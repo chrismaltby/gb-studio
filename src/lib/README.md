@@ -8,7 +8,7 @@ OR
 
 - Only relevant to / required by the main process and would not be needed by the renderer windows
 
-Files in this directory 
+Files in this directory
 
 - CAN import functions and types from shared/lib
 - CANNOT import functions from renderer/lib

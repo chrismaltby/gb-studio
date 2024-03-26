@@ -13,12 +13,16 @@ import loadAllScriptEventHandlers, {
 } from "./loadScriptEventHandlers";
 import migrateProject from "./migrateProject";
 import type { ProjectData } from "store/features/project/projectActions";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
 import { Dictionary } from "@reduxjs/toolkit";
 import { loadEngineFields } from "lib/project/engineFields";
+import { loadSceneTypes } from "lib/project/sceneTypes";
 
 const toUnixFilename = (filename: string) => {
   return filename.replace(/\\/g, "/");
@@ -49,12 +53,14 @@ const loadProject = async (
   data: ProjectData;
   scriptEventDefs: Dictionary<ScriptEventDef>;
   engineFields: EngineFieldSchema[];
+  sceneTypes: SceneTypeSchema[];
   modifiedSpriteIds: string[];
 }> => {
   const projectRoot = path.dirname(projectPath);
 
   const scriptEventDefs = await loadAllScriptEventHandlers(projectRoot);
   const engineFields = await loadEngineFields(projectRoot);
+  const sceneTypes = await loadSceneTypes(projectRoot);
 
   const json = migrateProject(
     await fs.readJson(projectPath),
@@ -354,6 +360,7 @@ const loadProject = async (
     modifiedSpriteIds,
     scriptEventDefs: cloneDictionary(scriptEventDefs),
     engineFields,
+    sceneTypes,
   };
 };
 

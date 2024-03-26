@@ -29,6 +29,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
 
       const project = denormalizeProject(state.project.present);
       const engineFields = state.engine.fields;
+      const sceneTypes = state.engine.sceneTypes;
 
       try {
         await API.project.build(project, {
@@ -37,6 +38,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           profile: state.editor.profile,
           exportBuild,
           debugEnabled,
+          sceneTypes,
         });
       } catch (e) {
         dispatch(navigationActions.setSection("build"));
@@ -63,9 +65,15 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
 
       const project = denormalizeProject(state.project.present);
       const engineFields = state.engine.fields;
+      const sceneTypes = state.engine.sceneTypes;
 
       try {
-        await API.project.exportProject(project, engineFields, exportType);
+        await API.project.exportProject(
+          project,
+          engineFields,
+          sceneTypes,
+          exportType
+        );
       } catch (e) {
         dispatch(navigationActions.setSection("build"));
       }

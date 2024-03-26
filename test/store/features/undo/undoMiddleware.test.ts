@@ -19,6 +19,7 @@ test("Should trigger undo clear history after successful project load", async ()
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",

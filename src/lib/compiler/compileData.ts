@@ -106,7 +106,10 @@ import {
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import type { Dictionary } from "@reduxjs/toolkit";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
   MusicDriverSetting,
@@ -1286,6 +1289,7 @@ const compile = async (
     projectRoot = "/tmp",
     scriptEventHandlers,
     engineFields = [],
+    sceneTypes = [],
     tmpPath = "/tmp",
     debugEnabled = false,
     progress = (_msg: string) => {},
@@ -1294,6 +1298,7 @@ const compile = async (
     projectRoot: string;
     scriptEventHandlers: ScriptEventHandlers;
     engineFields: EngineFieldSchema[];
+    sceneTypes: SceneTypeSchema[];
     tmpPath: string;
     debugEnabled?: boolean;
     progress: (_msg: string) => void;
@@ -1959,6 +1964,34 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `extern const far_ptr_t ui_fonts[];\n\n` +
     `void bootstrap_init(void) BANKED;\n\n` +
     `#endif\n`;
+
+  output[`scene_types.h`] =
+    `#ifndef SCENE_TYPES_H\n#define SCENE_TYPES_H\n\n` +
+    `typedef enum {\n` +
+    sceneTypes
+      .map((t, i) => {
+        return `    SCENE_TYPE_${t.key.toUpperCase()}${i === 0 ? " = 0" : ""}`;
+      })
+      .join(",\n") +
+    `\n} scene_type_e;\n` +
+    `#endif\n`;
+
+  output[`../states/states_ptrs.s`] =
+    `.include "macro.i"\n\n` +
+    `.area _CODE\n\n` +
+    `_state_start_fns::\n` +
+    sceneTypes
+      .map((t) => {
+        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_init`;
+      })
+      .join("\n") +
+    `\n\n` +
+    `_state_update_fns::\n` +
+    sceneTypes
+      .map((t) => {
+        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_update`;
+      })
+      .join("\n");
 
   output[`states_defines.h`] =
     `#ifndef STATES_DEFINES_H\n#define STATES_DEFINES_H\n\n` +

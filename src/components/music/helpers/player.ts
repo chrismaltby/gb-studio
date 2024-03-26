@@ -470,7 +470,7 @@ const player = {
   setOnIntervalCallback: (cb: (position: PlaybackPosition) => void) => {
     onIntervalCallback = cb;
   },
-  reset
+  reset,
 };
 
 export default player;

@@ -262,7 +262,7 @@
   "FIELD_LAST_OPTION_CANCELS": "Ostatnia opcja ustawia wartość na '0'",
   "FIELD_LAST_OPTION_CANCELS_DESC": "Ustawienie dla ostatniej opcji - jej wybranie ustawi wartość zmiennej na '0'",
   "FIELD_CANCEL_IF_B": "Ustaw wartość '0' jeżeli 'B' zostanie naciśnięte.",
-  "FIELD_CANCEL_IF_B_DESC": "Ustawienie dla przycisku 'B', naciśnięcie zamknie menu oraz ustawi wartość zmiennej na '0'.",  
+  "FIELD_CANCEL_IF_B_DESC": "Ustawienie dla przycisku 'B', naciśnięcie zamknie menu oraz ustawi wartość zmiennej na '0'.",
   "FIELD_NUMBER_OF_OPTIONS": "Ilość opcji wyboru",
   "FIELD_NUMBER_OF_OPTIONS_DESC": "Ustawienie ilości wymaganych opcji.",
   "FIELD_LAYOUT": "Schemat wyboru",
@@ -704,7 +704,7 @@
   "FIELD_VIEW_SLOPE_TILES": "Wyświetl tafly pochyłe",
   "FIELD_VIEW_EXTRA_TILES": "Wyświetl tafly dodatkowe",
   "FIELD_SOUNDS": "Dźwięki",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1177,7 +1177,7 @@
   "WARNING_TOO_MANY_UNIQUE_PROJECTILES": "Duża ilość pocisków na scenie: \"{name}\". Scena zawiera {num} pocisków, natomiast maksymalna ilość wynosi {max}.",
   "WARNING_ENGINE_PLUGIN_OUT_OF_DATE": "Wtyczka \"{pluginName}\" została stworzona dla starszej wersji GB Studio i może nie działać poprawnie. Wtyczka korzysta z silnika w wersji \"{pluginEngineVersion}\" natomiast GB Studio używa silnika w wersji \"{expectedEngineVersion}\".",
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Wtyczka \"{pluginName}\" bazuje na nieznanej wersji silnika i może nie działać poprawnie. Autorzy wtyczki mogą naprawić ten problem, sprawdzając, czy plik `engine/engine.json`  istnieje w folderze wtyczki i zawiera przynajmniej wpis `{\"version\": \"{expectedEngineVersion}\"}`.",
-  
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",

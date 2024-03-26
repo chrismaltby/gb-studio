@@ -14,7 +14,10 @@ import type {
   BuildType,
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type {
@@ -47,6 +50,7 @@ export type BuildOptions = {
   engineFields: EngineFieldSchema[];
   exportBuild: boolean;
   debugEnabled?: boolean;
+  sceneTypes: SceneTypeSchema[];
 };
 
 const createSubscribeAPI = <
@@ -185,8 +189,16 @@ const APISetup = {
     exportProject: (
       data: ProjectData,
       engineFields: EngineFieldSchema[],
+      sceneTypes: SceneTypeSchema[],
       exportType: ProjectExportType
-    ) => ipcRenderer.invoke("project:export", data, engineFields, exportType),
+    ) =>
+      ipcRenderer.invoke(
+        "project:export",
+        data,
+        engineFields,
+        sceneTypes,
+        exportType
+      ),
     getBackgroundInfo: (
       background: Background,
       is360: boolean
@@ -198,6 +210,7 @@ const APISetup = {
       data: ProjectData;
       scriptEventDefs: ScriptEventDefs;
       engineFields: EngineFieldSchema[];
+      sceneTypes: SceneTypeSchema[];
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>
@@ -400,8 +413,12 @@ const APISetup = {
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<
-          (event: IpcRendererEvent, fields: EngineFieldSchema[]) => void
-        >("watch:engineFields:changed"),
+          (
+            event: IpcRendererEvent,
+            fields: EngineFieldSchema[],
+            sceneTypes: SceneTypeSchema[]
+          ) => void
+        >("watch:engineSchema:changed"),
       },
       scriptEventDefs: {
         changed: createSubscribeAPI<

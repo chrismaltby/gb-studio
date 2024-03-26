@@ -28,6 +28,7 @@ test("Should change the path and root to new path and root and set loaded to tru
       path: "new_test_root/project_copy.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",

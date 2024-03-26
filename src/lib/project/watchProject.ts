@@ -144,7 +144,7 @@ const watchProject = (
     .on("unlink", callbacks.onRemoveEmote);
 
   const engineSchemaWatcher = chokidar
-    .watch(engineSchema, {
+    .watch([engineSchema, `${pluginsRoot}/**/engine/engine.json`], {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,

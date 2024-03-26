@@ -22,7 +22,7 @@ import {
   NarrowClipboardType,
 } from "./clipboardTypes";
 
-const decoder = new TextDecoder('utf-8');
+const decoder = new TextDecoder("utf-8");
 
 const isClipboardMetaspriteTiles = (
   input: unknown

@@ -96,7 +96,12 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { cameraShake, cameraShakeVariables, variableFromUnion, temporaryEntityVariable } = helpers;
+  const {
+    cameraShake,
+    cameraShakeVariables,
+    variableFromUnion,
+    temporaryEntityVariable,
+  } = helpers;
   let frames = 0;
   if (input.units === "frames") {
     frames = typeof input.frames === "number" ? input.frames : 30;
@@ -131,7 +136,10 @@ const compile = (input, helpers) => {
       cameraShake(shouldShakeX, shouldShakeY, frames, input.magnitude.value);
     }
   } else {
-    const magnitudeVar = variableFromUnion(input.magnitude, temporaryEntityVariable(0));
+    const magnitudeVar = variableFromUnion(
+      input.magnitude,
+      temporaryEntityVariable(0)
+    );
     if (frames > 0) {
       cameraShakeVariables(shouldShakeX, shouldShakeY, frames, magnitudeVar);
     }
