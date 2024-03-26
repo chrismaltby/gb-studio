@@ -27,6 +27,7 @@ import { initialState as initialSpriteState } from "../src/store/features/sprite
 import { initialState as initialScriptEventDefsState } from "../src/store/features/scriptEventDefs/scriptEventDefsState";
 import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
 import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
+import { initialState as initialDebuggerState } from "../src/store/features/debugger/debuggerState";
 import compileFonts, {
   PrecompiledFontData,
 } from "../src/lib/compiler/compileFonts";
@@ -267,6 +268,14 @@ export const dummyProjectData: ProjectData = {
     customControlsB: ["Control", "k", "x"],
     customControlsStart: ["Enter"],
     customControlsSelect: ["Shift"],
+    debuggerEnabled: false,
+    debuggerScriptType: "editor",
+    debuggerVariablesFilter: "all",
+    debuggerCollapsedPanes: [],
+    debuggerPauseOnScriptChanged: false,
+    debuggerPauseOnWatchedVariableChanged: false,
+    debuggerBreakpoints: [],
+    debuggerWatchedVariables: [],
   },
 };
 
@@ -325,6 +334,9 @@ export const dummyRootState: RootState = {
   },
   tracker: {
     ...initialTrackerState,
+  },
+  debug: {
+    ...initialDebuggerState,
   },
   trackerDocument: {
     past: [],
