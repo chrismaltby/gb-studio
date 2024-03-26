@@ -60,6 +60,15 @@ export const ScriptEventHeaderTitle = styled.div`
   max-width: 100%;
 `;
 
+export const ScriptEventHeaderBreakpointIndicator = styled.div`
+  display: flex;
+  svg {
+    fill: ${(props) => props.theme.colors.highlight};
+    max-width: 15px;
+    max-height: 15px;
+  }
+`;
+
 interface ScriptEventHeaderCaretProps {
   open?: boolean;
 }

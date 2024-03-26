@@ -81,6 +81,10 @@ export const MenuItemIcon = styled.div<MenuItemProps>`
     margin-left: -5px;
     margin-right: 5px;
   }
+  &:last-child:not(:first-child) {
+    margin-left: 5px;
+    margin-right: 0px;
+  }
 `;
 
 export const MenuGroup = styled.div`

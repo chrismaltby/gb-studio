@@ -14,6 +14,7 @@ import {
 import entitiesActions from "store/features/entities/entitiesActions";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
+import settingsActions from "store/features/settings/settingsActions";
 import {
   ScriptEventParentType,
   ScriptEventsRef,
@@ -31,15 +32,21 @@ import {
   ScriptEventRenameInputCompleteButton,
   ScriptEditorChildrenWrapper,
   ScriptEditorChildrenLabel,
+  ScriptEventHeaderBreakpointIndicator,
 } from "ui/scripting/ScriptEvents";
-import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
+import {
+  ArrowIcon,
+  BreakpointIcon,
+  CheckIcon,
+  CommentIcon,
+} from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm";
 import l10n from "shared/lib/lang/l10n";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuOverlay } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuItemIcon, MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -52,6 +59,7 @@ import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { getSettings } from "store/features/settings/settingsState";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -93,6 +101,12 @@ const ScriptEditorEvent = React.memo(
     );
     const scriptEventDefs = useAppSelector((state) =>
       selectScriptEventDefs(state)
+    );
+    const breakpointEnabled = useAppSelector(
+      (state) =>
+        getSettings(state).debuggerBreakpoints.findIndex(
+          (b) => b.scriptEventId === id
+        ) > -1
     );
 
     const onFetchClipboard = useCallback(() => {
@@ -177,6 +191,15 @@ const ScriptEditorEvent = React.memo(
         entitiesActions.toggleScriptEventDisableElse({ scriptEventId: id })
       );
     }, [dispatch, id]);
+
+    const toggleBreakpoint = useCallback(() => {
+      dispatch(
+        settingsActions.toggleBreakpoint({
+          scriptEventId: id,
+          context,
+        })
+      );
+    }, [context, dispatch, id]);
 
     const editCustomEvent = useCallback(() => {
       const customEventId = scriptEvent?.args?.customEventId;
@@ -423,6 +446,13 @@ const ScriptEditorEvent = React.memo(
                       />
                     )}
                   </ScriptEventHeaderTitle>
+                  {breakpointEnabled && (
+                    <ScriptEventHeaderBreakpointIndicator
+                      title={l10n("FIELD_BREAKPOINT")}
+                    >
+                      <BreakpointIcon />
+                    </ScriptEventHeaderBreakpointIndicator>
+                  )}
 
                   <DropdownButton
                     size="small"
@@ -456,6 +486,14 @@ const ScriptEditorEvent = React.memo(
                           : l10n("MENU_DISABLE_ELSE")}
                       </MenuItem>
                     )}
+                    <MenuItem onClick={toggleBreakpoint}>
+                      <span>{l10n("MENU_SET_BREAKPOINT")}</span>
+                      {breakpointEnabled && (
+                        <MenuItemIcon>
+                          <CheckIcon />
+                        </MenuItemIcon>
+                      )}
+                    </MenuItem>
                     <MenuDivider />
                     <MenuItem onClick={() => onOpenAddMenu(true)}>
                       {l10n("MENU_INSERT_EVENT_BEFORE")}

@@ -741,6 +741,12 @@ export const InfoIcon = () => (
   </svg>
 );
 
+export const BreakpointIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M15.728 3l5.272 5.272v7.456l-5.272 5.272h-7.456l-5.272-5.272v-7.456l5.272-5.272h7.456zm8.272 4.029v9.941l-7.029 7.03h-9.942l-7.029-7.029v-9.942l7.029-7.029h9.941l7.03 7.029zm-2 .829l-5.858-5.858h-8.284l-5.858 5.858v8.284l5.858 5.858h8.284l5.858-5.858v-8.284z" />{" "}
+  </svg>
+);
+
 export const SadIcon = () => (
   <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
     <defs>

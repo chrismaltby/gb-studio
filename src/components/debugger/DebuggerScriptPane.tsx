@@ -22,11 +22,8 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { TabBar } from "ui/tabs/Tabs";
-import DebuggerSceneLink from "components/debugger/DebuggerSceneLink";
-import DebuggerTriggerLink from "components/debugger/DebuggerTriggerLink";
-import DebuggerActorLink from "components/debugger/DebuggerActorLink";
-import DebuggerCustomEventLink from "components/debugger/DebuggerCustomEventLink";
 import API from "renderer/lib/api";
+import DebuggerScriptCtxBreadcrumb from "components/debugger/DebuggerScriptCtxBreadcrumb";
 
 interface DebuggerScriptPaneProps {
   collapsible?: boolean;
@@ -72,11 +69,6 @@ const ScriptPath = styled.div`
   color: ${(props) => props.theme.colors.input.text};
   background: ${(props) => props.theme.colors.input.background};
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-`;
-
-const ScriptPathSeparator = styled.span`
-  margin: 0 5px;
-  opacity: 0.5;
 `;
 
 interface ScrollWrapperProps {
@@ -306,39 +298,9 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       )}
       {!isCollapsed && isPaused && currentGBVMScript && (
         <Content>
-          {currentGBVMScript && (
+          {currentGBVMScript && scriptCtx && (
             <ScriptPath>
-              {scriptCtx?.sceneId && scriptCtx?.entityType !== "customEvent" && (
-                <>
-                  <DebuggerSceneLink id={scriptCtx.sceneId} />
-                  <ScriptPathSeparator>/</ScriptPathSeparator>
-                </>
-              )}
-              {scriptCtx?.entityType === "actor" && (
-                <>
-                  <DebuggerActorLink
-                    id={scriptCtx.entityId}
-                    sceneId={scriptCtx.sceneId}
-                  />
-                  <ScriptPathSeparator>/</ScriptPathSeparator>
-                </>
-              )}
-              {scriptCtx?.entityType === "trigger" && (
-                <>
-                  <DebuggerTriggerLink
-                    id={scriptCtx.entityId}
-                    sceneId={scriptCtx.sceneId}
-                  />
-                  <ScriptPathSeparator>/</ScriptPathSeparator>
-                </>
-              )}
-              {scriptCtx?.entityType === "customEvent" && (
-                <>
-                  <DebuggerCustomEventLink id={scriptCtx.entityId} />
-                  <ScriptPathSeparator>/</ScriptPathSeparator>
-                </>
-              )}
-              {scriptCtx?.scriptKey}
+              <DebuggerScriptCtxBreadcrumb context={scriptCtx} />
             </ScriptPath>
           )}
           <ScrollWrapper scrollable={!collapsible}>

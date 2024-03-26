@@ -35,4 +35,5 @@ export type DebuggerInitData = {
   memoryMap: Record<string, number>;
   globalVariables: Record<string, number>;
   pauseOnScriptChanged: boolean;
+  breakpoints: string[];
 };

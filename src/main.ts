@@ -955,6 +955,13 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle("debugger:set-breakpoints", (_event, breakpoints: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-breakpoints",
+    data: breakpoints,
+  });
+});
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(
@@ -1085,6 +1092,9 @@ ipcMain.handle(
             memoryMap,
             globalVariables,
             pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChange,
+            breakpoints: project.settings.debuggerBreakpoints.map(
+              (breakpoint) => breakpoint.scriptEventId
+            ),
           };
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s")

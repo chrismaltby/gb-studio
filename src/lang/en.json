@@ -721,6 +721,8 @@
   "FIELD_STEP": "Step",
   "FIELD_STEP_FRAME": "Step Frame",
   "FIELD_PAUSE_ON_SCRIPT_CHANGE": "Pause On Script Change",
+  "FIELD_PAUSE_ON_WATCHED_VAR_CHANGE": "Pause On Watched Variable Change",
+  "FIELD_BREAKPOINT": "Breakpoint",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1162,6 +1164,7 @@
   "MENU_SELECT_ALL": "Select All",
   "MENU_WINDOW": "Window",
   "MENU_HELP": "Help",
+  "MENU_SET_BREAKPOINT": "Set Breakpoint",
 
   "// 11": "Warnings -----------------------------------------------------",
 

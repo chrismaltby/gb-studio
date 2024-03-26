@@ -156,7 +156,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
   );
   const variablesData = useAppSelector((state) => state.debug.variablesData);
   const watchedVariableIds = useAppSelector(
-    (state) => getSettings(state).watchedVariables
+    (state) => getSettings(state).debuggerWatchedVariables
   );
   const isCollapsed = useAppSelector(
     (state) =>

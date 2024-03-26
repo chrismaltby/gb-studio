@@ -2,10 +2,6 @@
 
 let debug;
 
-const vmBreakpoints = [
-  // "12::19261", "12::19335"
-];
-
 // Consts
 
 const EVENT_BREAKPOINT = 8;
@@ -60,7 +56,7 @@ class Debug {
     this.globalVariables = {};
     this.memoryDict = new Map();
 
-    this.breakpoints = {};
+    this.breakpoints = [];
     this.pauseOnScriptChanged = false;
     this.pauseOnVMStep = false;
     this.currentScriptSymbol = "";
@@ -127,14 +123,12 @@ class Debug {
             }
             // If manual breakpoint is hit
             if (
-              vmBreakpoints.includes(
-                `${currentCtxData.bank}::${currentCtxData.addr}`
+              currentCtxData.closestGBVMSymbol &&
+              currentCtxData.address === currentCtxData.closestAddr &&
+              this.breakpoints.includes(
+                currentCtxData.closestGBVMSymbol.scriptEventId
               )
             ) {
-              console.log(
-                "PAUSED ON BREAKPOINT",
-                `${currentCtxData.bank}::${currentCtxData.addr}`
-              );
               this.pauseOnVMStep = true;
               emulator.pause();
               break;
@@ -173,10 +167,11 @@ class Debug {
     this.emulator.runUntil = this.debugRunUntil;
   }
 
-  initialize(memoryMap, globalVariables, pauseOnScriptChanged) {
+  initialize(memoryMap, globalVariables, pauseOnScriptChanged, breakpoints) {
     this.memoryMap = memoryMap;
     this.globalVariables = globalVariables;
     this.pauseOnScriptChanged = pauseOnScriptChanged;
+    this.breakpoints = breakpoints;
 
     const memoryDict = new Map();
     Object.keys(memoryMap).forEach((k) => {
@@ -340,23 +335,8 @@ class Debug {
     return this.vramCanvas.toDataURL("image/png");
   }
 
-  updateBreakpoints() {
-    this.module._emulator_clear_breakpoints(this.e);
-    Object.keys(this.breakpoints).forEach((addr) => {
-      if (this.breakpoints[addr]) {
-        this.module._emulator_set_breakpoint(this.e, addr);
-      }
-    });
-  }
-
-  setBreakPoint(addr) {
-    this.breakpoints[addr] = true;
-    this.updateBreakpoints();
-  }
-
-  unsetBreakPoint(addr) {
-    this.breakpoints[addr] = false;
-    this.updateBreakpoints();
+  setBreakPoints(breakpoints) {
+    this.breakpoints = breakpoints;
   }
 
   pause() {
@@ -455,7 +435,8 @@ let ready = setInterval(() => {
           debug.initialize(
             data.memoryMap,
             data.globalVariables,
-            data.pauseOnScriptChanged
+            data.pauseOnScriptChanged,
+            data.breakpoints
           );
 
           setInterval(() => {
@@ -482,8 +463,8 @@ let ready = setInterval(() => {
             });
           }, 100);
           break;
-        case "add-breakpoint":
-          debug.setBreakPoint(parseInt(data.address));
+        case "set-breakpoints":
+          debug.setBreakPoints(data);
           break;
         case "pause":
           debug.pause();
