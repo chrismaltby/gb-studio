@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
 import editorActions from "store/features/editor/editorActions";
@@ -284,6 +284,10 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     variablesFilter,
     watchedVariableIds,
   ]);
+
+  useEffect(() => {
+    API.debugger.setWatchedVariableIds(watchedVariableIds);
+  }, [watchedVariableIds]);
 
   return (
     <>

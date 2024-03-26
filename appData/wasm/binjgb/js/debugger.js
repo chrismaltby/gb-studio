@@ -54,14 +54,18 @@ class Debug {
 
     this.memoryMap = {};
     this.globalVariables = {};
+    this.variableMap = {};
     this.memoryDict = new Map();
 
     this.breakpoints = [];
     this.pauseOnScriptChanged = false;
+    this.pauseOnWatchedVariableChanged = true;
     this.pauseOnVMStep = false;
     this.currentScriptSymbol = "";
     this.scriptContexts = [];
     this.pausedUI = null;
+    this.prevGlobals = [];
+    this.watchedVariables = [];
 
     this.debugRunUntil = (ticks) => {
       while (true) {
@@ -79,6 +83,7 @@ class Debug {
           let firstCtx = debug.readMemInt16(firstCtxAddr);
           let scriptContexts = [];
           let currentCtxData = undefined;
+          const prevCtxs = this.scriptContexts;
 
           while (firstCtx !== 0) {
             const ctxAddr = debug.readMemInt16(firstCtx);
@@ -86,8 +91,7 @@ class Debug {
             const closestAddr = debug.getClosestAddress(ctxBank, ctxAddr);
             const closestSymbol = debug.getSymbol(ctxBank, closestAddr);
             const closestGBVMSymbol = parseDebuggerSymbol(closestSymbol);
-
-            const prevCtx = this.scriptContexts[scriptContexts.length];
+            const prevCtx = prevCtxs[scriptContexts.length];
 
             const ctxData = {
               address: ctxAddr,
@@ -147,9 +151,39 @@ class Debug {
               emulator.pause();
               break;
             }
-          }
 
-          console.log("BREAKPOINT");
+            if (this.pauseOnWatchedVariableChanged) {
+              const globals = this.getGlobals();
+              if (this.prevGlobals.length > 0) {
+                // Check if watched has change
+                const modified = !this.prevGlobals.every(
+                  (v, i) => v === globals[i]
+                );
+                if (modified) {
+                  const changedVariable = this.watchedVariables.find(
+                    (variableId) => {
+                      const variableData = this.variableMap[variableId];
+                      const symbol = variableData?.symbol;
+                      const variableIndex = this.globalVariables[symbol];
+                      if (variableIndex !== undefined) {
+                        return (
+                          this.prevGlobals[variableIndex] !== undefined &&
+                          globals[variableIndex] !==
+                            this.prevGlobals[variableIndex]
+                        );
+                      }
+                      return false;
+                    }
+                  );
+                  if (changedVariable) {
+                    this.pauseOnVMStep = true;
+                    emulator.pause();
+                  }
+                }
+              }
+              this.prevGlobals = globals;
+            }
+          }
         }
         if (event & EVENT_AUDIO_BUFFER_FULL && !this.emulator.isRewinding) {
           this.emulator.audio.pushBuffer();
@@ -167,11 +201,22 @@ class Debug {
     this.emulator.runUntil = this.debugRunUntil;
   }
 
-  initialize(memoryMap, globalVariables, pauseOnScriptChanged, breakpoints) {
+  initialize(
+    memoryMap,
+    globalVariables,
+    variableMap,
+    pauseOnScriptChanged,
+    pauseOnWatchedVarChanged,
+    breakpoints,
+    watchedVariables
+  ) {
     this.memoryMap = memoryMap;
     this.globalVariables = globalVariables;
+    this.variableMap = variableMap;
     this.pauseOnScriptChanged = pauseOnScriptChanged;
+    this.pauseOnWatchedVariableChanged = pauseOnWatchedVarChanged;
     this.breakpoints = breakpoints;
+    this.watchedVariables = watchedVariables;
 
     const memoryDict = new Map();
     Object.keys(memoryMap).forEach((k) => {
@@ -339,6 +384,10 @@ class Debug {
     this.breakpoints = breakpoints;
   }
 
+  setWatchedVariables(watchedVariables) {
+    this.watchedVariables = watchedVariables;
+  }
+
   pause() {
     this.pauseOnVMStep = true;
     this.emulator.pause();
@@ -386,6 +435,7 @@ class Debug {
     const offset = (this.globalVariables[symbol] ?? 0) * 2;
     const variablesStartAddr = this.memoryMap[SCRIPT_MEMORY_SYMBOL];
     this.writeMemInt16(variablesStartAddr + offset, value);
+    this.prevGlobals = this.getGlobals();
   }
 
   getCurrentSceneSymbol() {
@@ -435,8 +485,11 @@ let ready = setInterval(() => {
           debug.initialize(
             data.memoryMap,
             data.globalVariables,
+            data.variableMap,
             data.pauseOnScriptChanged,
-            data.breakpoints
+            data.pauseOnWatchedVariableChanged,
+            data.breakpoints,
+            data.watchedVariables
           );
 
           setInterval(() => {
@@ -481,8 +534,14 @@ let ready = setInterval(() => {
         case "pause-on-script":
           debug.pauseOnScriptChanged = data;
           break;
+        case "pause-on-var":
+          debug.pauseOnWatchedVariableChanged = data;
+          break;
         case "set-global":
           debug.setGlobal(data.symbol, data.value);
+          break;
+        case "set-watched":
+          debug.setWatchedVariables(data);
           break;
         default:
         // console.warn(event);

@@ -1,3 +1,4 @@
+import type { VariableMapData } from "lib/compiler/compileData";
 import type { EntityType } from "shared/lib/scripts/context";
 
 export type DebuggerScriptContext = {
@@ -35,5 +36,8 @@ export type DebuggerInitData = {
   memoryMap: Record<string, number>;
   globalVariables: Record<string, number>;
   pauseOnScriptChanged: boolean;
+  pauseOnWatchedVariableChanged: boolean;
   breakpoints: string[];
+  watchedVariables: string[];
+  variableMap: Record<string, VariableMapData>;
 };

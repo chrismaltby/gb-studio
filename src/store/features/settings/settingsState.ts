@@ -78,7 +78,8 @@ export type SettingsState = {
   debuggerScriptType: "editor" | "gbvm";
   debuggerVariablesFilter: "all" | "watched";
   debuggerCollapsedPanes: string[];
-  debuggerPauseOnScriptChange: boolean;
+  debuggerPauseOnScriptChanged: boolean;
+  debuggerPauseOnWatchedVariableChanged: boolean;
   debuggerBreakpoints: BreakpointData[];
   debuggerWatchedVariables: string[];
 };

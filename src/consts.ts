@@ -196,7 +196,8 @@ export const defaultProjectSettings: SettingsState = {
   debuggerScriptType: "editor",
   debuggerVariablesFilter: "all",
   debuggerCollapsedPanes: [],
-  debuggerPauseOnScriptChange: false,
+  debuggerPauseOnScriptChanged: false,
+  debuggerPauseOnWatchedVariableChanged: false,
   debuggerBreakpoints: [],
   debuggerWatchedVariables: [],
 };

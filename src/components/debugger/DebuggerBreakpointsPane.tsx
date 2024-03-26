@@ -27,8 +27,11 @@ const DebuggerBreakpointsPane = () => {
   const isCollapsed = useAppSelector((state) =>
     getSettings(state).debuggerCollapsedPanes.includes("breakpoints")
   );
-  const pauseOnScriptChange = useAppSelector(
-    (state) => getSettings(state).debuggerPauseOnScriptChange
+  const pauseOnScriptChanged = useAppSelector(
+    (state) => getSettings(state).debuggerPauseOnScriptChanged
+  );
+  const pauseOnWatchedVariableChanged = useAppSelector(
+    (state) => getSettings(state).debuggerPauseOnWatchedVariableChanged
   );
   const breakpoints = useAppSelector(
     (state) => getSettings(state).debuggerBreakpoints
@@ -39,12 +42,22 @@ const DebuggerBreakpointsPane = () => {
   }, [dispatch]);
 
   const onTogglePauseOnScriptChange = useCallback(() => {
+    API.debugger.setPauseOnScriptChanged(!pauseOnScriptChanged);
     dispatch(
       settingsActions.editSettings({
-        debuggerPauseOnScriptChange: !pauseOnScriptChange,
+        debuggerPauseOnScriptChanged: !pauseOnScriptChanged,
       })
     );
-  }, [dispatch, pauseOnScriptChange]);
+  }, [dispatch, pauseOnScriptChanged]);
+
+  const onTogglePauseOnWatchedVariableChange = useCallback(() => {
+    API.debugger.setPauseOnWatchVariableChanged(!pauseOnWatchedVariableChanged);
+    dispatch(
+      settingsActions.editSettings({
+        debuggerPauseOnWatchedVariableChanged: !pauseOnWatchedVariableChanged,
+      })
+    );
+  }, [dispatch, pauseOnWatchedVariableChanged]);
 
   useEffect(() => {
     API.debugger.setBreakpoints(breakpoints.map((b) => b.scriptEventId));
@@ -62,16 +75,16 @@ const DebuggerBreakpointsPane = () => {
       {!isCollapsed && (
         <Content>
           <CheckboxField
-            name="pauseOnScriptChange"
+            name="pauseOnScriptChanged"
             label={l10n("FIELD_PAUSE_ON_SCRIPT_CHANGE")}
-            checked={pauseOnScriptChange}
+            checked={pauseOnScriptChanged}
             onChange={onTogglePauseOnScriptChange}
           />
           <CheckboxField
-            name="pauseOnScriptChange"
+            name="pauseOnWatchedVariableChanged"
             label={l10n("FIELD_PAUSE_ON_WATCHED_VAR_CHANGE")}
-            checked={pauseOnScriptChange}
-            onChange={onTogglePauseOnScriptChange}
+            checked={pauseOnWatchedVariableChanged}
+            onChange={onTogglePauseOnWatchedVariableChange}
           />
         </Content>
       )}

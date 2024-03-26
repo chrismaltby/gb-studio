@@ -98,6 +98,7 @@ import {
   DebuggerInitData,
 } from "shared/lib/debugger/types";
 import pickBy from "lodash/pickBy";
+import keyBy from "lodash/keyBy";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -945,6 +946,13 @@ ipcMain.handle("debugger:pause-on-script", (_event, enabled: boolean) => {
   });
 });
 
+ipcMain.handle("debugger:pause-on-var", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-var",
+    data: enabled,
+  });
+});
+
 ipcMain.handle(
   "debugger:set-global",
   (_event, symbol: string, value: number) => {
@@ -959,6 +967,13 @@ ipcMain.handle("debugger:set-breakpoints", (_event, breakpoints: string[]) => {
   sendToGameWindow("debugger:data", {
     action: "set-breakpoints",
     data: breakpoints,
+  });
+});
+
+ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-watched",
+    data: variableIds,
   });
 });
 
@@ -1091,10 +1106,14 @@ ipcMain.handle(
           debuggerInitData = {
             memoryMap,
             globalVariables,
-            pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChange,
+            pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChanged,
+            pauseOnWatchedVariableChanged:
+              project.settings.debuggerPauseOnWatchedVariableChanged,
             breakpoints: project.settings.debuggerBreakpoints.map(
               (breakpoint) => breakpoint.scriptEventId
             ),
+            watchedVariables: project.settings.debuggerWatchedVariables,
+            variableMap: keyBy(Object.values(compiledData.variableMap), "id"),
           };
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s")
