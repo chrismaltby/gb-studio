@@ -33,6 +33,9 @@ const debuggerSlice = createSlice({
   name: "debug",
   initialState,
   reducers: {
+    disconnect: (state) => {
+      state.initialized = false;
+    },
     setSymbols: (
       state,
       action: PayloadAction<{

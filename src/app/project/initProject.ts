@@ -374,3 +374,7 @@ API.events.debugger.symbols.subscribe(
     );
   }
 );
+
+API.events.debugger.disconnected.subscribe(() => {
+  store.dispatch(debuggerActions.disconnect());
+});

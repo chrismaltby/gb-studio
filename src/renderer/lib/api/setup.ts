@@ -368,6 +368,9 @@ const APISetup = {
             }
           ) => void
         >("debugger:symbols"),
+      disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
+        "debugger:disconnected"
+      ),
     },
     settings: {
       uiScaleChanged: createSubscribeAPI<

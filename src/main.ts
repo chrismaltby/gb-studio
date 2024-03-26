@@ -536,6 +536,7 @@ const createPlay = async (
 
   playWindow.on("closed", () => {
     playWindow = null;
+    sendToProjectWindow("debugger:disconnected");
   });
 };
 

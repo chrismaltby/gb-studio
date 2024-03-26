@@ -7,6 +7,7 @@ import { PlayStartIcon, PauseIcon, NextIcon, StepIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
 const DebuggerControls = () => {
+  const initialized = useAppSelector((state) => state.debug.initialized);
   const isPaused = useAppSelector((state) => state.debug.isPaused);
 
   const onPlayPause = useCallback(() => {
@@ -44,6 +45,10 @@ const DebuggerControls = () => {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [onKeyDown]);
+
+  if (!initialized) {
+    return null;
+  }
 
   return (
     <>
