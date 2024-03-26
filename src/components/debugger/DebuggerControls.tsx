@@ -47,7 +47,12 @@ const DebuggerControls = () => {
 
   return (
     <>
-      <Button size="small" variant="transparent" onClick={onPlayPause}>
+      <Button
+        size="small"
+        variant="transparent"
+        onClick={onPlayPause}
+        title={isPaused ? l10n("FIELD_RESUME") : l10n("FIELD_PAUSE")}
+      >
         {isPaused ? <PlayStartIcon /> : <PauseIcon />}
       </Button>
       <FixedSpacer width={5} />

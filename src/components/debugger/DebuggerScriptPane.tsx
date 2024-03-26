@@ -158,7 +158,6 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
     currentThread?.closestGBVMSymbol?.scriptSymbol ?? "";
 
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
-  // const currentSceneData = sceneMap[currentSceneSymbol] ?? undefined;
 
   const scriptCtx: ScriptEditorCtx | undefined = useMemo(
     () =>
@@ -254,7 +253,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
                 }
                 onClick={onSetScriptTypeEditor}
               >
-                Editor
+                {l10n("FIELD_EDITOR")}
               </Button>
               /
               <Button
@@ -264,14 +263,14 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
                 }
                 onClick={onSetScriptTypeGBVM}
               >
-                GBVM
+                {l10n("FIELD_GBVM")}
               </Button>
             </>
           )
         }
       >
         {isCollapsed || !isPaused || scriptContexts.length === 0 ? (
-          l10n("FIELD_CURRENT_SCRIPT")
+          l10n("FIELD_THREADS")
         ) : (
           <TabWrapper onClick={stopPropagagtion}>
             <TabBar
@@ -286,14 +285,14 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       </SplitPaneHeader>
       {!isCollapsed && !isPaused && (
         <PlayPauseMessage>
-          Pause debugger to view currently running scripts
-          <Button onClick={onPlayPause}>Pause</Button>
+          {l10n("FIELD_PAUSE_TO_VIEW_SCRIPTS")}
+          <Button onClick={onPlayPause}>{l10n("FIELD_PAUSE")}</Button>
         </PlayPauseMessage>
       )}
       {!isCollapsed && isPaused && !currentGBVMScript && (
         <PlayPauseMessage>
-          No scripts currently running
-          <Button onClick={onPlayPause}>Resume</Button>
+          {l10n("FIELD_NO_SCRIPT_RUNNING")}
+          <Button onClick={onPlayPause}>{l10n("FIELD_RESUME")}</Button>
         </PlayPauseMessage>
       )}
       {!isCollapsed && isPaused && currentGBVMScript && (

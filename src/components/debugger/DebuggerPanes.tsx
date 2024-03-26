@@ -10,6 +10,7 @@ import DebuggerBreakpointsPane from "components/debugger/DebuggerBreakpointsPane
 import DebuggerPausedPane from "components/debugger/DebuggerPausedPane";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { Button } from "ui/buttons/Button";
+import l10n from "shared/lib/lang/l10n";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -84,9 +85,9 @@ const DebuggerPanes = () => {
     <Wrapper ref={wrapperEl}>
       {!initialized && (
         <NotInitializedWrapper>
-          Debugger not connected.
+          {l10n("FIELD_DEBUGGER_NOT_CONNECTED")}
           <Button onClick={onRun} disabled={running}>
-            {running ? "Building..." : "Start Debugger"}
+            {running ? l10n("FIELD_BUILDING") : l10n("FIELD_START_DEBUGGER")}
           </Button>
         </NotInitializedWrapper>
       )}

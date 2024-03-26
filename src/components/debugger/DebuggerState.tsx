@@ -5,11 +5,11 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import DebuggerSceneLink from "components/debugger/DebuggerSceneLink";
+import l10n from "shared/lib/lang/l10n";
 
 const Content = styled.div`
   background: ${(props) => props.theme.colors.scripting.form.background};
   padding: 10px;
-  min-height: 50px;
 `;
 
 const DataRow = styled.div`
@@ -50,18 +50,18 @@ const DebuggerState = () => {
         collapsed={isCollapsed}
         variant="secondary"
       >
-        Current State
+        {l10n("FIELD_CURRENT_STATE")}
       </SplitPaneHeader>
       {!isCollapsed && (
         <Content>
           {currentSceneData && (
             <DataRow>
-              <DataLabel>Scene:</DataLabel>
+              <DataLabel>{l10n("SCENE")}:</DataLabel>
               <DebuggerSceneLink id={currentSceneData.id} />
             </DataRow>
           )}
           <DataRow>
-            <DataLabel>Thread Count:</DataLabel>
+            <DataLabel>{l10n("FIELD_THREADS")}:</DataLabel>
             {scriptContexts.length}
           </DataRow>
         </Content>

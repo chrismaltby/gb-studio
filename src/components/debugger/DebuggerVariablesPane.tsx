@@ -310,7 +310,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                 }
                 onClick={onSetVariablesFilterAll}
               >
-                All
+                {l10n("FIELD_ALL")}
               </Button>
               /
               <Button
@@ -320,7 +320,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                 }
                 onClick={onSetVariablesFilterWatched}
               >
-                Watched
+                {l10n("FIELD_WATCHED")}
               </Button>
             </>
           )
@@ -362,6 +362,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                     onClick={() => {
                       onToggleWatchedVariable(variableData.id);
                     }}
+                    title={l10n("FIELD_WATCH")}
                   >
                     <StarIcon />
                   </Button>

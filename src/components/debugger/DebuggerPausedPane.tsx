@@ -1,4 +1,5 @@
 import React from "react";
+import l10n from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { InfoIcon } from "ui/icons/Icons";
@@ -30,7 +31,7 @@ const DebuggerPausedPane = () => {
 
   return (
     <PausedMessage>
-      <InfoIcon /> Debugger paused
+      <InfoIcon /> {l10n("FIELD_DEBUGGER_PAUSED")}
     </PausedMessage>
   );
 };
