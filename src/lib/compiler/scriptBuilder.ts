@@ -681,7 +681,10 @@ class ScriptBuilder {
     }
   };
 
-  private _stackPushEvaluatedExpression = (expression: string) => {
+  private _stackPushEvaluatedExpression = (
+    expression: string,
+    resultVariable?: ScriptBuilderVariable
+  ) => {
     const tokens = tokenize(expression);
     const rpnTokens = shuntingYard(tokens);
     if (rpnTokens.length > 0) {
@@ -711,6 +714,9 @@ class ScriptBuilder {
           rpn = rpn.operator(op);
         }
         token = rpnTokens.shift();
+      }
+      if (resultVariable !== undefined) {
+        rpn.refSetVariable(resultVariable);
       }
       rpn.stop();
     } else {
@@ -1124,6 +1130,24 @@ class ScriptBuilder {
           return rpn.refInd(variableAlias);
         } else {
           return rpn.ref(variableAlias);
+        }
+      },
+      refSet: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetInd: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET_IND", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetVariable: (variable: ScriptBuilderVariable) => {
+        const variableAlias = this.getVariableAlias(variable);
+        if (this._isIndirectVariable(variable)) {
+          return rpn.refSetInd(variableAlias);
+        } else {
+          return rpn.refSet(variableAlias);
         }
       },
       int8: (value: number | string) => {
@@ -2103,14 +2127,12 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
 
     this._setConst(
       this._localRef(actorRef, 3),
@@ -2138,16 +2160,15 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
@@ -2193,14 +2214,12 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
 
     this._actorSetPosition(actorRef);
     this._assertStackNeutral(stackPtr);
@@ -2221,16 +2240,15 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._actorSetPosition(actorRef);
     this._addNL();
   };
@@ -2248,14 +2266,13 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableX, ".ARG1");
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(2);
     this._addNL();
   };
 
@@ -2271,10 +2288,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .stop();
 
-    this._setVariable(variableX, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2290,10 +2306,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2341,9 +2356,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Up
@@ -2354,9 +2368,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Left
@@ -2367,9 +2380,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Right
@@ -2378,8 +2390,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
     this._stackPop(1);
 
     // End
@@ -3159,9 +3171,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(magnitude)
+      .refSet(this._localRef(cameraShakeArgsRef, 2))
       .stop();
-    this._set(this._localRef(cameraShakeArgsRef, 2), ".ARG0");
-    this._stackPop(1);
 
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
@@ -3761,9 +3772,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".ADD")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3773,9 +3783,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".SUB")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3836,9 +3845,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3860,9 +3868,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3887,9 +3894,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(variable);
     rpn.stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3927,9 +3933,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int16(flags)
       .operator(".B_OR")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3941,9 +3946,8 @@ extern void __mute_mask_${symbol};
       .int16(flags)
       .operator(".B_XOR")
       .operator(".B_AND")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3951,9 +3955,7 @@ extern void __mute_mask_${symbol};
     this._addComment(
       `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`
     );
-    this._stackPushEvaluatedExpression(expression);
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
+    this._stackPushEvaluatedExpression(expression, variable);
     this._addNL();
   };
 
