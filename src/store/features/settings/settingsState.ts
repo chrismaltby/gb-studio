@@ -5,6 +5,7 @@ import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
+export type ColorModeSetting = "mono" | "mixed" | "color";
 export type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";
 export type CartType = "mbc5" | "mbc3";
@@ -27,7 +28,6 @@ export type SettingsState = {
   worldScrollX: number;
   worldScrollY: number;
   zoom: number;
-  customColorsEnabled: boolean;
   sgbEnabled: boolean;
   customHead: string;
   defaultBackgroundPaletteIds: [
@@ -82,6 +82,7 @@ export type SettingsState = {
   debuggerPauseOnWatchedVariableChanged: boolean;
   debuggerBreakpoints: BreakpointData[];
   debuggerWatchedVariables: string[];
+  colorMode: ColorModeSetting;
 };
 
 export const initialState: SettingsState = defaultProjectSettings;

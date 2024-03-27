@@ -167,7 +167,7 @@ const MetaspriteEditor = ({
   const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)

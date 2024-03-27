@@ -89,7 +89,7 @@ const MetaspriteEditorPreviewSettings = ({
   const scenes = useAppSelector((state) => sceneSelectors.selectIds(state));
   const sceneIndex = scenes.indexOf(value);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
 
   useEffect(() => {

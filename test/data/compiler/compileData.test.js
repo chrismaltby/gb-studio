@@ -420,6 +420,7 @@ test("should precompile image data", async () => {
     backgrounds,
     scenes,
     {},
+    false,
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }

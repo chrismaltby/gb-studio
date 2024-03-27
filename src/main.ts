@@ -628,7 +628,7 @@ app.on("ready", async () => {
     if (host === "project") {
       // Load an asset from the current project
       const projectRoot = Path.dirname(projectPath);
-      const filename = Path.join(projectRoot, pathname);
+      const filename = Path.join(projectRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, projectRoot);
       return callback({ path: filename });
@@ -1048,7 +1048,7 @@ ipcMain.handle(
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-    const colorEnabled = project.settings.customColorsEnabled;
+    const colorMode = project.settings.colorMode;
     const sgbEnabled = project.settings.sgbEnabled;
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
@@ -1127,7 +1127,7 @@ ipcMain.handle(
         }
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && !colorEnabled,
+          sgbEnabled && colorMode === "mono",
           debuggerEnabled
         );
       }
@@ -1264,9 +1264,9 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:get-background-info",
-  (_event, background: Background, is360: boolean) => {
+  (_event, background: Background, is360: boolean, cgbOnly: boolean) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, is360, projectRoot);
+    return getBackgroundInfo(background, is360, cgbOnly, projectRoot);
   }
 );
 

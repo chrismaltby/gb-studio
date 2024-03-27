@@ -7,7 +7,7 @@ import l10n from "shared/lib/lang/l10n";
 const globAsync = promisify(glob);
 
 type BuildOptions = {
-  customColorsEnabled: boolean;
+  colorEnabled: boolean;
   sgb: boolean;
   musicDriver: string;
   profile: boolean;
@@ -19,7 +19,7 @@ type BuildOptions = {
 const buildMakeScript = async (
   buildRoot: string,
   {
-    customColorsEnabled,
+    colorEnabled,
     sgb,
     musicDriver,
     profile,
@@ -37,7 +37,7 @@ const buildMakeScript = async (
       : `../_gbstools/gbdk/bin/lcc`;
   let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -c`;
 
-  if (customColorsEnabled) {
+  if (colorEnabled) {
     CFLAGS += " -DCGB";
   }
 
@@ -106,7 +106,7 @@ const buildMakeScript = async (
 export const getBuildCommands = async (
   buildRoot: string,
   {
-    customColorsEnabled,
+    colorEnabled,
     sgb,
     musicDriver,
     profile,
@@ -146,7 +146,7 @@ export const getBuildCommands = async (
         `-c`,
       ];
 
-      if (customColorsEnabled) {
+      if (colorEnabled) {
         buildArgs.push("-DCGB");
       }
 

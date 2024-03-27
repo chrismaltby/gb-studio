@@ -130,7 +130,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId

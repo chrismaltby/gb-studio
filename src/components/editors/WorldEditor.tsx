@@ -128,7 +128,7 @@ export const WorldEditor: FC = () => {
 
   const onChangeColorsEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("customColorsEnabled", castEventToBool(e)),
+      onChangeSettingProp("colorMode", castEventToBool(e) ? "mixed" : "mono"),
     [onChangeSettingProp]
   );
 
@@ -184,9 +184,9 @@ export const WorldEditor: FC = () => {
 
           <FormRow>
             <CheckboxField
-              name="customColorsEnabled"
+              name="colorsEnabled"
               label={l10n("FIELD_EXPORT_IN_COLOR")}
-              checked={settings.customColorsEnabled}
+              checked={settings.colorMode !== "mono"}
               onChange={onChangeColorsEnabled}
             />
             <Button onClick={onOpenSettings}>

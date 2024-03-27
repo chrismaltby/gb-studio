@@ -36,7 +36,7 @@ const makeBuild = async ({
 }: MakeOptions) => {
   const env = Object.create(process.env);
   const { settings } = data;
-
+  const colorEnabled = settings.colorMode !== "mono";
   const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
@@ -53,15 +53,16 @@ const makeBuild = async ({
   env.CART_TYPE = settings.cartType || "mbc5";
   env.TMP = tmpPath;
   env.TEMP = tmpPath;
-  if (settings.customColorsEnabled) {
+  if (colorEnabled) {
     env.COLOR = true;
   }
-  if (settings.sgbEnabled) {
+  if (settings.sgbEnabled && settings.colorMode !== "color") {
     env.SGB = true;
   }
   if (settings.batterylessEnabled) {
     env.BATTERYLESS = true;
   }
+  env.COLOR_MODE = settings.colorMode;
   env.MUSIC_DRIVER = settings.musicDriver;
   if (profile) {
     env.PROFILE = true;
@@ -77,7 +78,7 @@ const makeBuild = async ({
 
   // Compile Source Files
   const makeCommands = await getBuildCommands(buildRoot, {
-    customColorsEnabled: settings.customColorsEnabled,
+    colorEnabled,
     sgb: settings.sgbEnabled,
     musicDriver: settings.musicDriver,
     batteryless: settings.batterylessEnabled,
@@ -156,7 +157,7 @@ const makeBuild = async ({
     linkFilePath,
     data.name || "GBStudio",
     settings.cartType,
-    settings.customColorsEnabled,
+    colorEnabled,
     settings.sgbEnabled,
     settings.musicDriver,
     profile,

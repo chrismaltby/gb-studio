@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH } from "consts";
+import { FLAG_VRAM_BANK_1, SCREEN_WIDTH } from "consts";
 import type {
   Actor,
   Scene,
@@ -12,6 +12,7 @@ import { CompiledFontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
+import clamp from "shared/lib/helpers/clamp";
 
 export interface PrecompiledBackground {
   id: string;
@@ -21,6 +22,7 @@ export interface PrecompiledBackground {
   height: number;
   data: number[] | Uint8Array;
   tileset: PrecompiledTileData;
+  cgbTileset?: PrecompiledTileData;
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
 }
@@ -54,6 +56,12 @@ export interface PrecompiledEmote {
 export interface PrecompiledTileData {
   symbol: string;
   data: number[] | Uint8Array;
+}
+
+export interface PrecompiledTilemapData {
+  symbol: string;
+  data: number[] | Uint8Array;
+  is360: boolean;
 }
 
 interface Entity {
@@ -94,6 +102,7 @@ export interface PrecompiledPalette {
 export type PrecompiledSprite = {
   symbol: string;
   tileset: PrecompiledTileData;
+  cgbTileset?: PrecompiledTileData;
 } & PrecompiledSpriteSheetData;
 
 export type PrecompiledFontData = {
@@ -780,6 +789,7 @@ export const compileTilesetHeader = (tileset: PrecompiledTileData) =>
 export const compileSpriteSheet = (
   spriteSheet: PrecompiledSprite,
   spriteSheetIndex: number,
+  useSecondBank: boolean,
   {
     statesOrder,
     stateReferences,
@@ -790,11 +800,18 @@ export const compileSpriteSheet = (
     null,
     stateNames.map((state) => statesOrder.indexOf(state))
   );
+  const bank1TileSize = Math.ceil(spriteSheet.data.length / 64) * 2;
+
   return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
 
 #include "gbs_types.h"
 #include "data/${spriteSheet.tileset.symbol}.h"
+${
+  spriteSheet.cgbTileset
+    ? `#include "data/${spriteSheet.cgbTileset?.symbol}.h"`
+    : ""
+}
 
 ${bankRef(spriteSheet.symbol)}
 
@@ -813,7 +830,15 @@ ${spriteSheet.metasprites
       spriteSheet.symbol
     }_metasprite_${metaspriteIndex}[]  = {
     ${metasprite
-      .map((tile) => `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`)
+      .map((tile) => {
+        let tileIndex = tile.tile;
+        let tileAttr = tile.props;
+        if (useSecondBank && tileIndex >= bank1TileSize) {
+          tileIndex -= bank1TileSize;
+          tileAttr |= FLAG_VRAM_BANK_1;
+        }
+        return `{ ${tile.y}, ${tile.x}, ${tileIndex}, ${tileAttr} }`;
+      })
       .join(", ")}${metasprite.length > 0 ? ",\n    " : ""}{metasprite_end}
 };`;
   })
@@ -851,7 +876,9 @@ ${toStructData(
     animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
     tileset: toFarPtr(spriteSheet.tileset.symbol),
-    cgb_tileset: "{ NULL, NULL }",
+    cgb_tileset: spriteSheet.cgbTileset
+      ? toFarPtr(spriteSheet.cgbTileset.symbol)
+      : "{ NULL, NULL }",
   },
 
   INDENT_SPACES
@@ -883,7 +910,10 @@ export const compileBackground = (
       width: background.width,
       height: background.height,
       tileset: toFarPtr(background.tileset.symbol),
-      cgb_tileset: "{ NULL, NULL }",
+      cgb_tileset:
+        color && background.cgbTileset
+          ? toFarPtr(background.cgbTileset.symbol)
+          : "{ NULL, NULL }",
       tilemap: toFarPtr(background.tilemap.symbol),
       cgb_tilemap_attr: color
         ? toFarPtr(background.tilemapAttr.symbol)
@@ -891,6 +921,7 @@ export const compileBackground = (
     },
     ([] as string[]).concat(
       background.tileset.symbol,
+      background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
       color ? background.tilemapAttr.symbol : []
     )
@@ -903,14 +934,65 @@ export const compileBackgroundHeader = (background: PrecompiledBackground) =>
     `// Background: ${background.name}`
   );
 
-export const compileTilemap = (tilemap: PrecompiledTileData) =>
-  toArrayDataFile(
+const TILE_FIRST_CHUNK_SIZE = 128;
+const TILE_BANK_SIZE = 192;
+const TILE_SECOND_CHUNK_MAX_SIZE = 64;
+
+export const compileTilemap = (
+  tilemap: PrecompiledTilemapData,
+  useSecondBank: boolean
+) => {
+  const maxValue = Math.max(...tilemap.data) + 1;
+  const bank1Size = useSecondBank ? Math.ceil(maxValue / 2) : maxValue;
+  const bank2Size = useSecondBank ? Math.floor(maxValue / 2) : 0;
+
+  const bank1SecondChunkSize = clamp(
+    bank1Size - TILE_FIRST_CHUNK_SIZE,
+    0,
+    TILE_SECOND_CHUNK_MAX_SIZE
+  );
+  const bank2SecondChunkSize = clamp(
+    bank2Size - TILE_FIRST_CHUNK_SIZE,
+    0,
+    TILE_SECOND_CHUNK_MAX_SIZE
+  );
+
+  return toArrayDataFile(
     DATA_TYPE,
     tilemap.symbol,
     `// Tilemap ${tilemap.symbol}`,
-    Array.from(tilemap.data).map(wrap8Bit).map(toHex),
+    (tilemap.is360
+      ? // 360 scenes use tile indexes as is
+        Array.from(tilemap.data)
+      : // For other scene types reorganise tile indexes
+        // to maximise tiles available for sprite data
+        Array.from(tilemap.data).map((v) => {
+          const index = useSecondBank ? Math.floor(v / 2) : v;
+
+          // Tiles within first chunk will have the correct index
+          if (index < TILE_FIRST_CHUNK_SIZE) {
+            return index;
+          }
+
+          // If in second chunk need to figure out which VRAM
+          // bank is being used and how big the chunk is to
+          // calculate tile data offset
+          const secondChunkSize =
+            useSecondBank && v % 2 === 1
+              ? bank2SecondChunkSize
+              : bank1SecondChunkSize;
+
+          return (
+            (index % TILE_BANK_SIZE) +
+            (TILE_SECOND_CHUNK_MAX_SIZE - secondChunkSize)
+          );
+        })
+    )
+      .map(wrap8Bit)
+      .map(toHex),
     16
   );
+};
 
 export const compileTilemapHeader = (tilemap: PrecompiledTileData) =>
   toArrayDataHeader(DATA_TYPE, tilemap.symbol, `// Tilemap ${tilemap.symbol}`);

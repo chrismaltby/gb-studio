@@ -53,31 +53,18 @@ export const tileArrayToTileData = (tiles: Uint8Array[]): Uint8Array => {
   return output;
 };
 
-const TILE_FIRST_CHUNK_SIZE = 128;
-const TILE_SECOND_CHUNK_END = 192;
-
 export const tilesAndLookupToTilemap = (
   tiles: Uint8Array[],
   lookup: TileLookup
-): Uint8Array => {
-  const output = new Uint8Array(tiles.length);
+): number[] => {
+  const output = new Array(tiles.length).fill(0);
   const keys = Object.keys(lookup);
   let i = 0;
-  // If num tiles > 128 and < 192 allocate in two chunks to give more tiles to sprites
-  const secondChunkSize =
-    keys.length > TILE_FIRST_CHUNK_SIZE && keys.length <= TILE_SECOND_CHUNK_END
-      ? TILE_SECOND_CHUNK_END - (keys.length - TILE_FIRST_CHUNK_SIZE)
-      : 0;
-
   for (const tileData of tiles) {
     const key = hashTileData(tileData);
     let value = keys.indexOf(key);
     if (value === -1) {
       throw new Error("Missing Tile" + key);
-    }
-    // Reallocate if using a realigned second chunk
-    if (secondChunkSize > 0 && value >= TILE_FIRST_CHUNK_SIZE) {
-      value = secondChunkSize + (value - TILE_FIRST_CHUNK_SIZE);
     }
     output[i] = value;
     i++;

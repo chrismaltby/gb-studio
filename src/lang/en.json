@@ -737,6 +737,14 @@
   "FIELD_PAUSE_TO_VIEW_SCRIPTS": "Pause debugger to view currently running scripts",
   "FIELD_CURRENT_STATE": "Current State",
   "FIELD_DEBUGGER_PAUSED": "Debugger paused",
+  "FIELD_COLOR_MODE": "Color Mode",
+  "FIELD_COLOR_MODE_MONO_NOTE": "Allows your game to run on all devices using four colors only",
+  "FIELD_COLOR_MODE_MIXED_NOTE": "Allows your game to run on monochrome and color devices",
+  "FIELD_COLOR_MODE_COLOR_NOTE": "Allows your game to run on color devices only",
+  "FIELD_COLOR_MODE_COLOR_LIMITATIONS_NOTE": "Increases the amount of tiles available in each scene for displaying backgrounds and sprites",
+  "FIELD_SUPPORTED_PLATFORMS": "Supported Platforms",
+  "FIELD_MONOCHROME_ONLY": "Monochrome only",
+  "FIELD_SGB_UNAVAILABLE": "Super GB Mode is not supported for 'Color Only' games",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1317,6 +1325,7 @@
   "SETTINGS_ENGINE": "Engine",
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Default Player Sprites",
   "SETTINGS_MUSIC": "Music",
+  "SETTINGS_COLOR": "Color Options",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

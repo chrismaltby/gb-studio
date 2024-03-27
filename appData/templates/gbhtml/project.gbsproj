@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.2.0",
-    "_release": "1",
+    "_version": "3.3.0",
+    "_release": "2",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -6212,7 +6212,6 @@
             "name": "cat",
             "symbol": "sprite_cat",
             "numFrames": 1,
-            "type": "static",
             "filename": "cat.png",
             "checksum": "acdc77db823a88d17537d263a436168ab01efe22",
             "width": 16,
@@ -6333,14 +6332,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "f0c3033d-e82a-407d-9fe2-3d5da4f59c09",
             "name": "checkbox",
             "symbol": "sprite_checkbox",
             "numFrames": 3,
-            "type": "actor",
             "filename": "checkbox.png",
             "checksum": "fdcbd8b39b1ba989ca58c7b7b4567c4257a43975",
             "width": 48,
@@ -6515,14 +6514,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
             "name": "dog",
             "symbol": "sprite_dog",
             "numFrames": 1,
-            "type": "static",
             "filename": "dog.png",
             "checksum": "d9bfa8cf4e196a4b89abc8811e1157b8cf3e4380",
             "width": 16,
@@ -6643,14 +6642,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
             "name": "duck",
             "symbol": "sprite_duck",
             "numFrames": 2,
-            "type": "animated",
             "filename": "duck.png",
             "checksum": "478ef3a9a69777125e9dd4431884adb5c7f079b3",
             "width": 32,
@@ -6802,14 +6801,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "f2610e3c-8ff9-42fa-a9bb-d1591031fa17",
             "name": "fire",
             "symbol": "sprite_fire",
             "numFrames": 4,
-            "type": "animated",
             "filename": "fire.png",
             "checksum": "178804359d94af9d2cd342cf77f92f4fb6373589",
             "width": 64,
@@ -7023,14 +7022,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
             "name": "ice",
             "symbol": "sprite_ice",
             "numFrames": 1,
-            "type": "static",
             "filename": "ice.png",
             "checksum": "e2bb5ba0ccb5b8d531b6afce09bf3b73d91971ea",
             "width": 16,
@@ -7151,14 +7150,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
             "name": "npc001",
             "symbol": "sprite_npc001",
             "numFrames": 3,
-            "type": "actor",
             "filename": "npc001.png",
             "checksum": "325c2370daedcc0afc0f8e6df58e4da01731dfc3",
             "width": 48,
@@ -7333,14 +7332,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
             "name": "npc002",
             "symbol": "sprite_npc002",
             "numFrames": 3,
-            "type": "actor",
             "filename": "npc002.png",
             "checksum": "5f3d41a6f7e0af6159c93b34cb6a480f14522c43",
             "width": 48,
@@ -7515,14 +7514,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
             "name": "npc003",
             "symbol": "sprite_npc003",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc003.png",
             "checksum": "a0c294cf5d64aee5d8748e5cbeafc8ea9e4cf8dd",
             "width": 96,
@@ -7871,14 +7870,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
             "name": "player",
             "symbol": "sprite_player",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "player.png",
             "checksum": "57d62a82877b5ce98f9b55b066672b11a74541af",
             "width": 96,
@@ -8227,14 +8226,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 8,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
             "name": "radio",
             "symbol": "sprite_radio",
             "numFrames": 1,
-            "type": "static",
             "filename": "radio.png",
             "checksum": "ae9943b8ed1e48fe22fafe87bf1b64245dcbd31c",
             "width": 16,
@@ -8355,14 +8354,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
             "name": "rock",
             "symbol": "sprite_rock",
             "numFrames": 1,
-            "type": "static",
             "filename": "rock.png",
             "checksum": "b7cf1ef0e7291494c1aff13493d447801316d6e8",
             "width": 16,
@@ -8483,14 +8482,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
             "name": "sage",
             "symbol": "sprite_sage",
             "numFrames": 1,
-            "type": "static",
             "filename": "sage.png",
             "checksum": "0f0fec264c85a7572c4dc810b886ea4a2bf8a3f5",
             "width": 16,
@@ -8611,14 +8610,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "000a6dde-cb60-436e-b357-30a529daa139",
             "name": "savepoint",
             "symbol": "sprite_savepoint",
             "numFrames": 2,
-            "type": "animated",
             "filename": "savepoint.png",
             "checksum": "0b8c6d14622922a2e3ea2f90add3ed89353a7a9b",
             "width": 32,
@@ -8770,14 +8769,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
             "name": "signpost",
             "symbol": "sprite_signpost",
             "numFrames": 1,
-            "type": "static",
             "filename": "signpost.png",
             "checksum": "03548e2774ea7810fc8bfe85ced542f09775fcab",
             "width": 16,
@@ -8898,14 +8897,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "e9e61bf7-88fd-491d-ae01-4b7f76909108",
             "name": "torch",
             "symbol": "sprite_torch",
             "numFrames": 1,
-            "type": "static",
             "filename": "torch.png",
             "checksum": "7115d29144680ee075cf63709a5bd562d327b0a4",
             "width": 16,
@@ -9026,7 +9025,8 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         }
     ],
     "palettes": [
@@ -9410,7 +9410,6 @@
         "worldScrollX": 0,
         "worldScrollY": 0,
         "zoom": 100,
-        "customColorsEnabled": false,
         "sgbEnabled": false,
         "customHead": "",
         "defaultBackgroundPaletteIds": [
@@ -9437,9 +9436,9 @@
         "defaultUIPaletteId": "default-ui",
         "playerPaletteId": "",
         "navigatorSplitSizes": [
-            429,
-            142,
-            142
+            602,
+            198,
+            198
         ],
         "showNavigator": true,
         "defaultFontId": "26fa15df-3318-44ad-8bfd-feff8ba7991d",
@@ -9459,6 +9458,51 @@
             "EVENT_TEXT",
             "EVENT_SWITCH_SCENE"
         ],
+        "customColorsWhite": "E8F8E0",
+        "customColorsLight": "B0F088",
+        "customColorsDark": "509878",
+        "customColorsBlack": "202850",
+        "customControlsUp": [
+            "ArrowUp",
+            "w"
+        ],
+        "customControlsDown": [
+            "ArrowDown",
+            "s"
+        ],
+        "customControlsLeft": [
+            "ArrowLeft",
+            "a"
+        ],
+        "customControlsRight": [
+            "ArrowRight",
+            "d"
+        ],
+        "customControlsA": [
+            "Alt",
+            "z",
+            "j"
+        ],
+        "customControlsB": [
+            "Control",
+            "k",
+            "x"
+        ],
+        "customControlsStart": [
+            "Enter"
+        ],
+        "customControlsSelect": [
+            "Shift"
+        ],
+        "debuggerEnabled": false,
+        "debuggerScriptType": "editor",
+        "debuggerVariablesFilter": "all",
+        "debuggerCollapsedPanes": [],
+        "debuggerPauseOnScriptChanged": false,
+        "debuggerPauseOnWatchedVariableChanged": false,
+        "debuggerBreakpoints": [],
+        "debuggerWatchedVariables": [],
+        "colorMode": "mono",
         "defaultFadeStyle": "white",
         "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
         "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"

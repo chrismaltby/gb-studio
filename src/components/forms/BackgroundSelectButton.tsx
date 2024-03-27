@@ -8,6 +8,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 
 interface BackgroundSelectProps {
   name: string;
@@ -154,6 +155,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const numTiles = useAppSelector(
     (state) => state.assets.backgrounds[value || ""]?.numTiles
   );
+  const isCGBOnly = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "color"
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -261,7 +265,13 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
-              <SpriteInfoRow error={numTiles > 192 && !is360}>
+              <SpriteInfoRow
+                error={
+                  (numTiles > MAX_BACKGROUND_TILES_CGB ||
+                    (!isCGBOnly && numTiles > MAX_BACKGROUND_TILES)) &&
+                  !is360
+                }
+              >
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>

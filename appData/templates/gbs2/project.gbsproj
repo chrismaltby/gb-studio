@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.2.0",
-    "_release": "1",
+    "_version": "3.3.0",
+    "_release": "2",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -22805,7 +22805,11 @@
                                         "id": "c044c230-a1bc-45d0-9cfa-b0619ae6a896",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -22988,7 +22992,11 @@
                                         "id": "e665bde2-c47c-44c4-bd8c-6833e41f5f7d",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -23171,7 +23179,11 @@
                                         "id": "adff33b1-14c6-47f5-a69d-b203a15f8f0a",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -23354,7 +23366,11 @@
                                         "id": "b8bf7fc5-b933-40b9-98ec-6ae8deebac63",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -23537,7 +23553,11 @@
                                         "id": "713bddf8-123c-4fad-a98b-619d84a20cf7",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -23720,7 +23740,11 @@
                                         "id": "cdade4ea-20ff-41f4-8d44-c1acff0dce0e",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -23903,7 +23927,11 @@
                                         "id": "8ecc8e58-0101-45e9-8418-3d65f65d2ab3",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 0.5
+                                            "time": 0.5,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -25966,7 +25994,11 @@
                     "id": "9785818e-bf26-405d-9ac5-f908acacccbf",
                     "command": "EVENT_CAMERA_SHAKE",
                     "args": {
-                        "time": 0.5
+                        "time": 0.5,
+                        "magnitude": {
+                            "type": "number",
+                            "value": 5
+                        }
                     }
                 }
             ],
@@ -25975,7 +26007,11 @@
                     "id": "57a67cd7-2542-4883-b687-12bf4e76ca59",
                     "command": "EVENT_CAMERA_SHAKE",
                     "args": {
-                        "time": 0.5
+                        "time": 0.5,
+                        "magnitude": {
+                            "type": "number",
+                            "value": 5
+                        }
                     }
                 }
             ],
@@ -25984,7 +26020,11 @@
                     "id": "1567a446-59af-4aa5-b812-1902ceed6711",
                     "command": "EVENT_CAMERA_SHAKE",
                     "args": {
-                        "time": 0.5
+                        "time": 0.5,
+                        "magnitude": {
+                            "type": "number",
+                            "value": 5
+                        }
                     }
                 }
             ],
@@ -33320,7 +33360,11 @@
                                                     "id": "bb032da2-cd1f-4d06-922b-6d7c90f29fbf",
                                                     "command": "EVENT_CAMERA_SHAKE",
                                                     "args": {
-                                                        "time": 0.5
+                                                        "time": 0.5,
+                                                        "magnitude": {
+                                                            "type": "number",
+                                                            "value": 5
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -33704,7 +33748,11 @@
                                                     "id": "bb032da2-cd1f-4d06-922b-6d7c90f29fbf",
                                                     "command": "EVENT_CAMERA_SHAKE",
                                                     "args": {
-                                                        "time": 0.5
+                                                        "time": 0.5,
+                                                        "magnitude": {
+                                                            "type": "number",
+                                                            "value": 5
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -33951,7 +33999,11 @@
                                                     "id": "bb032da2-cd1f-4d06-922b-6d7c90f29fbf",
                                                     "command": "EVENT_CAMERA_SHAKE",
                                                     "args": {
-                                                        "time": 0.5
+                                                        "time": 0.5,
+                                                        "magnitude": {
+                                                            "type": "number",
+                                                            "value": 5
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -34151,7 +34203,11 @@
                             "id": "a37c47f5-9cca-4b82-b240-46b1b4e8d232",
                             "command": "EVENT_CAMERA_SHAKE",
                             "args": {
-                                "time": 0.1
+                                "time": 0.1,
+                                "magnitude": {
+                                    "type": "number",
+                                    "value": 5
+                                }
                             }
                         }
                     ],
@@ -34247,7 +34303,11 @@
                             "id": "56f6872d-7a5f-4fe6-a5e7-5d1f8a7823af",
                             "command": "EVENT_CAMERA_SHAKE",
                             "args": {
-                                "time": 0.1
+                                "time": 0.1,
+                                "magnitude": {
+                                    "type": "number",
+                                    "value": 5
+                                }
                             }
                         }
                     ],
@@ -36975,7 +37035,11 @@
                                         "id": "0e6424fc-b991-4020-95af-44d485369ba7",
                                         "command": "EVENT_CAMERA_SHAKE",
                                         "args": {
-                                            "time": 1
+                                            "time": 1,
+                                            "magnitude": {
+                                                "type": "number",
+                                                "value": 5
+                                            }
                                         }
                                     },
                                     {
@@ -58192,7 +58256,6 @@
             "name": "bullet",
             "symbol": "sprite_bullet",
             "numFrames": 1,
-            "type": "static",
             "filename": "bullet.png",
             "checksum": "20f72d8c2befb3e03da3f64a307172a5d95853d1",
             "width": 16,
@@ -58313,14 +58376,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
             "name": "bullet_left",
             "symbol": "sprite_bullet_left",
             "numFrames": 2,
-            "type": "animated",
             "filename": "bullet_left.png",
             "checksum": "35ccc08a8a260fbbf530412dd81275900857ac78",
             "width": 32,
@@ -58472,14 +58535,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "450a3571-cc76-41be-8c95-818d60b83c59",
             "name": "bullet_right",
             "symbol": "sprite_bullet_right",
             "numFrames": 2,
-            "type": "animated",
             "filename": "bullet_right.png",
             "checksum": "8314b3c3b8f067e20f49bf3bd3cb63e03a457cc0",
             "width": 32,
@@ -58631,14 +58694,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "1e27bb8e-c805-435a-8b87-05b4f50da4f0",
             "name": "cat",
             "symbol": "sprite_cat",
             "numFrames": 1,
-            "type": "static",
             "filename": "cat.png",
             "checksum": "acdc77db823a88d17537d263a436168ab01efe22",
             "width": 16,
@@ -58759,14 +58822,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "f0c3033d-e82a-407d-9fe2-3d5da4f59c09",
             "name": "checkbox",
             "symbol": "sprite_checkbox",
             "numFrames": 2,
-            "type": "animated",
             "filename": "checkbox.png",
             "checksum": "47fd516f3adb10b1cfde24450b5c7c928abf643e",
             "width": 32,
@@ -58892,14 +58955,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "d4206af4-4d12-4cfd-a4a8-faa11d4aff34",
             "name": "chest",
             "symbol": "sprite_chest",
             "numFrames": 2,
-            "type": "animated",
             "filename": "chest.png",
             "checksum": "c5d44f84742b12cbac9318755055a7965edb4ea3",
             "width": 32,
@@ -59127,14 +59190,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "a827b612-578f-4cb9-a2bf-fd54b197b83f",
             "name": "cursor",
             "symbol": "sprite_cursor",
             "numFrames": 2,
-            "type": "animated",
             "filename": "cursor.png",
             "checksum": "1f21ce7ede568c59e378eec3bce19e7abe50414a",
             "width": 32,
@@ -59340,14 +59403,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
             "name": "dog",
             "symbol": "sprite_dog",
             "numFrames": 1,
-            "type": "static",
             "filename": "dog.png",
             "checksum": "d9bfa8cf4e196a4b89abc8811e1157b8cf3e4380",
             "width": 16,
@@ -59468,14 +59531,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "b98fb589-03b9-4c8b-949b-2d017c941752",
             "name": "drumkit",
             "symbol": "sprite_drumkit",
             "numFrames": 2,
-            "type": "animated",
             "filename": "drumkit.png",
             "checksum": "acd18649afd67247099431d7896d2e505872d308",
             "width": 32,
@@ -59622,14 +59685,14 @@
             "boundsY": 0,
             "boundsWidth": 32,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
             "name": "duck",
             "symbol": "sprite_duck",
             "numFrames": 2,
-            "type": "animated",
             "filename": "duck.png",
             "checksum": "478ef3a9a69777125e9dd4431884adb5c7f079b3",
             "width": 32,
@@ -59781,14 +59844,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "55561033-cbbb-4d7b-9961-4db33c1d596c",
             "name": "elephant",
             "symbol": "sprite_elephant",
             "numFrames": 31.5,
-            "type": "animated",
             "filename": "elephant.png",
             "checksum": "60284e758421739af1e232f7b70eaf126d4c7610",
             "width": 504,
@@ -61642,14 +61705,14 @@
             "boundsY": 0,
             "boundsWidth": 47,
             "boundsHeight": 39,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "954ffda3-81b7-40ea-a338-3b11ad4b75fb",
             "name": "enemy_ship",
             "symbol": "sprite_enemy_ship",
             "numFrames": 4,
-            "type": "animated",
             "filename": "enemy_ship.png",
             "checksum": "5ca3edf07271d35f48c4d5c6a795ad81d08b479f",
             "width": 64,
@@ -62001,14 +62064,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "493bdd1e-7e97-4911-b89a-c0677dfdcaaa",
             "name": "explode",
             "symbol": "sprite_explode",
             "numFrames": 4,
-            "type": "animated",
             "filename": "explode.png",
             "checksum": "3bb5bb170d76027fce34694c0c0d8237c189690c",
             "width": 64,
@@ -62222,14 +62285,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "f2610e3c-8ff9-42fa-a9bb-d1591031fa17",
             "name": "fire",
             "symbol": "sprite_fire",
             "numFrames": 4,
-            "type": "animated",
             "filename": "fire.png",
             "checksum": "178804359d94af9d2cd342cf77f92f4fb6373589",
             "width": 64,
@@ -62443,14 +62506,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "81b14fe6-2235-480e-bc3b-a5899aa66afe",
             "name": "hidden_stairs",
             "symbol": "sprite_hidden_stairs",
             "numFrames": 1,
-            "type": "static",
             "filename": "hidden_stairs.png",
             "checksum": "958c815a9dff5938722bb9a6d012a10249134190",
             "width": 16,
@@ -62571,14 +62634,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
             "name": "ice",
             "symbol": "sprite_ice",
             "numFrames": 1,
-            "type": "static",
             "filename": "ice.png",
             "checksum": "e2bb5ba0ccb5b8d531b6afce09bf3b73d91971ea",
             "width": 16,
@@ -62699,14 +62762,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "a933db32-62f4-40a9-bf7c-bf44df85b1a4",
             "name": "keyboard",
             "symbol": "sprite_keyboard",
             "numFrames": 2,
-            "type": "animated",
             "filename": "keyboard.png",
             "checksum": "9ccb7ce55bcd7a81e8c8f471e4c33c777fa114e6",
             "width": 32,
@@ -62853,14 +62916,14 @@
             "boundsY": 0,
             "boundsWidth": 32,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "8cb9c002-1abc-458c-9588-9b55af8efb08",
             "name": "machine",
             "symbol": "sprite_machine",
             "numFrames": 2,
-            "type": "animated",
             "filename": "machine.png",
             "checksum": "10e86bdc2747f98c29c83028783152acac542177",
             "width": 32,
@@ -63012,14 +63075,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
             "name": "npc001",
             "symbol": "sprite_npc001",
             "numFrames": 3,
-            "type": "actor",
             "filename": "npc001.png",
             "checksum": "325c2370daedcc0afc0f8e6df58e4da01731dfc3",
             "width": 48,
@@ -63194,14 +63257,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
             "name": "npc002",
             "symbol": "sprite_npc002",
             "numFrames": 3,
-            "type": "actor",
             "filename": "npc002.png",
             "checksum": "5f3d41a6f7e0af6159c93b34cb6a480f14522c43",
             "width": 48,
@@ -63376,14 +63439,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
             "name": "npc003",
             "symbol": "sprite_npc003",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc003.png",
             "checksum": "a0c294cf5d64aee5d8748e5cbeafc8ea9e4cf8dd",
             "width": 96,
@@ -63732,14 +63795,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "46a3db76-878e-4896-892b-d1afa7d5e2f0",
             "name": "npc004",
             "symbol": "sprite_npc004",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc004.png",
             "checksum": "b5c1a454273623430add536a14de7a4328659389",
             "width": 96,
@@ -64088,14 +64151,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "7a27b229-5f3d-4eaa-b20c-07997673324d",
             "name": "npc005",
             "symbol": "sprite_npc005",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc005.png",
             "checksum": "fe2a346e79ea7e5c00b74d726e273a056cbffb28",
             "width": 96,
@@ -64444,14 +64507,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "c475c713-9fd8-455a-b9bc-8c62b2b8fd5e",
             "name": "npc006",
             "symbol": "sprite_npc006",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc006.png",
             "checksum": "0588e9e69b43360b7f723efb9f7d77160e151bfe",
             "width": 96,
@@ -64800,14 +64863,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "2b18f935-85a3-4f38-9f52-e5c4ea20776a",
             "name": "npc007",
             "symbol": "sprite_npc007",
             "numFrames": 3,
-            "type": "actor",
             "filename": "npc007.png",
             "checksum": "8cd0fd5b18c0f94f02b9ae1802feb6c1fef2a920",
             "width": 48,
@@ -64982,14 +65045,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "a9ee1856-b62b-49d8-8eb3-cdf681fa2e76",
             "name": "npc008",
             "symbol": "sprite_npc008",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "npc008.png",
             "checksum": "70a7f36d8770fca9ac372b912a1694a5cdcdaa21",
             "width": 96,
@@ -65369,14 +65432,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "b073d693-12e6-43bf-bb2b-d7e78641fed3",
             "name": "npc_gardener",
             "symbol": "sprite_npc_gardener",
             "numFrames": 1,
-            "type": "static",
             "filename": "npc_gardener.png",
             "checksum": "d38f32b4a53309091a711e808a07eeb140a82b7a",
             "width": 16,
@@ -65629,14 +65692,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
             "name": "player",
             "symbol": "sprite_player",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "player.png",
             "checksum": "57d62a82877b5ce98f9b55b066672b11a74541af",
             "width": 96,
@@ -65985,14 +66048,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 8,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "c0310735-3e7c-4ff1-bcff-b07d818d433b",
             "name": "player_platform",
             "symbol": "sprite_player_platform",
             "numFrames": 5.5,
-            "type": "animated",
             "filename": "player_platform.png",
             "checksum": "eea46c3f4a89b044d31ad1e87b9854a4063aeb72",
             "width": 88,
@@ -66754,14 +66817,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 24,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "2f2d492c-dba2-434c-93c9-d1301e88d5e9",
             "name": "player_ship",
             "symbol": "sprite_player_ship",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "player_ship.png",
             "checksum": "29459697b548d556d45bb427c413f48d7b14f7b1",
             "width": 96,
@@ -67110,14 +67173,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "058c0142-0c1e-4762-b5ac-e085d84fc734",
             "name": "pod_door",
             "symbol": "sprite_pod_door",
             "numFrames": 3,
-            "type": "actor",
             "filename": "pod_door.png",
             "checksum": "b8f3e928d6ed27502f5a431e4a35496ecebb614a",
             "width": 48,
@@ -67354,14 +67417,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "94eb6557-0cfc-453e-8e1f-ddb191ac8536",
             "name": "portal",
             "symbol": "sprite_portal",
             "numFrames": 3,
-            "type": "actor",
             "filename": "portal.png",
             "checksum": "ce76db1c019b417a9a1c469a56fe9996249e38e4",
             "width": 48,
@@ -67598,14 +67661,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
             "name": "radio",
             "symbol": "sprite_radio",
             "numFrames": 1,
-            "type": "static",
             "filename": "radio.png",
             "checksum": "ae9943b8ed1e48fe22fafe87bf1b64245dcbd31c",
             "width": 16,
@@ -67726,14 +67789,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
             "name": "rock",
             "symbol": "sprite_rock",
             "numFrames": 1,
-            "type": "static",
             "filename": "rock.png",
             "checksum": "b7cf1ef0e7291494c1aff13493d447801316d6e8",
             "width": 16,
@@ -67854,14 +67917,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
             "name": "sage",
             "symbol": "sprite_sage",
             "numFrames": 1,
-            "type": "static",
             "filename": "sage.png",
             "checksum": "0f0fec264c85a7572c4dc810b886ea4a2bf8a3f5",
             "width": 16,
@@ -67982,14 +68045,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "000a6dde-cb60-436e-b357-30a529daa139",
             "name": "savepoint",
             "symbol": "sprite_savepoint",
             "numFrames": 2,
-            "type": "animated",
             "filename": "savepoint.png",
             "checksum": "0b8c6d14622922a2e3ea2f90add3ed89353a7a9b",
             "width": 32,
@@ -68141,14 +68204,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
             "name": "signpost",
             "symbol": "sprite_signpost",
             "numFrames": 1,
-            "type": "static",
             "filename": "signpost.png",
             "checksum": "dfe9e69e950460ad1235405937d86c2de3a6df12",
             "width": 16,
@@ -68269,14 +68332,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "b4845aec-11e3-475b-8a9a-0a01b920c710",
             "name": "space_mine",
             "symbol": "sprite_space_mine",
             "numFrames": 4,
-            "type": "animated",
             "filename": "space_mine.png",
             "checksum": "287419e44a11c4a58732ef5ea7b0c51709be3279",
             "width": 64,
@@ -68628,14 +68691,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "animated"
         },
         {
             "id": "e9e61bf7-88fd-491d-ae01-4b7f76909108",
             "name": "torch",
             "symbol": "sprite_torch",
             "numFrames": 1,
-            "type": "static",
             "filename": "torch.png",
             "checksum": "7115d29144680ee075cf63709a5bd562d327b0a4",
             "width": 16,
@@ -68756,14 +68819,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         },
         {
             "id": "f88eea80-c5b4-4e10-b49f-7a8aa8bd477e",
             "name": "turnip",
             "symbol": "sprite_turnip",
             "numFrames": 3,
-            "type": "actor",
             "filename": "turnip.png",
             "checksum": "f2d6d2342a30bf409c629b4d1e7f8f09cd26c856",
             "width": 48,
@@ -69022,14 +69085,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "735c26e5-eee4-43ad-a668-a2ab93f84bd8",
             "name": "ui_weapon",
             "symbol": "sprite_ui_weapon",
             "numFrames": 1,
-            "type": "static",
             "filename": "ui_weapon.png",
             "checksum": "696a0c2153ca67099513669b7c04c4af32ddacfa",
             "width": 16,
@@ -69150,7 +69213,8 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         }
     ],
     "palettes": [
@@ -69758,7 +69822,11 @@
                                 "id": "bb032da2-cd1f-4d06-922b-6d7c90f29fbf",
                                 "command": "EVENT_CAMERA_SHAKE",
                                 "args": {
-                                    "time": 0.5
+                                    "time": 0.5,
+                                    "magnitude": {
+                                        "type": "number",
+                                        "value": 5
+                                    }
                                 }
                             }
                         ]
@@ -69840,7 +69908,11 @@
                     "id": "c044c230-a1bc-45d0-9cfa-b0619ae6a896",
                     "command": "EVENT_CAMERA_SHAKE",
                     "args": {
-                        "time": 0.5
+                        "time": 0.5,
+                        "magnitude": {
+                            "type": "number",
+                            "value": 5
+                        }
                     }
                 },
                 {
@@ -70375,9 +70447,7 @@
             "name": "Tronimal_Sound_Effects.sav",
             "symbol": "sound_gbstudio_sfx_sav",
             "filename": "Tronimal_Sound_Effects.sav",
-            "type": "fxhammer",
-            "inode": "18979781",
-            "_v": 1661702554742
+            "type": "fxhammer"
         }
     ],
     "fonts": [
@@ -70602,7 +70672,6 @@
         "worldScrollX": 0,
         "worldScrollY": 22,
         "zoom": 115.88104721903801,
-        "customColorsEnabled": true,
         "sgbEnabled": false,
         "customHead": "",
         "defaultBackgroundPaletteIds": [
@@ -70629,9 +70698,9 @@
         "defaultUIPaletteId": "default-ui",
         "playerPaletteId": "",
         "navigatorSplitSizes": [
-            516,
-            161,
-            161
+            616,
+            191,
+            191
         ],
         "showNavigator": true,
         "defaultFontId": "948c169c-8e4b-491c-a5f0-66898bbf45d9",
@@ -70655,6 +70724,47 @@
         "customColorsLight": "B0F088",
         "customColorsDark": "509878",
         "customColorsBlack": "202850",
+        "customControlsUp": [
+            "ArrowUp",
+            "w"
+        ],
+        "customControlsDown": [
+            "ArrowDown",
+            "s"
+        ],
+        "customControlsLeft": [
+            "ArrowLeft",
+            "a"
+        ],
+        "customControlsRight": [
+            "ArrowRight",
+            "d"
+        ],
+        "customControlsA": [
+            "Alt",
+            "z",
+            "j"
+        ],
+        "customControlsB": [
+            "Control",
+            "k",
+            "x"
+        ],
+        "customControlsStart": [
+            "Enter"
+        ],
+        "customControlsSelect": [
+            "Shift"
+        ],
+        "debuggerEnabled": false,
+        "debuggerScriptType": "editor",
+        "debuggerVariablesFilter": "all",
+        "debuggerCollapsedPanes": [],
+        "debuggerPauseOnScriptChanged": false,
+        "debuggerPauseOnWatchedVariableChanged": false,
+        "debuggerBreakpoints": [],
+        "debuggerWatchedVariables": [],
+        "colorMode": "mixed",
         "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
         "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
     }

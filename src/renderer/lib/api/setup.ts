@@ -189,9 +189,15 @@ const APISetup = {
     ) => ipcRenderer.invoke("project:export", data, engineFields, exportType),
     getBackgroundInfo: (
       background: Background,
-      is360: boolean
+      is360: boolean,
+      cgbOnly: boolean
     ): Promise<BackgroundInfo> =>
-      ipcRenderer.invoke("project:get-background-info", background, is360),
+      ipcRenderer.invoke(
+        "project:get-background-info",
+        background,
+        is360,
+        cgbOnly
+      ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<{

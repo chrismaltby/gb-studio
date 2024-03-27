@@ -6,6 +6,7 @@ import {
   migrateFrom310r1To310r2Event,
   migrateFrom310r3To311r1Event,
   migrateFrom320r1To320r2Event,
+  migrateFrom320r2To330r1Settings,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -601,5 +602,42 @@ test("should add magnitude to camera shake events", () => {
       },
     },
     id: "event-2",
+  });
+});
+
+test("should migrate customColorsEnabled=false to colorMode=mono", () => {
+  const oldProject = {
+    settings: {
+      customColorsEnabled: false,
+    },
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mono",
+    },
+  });
+});
+
+test("should migrate customColorsEnabled=true to colorMode=mixed", () => {
+  const oldProject = {
+    settings: {
+      customColorsEnabled: true,
+    },
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mixed",
+    },
+  });
+});
+
+test("should migrate missing customColorsEnabled to colorMode=mono", () => {
+  const oldProject = {
+    settings: {},
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mono",
+    },
   });
 });

@@ -238,7 +238,6 @@ export const dummyProjectData: ProjectData = {
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
-    customColorsEnabled: false,
     sgbEnabled: false,
     defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
@@ -276,6 +275,7 @@ export const dummyProjectData: ProjectData = {
     debuggerPauseOnWatchedVariableChanged: false,
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
+    colorMode: "mono",
   },
 };
 

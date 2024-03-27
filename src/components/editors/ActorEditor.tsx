@@ -136,7 +136,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
       state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
