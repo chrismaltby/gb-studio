@@ -372,6 +372,13 @@ API.events.debugger.symbols.subscribe(
         gbvmScripts,
       })
     );
+    if (!store.getState().project.present.settings.debuggerEnabled) {
+      store.dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: true,
+        })
+      );
+    }
   }
 );
 
