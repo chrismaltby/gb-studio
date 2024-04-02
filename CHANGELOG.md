@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
 
