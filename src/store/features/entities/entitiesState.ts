@@ -1859,7 +1859,7 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
-      tileLookup?: Uint8Array;
+      tileLookup?: number[];
       x: number;
       y: number;
       value: number;
@@ -2120,7 +2120,7 @@ const paintColor: CaseReducer<
     {
       backgroundId: string;
       sceneId: string;
-      tileLookup?: Uint8Array;
+      tileLookup?: number[];
       x: number;
       y: number;
       paletteIndex: number;

@@ -13,6 +13,7 @@ import {
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_ACTOR_SET_SPRITE,
+  FLAG_VRAM_BANK_1,
 } from "consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
@@ -64,6 +65,7 @@ import {
   PrecompiledScene,
   PrecompiledPalette,
   PrecompiledSceneEventPtrs,
+  sceneName,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -114,10 +116,33 @@ import type {
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { EntityType } from "shared/lib/scripts/context";
 
 type TilemapData = {
   symbol: string;
   data: number[] | Uint8Array;
+  is360: boolean;
+};
+
+type TilesetData = {
+  symbol: string;
+  data: number[] | Uint8Array;
+};
+
+export type SceneMapData = {
+  id: string;
+  name: string;
+  symbol: string;
+};
+
+export type VariableMapData = {
+  id: string;
+  name: string;
+  symbol: string;
+  isLocal: boolean;
+  entityType: EntityType;
+  entityId: string;
+  sceneId: string;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -202,6 +227,7 @@ export const precompileBackgrounds = async (
   backgrounds: BackgroundData[],
   scenes: Scene[],
   customEventsLookup: Dictionary<CustomEvent>,
+  cgbOnly: boolean,
   projectRoot: string,
   tmpPath: string,
   {
@@ -254,6 +280,7 @@ export const precompileBackgrounds = async (
   const backgroundData = await compileImages(
     usedBackgrounds,
     generate360Ids,
+    cgbOnly,
     projectRoot,
     tmpPath,
     {
@@ -261,19 +288,20 @@ export const precompileBackgrounds = async (
     }
   );
 
-  const usedTilesets: TilemapData[] = [];
+  const usedTilesets: TilesetData[] = [];
 
   const usedTilesetLookup: Record<string, number> = {};
   Object.keys(backgroundData.tilesets).forEach((tileKey) => {
     usedTilesetLookup[tileKey] = usedTilesets.length;
     usedTilesets.push({
       symbol: "ts_" + usedTilesets.length,
-      data: backgroundData.tilesets[tileKey],
+      data: backgroundData.tilesets[Number(tileKey)],
     });
   });
 
   const usedBackgroundsWithData: PrecompiledBackground[] = usedBackgrounds.map(
     (background) => {
+      const is360 = generate360Ids.includes(background.id);
       // Determine tilemap
       const tilemapData = backgroundData.tilemaps[background.id];
       const tilemapKey = JSON.stringify(tilemapData);
@@ -283,6 +311,7 @@ export const precompileBackgrounds = async (
         tilemap = {
           symbol: `${background.symbol}_tilemap`,
           data: tilemapData,
+          is360,
         };
         usedTilemaps.push(tilemap);
         usedTilemapsCache[tilemapKey] = tilemap;
@@ -296,14 +325,22 @@ export const precompileBackgrounds = async (
         background.tileColors || [],
         tilemapData.length,
         0
-      );
+      ).map((attr, index) => {
+        // CGB Only games spread background tiles evenly between
+        // each VRAM bank so need to set FLAG_VRAM_BANK_1 on odd tiles
+        if (cgbOnly && tilemapData[index] % 2 === 1 && !is360) {
+          return attr | FLAG_VRAM_BANK_1;
+        }
+        return attr;
+      });
       const tilemapAttrKey = JSON.stringify(tilemapAttrData);
-      let tilemapAttr;
+      let tilemapAttr: TilemapData | undefined;
       if (usedTilemapAttrsCache[tilemapAttrKey] === undefined) {
         // New tilemap attr
         tilemapAttr = {
           symbol: `${background.symbol}_tilemap_attr`,
           data: tilemapAttrData,
+          is360: generate360Ids.includes(background.id),
         };
         usedTilemapAttrs.push(tilemapAttr);
         usedTilemapAttrsCache[tilemapAttrKey] = tilemapAttr;
@@ -312,14 +349,17 @@ export const precompileBackgrounds = async (
         tilemapAttr = usedTilemapAttrsCache[tilemapAttrKey];
       }
 
-      const tilesetIndex =
-        usedTilesetLookup[backgroundData.tilemapsTileset[background.id]];
-      const tileset = usedTilesets[tilesetIndex];
-      tileset.symbol = `${background.symbol}_tileset`;
+      const tilesetIndexes = backgroundData.tilemapsTileset[background.id];
+      for (let i = 0; i < tilesetIndexes.length; i++) {
+        const tilesetIndex = tilesetIndexes[i];
+        const tileset = usedTilesets[tilesetIndex];
+        tileset.symbol = `${background.symbol}_${i}_tileset`;
+      }
 
       return {
         ...background,
-        tileset,
+        tileset: usedTilesets[tilesetIndexes[0]],
+        cgbTileset: usedTilesets[tilesetIndexes[1]],
         tilemap,
         tilemapAttr,
         data: tilemapData,
@@ -347,7 +387,7 @@ export const precompilePalettes = async (
   const sceneActorPaletteIndexes: Record<string, number> = {};
   const actorPaletteIndexes = {};
 
-  const isColor = settings.customColorsEnabled || settings.sgbEnabled;
+  const isColor = settings.colorMode !== "mono" || settings.sgbEnabled;
 
   const palettesLookup = indexById(palettes);
   const defaultBackgroundPaletteIds =
@@ -544,8 +584,9 @@ export const precompileSprites = async (
   scenes: Scene[],
   customEventsLookup: Dictionary<CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
+  cgbOnly: boolean,
   projectRoot: string,
-  usedTilesets: TilemapData[]
+  usedTilesets: TilesetData[]
 ) => {
   const usedSprites: SpriteSheetData[] = [];
   const usedSpriteLookup: Record<string, SpriteSheetData> = {};
@@ -608,28 +649,78 @@ export const precompileSprites = async (
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
     // Determine tileset
     const spriteTileset = sprite.data;
-    const tilesetKey = JSON.stringify(spriteTileset);
-    let tilesetIndex = 0;
-    if (usedTilesetCache[tilesetKey] === undefined) {
-      // New tileset
-      tilesetIndex = usedTilesets.length;
-      usedTilesets.push({
-        symbol: `ts_${tilesetIndex}`,
-        data: spriteTileset,
-      });
-      usedTilesetCache[tilesetKey] = tilesetIndex;
+    if (cgbOnly) {
+      const bank1Size = Math.ceil(sprite.data.length / 64) * 32;
+      const bank1Tileset = spriteTileset.slice(0, bank1Size);
+      const bank2Tileset = spriteTileset.slice(bank1Size, spriteTileset.length);
+
+      // VRAM Bank1 Tileset
+      const tileset1Key = JSON.stringify(bank1Tileset);
+      let tileset1Index = 0;
+      if (usedTilesetCache[tileset1Key] === undefined) {
+        // New tileset
+        tileset1Index = usedTilesets.length;
+        usedTilesets.push({
+          symbol: `ts_${tileset1Index}`,
+          data: bank1Tileset,
+        });
+        usedTilesetCache[tileset1Key] = tileset1Index;
+      } else {
+        // Already used tileset
+        tileset1Index = usedTilesetCache[tileset1Key];
+      }
+
+      // VRAM Bank2 Tileset
+      const tileset2Key = JSON.stringify(bank2Tileset);
+      let tileset2Index = 0;
+      if (usedTilesetCache[tileset2Key] === undefined) {
+        // New tileset
+        tileset2Index = usedTilesets.length;
+        usedTilesets.push({
+          symbol: `ts_${tileset2Index}`,
+          data: bank2Tileset,
+        });
+        usedTilesetCache[tileset2Key] = tileset2Index;
+      } else {
+        // Already used tileset
+        tileset2Index = usedTilesetCache[tileset2Key];
+      }
+
+      const tileset1 = usedTilesets[tileset1Index];
+      tileset1.symbol = `${sprite.symbol}_bank1_tileset`;
+
+      const tileset2 = usedTilesets[tileset2Index];
+      tileset2.symbol = `${sprite.symbol}_bank2_tileset`;
+
+      return {
+        ...sprite,
+        tileset: tileset1,
+        cgbTileset: tileset2,
+      };
     } else {
-      // Already used tileset
-      tilesetIndex = usedTilesetCache[tilesetKey];
+      const tilesetKey = JSON.stringify(spriteTileset);
+      let tilesetIndex = 0;
+      if (usedTilesetCache[tilesetKey] === undefined) {
+        // New tileset
+        tilesetIndex = usedTilesets.length;
+        usedTilesets.push({
+          symbol: `ts_${tilesetIndex}`,
+          data: spriteTileset,
+        });
+        usedTilesetCache[tilesetKey] = tilesetIndex;
+      } else {
+        // Already used tileset
+        tilesetIndex = usedTilesetCache[tilesetKey];
+      }
+
+      const tileset = usedTilesets[tilesetIndex];
+      tileset.symbol = `${sprite.symbol}_tileset`;
+
+      return {
+        ...sprite,
+        tileset,
+      };
     }
-
-    const tileset = usedTilesets[tilesetIndex];
-    tileset.symbol = `${sprite.symbol}_tileset`;
-
-    return {
-      ...sprite,
-      tileset,
-    };
   });
 
   return {
@@ -1118,6 +1209,7 @@ const precompile = async (
   const customEventsLookup = keyBy(projectData.customEvents, "id");
   const variablesLookup = keyBy(projectData.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
+  const cgbOnly = projectData.settings.colorMode === "color";
 
   const usedAssets = determineUsedAssets({
     scenes: projectData.scenes,
@@ -1142,6 +1234,7 @@ const precompile = async (
     projectData.backgrounds,
     projectData.scenes,
     customEventsLookup,
+    cgbOnly,
     projectRoot,
     tmpPath,
     { warnings }
@@ -1162,6 +1255,7 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
+    cgbOnly,
     projectRoot,
     usedTilesets
   );
@@ -1269,6 +1363,7 @@ const compile = async (
     scriptEventHandlers,
     engineFields = [],
     tmpPath = "/tmp",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: {
@@ -1276,12 +1371,18 @@ const compile = async (
     scriptEventHandlers: ScriptEventHandlers;
     engineFields: EngineFieldSchema[];
     tmpPath: string;
+    debugEnabled?: boolean;
     progress: (_msg: string) => void;
     warnings: (_msg: string) => void;
   }
-): Promise<{ files: Record<string, string> }> => {
+): Promise<{
+  files: Record<string, string>;
+  sceneMap: Record<string, SceneMapData>;
+  variableMap: Record<string, VariableMapData>;
+}> => {
   const output: Record<string, string> = {};
-  const symbols = {};
+  const symbols: Dictionary<string> = {};
+  const sceneMap: Record<string, SceneMapData> = {};
 
   if (projectData.scenes.length === 0) {
     throw new Error(
@@ -1294,9 +1395,9 @@ const compile = async (
     warnings,
   });
 
-  const customColorsEnabled = projectData.settings.customColorsEnabled;
-  const isSGB = projectData.settings.sgbEnabled;
-
+  const colorEnabled = projectData.settings.colorMode !== "mono";
+  const isCGBOnly = projectData.settings.colorMode === "color";
+  const isSGB = projectData.settings.sgbEnabled && !isCGBOnly;
   const precompiledEngineFields = keyBy(engineFields, "key");
   const customEventsLookup = keyBy(projectData.customEvents, "id");
 
@@ -1325,11 +1426,19 @@ const compile = async (
       // Include variables referenced from GBVM
       if (variable.symbol) {
         const symbol = variable.symbol.toUpperCase();
-        memo[variable.id] = symbol;
+        memo[variable.id] = {
+          symbol,
+          id: variable.id,
+          name: variable.name,
+          isLocal: false,
+          entityType: "scene",
+          entityId: "",
+          sceneId: "",
+        };
       }
       return memo;
     },
-    {} as Record<string, string>
+    {} as Record<string, VariableMapData>
   );
 
   // Determine which scene types need to support persisting player sprite
@@ -1344,8 +1453,24 @@ const compile = async (
   persistSceneTypes.forEach((sceneType) => {
     const bankVar = `PLAYER_SPRITE_${sceneType}_BANK`;
     const dataVar = `PLAYER_SPRITE_${sceneType}_DATA`;
-    variableAliasLookup[bankVar] = bankVar;
-    variableAliasLookup[dataVar] = dataVar;
+    variableAliasLookup[bankVar] = {
+      symbol: bankVar,
+      id: "",
+      name: "Player Sprite Bank",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
+    };
+    variableAliasLookup[dataVar] = {
+      symbol: dataVar,
+      id: "",
+      name: "Player Sprite Data",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
+    };
     const sprite =
       precompiled.usedSprites.find(
         (sprite) =>
@@ -1358,6 +1483,10 @@ const compile = async (
   // Add event data
   const additionalScripts: Dictionary<{
     symbol: string;
+    sceneId: string;
+    entityId: string;
+    entityType: ScriptBuilderEntityType;
+    scriptKey: string;
     compiledScript: string;
   }> = {};
   const additionalOutput: Dictionary<{
@@ -1379,7 +1508,7 @@ const compile = async (
         entityIndex: number,
         loop: boolean,
         lock: boolean,
-        scriptType: string
+        scriptKey: string
       ) => {
         let scriptTypeCode = "interact";
         let scriptName = "script";
@@ -1393,7 +1522,7 @@ const compile = async (
             hit3Script: "hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         } else if (entityType === "trigger") {
           scriptTypeCode = "interact";
@@ -1405,7 +1534,7 @@ const compile = async (
             playerHit3Script: "p_hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         }
         scriptName = `${entity.symbol}_${scriptTypeCode}`;
@@ -1440,6 +1569,7 @@ const compile = async (
           variableAliasLookup,
           entityType,
           entityIndex,
+          entityScriptKey: scriptKey,
           entity,
           warnings,
           loop,
@@ -1453,10 +1583,12 @@ const compile = async (
           compiledAssetsCache,
           branch: false,
           isFunction: false,
+          debugEnabled,
         });
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+
         return scriptName;
       };
 
@@ -1477,6 +1609,7 @@ const compile = async (
                     entity: actor,
                     entityType: "actor",
                     entityId: actor.id,
+                    scriptKey: "startScript",
                   },
                 } as ScriptEvent,
                 actorStartScript.filter((event) => event.command !== EVENT_END)
@@ -1491,6 +1624,7 @@ const compile = async (
                   entity: scene,
                   entityType: "scene",
                   entityId: scene.id,
+                  scriptKey: "script",
                 },
               }
             : [],
@@ -1517,11 +1651,11 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             customEventsLookup,
             scriptEventHandlers
           );
-          const autoFadeIndex = autoFadeId ? initScript.findIndex(
-            (item) => item.id === autoFadeId
-          ) : -1;
+          const autoFadeIndex = autoFadeId
+            ? initScript.findIndex((item) => item.id === autoFadeId)
+            : -1;
           const fadeEvent = {
-            id: "",
+            id: "autofade",
             command: "EVENT_FADE_IN",
             args: {
               speed: scene.autoFadeSpeed,
@@ -1665,12 +1799,11 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     }
   );
 
-  (
-    Object.values(additionalScripts) as {
-      symbol: string;
-      compiledScript: string;
-    }[]
-  ).forEach((additional) => {
+  Object.values(additionalScripts).forEach((additional) => {
+    if (!additional) {
+      return;
+    }
+
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
@@ -1704,17 +1837,17 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   // Add background map data
   precompiled.usedBackgrounds.forEach((background) => {
     output[`${background.symbol}.c`] = compileBackground(background, {
-      color: customColorsEnabled,
+      color: colorEnabled,
     });
     output[`${background.symbol}.h`] = compileBackgroundHeader(background);
   });
 
   precompiled.usedTilemaps.forEach((tilemap) => {
-    output[`${tilemap.symbol}.c`] = compileTilemap(tilemap);
+    output[`${tilemap.symbol}.c`] = compileTilemap(tilemap, isCGBOnly);
     output[`${tilemap.symbol}.h`] = compileTilemapHeader(tilemap);
   });
 
-  if (customColorsEnabled) {
+  if (colorEnabled) {
     precompiled.usedTilemapAttrs.forEach((tilemapAttr) => {
       output[`${tilemapAttr.symbol}.c`] = compileTilemapAttr(tilemapAttr);
       output[`${tilemapAttr.symbol}.h`] = compileTilemapAttrHeader(tilemapAttr);
@@ -1723,10 +1856,15 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   // Add sprite data
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`${sprite.symbol}.c`] = compileSpriteSheet(sprite, spriteIndex, {
-      statesOrder: precompiled.statesOrder,
-      stateReferences: precompiled.stateReferences,
-    });
+    output[`${sprite.symbol}.c`] = compileSpriteSheet(
+      sprite,
+      spriteIndex,
+      isCGBOnly,
+      {
+        statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
+      }
+    );
     output[`${sprite.symbol}.h`] = compileSpriteSheetHeader(sprite);
   });
 
@@ -1765,6 +1903,12 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       });
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
+
+    sceneMap[scene.symbol] = {
+      id: scene.id,
+      name: sceneName(scene, sceneIndex),
+      symbol: scene.symbol,
+    };
 
     output[`${scene.symbol}.c`] = compileScene(scene, sceneIndex, {
       bgPalette,
@@ -1867,6 +2011,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     variableAliasLookup,
     precompiled.stateReferences
   );
+
+  const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
+
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
     startY,
@@ -1923,6 +2070,8 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   return {
     files: output,
+    sceneMap,
+    variableMap,
   };
 };
 

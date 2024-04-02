@@ -45,14 +45,14 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
     ) {
       const state = store.getState();
       const projectSettings = getSettings(state);
-      if (!projectSettings.customColorsEnabled) {
+      if (projectSettings.colorMode === "mono") {
         API.dialog.confirmEnableColorDialog().then((cancel) => {
           if (cancel) {
             return;
           }
           store.dispatch(
             settingsActions.editSettings({
-              customColorsEnabled: true,
+              colorMode: "mixed",
             })
           );
           store.dispatch(action);

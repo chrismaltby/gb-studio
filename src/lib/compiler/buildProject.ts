@@ -17,6 +17,7 @@ type BuildOptions = {
   engineFields: EngineFieldSchema[];
   scriptEventHandlers: ScriptEventHandlers;
   outputRoot: string;
+  debugEnabled?: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
@@ -31,6 +32,7 @@ const buildProject = async (
     engineFields = [],
     scriptEventHandlers,
     outputRoot = "/tmp/testing",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: BuildOptions
@@ -40,6 +42,7 @@ const buildProject = async (
     engineFields,
     scriptEventHandlers,
     tmpPath,
+    debugEnabled,
     progress,
     warnings,
   });
@@ -77,9 +80,10 @@ const buildProject = async (
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
-    const colorsHead = data.settings.customColorsEnabled
-      ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`
-      : "";
+    const colorsHead =
+      data.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`
+        : "";
     const customHead = data.settings.customHead || "";
     const customControls = JSON.stringify({
       up: data.settings.customControlsUp,
@@ -108,6 +112,7 @@ const buildProject = async (
       `${outputRoot}/build/pocket/game.pocket`
     );
   }
+  return compiledData;
 };
 
 export default buildProject;

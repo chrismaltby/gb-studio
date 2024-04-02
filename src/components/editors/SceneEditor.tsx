@@ -57,6 +57,7 @@ import Alert, { AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface SceneEditorProps {
   id: string;
@@ -129,7 +130,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId
@@ -386,6 +387,19 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     );
   }, [dispatch, id]);
 
+  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
+
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "entity",
+      entityType: "scene",
+      entityId: id,
+      sceneId: id,
+      scriptKey,
+    }),
+    [id, scriptKey]
+  );
+
   if (!scene) {
     return <WorldEditor />;
   }
@@ -425,7 +439,6 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
   const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
   const showParallaxOptions = showParallaxButton && scene.parallax;
-  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
 
   const scriptButton = (
     <ScriptEditorDropdownButton
@@ -767,12 +780,9 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
         {scene.autoFadeSpeed === null && scriptKey === "script" && (
           <ScriptEventAutoFadeDisabledWarning />
         )}
-        <ScriptEditorContext.Provider value="entity">
+        <ScriptEditorContext.Provider value={scriptCtx}>
           <ScriptEditor
             value={scene[scriptKey]}
-            type="scene"
-            entityId={scene.id}
-            scriptKey={scriptKey}
             showAutoFadeIndicator={scriptKey === "script"}
           />
         </ScriptEditorContext.Provider>

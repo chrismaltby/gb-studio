@@ -139,9 +139,10 @@ const main = async (
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.name);
     const author = sanitize(project.author);
-    const colorsHead = project.settings.customColorsEnabled
-      ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
-      : "";
+    const colorsHead =
+      project.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
+        : "";
     const customHead = project.settings.customHead || "";
     const customControls = JSON.stringify({
       up: project.settings.customControlsUp,

@@ -9,18 +9,22 @@ const buildGame = createAction(
     {
       buildType = "web",
       exportBuild = false,
+      debugEnabled = false,
     }: {
       buildType?: BuildType;
       exportBuild?: boolean;
+      debugEnabled?: boolean;
     } = {
       buildType: "web",
       exportBuild: false,
+      debugEnabled: false,
     }
   ) => {
     return {
       payload: {
         buildType,
         exportBuild,
+        debugEnabled,
       },
     };
   }

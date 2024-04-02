@@ -29,6 +29,10 @@ const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
 const MAX_SPRITE_TILES = 64;
+
+export const MAX_BACKGROUND_TILES = 16 * 12;
+export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
+
 const SCREEN_WIDTH = 20;
 const SCREEN_HEIGHT = 18;
 const MAX_ONSCREEN = 10;
@@ -100,6 +104,8 @@ export const DMG_PALETTE = {
   colors: ["E8F8E0", "B0F088", "509878", "202850"],
 } as Palette;
 
+export const FLAG_VRAM_BANK_1 = 0x8;
+
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
 
@@ -145,7 +151,6 @@ export const defaultProjectSettings: SettingsState = {
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
-  customColorsEnabled: false,
   sgbEnabled: false,
   customHead: "",
   defaultBackgroundPaletteIds: [
@@ -192,6 +197,15 @@ export const defaultProjectSettings: SettingsState = {
   customControlsB: ["Control", "k", "x"],
   customControlsStart: ["Enter"],
   customControlsSelect: ["Shift"],
+  debuggerEnabled: false,
+  debuggerScriptType: "editor",
+  debuggerVariablesFilter: "all",
+  debuggerCollapsedPanes: [],
+  debuggerPauseOnScriptChanged: false,
+  debuggerPauseOnWatchedVariableChanged: false,
+  debuggerBreakpoints: [],
+  debuggerWatchedVariables: [],
+  colorMode: "mixed",
 };
 
 export {

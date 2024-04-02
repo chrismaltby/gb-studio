@@ -51,6 +51,7 @@ import {
   castEventToInt,
 } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface ActorEditorProps {
   id: string;
@@ -135,7 +136,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
       state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
@@ -332,6 +333,19 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
   };
 
+  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
+
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "entity",
+      entityType: "actor",
+      entityId: id,
+      sceneId,
+      scriptKey,
+    }),
+    [id, sceneId, scriptKey]
+  );
+
   if (!scene || !actor) {
     return <WorldEditor />;
   }
@@ -358,8 +372,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
       {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
     </Button>
   );
-
-  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
 
   const scriptButton = (
     <ScriptEditorDropdownButton
@@ -601,13 +613,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({
           )}
         </StickyTabs>
 
-        <ScriptEditorContext.Provider value="entity">
-          <ScriptEditor
-            value={actor[scriptKey]}
-            type="actor"
-            entityId={actor.id}
-            scriptKey={scriptKey}
-          />
+        <ScriptEditorContext.Provider value={scriptCtx}>
+          <ScriptEditor value={actor[scriptKey]} />
         </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>

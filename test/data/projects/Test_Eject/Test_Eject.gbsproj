@@ -200,7 +200,7 @@
         "worldScrollX": 0,
         "worldScrollY": 0,
         "zoom": 100,
-        "customColorsEnabled": false,
+        "colorMode": "mono",
         "defaultBackgroundPaletteIds": [
             "default-bg-1",
             "default-bg-2",

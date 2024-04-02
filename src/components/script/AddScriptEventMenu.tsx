@@ -634,7 +634,7 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: defaultVariableForContext(context),
+              defaultVariableId: defaultVariableForContext(context.type),
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),

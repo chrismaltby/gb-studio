@@ -92,6 +92,13 @@ import loadAllScriptEventHandlers, {
   ScriptEventHandlers,
 } from "lib/project/loadScriptEventHandlers";
 import { cloneDictionary } from "lib/helpers/clone";
+import { readDebuggerSymbols } from "lib/debugger/readDebuggerSymbols";
+import {
+  DebuggerDataPacket,
+  DebuggerInitData,
+} from "shared/lib/debugger/types";
+import pickBy from "lodash/pickBy";
+import keyBy from "lodash/keyBy";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -101,6 +108,7 @@ declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
+declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 type SplashTab = "info" | "new" | "recent";
 
@@ -127,6 +135,7 @@ let keepOpen = false;
 let projectPath = "";
 let cancelBuild = false;
 let musicWindowInitialized = false;
+let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
 
@@ -438,6 +447,10 @@ const sendToMusicWindow = (channel: string, ...args: unknown[]) => {
   musicWindow?.webContents.send(channel, ...args);
 };
 
+const sendToGameWindow = (channel: string, ...args: unknown[]) => {
+  playWindow?.webContents.send(channel, ...args);
+};
+
 const buildLog = (msg: string) => sendToProjectWindow("build:log", msg);
 const buildErr = (msg: string) => sendToProjectWindow("build:error", msg);
 
@@ -483,7 +496,11 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (url: string, sgb: boolean) => {
+const createPlay = async (
+  url: string,
+  sgb: boolean,
+  debugEnabled?: boolean
+) => {
   if (playWindow && sgb !== playWindowSgb) {
     playWindow.close();
     playWindow = null;
@@ -501,18 +518,25 @@ const createPlay = async (url: string, sgb: boolean) => {
         contextIsolation: true,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
+        preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
+    playWindow.setAlwaysOnTop(true);
     playWindowSgb = sgb;
   } else {
     playWindow.show();
   }
 
   playWindow.setMenu(null);
-  playWindow.loadURL(`${url}?audio=true&sgb=${sgb ? "true" : "false"}`);
+  playWindow.loadURL(
+    `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
+      !!debugEnabled && !!debuggerInitData ? "true" : "false"
+    }`
+  );
 
   playWindow.on("closed", () => {
     playWindow = null;
+    sendToProjectWindow("debugger:disconnected");
   });
 };
 
@@ -604,7 +628,7 @@ app.on("ready", async () => {
     if (host === "project") {
       // Load an asset from the current project
       const projectRoot = Path.dirname(projectPath);
-      const filename = Path.join(projectRoot, pathname);
+      const filename = Path.join(projectRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, projectRoot);
       return callback({ path: filename });
@@ -659,10 +683,6 @@ ipcMain.handle("clear-recent-projects", async (_event) => {
 ipcMain.handle("open-help", async (_event, helpPage) => {
   if (!isString(helpPage)) throw new Error("Invalid URL");
   openHelp(helpPage);
-});
-
-ipcMain.on("open-play", async (_event, url, sgb) => {
-  createPlay(url, sgb);
 });
 
 ipcMain.handle("open-folder", async (_event, path) => {
@@ -884,6 +904,80 @@ ipcMain.on("music:data-receive", (_event, data: MusicDataReceivePacket) => {
   }
 });
 
+ipcMain.on("debugger:data-receive", (_event, data: DebuggerDataPacket) => {
+  if (data.action === "initialized" && debuggerInitData) {
+    sendToGameWindow("debugger:data", {
+      action: "listener-ready",
+      data: debuggerInitData,
+    });
+  }
+  if (projectWindow) {
+    sendToProjectWindow("debugger:data", data);
+  }
+});
+
+ipcMain.handle("debugger:resume", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "resume",
+  });
+});
+
+ipcMain.handle("debugger:pause", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause",
+  });
+});
+
+ipcMain.handle("debugger:step", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step",
+  });
+});
+
+ipcMain.handle("debugger:step-frame", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step-frame",
+  });
+});
+
+ipcMain.handle("debugger:pause-on-script", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-script",
+    data: enabled,
+  });
+});
+
+ipcMain.handle("debugger:pause-on-var", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-var",
+    data: enabled,
+  });
+});
+
+ipcMain.handle(
+  "debugger:set-global",
+  (_event, symbol: string, value: number) => {
+    sendToGameWindow("debugger:data", {
+      action: "set-global",
+      data: { symbol, value },
+    });
+  }
+);
+
+ipcMain.handle("debugger:set-breakpoints", (_event, breakpoints: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-breakpoints",
+    data: breakpoints,
+  });
+});
+
+ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-watched",
+    data: variableIds,
+  });
+});
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(
@@ -954,16 +1048,19 @@ ipcMain.handle(
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-    const colorEnabled = project.settings.customColorsEnabled;
+    const colorMode = project.settings.colorMode;
     const sgbEnabled = project.settings.sgbEnabled;
+    const debuggerEnabled =
+      options.debugEnabled || project.settings.debuggerEnabled;
 
     try {
-      await buildProject(project, {
+      const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
         outputRoot,
         scriptEventHandlers,
         tmpPath: getTmp(),
+        debugEnabled: debuggerEnabled,
         progress: (message) => {
           if (cancelBuild) {
             throw new Error("BUILD_CANCELLED");
@@ -1003,9 +1100,35 @@ ipcMain.handle(
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
+        if (debuggerEnabled) {
+          const { memoryMap, globalVariables } = await readDebuggerSymbols(
+            outputRoot
+          );
+          debuggerInitData = {
+            memoryMap,
+            globalVariables,
+            pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChanged,
+            pauseOnWatchedVariableChanged:
+              project.settings.debuggerPauseOnWatchedVariableChanged,
+            breakpoints: project.settings.debuggerBreakpoints.map(
+              (breakpoint) => breakpoint.scriptEventId
+            ),
+            watchedVariables: project.settings.debuggerWatchedVariables,
+            variableMap: keyBy(Object.values(compiledData.variableMap), "id"),
+          };
+          const gbvmScripts = pickBy(compiledData.files, (_, key) =>
+            key.endsWith(".s")
+          );
+          sendToProjectWindow("debugger:symbols", {
+            variableMap: compiledData.variableMap,
+            sceneMap: compiledData.sceneMap,
+            gbvmScripts,
+          });
+        }
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && !colorEnabled
+          sgbEnabled && colorMode === "mono",
+          debuggerEnabled
         );
       }
 
@@ -1141,9 +1264,9 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:get-background-info",
-  (_event, background: Background, is360: boolean) => {
+  (_event, background: Background, is360: boolean, cgbOnly: boolean) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, is360, projectRoot);
+    return getBackgroundInfo(background, is360, cgbOnly, projectRoot);
   }
 );
 
@@ -1372,8 +1495,8 @@ menu.on("zoom", (zoomType) => {
   sendToProjectWindow("menu:zoom", zoomType);
 });
 
-menu.on("run", () => {
-  sendToProjectWindow("menu:run");
+menu.on("run", (debugEnabled) => {
+  sendToProjectWindow("menu:run", debugEnabled);
 });
 
 menu.on("build", (buildType) => {

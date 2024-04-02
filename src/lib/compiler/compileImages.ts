@@ -16,9 +16,9 @@ type CompileImageOptions = {
 };
 
 interface CompiledImagesResult {
-  tilesets: Record<string, Uint8Array>;
+  tilesets: Uint8Array[];
   tilemaps: Record<string, number[] | Uint8Array>;
-  tilemapsTileset: Record<string, number>;
+  tilemapsTileset: Record<string, number[]>;
 }
 
 const imageBuildCache: Record<
@@ -31,11 +31,12 @@ const imageBuildCache: Record<
 > = {};
 
 let lastOutput: CompiledImagesResult | null = null;
-let lastOutputIds = "";
+let lastOutputCacheKey = "";
 
 const compileImages = async (
   imgs: BackgroundData[],
   generate360Ids: string[],
+  cgbOnly: boolean,
   projectPath: string,
   tmpPath: string,
   { warnings }: CompileImageOptions
@@ -44,7 +45,7 @@ const compileImages = async (
   const tilesetIndexes: number[] = [];
   const imgTiles: Uint8Array[][] = [];
   const output: CompiledImagesResult = {
-    tilesets: {},
+    tilesets: [],
     tilemaps: {},
     tilemapsTileset: {},
   };
@@ -55,12 +56,14 @@ const compileImages = async (
     const img = imgs[i];
 
     const filename = assetFilename(projectPath, "backgrounds", img);
-    let tilesetLookup;
+    let tilesetLookup: TileLookup | undefined;
 
     const imageModifiedTime = await getFileModifiedTime(filename);
 
     const is360 = generate360Ids.includes(img.id);
-    const cacheKey = `${img.id}${is360 ? "_360" : ""}`;
+    const cacheKey = `${projectPath}_${img.id}_${img.filename}${
+      is360 ? "_360" : ""
+    }${cgbOnly ? "_cgb" : ""}`;
 
     if (
       imageBuildCache[cacheKey] &&
@@ -86,6 +89,7 @@ const compileImages = async (
     const backgroundInfo = await getBackgroundInfo(
       img,
       is360,
+      cgbOnly,
       projectPath,
       tilesetLength
     );
@@ -107,8 +111,16 @@ const compileImages = async (
   // If previous build generated the same images all unmodified
   // no need to recalculate image tiles and tile lookups,
   // just reuse last compile
-  const ids = imgs.map((img) => img.id).join();
-  if (uncachedCount === 0 && ids === lastOutputIds && lastOutput) {
+  const outputCacheKey = JSON.stringify({
+    ids: imgs.map((img) => img.id).join(),
+    generate360Ids,
+    cgbOnly,
+  });
+  if (
+    uncachedCount === 0 &&
+    outputCacheKey === lastOutputCacheKey &&
+    lastOutput
+  ) {
     return lastOutput;
   }
 
@@ -133,44 +145,62 @@ const compileImages = async (
     }
   }
 
-  // Remove unneeded tilesets
-  for (let i = 0; i < imgs.length - 1; i++) {
-    for (let j = imgs.length - 1; j >= i + 1; j--) {
-      if (tilesetLookups[i] === tilesetLookups[j]) {
-        tilesetIndexes[i] = j;
-        tilesetLookups[i] = null;
-        break;
-      }
-    }
-  }
-
-  // Output lookups to files
   for (let i = 0; i < imgs.length; i++) {
     if (generate360Ids.includes(imgs[i].id)) {
-      // Generate 360 tiles
-      output.tilesets[i] = tileArrayToTileData(imgTiles[i]);
-    } else if (tilesetLookups[i]) {
-      output.tilesets[i] = tileLookupToTileData(tilesetLookups[i] ?? {});
-    }
-  }
-
-  for (let i = 0; i < imgs.length; i++) {
-    if (generate360Ids.includes(imgs[i].id)) {
+      // Generate 360 tileset
+      const tileSetIndex = output.tilesets.length;
+      output.tilesets.push(tileArrayToTileData(imgTiles[i]));
       // Generate 360 tilemap
       output.tilemaps[imgs[i].id] = Array.from(Array(360)).map((_, i) => i);
-      output.tilemapsTileset[imgs[i].id] = i;
-    } else {
+      output.tilemapsTileset[imgs[i].id] = [tileSetIndex];
+    } else if (cgbOnly) {
+      // Color Only mode uses two VRAM banks for tiles
+      // Tiles are split evenly between both banks
+
+      const tiles = tileLookupToTileData(tilesetLookups[i] ?? {});
+      const tileSetIndex = output.tilesets.length;
+      const bank1Tiles: number[] = [];
+      const bank2Tiles: number[] = [];
+
+      // Split every other tile between vram banks
+      for (let i = 0; i < tiles.length; i++) {
+        if (Math.floor(i / 16) % 2 === 0) {
+          bank1Tiles.push(tiles[i]);
+        } else {
+          bank2Tiles.push(tiles[i]);
+        }
+      }
+
+      output.tilesets.push(new Uint8Array(bank1Tiles));
+      if (bank2Tiles.length > 0) {
+        // Two banks
+        output.tilesets.push(new Uint8Array(bank2Tiles));
+      }
       const tilemap = tilesAndLookupToTilemap(
         imgTiles[i],
         tilesetLookups[tilesetIndexes[i]] ?? {}
       );
       output.tilemaps[imgs[i].id] = tilemap;
-      output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];
+      output.tilemapsTileset[imgs[i].id] =
+        bank2Tiles.length > 0
+          ? [tileSetIndex, tileSetIndex + 1]
+          : [tileSetIndex];
+    } else {
+      // Monochrome + Mixed color mode uses one VRAM bank for tiles
+      const tiles = tileLookupToTileData(tilesetLookups[i] ?? {});
+      const tileSetIndex = output.tilesets.length;
+      output.tilesets.push(tiles);
+      const tilemap = tilesAndLookupToTilemap(
+        imgTiles[i],
+        tilesetLookups[tilesetIndexes[i]] ?? {}
+      );
+      output.tilemaps[imgs[i].id] = tilemap;
+      output.tilemapsTileset[imgs[i].id] = [tileSetIndex];
     }
   }
 
   lastOutput = output;
-  lastOutputIds = ids;
+  lastOutputCacheKey = outputCacheKey;
 
   return output;
 };

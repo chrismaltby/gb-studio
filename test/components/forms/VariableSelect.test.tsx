@@ -82,7 +82,15 @@ test("Should use default custom event variable name with not renamed", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <ScriptEditorContext.Provider value="script">
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
       <VariableSelect
         name="test"
         entityId="customEvent1"
@@ -174,7 +182,15 @@ test("Should use renamed variable for custom event", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <ScriptEditorContext.Provider value="script">
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
       <VariableSelect
         name="test"
         entityId="customEvent1"

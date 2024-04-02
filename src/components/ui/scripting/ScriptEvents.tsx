@@ -60,6 +60,15 @@ export const ScriptEventHeaderTitle = styled.div`
   max-width: 100%;
 `;
 
+export const ScriptEventHeaderBreakpointIndicator = styled.div`
+  display: flex;
+  svg {
+    fill: ${(props) => props.theme.colors.highlight};
+    max-width: 15px;
+    max-height: 15px;
+  }
+`;
+
 interface ScriptEventHeaderCaretProps {
   open?: boolean;
 }
@@ -78,6 +87,7 @@ interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
   comment?: boolean;
+  isExecuting?: boolean;
   child?: boolean;
   altBg?: boolean;
 }
@@ -166,6 +176,20 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
         `
       : ""}
 
+      ${(props) =>
+    props.isExecuting
+      ? css`
+          &&& {
+            background: ${(props) => props.theme.colors.highlight};
+            color: ${(props) => props.theme.colors.highlightText};
+
+            svg {
+              fill: ${(props) => props.theme.colors.highlightText};
+            }
+          }
+        `
+      : ""}
+    
   ${(props) =>
     props.child
       ? css`
