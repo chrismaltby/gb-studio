@@ -148,9 +148,9 @@ const addFileToProject = createAction<string>("project/addFile");
  * Save
  */
 
-const saveProject = createAsyncThunk<void, string | undefined>(
+const saveProject = createAsyncThunk<void>(
   "project/saveProject",
-  async (_newPath, thunkApi) => {
+  async (_, thunkApi) => {
     const state = thunkApi.getState() as RootState;
 
     if (!state.document.loaded) {
