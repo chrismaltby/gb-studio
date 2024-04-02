@@ -1,6 +1,7 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import {
   actorSelectors,
+  customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
   triggerSelectors,
@@ -32,6 +33,7 @@ import {
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { CodeIcon } from "ui/icons/Icons";
 
 const worker = new VariableUsesWorker();
 
@@ -72,6 +74,9 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
+  const customEventsLookup = useAppSelector((state) =>
+    customEventSelectors.selectEntities(state)
+  );
   const [showSymbols, setShowSymbols] = useState(false);
 
   const scriptEventDefs = useAppSelector((state) =>
@@ -107,6 +112,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       triggersLookup,
       scriptEventsLookup,
       scriptEventDefs,
+      customEventsLookup,
       l10NData: getL10NData(),
     });
   }, [
@@ -116,6 +122,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     id,
     scriptEventsLookup,
     scriptEventDefs,
+    customEventsLookup,
   ]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,20 +144,22 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   };
 
   const setSelectedId = (id: string, item: VariableUse) => {
-    dispatch(editorActions.editSearchTerm(""));
-    dispatch(editorActions.editSearchTerm(item.sceneId));
-    if (item.type === "actor") {
+    if (item.type === "scene") {
+      dispatch(editorActions.selectScene({ sceneId: id }));
+      dispatch(editorActions.setFocusSceneId(item.sceneId));
+    } else if (item.type === "actor") {
       dispatch(
         editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
       );
+      dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "trigger") {
       dispatch(
         editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
       );
-    } else {
-      dispatch(editorActions.selectScene({ sceneId: id }));
+      dispatch(editorActions.setFocusSceneId(item.sceneId));
+    } else if (item.type === "custom") {
+      dispatch(editorActions.selectCustomEvent({ customEventId: id }));
     }
-    dispatch(editorActions.setFocusSceneId(item.sceneId));
   };
 
   const selectSidebar = () => {
@@ -211,17 +220,28 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
                   items={variableUses}
                   height={height - 30}
                   setSelectedId={setSelectedId}
-                  children={({ item }) =>
-                    item.type === "scene" ? (
-                      <EntityListItem item={item} type={item.type} />
-                    ) : (
-                      <EntityListItem
-                        item={item}
-                        type={item.type}
-                        nestLevel={1}
-                      />
-                    )
-                  }
+                  children={({ item }) => {
+                    switch (item.type) {
+                      case "scene":
+                        return <EntityListItem item={item} type={item.type} />;
+                      case "custom":
+                        return (
+                          <EntityListItem
+                            item={item}
+                            type={item.type}
+                            icon={<CodeIcon />}
+                          />
+                        );
+                      default:
+                        return (
+                          <EntityListItem
+                            item={item}
+                            type={item.type}
+                            nestLevel={1}
+                          />
+                        );
+                    }
+                  }}
                 />
               ) : (
                 <UseMessage>{l10n("FIELD_VARIABLE_NOT_USED")}</UseMessage>
