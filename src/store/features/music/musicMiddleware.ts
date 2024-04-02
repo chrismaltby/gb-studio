@@ -30,7 +30,7 @@ function onSongLoaded(player: ScripTracker) {
 function playMOD(filename: string, settings: MusicSettings) {
   if (modPlayer) {
     modPlayer.loadModule(
-      `file://${filename}`,
+      `gbs://project/${filename}`,
       !!settings.disableSpeedConversion
     );
   }
