@@ -34,7 +34,7 @@ import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type { ProjectData } from "store/features/project/projectActions";
-import type { BuildOptions } from "renderer/lib/api/setup";
+import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
 import buildProject from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
 import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
@@ -674,10 +674,18 @@ ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
 
-ipcMain.handle("get-recent-projects", async () => {
+ipcMain.handle("get-recent-projects", async (): Promise<
+  RecentProjectData[]
+> => {
   const recentProjects = settings.get("recentProjects");
   if (!isStringArray(recentProjects)) return [];
-  return recentProjects;
+  return recentProjects.map((path) => {
+    return {
+      name: Path.basename(path),
+      dir: Path.dirname(path),
+      path,
+    };
+  });
 });
 
 ipcMain.handle("clear-recent-projects", async (_event) => {

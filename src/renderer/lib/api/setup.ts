@@ -49,6 +49,12 @@ export type BuildOptions = {
   debugEnabled?: boolean;
 };
 
+export type RecentProjectData = {
+  name: string;
+  dir: string;
+  path: string;
+};
+
 const createSubscribeAPI = <
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (event: IpcRendererEvent, ...args: any[]) => void
@@ -161,7 +167,7 @@ const APISetup = {
       ipcRenderer.invoke("dialog:migrate-warning", path),
   },
   project: {
-    getRecentProjects: (): Promise<string[]> =>
+    getRecentProjects: (): Promise<RecentProjectData[]> =>
       ipcRenderer.invoke("get-recent-projects"),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
     openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
