@@ -208,8 +208,6 @@ const APISetup = {
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>
       ipcRenderer.invoke("project:save", data),
-    saveProjectAs: (filename: string, data: ProjectData): Promise<void> =>
-      ipcRenderer.invoke("project:save-as", filename, data),
     setModified: () => ipcRenderer.invoke("project:set-modified"),
     setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),
   },

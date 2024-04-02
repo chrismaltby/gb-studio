@@ -72,7 +72,6 @@ import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
-import saveAsProjectData from "lib/project/saveAsProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
@@ -1056,13 +1055,6 @@ ipcMain.handle("project:save", async (_, data: ProjectData): Promise<void> => {
 });
 
 ipcMain.handle(
-  "project:save-as",
-  async (_, filename: string, data: ProjectData): Promise<void> => {
-    await saveAsProjectData(projectPath, filename, data);
-  }
-);
-
-ipcMain.handle(
   "project:build",
   async (event, project: ProjectData, options: BuildOptions) => {
     cancelBuild = false;
@@ -1750,13 +1742,15 @@ const saveAsProjectPicker = async () => {
 };
 
 const saveAsProject = async (saveAsPath: string) => {
+  const originalProjectPath = projectPath;
   const projectName = Path.parse(saveAsPath).name;
   const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
-  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectDir = Path.dirname(newProjectPath);
 
   let projectExists;
   try {
-    await stat(projectPath);
+    await stat(newProjectDir);
     projectExists = true;
   } catch (e) {
     projectExists = false;
@@ -1778,7 +1772,10 @@ const saveAsProject = async (saveAsPath: string) => {
     return;
   }
 
+  await copy(Path.dirname(originalProjectPath), Path.dirname(newProjectPath));
+
+  projectPath = newProjectPath;
   addRecentProject(projectPath);
 
-  sendToProjectWindow("menu:save-as-project", projectPath);
+  sendToProjectWindow("menu:save-project");
 };

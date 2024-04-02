@@ -253,10 +253,6 @@ API.events.menu.saveProject.subscribe(() => {
   store.dispatch(projectActions.saveProject());
 });
 
-API.events.menu.saveProjectAs.subscribe((_, filename: string) => {
-  store.dispatch(projectActions.saveProject(filename));
-});
-
 API.events.menu.onSaveAndCloseProject.subscribe(async () => {
   await store.dispatch(projectActions.saveProject());
   window.close();

@@ -150,7 +150,7 @@ const addFileToProject = createAction<string>("project/addFile");
 
 const saveProject = createAsyncThunk<void, string | undefined>(
   "project/saveProject",
-  async (newPath, thunkApi) => {
+  async (_newPath, thunkApi) => {
     const state = thunkApi.getState() as RootState;
 
     if (!state.document.loaded) {
@@ -158,9 +158,6 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     }
     if (saving) {
       throw new Error("Cannot save project while already saving");
-    }
-    if (!newPath && !state.document.modified) {
-      throw new Error("Cannot save unmodified project");
     }
 
     saving = true;
@@ -181,13 +178,8 @@ const saveProject = createAsyncThunk<void, string | undefined>(
         },
       };
 
-      if (newPath) {
-        // Save As
-        await API.project.saveProjectAs(newPath, data);
-      } else {
-        // Save
-        await API.project.saveProject(data);
-      }
+      // Save
+      await API.project.saveProject(data);
     } catch (e) {
       console.error(e);
     }
