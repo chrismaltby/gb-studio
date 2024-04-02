@@ -685,30 +685,53 @@ ipcMain.handle("open-help", async (_event, helpPage) => {
   openHelp(helpPage);
 });
 
-ipcMain.handle("open-folder", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
-  shell.openPath(path);
+ipcMain.handle("open-folder", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const folderPath = Path.join(projectRoot, assetPath);
+
+  guardAssetWithinProject(folderPath, projectRoot);
+
+  shell.openPath(folderPath);
 });
 
-ipcMain.handle("open-image", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
+ipcMain.handle("open-image", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
   const app = String(settings.get("imageEditorPath") || "") || undefined;
-  open(path, { app });
+  open(filename, { app });
 });
 
-ipcMain.handle("open-mod", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
+ipcMain.handle("open-mod", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
   const app = String(settings.get("musicEditorPath") || "") || undefined;
-  open(path, { app });
+  open(filename, { app });
 });
 
-ipcMain.handle("open-file", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
-  shell.openPath(path);
+ipcMain.handle("open-file", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  shell.openPath(filename);
 });
 
 ipcMain.handle("open-external", async (_event, url) => {
@@ -1298,8 +1321,10 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("tracker:new", async (_event, filename: string) => {
+ipcMain.handle("tracker:new", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
 
@@ -1334,22 +1359,23 @@ ipcMain.handle("tracker:new", async (_event, filename: string) => {
   return await copy2(templatePath, filename);
 });
 
-ipcMain.handle("tracker:load", async (_event, filename: string) => {
+ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   // Convert song to UGE format and save
   const data = await readFile(filename);
   const song = loadUGESong(new Uint8Array(data).buffer);
   if (song) {
-    song.filename = filename;
+    song.filename = assetPath;
   }
   return song;
 });
 
 ipcMain.handle("tracker:save", async (_event, song: Song) => {
   const projectRoot = Path.dirname(projectPath);
-  const filename = song.filename;
+  const filename = Path.join(projectRoot, song.filename);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   // Convert song to UGE format and save
@@ -1357,8 +1383,10 @@ ipcMain.handle("tracker:save", async (_event, song: Song) => {
   await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
 });
 
-ipcMain.handle("sfx:play-wav", async (_event, filename: string) => {
+ipcMain.handle("sfx:play-wav", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const sfx = await compileWav(filename, "asm");
@@ -1367,8 +1395,10 @@ ipcMain.handle("sfx:play-wav", async (_event, filename: string) => {
   });
 });
 
-ipcMain.handle("sfx:play-vgm", async (_event, filename: string) => {
+ipcMain.handle("sfx:play-vgm", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const { output: sfx } = await compileVGM(filename, "asm");
@@ -1379,8 +1409,10 @@ ipcMain.handle("sfx:play-vgm", async (_event, filename: string) => {
 
 ipcMain.handle(
   "sfx:play-fxhammer",
-  async (_event, filename: string, effectIndex: number) => {
+  async (_event, assetPath: string, effectIndex: number) => {
     const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
+
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
     const { output: sfx } = await compileFXHammerSingle(
@@ -1394,8 +1426,10 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("music:play-uge", async (_event, filename: string) => {
+ipcMain.handle("music:play-uge", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const fileData = toArrayBuffer(await readFile(filename));

@@ -1,4 +1,3 @@
-import path from "path";
 import { createSlice, AnyAction } from "@reduxjs/toolkit";
 import projectActions from "store/features/project/projectActions";
 
@@ -6,16 +5,12 @@ export interface DocumentState {
   modified: boolean;
   loaded: boolean;
   saving: boolean;
-  path: string;
-  root: string;
 }
 
 export const initialState: DocumentState = {
   modified: false,
   loaded: false,
   saving: false,
-  path: "",
-  root: "",
 };
 
 const documentSlice = createSlice({
@@ -27,9 +22,7 @@ const documentSlice = createSlice({
       .addCase(projectActions.loadProject.pending, (state, _action) => {
         state.loaded = false;
       })
-      .addCase(projectActions.loadProject.fulfilled, (state, action) => {
-        state.path = action.payload.path;
-        state.root = path.dirname(action.payload.path);
+      .addCase(projectActions.loadProject.fulfilled, (state, _action) => {
         state.modified = false;
         state.loaded = true;
       })
@@ -39,14 +32,9 @@ const documentSlice = createSlice({
       .addCase(projectActions.saveProject.rejected, (state, _action) => {
         state.saving = false;
       })
-      .addCase(projectActions.saveProject.fulfilled, (state, action) => {
+      .addCase(projectActions.saveProject.fulfilled, (state, _action) => {
         state.saving = false;
         state.modified = false;
-        if (action.meta.arg) {
-          // If "Save As" set new root path
-          state.path = action.meta.arg;
-          state.root = path.dirname(action.meta.arg);
-        }
       })
       .addMatcher(
         (action: AnyAction): action is AnyAction =>

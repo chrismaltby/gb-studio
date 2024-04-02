@@ -9,6 +9,7 @@ import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import electronActions from "store/features/electron/electronActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetPath } from "shared/lib/helpers/assets";
 
 interface ModViewerProps {
   trackId: string;
@@ -68,7 +69,6 @@ const TrackSettings = styled.div`
 
 const ModViewer = ({ trackId }: ModViewerProps) => {
   const dispatch = useAppDispatch();
-  const projectRoot = useAppSelector((state) => state.document.root);
   const track = useAppSelector((state) =>
     musicSelectors.selectById(state, trackId)
   );
@@ -97,12 +97,12 @@ const ModViewer = ({ trackId }: ModViewerProps) => {
     if (track) {
       dispatch(
         electronActions.openFile({
-          filename: `${projectRoot}/assets/music/${track.filename}`,
+          filename: assetPath("music", track),
           type: "music",
         })
       );
     }
-  }, [dispatch, projectRoot, track]);
+  }, [dispatch, track]);
 
   if (!track) {
     return <div />;

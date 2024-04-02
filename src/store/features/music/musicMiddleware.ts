@@ -6,7 +6,7 @@ import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { MusicSettings } from "shared/lib/entities/entitiesTypes";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 
 let modPlayer: ScripTracker;
@@ -53,8 +53,7 @@ const musicMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const track = musicSelectors.selectById(state, action.payload.musicId);
       if (track) {
-        const projectRoot = state.document.root;
-        const filename = assetFilename(projectRoot, "music", track);
+        const filename = assetPath("music", track);
         if (track.type === "uge") {
           playUGE(filename, track.settings);
         } else {

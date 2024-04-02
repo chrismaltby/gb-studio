@@ -8,10 +8,10 @@ export const isAssetWithinProject = (
   const absoluteParentPath = path.resolve(projectRoot);
   const absoluteChildPath = path.resolve(assetPath);
 
-  return (
-    absoluteChildPath.startsWith(absoluteParentPath) &&
-    absoluteParentPath !== absoluteChildPath
-  );
+  if (absoluteParentPath === absoluteChildPath) {
+    return true;
+  }
+  return absoluteChildPath.startsWith(absoluteParentPath);
 };
 
 export const guardAssetWithinProject = (

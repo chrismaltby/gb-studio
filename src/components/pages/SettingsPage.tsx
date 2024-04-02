@@ -52,7 +52,6 @@ import { ColorModeSelect } from "components/forms/ColorModeSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
-  const projectRoot = useAppSelector((state) => state.document.root);
   const settings = useAppSelector((state) => state.project.present.settings);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
@@ -208,12 +207,12 @@ const SettingsPage: FC = () => {
     (path: string) => {
       dispatch(
         electronActions.openFile({
-          filename: Path.join(projectRoot, "assets", path),
+          filename: Path.join("assets", path),
           type: "image",
         })
       );
     },
-    [dispatch, projectRoot]
+    [dispatch]
   );
 
   return (

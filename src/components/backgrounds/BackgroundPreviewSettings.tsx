@@ -13,6 +13,7 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import l10n from "shared/lib/lang/l10n";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetPath } from "shared/lib/helpers/assets";
 
 interface BackgroundPreviewSettingsProps {
   backgroundId: string;
@@ -60,7 +61,6 @@ const BackgroundPreviewSettings = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  const projectRoot = useAppSelector((state) => state.document.root);
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
@@ -151,12 +151,12 @@ const BackgroundPreviewSettings = ({
     if (background) {
       dispatch(
         electronActions.openFile({
-          filename: `${projectRoot}/assets/backgrounds/${background.filename}`,
+          filename: assetPath("backgrounds", background),
           type: "image",
         })
       );
     }
-  }, [background, dispatch, projectRoot]);
+  }, [background, dispatch]);
 
   return (
     <Wrapper>
