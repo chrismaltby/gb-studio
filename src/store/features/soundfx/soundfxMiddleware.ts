@@ -5,7 +5,6 @@ import {
   stopBuffer,
   decodeAudioData,
 } from "renderer/lib/soundfx/soundfx";
-import { assetsRoot } from "consts";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import musicActions from "store/features/music/musicActions";
@@ -30,7 +29,7 @@ window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
 function play(filename: string) {
-  const url = `file://${assetsRoot}/soundfx/${filename}`;
+  const url = `gbs://app-assets/soundfx/${filename}`;
   fetch(url)
     .then((response) => response.arrayBuffer())
     .then(decodeAudioData)

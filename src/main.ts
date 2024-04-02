@@ -41,7 +41,7 @@ import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDial
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
-import { buildUUID, projectTemplatesRoot } from "consts";
+import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
@@ -630,6 +630,12 @@ app.on("ready", async () => {
       const filename = Path.join(projectRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, projectRoot);
+      return callback({ path: filename });
+    } else if (host === "app-assets") {
+      // Load an asset from the GB Studio global assets folder
+      const filename = Path.join(assetsRoot, decodeURI(pathname));
+      // Check project has permission to access this asset
+      guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
     }
   });
