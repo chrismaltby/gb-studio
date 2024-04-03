@@ -13,7 +13,6 @@ import {
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_ACTOR_SET_SPRITE,
-  FLAG_VRAM_BANK_1,
 } from "consts";
 import compileSprites, { SpriteTileAllocationStrategy } from "./compileSprites";
 import compileAvatars from "./compileAvatars";
@@ -234,13 +233,6 @@ export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
-const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
-  if (arr.length > len) {
-    return arr.slice(0, len);
-  }
-  return arr.concat(Array(len - arr.length).fill(padding));
-};
-
 const ensureProjectAsset = async (
   relativePath: string,
   {
@@ -287,8 +279,6 @@ export const precompileBackgrounds = async (
 ) => {
   const usedTilemaps: TilemapData[] = [];
   const usedTilemapAttrs: TilemapData[] = [];
-  const usedTilemapsCache: Record<string, TilemapData> = {};
-  const usedTilemapAttrsCache: Record<string, TilemapData> = {};
 
   const eventImageIds: string[] = [];
   walkScenesScripts(
@@ -326,12 +316,11 @@ export const precompileBackgrounds = async (
     .map((background) => background.id);
 
   const backgroundLookup = indexById(usedBackgrounds);
-  const backgroundData = await compileImages(
+  const backgroundsData = await compileImages(
     usedBackgrounds,
     generate360Ids,
     cgbOnly,
     projectRoot,
-    tmpPath,
     {
       warnings,
     }
@@ -339,79 +328,58 @@ export const precompileBackgrounds = async (
 
   const usedTilesets: TilesetData[] = [];
 
-  const usedTilesetLookup: Record<string, number> = {};
-  Object.keys(backgroundData.tilesets).forEach((tileKey) => {
-    usedTilesetLookup[tileKey] = usedTilesets.length;
-    usedTilesets.push({
-      symbol: "ts_" + usedTilesets.length,
-      data: backgroundData.tilesets[Number(tileKey)],
-    });
-  });
-
-  const usedBackgroundsWithData: PrecompiledBackground[] = usedBackgrounds.map(
+  const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
-      const is360 = generate360Ids.includes(background.id);
-      // Determine tilemap
-      const tilemapData = backgroundData.tilemaps[background.id];
-      const tilemapKey = JSON.stringify(tilemapData);
-      let tilemap;
-      if (usedTilemapsCache[tilemapKey] === undefined) {
-        // New tilemap
-        tilemap = {
+      // Determine tileset
+      let tileset1Index = -1;
+      let tileset2Index = -1;
+      let tilemapIndex = -1;
+      let tilemapAttrIndex = -1;
+
+      // VRAM Bank 1
+      if (background.vramData[0].length > 0) {
+        tileset1Index = usedTilesets.length;
+        usedTilesets.push({
+          symbol: `${background.symbol}_tileset`,
+          data: background.vramData[0],
+        });
+      }
+
+      // VRAM Bank 2
+      if (background.vramData[1].length > 0) {
+        tileset2Index = usedTilesets.length;
+        usedTilesets.push({
+          symbol: `${background.symbol}_cgb_tileset`,
+          data: background.vramData[1],
+        });
+      }
+
+      // Extract Tilemap
+      if (background.tilemap.length > 0) {
+        tilemapIndex = usedTilemaps.length;
+        usedTilemaps.push({
           symbol: `${background.symbol}_tilemap`,
-          data: tilemapData,
-          is360,
-        };
-        usedTilemaps.push(tilemap);
-        usedTilemapsCache[tilemapKey] = tilemap;
-      } else {
-        // Already used tilemap
-        tilemap = usedTilemapsCache[tilemapKey];
-      }
-
-      // Determine tilemap attrs
-      const tilemapAttrData = padArrayEnd(
-        background.tileColors || [],
-        tilemapData.length,
-        0
-      ).map((attr, index) => {
-        // CGB Only games spread background tiles evenly between
-        // each VRAM bank so need to set FLAG_VRAM_BANK_1 on odd tiles
-        if (cgbOnly && tilemapData[index] % 2 === 1 && !is360) {
-          return attr | FLAG_VRAM_BANK_1;
-        }
-        return attr;
-      });
-      const tilemapAttrKey = JSON.stringify(tilemapAttrData);
-      let tilemapAttr: TilemapData | undefined;
-      if (usedTilemapAttrsCache[tilemapAttrKey] === undefined) {
-        // New tilemap attr
-        tilemapAttr = {
-          symbol: `${background.symbol}_tilemap_attr`,
-          data: tilemapAttrData,
+          data: background.tilemap,
           is360: generate360Ids.includes(background.id),
-        };
-        usedTilemapAttrs.push(tilemapAttr);
-        usedTilemapAttrsCache[tilemapAttrKey] = tilemapAttr;
-      } else {
-        // Already used tilemap attr
-        tilemapAttr = usedTilemapAttrsCache[tilemapAttrKey];
+        });
       }
 
-      const tilesetIndexes = backgroundData.tilemapsTileset[background.id];
-      for (let i = 0; i < tilesetIndexes.length; i++) {
-        const tilesetIndex = tilesetIndexes[i];
-        const tileset = usedTilesets[tilesetIndex];
-        tileset.symbol = `${background.symbol}_${i}_tileset`;
+      // Extract Tilemap Attr
+      if (background.attr.length > 0) {
+        tilemapAttrIndex = usedTilemapAttrs.length;
+        usedTilemapAttrs.push({
+          symbol: `${background.symbol}_tilemap_attr`,
+          data: background.attr,
+          is360: generate360Ids.includes(background.id),
+        });
       }
 
       return {
         ...background,
-        tileset: usedTilesets[tilesetIndexes[0]],
-        cgbTileset: usedTilesets[tilesetIndexes[1]],
-        tilemap,
-        tilemapAttr,
-        data: tilemapData,
+        tileset: usedTilesets[tileset1Index],
+        cgbTileset: usedTilesets[tileset2Index],
+        tilemap: usedTilemaps[tilemapIndex],
+        tilemapAttr: usedTilemapAttrs[tilemapAttrIndex],
       };
     }
   );
@@ -1844,7 +1812,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   });
 
   precompiled.usedTilemaps.forEach((tilemap) => {
-    output[`${tilemap.symbol}.c`] = compileTilemap(tilemap, isCGBOnly);
+    output[`${tilemap.symbol}.c`] = compileTilemap(tilemap);
     output[`${tilemap.symbol}.h`] = compileTilemapHeader(tilemap);
   });
 

@@ -38,10 +38,6 @@ export const mergeTileLookups = (tileLookups: TileLookup[]): TileLookup => {
   return output;
 };
 
-export const tileLookupToTileData = (lookup: TileLookup): Uint8Array => {
-  return tileArrayToTileData(Object.values(lookup));
-};
-
 export const tileArrayToTileData = (tiles: Uint8Array[]): Uint8Array => {
   const size = tiles.reduce((memo, tile) => memo + tile.length, 0);
   const output = new Uint8Array(size);
@@ -62,7 +58,7 @@ export const tilesAndLookupToTilemap = (
   let i = 0;
   for (const tileData of tiles) {
     const key = hashTileData(tileData);
-    let value = keys.indexOf(key);
+    const value = keys.indexOf(key);
     if (value === -1) {
       throw new Error("Missing Tile" + key);
     }

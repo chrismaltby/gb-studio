@@ -12,7 +12,6 @@ import { CompiledFontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
-import clamp from "shared/lib/helpers/clamp";
 
 export interface PrecompiledBackground {
   id: string;
@@ -20,7 +19,6 @@ export interface PrecompiledBackground {
   name: string;
   width: number;
   height: number;
-  data: number[] | Uint8Array;
   tileset: PrecompiledTileData;
   cgbTileset?: PrecompiledTileData;
   tilemap: PrecompiledTileData;
@@ -903,7 +901,9 @@ export const compileBackground = (
     {
       width: background.width,
       height: background.height,
-      tileset: toFarPtr(background.tileset.symbol),
+      tileset: background.tileset
+        ? toFarPtr(background.tileset.symbol)
+        : "{ NULL, NULL }",
       cgb_tileset:
         color && background.cgbTileset
           ? toFarPtr(background.cgbTileset.symbol)
@@ -914,7 +914,7 @@ export const compileBackground = (
         : "{ NULL, NULL }",
     },
     ([] as string[]).concat(
-      background.tileset.symbol,
+      background.tileset?.symbol ?? [],
       background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
       color ? background.tilemapAttr.symbol : []
@@ -928,62 +928,12 @@ export const compileBackgroundHeader = (background: PrecompiledBackground) =>
     `// Background: ${background.name}`
   );
 
-const TILE_FIRST_CHUNK_SIZE = 128;
-const TILE_BANK_SIZE = 192;
-const TILE_SECOND_CHUNK_MAX_SIZE = 64;
-
-export const compileTilemap = (
-  tilemap: PrecompiledTilemapData,
-  useSecondBank: boolean
-) => {
-  const maxValue = Math.max(...tilemap.data) + 1;
-  const bank1Size = useSecondBank ? Math.ceil(maxValue / 2) : maxValue;
-  const bank2Size = useSecondBank ? Math.floor(maxValue / 2) : 0;
-
-  const bank1SecondChunkSize = clamp(
-    bank1Size - TILE_FIRST_CHUNK_SIZE,
-    0,
-    TILE_SECOND_CHUNK_MAX_SIZE
-  );
-  const bank2SecondChunkSize = clamp(
-    bank2Size - TILE_FIRST_CHUNK_SIZE,
-    0,
-    TILE_SECOND_CHUNK_MAX_SIZE
-  );
-
+export const compileTilemap = (tilemap: PrecompiledTilemapData) => {
   return toArrayDataFile(
     DATA_TYPE,
     tilemap.symbol,
     `// Tilemap ${tilemap.symbol}`,
-    (tilemap.is360
-      ? // 360 scenes use tile indexes as is
-        Array.from(tilemap.data)
-      : // For other scene types reorganise tile indexes
-        // to maximise tiles available for sprite data
-        Array.from(tilemap.data).map((v) => {
-          const index = useSecondBank ? Math.floor(v / 2) : v;
-
-          // Tiles within first chunk will have the correct index
-          if (index < TILE_FIRST_CHUNK_SIZE) {
-            return index;
-          }
-
-          // If in second chunk need to figure out which VRAM
-          // bank is being used and how big the chunk is to
-          // calculate tile data offset
-          const secondChunkSize =
-            useSecondBank && v % 2 === 1
-              ? bank2SecondChunkSize
-              : bank1SecondChunkSize;
-
-          return (
-            (index % TILE_BANK_SIZE) +
-            (TILE_SECOND_CHUNK_MAX_SIZE - secondChunkSize)
-          );
-        })
-    )
-      .map(wrap8Bit)
-      .map(toHex),
+    Array.from(tilemap.data).map(wrap8Bit).map(toHex),
     16
   );
 };
