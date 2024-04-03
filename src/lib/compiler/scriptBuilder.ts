@@ -29,7 +29,7 @@ import {
   PrecompiledSprite,
   PrecompiledEmote,
   PrecompiledBackground,
-} from "./compileData2";
+} from "./generateGBVMData";
 import { DMG_PALETTE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,

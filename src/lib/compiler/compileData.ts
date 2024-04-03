@@ -65,7 +65,7 @@ import {
   PrecompiledPalette,
   PrecompiledSceneEventPtrs,
   sceneName,
-} from "./compileData2";
+} from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import {

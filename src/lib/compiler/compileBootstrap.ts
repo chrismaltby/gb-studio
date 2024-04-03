@@ -7,7 +7,7 @@ import {
   avatarFontSymbol,
   PrecompiledFontData,
   PrecompiledScene,
-} from "./compileData2";
+} from "./generateGBVMData";
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
 
