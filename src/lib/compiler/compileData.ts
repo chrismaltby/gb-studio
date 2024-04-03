@@ -103,6 +103,7 @@ import {
   ScriptEvent,
   SoundData,
   SpriteSheetData,
+  TilesetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import type { Dictionary } from "@reduxjs/toolkit";
@@ -116,14 +117,15 @@ import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
+import compileTilesets from "lib/compiler/compileTilesets";
 
-type TilemapData = {
+type CompiledTilemapData = {
   symbol: string;
   data: number[] | Uint8Array;
   is360: boolean;
 };
 
-type TilesetData = {
+type CompiledTilesetData = {
   symbol: string;
   data: number[] | Uint8Array;
 };
@@ -171,6 +173,7 @@ export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
 export const EVENT_MSG_PRE_VARIABLES = "Preparing variables...";
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
+export const EVENT_MSG_PRE_TILESETS = "Preparing tilesets...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
 export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
@@ -228,8 +231,8 @@ export const precompileBackgrounds = async (
     warnings: (_msg: string) => void;
   }
 ) => {
-  const usedTilemaps: TilemapData[] = [];
-  const usedTilemapAttrs: TilemapData[] = [];
+  const usedTilemaps: CompiledTilemapData[] = [];
+  const usedTilemapAttrs: CompiledTilemapData[] = [];
 
   const eventImageIds: string[] = [];
   walkScenesScripts(
@@ -277,7 +280,7 @@ export const precompileBackgrounds = async (
     }
   );
 
-  const usedTilesets: TilesetData[] = [];
+  const usedTilesets: CompiledTilesetData[] = [];
 
   const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
@@ -553,10 +556,11 @@ export const precompileSprites = async (
   customEventsLookup: Dictionary<CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
   cgbOnly: boolean,
-  projectRoot: string,
-  usedTilesets: TilesetData[]
+  projectRoot: string
 ) => {
   const usedSprites: SpriteSheetData[] = [];
+  const usedTilesets: CompiledTilesetData[] = [];
+
   const usedSpriteLookup: Record<string, SpriteSheetData> = {};
   const spriteLookup = indexById(spriteSheets);
 
@@ -641,6 +645,7 @@ export const precompileSprites = async (
 
   return {
     usedSprites: usedSpritesWithData,
+    usedTilesets,
     statesOrder,
     stateReferences,
     spriteLookup,
@@ -745,6 +750,62 @@ export const precompileEmotes = async (
   return {
     usedEmotes: emoteData,
     emoteLookup,
+  };
+};
+
+export const precompileTilesets = async (
+  tilesets: TilesetData[],
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
+  projectRoot: string,
+  {
+    warnings,
+  }: {
+    warnings: (msg: string) => void;
+  }
+) => {
+  const usedTilesets: TilesetData[] = [];
+  const usedTilesetLookup: Record<string, TilesetData> = {};
+  const tilesetLookup = indexById(tilesets);
+
+  const addTileset = (id: string) => {
+    const tileset = tilesetLookup[id];
+    if (!usedTilesetLookup[id] && tileset) {
+      usedTilesets.push(tileset);
+      usedTilesetLookup[id] = tileset;
+    }
+  };
+
+  walkScenesScripts(
+    scenes,
+    {
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      },
+    },
+    (cmd) => {
+      if (cmd.args && cmd.args.tilesetId) {
+        addTileset(ensureString(cmd.args.tilesetId, ""));
+      }
+      if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
+          .filter((ref) => ref.type === "tileset")
+          .map((ref) => ref.id);
+        for (const id of referencedIds) {
+          addTileset(id);
+        }
+      }
+    }
+  );
+
+  const tilesetData = await compileTilesets(usedTilesets, projectRoot, {
+    warnings,
+  });
+
+  return {
+    usedTilesets: tilesetData,
+    tilesetLookup,
   };
 };
 
@@ -1143,7 +1204,7 @@ const precompile = async (
   const {
     usedBackgrounds,
     backgroundLookup,
-    usedTilesets,
+    usedTilesets: usedBackgroundTilesets,
     usedTilemaps,
     usedTilemapAttrs,
   } = await precompileBackgrounds(
@@ -1153,6 +1214,15 @@ const precompile = async (
     cgbOnly,
     projectRoot,
     tmpPath,
+    { warnings }
+  );
+
+  progress(EVENT_MSG_PRE_TILESETS);
+  const { usedTilesets } = await precompileTilesets(
+    projectData.tilesets,
+    projectData.scenes,
+    customEventsLookup,
+    projectRoot,
     { warnings }
   );
 
@@ -1166,14 +1236,18 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites, statesOrder, stateReferences } = await precompileSprites(
+  const {
+    usedSprites,
+    usedTilesets: usedSpriteTilesets,
+    statesOrder,
+    stateReferences,
+  } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
     cgbOnly,
-    projectRoot,
-    usedTilesets
+    projectRoot
   );
 
   progress(EVENT_MSG_PRE_AVATARS);
@@ -1249,7 +1323,11 @@ const precompile = async (
     usedVariables,
     usedBackgrounds,
     backgroundLookup,
-    usedTilesets,
+    usedTilesets: [
+      ...usedBackgroundTilesets,
+      ...usedSpriteTilesets,
+      ...usedTilesets,
+    ],
     usedTilemaps,
     usedTilemapAttrs,
     usedSprites,
