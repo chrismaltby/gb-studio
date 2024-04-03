@@ -45,6 +45,55 @@ interface SpriteTileData {
   props: number;
 }
 
+/**
+ * Allocates a sprite tile for to default DMG location.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
+  tileIndex
+) => {
+  return {
+    tileIndex,
+    inVRAM2: false,
+  };
+};
+
+/**
+ * Allocates a sprite tile for color-only sprites and adjusts the tile index based on VRAM bank allocation.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
+  tileIndex,
+  numTiles
+) => {
+  const bank1NumTiles = Math.ceil(numTiles / 4) * 2;
+  const inVRAM2 = tileIndex >= bank1NumTiles;
+  return {
+    tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
+    inVRAM2: tileIndex >= bank1NumTiles,
+  };
+};
+
+/**
+ * Dummy sprite tile allocation strategy for testing purposes only allocates all sprite tiles to VRAM bank 2.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
+  return {
+    tileIndex,
+    inVRAM2: true,
+  };
+};
+
 const makeProps = (
   objPalette: ObjPalette,
   paletteIndex: number,
@@ -65,10 +114,14 @@ const makeProps = (
 
 export const compileSprite = async (
   spriteSheet: SpriteSheetData,
-  projectRoot: string,
-  tileAllocationStrategy: SpriteTileAllocationStrategy
+  cgbOnly: boolean,
+  projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
+
+  const tileAllocationStrategy = cgbOnly
+    ? spriteTileAllocationColorOnly
+    : spriteTileAllocationDefault;
 
   const metasprites = spriteSheet.states
     .map((state) => state.animations)
@@ -203,8 +256,8 @@ export const compileSprite = async (
 
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
-  projectRoot: string,
-  tileAllocationStrategy: SpriteTileAllocationStrategy
+  cgbOnly: boolean,
+  projectRoot: string
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
   statesOrder: string[];
@@ -213,8 +266,7 @@ const compileSprites = async (
   const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
-      (spriteSheet) => () =>
-        compileSprite(spriteSheet, projectRoot, tileAllocationStrategy)
+      (spriteSheet) => () => compileSprite(spriteSheet, cgbOnly, projectRoot)
     )
   );
   const stateNames = spritesData

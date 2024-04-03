@@ -14,7 +14,7 @@ import {
   EVENT_PLAYER_SET_SPRITE,
   EVENT_ACTOR_SET_SPRITE,
 } from "consts";
-import compileSprites, { SpriteTileAllocationStrategy } from "./compileSprites";
+import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileEmotes from "./compileEmotes";
 import compileFonts from "./compileFonts";
@@ -116,55 +116,6 @@ import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
-
-/**
- * Allocates a sprite tile for to default DMG location.
- *
- * @param {number} tileIndex - The index of the sprite tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
- * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
- */
-export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
-  tileIndex
-) => {
-  return {
-    tileIndex,
-    inVRAM2: false,
-  };
-};
-
-/**
- * Allocates a sprite tile for color-only sprites and adjusts the tile index based on VRAM bank allocation.
- *
- * @param {number} tileIndex - The index of the sprite tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
- * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
- */
-export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
-  tileIndex,
-  numTiles
-) => {
-  const bank1NumTiles = Math.ceil(numTiles / 4) * 2;
-  const inVRAM2 = tileIndex >= bank1NumTiles;
-  return {
-    tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
-    inVRAM2: tileIndex >= bank1NumTiles,
-  };
-};
-
-/**
- * Dummy sprite tile allocation strategy for testing purposes only allocates all sprite tiles to VRAM bank 2.
- *
- * @param {number} tileIndex - The index of the sprite tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
- * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
- */
-export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
-  return {
-    tileIndex,
-    inVRAM2: true,
-  };
-};
 
 type TilemapData = {
   symbol: string;
@@ -652,14 +603,10 @@ export const precompileSprites = async (
     }
   }
 
-  const tileAllocationStrategy = cgbOnly
-    ? spriteTileAllocationColorOnly
-    : spriteTileAllocationDefault;
-
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     usedSprites,
-    projectRoot,
-    tileAllocationStrategy
+    cgbOnly,
+    projectRoot
   );
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
