@@ -84,6 +84,7 @@ import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
+import { loadTilesetData } from "lib/project/loadTilesetData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
@@ -383,6 +384,13 @@ const createProjectWindow = async () => {
       }
       sendToProjectWindow("watch:emote:changed", filename, data);
     },
+    onChangedTileset: async (filename: string) => {
+      const data = await loadTilesetData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:tileset:changed", filename, data);
+    },
     onRemoveSprite: async (filename: string) => {
       const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
       sendToProjectWindow("watch:sprite:removed", file, plugin);
@@ -417,6 +425,14 @@ const createProjectWindow = async () => {
     onRemoveEmote: async (filename: string) => {
       const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
       sendToProjectWindow("watch:emote:removed", file, plugin);
+    },
+    onRemoveTileset: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(
+        filename,
+        projectRoot,
+        "tilesets"
+      );
+      sendToProjectWindow("watch:tileset:removed", file, plugin);
     },
     onChangedEngineSchema: async (_filename: string) => {
       const fields = await loadEngineFields(projectRoot);

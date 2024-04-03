@@ -407,6 +407,7 @@ const APISetup = {
       font: createWatchSubscribeAPI<FontAssetData>("watch:font"),
       avatar: createWatchSubscribeAPI<AvatarAssetData>("watch:avatar"),
       emote: createWatchSubscribeAPI<EmoteAssetData>("watch:emote"),
+      tileset: createWatchSubscribeAPI<EmoteAssetData>("watch:tileset"),
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<

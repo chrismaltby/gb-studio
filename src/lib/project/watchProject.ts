@@ -14,6 +14,7 @@ const watchProject = (
     onChangedFont: WatchCallback;
     onChangedAvatar: WatchCallback;
     onChangedEmote: WatchCallback;
+    onChangedTileset: WatchCallback;
     onRemoveSprite: WatchCallback;
     onRemoveBackground: WatchCallback;
     onRemoveUI: WatchCallback;
@@ -22,6 +23,7 @@ const watchProject = (
     onRemoveFont: WatchCallback;
     onRemoveAvatar: WatchCallback;
     onRemoveEmote: WatchCallback;
+    onRemoveTileset: WatchCallback;
     onChangedEngineSchema: WatchCallback;
     onChangedEventPlugin: WatchCallback;
   }
@@ -34,6 +36,7 @@ const watchProject = (
   const fontsRoot = `${projectRoot}/assets/fonts`;
   const avatarsRoot = `${projectRoot}/assets/avatars`;
   const emotesRoot = `${projectRoot}/assets/emotes`;
+  const tilesetsRoot = `${projectRoot}/assets/tilesets`;
   const uiRoot = `${projectRoot}/assets/ui`;
   const sgbRoot = `${projectRoot}/assets/sgb`;
   const pluginsRoot = `${projectRoot}/plugins`;
@@ -143,6 +146,16 @@ const watchProject = (
     .on("change", callbacks.onChangedEmote)
     .on("unlink", callbacks.onRemoveEmote);
 
+  const tilesetsWatcher = chokidar
+    .watch(`${tilesetsRoot}/**/*.{png,PNG}`, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+    })
+    .on("add", callbacks.onChangedTileset)
+    .on("change", callbacks.onChangedTileset)
+    .on("unlink", callbacks.onRemoveTileset);
+
   const engineSchemaWatcher = chokidar
     .watch(engineSchema, {
       ignoreInitial: true,
@@ -185,6 +198,8 @@ const watchProject = (
         callbacks.onChangedAvatar(filename);
       } else if (subfolder === "emotes") {
         callbacks.onChangedEmote(filename);
+      } else if (subfolder === "tilesets") {
+        callbacks.onChangedTileset(filename);
       } else if (subfolder === "sounds") {
         callbacks.onChangedSound(filename);
       }
@@ -203,6 +218,8 @@ const watchProject = (
         callbacks.onChangedAvatar(filename);
       } else if (subfolder === "emotes") {
         callbacks.onChangedEmote(filename);
+      } else if (subfolder === "tilesets") {
+        callbacks.onChangedTileset(filename);
       } else if (subfolder === "sounds") {
         callbacks.onChangedSound(filename);
       }
@@ -221,6 +238,8 @@ const watchProject = (
         callbacks.onRemoveAvatar(filename);
       } else if (subfolder === "emotes") {
         callbacks.onRemoveEmote(filename);
+      } else if (subfolder === "tilesets") {
+        callbacks.onRemoveTileset(filename);
       } else if (subfolder === "sounds") {
         callbacks.onRemoveSound(filename);
       }
@@ -236,6 +255,7 @@ const watchProject = (
     fontsWatcher.close();
     avatarsWatcher.close();
     emotesWatcher.close();
+    tilesetsWatcher.close();
     engineSchemaWatcher.close();
     pluginEventsWatcher.close();
     pluginAssetsWatcher.close();

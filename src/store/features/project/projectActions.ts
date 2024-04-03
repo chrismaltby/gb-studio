@@ -9,6 +9,7 @@ import {
   AvatarData,
   EmoteData,
   SoundData,
+  TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type { RootState } from "store/configureStore";
@@ -103,6 +104,14 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           inode: undefined,
           _v: undefined,
         } as unknown as EmoteData)
+    ),
+    tilesets: data.tilesets.map(
+      (tileset) =>
+        ({
+          ...tileset,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as TilesetData)
     ),
   };
 };

@@ -225,6 +225,16 @@ API.events.watch.emote.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeEmote({ filename, plugin }));
 });
 
+// Watch Tilesets
+
+API.events.watch.tileset.changed.subscribe((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadTileset({ data }));
+});
+
+API.events.watch.tileset.removed.subscribe((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeTileset({ filename, plugin }));
+});
+
 // Watch UI
 
 API.events.watch.ui.changed.subscribe(() => {
