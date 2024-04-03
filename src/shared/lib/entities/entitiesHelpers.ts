@@ -410,6 +410,7 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.backgrounds),
     ...extractEntitySymbols(state.spriteSheets),
     ...extractEntitySymbols(state.emotes),
+    ...extractEntitySymbols(state.tilesets),
     ...extractEntitySymbols(state.fonts),
     ...extractEntitySymbols(state.variables),
     ...extractEntitySymbols(state.customEvents),
@@ -447,6 +448,7 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.backgrounds, symbols);
   ensureEntitySymbolsUnique(state.spriteSheets, symbols);
   ensureEntitySymbolsUnique(state.emotes, symbols);
+  ensureEntitySymbolsUnique(state.tilesets, symbols);
   ensureEntitySymbolsUnique(state.fonts, symbols);
   ensureEntitySymbolsUnique(state.variables, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);

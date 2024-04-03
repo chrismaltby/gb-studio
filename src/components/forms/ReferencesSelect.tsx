@@ -14,6 +14,7 @@ import {
   sceneSelectors,
   soundSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import { Button } from "ui/buttons/Button";
@@ -44,6 +45,7 @@ export type ReferenceType =
   | "music"
   | "sound"
   | "emote"
+  | "tileset"
   | "script"
   | "scene"
   | "variable";
@@ -167,6 +169,7 @@ export const ReferencesSelect = ({
   const fontRefs = value.filter((ref) => ref.type === "font");
   const sceneRefs = value.filter((ref) => ref.type === "scene");
   const emoteRefs = value.filter((ref) => ref.type === "emote");
+  const tilesetRefs = value.filter((ref) => ref.type === "tileset");
 
   return (
     <div>
@@ -344,6 +347,26 @@ export const ReferencesSelect = ({
               copyTransform={addBankRef}
               onRemove={onRemove}
               extraSymbols={(symbol) => [tilesetSymbol(symbol)]}
+            />
+          ))}
+          {tilesetRefs.length > 0 && (
+            <ReferenceSection>{l10n("FIELD_TILESETS")}</ReferenceSection>
+          )}
+          {tilesetRefs.map((ref) => (
+            <AssetReference
+              key={ref.id}
+              id={ref.id}
+              selector={(state) => tilesetSelectors.selectById(state, ref.id)}
+              onRename={(symbol) => {
+                dispatch(
+                  entitiesActions.setTilesetSymbol({
+                    tilesetId: ref.id,
+                    symbol,
+                  })
+                );
+              }}
+              copyTransform={addBankRef}
+              onRemove={onRemove}
             />
           ))}
           {variableRefs.length > 0 && (

@@ -745,6 +745,8 @@
   "FIELD_SUPPORTED_PLATFORMS": "Supported Platforms",
   "FIELD_MONOCHROME_ONLY": "Monochrome only",
   "FIELD_SGB_UNAVAILABLE": "Super GB Mode is not supported for 'Color Only' games",
+  "FIELD_TILESETS": "Tilesets",
+  "FIELD_TILESET": "Tileset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

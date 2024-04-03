@@ -585,6 +585,19 @@ const removeEmote: CaseReducer<
  * Tileset
  */
 
+const setTilesetSymbol: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ tilesetId: string; symbol: string }>
+> = (state, action) => {
+  updateEntitySymbol(
+    state,
+    state.tilesets,
+    tilesetsAdapter,
+    action.payload.tilesetId,
+    action.payload.symbol
+  );
+};
+
 const loadTileset: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3221,6 +3234,12 @@ const entitiesSlice = createSlice({
     setEmoteSymbol,
 
     /**************************************************************************
+     * Tileset
+     */
+
+    setTilesetSymbol,
+
+    /**************************************************************************
      * Font
      */
 
@@ -3417,6 +3436,9 @@ export const avatarSelectors = avatarsAdapter.getSelectors(
 );
 export const emoteSelectors = emotesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.emotes
+);
+export const tilesetSelectors = tilesetsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.tilesets
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables

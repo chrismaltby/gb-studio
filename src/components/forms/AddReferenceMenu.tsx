@@ -21,6 +21,7 @@ import {
   sceneSelectors,
   soundSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import {
@@ -32,6 +33,7 @@ import {
   SceneNormalized,
   Sound,
   SpriteSheet,
+  Tileset,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
@@ -136,6 +138,14 @@ const emoteToOption = (emote: Emote): EventOption => {
     label: emote.name,
     value: emote.id,
     referenceType: "emote",
+  };
+};
+
+const tilesetToOption = (tileset: Tileset): EventOption => {
+  return {
+    label: tileset.name,
+    value: tileset.id,
+    referenceType: "tileset",
   };
 };
 
@@ -340,6 +350,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     variableSelectors.selectEntities(state)
   );
   const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
+  const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
@@ -360,7 +371,6 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         label: l10n("FIELD_EMOTES"),
         options: emotes.map(emoteToOption).sort(sortAlphabeticallyByLabel),
       },
-
       {
         label: l10n("FIELD_FONTS"),
         options: fonts.map(fontToOption).sort(sortAlphabeticallyByLabel),
@@ -395,6 +405,10 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         options: sprites.map(spriteToOption).sort(sortAlphabeticallyByLabel),
       },
       {
+        label: l10n("FIELD_TILESETS"),
+        options: tilesets.map(tilesetToOption).sort(sortAlphabeticallyByLabel),
+      },
+      {
         label: l10n("FIELD_VARIABLES"),
         options: allVariables
           .map((id: string) => ({
@@ -421,6 +435,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     scenes,
     customEvents,
     sounds,
+    tilesets,
   ]);
 
   const updateOptions = useCallback(() => {
