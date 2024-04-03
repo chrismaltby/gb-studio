@@ -17,6 +17,13 @@ const S_FLIPX = 0x20;
 const S_FLIPY = 0x40;
 const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
+const S_VRAM2 = 0x8;
+
+export type SpriteTileAllocationStrategy = (
+  tileIndex: number,
+  numTiles: number,
+  sprite: SpriteSheetData
+) => { tileIndex: number; inVRAM2: boolean };
 
 interface AnimationOffset {
   start: number;
@@ -24,7 +31,7 @@ interface AnimationOffset {
 }
 
 export type PrecompiledSpriteSheetData = SpriteSheetData & {
-  data: number[];
+  vramData: [number[], number[]];
   tiles: IndexedImage[];
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
@@ -43,20 +50,23 @@ const makeProps = (
   paletteIndex: number,
   flipX: boolean,
   flipY: boolean,
-  priority: boolean
+  priority: boolean,
+  inVRAM2: boolean
 ): number => {
   return (
     (objPalette === "OBP1" ? S_PALETTE : 0) +
     (flipX ? S_FLIPX : 0) +
     (flipY ? S_FLIPY : 0) +
     (priority ? S_PRIORITY : 0) +
-    (paletteIndex & S_GBC_PALETTE_MASK)
+    (paletteIndex & S_GBC_PALETTE_MASK) +
+    (inVRAM2 ? S_VRAM2 : 0)
   );
 };
 
 export const compileSprite = async (
   spriteSheet: SpriteSheetData,
-  projectRoot: string
+  projectRoot: string,
+  tileAllocationStrategy: SpriteTileAllocationStrategy
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
 
@@ -93,9 +103,14 @@ export const compileSprite = async (
                   if (!optimisedTile) {
                     return null;
                   }
+                  const { tileIndex, inVRAM2 } = tileAllocationStrategy(
+                    optimisedTile.tile,
+                    tiles.length,
+                    spriteSheet
+                  );
                   if (flip) {
                     const data: SpriteTileData = {
-                      tile: optimisedTile.tile,
+                      tile: tileIndex,
                       x: 8 - tile.x - currentX,
                       y: -tile.y - currentY,
                       props: makeProps(
@@ -103,7 +118,8 @@ export const compileSprite = async (
                         tile.paletteIndex,
                         !optimisedTile.flipX,
                         optimisedTile.flipY,
-                        tile.priority
+                        tile.priority,
+                        inVRAM2
                       ),
                     };
                     currentX = 8 - tile.x;
@@ -111,7 +127,7 @@ export const compileSprite = async (
                     return data;
                   }
                   const data: SpriteTileData = {
-                    tile: optimisedTile.tile,
+                    tile: tileIndex,
                     x: tile.x - currentX,
                     y: -tile.y - currentY,
                     props: makeProps(
@@ -119,7 +135,8 @@ export const compileSprite = async (
                       tile.paletteIndex,
                       optimisedTile.flipX,
                       optimisedTile.flipY,
-                      tile.priority
+                      tile.priority,
+                      inVRAM2
                     ),
                   };
                   currentX = tile.x;
@@ -164,15 +181,17 @@ export const compileSprite = async (
     };
   });
 
-  const data = Array.from(
-    tiles
-      .map(indexedImageTo2bppSpriteData)
-      .reduce((a, b) => [...a, ...Array.from(b)], [] as number[])
-  );
+  const vramData: [number[], number[]] = [[], []];
+
+  // Split tiles into VRAM banks based on allocation strategy
+  tiles.map(indexedImageTo2bppSpriteData).forEach((tile, i) => {
+    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length, spriteSheet);
+    vramData[inVRAM2 ? 1 : 0].push(...tile);
+  });
 
   const precompiled: PrecompiledSpriteSheetData = {
     ...spriteSheet,
-    data,
+    vramData,
     tiles,
     metasprites: uniqFrames,
     animationOffsets,
@@ -184,7 +203,8 @@ export const compileSprite = async (
 
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
-  projectRoot: string
+  projectRoot: string,
+  tileAllocationStrategy: SpriteTileAllocationStrategy
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
   statesOrder: string[];
@@ -193,7 +213,8 @@ const compileSprites = async (
   const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
-      (spriteSheet) => () => compileSprite(spriteSheet, projectRoot)
+      (spriteSheet) => () =>
+        compileSprite(spriteSheet, projectRoot, tileAllocationStrategy)
     )
   );
   const stateNames = spritesData

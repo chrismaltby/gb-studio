@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { FLAG_VRAM_BANK_1, SCREEN_WIDTH } from "consts";
+import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
   Scene,
@@ -789,7 +789,6 @@ export const compileTilesetHeader = (tileset: PrecompiledTileData) =>
 export const compileSpriteSheet = (
   spriteSheet: PrecompiledSprite,
   spriteSheetIndex: number,
-  useSecondBank: boolean,
   {
     statesOrder,
     stateReferences,
@@ -800,13 +799,12 @@ export const compileSpriteSheet = (
     null,
     stateNames.map((state) => statesOrder.indexOf(state))
   );
-  const bank1TileSize = Math.ceil(spriteSheet.data.length / 64) * 2;
 
   return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
 
 #include "gbs_types.h"
-#include "data/${spriteSheet.tileset.symbol}.h"
+${spriteSheet.tileset ? `#include "data/${spriteSheet.tileset?.symbol}.h"` : ""}
 ${
   spriteSheet.cgbTileset
     ? `#include "data/${spriteSheet.cgbTileset?.symbol}.h"`
@@ -831,13 +829,7 @@ ${spriteSheet.metasprites
     }_metasprite_${metaspriteIndex}[]  = {
     ${metasprite
       .map((tile) => {
-        let tileIndex = tile.tile;
-        let tileAttr = tile.props;
-        if (useSecondBank && tileIndex >= bank1TileSize) {
-          tileIndex -= bank1TileSize;
-          tileAttr |= FLAG_VRAM_BANK_1;
-        }
-        return `{ ${tile.y}, ${tile.x}, ${tileIndex}, ${tileAttr} }`;
+        return `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`;
       })
       .join(", ")}${metasprite.length > 0 ? ",\n    " : ""}{metasprite_end}
 };`;
@@ -875,7 +867,9 @@ ${toStructData(
     animations: `${spriteSheet.symbol}_animations`,
     animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
-    tileset: toFarPtr(spriteSheet.tileset.symbol),
+    tileset: spriteSheet.tileset
+      ? toFarPtr(spriteSheet.tileset.symbol)
+      : "{ NULL, NULL }",
     cgb_tileset: spriteSheet.cgbTileset
       ? toFarPtr(spriteSheet.cgbTileset.symbol)
       : "{ NULL, NULL }",

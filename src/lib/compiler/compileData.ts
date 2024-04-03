@@ -15,7 +15,7 @@ import {
   EVENT_ACTOR_SET_SPRITE,
   FLAG_VRAM_BANK_1,
 } from "consts";
-import compileSprites from "./compileSprites";
+import compileSprites, { SpriteTileAllocationStrategy } from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileEmotes from "./compileEmotes";
 import compileFonts from "./compileFonts";
@@ -117,6 +117,55 @@ import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
+
+/**
+ * Allocates a sprite tile for to default DMG location.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
+  tileIndex
+) => {
+  return {
+    tileIndex,
+    inVRAM2: false,
+  };
+};
+
+/**
+ * Allocates a sprite tile for color-only sprites and adjusts the tile index based on VRAM bank allocation.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
+  tileIndex,
+  numTiles
+) => {
+  const bank1NumTiles = Math.ceil(numTiles / 4) * 2;
+  const inVRAM2 = tileIndex >= bank1NumTiles;
+  return {
+    tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
+    inVRAM2: tileIndex >= bank1NumTiles,
+  };
+};
+
+/**
+ * Dummy sprite tile allocation strategy for testing purposes only allocates all sprite tiles to VRAM bank 2.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
+  return {
+    tileIndex,
+    inVRAM2: true,
+  };
+};
 
 type TilemapData = {
   symbol: string;
@@ -635,92 +684,44 @@ export const precompileSprites = async (
     }
   }
 
+  const tileAllocationStrategy = cgbOnly
+    ? spriteTileAllocationColorOnly
+    : spriteTileAllocationDefault;
+
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     usedSprites,
-    projectRoot
+    projectRoot,
+    tileAllocationStrategy
   );
-
-  // Build tilemap cache
-  const usedTilesetCache: Record<string, number> = {};
-  usedTilesets.forEach((tileset, tilesetIndex) => {
-    usedTilesetCache[JSON.stringify(tileset)] = tilesetIndex;
-  });
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
     // Determine tileset
-    const spriteTileset = sprite.data;
-    if (cgbOnly) {
-      const bank1Size = Math.ceil(sprite.data.length / 64) * 32;
-      const bank1Tileset = spriteTileset.slice(0, bank1Size);
-      const bank2Tileset = spriteTileset.slice(bank1Size, spriteTileset.length);
+    let tileset1Index = -1;
+    let tileset2Index = -1;
 
-      // VRAM Bank1 Tileset
-      const tileset1Key = JSON.stringify(bank1Tileset);
-      let tileset1Index = 0;
-      if (usedTilesetCache[tileset1Key] === undefined) {
-        // New tileset
-        tileset1Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `ts_${tileset1Index}`,
-          data: bank1Tileset,
-        });
-        usedTilesetCache[tileset1Key] = tileset1Index;
-      } else {
-        // Already used tileset
-        tileset1Index = usedTilesetCache[tileset1Key];
-      }
-
-      // VRAM Bank2 Tileset
-      const tileset2Key = JSON.stringify(bank2Tileset);
-      let tileset2Index = 0;
-      if (usedTilesetCache[tileset2Key] === undefined) {
-        // New tileset
-        tileset2Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `ts_${tileset2Index}`,
-          data: bank2Tileset,
-        });
-        usedTilesetCache[tileset2Key] = tileset2Index;
-      } else {
-        // Already used tileset
-        tileset2Index = usedTilesetCache[tileset2Key];
-      }
-
-      const tileset1 = usedTilesets[tileset1Index];
-      tileset1.symbol = `${sprite.symbol}_bank1_tileset`;
-
-      const tileset2 = usedTilesets[tileset2Index];
-      tileset2.symbol = `${sprite.symbol}_bank2_tileset`;
-
-      return {
-        ...sprite,
-        tileset: tileset1,
-        cgbTileset: tileset2,
-      };
-    } else {
-      const tilesetKey = JSON.stringify(spriteTileset);
-      let tilesetIndex = 0;
-      if (usedTilesetCache[tilesetKey] === undefined) {
-        // New tileset
-        tilesetIndex = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `ts_${tilesetIndex}`,
-          data: spriteTileset,
-        });
-        usedTilesetCache[tilesetKey] = tilesetIndex;
-      } else {
-        // Already used tileset
-        tilesetIndex = usedTilesetCache[tilesetKey];
-      }
-
-      const tileset = usedTilesets[tilesetIndex];
-      tileset.symbol = `${sprite.symbol}_tileset`;
-
-      return {
-        ...sprite,
-        tileset,
-      };
+    // VRAM Bank 1
+    if (sprite.vramData[0].length > 0) {
+      tileset1Index = usedTilesets.length;
+      usedTilesets.push({
+        symbol: `${sprite.symbol}_tileset`,
+        data: sprite.vramData[0],
+      });
     }
+
+    // VRAM Bank 2
+    if (sprite.vramData[1].length > 0) {
+      tileset2Index = usedTilesets.length;
+      usedTilesets.push({
+        symbol: `${sprite.symbol}_bank2_tileset`,
+        data: sprite.vramData[1],
+      });
+    }
+
+    return {
+      ...sprite,
+      tileset: usedTilesets[tileset1Index],
+      cgbTileset: usedTilesets[tileset2Index],
+    };
   });
 
   return {
@@ -1856,15 +1857,10 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   // Add sprite data
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`${sprite.symbol}.c`] = compileSpriteSheet(
-      sprite,
-      spriteIndex,
-      isCGBOnly,
-      {
-        statesOrder: precompiled.statesOrder,
-        stateReferences: precompiled.stateReferences,
-      }
-    );
+    output[`${sprite.symbol}.c`] = compileSpriteSheet(sprite, spriteIndex, {
+      statesOrder: precompiled.statesOrder,
+      stateReferences: precompiled.stateReferences,
+    });
     output[`${sprite.symbol}.h`] = compileSpriteSheetHeader(sprite);
   });
 

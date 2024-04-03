@@ -43,7 +43,9 @@ import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
 import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
-import compileData from "lib/compiler/compileData";
+import compileData, {
+  spriteTileAllocationDefault,
+} from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import type {
   Background,
@@ -1461,7 +1463,7 @@ ipcMain.handle(
     const filename = assetFilename(projectRoot, "sprites", spriteData);
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    return compileSprite(spriteData, projectRoot);
+    return compileSprite(spriteData, projectRoot, spriteTileAllocationDefault);
   }
 );
 
