@@ -71,7 +71,7 @@ export const imageTileAllocationColorOnly: ImageTileAllocationStrategy = (
   // After that split evenly between bank 1 and 2
   return {
     tileIndex: 128 + Math.floor((tileIndex - 256) / 2),
-    inVRAM2: tileIndex % 2 === 0,
+    inVRAM2: tileIndex % 2 !== 0,
   };
 };
 

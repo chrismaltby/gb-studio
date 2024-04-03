@@ -2,7 +2,7 @@ import compile, {
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
-import { compileSceneProjectiles } from "../../../src/lib/compiler/compileData2";
+import { compileSceneProjectiles } from "../../../src/lib/compiler/generateGBVMData";
 import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 import { getTestScriptHandlers } from "../../getTestScriptHandlers";
