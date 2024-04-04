@@ -63,17 +63,15 @@ const compile = (input, helpers) => {
   const {
     replaceTileXY,
     replaceTileXYVariable,
-    variableFromUnion,
-    temporaryEntityVariable,
+    localVariableFromUnion,
+    markLocalsUsed,
   } = helpers;
   if (input.tileIndex.type === "number") {
     replaceTileXY(input.x, input.y, input.tilesetId, input.tileIndex.value);
   } else {
-    const indexVar = variableFromUnion(
-      input.tileIndex,
-      temporaryEntityVariable(0)
-    );
+    const indexVar = localVariableFromUnion(input.tileIndex);
     replaceTileXYVariable(input.x, input.y, input.tilesetId, indexVar);
+    markLocalsUsed(indexVar);
   }
 };
 

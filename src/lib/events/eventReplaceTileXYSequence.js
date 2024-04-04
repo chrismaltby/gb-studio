@@ -88,23 +88,16 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    replaceTileXY,
     replaceTileXYVariable,
-    variableFromUnion,
-    temporaryEntityVariable,
+    localVariableFromUnion,
     ifVariableCompare,
     variableInc,
     variableSetToUnionValue,
+    markLocalsUsed,
   } = helpers;
 
-  const fromVar = variableFromUnion(
-    input.tileIndex,
-    temporaryEntityVariable(0)
-  );
-  const toVar = variableFromUnion(
-    input.toTileIndex,
-    temporaryEntityVariable(1)
-  );
+  const fromVar = localVariableFromUnion(input.tileIndex);
+  const toVar = localVariableFromUnion(input.toTileIndex);
 
   ifVariableCompare(input.variable, ".LT", fromVar, () => {
     variableSetToUnionValue(input.variable, input.tileIndex);
@@ -117,15 +110,7 @@ const compile = (input, helpers) => {
     variableSetToUnionValue(input.variable, input.tileIndex);
   });
 
-  //   if (input.tileIndex.type === "number") {
-  //     replaceTileXY(input.x, input.y, input.tilesetId, input.tileIndex.value);
-  //   } else {
-  //     const indexVar = variableFromUnion(
-  //       input.tileIndex,
-  //       temporaryEntityVariable(0)
-  //     );
-  //     replaceTileXYVariable(input.x, input.y, input.tilesetId, indexVar);
-  //   }
+  markLocalsUsed(fromVar, toVar);
 };
 
 module.exports = {

@@ -3678,6 +3678,10 @@ extern void __mute_mask_${symbol};
       return variable.symbol;
     }
 
+    if (typeof variable === "string" && variable.startsWith(".LOCAL")) {
+      return variable;
+    }
+
     // Set correct default variable for missing vars based on script context
     if (variable === "") {
       variable = defaultVariableForContext(this.options.context);
@@ -4022,6 +4026,24 @@ extern void __mute_mask_${symbol};
     }
     this.variableSetToUnionValue(defaultVariable, unionValue);
     return defaultVariable;
+  };
+
+  localVariableFromUnion = (unionValue: ScriptBuilderUnionValue) => {
+    if (unionValue.type === "variable") {
+      return unionValue.value;
+    }
+    const local = this._declareLocal("union_val", 1, true);
+    this.variableSetToUnionValue(this._localRef(local, 0), unionValue);
+    return local;
+  };
+
+  markLocalsUsed = (...locals: string[]) => {
+    console.log("markLocalsUsed", locals);
+    locals.forEach((local) => {
+      console.log("_markLocalUse", local);
+
+      this._markLocalUse(local);
+    });
   };
 
   variableSetToUnionValue = (
