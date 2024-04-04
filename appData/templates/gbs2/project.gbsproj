@@ -4552,32 +4552,6 @@
                                 "id": "fb3e9a6c-a491-457e-8c93-d0971516643a"
                             },
                             {
-                                "command": "EVENT_REPLACE_TILE_XY",
-                                "args": {
-                                    "x": 22,
-                                    "y": 7,
-                                    "tileIndex": {
-                                        "type": "variable",
-                                        "value": "L0"
-                                    },
-                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a"
-                                },
-                                "id": "fa5ee625-dee4-4a10-a341-608df19eedc3"
-                            },
-                            {
-                                "command": "EVENT_REPLACE_TILE_XY",
-                                "args": {
-                                    "x": 22,
-                                    "y": 8,
-                                    "tileIndex": {
-                                        "type": "variable",
-                                        "value": "L0"
-                                    },
-                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a"
-                                },
-                                "id": "b79abe77-f66a-4f47-a94e-b5443ace832b"
-                            },
-                            {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
                                     "x": 22,
