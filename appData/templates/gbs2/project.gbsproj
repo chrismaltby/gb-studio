@@ -616,11 +616,23 @@
                     "height": 4,
                     "script": [
                         {
-                            "id": "c1b86b13-894a-4bf7-8af7-32e10521f049",
-                            "command": "EVENT_ACTOR_DEACTIVATE",
+                            "command": "EVENT_IF_COLOR_SUPPORTED",
                             "args": {
-                                "actorId": "$self$"
-                            }
+                                "__collapseElse": false
+                            },
+                            "children": {
+                                "true": [],
+                                "false": [
+                                    {
+                                        "id": "c1b86b13-894a-4bf7-8af7-32e10521f049",
+                                        "command": "EVENT_ACTOR_DEACTIVATE",
+                                        "args": {
+                                            "actorId": "$self$"
+                                        }
+                                    }
+                                ]
+                            },
+                            "id": "e666b93b-4f88-4afd-8cca-3be81a90e49e"
                         },
                         {
                             "id": "45eb456d-6932-446f-bb4c-464d88d25621",
@@ -653,11 +665,23 @@
                     "height": 4,
                     "script": [
                         {
-                            "id": "f33f5e20-525b-4338-995b-f920438a118f",
-                            "command": "EVENT_ACTOR_DEACTIVATE",
+                            "command": "EVENT_IF_COLOR_SUPPORTED",
                             "args": {
-                                "actorId": "$self$"
-                            }
+                                "__collapseElse": false
+                            },
+                            "children": {
+                                "true": [],
+                                "false": [
+                                    {
+                                        "id": "b089a337-f777-40d7-b45b-a6914f994cc8",
+                                        "command": "EVENT_ACTOR_DEACTIVATE",
+                                        "args": {
+                                            "actorId": "$self$"
+                                        }
+                                    }
+                                ]
+                            },
+                            "id": "6e78543f-55c2-4617-819f-7cb637f330d0"
                         },
                         {
                             "id": "6e1a0642-6f10-47ab-acf3-1f294b08fb61",
@@ -56139,8 +56163,8 @@
                 0,
                 0,
                 3,
-                4,
-                4,
+                132,
+                132,
                 0,
                 0,
                 0,
@@ -56195,8 +56219,8 @@
                 0,
                 0,
                 3,
-                4,
-                4,
+                132,
+                132,
                 0,
                 0,
                 0,
@@ -56251,8 +56275,8 @@
                 0,
                 0,
                 3,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
@@ -56307,8 +56331,8 @@
                 1,
                 0,
                 2,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
@@ -56363,8 +56387,8 @@
                 4,
                 4,
                 4,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
@@ -56419,8 +56443,8 @@
                 4,
                 4,
                 4,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
@@ -56475,8 +56499,8 @@
                 4,
                 4,
                 4,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
@@ -56531,8 +56555,8 @@
                 4,
                 4,
                 4,
-                3,
-                3,
+                131,
+                131,
                 0,
                 0,
                 0,
