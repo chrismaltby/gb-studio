@@ -747,6 +747,9 @@
   "FIELD_SGB_UNAVAILABLE": "Super GB Mode is not supported for 'Color Only' games",
   "FIELD_TILESETS": "Tilesets",
   "FIELD_TILESET": "Tileset",
+  "FIELD_TILE": "Tile",
+  "FIELD_TILESET_DESC": "The tileset to fetch tiles from",
+  "FIELD_TILE_DESC": "The tile offset inside tileset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1078,6 +1081,9 @@
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
   "EVENT_IF_CURRENT_SCENE_IS": "If Current Scene Is",
   "EVENT_IF_CURRENT_SCENE_IS_LABEL": "If Current Scene Is {scene}",
+  "EVENT_REPLACE_TILE_XY": "Replace Tile At Position",
+  "EVENT_REPLACE_TILE_XY_DESC": "Replace a tile at a specified coordinate with another from a tileset.",
+  "EVENT_REPLACE_TILE_XY_LABEL": "Replace Tile At {{x},{y}}",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -1323,11 +1323,9 @@ const precompile = async (
     usedVariables,
     usedBackgrounds,
     backgroundLookup,
-    usedTilesets: [
-      ...usedBackgroundTilesets,
-      ...usedSpriteTilesets,
-      ...usedTilesets,
-    ],
+    usedTilesets,
+    usedBackgroundTilesets,
+    usedSpriteTilesets,
     usedTilemaps,
     usedTilemapAttrs,
     usedSprites,
@@ -1555,6 +1553,7 @@ const compile = async (
           stateReferences: precompiled.stateReferences,
           avatars: precompiled.usedAvatars,
           emotes: precompiled.usedEmotes,
+          tilesets: precompiled.usedTilesets,
           backgrounds: precompiled.usedBackgrounds,
           customEvents: projectData.customEvents,
           palettes: projectData.palettes,
@@ -1812,6 +1811,16 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   });
 
   precompiled.usedTilesets.forEach((tileset) => {
+    output[`${tileset.symbol}.c`] = compileTileset(tileset);
+    output[`${tileset.symbol}.h`] = compileTilesetHeader(tileset);
+  });
+
+  precompiled.usedBackgroundTilesets.forEach((tileset) => {
+    output[`${tileset.symbol}.c`] = compileTileset(tileset);
+    output[`${tileset.symbol}.h`] = compileTilesetHeader(tileset);
+  });
+
+  precompiled.usedSpriteTilesets.forEach((tileset) => {
     output[`${tileset.symbol}.c`] = compileTileset(tileset);
     output[`${tileset.symbol}.h`] = compileTilesetHeader(tileset);
   });

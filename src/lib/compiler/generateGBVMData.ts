@@ -51,6 +51,12 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
+export interface PrecompiledTilesetData {
+  id: string;
+  symbol: string;
+  data: number[] | Uint8Array;
+}
+
 export interface PrecompiledTileData {
   symbol: string;
   data: number[] | Uint8Array;

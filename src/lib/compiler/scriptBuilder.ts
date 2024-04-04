@@ -28,6 +28,7 @@ import {
   PrecompiledScene,
   PrecompiledSprite,
   PrecompiledEmote,
+  PrecompiledTilesetData,
   PrecompiledBackground,
 } from "./generateGBVMData";
 import { DMG_PALETTE, defaultProjectSettings } from "consts";
@@ -126,6 +127,7 @@ export interface ScriptBuilderOptions {
   sounds: SoundData[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
+  tilesets: PrecompiledTilesetData[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
@@ -526,6 +528,7 @@ class ScriptBuilder {
       sounds: options.sounds || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
+      tilesets: options.tilesets || [],
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
@@ -1812,6 +1815,22 @@ extern void __mute_mask_${symbol};
     b4: number
   ) => {
     this._addCmd(".CGB_PAL", r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4);
+  };
+
+  _replaceTileXY = (
+    x: number,
+    y: number,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE_XY",
+      x,
+      y,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex
+    );
   };
 
   _callFar = (symbol: string, argsLen: number) => {
@@ -4114,6 +4133,51 @@ extern void __mute_mask_${symbol};
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
     this._fadeOut(true);
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Tiles
+
+  replaceTileXY = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndex: number
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    this._addComment(`Replace Tile XY`);
+    this._stackPushConst(tileIndex);
+    this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    this._stackPop(1);
+  };
+
+  replaceTileXYVariable = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndexVariable: string
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    const variableAlias = this.getVariableAlias(tileIndexVariable);
+
+    this._addComment(`Replace Tile XY`);
+    if (this._isIndirectVariable(tileIndexVariable)) {
+      this._stackPushInd(variableAlias);
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, variableAlias);
+    }
   };
 
   // --------------------------------------------------------------------------

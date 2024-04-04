@@ -15,6 +15,26 @@ const globAsync = promisify(glob);
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
+export type ScriptEventHelperDef =
+  | {
+      type: "position";
+      x: string;
+      y: string;
+      units?: string;
+    }
+  | {
+      type: "camera";
+      x: string;
+      y: string;
+      units?: string;
+    }
+  | {
+      type: "overlay";
+      x: string;
+      y: string;
+      units?: string;
+    };
+
 export interface ScriptEventDef {
   id: string;
   fields: ScriptEventFieldSchema[];
