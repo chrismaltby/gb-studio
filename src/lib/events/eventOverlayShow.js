@@ -49,4 +49,10 @@ module.exports = {
   groups,
   fields,
   compile,
+  helper: {
+    type: "overlay",
+    x: "x",
+    y: "y",
+    color: "color",
+  },
 };

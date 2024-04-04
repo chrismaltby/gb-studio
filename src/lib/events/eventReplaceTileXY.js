@@ -82,4 +82,9 @@ module.exports = {
   groups,
   fields,
   compile,
+  helper: {
+    type: "position",
+    x: "x",
+    y: "y",
+  },
 };

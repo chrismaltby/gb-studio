@@ -21,6 +21,8 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       units?: string;
+      tileWidth?: number;
+      tileHeight?: number;
     }
   | {
       type: "camera";
@@ -32,7 +34,13 @@ export type ScriptEventHelperDef =
       type: "overlay";
       x: string;
       y: string;
-      units?: string;
+      color?: string;
+    }
+  | {
+      type: "distance";
+      actorId: string;
+      distance: string;
+      operator: string;
     };
 
 export interface ScriptEventDef {
@@ -47,6 +55,7 @@ export interface ScriptEventDef {
   allowChildrenBeforeInitFade?: boolean;
   waitUntilAfterInitFade?: boolean;
   hasAutoLabel: boolean;
+  helper?: ScriptEventHelperDef;
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 

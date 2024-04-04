@@ -128,4 +128,11 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "position",
+    x: "x",
+    y: "y",
+    units: "units",
+    tileWidth: 2,
+  },
 };
