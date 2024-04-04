@@ -750,6 +750,12 @@
   "FIELD_TILE": "Tile",
   "FIELD_TILESET_DESC": "The tileset to fetch tiles from",
   "FIELD_TILE_DESC": "The tile offset inside tileset",
+  "FIELD_FROM_TILE": "From Tile",
+  "FIELD_FROM_TILE_DESC": "The starting tile offset inside tileset",
+  "FIELD_TO_TILE": "To Tile",
+  "FIELD_TO_TILE_DESC": "The ending tile offset inside tileset",
+  "FIELD_STATE_VARIABLE": "State Variable",
+  "FIELD_STATE_VARIABLE_DESC": "A variable to store the current state of this event",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1084,6 +1090,9 @@
   "EVENT_REPLACE_TILE_XY": "Replace Tile At Position",
   "EVENT_REPLACE_TILE_XY_DESC": "Replace a tile at a specified coordinate with another from a tileset.",
   "EVENT_REPLACE_TILE_XY_LABEL": "Replace Tile At {{x},{y}}",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE": "Replace Tile At Position From Sequence",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE_DESC": "Replace a tile at a specified coordinate with another from a tileset in a sequence.",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE_LABEL": "Replace Tile At {{x},{y}} From Sequence",
 
   "// 10": "Menu -----------------------------------------------------",
 
