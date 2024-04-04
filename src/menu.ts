@@ -273,7 +273,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
           },
         },
         {
-          label: l10n("MENU_BACKGROUNDS"),
+          label: l10n("MENU_IMAGES"),
           accelerator: "CommandOrControl+3",
           click: () => {
             notifyListeners("section", "backgrounds");

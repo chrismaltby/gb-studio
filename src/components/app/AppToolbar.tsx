@@ -78,7 +78,7 @@ const AppToolbar: FC = () => {
     () => ({
       world: l10n("NAV_GAME_WORLD"),
       sprites: l10n("NAV_SPRITES"),
-      backgrounds: l10n("NAV_BACKGROUNDS"),
+      backgrounds: l10n("NAV_IMAGES"),
       music: l10n("NAV_MUSIC"),
       sounds: l10n("NAV_SFX"),
       palettes: l10n("NAV_PALETTES"),

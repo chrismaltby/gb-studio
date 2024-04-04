@@ -233,6 +233,10 @@ export type Tileset = {
   name: string;
   symbol: string;
   filename: string;
+  width: number;
+  height: number;
+  imageWidth: number;
+  imageHeight: number;
   plugin?: string;
   inode: string;
   _v: number;

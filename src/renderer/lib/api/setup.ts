@@ -36,6 +36,7 @@ import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
+import { TilesetAssetData } from "lib/project/loadTilesetData";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -407,7 +408,7 @@ const APISetup = {
       font: createWatchSubscribeAPI<FontAssetData>("watch:font"),
       avatar: createWatchSubscribeAPI<AvatarAssetData>("watch:avatar"),
       emote: createWatchSubscribeAPI<EmoteAssetData>("watch:emote"),
-      tileset: createWatchSubscribeAPI<EmoteAssetData>("watch:tileset"),
+      tileset: createWatchSubscribeAPI<TilesetAssetData>("watch:tileset"),
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<

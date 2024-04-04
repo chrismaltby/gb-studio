@@ -22,6 +22,7 @@
   "NAV_DIALOGUE_REVIEW": "Dialogue Review",
   "NAV_BUILD_AND_RUN": "Build & Run",
   "NAV_SETTINGS": "Settings",
+  "NAV_IMAGES": "Images",
 
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "modified",
@@ -1116,6 +1117,7 @@
   "MENU_GAME_WORLD": "Game World",
   "MENU_SPRITES": "Sprites",
   "MENU_BACKGROUNDS": "Backgrounds",
+  "MENU_IMAGES": "Images",
   "MENU_UI_ELEMENTS": "UI Elements",
   "MENU_MUSIC": "Music",
   "MENU_SFX": "Sound Effects",
