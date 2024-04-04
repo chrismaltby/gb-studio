@@ -4038,10 +4038,7 @@ extern void __mute_mask_${symbol};
   };
 
   markLocalsUsed = (...locals: string[]) => {
-    console.log("markLocalsUsed", locals);
     locals.forEach((local) => {
-      console.log("_markLocalUse", local);
-
       this._markLocalUse(local);
     });
   };
