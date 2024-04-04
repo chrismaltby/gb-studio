@@ -41,6 +41,7 @@ const fields = [
     type: "tileset",
     label: l10n("FIELD_TILESET"),
     description: l10n("FIELD_TILESET_DESC"),
+    defaultValue: "LAST_TILESET",
   },
   {
     type: "group",
