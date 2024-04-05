@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1370240329",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1391240405",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -22,6 +22,7 @@
   "NAV_DIALOGUE_REVIEW": "Podgląd dialogów",
   "NAV_BUILD_AND_RUN": "Zbuduj i uruchom",
   "NAV_SETTINGS": "Ustawienia",
+  "NAV_IMAGES": "Obrazy",
 
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "zmodyfikowano",
@@ -745,6 +746,19 @@
   "FIELD_SUPPORTED_PLATFORMS": "Obsługiwane platformy",
   "FIELD_MONOCHROME_ONLY": "Tylko Monochromatyczne",
   "FIELD_SGB_UNAVAILABLE": "Tryb Super GB Mode nie jest obsługiwany dla gier z opcją 'Tylko kolor' ",
+  "FIELD_TILESETS": "Tilesets",
+  "FIELD_TILESET": "Tileset",
+  "FIELD_TILE": "Tifla",
+  "FIELD_TILESET_DESC": "Tileset z którego pobrane są tafle",
+  "FIELD_TILE_DESC": "Przesunięcie tafli wewnątrz tilesetu",
+  "FIELD_FROM_TILE": "Od tafli",
+  "FIELD_FROM_TILE_DESC": "Początkowe przesunięcie tafli wewnątrz tilesetu",
+  "FIELD_TO_TILE": "Do tafli",
+  "FIELD_TO_TILE_DESC": "Końcowe przesunięcie tafli wewnątrz tilesetu",
+  "FIELD_STATE_VARIABLE": "Zmienna stanu",
+  "FIELD_STATE_VARIABLE_DESC": "Zmienna przechowywująca aktualny stan tego zdarzenia",
+  "FIELD_ANIMATION_FRAMES": "Klatki animacji",
+  "FIELD_ANIMATION_FRAMES_DESC": "Liczba klatek animacji do odtwarzania w cyklu.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1076,7 +1090,13 @@
   "EVENT_LOOP_WHILE_LABEL": "Podczas ({expression})",
   "EVENT_IF_CURRENT_SCENE_IS": "Warunek aktualna scena",
   "EVENT_IF_CURRENT_SCENE_IS_LABEL": "Warunek aktualna scena to {scene}",
-
+  "EVENT_REPLACE_TILE_XY": "Zastąp taflę",
+  "EVENT_REPLACE_TILE_XY_DESC": "Zastąpienie tafli o podanych współrzędnych inną taflą z tilesetu.",
+  "EVENT_REPLACE_TILE_XY_LABEL": "Zastąp taflę {{x},{y}}",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE": "Zastąp ciąg tafli",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE_DESC": "Zastąp ciąg tafli o podanych współrzędnych, innym ciągiem tafli z tilesetu.",
+  "EVENT_REPLACE_TILE_XY_SEQUENCE_LABEL": "Zastąp ciąg tafli {{x},{y}}",
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
@@ -1099,6 +1119,7 @@
   "MENU_GAME_WORLD": "Świat gry",
   "MENU_SPRITES": "Obiekty",
   "MENU_BACKGROUNDS": "Tła",
+  "MENU_IMAGES": "Obrazy",
   "MENU_UI_ELEMENTS": "Elementy systemu",
   "MENU_MUSIC": "Muzyka",
   "MENU_SFX": "Dźwięki",
@@ -1252,9 +1273,9 @@
   "// 14": "Dialogue Review ------------------------------------------------",
 
   "DIALOGUE_REVIEW": "Przegląd dialogu",
-  "DIALOGUE_LINE": ": wierszy",
-  "DIALOGUE_LINES": ": wierszy",
-  "DIALOGUE_WORD": ": wyrazy",
+  "DIALOGUE_LINE": ": linia",
+  "DIALOGUE_LINES": ": linie",
+  "DIALOGUE_WORD": ": wyraz",
   "DIALOGUE_WORDS": ": wyrazy",
 
   "// 15": "Dialogs ------------------------------------------------------",
