@@ -1147,9 +1147,15 @@ export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<{ symbol: string }>,
   stateReferences: string[]
 ) => {
-  const variables = Object.values(variableAliasLookup).map(
+  const allVariables = Object.values(variableAliasLookup).map(
     (v) => v?.symbol
   ) as string[];
+  const tmpSorted = allVariables
+    .filter((item) => item.startsWith("TMP_"))
+    .sort();
+  const globals = allVariables.filter((item) => !item.startsWith("TMP_"));
+  const variables = [...globals, ...tmpSorted];
+
   return (
     variables
       .map((string, stringIndex) => {

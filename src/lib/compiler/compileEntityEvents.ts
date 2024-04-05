@@ -111,6 +111,8 @@ const compileEntityEvents = (
           args?.value as number,
           subInput[i]?.children?.true
         );
+      } else if (command === "INTERNAL_RESET_SCENE_TMP") {
+        scriptBuilder.insertSceneTemporaryVariablesResetPlaceholder();
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
@@ -162,6 +164,18 @@ const compileEntityEvents = (
       `Compiling failed with error "${e}". ${JSON.stringify(location)}`
     );
   }
+};
+
+export const isEmptyCompiledScript = (script: string): boolean => {
+  return (
+    script
+      .replace(/;.*/g, "") // Strip comments
+      .replace(/[\s\S]*::/, "") // Strip head
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((i) => i)
+      .join() === "VM_LOCK,VM_STOP"
+  );
 };
 
 export default compileEntityEvents;

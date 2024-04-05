@@ -1,7 +1,9 @@
 import keyBy from "lodash/keyBy";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
-import compileEntityEvents from "./compileEntityEvents";
+import compileEntityEvents, {
+  isEmptyCompiledScript,
+} from "./compileEntityEvents";
 import {
   projectTemplatesRoot,
   MAX_ACTORS,
@@ -1485,11 +1487,9 @@ const compile = async (
     filename: string;
     data: string;
   }> = {};
-  const compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }> = {};
+  const compiledSubScriptCache: Dictionary<string> = {};
   const compiledAssetsCache: Dictionary<string> = {};
+  const entityTmpVarCount: Dictionary<number> = {};
 
   const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
     (scene, sceneIndex) => {
@@ -1572,12 +1572,17 @@ const compile = async (
           additionalScripts,
           additionalOutput,
           symbols,
-          compiledCustomEventScriptCache,
+          compiledSubScriptCache,
           compiledAssetsCache,
+          entityTmpVarCount,
           branch: false,
           isFunction: false,
           debugEnabled,
         });
+
+        if (isEmptyCompiledScript(compiledScript)) {
+          return null;
+        }
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
@@ -1588,6 +1593,13 @@ const compile = async (
       const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
         // Merge start scripts for actors with scene start script
         const initScript = ([] as ScriptEvent[]).concat(
+          {
+            id: "",
+            command: "INTERNAL_RESET_SCENE_TMP",
+            args: {
+              sceneId: scene.id,
+            },
+          },
           scene.actors
             .map((actor) => {
               const actorStartScript = actor.startScript || [];
@@ -1714,7 +1726,6 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       );
 
       return {
-        start: bankSceneEvents(scene, sceneIndex),
         playerHit1: compileScript(
           combinedPlayerHitScript,
           "scene",
@@ -1788,6 +1799,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             "script"
           );
         }),
+        start: bankSceneEvents(scene, sceneIndex), // Need to compile scene start script last to make sure all scene temporary variables have been found
       };
     }
   );

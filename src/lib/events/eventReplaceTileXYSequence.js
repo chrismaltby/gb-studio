@@ -81,13 +81,6 @@ const fields = [
       },
     ],
   },
-  {
-    key: "variable",
-    label: l10n("FIELD_STATE_VARIABLE"),
-    description: l10n("FIELD_STATE_VARIABLE_DESC"),
-    type: "variable",
-    defaultValue: "LAST_VARIABLE",
-  },
 ];
 
 const compile = (input, helpers) => {
@@ -99,6 +92,7 @@ const compile = (input, helpers) => {
     variableAdd,
     variableSetToUnionValue,
     markLocalsUsed,
+    declareSceneTemporaryVariable,
     _declareLocal,
     _rpn,
     _addComment,
@@ -108,6 +102,7 @@ const compile = (input, helpers) => {
   const fromVar = localVariableFromUnion(input.tileIndex);
   const framesVar = localVariableFromUnion(input.frames);
   const toVar = _declareLocal("to_var", 1, true);
+  const counterVar = declareSceneTemporaryVariable();
 
   // Calculate max frame
   _addComment("Calculate max frame");
@@ -134,26 +129,26 @@ const compile = (input, helpers) => {
   }
   _addNL();
 
-  ifVariableCompare(input.variable, ".LT", fromVar, () => {
-    variableSetToUnionValue(input.variable, input.tileIndex);
+  ifVariableCompare(counterVar, ".LT", fromVar, () => {
+    variableSetToUnionValue(counterVar, input.tileIndex);
   });
 
   replaceTileXYVariable(
     input.x,
     input.y,
     input.tilesetId,
-    input.variable,
+    counterVar,
     input.tileSize
   );
 
   if (input.tileSize === "16px") {
-    variableAdd(input.variable, 2);
+    variableAdd(counterVar, 2);
   } else {
-    variableInc(input.variable);
+    variableInc(counterVar);
   }
 
-  ifVariableCompare(input.variable, ".GT", toVar, () => {
-    variableSetToUnionValue(input.variable, input.tileIndex);
+  ifVariableCompare(counterVar, ".GT", toVar, () => {
+    variableSetToUnionValue(counterVar, input.tileIndex);
   });
 
   markLocalsUsed(fromVar, framesVar, toVar);

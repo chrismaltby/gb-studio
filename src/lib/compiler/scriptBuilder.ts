@@ -57,6 +57,7 @@ import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
+import { checksumString } from "lib/helpers/checksum";
 
 export type ScriptOutput = string[];
 
@@ -144,11 +145,9 @@ export interface ScriptBuilderOptions {
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
-  compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }>;
+  compiledSubScriptCache: Dictionary<string>;
   debugEnabled: boolean;
+  entityTmpVarCount: Dictionary<number>;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -537,8 +536,8 @@ class ScriptBuilder {
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
-      compiledCustomEventScriptCache:
-        options.compiledCustomEventScriptCache ?? {},
+      entityTmpVarCount: options.entityTmpVarCount ?? {},
+      compiledSubScriptCache: options.compiledSubScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || defaultProjectSettings,
@@ -3415,17 +3414,12 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    const { customEvents, compiledCustomEventScriptCache } = this.options;
+    const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
     if (!customEvent) {
       console.warn("Script not found", customEventId);
       return;
-    }
-
-    const cachedResult = compiledCustomEventScriptCache[customEventId];
-    if (cachedResult) {
-      return cachedResult;
     }
 
     const argLookup: {
@@ -3575,17 +3569,15 @@ extern void __mute_mask_${symbol};
       customEvent.symbol ? customEvent.symbol : `script_custom_0`,
       false
     );
-    const result = { scriptRef: symbol, argsLen };
-    compiledCustomEventScriptCache[customEventId] = result;
 
-    this._compileSubScript("custom", script, symbol, {
+    const scriptRef = this._compileSubScript("custom", script, symbol, {
       argLookup,
       entity: customEvent,
       entityType: "customEvent",
       entityScriptKey: "script",
     });
 
-    return result;
+    return { scriptRef, argsLen };
   };
 
   returnFar = () => {
@@ -3708,7 +3700,12 @@ extern void __mute_mask_${symbol};
       return variable.symbol;
     }
 
-    if (typeof variable === "string" && variable.startsWith(".LOCAL")) {
+    if (
+      typeof variable === "string" &&
+      (variable.startsWith(".LOCAL") ||
+        variable.startsWith("VAR_") ||
+        variable.startsWith("TMP_"))
+    ) {
       return variable;
     }
 
@@ -4111,6 +4108,37 @@ extern void __mute_mask_${symbol};
   variablesReset = () => {
     this._addComment("Variables Reset");
     this._memSet(0, 0, "MAX_GLOBAL_VARS");
+  };
+
+  // --------------------------------------------------------------------------
+  // Scene Temporary Variables
+
+  declareSceneTemporaryVariable = () => {
+    const {
+      variableAliasLookup,
+      scene,
+      entityTmpVarCount,
+      entity,
+      entityType,
+      argLookup,
+    } = this.options;
+    const counter = entityTmpVarCount[scene.id] ?? 0;
+    const symbol = `TMP_S_${counter}`;
+    variableAliasLookup[symbol] = {
+      symbol,
+      name: symbol,
+      id: symbol,
+      isLocal: false,
+      entityType,
+      entityId: "",
+      sceneId: scene.id,
+    };
+    entityTmpVarCount[scene.id] = counter + 1;
+    return symbol;
+  };
+
+  insertSceneTemporaryVariablesResetPlaceholder = () => {
+    this.output.push("||RESET_SCENE_TMP_VARS||");
   };
 
   // --------------------------------------------------------------------------
@@ -5303,10 +5331,27 @@ extern void __mute_mask_${symbol};
         },
       }
     );
+
+    // Cache identical scripts to reuse symbols where possible
+    const cacheKey = checksumString(
+      compiledSubScript
+        // Strip script symbol
+        .replace(new RegExp(symbol, "g"), "SYMBOL")
+        // Strip Debug symbols
+        .replace(/^GBVM\$.*/gm, "")
+        .replace(/^.globl GBVM\$.*/gm, "")
+    );
+    const cachedSymbol = this.options.compiledSubScriptCache[cacheKey];
+    if (cachedSymbol) {
+      return cachedSymbol;
+    }
+    this.options.compiledSubScriptCache[cacheKey] = symbol;
+
     this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
     };
+
     return symbol;
   };
 
@@ -5437,7 +5482,18 @@ ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
       reserveMem > 0
         ? this._padCmd("VM_RESERVE", String(reserveMem), 8, 24) + "\n\n"
         : ""
-    }${this.output.join("\n")}
+    }${this.output.join("\n").replace(/\|\|RESET_SCENE_TMP_VARS\|\|\n/, () => {
+      const { scene, entityTmpVarCount } = this.options;
+      const tmpCount = entityTmpVarCount[scene.id] ?? 0;
+      if (tmpCount >= 1) {
+        return (
+          `        ; Reset Scene Tmp Vars\n` +
+          this._padCmd("VM_MEMSET", `TMP_S_0, 0, ${tmpCount}`, 8, 24) +
+          "\n\n"
+        );
+      }
+      return "";
+    })}
 `;
   };
 }
