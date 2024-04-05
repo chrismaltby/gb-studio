@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1389240405",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1391240405",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -757,6 +757,8 @@
   "FIELD_TO_TILE_DESC": "Końcowe przesunięcie tafli wewnątrz tilesetu",
   "FIELD_STATE_VARIABLE": "Zmienna stanu",
   "FIELD_STATE_VARIABLE_DESC": "Zmienna przechowywująca aktualny stan tego zdarzenia",
+  "FIELD_ANIMATION_FRAMES": "Klatki animacji",
+  "FIELD_ANIMATION_FRAMES_DESC": "Liczba klatek animacji do odtwarzania w cyklu.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1271,9 +1273,9 @@
   "// 14": "Dialogue Review ------------------------------------------------",
 
   "DIALOGUE_REVIEW": "Przegląd dialogu",
-  "DIALOGUE_LINE": ": wierszy",
-  "DIALOGUE_LINES": ": wierszy",
-  "DIALOGUE_WORD": ": wyrazy",
+  "DIALOGUE_LINE": ": linia",
+  "DIALOGUE_LINES": ": linie",
+  "DIALOGUE_WORD": ": wyraz",
   "DIALOGUE_WORDS": ": wyrazy",
 
   "// 15": "Dialogs ------------------------------------------------------",
