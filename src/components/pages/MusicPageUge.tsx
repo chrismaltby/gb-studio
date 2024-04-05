@@ -27,7 +27,7 @@ import l10n from "shared/lib/lang/l10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetPath } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
@@ -97,8 +97,6 @@ const MusicPageUge = () => {
 
   const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
 
-  const projectRoot = useAppSelector((state) => state.document.root);
-
   const song = useAppSelector((state) => state.trackerDocument.present.song);
   const modified = useAppSelector(
     (state) => state.trackerDocument.present.modified
@@ -112,10 +110,10 @@ const MusicPageUge = () => {
   const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
     if (selectedSong) {
-      setSelectedSongPath(assetFilename(projectRoot, "music", selectedSong));
+      setSelectedSongPath(assetPath("music", selectedSong));
       setSelectedSongType(selectedSong.type || "");
     }
-  }, [projectRoot, selectedSong]);
+  }, [selectedSong]);
 
   useEffect(() => {
     if (selectedSongPath !== "" && selectedSongType === "uge") {

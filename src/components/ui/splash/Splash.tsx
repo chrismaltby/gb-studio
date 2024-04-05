@@ -557,7 +557,7 @@ export const SplashProjectClearButton = styled.div`
 export interface SplashProjectProps {
   project: {
     name: string;
-    path: string;
+    dir: string;
   };
   onClick: () => void;
 }
@@ -636,7 +636,7 @@ export const SplashProject: FC<SplashProjectProps> = ({ project, onClick }) => (
     <img src={projectIcon} alt="" />
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
-      <SplashProjectPath>{project.path}</SplashProjectPath>
+      <SplashProjectPath>{project.dir}</SplashProjectPath>
     </SplashProjectDetails>
   </SplashProjectWrapper>
 );

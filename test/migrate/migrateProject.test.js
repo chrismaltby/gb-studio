@@ -3,7 +3,7 @@ import migrateProject, {
   LATEST_PROJECT_MINOR_VERSION,
 } from "../../src/lib/project/migrateProject";
 
-test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
+test("should migrate conditional events from 1.0.0 to latest release", () => {
   const oldProject = {
     _version: "1",
     settings: {},
@@ -44,6 +44,7 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
     _version: LATEST_PROJECT_VERSION,
     _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
+      colorMode: "mono",
       startMoveSpeed: 1,
       startAnimSpeed: 15,
       defaultBackgroundPaletteIds: [
@@ -118,7 +119,7 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
   });
 });
 
-test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
+test("should migrate conditional events from 1.2.0 to latest release", () => {
   const oldProject = {
     _version: "1.2.0",
     settings: {},
@@ -161,6 +162,7 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
     _version: LATEST_PROJECT_VERSION,
     _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
+      colorMode: "mono",
       startMoveSpeed: 1,
       startAnimSpeed: 15,
       defaultBackgroundPaletteIds: [

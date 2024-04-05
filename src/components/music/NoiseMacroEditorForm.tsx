@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
+import { ThemeContext } from "styled-components";
 import { FormRow } from "ui/form/FormLayout";
 
 interface NoiseMacroEditorFormProps {
@@ -11,6 +12,8 @@ export const NoiseMacroEditorForm = ({
   onChange,
 }: NoiseMacroEditorFormProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const themeContext = useContext(ThemeContext);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -21,9 +24,7 @@ export const NoiseMacroEditorForm = ({
     const drawHeight = canvas.height - 10;
     const ctx = canvas.getContext("2d");
 
-    const defaultColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--highlight-color");
+    const defaultColor = themeContext.colors.highlight;
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;

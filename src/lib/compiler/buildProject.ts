@@ -7,6 +7,7 @@ import copy from "lib/helpers/fsCopy";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -16,6 +17,7 @@ type BuildOptions = {
   engineFields: EngineFieldSchema[];
   scriptEventHandlers: ScriptEventHandlers;
   outputRoot: string;
+  debugEnabled?: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
@@ -30,6 +32,7 @@ const buildProject = async (
     engineFields = [],
     scriptEventHandlers,
     outputRoot = "/tmp/testing",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: BuildOptions
@@ -39,6 +42,7 @@ const buildProject = async (
     engineFields,
     scriptEventHandlers,
     tmpPath,
+    debugEnabled,
     progress,
     warnings,
   });
@@ -50,6 +54,11 @@ const buildProject = async (
     engineFields,
     outputRoot,
     compiledData,
+    progress,
+    warnings,
+  });
+  await validateEjectedBuild({
+    buildRoot: outputRoot,
     progress,
     warnings,
   });
@@ -71,9 +80,10 @@ const buildProject = async (
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
-    const colorsHead = data.settings.customColorsEnabled
-      ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`
-      : "";
+    const colorsHead =
+      data.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`
+        : "";
     const customHead = data.settings.customHead || "";
     const customControls = JSON.stringify({
       up: data.settings.customControlsUp,
@@ -102,6 +112,7 @@ const buildProject = async (
       `${outputRoot}/build/pocket/game.pocket`
     );
   }
+  return compiledData;
 };
 
 export default buildProject;

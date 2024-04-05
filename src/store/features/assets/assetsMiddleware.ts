@@ -10,6 +10,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const backgroundsLookup = backgroundSelectors.selectEntities(state);
       const background = backgroundsLookup[action.payload.backgroundId];
+      const isCGBOnly = state.project.present.settings.colorMode === "color";
 
       if (background) {
         const cachedWarnings =
@@ -17,10 +18,11 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
         if (
           !cachedWarnings ||
           cachedWarnings.timestamp < background._v ||
-          cachedWarnings.is360 !== action.payload.is360
+          cachedWarnings.is360 !== action.payload.is360 ||
+          cachedWarnings.isCGBOnly !== isCGBOnly
         ) {
           API.project
-            .getBackgroundInfo(background, action.payload.is360)
+            .getBackgroundInfo(background, action.payload.is360, isCGBOnly)
             .then((info) => {
               store.dispatch(
                 actions.setBackgroundAssetInfo({
@@ -29,6 +31,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
                   warnings: info.warnings,
                   numTiles: info.numTiles,
                   lookup: info.lookup,
+                  isCGBOnly,
                 })
               );
             });

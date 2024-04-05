@@ -7,15 +7,6 @@ import {
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
-import {
-  EVENT_ACTOR_MOVE_TO,
-  EVENT_ACTOR_SET_POSITION,
-  EVENT_CAMERA_MOVE_TO,
-  EVENT_IF_ACTOR_AT_POSITION,
-  EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
-  EVENT_OVERLAY_MOVE_TO,
-  EVENT_OVERLAY_SHOW,
-} from "consts";
 
 const TILE_SIZE = 8;
 
@@ -28,6 +19,7 @@ const EventHelperWrapper = styled.div`
   width: 100%;
   height: 100%;
   transform: translate3d(0, 0, 0);
+  z-index: 101;
 `;
 
 const CameraPos = styled.div`
@@ -37,12 +29,27 @@ const CameraPos = styled.div`
   outline: 10px solid red;
 `;
 
-const PosMarker = styled.div`
+interface PosMarkerProps {
+  tileWidth: number;
+  tileHeight: number;
+}
+
+const PosMarker = styled.div<PosMarkerProps>`
+  position: absolute;
+  width: ${(props) => props.tileWidth * 8}px;
+  height: ${(props) => props.tileHeight * 8}px;
+  outline: 3px solid red;
+  box-shadow: 0 0 1000px 1000px rgba(0, 0, 0, 0.6);
+`;
+
+const DistanceMarker = styled.div`
   position: absolute;
   width: 16px;
   height: 8px;
   background: red;
+  opacity: 0.5;
 `;
+
 const OverlayPos = styled.div`
   position: absolute;
   width: 256px;
@@ -79,16 +86,27 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const sceneId = useAppSelector((state) => state.editor.scene);
 
   const sceneEventVisible = eventId && sceneId === scene.id;
-  const event = sceneEventVisible && scriptEventsLookup[eventId];
+  const event = sceneEventVisible ? scriptEventsLookup[eventId] : undefined;
+  const scriptEventDef = useAppSelector(
+    (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+  );
 
-  if (!event) {
+  if (!event || !scriptEventDef || !scriptEventDef.helper) {
     return <></>;
   }
 
-  if (event.command === EVENT_CAMERA_MOVE_TO) {
-    const units = argValue(event.args?.units);
-    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
-    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
+  if (scriptEventDef.helper.type === "camera") {
+    const units = scriptEventDef.helper.units
+      ? argValue(event.args?.[scriptEventDef.helper.units])
+      : "tiles";
+    const x = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.x]),
+      0
+    );
+    const y = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.y]),
+      0
+    );
     if (x === undefined && y === undefined) {
       return <div />;
     }
@@ -104,20 +122,28 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     );
   }
 
-  if (
-    event.command === EVENT_ACTOR_MOVE_TO ||
-    event.command === EVENT_ACTOR_SET_POSITION ||
-    event.command === EVENT_IF_ACTOR_AT_POSITION
-  ) {
-    const units = argValue(event.args?.units);
-    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
-    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
+  if (scriptEventDef.helper.type === "position") {
+    const units = scriptEventDef.helper.units
+      ? argValue(event.args?.[scriptEventDef.helper.units])
+      : "tiles";
+    const x = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.x]),
+      0
+    );
+    const y = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.y]),
+      0
+    );
+    const tileWidth = scriptEventDef.helper.tileWidth ?? 1;
+    const tileHeight = scriptEventDef.helper.tileHeight ?? 1;
     if (x === undefined && y === undefined) {
       return <div />;
     }
     return (
       <EventHelperWrapper>
         <PosMarker
+          tileWidth={tileWidth}
+          tileHeight={tileHeight}
           style={{
             left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),
@@ -127,15 +153,18 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     );
   }
 
-  if (event.command === EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR) {
-    const distance = ensureMaybeNumber(argValue(event.args?.distance), 0);
+  if (scriptEventDef.helper.type === "distance") {
+    const distance = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.distance]),
+      0
+    );
 
     if (distance === undefined) {
       return <div />;
     }
 
     const otherActorId = ensureMaybeString(
-      argValue(event.args?.otherActorId),
+      argValue(event.args?.[scriptEventDef.helper.actorId]),
       ""
     );
     if (otherActorId === undefined) {
@@ -163,7 +192,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
         // distance formula
         const d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
 
-        switch (event.args?.operator) {
+        switch (event.args?.[scriptEventDef.helper.operator]) {
           case "==":
             if (d === distance) {
               tiles.push({ xpos, ypos });
@@ -203,12 +232,11 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     return (
       <EventHelperWrapper>
         {tiles.map((v, i) => (
-          <PosMarker
+          <DistanceMarker
             key={i}
             style={{
               left: (v.xpos || 0) * TILE_SIZE,
               top: (v.ypos || 0) * TILE_SIZE,
-              opacity: 0.8,
             }}
           />
         ))}
@@ -216,13 +244,18 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     );
   }
 
-  if (
-    event.command === EVENT_OVERLAY_SHOW ||
-    event.command === EVENT_OVERLAY_MOVE_TO
-  ) {
-    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
-    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
-    const color = argValue(event.args?.color);
+  if (scriptEventDef.helper.type === "overlay") {
+    const x = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.x]),
+      0
+    );
+    const y = ensureMaybeNumber(
+      argValue(event.args?.[scriptEventDef.helper.y]),
+      0
+    );
+    const color = scriptEventDef.helper.color
+      ? argValue(event.args?.[scriptEventDef.helper.color])
+      : "black";
     if (x === undefined && y === undefined) {
       return <div />;
     }

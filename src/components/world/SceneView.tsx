@@ -181,7 +181,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     false;
 
   const gbcEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
 
   const tool = useAppSelector((state) => state.editor.tool);

@@ -5,7 +5,10 @@ import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesState";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
@@ -34,8 +37,10 @@ const ImagesPage = () => {
   );
 
   const background =
-    useAppSelector((state) =>
-      backgroundSelectors.selectById(state, selectedId)
+    useAppSelector(
+      (state) =>
+        backgroundSelectors.selectById(state, selectedId) ||
+        tilesetSelectors.selectById(state, selectedId)
     ) || allBackgrounds[0];
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({

@@ -29,6 +29,7 @@ import {
   SpriteSheetData,
   ScriptEventNormalized,
   Sound,
+  Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -61,6 +62,7 @@ export interface NormalizedEntities {
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
+  tilesets: Record<EntityId, Tileset>;
   customEvents: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
@@ -77,6 +79,7 @@ export interface NormalizedResult {
   fonts: EntityId[];
   avatars: EntityId[];
   emotes: EntityId[];
+  tilesets: EntityId[];
   variables: EntityId[];
   engineFieldValues: EntityId[];
 }
@@ -94,6 +97,7 @@ const soundSchema = new schema.Entity("sounds");
 const fontSchema = new schema.Entity("fonts");
 const avatarSchema = new schema.Entity("avatars");
 const emoteSchema = new schema.Entity("emotes");
+const tilesetSchema = new schema.Entity("tilesets");
 
 const scriptEventSchema = new schema.Entity("scriptEvents");
 scriptEventSchema.define({
@@ -148,6 +152,7 @@ const projectSchema = {
   fonts: [fontSchema],
   avatars: [avatarSchema],
   emotes: [emoteSchema],
+  tilesets: [tilesetSchema],
   spriteSheets: [spriteSheetsSchema],
   variables: [variablesSchema],
   customEvents: [customEventsSchema],
@@ -178,6 +183,7 @@ export const denormalizeEntities = (
     fonts: state.fonts.ids,
     avatars: state.avatars.ids,
     emotes: state.emotes.ids,
+    tilesets: state.tilesets.ids,
     variables: state.variables.ids,
     engineFieldValues: state.engineFieldValues.ids,
   };
@@ -211,6 +217,7 @@ export const denormalizeEntities = (
     fonts: state.fonts.entities as Record<EntityId, Font>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
+    tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
     variables: state.variables.entities as Record<EntityId, Variable>,
     engineFieldValues: state.engineFieldValues.entities as Record<
       EntityId,
@@ -403,6 +410,7 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.backgrounds),
     ...extractEntitySymbols(state.spriteSheets),
     ...extractEntitySymbols(state.emotes),
+    ...extractEntitySymbols(state.tilesets),
     ...extractEntitySymbols(state.fonts),
     ...extractEntitySymbols(state.variables),
     ...extractEntitySymbols(state.customEvents),
@@ -440,6 +448,7 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.backgrounds, symbols);
   ensureEntitySymbolsUnique(state.spriteSheets, symbols);
   ensureEntitySymbolsUnique(state.emotes, symbols);
+  ensureEntitySymbolsUnique(state.tilesets, symbols);
   ensureEntitySymbolsUnique(state.fonts, symbols);
   ensureEntitySymbolsUnique(state.variables, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);

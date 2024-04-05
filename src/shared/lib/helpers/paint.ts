@@ -59,7 +59,7 @@ const paintLine = <T>(
 
 const paintMagic = <T>(
   bgWidth: number,
-  tileLookup: Uint8Array,
+  tileLookup: number[],
   x: number,
   y: number,
   value: T,

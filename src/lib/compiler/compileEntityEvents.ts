@@ -5,7 +5,7 @@ import ScriptBuilder, {
   ScriptBuilderOptions,
   ScriptOutput,
 } from "./scriptBuilder";
-import { PrecompiledScene } from "./compileData2";
+import { PrecompiledScene } from "./generateGBVMData";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
@@ -23,6 +23,7 @@ type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
   entity?: ScriptBuilderEntity;
   entityType: string;
   entityIndex: number;
+  debugEnabled: boolean;
   warnings: (msg: string) => void;
 };
 
@@ -74,6 +75,8 @@ const compileEntityEvents = (
         continue;
       }
       if (scriptEventHandlers[command]) {
+        scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
+
         try {
           scriptEventHandlers[command]?.compile(
             { ...subInput[i].args, ...subInput[i].children },
@@ -92,11 +95,15 @@ const compileEntityEvents = (
             )}`
           );
         }
+        if (scriptEventHandlers[command]?.isConditional) {
+          scriptBuilder.addDebugEndSymbol(scriptSymbolName, subInput[i].id);
+        }
       } else if (command === "INTERNAL_SET_CONTEXT") {
         const args = subInput[i].args ?? {};
         scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;
         scriptBuilder.options.entityType =
           args.entityType as ScriptBuilderEntityType;
+        scriptBuilder.options.entityScriptKey = String(args.scriptKey);
       } else if (command === "INTERNAL_IF_PARAM") {
         const args = subInput[i].args;
         scriptBuilder.ifParamValue(

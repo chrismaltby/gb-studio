@@ -60,6 +60,7 @@ import { AngleInput } from "ui/form/AngleInput";
 import { isStringArray } from "shared/types";
 import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
+import { TilesetSelect } from "components/forms/TilesetSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -190,7 +191,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = defaultVariableForContext(context);
+          replaceValue = defaultVariableForContext(context.type);
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -459,7 +460,7 @@ const ScriptEventFormInput = ({
   } else if (type === "variable") {
     let fallbackValue = defaultValue;
     if (fallbackValue === "LAST_VARIABLE") {
-      fallbackValue = defaultVariableForContext(context);
+      fallbackValue = defaultVariableForContext(context.type);
     }
     return (
       <OffscreenSkeletonInput>
@@ -620,6 +621,17 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <EmoteSelect name={id} value={String(value)} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "tileset") {
+    return (
+      <OffscreenSkeletonInput>
+        <TilesetSelect
+          name={id}
+          value={String(value)}
+          onChange={onChangeField}
+          tileIndex={argValue(args.tileIndex) as number | undefined}
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "avatar") {

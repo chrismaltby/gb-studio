@@ -11,6 +11,7 @@ import makeBuild from "lib/compiler/makeBuild";
 import initElectronL10N from "lib/lang/initElectronL10N";
 import { loadEngineFields } from "lib/project/engineFields";
 import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
+import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 
 const rmdir = promisify(rimraf);
 
@@ -74,6 +75,12 @@ const main = async (
     warnings,
   });
 
+  await validateEjectedBuild({
+    buildRoot: tmpBuildDir,
+    progress,
+    warnings,
+  });
+
   if (command === "export") {
     if (program.onlyData) {
       // Export src/data and include/data to destination
@@ -132,9 +139,10 @@ const main = async (
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.name);
     const author = sanitize(project.author);
-    const colorsHead = project.settings.customColorsEnabled
-      ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
-      : "";
+    const colorsHead =
+      project.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
+        : "";
     const customHead = project.settings.customHead || "";
     const customControls = JSON.stringify({
       up: project.settings.customControlsUp,

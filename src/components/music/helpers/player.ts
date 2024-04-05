@@ -5,7 +5,7 @@ import { Song } from "shared/lib/uge/song/Song";
 import { lo, hi } from "shared/lib/helpers/8bit";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 
-type PlaybackPosition = [number, number];
+export type PlaybackPosition = [number, number];
 
 let currentSong: Song | null = null;
 

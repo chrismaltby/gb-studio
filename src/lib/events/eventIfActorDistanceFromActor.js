@@ -149,4 +149,10 @@ module.exports = {
   groups,
   fields,
   compile,
+  helper: {
+    type: "distance",
+    actorId: "otherActorId",
+    distance: "distance",
+    operator: "operator",
+  },
 };

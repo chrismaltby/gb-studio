@@ -12,6 +12,7 @@ import engineActions from "store/features/engine/engineActions";
 import scriptEventDefsActions from "store/features/scriptEventDefs/scriptEventDefsActions";
 import errorActions from "store/features/error/errorActions";
 import consoleActions from "store/features/console/consoleActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
@@ -224,6 +225,16 @@ API.events.watch.emote.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeEmote({ filename, plugin }));
 });
 
+// Watch Tilesets
+
+API.events.watch.tileset.changed.subscribe((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadTileset({ data }));
+});
+
+API.events.watch.tileset.removed.subscribe((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeTileset({ filename, plugin }));
+});
+
 // Watch UI
 
 API.events.watch.ui.changed.subscribe(() => {
@@ -250,10 +261,6 @@ API.events.watch.scriptEventDefs.changed.subscribe((_, scriptEventDefs) => {
 
 API.events.menu.saveProject.subscribe(() => {
   store.dispatch(projectActions.saveProject());
-});
-
-API.events.menu.saveProjectAs.subscribe((_, filename: string) => {
-  store.dispatch(projectActions.saveProject(filename));
 });
 
 API.events.menu.onSaveAndCloseProject.subscribe(async () => {
@@ -287,8 +294,14 @@ API.events.menu.zoom.subscribe((_, zoomType) => {
   }
 });
 
-API.events.menu.run.subscribe(() => {
-  store.dispatch(buildGameActions.buildGame());
+API.events.menu.run.subscribe((_, debugEnabled) => {
+  store.dispatch(
+    buildGameActions.buildGame({
+      buildType: "web",
+      exportBuild: false,
+      debugEnabled,
+    })
+  );
 });
 
 API.events.menu.build.subscribe((_, buildType) => {
@@ -332,4 +345,49 @@ API.events.settings.settingChanged.subscribe((_, key, value) => {
       [key]: value,
     })
   );
+});
+
+// Debugger
+
+API.events.debugger.data.subscribe((_, packet) => {
+  switch (packet.action) {
+    case "initialized": {
+      break;
+    }
+    case "update-globals": {
+      store.dispatch(
+        debuggerActions.setRAMData({
+          vramPreview: packet.vram,
+          variablesData: packet.data,
+          scriptContexts: packet.scriptContexts,
+          currentSceneSymbol: packet.currentSceneSymbol,
+          isPaused: packet.isPaused,
+        })
+      );
+      break;
+    }
+  }
+});
+
+API.events.debugger.symbols.subscribe(
+  (_, { variableMap, sceneMap, gbvmScripts }) => {
+    store.dispatch(
+      debuggerActions.setSymbols({
+        variableDataBySymbol: variableMap,
+        sceneMap,
+        gbvmScripts,
+      })
+    );
+    if (!store.getState().project.present.settings.debuggerEnabled) {
+      store.dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: true,
+        })
+      );
+    }
+  }
+);
+
+API.events.debugger.disconnected.subscribe(() => {
+  store.dispatch(debuggerActions.disconnect());
 });

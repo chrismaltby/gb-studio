@@ -17,12 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add shortcut to search scenes when in world mode by pressing `/`
 - Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
 - Add native Mac ARM support for M1/M2/M3+ devices
+- Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
+- Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
 
 ### Changed
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Updated code generation to reduce access to stack [@pau-tomas](https://github.com/pau-tomas)
+- Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
 

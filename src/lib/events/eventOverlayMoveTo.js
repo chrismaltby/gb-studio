@@ -50,4 +50,9 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "overlay",
+    x: "x",
+    y: "y",
+  },
 };

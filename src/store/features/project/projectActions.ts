@@ -9,6 +9,7 @@ import {
   AvatarData,
   EmoteData,
   SoundData,
+  TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type { RootState } from "store/configureStore";
@@ -104,6 +105,14 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           _v: undefined,
         } as unknown as EmoteData)
     ),
+    tilesets: data.tilesets.map(
+      (tileset) =>
+        ({
+          ...tileset,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as TilesetData)
+    ),
   };
 };
 
@@ -148,9 +157,9 @@ const addFileToProject = createAction<string>("project/addFile");
  * Save
  */
 
-const saveProject = createAsyncThunk<void, string | undefined>(
+const saveProject = createAsyncThunk<void>(
   "project/saveProject",
-  async (newPath, thunkApi) => {
+  async (_, thunkApi) => {
     const state = thunkApi.getState() as RootState;
 
     if (!state.document.loaded) {
@@ -158,9 +167,6 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     }
     if (saving) {
       throw new Error("Cannot save project while already saving");
-    }
-    if (!newPath && !state.document.modified) {
-      throw new Error("Cannot save unmodified project");
     }
 
     saving = true;
@@ -181,13 +187,8 @@ const saveProject = createAsyncThunk<void, string | undefined>(
         },
       };
 
-      if (newPath) {
-        // Save As
-        await API.project.saveProjectAs(newPath, data);
-      } else {
-        // Save
-        await API.project.saveProject(data);
-      }
+      // Save
+      await API.project.saveProject(data);
     } catch (e) {
       console.error(e);
     }

@@ -10,6 +10,7 @@ export type AssetType =
   | "avatars"
   | "backgrounds"
   | "emotes"
+  | "tilesets"
   | "fonts"
   | "music"
   | "sounds"

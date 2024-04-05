@@ -15,6 +15,34 @@ const globAsync = promisify(glob);
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
+export type ScriptEventHelperDef =
+  | {
+      type: "position";
+      x: string;
+      y: string;
+      units?: string;
+      tileWidth?: number;
+      tileHeight?: number;
+    }
+  | {
+      type: "camera";
+      x: string;
+      y: string;
+      units?: string;
+    }
+  | {
+      type: "overlay";
+      x: string;
+      y: string;
+      color?: string;
+    }
+  | {
+      type: "distance";
+      actorId: string;
+      distance: string;
+      operator: string;
+    };
+
 export interface ScriptEventDef {
   id: string;
   fields: ScriptEventFieldSchema[];
@@ -27,6 +55,7 @@ export interface ScriptEventDef {
   allowChildrenBeforeInitFade?: boolean;
   waitUntilAfterInitFade?: boolean;
   hasAutoLabel: boolean;
+  helper?: ScriptEventHelperDef;
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 
