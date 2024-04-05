@@ -96,4 +96,10 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "camera",
+    x: "x",
+    y: "y",
+    units: "units",
+  },
 };

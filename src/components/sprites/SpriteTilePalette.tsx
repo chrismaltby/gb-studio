@@ -8,7 +8,7 @@ import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { assetURL } from "shared/lib/helpers/assets";
+import { assetPath, assetURL } from "shared/lib/helpers/assets";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -72,7 +72,6 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const replaceSpriteTileMode = useAppSelector(
     (state) => state.editor.replaceSpriteTileMode
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
   const width = spriteSheet?.width || 0;
   const height = spriteSheet?.height || 0;
 
@@ -221,12 +220,12 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
     if (spriteSheet) {
       dispatch(
         electronActions.openFile({
-          filename: `${projectRoot}/assets/sprites/${spriteSheet.filename}`,
+          filename: assetPath("sprites", spriteSheet),
           type: "image",
         })
       );
     }
-  }, [spriteSheet, dispatch, projectRoot]);
+  }, [spriteSheet, dispatch]);
 
   if (!spriteSheet) {
     return null;

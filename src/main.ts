@@ -34,14 +34,14 @@ import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type { ProjectData } from "store/features/project/projectActions";
-import type { BuildOptions } from "renderer/lib/api/setup";
+import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
 import buildProject from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
 import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
-import { buildUUID, projectTemplatesRoot } from "consts";
+import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
@@ -75,7 +75,6 @@ import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
-import saveAsProjectData from "lib/project/saveAsProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
@@ -88,6 +87,7 @@ import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
+import { loadTilesetData } from "lib/project/loadTilesetData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
@@ -388,6 +388,13 @@ const createProjectWindow = async () => {
       }
       sendToProjectWindow("watch:emote:changed", filename, data);
     },
+    onChangedTileset: async (filename: string) => {
+      const data = await loadTilesetData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:tileset:changed", filename, data);
+    },
     onRemoveSprite: async (filename: string) => {
       const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
       sendToProjectWindow("watch:sprite:removed", file, plugin);
@@ -422,6 +429,14 @@ const createProjectWindow = async () => {
     onRemoveEmote: async (filename: string) => {
       const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
       sendToProjectWindow("watch:emote:removed", file, plugin);
+    },
+    onRemoveTileset: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(
+        filename,
+        projectRoot,
+        "tilesets"
+      );
+      sendToProjectWindow("watch:tileset:removed", file, plugin);
     },
     onChangedEngineSchema: async (_filename: string) => {
       const fields = await loadEngineFields(projectRoot);
@@ -633,9 +648,15 @@ app.on("ready", async () => {
     if (host === "project") {
       // Load an asset from the current project
       const projectRoot = Path.dirname(projectPath);
-      const filename = Path.join(projectRoot, pathname);
+      const filename = Path.join(projectRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, projectRoot);
+      return callback({ path: filename });
+    } else if (host === "app-assets") {
+      // Load an asset from the GB Studio global assets folder
+      const filename = Path.join(assetsRoot, decodeURI(pathname));
+      // Check project has permission to access this asset
+      guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
     }
   });
@@ -674,10 +695,18 @@ ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
 
-ipcMain.handle("get-recent-projects", async () => {
+ipcMain.handle("get-recent-projects", async (): Promise<
+  RecentProjectData[]
+> => {
   const recentProjects = settings.get("recentProjects");
   if (!isStringArray(recentProjects)) return [];
-  return recentProjects;
+  return recentProjects.map((path) => {
+    return {
+      name: Path.basename(path),
+      dir: Path.dirname(path),
+      path,
+    };
+  });
 });
 
 ipcMain.handle("clear-recent-projects", async (_event) => {
@@ -690,30 +719,53 @@ ipcMain.handle("open-help", async (_event, helpPage) => {
   openHelp(helpPage);
 });
 
-ipcMain.handle("open-folder", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
-  shell.openPath(path);
+ipcMain.handle("open-folder", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const folderPath = Path.join(projectRoot, assetPath);
+
+  guardAssetWithinProject(folderPath, projectRoot);
+
+  shell.openPath(folderPath);
 });
 
-ipcMain.handle("open-image", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
+ipcMain.handle("open-image", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
   const app = String(settings.get("imageEditorPath") || "") || undefined;
-  open(path, { app });
+  open(filename, { app });
 });
 
-ipcMain.handle("open-mod", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
+ipcMain.handle("open-mod", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
   const app = String(settings.get("musicEditorPath") || "") || undefined;
-  open(path, { app });
+  open(filename, { app });
 });
 
-ipcMain.handle("open-file", async (_event, path) => {
-  if (!isString(path)) throw new Error("Invalid Path");
-  // @TODO Confirm that folder is within project
-  shell.openPath(path);
+ipcMain.handle("open-file", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  shell.openPath(filename);
 });
 
 ipcMain.handle("open-external", async (_event, url) => {
@@ -1038,13 +1090,6 @@ ipcMain.handle("project:save", async (_, data: ProjectData): Promise<void> => {
 });
 
 ipcMain.handle(
-  "project:save-as",
-  async (_, filename: string, data: ProjectData): Promise<void> => {
-    await saveAsProjectData(projectPath, filename, data);
-  }
-);
-
-ipcMain.handle(
   "project:build",
   async (event, project: ProjectData, options: BuildOptions) => {
     cancelBuild = false;
@@ -1053,7 +1098,7 @@ ipcMain.handle(
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-    const colorEnabled = project.settings.customColorsEnabled;
+    const colorMode = project.settings.colorMode;
     const sgbEnabled = project.settings.sgbEnabled;
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
@@ -1088,7 +1133,7 @@ ipcMain.handle(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        shell.openPath(`${projectRoot}/build/${buildType}`);
+        shell.openPath(Path.join(projectRoot, "build", buildType));
         buildLog(`-`);
         buildLog(
           `Success! ${
@@ -1133,7 +1178,7 @@ ipcMain.handle(
         }
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && !colorEnabled,
+          sgbEnabled && colorMode === "mono",
           debuggerEnabled
         );
       }
@@ -1240,7 +1285,7 @@ ipcMain.handle(
         warnings,
       });
 
-      const exportRoot = `${projectRoot}/build/src`;
+      const exportRoot = Path.join(projectRoot, "build", "src");
 
       if (exportType === "data") {
         const dataSrcTmpPath = Path.join(outputRoot, "src", "data");
@@ -1272,9 +1317,9 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:get-background-info",
-  (_event, background: Background, is360: boolean) => {
+  (_event, background: Background, is360: boolean, cgbOnly: boolean) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, is360, projectRoot);
+    return getBackgroundInfo(background, is360, cgbOnly, projectRoot);
   }
 );
 
@@ -1306,8 +1351,10 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("tracker:new", async (_event, filename: string) => {
+ipcMain.handle("tracker:new", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
 
@@ -1342,22 +1389,23 @@ ipcMain.handle("tracker:new", async (_event, filename: string) => {
   return await copy2(templatePath, filename);
 });
 
-ipcMain.handle("tracker:load", async (_event, filename: string) => {
+ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   // Convert song to UGE format and save
   const data = await readFile(filename);
   const song = loadUGESong(new Uint8Array(data).buffer);
   if (song) {
-    song.filename = filename;
+    song.filename = assetPath;
   }
   return song;
 });
 
 ipcMain.handle("tracker:save", async (_event, song: Song) => {
   const projectRoot = Path.dirname(projectPath);
-  const filename = song.filename;
+  const filename = Path.join(projectRoot, song.filename);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   // Convert song to UGE format and save
@@ -1365,8 +1413,10 @@ ipcMain.handle("tracker:save", async (_event, song: Song) => {
   await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
 });
 
-ipcMain.handle("sfx:play-wav", async (_event, filename: string) => {
+ipcMain.handle("sfx:play-wav", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const sfx = await compileWav(filename, "asm");
@@ -1375,8 +1425,10 @@ ipcMain.handle("sfx:play-wav", async (_event, filename: string) => {
   });
 });
 
-ipcMain.handle("sfx:play-vgm", async (_event, filename: string) => {
+ipcMain.handle("sfx:play-vgm", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const { output: sfx } = await compileVGM(filename, "asm");
@@ -1387,8 +1439,10 @@ ipcMain.handle("sfx:play-vgm", async (_event, filename: string) => {
 
 ipcMain.handle(
   "sfx:play-fxhammer",
-  async (_event, filename: string, effectIndex: number) => {
+  async (_event, assetPath: string, effectIndex: number) => {
     const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
+
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
     const { output: sfx } = await compileFXHammerSingle(
@@ -1402,8 +1456,10 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("music:play-uge", async (_event, filename: string) => {
+ipcMain.handle("music:play-uge", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const fileData = toArrayBuffer(await readFile(filename));
@@ -1429,7 +1485,7 @@ ipcMain.handle(
     const filename = assetFilename(projectRoot, "sprites", spriteData);
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    return compileSprite(spriteData, projectRoot);
+    return compileSprite(spriteData, false, projectRoot);
   }
 );
 
@@ -1724,13 +1780,15 @@ const saveAsProjectPicker = async () => {
 };
 
 const saveAsProject = async (saveAsPath: string) => {
+  const originalProjectPath = projectPath;
   const projectName = Path.parse(saveAsPath).name;
   const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
-  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectDir = Path.dirname(newProjectPath);
 
   let projectExists;
   try {
-    await stat(projectPath);
+    await stat(newProjectDir);
     projectExists = true;
   } catch (e) {
     projectExists = false;
@@ -1752,7 +1810,10 @@ const saveAsProject = async (saveAsPath: string) => {
     return;
   }
 
+  await copy(Path.dirname(originalProjectPath), Path.dirname(newProjectPath));
+
+  projectPath = newProjectPath;
   addRecentProject(projectPath);
 
-  sendToProjectWindow("menu:save-as-project", projectPath);
+  sendToProjectWindow("menu:save-project");
 };

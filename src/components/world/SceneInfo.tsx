@@ -119,6 +119,9 @@ const SceneInfo = () => {
   const backgroundNumTiles = useAppSelector(
     (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
+  const isCGBOnly = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "color"
+  );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -265,10 +268,15 @@ const SceneInfo = () => {
       }
 
       const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
-        return (
-          memo +
-          (spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0)
-        );
+        let numTiles =
+          spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0;
+        if (isCGBOnly) {
+          // CGB Only splits tiles equally between VRAM banks 1 + 2
+          // need to take into account that odd number of tiles will fill
+          // VRAM bank1 quicker
+          numTiles = Math.ceil(numTiles * 0.5) * 2;
+        }
+        return memo + numTiles;
       }, 0);
 
       setTileCount(tileCount);
@@ -348,13 +356,14 @@ const SceneInfo = () => {
     setActorWarnings(newActorWarnings);
     setLoaded(true);
   }, [
-    actorsLookup,
-    defaultPlayerSprites,
     scene,
-    scriptEventsLookup,
     spriteSheetsLookup,
+    scriptEventsLookup,
+    actorsLookup,
     triggersLookup,
     customEventsLookup,
+    defaultPlayerSprites,
+    isCGBOnly,
   ]);
 
   const debouncedRecalculateCounts = useDebounce(recalculateCounts, 200);
@@ -390,7 +399,7 @@ const SceneInfo = () => {
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =
     scene.type !== "LOGO"
-      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles)
+      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles, isCGBOnly)
       : MAX_LOGO_SPRITE_TILES;
 
   return (

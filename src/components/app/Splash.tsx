@@ -41,14 +41,9 @@ import useWindowFocus from "ui/hooks/use-window-focus";
 import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
+import type { RecentProjectData } from "renderer/lib/api/setup";
 
 declare const DOCS_URL: string;
-
-type ProjectInfo = {
-  name: string;
-  dir: string;
-  path: string;
-};
 
 type TemplateInfo = {
   id: string;
@@ -93,7 +88,7 @@ export const Splash = () => {
   const [templateId, setTemplateId] = useState("gbs2");
   const [section, setSection] = useState<SplashTabSection>();
   const [openCredits, setOpenCredits] = useState(false);
-  const [recentProjects, setRecentProjects] = useState<ProjectInfo[]>([]);
+  const [recentProjects, setRecentProjects] = useState<RecentProjectData[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
   const [path, setPath] = useState<string>("");
   const [nameError, setNameError] = useState("");
@@ -103,15 +98,7 @@ export const Splash = () => {
 
   useEffect(() => {
     async function fetchData() {
-      setRecentProjects(
-        (await API.project.getRecentProjects())
-          .map((projectPath) => ({
-            name: Path.basename(projectPath),
-            dir: Path.dirname(projectPath),
-            path: projectPath,
-          }))
-          .reverse()
-      );
+      setRecentProjects((await API.project.getRecentProjects()).reverse());
       setPath(await getLastUsedPath());
       const urlParams = new URLSearchParams(window.location.search);
       const forceTab = urlParams.get("tab");

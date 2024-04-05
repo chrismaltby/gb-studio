@@ -92,31 +92,40 @@ const WorldPage = () => {
       direction: "top",
       minSize: 30,
       maxSize: windowHeight - 100,
+      onResizeComplete: (height) => {
+        if (height === 30 && debuggerEnabled) {
+          dispatch(
+            settingsActions.editSettings({
+              debuggerEnabled: false,
+            })
+          );
+        } else if (height > 30 && !debuggerEnabled) {
+          dispatch(
+            settingsActions.editSettings({
+              debuggerEnabled: true,
+            })
+          );
+        }
+      },
     });
 
   const toggleDebuggerPane = useCallback(() => {
     if (debuggerPaneHeight === 30) {
       setDebuggerPaneSize(windowHeight * 0.5);
-    } else {
-      setDebuggerPaneSize(30);
-    }
-  }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
-
-  useEffect(() => {
-    if (debuggerPaneHeight === 30 && debuggerEnabled) {
-      dispatch(
-        settingsActions.editSettings({
-          debuggerEnabled: false,
-        })
-      );
-    } else if (debuggerPaneHeight > 30 && !debuggerEnabled) {
       dispatch(
         settingsActions.editSettings({
           debuggerEnabled: true,
         })
       );
+    } else {
+      setDebuggerPaneSize(30);
+      dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: false,
+        })
+      );
     }
-  }, [debuggerEnabled, debuggerPaneHeight, dispatch]);
+  }, [debuggerPaneHeight, dispatch, setDebuggerPaneSize, windowHeight]);
 
   useEffect(() => {
     const unsubscribe = API.events.debugger.data.subscribe((_, packet) => {

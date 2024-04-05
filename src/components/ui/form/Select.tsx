@@ -152,7 +152,6 @@ const ValuePreview = styled.div`
   canvas {
     max-width: 22px;
     max-height: 22px;
-    image-rendering: auto !important;
   }
 `;
 

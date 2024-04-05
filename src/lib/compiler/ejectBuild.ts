@@ -56,6 +56,7 @@ const ejectBuild = async ({
   const expectedEngineMetaPath = `${corePath}/engine.json`;
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
+  const colorEnabled = settings.colorMode !== "mono";
 
   progress(`Unlink ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
@@ -212,7 +213,7 @@ const ejectBuild = async ({
   await makefileInjectToolsPath(`${outputRoot}/Makefile`, buildToolsPath);
   const makeDotBuildFile = buildMakeDotBuildFile({
     cartType: settings.cartType,
-    color: settings.customColorsEnabled,
+    color: colorEnabled,
     sgb: settings.sgbEnabled,
     batteryless: settings.batterylessEnabled,
     musicDriver: settings.musicDriver,

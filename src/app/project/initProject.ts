@@ -225,6 +225,16 @@ API.events.watch.emote.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeEmote({ filename, plugin }));
 });
 
+// Watch Tilesets
+
+API.events.watch.tileset.changed.subscribe((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadTileset({ data }));
+});
+
+API.events.watch.tileset.removed.subscribe((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeTileset({ filename, plugin }));
+});
+
 // Watch UI
 
 API.events.watch.ui.changed.subscribe(() => {
@@ -252,10 +262,6 @@ API.events.watch.scriptEventDefs.changed.subscribe((_, scriptEventDefs) => {
 
 API.events.menu.saveProject.subscribe(() => {
   store.dispatch(projectActions.saveProject());
-});
-
-API.events.menu.saveProjectAs.subscribe((_, filename: string) => {
-  store.dispatch(projectActions.saveProject(filename));
 });
 
 API.events.menu.onSaveAndCloseProject.subscribe(async () => {
@@ -373,6 +379,13 @@ API.events.debugger.symbols.subscribe(
         gbvmScripts,
       })
     );
+    if (!store.getState().project.present.settings.debuggerEnabled) {
+      store.dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: true,
+        })
+      );
+    }
   }
 );
 

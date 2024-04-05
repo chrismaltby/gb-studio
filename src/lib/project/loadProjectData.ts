@@ -23,6 +23,7 @@ import { cloneDictionary } from "lib/helpers/clone";
 import { Dictionary } from "@reduxjs/toolkit";
 import { loadEngineFields } from "lib/project/engineFields";
 import { loadSceneTypes } from "lib/project/sceneTypes";
+import loadAllTilesetData from "lib/project/loadTilesetData";
 
 const toUnixFilename = (filename: string) => {
   return filename.replace(/\\/g, "/");
@@ -68,16 +69,25 @@ const loadProject = async (
     scriptEventDefs
   ) as ProjectData;
 
-  const [backgrounds, sprites, music, sounds, fonts, avatars, emotes] =
-    await Promise.all([
-      loadAllBackgroundData(projectRoot),
-      loadAllSpriteData(projectRoot),
-      loadAllMusicData(projectRoot),
-      loadAllSoundData(projectRoot),
-      loadAllFontData(projectRoot),
-      loadAllAvatarData(projectRoot),
-      loadAllEmoteData(projectRoot),
-    ]);
+  const [
+    backgrounds,
+    sprites,
+    music,
+    sounds,
+    fonts,
+    avatars,
+    emotes,
+    tilesets,
+  ] = await Promise.all([
+    loadAllBackgroundData(projectRoot),
+    loadAllSpriteData(projectRoot),
+    loadAllMusicData(projectRoot),
+    loadAllSoundData(projectRoot),
+    loadAllFontData(projectRoot),
+    loadAllAvatarData(projectRoot),
+    loadAllEmoteData(projectRoot),
+    loadAllTilesetData(projectRoot),
+  ]);
 
   // Merge stored backgrounds data with file system data
   const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
@@ -253,6 +263,26 @@ const loadProject = async (
     })
     .sort(sortByName);
 
+  // Merge stored tilesets data with file system data
+  const oldTilesetByFilename = indexByFilename(json.tilesets || []);
+
+  const fixedTilesetIds = tilesets
+    .map((tileset) => {
+      const oldTileset = oldTilesetByFilename[toAssetFilename(tileset)];
+      if (oldTileset) {
+        return {
+          ...tileset,
+          id: oldTileset.id,
+          symbol:
+            oldTileset?.symbol !== undefined
+              ? oldTileset.symbol
+              : tileset.symbol,
+        };
+      }
+      return tileset;
+    })
+    .sort(sortByName);
+
   const addMissingEntityId = <T extends { id: string }>(entity: T) => {
     if (!entity.id) {
       return {
@@ -352,6 +382,7 @@ const loadProject = async (
       fonts: fixedFontIds,
       avatars: fixedAvatarIds,
       emotes: fixedEmoteIds,
+      tilesets: fixedTilesetIds,
       scenes: fixedScenes,
       customEvents: fixedCustomEvents,
       palettes: fixedPalettes,

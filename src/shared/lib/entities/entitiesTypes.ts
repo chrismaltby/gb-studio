@@ -228,6 +228,22 @@ export type Sound = {
 
 export type SoundData = Omit<Sound, "_v" | "inode">;
 
+export type Tileset = {
+  id: string;
+  name: string;
+  symbol: string;
+  filename: string;
+  width: number;
+  height: number;
+  imageWidth: number;
+  imageHeight: number;
+  plugin?: string;
+  inode: string;
+  _v: number;
+};
+
+export type TilesetData = Omit<Tileset, "_v" | "inode">;
+
 export type Palette = {
   id: string;
   name: string;
@@ -411,6 +427,7 @@ export type ProjectEntitiesData = {
   fonts: FontData[];
   avatars: AvatarData[];
   emotes: EmoteData[];
+  tilesets: TilesetData[];
   variables: Variable[];
   engineFieldValues: EngineFieldValue[];
 };
@@ -433,6 +450,7 @@ export interface EntitiesState {
   fonts: EntityState<Font>;
   avatars: EntityState<Avatar>;
   emotes: EntityState<Emote>;
+  tilesets: EntityState<Tileset>;
   variables: EntityState<Variable>;
   engineFieldValues: EntityState<EngineFieldValue>;
 }
@@ -452,11 +470,17 @@ export interface ScriptEventFieldCondition {
 
 export const distanceUnitTypes = ["tiles", "pixels"] as const;
 export const timeUnitTypes = ["time", "frames"] as const;
-export const unitTypes = [...distanceUnitTypes, ...timeUnitTypes] as const;
+export const gridUnitTypes = ["8px", "16px"] as const;
+export const unitTypes = [
+  ...distanceUnitTypes,
+  ...timeUnitTypes,
+  ...gridUnitTypes,
+] as const;
 
 export type UnitType = typeof unitTypes[number];
 export type DistanceUnitType = typeof distanceUnitTypes[number];
 export type TimeUnitType = typeof timeUnitTypes[number];
+export type GridUnitType = typeof gridUnitTypes[number];
 
 export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
 export type MovementType = typeof movementTypes[number];

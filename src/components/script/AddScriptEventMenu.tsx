@@ -27,6 +27,7 @@ import {
   musicSelectors,
   sceneSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
@@ -72,6 +73,7 @@ interface InstanciateOptions {
   defaultActorId: string;
   defaultSpriteId: string;
   defaultEmoteId: string;
+  defaultTilesetId: string;
   defaultArgs?: Record<string, unknown>;
 }
 
@@ -89,6 +91,7 @@ const instanciateScriptEvent = (
     defaultActorId,
     defaultSpriteId,
     defaultEmoteId,
+    defaultTilesetId,
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEventNormalized, "id"> => {
@@ -130,6 +133,8 @@ const instanciateScriptEvent = (
           replaceValue = defaultSpriteId;
         } else if (defaultValue === "LAST_EMOTE") {
           replaceValue = defaultEmoteId;
+        } else if (defaultValue === "LAST_TILESET") {
+          replaceValue = defaultTilesetId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
         } else if (field.type === "events") {
@@ -462,6 +467,9 @@ const AddScriptEventMenu = ({
   const lastEmoteId = useAppSelector(
     (state) => emoteSelectors.selectIds(state)[0]
   );
+  const lastTilesetId = useAppSelector(
+    (state) => tilesetSelectors.selectIds(state)[0]
+  );
   const context = useContext(ScriptEditorContext);
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
@@ -639,6 +647,7 @@ const AddScriptEventMenu = ({
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
+              defaultTilesetId: String(lastTilesetId),
               defaultArgs,
             }),
           ],
@@ -652,6 +661,7 @@ const AddScriptEventMenu = ({
       dispatch,
       insertId,
       lastEmoteId,
+      lastTilesetId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,

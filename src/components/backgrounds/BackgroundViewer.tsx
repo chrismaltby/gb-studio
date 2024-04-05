@@ -5,6 +5,7 @@ import {
   backgroundSelectors,
   paletteSelectors,
   sceneSelectors,
+  tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import ColorizedImage from "components/world/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
@@ -42,6 +43,7 @@ const ImageContainer = styled.div`
 `;
 
 const ImageScale = styled.div`
+  display: flex;
   transform-origin: top left;
 `;
 
@@ -60,6 +62,10 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
+  const tileset = useAppSelector((state) =>
+    tilesetSelectors.selectById(state, backgroundId)
+  );
+
   const zoom = useAppSelector((state) => state.editor.zoomImage) / 100;
   const previewAsSceneId = useAppSelector(
     (state) => state.editor.previewAsSceneId
@@ -86,41 +92,74 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
     );
   }, [scene, palettesLookup, defaultPaletteIds]);
 
-  if (!background) {
-    return <div />;
-  }
-
-  return (
-    <ScrollWrapper>
-      <ContentWrapper
-        style={{
-          minWidth: background.imageWidth * zoom + 100,
-          minHeight: background.imageHeight * zoom + 110,
-        }}
-      >
-        <ImageContainer
+  if (background) {
+    return (
+      <ScrollWrapper>
+        <ContentWrapper
           style={{
-            width: background.imageWidth * zoom,
-            height: background.imageHeight * zoom,
+            minWidth: background.imageWidth * zoom + 100,
+            minHeight: background.imageHeight * zoom + 110,
           }}
         >
-          <ImageScale
+          <ImageContainer
             style={{
-              transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              width: background.imageWidth * zoom,
+              height: background.imageHeight * zoom,
             }}
           >
-            <ColorizedImage
-              width={background.width * TILE_SIZE}
-              height={background.height * TILE_SIZE}
-              src={assetURL("backgrounds", background)}
-              tiles={background.tileColors}
-              palettes={palettes}
-            />
-          </ImageScale>
-        </ImageContainer>
-      </ContentWrapper>
-    </ScrollWrapper>
-  );
+            <ImageScale
+              style={{
+                transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              }}
+            >
+              <ColorizedImage
+                width={background.width * TILE_SIZE}
+                height={background.height * TILE_SIZE}
+                src={assetURL("backgrounds", background)}
+                tiles={background.tileColors}
+                palettes={palettes}
+              />
+            </ImageScale>
+          </ImageContainer>
+        </ContentWrapper>
+      </ScrollWrapper>
+    );
+  }
+  if (tileset) {
+    return (
+      <ScrollWrapper>
+        <ContentWrapper
+          style={{
+            minWidth: tileset.imageWidth * zoom + 100,
+            minHeight: tileset.imageHeight * zoom + 110,
+          }}
+        >
+          <ImageContainer
+            style={{
+              width: tileset.imageWidth * zoom,
+              height: tileset.imageHeight * zoom,
+            }}
+          >
+            <ImageScale
+              style={{
+                transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              }}
+            >
+              <ColorizedImage
+                width={tileset.width * TILE_SIZE}
+                height={tileset.height * TILE_SIZE}
+                src={assetURL("tilesets", tileset)}
+                tiles={[]}
+                palettes={palettes}
+              />
+            </ImageScale>
+          </ImageContainer>
+        </ContentWrapper>
+      </ScrollWrapper>
+    );
+  }
+
+  return <div />;
 };
 
 export default BackgroundViewer;

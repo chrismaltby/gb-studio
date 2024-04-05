@@ -5,7 +5,7 @@ import ScriptBuilder, {
   ScriptBuilderOptions,
   ScriptOutput,
 } from "./scriptBuilder";
-import { PrecompiledScene } from "./compileData2";
+import { PrecompiledScene } from "./generateGBVMData";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";

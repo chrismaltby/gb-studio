@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.2.0",
-    "_release": "1",
+    "_version": "3.3.0",
+    "_release": "2",
     "scenes": [],
     "backgrounds": [
         {
@@ -23,7 +23,6 @@
             "name": "actor",
             "symbol": "sprite_actor",
             "numFrames": 3,
-            "type": "actor",
             "filename": "actor.png",
             "checksum": "8646d62a30fe76f9e39e3dbdb23aab0182a33146",
             "width": 48,
@@ -198,14 +197,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor"
         },
         {
             "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
             "name": "actor_animated",
             "symbol": "sprite_actor_animated",
             "numFrames": 6,
-            "type": "actor_animated",
             "filename": "actor_animated.png",
             "checksum": "cd6c8ebac31ccd6a325b8a7e94a05d442ae6725e",
             "width": 96,
@@ -554,14 +553,14 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 8,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "actor_animated"
         },
         {
             "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
             "name": "static",
             "symbol": "sprite_static",
             "numFrames": 1,
-            "type": "static",
             "filename": "static.png",
             "checksum": "ed08d198cc3dd48f9bfba000769904ae41b36db8",
             "width": 16,
@@ -682,7 +681,8 @@
             "boundsY": 0,
             "boundsWidth": 16,
             "boundsHeight": 16,
-            "animSpeed": 15
+            "animSpeed": 15,
+            "type": "static"
         }
     ],
     "palettes": [
@@ -941,7 +941,6 @@
         "worldScrollX": 0,
         "worldScrollY": 0,
         "zoom": 100,
-        "customColorsEnabled": false,
         "sgbEnabled": false,
         "customHead": "",
         "defaultBackgroundPaletteIds": [
@@ -968,9 +967,9 @@
         "defaultUIPaletteId": "default-ui",
         "playerPaletteId": "",
         "navigatorSplitSizes": [
-            443,
-            135,
-            135
+            620,
+            189,
+            189
         ],
         "showNavigator": true,
         "defaultFontId": "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
@@ -990,6 +989,51 @@
             "EVENT_TEXT",
             "EVENT_SWITCH_SCENE"
         ],
+        "customColorsWhite": "E8F8E0",
+        "customColorsLight": "B0F088",
+        "customColorsDark": "509878",
+        "customColorsBlack": "202850",
+        "customControlsUp": [
+            "ArrowUp",
+            "w"
+        ],
+        "customControlsDown": [
+            "ArrowDown",
+            "s"
+        ],
+        "customControlsLeft": [
+            "ArrowLeft",
+            "a"
+        ],
+        "customControlsRight": [
+            "ArrowRight",
+            "d"
+        ],
+        "customControlsA": [
+            "Alt",
+            "z",
+            "j"
+        ],
+        "customControlsB": [
+            "Control",
+            "k",
+            "x"
+        ],
+        "customControlsStart": [
+            "Enter"
+        ],
+        "customControlsSelect": [
+            "Shift"
+        ],
+        "debuggerEnabled": false,
+        "debuggerScriptType": "editor",
+        "debuggerVariablesFilter": "all",
+        "debuggerCollapsedPanes": [],
+        "debuggerPauseOnScriptChanged": false,
+        "debuggerPauseOnWatchedVariableChanged": false,
+        "debuggerBreakpoints": [],
+        "debuggerWatchedVariables": [],
+        "colorMode": "mono",
         "defaultFadeStyle": "white",
         "playerSpriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd"
     }

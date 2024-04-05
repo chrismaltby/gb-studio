@@ -35,7 +35,7 @@ import { projectTemplatesRoot } from "../src/consts";
 import {
   PrecompiledBackground,
   PrecompiledSprite,
-} from "../src/lib/compiler/compileData2";
+} from "../src/lib/compiler/generateGBVMData";
 
 export const dummySceneNormalized: SceneNormalized = {
   id: "",
@@ -109,7 +109,6 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
   name: "",
   width: 1,
   height: 1,
-  data: new Uint8Array(),
   tileset: {
     symbol: "ts_1",
     data: new Uint8Array(),
@@ -175,7 +174,6 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
     symbol: "ts_1",
     data: new Uint8Array(),
   },
-  data: [],
   tiles: [],
   metasprites: [],
   animationOffsets: [],
@@ -185,6 +183,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   width: 32,
   height: 32,
   animSpeed: 15,
+  vramData: [[], []],
 };
 
 export const dummyMusic: Music = {
@@ -224,6 +223,7 @@ export const dummyProjectData: ProjectData = {
   avatars: [],
   emotes: [],
   sounds: [],
+  tilesets: [],
   engineFieldValues: [],
   settings: {
     startSceneId: "",
@@ -238,7 +238,6 @@ export const dummyProjectData: ProjectData = {
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
-    customColorsEnabled: false,
     sgbEnabled: false,
     defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
@@ -276,6 +275,7 @@ export const dummyProjectData: ProjectData = {
     debuggerPauseOnWatchedVariableChanged: false,
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
+    colorMode: "mono",
   },
 };
 

@@ -18,7 +18,7 @@ test("Should trigger call to check background assets", async () => {
   mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
-    lookup: new Uint8Array(),
+    lookup: [],
   });
 
   const store = {
@@ -42,6 +42,9 @@ test("Should trigger call to check background assets", async () => {
               ids: ["bg1"],
             },
           },
+          settings: {
+            colorMode: "mono",
+          },
         },
       },
     }),
@@ -64,8 +67,9 @@ test("Should trigger call to check background assets", async () => {
       id: "bg1",
       numTiles: 10,
       is360: false,
+      isCGBOnly: false,
       warnings: ["Warning 1"],
-      lookup: new Uint8Array(),
+      lookup: [],
     })
   );
 });
@@ -75,7 +79,7 @@ test("Should not trigger call to check background assets if already cached asset
   mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
-    lookup: new Uint8Array(),
+    lookup: [],
   });
 
   const store = {
@@ -89,6 +93,7 @@ test("Should not trigger call to check background assets if already cached asset
             id: "bg1",
             assets: ["Warning 2"],
             is360: false,
+            isCGBOnly: false,
             timestamp: 100,
           },
         },
@@ -106,6 +111,9 @@ test("Should not trigger call to check background assets if already cached asset
               },
               ids: ["bg1"],
             },
+          },
+          settings: {
+            colorMode: "mono",
           },
         },
       },
@@ -132,7 +140,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
   mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
-    lookup: new Uint8Array(),
+    lookup: [],
   });
 
   const store = {
@@ -163,6 +171,9 @@ test("Should trigger call to check background assets if cache has expired", asyn
               ids: ["bg1"],
             },
           },
+          settings: {
+            colorMode: "mono",
+          },
         },
       },
     }),
@@ -185,8 +196,9 @@ test("Should trigger call to check background assets if cache has expired", asyn
       id: "bg1",
       numTiles: 10,
       is360: false,
+      isCGBOnly: false,
       warnings: ["Warning 1"],
-      lookup: new Uint8Array(),
+      lookup: [],
     })
   );
 });

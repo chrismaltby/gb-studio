@@ -7,28 +7,29 @@ import {
 } from "shared/lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
-const MAX_TILESET_TILES = 16 * 12;
 
 export interface BackgroundInfo {
   numTiles: number;
   warnings: string[];
-  lookup: Uint8Array;
+  lookup: number[];
 }
 
 export const getBackgroundInfo = async (
   background: BackgroundData,
   is360: boolean,
+  isCGBOnly: boolean,
   projectPath: string,
   precalculatedTilesetLength?: number
 ): Promise<BackgroundInfo> => {
   const warnings: string[] = [];
 
   let tilesetLength = precalculatedTilesetLength;
-  let tilesets = new Uint8Array();
+  let tilesets: number[] = [];
   if (!tilesetLength) {
     const filename = assetFilename(projectPath, "backgrounds", background);
     const tileData = await readFileToTilesDataArray(filename);
@@ -72,11 +73,20 @@ export const getBackgroundInfo = async (
   ) {
     warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
   }
-  if (tilesetLength > MAX_TILESET_TILES && !is360) {
+  if (tilesetLength > MAX_BACKGROUND_TILES && !is360 && !isCGBOnly) {
     warnings.push(
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
-        maxTilesetLength: MAX_TILESET_TILES,
+        maxTilesetLength: MAX_BACKGROUND_TILES,
+      })
+    );
+  }
+
+  if (tilesetLength > MAX_BACKGROUND_TILES_CGB && !is360 && isCGBOnly) {
+    warnings.push(
+      l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
+        tilesetLength,
+        maxTilesetLength: MAX_BACKGROUND_TILES_CGB,
       })
     );
   }

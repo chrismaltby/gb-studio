@@ -73,7 +73,7 @@ export const SpriteEditor = ({
   spriteStateId,
 }: SpriteEditorProps) => {
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.customColorsEnabled
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id)
@@ -713,7 +713,7 @@ export const SpriteEditor = ({
                 spriteState.animationType !== "cursor" && (
                   <FormRow>
                     <CheckboxField
-                      name="customColorsEnabled"
+                      name="flipRightForLeft"
                       label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
                       checked={!!spriteState.flipLeft}
                       onChange={onChangeStateFlipLeft}

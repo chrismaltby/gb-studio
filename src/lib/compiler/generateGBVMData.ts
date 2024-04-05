@@ -19,8 +19,8 @@ export interface PrecompiledBackground {
   name: string;
   width: number;
   height: number;
-  data: number[] | Uint8Array;
   tileset: PrecompiledTileData;
+  cgbTileset?: PrecompiledTileData;
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
 }
@@ -51,9 +51,23 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
+export interface PrecompiledTilesetData {
+  id: string;
+  symbol: string;
+  data: number[] | Uint8Array;
+  width: number;
+  height: number;
+}
+
 export interface PrecompiledTileData {
   symbol: string;
   data: number[] | Uint8Array;
+}
+
+export interface PrecompiledTilemapData {
+  symbol: string;
+  data: number[] | Uint8Array;
+  is360: boolean;
 }
 
 interface Entity {
@@ -94,6 +108,7 @@ export interface PrecompiledPalette {
 export type PrecompiledSprite = {
   symbol: string;
   tileset: PrecompiledTileData;
+  cgbTileset?: PrecompiledTileData;
 } & PrecompiledSpriteSheetData;
 
 export type PrecompiledFontData = {
@@ -790,11 +805,17 @@ export const compileSpriteSheet = (
     null,
     stateNames.map((state) => statesOrder.indexOf(state))
   );
+
   return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
 
 #include "gbs_types.h"
-#include "data/${spriteSheet.tileset.symbol}.h"
+${spriteSheet.tileset ? `#include "data/${spriteSheet.tileset?.symbol}.h"` : ""}
+${
+  spriteSheet.cgbTileset
+    ? `#include "data/${spriteSheet.cgbTileset?.symbol}.h"`
+    : ""
+}
 
 ${bankRef(spriteSheet.symbol)}
 
@@ -813,7 +834,9 @@ ${spriteSheet.metasprites
       spriteSheet.symbol
     }_metasprite_${metaspriteIndex}[]  = {
     ${metasprite
-      .map((tile) => `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`)
+      .map((tile) => {
+        return `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`;
+      })
       .join(", ")}${metasprite.length > 0 ? ",\n    " : ""}{metasprite_end}
 };`;
   })
@@ -850,8 +873,12 @@ ${toStructData(
     animations: `${spriteSheet.symbol}_animations`,
     animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
-    tileset: toFarPtr(spriteSheet.tileset.symbol),
-    cgb_tileset: "{ NULL, NULL }",
+    tileset: spriteSheet.tileset
+      ? toFarPtr(spriteSheet.tileset.symbol)
+      : "{ NULL, NULL }",
+    cgb_tileset: spriteSheet.cgbTileset
+      ? toFarPtr(spriteSheet.cgbTileset.symbol)
+      : "{ NULL, NULL }",
   },
 
   INDENT_SPACES
@@ -882,15 +909,21 @@ export const compileBackground = (
     {
       width: background.width,
       height: background.height,
-      tileset: toFarPtr(background.tileset.symbol),
-      cgb_tileset: "{ NULL, NULL }",
+      tileset: background.tileset
+        ? toFarPtr(background.tileset.symbol)
+        : "{ NULL, NULL }",
+      cgb_tileset:
+        color && background.cgbTileset
+          ? toFarPtr(background.cgbTileset.symbol)
+          : "{ NULL, NULL }",
       tilemap: toFarPtr(background.tilemap.symbol),
       cgb_tilemap_attr: color
         ? toFarPtr(background.tilemapAttr.symbol)
         : "{ NULL, NULL }",
     },
     ([] as string[]).concat(
-      background.tileset.symbol,
+      background.tileset?.symbol ?? [],
+      background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
       color ? background.tilemapAttr.symbol : []
     )
@@ -903,14 +936,15 @@ export const compileBackgroundHeader = (background: PrecompiledBackground) =>
     `// Background: ${background.name}`
   );
 
-export const compileTilemap = (tilemap: PrecompiledTileData) =>
-  toArrayDataFile(
+export const compileTilemap = (tilemap: PrecompiledTilemapData) => {
+  return toArrayDataFile(
     DATA_TYPE,
     tilemap.symbol,
     `// Tilemap ${tilemap.symbol}`,
     Array.from(tilemap.data).map(wrap8Bit).map(toHex),
     16
   );
+};
 
 export const compileTilemapHeader = (tilemap: PrecompiledTileData) =>
   toArrayDataHeader(DATA_TYPE, tilemap.symbol, `// Tilemap ${tilemap.symbol}`);

@@ -22,7 +22,7 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetPath } from "shared/lib/helpers/assets";
 
 const COLLAPSED_SIZE = 30;
 
@@ -323,18 +323,16 @@ export const NavigatorSongs = ({
 
   const showInstrumentList = selectedSong && selectedSong.type === "uge";
 
-  const projectRoot = useAppSelector((state) => state.document.root);
-
   const addSong = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
 
-      const path = assetFilename(projectRoot, "music", {
+      const path = assetPath("music", {
         filename: "song_template.uge",
       });
       dispatch(addNewSongFile(path));
     },
-    [dispatch, projectRoot]
+    [dispatch]
   );
 
   return (

@@ -30,12 +30,12 @@ void simple_LCD_isr(void) NONBANKED {
         if (WY_REG) {
             if (WY_REG < MENU_CLOSED_Y) LYC_REG = WY_REG - 1;
         } else {
-            if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) HIDE_SPRITES;
+            if ((WX_REG == DEVICE_WINDOW_PX_OFFSET_X) && (show_actors_on_overlay == FALSE)) HIDE_SPRITES;
             LYC_REG = overlay_cut_scanline;
         }
     } else {
         if (LYC_REG < overlay_cut_scanline) {
-            if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) {
+            if ((WX_REG == DEVICE_WINDOW_PX_OFFSET_X) && (show_actors_on_overlay == FALSE)) {
                 while (STAT_REG & STATF_BUSY) ;
                 HIDE_SPRITES;
             }
@@ -64,7 +64,7 @@ void fullscreen_LCD_isr(void) NONBANKED {
 }
 
 void VBL_isr(void) NONBANKED {
-    if ((WY_REG = win_pos_y) < MENU_CLOSED_Y) WX_REG = (win_pos_x + MINWNDPOSX), SHOW_WIN; else WX_REG = 0, HIDE_WIN;
+    if ((WY_REG = win_pos_y) < MENU_CLOSED_Y) WX_REG = (win_pos_x + DEVICE_WINDOW_PX_OFFSET_X), SHOW_WIN; else WX_REG = 0, HIDE_WIN;
     if (hide_sprites) HIDE_SPRITES; else SHOW_SPRITES;
     scroll_shadow_update();
 }
