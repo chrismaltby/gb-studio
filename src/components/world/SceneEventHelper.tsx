@@ -134,8 +134,22 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
       argValue(event.args?.[scriptEventDef.helper.y]),
       0
     );
-    const tileWidth = scriptEventDef.helper.tileWidth ?? 1;
-    const tileHeight = scriptEventDef.helper.tileHeight ?? 1;
+    const tileSize = ensureMaybeString(
+      argValue(event.args?.[scriptEventDef.helper.tileSize ?? ""]),
+      ""
+    );
+    let tileWidth = 1;
+    let tileHeight = 1;
+    if (tileSize === "16px") {
+      tileWidth = 2;
+      tileHeight = 2;
+    }
+    if (scriptEventDef.helper.tileWidth) {
+      tileWidth = scriptEventDef.helper.tileWidth;
+    }
+    if (scriptEventDef.helper.tileHeight) {
+      tileHeight = scriptEventDef.helper.tileHeight;
+    }
     if (x === undefined && y === undefined) {
       return <div />;
     }

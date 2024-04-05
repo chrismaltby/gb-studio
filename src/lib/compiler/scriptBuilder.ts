@@ -1841,6 +1841,22 @@ extern void __mute_mask_${symbol};
     this._addCmd(".CGB_PAL", r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4);
   };
 
+  _replaceTile = (
+    addr: ScriptBuilderStackVariable,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable,
+    numTiles: number
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE",
+      addr,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex,
+      numTiles
+    );
+  };
+
   _replaceTileXY = (
     x: number,
     y: number,
@@ -1855,6 +1871,10 @@ extern void __mute_mask_${symbol};
       `_${symbol}`,
       tileIndex
     );
+  };
+
+  _getTileXY = (addr: ScriptBuilderStackVariable, x: number, y: number) => {
+    this._addCmd("VM_GET_TILE_XY", addr, x, y);
   };
 
   _callFar = (symbol: string, argsLen: number) => {
@@ -3810,6 +3830,17 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  variableAdd = (variable: ScriptBuilderVariable, value: number) => {
+    this._addComment("Variable Increment By " + value);
+    this._rpn() //
+      .refVariable(variable)
+      .int8(value)
+      .operator(".ADD")
+      .refSetVariable(variable)
+      .stop();
+    this._addNL();
+  };
+
   variableSetToTrue = (variable: string) => {
     this._addComment("Variable Set To True");
     this._setVariableConst(variable, 1);
@@ -4029,7 +4060,13 @@ extern void __mute_mask_${symbol};
     return defaultVariable;
   };
 
-  localVariableFromUnion = (unionValue: ScriptBuilderUnionValue) => {
+  localVariableFromUnion = (
+    unionValue: ScriptBuilderUnionValue
+  ): string | ScriptBuilderFunctionArg => {
+    if (!unionValue) {
+      // Guard undefined values
+      return this.localVariableFromUnion({ type: "number", value: 0 });
+    }
     if (unionValue.type === "variable") {
       return unionValue.value;
     }
@@ -4162,7 +4199,8 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     tilesetId: string,
-    tileIndex: number
+    tileIndex: number,
+    tileSize: "8px" | "16px"
   ) => {
     const { tilesets } = this.options;
     const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
@@ -4172,7 +4210,36 @@ extern void __mute_mask_${symbol};
 
     this._addComment(`Replace Tile XY`);
     this._stackPushConst(tileIndex);
-    this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
     this._stackPop(1);
   };
 
@@ -4180,7 +4247,8 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     tilesetId: string,
-    tileIndexVariable: string
+    tileIndexVariable: string,
+    tileSize: "8px" | "16px"
   ) => {
     const { tilesets } = this.options;
     const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
@@ -4193,11 +4261,40 @@ extern void __mute_mask_${symbol};
     this._addComment(`Replace Tile XY`);
     if (this._isIndirectVariable(tileIndexVariable)) {
       this._stackPushInd(variableAlias);
-      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
-      this._stackPop(1);
     } else {
-      this._replaceTileXY(x, y, tileset.symbol, variableAlias);
+      this._stackPush(variableAlias);
     }
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
+    this._stackPop(1);
   };
 
   // --------------------------------------------------------------------------

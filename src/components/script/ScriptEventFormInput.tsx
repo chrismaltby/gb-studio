@@ -631,6 +631,11 @@ const ScriptEventFormInput = ({
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          unitsAllowed={field.unitsAllowed}
+          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );

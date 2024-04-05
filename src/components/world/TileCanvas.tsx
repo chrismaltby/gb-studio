@@ -1,20 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { DMG_PALETTE } from "consts";
+import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { tilesetSelectors } from "store/features/entities/entitiesState";
 import TilePreviewWorker, { TilePreviewResult } from "./TilePreview.worker";
 import { assetURL } from "shared/lib/helpers/assets";
+import { GridUnitType } from "shared/lib/entities/entitiesTypes";
 
 interface TileCanvasProps {
   tilesetId: string;
   tileIndex?: number;
+  tileSize?: GridUnitType;
 }
 
 const worker = new TilePreviewWorker();
 
-export const TileCanvas = ({ tilesetId, tileIndex }: TileCanvasProps) => {
-  const width = 8;
-  const height = 8;
+export const TileCanvas = ({
+  tilesetId,
+  tileIndex,
+  tileSize,
+}: TileCanvasProps) => {
+  const size = tileSize === "16px" ? 2 : 1;
+  const width = TILE_SIZE * size;
+  const height = TILE_SIZE * size;
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const tileset = useAppSelector(
@@ -40,7 +47,7 @@ export const TileCanvas = ({ tilesetId, tileIndex }: TileCanvasProps) => {
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [tileset, workerId]
+    [height, tileset, width, workerId]
   );
 
   useEffect(() => {
@@ -65,8 +72,9 @@ export const TileCanvas = ({ tilesetId, tileIndex }: TileCanvasProps) => {
       src: tilesetURL,
       palette: DMG_PALETTE.colors,
       tileIndex,
+      tileSize,
     });
-  }, [canvasRef, tileIndex, tileset, workerId]);
+  }, [canvasRef, tileIndex, tileSize, tileset, workerId]);
 
   return (
     <canvas

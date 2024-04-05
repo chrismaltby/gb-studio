@@ -470,11 +470,17 @@ export interface ScriptEventFieldCondition {
 
 export const distanceUnitTypes = ["tiles", "pixels"] as const;
 export const timeUnitTypes = ["time", "frames"] as const;
-export const unitTypes = [...distanceUnitTypes, ...timeUnitTypes] as const;
+export const gridUnitTypes = ["8px", "16px"] as const;
+export const unitTypes = [
+  ...distanceUnitTypes,
+  ...timeUnitTypes,
+  ...gridUnitTypes,
+] as const;
 
 export type UnitType = typeof unitTypes[number];
 export type DistanceUnitType = typeof distanceUnitTypes[number];
 export type TimeUnitType = typeof timeUnitTypes[number];
+export type GridUnitType = typeof gridUnitTypes[number];
 
 export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
 export type MovementType = typeof movementTypes[number];

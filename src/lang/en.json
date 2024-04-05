@@ -757,6 +757,8 @@
   "FIELD_TO_TILE_DESC": "The ending tile offset inside tileset",
   "FIELD_STATE_VARIABLE": "State Variable",
   "FIELD_STATE_VARIABLE_DESC": "A variable to store the current state of this event",
+  "FIELD_ANIMATION_FRAMES": "Animation Frames",
+  "FIELD_ANIMATION_FRAMES_DESC": "The number of animation frames to cycle through.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

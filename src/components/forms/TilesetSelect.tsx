@@ -1,7 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { tilesetSelectors } from "store/features/entities/entitiesState";
-import { Tileset } from "shared/lib/entities/entitiesTypes";
+import {
+  UnitType,
+  Tileset,
+  GridUnitType,
+} from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -10,12 +14,17 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { TileCanvas } from "components/world/TileCanvas";
+import { UnitsSelectButtonInputOverlay } from "components/forms/UnitsSelectButtonInputOverlay";
+import styled from "styled-components";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
   tileIndex?: number;
   onChange?: (newId: string) => void;
+  units?: UnitType;
+  unitsAllowed?: UnitType[];
+  onChangeUnits?: (newUnits: UnitType) => void;
   optional?: boolean;
   optionalLabel?: string;
   optionalDefaultTilesetId?: string;
@@ -25,10 +34,17 @@ interface TilesetOption extends Option {
   tileset: Tileset;
 }
 
+const Wrapper = styled.div`
+  position: relative;
+`;
+
 export const TilesetSelect: FC<TilesetSelectProps> = ({
   value,
   tileIndex,
   onChange,
+  units,
+  unitsAllowed,
+  onChangeUnits,
   optional,
   optionalLabel,
   optionalDefaultTilesetId,
@@ -105,33 +121,52 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   };
 
   return (
-    <Select
-      value={currentValue}
-      options={options}
-      onChange={onSelectChange}
-      formatOptionLabel={(option: TilesetOption) => {
-        return (
-          <OptionLabelWithPreview
-            preview={
-              <TileCanvas tilesetId={option.value} tileIndex={tileIndex} />
-            }
-          >
-            {option.label}
-          </OptionLabelWithPreview>
-        );
-      }}
-      components={{
-        SingleValue: () => (
-          <SingleValueWithPreview
-            preview={
-              <TileCanvas tilesetId={value || ""} tileIndex={tileIndex} />
-            }
-          >
-            {currentValue?.label}
-          </SingleValueWithPreview>
-        ),
-      }}
-      {...selectProps}
-    />
+    <Wrapper>
+      <Select
+        value={currentValue}
+        options={options}
+        onChange={onSelectChange}
+        formatOptionLabel={(option: TilesetOption) => {
+          return (
+            <OptionLabelWithPreview
+              preview={
+                <TileCanvas
+                  tilesetId={option.value}
+                  tileIndex={tileIndex}
+                  tileSize={units as GridUnitType}
+                />
+              }
+            >
+              {option.label}
+            </OptionLabelWithPreview>
+          );
+        }}
+        components={{
+          SingleValue: () => (
+            <SingleValueWithPreview
+              preview={
+                <TileCanvas
+                  tilesetId={value || ""}
+                  tileIndex={tileIndex}
+                  tileSize={units as GridUnitType}
+                />
+              }
+            >
+              {currentValue?.label}
+            </SingleValueWithPreview>
+          ),
+        }}
+        {...selectProps}
+      />
+      {units && (
+        <UnitsSelectButtonInputOverlay
+          parentValue={String(currentValue?.label) ?? ""}
+          parentValueOffset={24}
+          value={units}
+          allowedValues={unitsAllowed}
+          onChange={onChangeUnits}
+        />
+      )}
+    </Wrapper>
   );
 };

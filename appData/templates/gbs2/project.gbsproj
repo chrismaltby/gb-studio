@@ -4542,12 +4542,12 @@
                                         "type": "number",
                                         "value": 0
                                     },
-                                    "toTileIndex": {
-                                        "type": "number",
-                                        "value": 3
-                                    },
                                     "variable": "L0",
-                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a"
+                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a",
+                                    "frames": {
+                                        "type": "number",
+                                        "value": 4
+                                    }
                                 },
                                 "id": "fb3e9a6c-a491-457e-8c93-d0971516643a"
                             },
@@ -4560,12 +4560,12 @@
                                         "type": "number",
                                         "value": 4
                                     },
-                                    "toTileIndex": {
-                                        "type": "number",
-                                        "value": 7
-                                    },
                                     "variable": "L1",
-                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a"
+                                    "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a",
+                                    "frames": {
+                                        "type": "number",
+                                        "value": 4
+                                    }
                                 },
                                 "id": "418dc58d-8057-41e3-ada5-96e620d889f5"
                             },
@@ -4578,12 +4578,12 @@
                                         "type": "number",
                                         "value": 0
                                     },
-                                    "toTileIndex": {
-                                        "type": "number",
-                                        "value": 3
-                                    },
                                     "variable": "L2",
-                                    "tilesetId": "d7042527-d20e-486d-93e6-66b9397df510"
+                                    "tilesetId": "d7042527-d20e-486d-93e6-66b9397df510",
+                                    "frames": {
+                                        "type": "number",
+                                        "value": 4
+                                    }
                                 },
                                 "id": "77f7c1aa-6c94-4b45-a05a-3914ec07e588"
                             }

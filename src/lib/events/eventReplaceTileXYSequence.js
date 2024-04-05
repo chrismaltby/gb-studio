@@ -42,6 +42,9 @@ const fields = [
     label: l10n("FIELD_TILESET"),
     description: l10n("FIELD_TILESET_DESC"),
     defaultValue: "LAST_TILESET",
+    unitsField: "tileSize",
+    unitsDefault: "8px",
+    unitsAllowed: ["8px", "16px"],
   },
   {
     type: "group",
@@ -62,16 +65,16 @@ const fields = [
         },
       },
       {
-        key: "toTileIndex",
-        label: l10n("FIELD_TO_TILE"),
-        description: l10n("FIELD_TO_TILE_DESC"),
+        key: "frames",
+        label: l10n("FIELD_ANIMATION_FRAMES"),
+        description: l10n("FIELD_ANIMATION_FRAMES_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
-        min: 0,
+        min: 1,
         width: "50%",
         defaultValue: {
-          number: 0,
+          number: 1,
           variable: "LAST_VARIABLE",
           property: "$self$:xpos",
         },
@@ -93,25 +96,67 @@ const compile = (input, helpers) => {
     localVariableFromUnion,
     ifVariableCompare,
     variableInc,
+    variableAdd,
     variableSetToUnionValue,
     markLocalsUsed,
+    _declareLocal,
+    _rpn,
+    _addComment,
+    _addNL,
   } = helpers;
 
   const fromVar = localVariableFromUnion(input.tileIndex);
-  const toVar = localVariableFromUnion(input.toTileIndex);
+  const framesVar = localVariableFromUnion(input.frames);
+  const toVar = _declareLocal("to_var", 1, true);
+
+  // Calculate max frame
+  _addComment("Calculate max frame");
+  if (input.tileSize === "16px") {
+    _rpn() //
+      .refVariable(fromVar)
+      .refVariable(framesVar)
+      .int8(1)
+      .operator(".SUB")
+      .int8(2)
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(toVar)
+      .stop();
+  } else {
+    _rpn() //
+      .refVariable(fromVar)
+      .refVariable(framesVar)
+      .int8(1)
+      .operator(".SUB")
+      .operator(".ADD")
+      .refSet(toVar)
+      .stop();
+  }
+  _addNL();
 
   ifVariableCompare(input.variable, ".LT", fromVar, () => {
     variableSetToUnionValue(input.variable, input.tileIndex);
   });
 
-  replaceTileXYVariable(input.x, input.y, input.tilesetId, input.variable);
-  variableInc(input.variable);
+  replaceTileXYVariable(
+    input.x,
+    input.y,
+    input.tilesetId,
+    input.variable,
+    input.tileSize
+  );
+
+  if (input.tileSize === "16px") {
+    variableAdd(input.variable, 2);
+  } else {
+    variableInc(input.variable);
+  }
 
   ifVariableCompare(input.variable, ".GT", toVar, () => {
     variableSetToUnionValue(input.variable, input.tileIndex);
   });
 
-  markLocalsUsed(fromVar, toVar);
+  markLocalsUsed(fromVar, framesVar, toVar);
 };
 
 module.exports = {
@@ -125,5 +170,6 @@ module.exports = {
     type: "position",
     x: "x",
     y: "y",
+    tileSize: "tileSize",
   },
 };

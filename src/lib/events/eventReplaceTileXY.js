@@ -37,26 +37,33 @@ const fields = [
     ],
   },
   {
-    key: "tilesetId",
-    type: "tileset",
-    label: l10n("FIELD_TILESET"),
-    description: l10n("FIELD_TILESET_DESC"),
-    defaultValue: "LAST_TILESET",
-  },
-  {
-    key: "tileIndex",
-    label: l10n("FIELD_TILE"),
-    description: l10n("FIELD_TILE_DESC"),
-    type: "union",
-    types: ["number", "variable", "property"],
-    defaultType: "number",
-    min: 0,
-    width: "50%",
-    defaultValue: {
-      number: 0,
-      variable: "LAST_VARIABLE",
-      property: "$self$:xpos",
-    },
+    type: "group",
+    fields: [
+      {
+        key: "tilesetId",
+        type: "tileset",
+        label: l10n("FIELD_TILESET"),
+        description: l10n("FIELD_TILESET_DESC"),
+        defaultValue: "LAST_TILESET",
+        unitsField: "tileSize",
+        unitsDefault: "8px",
+        unitsAllowed: ["8px", "16px"],
+      },
+      {
+        key: "tileIndex",
+        label: l10n("FIELD_TILE"),
+        description: l10n("FIELD_TILE_DESC"),
+        type: "union",
+        types: ["number", "variable", "property"],
+        defaultType: "number",
+        min: 0,
+        defaultValue: {
+          number: 0,
+          variable: "LAST_VARIABLE",
+          property: "$self$:xpos",
+        },
+      },
+    ],
   },
 ];
 
@@ -68,10 +75,22 @@ const compile = (input, helpers) => {
     markLocalsUsed,
   } = helpers;
   if (input.tileIndex.type === "number") {
-    replaceTileXY(input.x, input.y, input.tilesetId, input.tileIndex.value);
+    replaceTileXY(
+      input.x,
+      input.y,
+      input.tilesetId,
+      input.tileIndex.value,
+      input.tileSize
+    );
   } else {
     const indexVar = localVariableFromUnion(input.tileIndex);
-    replaceTileXYVariable(input.x, input.y, input.tilesetId, indexVar);
+    replaceTileXYVariable(
+      input.x,
+      input.y,
+      input.tilesetId,
+      indexVar,
+      input.tileSize
+    );
     markLocalsUsed(indexVar);
   }
 };
@@ -87,5 +106,6 @@ module.exports = {
     type: "position",
     x: "x",
     y: "y",
+    tileSize: "tileSize",
   },
 };

@@ -21,6 +21,7 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       units?: string;
+      tileSize?: string;
       tileWidth?: number;
       tileHeight?: number;
     }
