@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Updated code generation to reduce access to stack [@pau-tomas](https://github.com/pau-tomas)
 - Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
