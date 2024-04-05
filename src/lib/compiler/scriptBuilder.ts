@@ -2411,7 +2411,6 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._stackPop(1);
 
     // End
     this._label(endLabel);
