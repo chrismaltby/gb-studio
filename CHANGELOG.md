@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
 - Add event "Replace Tile At Position" and "Replace Tile From Sequence" to update background tiles, calling "Replace Tile From Sequence" repeatedly will cycle through animation  frames
 - Add new asset folder "Tilesets" for use in "Replace Tile" events
-- Add ability for plugins to define additional scene types by including defined types (e.g. `"types": [{"key": "RACING", "label": "Racing 2D"}]`) in `engine.json` [@pau-tomas](https://github.com/pau-tomas)
+- Add ability for plugins to define additional scene types by including defined types (e.g. `"sceneTypes": [{"key": "RACING", "label": "Racing 2D"}]`) in `engine.json` [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 

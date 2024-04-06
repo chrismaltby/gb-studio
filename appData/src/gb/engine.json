@@ -197,7 +197,7 @@
       "defaultValue": 0
     }
   ],
-  "types": [
+  "sceneTypes": [
     {
       "key": "TOPDOWN",
       "label": "GAMETYPE_TOP_DOWN"

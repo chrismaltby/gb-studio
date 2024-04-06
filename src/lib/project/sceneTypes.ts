@@ -6,11 +6,11 @@ import { engineRoot } from "consts";
 import glob from "glob";
 
 interface EngineData {
-  types?: SceneTypeSchema[];
+  sceneTypes?: SceneTypeSchema[];
 }
 
 export interface SceneTypeSyncResult {
-  types: SceneTypeSchema[];
+  sceneTypes: SceneTypeSchema[];
 }
 
 export const sceneTypesEmitter = new EventEmitter.EventEmitter();
@@ -36,12 +36,12 @@ export const loadSceneTypes = async (
     defaultEngine = await readJSON(defaultEngineJsonPath);
   }
 
-  let types: SceneTypeSchema[] = [];
+  let sceneTypes: SceneTypeSchema[] = [];
 
-  if (localEngine && localEngine.types) {
-    types = localEngine.types;
-  } else if (defaultEngine && defaultEngine.types) {
-    types = defaultEngine.types;
+  if (localEngine && localEngine.sceneTypes) {
+    sceneTypes = localEngine.sceneTypes;
+  } else if (defaultEngine && defaultEngine.sceneTypes) {
+    sceneTypes = defaultEngine.sceneTypes;
   }
 
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
@@ -50,8 +50,8 @@ export const loadSceneTypes = async (
     if (await pathExists(enginePluginJsonPath)) {
       try {
         const pluginEngine = await readJSON(enginePluginJsonPath);
-        if (pluginEngine.types) {
-          types = types.concat(pluginEngine.types);
+        if (pluginEngine.sceneTypes) {
+          sceneTypes = sceneTypes.concat(pluginEngine.sceneTypes);
         }
       } catch (e) {
         console.warn(e);
@@ -59,5 +59,5 @@ export const loadSceneTypes = async (
     }
   }
 
-  return types;
+  return sceneTypes;
 };
