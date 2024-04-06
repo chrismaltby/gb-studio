@@ -489,7 +489,7 @@ export const compileScene = (
     {
       width: scene.width,
       height: scene.height,
-      type: `SCENE_TYPE_${scene.type}`,
+      type: `SCENE_TYPE_${String(scene.type).toUpperCase()}`,
       background: toFarPtr(scene.background.symbol),
       collisions: toFarPtr(sceneCollisionsSymbol(scene.symbol)),
       parallax_rows: compileParallax(
