@@ -626,6 +626,16 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["include/sio.h", "src/core/sio.c"],
   },
+  {
+    version: "3.3.0-e0",
+    description:
+      "Updates\n" + ["   * Added scene types to engine.json"].join("\n"),
+    modifiedFiles: [
+      "engine.json",
+      "src/gb/include/data/scene_types.h",
+      "src/gb/include/gbs_types.h",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

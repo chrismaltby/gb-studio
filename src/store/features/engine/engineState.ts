@@ -22,7 +22,6 @@ export type EngineFieldSchema = {
 export type SceneTypeSchema = {
   key: string;
   label: string;
-  file: string;
 };
 
 export interface EngineState {

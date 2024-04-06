@@ -15,6 +15,33 @@ export interface SceneTypeSyncResult {
 
 export const sceneTypesEmitter = new EventEmitter.EventEmitter();
 
+const defaultSceneTypes = [
+  {
+    key: "TOPDOWN",
+    label: "GAMETYPE_TOP_DOWN",
+  },
+  {
+    key: "PLATFORM",
+    label: "GAMETYPE_PLATFORMER",
+  },
+  {
+    key: "ADVENTURE",
+    label: "GAMETYPE_ADVENTURE",
+  },
+  {
+    key: "SHMUP",
+    label: "GAMETYPE_SHMUP",
+  },
+  {
+    key: "POINTNCLICK",
+    label: "GAMETYPE_POINT_N_CLICK",
+  },
+  {
+    key: "LOGO",
+    label: "GAMETYPE_LOGO",
+  },
+];
+
 export const loadSceneTypes = async (
   projectRoot: string
 ): Promise<SceneTypeSchema[]> => {
@@ -42,6 +69,10 @@ export const loadSceneTypes = async (
     sceneTypes = localEngine.sceneTypes;
   } else if (defaultEngine && defaultEngine.sceneTypes) {
     sceneTypes = defaultEngine.sceneTypes;
+  }
+
+  if (!sceneTypes || (sceneTypes && sceneTypes.length === 0)) {
+    sceneTypes = defaultSceneTypes;
   }
 
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
