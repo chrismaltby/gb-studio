@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ThemeContext } from "styled-components";
 
 interface VibratoWaveformPreviewProps {
   waveform: string;
@@ -6,6 +7,8 @@ interface VibratoWaveformPreviewProps {
 export const VibratoWaveformPreview = ({
   waveform,
 }: VibratoWaveformPreviewProps) => {
+  const themeContext = useContext(ThemeContext);
+
   let path = "";
 
   [...waveform].forEach((l: string, i: number) => {
@@ -14,9 +17,7 @@ export const VibratoWaveformPreview = ({
     } `;
   });
 
-  const defaultColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue("--highlight-color");
+  const defaultColor = themeContext.colors.highlight;
 
   return (
     <div style={{ height: 20 }}>

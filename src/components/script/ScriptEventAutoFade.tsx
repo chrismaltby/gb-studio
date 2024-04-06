@@ -2,7 +2,7 @@ import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import { ArrowIcon } from "ui/icons/Icons";
@@ -20,11 +20,14 @@ import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 export const ScriptEventAutoFade = () => {
   const dispatch = useAppDispatch();
-  const type = useAppSelector((state) => state.editor.type);
-  const sceneId = useAppSelector((state) => state.editor.scene);
+  const context = useContext(ScriptEditorContext);
+  const type = context.entityType;
+  const sceneId = context.sceneId;
+  const headerRef = useRef<HTMLDivElement>(null);
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
@@ -70,6 +73,14 @@ export const ScriptEventAutoFade = () => {
     );
   }, [autoFadeEventCollapse, dispatch, sceneId]);
 
+  const isExecuting = context.executingId === "autofade";
+
+  useEffect(() => {
+    if (isExecuting && headerRef.current) {
+      headerRef.current.scrollIntoView();
+    }
+  }, [isExecuting]);
+
   if (type !== "scene" || value === null || !scene) {
     return null;
   }
@@ -77,10 +88,12 @@ export const ScriptEventAutoFade = () => {
   return (
     <ScriptEventWrapper conditional={false} nestLevel={0}>
       <ScriptEventHeader
+        ref={headerRef}
         conditional={false}
         comment={false}
         nestLevel={0}
         altBg={false}
+        isExecuting={isExecuting}
         style={{
           cursor: "not-allowed",
         }}

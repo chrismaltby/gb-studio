@@ -29,6 +29,10 @@ const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
 const MAX_SPRITE_TILES = 64;
+
+export const MAX_BACKGROUND_TILES = 16 * 12;
+export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
+
 const SCREEN_WIDTH = 20;
 const SCREEN_HEIGHT = 18;
 const MAX_ONSCREEN = 10;
@@ -100,6 +104,8 @@ export const DMG_PALETTE = {
   colors: ["E8F8E0", "B0F088", "509878", "202850"],
 } as Palette;
 
+export const FLAG_VRAM_BANK_1 = 0x8;
+
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
 
@@ -110,14 +116,6 @@ export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
 // @TODO Check if any uses of these hard coded event types can be made more generic to not need to know the specific event used
 export const EVENT_TEXT = "EVENT_TEXT";
-export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
-export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
-export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
-export const EVENT_OVERLAY_SHOW = "EVENT_OVERLAY_SHOW";
-export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
-export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
-export const EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR =
-  "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR";
 export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_ACTOR_SET_SPRITE = "EVENT_ACTOR_SET_SPRITE";
@@ -145,7 +143,6 @@ export const defaultProjectSettings: SettingsState = {
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
-  customColorsEnabled: false,
   sgbEnabled: false,
   customHead: "",
   defaultBackgroundPaletteIds: [
@@ -192,6 +189,15 @@ export const defaultProjectSettings: SettingsState = {
   customControlsB: ["Control", "k", "x"],
   customControlsStart: ["Enter"],
   customControlsSelect: ["Shift"],
+  debuggerEnabled: false,
+  debuggerScriptType: "editor",
+  debuggerVariablesFilter: "all",
+  debuggerCollapsedPanes: [],
+  debuggerPauseOnScriptChanged: false,
+  debuggerPauseOnWatchedVariableChanged: false,
+  debuggerBreakpoints: [],
+  debuggerWatchedVariables: [],
+  colorMode: "mixed",
 };
 
 export {

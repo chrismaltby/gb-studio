@@ -192,7 +192,14 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
           label: l10n("MENU_RUN"),
           accelerator: "CommandOrControl+B",
           click: () => {
-            notifyListeners("run");
+            notifyListeners("run", false);
+          },
+        },
+        {
+          label: l10n("MENU_RUN_WITH_DEBUGGING"),
+          accelerator: "CommandOrControl+Alt+B",
+          click: () => {
+            notifyListeners("run", true);
           },
         },
         {
@@ -266,7 +273,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
           },
         },
         {
-          label: l10n("MENU_BACKGROUNDS"),
+          label: l10n("MENU_IMAGES"),
           accelerator: "CommandOrControl+3",
           click: () => {
             notifyListeners("section", "backgrounds");

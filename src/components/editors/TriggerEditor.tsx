@@ -36,6 +36,7 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface TriggerEditorProps {
   id: string;
@@ -251,6 +252,17 @@ export const TriggerEditor = ({
     [scriptKey, trigger]
   );
 
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "entity",
+      entityType: "trigger",
+      entityId: id,
+      sceneId,
+      scriptKey,
+    }),
+    [id, sceneId, scriptKey]
+  );
+
   if (!scene || !trigger) {
     return <WorldEditor />;
   }
@@ -383,13 +395,8 @@ export const TriggerEditor = ({
             />
           )}
         </StickyTabs>
-        <ScriptEditorContext.Provider value="entity">
-          <ScriptEditor
-            value={trigger[scriptKey] || []}
-            type="trigger"
-            entityId={trigger.id}
-            scriptKey={scriptKey}
-          />
+        <ScriptEditorContext.Provider value={scriptCtx}>
+          <ScriptEditor value={trigger[scriptKey] || []} />
         </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>

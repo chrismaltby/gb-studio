@@ -3,10 +3,16 @@ import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
+import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
+export type ColorModeSetting = "mono" | "mixed" | "color";
 export type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";
 export type CartType = "mbc5" | "mbc3";
+export type BreakpointData = {
+  scriptEventId: string;
+  context: ScriptEditorCtx;
+};
 
 export type SettingsState = {
   startSceneId: string;
@@ -22,7 +28,6 @@ export type SettingsState = {
   worldScrollX: number;
   worldScrollY: number;
   zoom: number;
-  customColorsEnabled: boolean;
   sgbEnabled: boolean;
   customHead: string;
   defaultBackgroundPaletteIds: [
@@ -69,6 +74,15 @@ export type SettingsState = {
   customControlsB: string[];
   customControlsStart: string[];
   customControlsSelect: string[];
+  debuggerEnabled: boolean;
+  debuggerScriptType: "editor" | "gbvm";
+  debuggerVariablesFilter: "all" | "watched";
+  debuggerCollapsedPanes: string[];
+  debuggerPauseOnScriptChanged: boolean;
+  debuggerPauseOnWatchedVariableChanged: boolean;
+  debuggerBreakpoints: BreakpointData[];
+  debuggerWatchedVariables: string[];
+  colorMode: ColorModeSetting;
 };
 
 export const initialState: SettingsState = defaultProjectSettings;
@@ -115,6 +129,37 @@ const settingsSlice = createSlice({
         );
       } else {
         state.favoriteEvents.push(action.payload);
+      }
+    },
+
+    toggleBreakpoint: (state, action: PayloadAction<BreakpointData>) => {
+      const index = state.debuggerBreakpoints.findIndex(
+        (item) => item.scriptEventId === action.payload.scriptEventId
+      );
+      if (index !== -1) {
+        state.debuggerBreakpoints.splice(index, 1);
+      } else {
+        state.debuggerBreakpoints.unshift(action.payload);
+      }
+    },
+
+    toggleWatchedVariable: (state, action: PayloadAction<string>) => {
+      if (state.debuggerWatchedVariables.includes(action.payload)) {
+        state.debuggerWatchedVariables = state.debuggerWatchedVariables.filter(
+          (item) => item !== action.payload
+        );
+      } else {
+        state.debuggerWatchedVariables.push(action.payload);
+      }
+    },
+
+    toggleDebuggerPaneCollapsed: (state, action: PayloadAction<string>) => {
+      if (state.debuggerCollapsedPanes.includes(action.payload)) {
+        state.debuggerCollapsedPanes = state.debuggerCollapsedPanes.filter(
+          (item) => item !== action.payload
+        );
+      } else {
+        state.debuggerCollapsedPanes.push(action.payload);
       }
     },
   },

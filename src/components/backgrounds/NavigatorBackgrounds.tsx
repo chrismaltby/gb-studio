@@ -1,27 +1,32 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Background } from "shared/lib/entities/entitiesTypes";
+import { Background, Tileset } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
+import useSplitPane from "ui/hooks/use-split-pane";
 
 interface NavigatorBackgroundsProps {
   height: number;
   selectedId: string;
 }
 
-interface BackgroundNavigatorItem {
+interface ImageNavigatorItem {
   id: string;
   name: string;
 }
 
-const backgroundToNavigatorItem = (
-  background: Background
-): BackgroundNavigatorItem => ({
+const imageToNavigatorItem = (
+  background: Background | Tileset
+): ImageNavigatorItem => ({
   id: background.id,
   name: background.name || background.filename,
 });
@@ -39,23 +44,40 @@ const Pane = styled.div`
   overflow: hidden;
 `;
 
+const COLLAPSED_SIZE = 30;
+
 export const NavigatorBackgrounds = ({
   height,
   selectedId,
 }: NavigatorBackgroundsProps) => {
-  const [items, setItems] = useState<BackgroundNavigatorItem[]>([]);
+  const [backgroundItems, setBackgroundItems] = useState<ImageNavigatorItem[]>(
+    []
+  );
+  const [tilesetItems, setTilesetItems] = useState<ImageNavigatorItem[]>([]);
+
   const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
+  );
+  const allTilesets = useAppSelector((state) =>
+    tilesetSelectors.selectAll(state)
   );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setItems(
+    setBackgroundItems(
       allBackgrounds
-        .map((background) => backgroundToNavigatorItem(background))
+        .map((background) => imageToNavigatorItem(background))
         .sort(sortByName)
     );
   }, [allBackgrounds]);
+
+  useEffect(() => {
+    setTilesetItems(
+      allTilesets
+        .map((tileset) => imageToNavigatorItem(tileset))
+        .sort(sortByName)
+    );
+  }, [allTilesets]);
 
   const setSelectedId = useCallback(
     (id: string) => {
@@ -64,20 +86,48 @@ export const NavigatorBackgrounds = ({
     [dispatch]
   );
 
-  return (
-    <Pane style={{ height }}>
-      <SplitPaneHeader collapsed={false}>
-        {l10n("NAV_BACKGROUNDS")}
-      </SplitPaneHeader>
+  const [splitSizes, setSplitSizes] = useState([window.innerHeight / 2, 200]);
+  const [onDragStart, togglePane] = useSplitPane({
+    sizes: splitSizes,
+    setSizes: setSplitSizes,
+    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE],
+    collapsedSize: COLLAPSED_SIZE,
+    reopenSize: 200,
+    maxTotal: height,
+    direction: "vertical",
+  });
 
-      <FlatList
-        selectedId={selectedId}
-        items={items}
-        setSelectedId={setSelectedId}
-        height={height - 30}
-      >
-        {({ item }) => <EntityListItem type="background" item={item} />}
-      </FlatList>
-    </Pane>
+  return (
+    <>
+      <Pane style={{ height: splitSizes[0] }}>
+        <SplitPaneHeader collapsed={false} onToggle={() => togglePane(0)}>
+          {l10n("NAV_BACKGROUNDS")}
+        </SplitPaneHeader>
+
+        <FlatList
+          selectedId={selectedId}
+          items={backgroundItems}
+          setSelectedId={setSelectedId}
+          height={splitSizes[0] - 30}
+        >
+          {({ item }) => <EntityListItem type="background" item={item} />}
+        </FlatList>
+      </Pane>
+      <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
+
+      <Pane style={{ height: splitSizes[1] }}>
+        <SplitPaneHeader collapsed={false} onToggle={() => togglePane(1)}>
+          {l10n("FIELD_TILESETS")}
+        </SplitPaneHeader>
+        <FlatList
+          selectedId={selectedId}
+          items={tilesetItems}
+          setSelectedId={setSelectedId}
+          height={splitSizes[1] - 30}
+        >
+          {({ item }) => <EntityListItem type="background" item={item} />}
+        </FlatList>
+      </Pane>
+    </>
   );
 };

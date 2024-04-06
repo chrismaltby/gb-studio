@@ -75,6 +75,7 @@ import {
   ScriptEventsRef,
   ScriptEventParentType,
   Sound,
+  Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import {
   normalizeEntities,
@@ -108,6 +109,9 @@ const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
+  sortComparer: sortByFilename,
+});
+const tilesetsAdapter = createEntityAdapter<Tileset>({
   sortComparer: sortByFilename,
 });
 const metaspritesAdapter = createEntityAdapter<Metasprite>();
@@ -152,6 +156,7 @@ export const initialState: EntitiesState = {
   fonts: fontsAdapter.getInitialState(),
   avatars: avatarsAdapter.getInitialState(),
   emotes: emotesAdapter.getInitialState(),
+  tilesets: tilesetsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
@@ -256,6 +261,7 @@ const loadProject: CaseReducer<
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
   avatarsAdapter.setAll(state.avatars, entities.avatars || {});
   emotesAdapter.setAll(state.emotes, entities.emotes || {});
+  tilesetsAdapter.setAll(state.tilesets, entities.tilesets || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
   engineFieldValuesAdapter.setAll(
@@ -574,6 +580,50 @@ const removeEmote: CaseReducer<
 > = (state, action) => {
   removeAssetEntity(state.emotes, emotesAdapter, action.payload);
 };
+
+/**************************************************************************
+ * Tileset
+ */
+
+const setTilesetSymbol: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ tilesetId: string; symbol: string }>
+> = (state, action) => {
+  updateEntitySymbol(
+    state,
+    state.tilesets,
+    tilesetsAdapter,
+    action.payload.tilesetId,
+    action.payload.symbol
+  );
+};
+
+const loadTileset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Tileset;
+  }>
+> = (state, action) => {
+  upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [
+    "id",
+    "symbol",
+  ]);
+  ensureSymbolsUnique(state);
+};
+
+const removeTileset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin?: string;
+  }>
+> = (state, action) => {
+  removeAssetEntity(state.tilesets, tilesetsAdapter, action.payload);
+};
+
+/**************************************************************************
+ * Fix Scenes
+ */
 
 const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   const scenes = localSceneSelectors.selectAll(state);
@@ -1859,7 +1909,7 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
-      tileLookup?: Uint8Array;
+      tileLookup?: number[];
       x: number;
       y: number;
       value: number;
@@ -2120,7 +2170,7 @@ const paintColor: CaseReducer<
     {
       backgroundId: string;
       sceneId: string;
-      tileLookup?: Uint8Array;
+      tileLookup?: number[];
       x: number;
       y: number;
       paletteIndex: number;
@@ -3184,6 +3234,12 @@ const entitiesSlice = createSlice({
     setEmoteSymbol,
 
     /**************************************************************************
+     * Tileset
+     */
+
+    setTilesetSymbol,
+
+    /**************************************************************************
      * Font
      */
 
@@ -3213,6 +3269,8 @@ const entitiesSlice = createSlice({
     removeAvatar,
     loadEmote,
     removeEmote,
+    loadTileset,
+    removeTileset,
   },
   extraReducers: (builder) =>
     builder
@@ -3378,6 +3436,9 @@ export const avatarSelectors = avatarsAdapter.getSelectors(
 );
 export const emoteSelectors = emotesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.emotes
+);
+export const tilesetSelectors = tilesetsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.tilesets
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables

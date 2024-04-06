@@ -49,6 +49,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",
@@ -91,6 +92,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",
@@ -133,6 +135,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",
@@ -595,7 +598,7 @@ test("Should be able to flood fill collisions", () => {
     brush: "fill",
     isTileProp: false,
     drawLine: false,
-    tileLookup: new Uint8Array(),
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);
@@ -644,7 +647,7 @@ test("Should be able to paint collisions", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: false,
-    tileLookup: new Uint8Array(),
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);
@@ -700,7 +703,7 @@ test("Should be able to paint collision line", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: true,
-    tileLookup: new Uint8Array(),
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);

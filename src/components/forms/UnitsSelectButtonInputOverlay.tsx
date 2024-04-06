@@ -69,6 +69,8 @@ export const UnitsSelectButtonInputOverlay = ({
       pixels: l10n("FIELD_PIXELS"),
       time: l10n("FIELD_SECONDS"),
       frames: l10n("FIELD_FRAMES"),
+      "8px": "8px",
+      "16px": "16px",
     }),
     []
   );
@@ -79,6 +81,8 @@ export const UnitsSelectButtonInputOverlay = ({
       pixels: l10n("FIELD_PIXELS_SHORT").toLocaleLowerCase(),
       time: l10n("FIELD_SECONDS").toLocaleLowerCase(),
       frames: l10n("FIELD_FRAMES").toLocaleLowerCase(),
+      "8px": "8px",
+      "16px": "16px",
     }),
     []
   );

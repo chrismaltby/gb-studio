@@ -76,7 +76,7 @@ const ActorView = memo(
       paletteSelectors.selectEntities(state)
     );
     const showSprite = useAppSelector((state) => state.editor.zoom > 80);
-    const gbcEnabled = settings.customColorsEnabled;
+    const gbcEnabled = settings.colorMode !== "mono";
     const palette: Palette = useMemo(
       () =>
         gbcEnabled

@@ -12,7 +12,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const dispatch = store.dispatch.bind(store);
 
-      const { buildType, exportBuild } = action.payload;
+      const { buildType, exportBuild, debugEnabled } = action.payload;
 
       if (state.console.status === "cancelled") {
         // Wait until cancel is complete before allowing another build
@@ -29,6 +29,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
 
       const project = denormalizeProject(state.project.present);
       const engineFields = state.engine.fields;
+      const sceneTypes = state.engine.sceneTypes;
 
       try {
         await API.project.build(project, {
@@ -36,6 +37,8 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           engineFields,
           profile: state.editor.profile,
           exportBuild,
+          debugEnabled,
+          sceneTypes,
         });
       } catch (e) {
         dispatch(navigationActions.setSection("build"));
@@ -62,9 +65,15 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
 
       const project = denormalizeProject(state.project.present);
       const engineFields = state.engine.fields;
+      const sceneTypes = state.engine.sceneTypes;
 
       try {
-        await API.project.exportProject(project, engineFields, exportType);
+        await API.project.exportProject(
+          project,
+          engineFields,
+          sceneTypes,
+          exportType
+        );
       } catch (e) {
         dispatch(navigationActions.setSection("build"));
       }

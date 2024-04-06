@@ -72,7 +72,7 @@ test("Should trigger call to play music", async () => {
   middleware(store)(next)(action);
 
   expect(loadSpy).toBeCalledWith(
-    "file:///root/path/assets/music/track1.mod",
+    "gbs://project/assets/music/track1.mod",
     false
   );
 });

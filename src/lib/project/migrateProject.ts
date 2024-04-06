@@ -47,7 +47,7 @@ import {
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
-export const LATEST_PROJECT_VERSION = "3.2.0";
+export const LATEST_PROJECT_VERSION = "3.3.0";
 export const LATEST_PROJECT_MINOR_VERSION = "2";
 
 const ensureProjectAssetSync = (
@@ -1959,6 +1959,24 @@ const migrateFrom320r1To320r2Events = (data: ProjectData): ProjectData => {
   };
 };
 
+type ProjectDataV320r2 = ProjectData & {
+  settings: {
+    customColorsEnabled: boolean;
+  };
+};
+
+export const migrateFrom320r2To330r1Settings = (
+  data: ProjectDataV320r2
+): ProjectData => {
+  return {
+    ...data,
+    settings: {
+      ...data.settings,
+      colorMode: data.settings.customColorsEnabled ? "mixed" : "mono",
+    },
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2112,6 +2130,17 @@ const migrateProject = (
   if (version === "3.2.0") {
     if (release === "1") {
       data = migrateFrom320r1To320r2Events(data);
+      release = "2";
+    }
+    if (release === "2") {
+      version = "3.3.0";
+      release = "1";
+    }
+  }
+
+  if (version === "3.3.0") {
+    if (release === "1") {
+      data = migrateFrom320r2To330r1Settings(data as ProjectDataV320r2);
       release = "2";
     }
   }

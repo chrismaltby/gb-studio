@@ -28,8 +28,9 @@ import {
   PrecompiledScene,
   PrecompiledSprite,
   PrecompiledEmote,
+  PrecompiledTilesetData,
   PrecompiledBackground,
-} from "./compileData2";
+} from "./generateGBVMData";
 import { DMG_PALETTE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
@@ -55,6 +56,7 @@ import {
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { VariableMapData } from "lib/compiler/compileData";
 
 export type ScriptOutput = string[];
 
@@ -78,7 +80,11 @@ interface ScriptBuilderProjectile {
   collisionMask: string[];
 }
 
-export type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
+export type ScriptBuilderEntityType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 type ScriptBuilderStackVariable = string | number;
 
@@ -107,8 +113,9 @@ export interface ScriptBuilderOptions {
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
+  entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<string>;
+  variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -120,6 +127,7 @@ export interface ScriptBuilderOptions {
   sounds: SoundData[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
+  tilesets: PrecompiledTilesetData[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
@@ -140,6 +148,7 @@ export interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  debugEnabled: boolean;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -510,6 +519,7 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
+      entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
@@ -524,6 +534,7 @@ class ScriptBuilder {
       sounds: options.sounds || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
+      tilesets: options.tilesets || [],
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
@@ -531,6 +542,7 @@ class ScriptBuilder {
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
+      debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
@@ -678,7 +690,10 @@ class ScriptBuilder {
     }
   };
 
-  private _stackPushEvaluatedExpression = (expression: string) => {
+  private _stackPushEvaluatedExpression = (
+    expression: string,
+    resultVariable?: ScriptBuilderVariable
+  ) => {
     const tokens = tokenize(expression);
     const rpnTokens = shuntingYard(tokens);
     if (rpnTokens.length > 0) {
@@ -708,6 +723,9 @@ class ScriptBuilder {
           rpn = rpn.operator(op);
         }
         token = rpnTokens.shift();
+      }
+      if (resultVariable !== undefined) {
+        rpn.refSetVariable(resultVariable);
       }
       rpn.stop();
     } else {
@@ -1121,6 +1139,24 @@ class ScriptBuilder {
           return rpn.refInd(variableAlias);
         } else {
           return rpn.ref(variableAlias);
+        }
+      },
+      refSet: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetInd: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET_IND", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetVariable: (variable: ScriptBuilderVariable) => {
+        const variableAlias = this.getVariableAlias(variable);
+        if (this._isIndirectVariable(variable)) {
+          return rpn.refSetInd(variableAlias);
+        } else {
+          return rpn.refSet(variableAlias);
         }
       },
       int8: (value: number | string) => {
@@ -1811,6 +1847,42 @@ extern void __mute_mask_${symbol};
     this._addCmd(".CGB_PAL", r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4);
   };
 
+  _replaceTile = (
+    addr: ScriptBuilderStackVariable,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable,
+    numTiles: number
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE",
+      addr,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex,
+      numTiles
+    );
+  };
+
+  _replaceTileXY = (
+    x: number,
+    y: number,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE_XY",
+      x,
+      y,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex
+    );
+  };
+
+  _getTileXY = (addr: ScriptBuilderStackVariable, x: number, y: number) => {
+    this._addCmd("VM_GET_TILE_XY", addr, x, y);
+  };
+
   _callFar = (symbol: string, argsLen: number) => {
     this._addCmd("VM_CALL_FAR", `___bank_${symbol}`, `_${symbol}`);
     if (argsLen > 0) {
@@ -2100,14 +2172,12 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
 
     this._setConst(
       this._localRef(actorRef, 3),
@@ -2135,16 +2205,15 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
@@ -2190,14 +2259,12 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
 
     this._actorSetPosition(actorRef);
     this._assertStackNeutral(stackPtr);
@@ -2218,16 +2285,15 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._actorSetPosition(actorRef);
     this._addNL();
   };
@@ -2245,14 +2311,13 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableX, ".ARG1");
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(2);
     this._addNL();
   };
 
@@ -2268,10 +2333,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .stop();
 
-    this._setVariable(variableX, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2287,10 +2351,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2338,9 +2401,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Up
@@ -2351,9 +2413,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Left
@@ -2364,9 +2425,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Right
@@ -2375,9 +2435,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
-    this._stackPop(1);
 
     // End
     this._label(endLabel);
@@ -3156,9 +3215,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(magnitude)
+      .refSet(this._localRef(cameraShakeArgsRef, 2))
       .stop();
-    this._set(this._localRef(cameraShakeArgsRef, 2), ".ARG0");
-    this._stackPop(1);
 
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
@@ -3526,7 +3584,12 @@ extern void __mute_mask_${symbol};
     const result = { scriptRef: symbol, argsLen };
     compiledCustomEventScriptCache[customEventId] = result;
 
-    this._compileSubScript("custom", script, symbol, { argLookup });
+    this._compileSubScript("custom", script, symbol, {
+      argLookup,
+      entity: customEvent,
+      entityType: "customEvent",
+      entityScriptKey: "script",
+    });
 
     return result;
   };
@@ -3651,6 +3714,10 @@ extern void __mute_mask_${symbol};
       return variable.symbol;
     }
 
+    if (typeof variable === "string" && variable.startsWith(".LOCAL")) {
+      return variable;
+    }
+
     // Set correct default variable for missing vars based on script context
     if (variable === "") {
       variable = defaultVariableForContext(this.options.context);
@@ -3676,6 +3743,7 @@ extern void __mute_mask_${symbol};
       entityType,
       variablesLookup,
       variableAliasLookup,
+      scene,
     } = this.options;
 
     const id = getVariableId(variable, entity);
@@ -3683,18 +3751,27 @@ extern void __mute_mask_${symbol};
     const namedVariable = variablesLookup[id || "0"];
     if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
-      variableAliasLookup[id] = symbol;
+      variableAliasLookup[id] = {
+        symbol,
+        name: namedVariable.name,
+        id: namedVariable.id,
+        isLocal: false,
+        entityType: "scene",
+        entityId: "",
+        sceneId: "",
+      };
       return symbol;
     }
 
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
-      return existingAlias;
+      return existingAlias.symbol;
     }
 
     let name = "";
-    if (entity && isVariableLocal(variable)) {
+    const isLocal = isVariableLocal(variable);
+    if (entity && isLocal) {
       const num = toVariableNumber(variable);
       const localName = localVariableName(num, entity.id, variablesLookup);
       if (entityType === "scene") {
@@ -3709,7 +3786,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableDefaultName(num);
+      name = namedVariable?.name ?? globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3717,14 +3794,22 @@ extern void __mute_mask_${symbol};
     let counter = 1;
 
     // Make sure new alias is unique
-    const aliases = Object.values(variableAliasLookup) as string[];
+    const aliases = Object.values(variableAliasLookup).map((v) => v?.symbol);
     while (aliases.includes(newAlias)) {
       newAlias = `${alias}_${counter}`;
       counter++;
     }
 
     // New Alias is now unique
-    variableAliasLookup[id] = newAlias;
+    variableAliasLookup[id] = {
+      symbol: newAlias,
+      id,
+      name,
+      isLocal,
+      entityType,
+      entityId: entity?.id ?? "",
+      sceneId: scene?.id ?? "",
+    };
 
     return newAlias;
   };
@@ -3735,9 +3820,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".ADD")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3747,9 +3831,19 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".SUB")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
+    this._addNL();
+  };
+
+  variableAdd = (variable: ScriptBuilderVariable, value: number) => {
+    this._addComment("Variable Increment By " + value);
+    this._rpn() //
+      .refVariable(variable)
+      .int8(value)
+      .operator(".ADD")
+      .refSetVariable(variable)
+      .stop();
     this._addNL();
   };
 
@@ -3810,9 +3904,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3834,9 +3927,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3861,9 +3953,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(variable);
     rpn.stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3901,9 +3992,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int16(flags)
       .operator(".B_OR")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3915,9 +4005,8 @@ extern void __mute_mask_${symbol};
       .int16(flags)
       .operator(".B_XOR")
       .operator(".B_AND")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3925,9 +4014,7 @@ extern void __mute_mask_${symbol};
     this._addComment(
       `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`
     );
-    this._stackPushEvaluatedExpression(expression);
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
+    this._stackPushEvaluatedExpression(expression, variable);
     this._addNL();
   };
 
@@ -3977,6 +4064,27 @@ extern void __mute_mask_${symbol};
     }
     this.variableSetToUnionValue(defaultVariable, unionValue);
     return defaultVariable;
+  };
+
+  localVariableFromUnion = (
+    unionValue: ScriptBuilderUnionValue
+  ): string | ScriptBuilderFunctionArg => {
+    if (!unionValue) {
+      // Guard undefined values
+      return this.localVariableFromUnion({ type: "number", value: 0 });
+    }
+    if (unionValue.type === "variable") {
+      return unionValue.value;
+    }
+    const local = this._declareLocal("union_val", 1, true);
+    this.variableSetToUnionValue(this._localRef(local, 0), unionValue);
+    return local;
+  };
+
+  markLocalsUsed = (...locals: string[]) => {
+    locals.forEach((local) => {
+      this._markLocalUse(local);
+    });
   };
 
   variableSetToUnionValue = (
@@ -4088,6 +4196,111 @@ extern void __mute_mask_${symbol};
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
     this._fadeOut(true);
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Tiles
+
+  replaceTileXY = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndex: number,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    this._addComment(`Replace Tile XY`);
+    this._stackPushConst(tileIndex);
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
+    this._stackPop(1);
+  };
+
+  replaceTileXYVariable = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndexVariable: string,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    const variableAlias = this.getVariableAlias(tileIndexVariable);
+
+    this._addComment(`Replace Tile XY`);
+    if (this._isIndirectVariable(tileIndexVariable)) {
+      this._stackPushInd(variableAlias);
+    } else {
+      this._stackPush(variableAlias);
+    }
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
+    this._stackPop(1);
   };
 
   // --------------------------------------------------------------------------
@@ -5090,6 +5303,7 @@ extern void __mute_mask_${symbol};
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
         branch: false,
+        debugEnabled: this.options.debugEnabled,
         warnings: (msg: string) => {
           console.error(msg);
         },
@@ -5139,6 +5353,47 @@ extern void __mute_mask_${symbol};
 
   makeSymbol = (name: string) => {
     return this._getAvailableSymbol(name);
+  };
+
+  // --------------------------------------------------------------------------
+  // Debuger
+
+  addDebugSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = (
+        scriptEventId === "autofade"
+          ? [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              "scene",
+              this.options.scene?.id ?? "",
+              "script",
+            ]
+          : [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              this.options.entityType,
+              this.options.entity?.id ?? "",
+              this.options.entityScriptKey ?? "script",
+            ]
+      )
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM$${debugSymbol}`);
+    }
+  };
+
+  addDebugEndSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = [scriptSymbolName, scriptEventId]
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM_END$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM_END$${debugSymbol}`);
+    }
   };
 
   // --------------------------------------------------------------------------

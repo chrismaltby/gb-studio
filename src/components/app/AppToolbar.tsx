@@ -62,7 +62,6 @@ const AppToolbar: FC = () => {
   const section = useAppSelector((state) => state.navigation.section);
   const zoom = useAppSelector((state) => getZoomForSection(state, section));
   const initalSearchTerm = useAppSelector((state) => state.editor.searchTerm);
-  const projectRoot = useAppSelector((state) => state.document.root);
   const buildStatus = useAppSelector((state) => state.console.status);
   const running = buildStatus === "running";
   const cancelling = buildStatus === "cancelled";
@@ -79,7 +78,7 @@ const AppToolbar: FC = () => {
     () => ({
       world: l10n("NAV_GAME_WORLD"),
       sprites: l10n("NAV_SPRITES"),
-      backgrounds: l10n("NAV_BACKGROUNDS"),
+      backgrounds: l10n("NAV_IMAGES"),
       music: l10n("NAV_MUSIC"),
       sounds: l10n("NAV_SFX"),
       palettes: l10n("NAV_PALETTES"),
@@ -149,8 +148,8 @@ const AppToolbar: FC = () => {
   }, [initalSearchTerm]);
 
   const openProjectFolder = useCallback(() => {
-    dispatch(electronActions.openFolder(projectRoot));
-  }, [dispatch, projectRoot]);
+    dispatch(electronActions.openFolder("/"));
+  }, [dispatch]);
 
   // Handle focusing search when pressing "/"
   const onKeyDown = useCallback((e: KeyboardEvent) => {

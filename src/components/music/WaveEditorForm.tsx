@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { FormRow, FormField } from "ui/form/FormLayout";
+import { ThemeContext } from "styled-components";
 
 interface WaveEditorFormProps {
   waveId: number;
@@ -14,6 +15,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
   const dispatch = useAppDispatch();
 
   const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const themeContext = useContext(ThemeContext);
 
   const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({
     value: i,
@@ -47,9 +49,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
 
     const ctx = canvas.getContext("2d");
 
-    const defaultColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--highlight-color");
+    const defaultColor = themeContext.colors.highlight;
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;

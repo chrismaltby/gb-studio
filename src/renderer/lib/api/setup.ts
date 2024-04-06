@@ -14,7 +14,10 @@ import type {
   BuildType,
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type {
@@ -32,8 +35,11 @@ import type { FontAssetData } from "lib/project/loadFontData";
 import type { AvatarAssetData } from "lib/project/loadAvatarData";
 import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { NavigationSection } from "store/features/navigation/navigationState";
-import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
+import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
+import type { DebuggerDataPacket } from "shared/lib/debugger/types";
+import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
+import { TilesetAssetData } from "lib/project/loadTilesetData";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -44,6 +50,14 @@ export type BuildOptions = {
   profile: boolean;
   engineFields: EngineFieldSchema[];
   exportBuild: boolean;
+  debugEnabled?: boolean;
+  sceneTypes: SceneTypeSchema[];
+};
+
+export type RecentProjectData = {
+  name: string;
+  dir: string;
+  path: string;
 };
 
 const createSubscribeAPI = <
@@ -158,7 +172,7 @@ const APISetup = {
       ipcRenderer.invoke("dialog:migrate-warning", path),
   },
   project: {
-    getRecentProjects: (): Promise<string[]> =>
+    getRecentProjects: (): Promise<RecentProjectData[]> =>
       ipcRenderer.invoke("get-recent-projects"),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
     openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
@@ -182,25 +196,38 @@ const APISetup = {
     exportProject: (
       data: ProjectData,
       engineFields: EngineFieldSchema[],
+      sceneTypes: SceneTypeSchema[],
       exportType: ProjectExportType
-    ) => ipcRenderer.invoke("project:export", data, engineFields, exportType),
+    ) =>
+      ipcRenderer.invoke(
+        "project:export",
+        data,
+        engineFields,
+        sceneTypes,
+        exportType
+      ),
     getBackgroundInfo: (
       background: Background,
-      is360: boolean
+      is360: boolean,
+      cgbOnly: boolean
     ): Promise<BackgroundInfo> =>
-      ipcRenderer.invoke("project:get-background-info", background, is360),
+      ipcRenderer.invoke(
+        "project:get-background-info",
+        background,
+        is360,
+        cgbOnly
+      ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<{
       data: ProjectData;
       scriptEventDefs: ScriptEventDefs;
       engineFields: EngineFieldSchema[];
+      sceneTypes: SceneTypeSchema[];
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>
       ipcRenderer.invoke("project:save", data),
-    saveProjectAs: (filename: string, data: ProjectData): Promise<void> =>
-      ipcRenderer.invoke("project:save-as", filename, data),
     setModified: () => ipcRenderer.invoke("project:set-modified"),
     setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),
   },
@@ -275,6 +302,24 @@ const APISetup = {
     writeBuffer: (format: string, buffer: Buffer): Promise<void> =>
       ipcRenderer.invoke("clipboard:write-buffer", format, buffer),
   },
+  debugger: {
+    pause: () => ipcRenderer.invoke("debugger:pause"),
+    resume: () => ipcRenderer.invoke("debugger:resume"),
+    setPauseOnScriptChanged: (enabled: boolean) =>
+      ipcRenderer.invoke("debugger:pause-on-script", enabled),
+    setPauseOnWatchVariableChanged: (enabled: boolean) =>
+      ipcRenderer.invoke("debugger:pause-on-var", enabled),
+    setGlobal: (symbol: string, value: number) =>
+      ipcRenderer.invoke("debugger:set-global", symbol, value),
+    step: () => ipcRenderer.invoke("debugger:step"),
+    stepFrame: () => ipcRenderer.invoke("debugger:step-frame"),
+    setBreakpoints: (breakpoints: string[]) =>
+      ipcRenderer.invoke("debugger:set-breakpoints", breakpoints),
+    setWatchedVariableIds: (variableIds: string[]) =>
+      ipcRenderer.invoke("debugger:set-watched", variableIds),
+    sendToProjectWindow: (data: DebuggerDataPacket) =>
+      ipcRenderer.send("debugger:data-receive", data),
+  },
   events: {
     menu: {
       saveProject:
@@ -303,7 +348,9 @@ const APISetup = {
       zoom: createSubscribeAPI<
         (event: IpcRendererEvent, zoom: MenuZoomType) => void
       >("menu:zoom"),
-      run: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:run"),
+      run: createSubscribeAPI<
+        (event: IpcRendererEvent, debugEnabled: boolean) => void
+      >("menu:run"),
       build:
         createSubscribeAPI<
           (event: IpcRendererEvent, buildType: BuildType) => void
@@ -330,6 +377,25 @@ const APISetup = {
         (event: IpcRendererEvent, data: MusicDataPacket) => void
       >("music:data"),
     },
+    debugger: {
+      data: createSubscribeAPI<
+        (event: IpcRendererEvent, data: DebuggerDataPacket) => void
+      >("debugger:data"),
+      symbols:
+        createSubscribeAPI<
+          (
+            event: IpcRendererEvent,
+            data: {
+              variableMap: Record<string, VariableMapData>;
+              sceneMap: Record<string, SceneMapData>;
+              gbvmScripts: Record<string, string>;
+            }
+          ) => void
+        >("debugger:symbols"),
+      disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
+        "debugger:disconnected"
+      ),
+    },
     settings: {
       uiScaleChanged: createSubscribeAPI<
         (event: IpcRendererEvent, scale: number) => void
@@ -355,11 +421,16 @@ const APISetup = {
       font: createWatchSubscribeAPI<FontAssetData>("watch:font"),
       avatar: createWatchSubscribeAPI<AvatarAssetData>("watch:avatar"),
       emote: createWatchSubscribeAPI<EmoteAssetData>("watch:emote"),
+      tileset: createWatchSubscribeAPI<TilesetAssetData>("watch:tileset"),
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<
-          (event: IpcRendererEvent, fields: EngineFieldSchema[]) => void
-        >("watch:engineFields:changed"),
+          (
+            event: IpcRendererEvent,
+            fields: EngineFieldSchema[],
+            sceneTypes: SceneTypeSchema[]
+          ) => void
+        >("watch:engineSchema:changed"),
       },
       scriptEventDefs: {
         changed: createSubscribeAPI<

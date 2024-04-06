@@ -5,7 +5,6 @@ import {
   stopBuffer,
   decodeAudioData,
 } from "renderer/lib/soundfx/soundfx";
-import { assetsRoot } from "consts";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import musicActions from "store/features/music/musicActions";
@@ -13,8 +12,7 @@ import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { Sound } from "shared/lib/entities/entitiesTypes";
-import type { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 
 let oscillator: OscillatorNode | undefined = undefined;
@@ -31,7 +29,7 @@ window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
 function play(filename: string) {
-  const url = `file://${assetsRoot}/soundfx/${filename}`;
+  const url = `gbs://app-assets/soundfx/${filename}`;
   fetch(url)
     .then((response) => response.arrayBuffer())
     .then(decodeAudioData)
@@ -40,12 +38,8 @@ function play(filename: string) {
     });
 }
 
-async function playSound(
-  sound: Sound,
-  effectIndex: number,
-  { projectRoot }: CompileSoundOptions
-) {
-  const filename = assetFilename(projectRoot, "sounds", sound);
+async function playSound(sound: Sound, effectIndex: number) {
+  const filename = assetPath("sounds", sound);
 
   if (sound.type === "wav") {
     API.soundfx.playWav(filename);
@@ -84,8 +78,7 @@ const soundfxMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const sound = soundSelectors.selectById(state, action.payload.effect);
       if (sound) {
-        const projectRoot = state.document.root;
-        playSound(sound, action.payload.effectIndex, { projectRoot });
+        playSound(sound, action.payload.effectIndex);
       }
     } else if (actions.pauseSoundFx.match(action)) {
       pause();

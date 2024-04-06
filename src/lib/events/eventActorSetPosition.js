@@ -94,4 +94,11 @@ module.exports = {
   groups,
   fields,
   compile,
+  helper: {
+    type: "position",
+    x: "x",
+    y: "y",
+    units: "units",
+    tileWidth: 2,
+  },
 };

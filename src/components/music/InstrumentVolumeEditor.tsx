@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import l10n from "shared/lib/lang/l10n";
+import { ThemeContext } from "styled-components";
 import { FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 
@@ -24,6 +25,8 @@ export const InstrumentVolumeEditor = ({
   onChange,
 }: InstrumentVolumeEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const themeContext = useContext(ThemeContext);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -37,9 +40,7 @@ export const InstrumentVolumeEditor = ({
     const normalisedVolume = initialVolume / 15;
     const secLength = length === null ? 1 : length / 256;
 
-    const defaultColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--highlight-color");
+    const defaultColor = themeContext.colors.highlight;
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;
