@@ -5,7 +5,10 @@ import makeBuild from "./makeBuild";
 import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import type { ProjectData } from "store/features/project/projectActions";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 
@@ -16,6 +19,7 @@ type BuildOptions = {
   profile: boolean;
   engineFields: EngineFieldSchema[];
   scriptEventHandlers: ScriptEventHandlers;
+  sceneTypes: SceneTypeSchema[];
   outputRoot: string;
   debugEnabled?: boolean;
   progress: (msg: string) => void;
@@ -31,6 +35,7 @@ const buildProject = async (
     profile = false,
     engineFields = [],
     scriptEventHandlers,
+    sceneTypes = [],
     outputRoot = "/tmp/testing",
     debugEnabled = false,
     progress = (_msg: string) => {},
@@ -41,6 +46,7 @@ const buildProject = async (
     projectRoot,
     engineFields,
     scriptEventHandlers,
+    sceneTypes,
     tmpPath,
     debugEnabled,
     progress,

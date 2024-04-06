@@ -42,7 +42,10 @@ import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEng
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
 import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import type {
@@ -99,6 +102,7 @@ import {
 } from "shared/lib/debugger/types";
 import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
+import { loadSceneTypes } from "lib/project/sceneTypes";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -436,7 +440,8 @@ const createProjectWindow = async () => {
     },
     onChangedEngineSchema: async (_filename: string) => {
       const fields = await loadEngineFields(projectRoot);
-      sendToProjectWindow("watch:engineFields:changed", fields);
+      const sceneTypes = await loadSceneTypes(projectRoot);
+      sendToProjectWindow("watch:engineSchema:changed", fields, sceneTypes);
     },
     onChangedEventPlugin: async (_filename: string) => {
       // Reload all script event handlers and push new defs to project window
@@ -1089,7 +1094,7 @@ ipcMain.handle(
   async (event, project: ProjectData, options: BuildOptions) => {
     cancelBuild = false;
 
-    const { exportBuild, buildType } = options;
+    const { exportBuild, buildType, sceneTypes } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
@@ -1102,6 +1107,7 @@ ipcMain.handle(
       const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
+        sceneTypes,
         outputRoot,
         scriptEventHandlers,
         tmpPath: getTmp(),
@@ -1232,6 +1238,7 @@ ipcMain.handle(
     event,
     project: ProjectData,
     engineFields: EngineFieldSchema[],
+    sceneTypes: SceneTypeSchema[],
     exportType: ProjectExportType
   ) => {
     const buildStartTime = Date.now();
@@ -1258,6 +1265,7 @@ ipcMain.handle(
       const compiledData = await compileData(project, {
         projectRoot,
         engineFields,
+        sceneTypes,
         scriptEventHandlers,
         tmpPath,
         progress,

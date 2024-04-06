@@ -157,7 +157,7 @@ const watchProject = (
     .on("unlink", callbacks.onRemoveTileset);
 
   const engineSchemaWatcher = chokidar
-    .watch(engineSchema, {
+    .watch([engineSchema, `${pluginsRoot}/**/engine/engine.json`], {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
