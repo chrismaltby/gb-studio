@@ -234,3 +234,17 @@ export const multiplyScriptValueConst = (
     },
   };
 };
+
+export const addScriptValueConst = (
+  value: ScriptValue,
+  num: number
+): ScriptValue => {
+  return {
+    type: "add",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};

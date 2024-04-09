@@ -71,6 +71,7 @@ import {
   precompileScriptValue,
   sortFetchOperations,
   multiplyScriptValueConst,
+  addScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 
 export type ScriptOutput = string[];
@@ -3545,6 +3546,68 @@ extern void __mute_mask_${symbol};
       this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
+  };
+
+  cameraMoveToScriptValues = (
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
+    const xOffset = 80;
+    const yOffset = 72;
+
+    const stackPtr = this.stackPtr;
+    this._addComment("Camera Move To");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        addScriptValueConst(
+          multiplyScriptValueConst(valueX, units === "tiles" ? 8 : 1),
+          xOffset
+        )
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        addScriptValueConst(
+          multiplyScriptValueConst(valueY, units === "tiles" ? 8 : 1),
+          yOffset
+        )
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(cameraMoveArgsRef, 0));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(cameraMoveArgsRef, 1));
+
+    rpn.stop();
+
+    this._addComment(`-- Move Camera`);
+    if (speed === 0) {
+      this._cameraSetPos(".ARG1");
+    } else {
+      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+    }
+
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
