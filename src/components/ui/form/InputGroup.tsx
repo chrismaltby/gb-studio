@@ -2,12 +2,18 @@ import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { Input } from "./Input";
 import { Select } from "ui/form/Select";
+import { ToggleButtonGroupWrapper } from "ui/form/ToggleButtonGroup";
 
 export const InputGroup = styled.div`
   display: flex;
   width: 100%;
 
   & > div:not(:first-child) ${Input} {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  & > ${ToggleButtonGroupWrapper}:not(:first-child),
+  & > ${ToggleButtonGroupWrapper}:not(:first-child) > :first-child > label {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
@@ -21,6 +27,11 @@ export const InputGroup = styled.div`
   }
 
   & > div:not(:last-child) ${Input} {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  & > ${ToggleButtonGroupWrapper}:not(:last-child),
+  & > ${ToggleButtonGroupWrapper}:not(:last-child) > :last-child > label {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }

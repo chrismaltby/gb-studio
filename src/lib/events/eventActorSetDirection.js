@@ -22,40 +22,17 @@ const fields = [
     key: "direction",
     label: l10n("FIELD_DIRECTION"),
     description: l10n("FIELD_DIRECTION_DESC"),
-    type: "union",
-    types: ["direction", "variable", "property"],
-    defaultType: "direction",
+    type: "value",
     defaultValue: {
-      direction: "up",
-      variable: "LAST_VARIABLE",
-      property: "$self$:direction",
+      type: "direction",
+      value: "up",
     },
   },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    actorSetActive,
-    actorSetDirection,
-    actorSetDirectionToVariable,
-    variableFromUnion,
-    temporaryEntityVariable,
-  } = helpers;
-
-  if (input.direction.type === "direction") {
-    actorSetActive(input.actorId);
-    actorSetDirection(input.direction.value);
-  } else if (typeof input.direction === "string") {
-    actorSetActive(input.actorId);
-    actorSetDirection(input.direction);
-  } else {
-    const dirVar = variableFromUnion(
-      input.direction,
-      temporaryEntityVariable(0)
-    );
-    actorSetActive(input.actorId);
-    actorSetDirectionToVariable(dirVar);
-  }
+  const { actorSetDirectionToScriptValue } = helpers;
+  actorSetDirectionToScriptValue(input.actorId, input.direction);
 };
 
 module.exports = {

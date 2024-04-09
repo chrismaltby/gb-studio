@@ -23,7 +23,7 @@ export type ToggleButtonGroupProps<T> = {
     }
 );
 
-const Wrapper = styled.div`
+export const ToggleButtonGroupWrapper = styled.div`
   display: flex;
   position: relative;
   background: ${(props) => props.theme.colors.input.background};
@@ -129,7 +129,7 @@ export const ToggleButtonGroup = <T,>({
     [props]
   );
   return (
-    <Wrapper>
+    <ToggleButtonGroupWrapper>
       {options.map((option) => (
         <Option key={String(option.value)}>
           <Input
@@ -148,6 +148,6 @@ export const ToggleButtonGroup = <T,>({
           </Label>
         </Option>
       ))}
-    </Wrapper>
+    </ToggleButtonGroupWrapper>
   );
 };

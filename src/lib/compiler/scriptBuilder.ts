@@ -2822,6 +2822,53 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  actorSetDirectionToScriptValue = (actorId: string, value: ScriptValue) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const leftLabel = this.getNextLabel();
+    const rightLabel = this.getNextLabel();
+    const upLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment("Actor Set Direction To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this.actorSetById(actorId);
+      this._actorSetDirection(actorRef, String(rpnOps[0].value || 0));
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "direction") {
+      this.actorSetById(actorId);
+      this._actorSetDirection(actorRef, toASMDir(rpnOps[0].value));
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 1)).stop();
+      this.actorSetById(actorId);
+      const newValueRef = this._localRef(actorRef, 1);
+      this._ifConst(".EQ", newValueRef, ".DIR_LEFT", leftLabel, 0);
+      this._ifConst(".EQ", newValueRef, ".DIR_RIGHT", rightLabel, 0);
+      this._ifConst(".EQ", newValueRef, ".DIR_UP", upLabel, 0);
+      // Down
+      this._actorSetDirection(actorRef, ".DIR_DOWN");
+      this._jump(endLabel);
+      // Left
+      this._label(leftLabel);
+      this._actorSetDirection(actorRef, ".DIR_LEFT");
+      this._jump(endLabel);
+      // Right
+      this._label(rightLabel);
+      this._actorSetDirection(actorRef, ".DIR_RIGHT");
+      this._jump(endLabel);
+      // Up
+      this._label(upLabel);
+      this._actorSetDirection(actorRef, ".DIR_UP");
+      this._label(endLabel);
+    }
+    this._addNL();
+  };
+
   actorEmote = (emoteId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { emotes } = this.options;
@@ -2903,6 +2950,25 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Animation Frame To Variable");
     this._setToVariable(this._localRef(actorRef, 1), variable);
+    this._actorSetAnimFrame(actorRef);
+    this._addNL();
+  };
+
+  actorSetFrameToScriptValue = (actorId: string, value: ScriptValue) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Set Animation Frame To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+    rpn.stop();
+
+    this.actorSetById(actorId);
     this._actorSetAnimFrame(actorRef);
     this._addNL();
   };
