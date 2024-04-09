@@ -34,6 +34,7 @@ import {
   isVariableField,
   isPropertyField,
   ScriptEventDefs,
+  isScriptValueField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
@@ -95,6 +96,11 @@ import {
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
 import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import {
+  extractScriptValueActorIds,
+  extractScriptValueVariables,
+} from "shared/lib/scriptValue/helpers";
+import { isScriptValue, ScriptValue } from "shared/lib/scriptValue/types";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2424,8 +2430,28 @@ const refreshCustomEventArgs: CaseReducer<
       if (!args) return;
       if (args.__comment) return;
       Object.keys(args).forEach((arg) => {
-        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const addActor = (actor: string) => {
+        const addActor = (actor: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(actor)
+          );
+          actors[actor] = {
+            id: actor,
+            name: oldActors[actor]?.name || `Actor ${letter}`,
+          };
+        };
+        const addVariable = (variable: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(variable[1])
+          );
+          variables[variable] = {
+            id: variable,
+            name: oldVariables[variable]?.name || `Variable ${letter}`,
+            passByReference: oldVariables[variable]?.passByReference ?? true,
+          };
+        };
+        const addPropertyActor = (property: string) => {
+          const actor = property && property.replace(/:.*/, "");
+          if (actor !== "player" && actor !== "$self$") {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(actor)
             );
@@ -2433,7 +2459,10 @@ const refreshCustomEventArgs: CaseReducer<
               id: actor,
               name: oldActors[actor]?.name || `Actor ${letter}`,
             };
-          };
+          }
+        };
+
+        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const actor = args[arg];
           if (
             actor &&
@@ -2444,17 +2473,8 @@ const refreshCustomEventArgs: CaseReducer<
             addActor(actor);
           }
         }
+
         if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const addVariable = (variable: string) => {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable[1])
-            );
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]?.name || `Variable ${letter}`,
-              passByReference: oldVariables[variable]?.passByReference ?? true,
-            };
-          };
           const variable = args[arg];
           if (
             isUnionVariableValue(variable) &&
@@ -2470,23 +2490,28 @@ const refreshCustomEventArgs: CaseReducer<
           }
         }
         if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const addPropertyActor = (property: string) => {
-            const actor = property && property.replace(/:.*/, "");
-            if (actor !== "player" && actor !== "$self$") {
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(actor)
-              );
-              actors[actor] = {
-                id: actor,
-                name: oldActors[actor]?.name || `Actor ${letter}`,
-              };
-            }
-          };
           const property = args[arg];
           if (isUnionPropertyValue(property) && property.value) {
             addPropertyActor(property.value);
           } else if (typeof property === "string") {
             addPropertyActor(property);
+          }
+        }
+        if (
+          isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)
+        ) {
+          const value = isScriptValue(args[arg])
+            ? (args[arg] as ScriptValue)
+            : undefined;
+          const actors = value ? extractScriptValueActorIds(value) : [];
+          const variables = value ? extractScriptValueVariables(value) : [];
+          for (const actor of actors) {
+            addPropertyActor(actor);
+          }
+          for (const variable of variables) {
+            if (isVariableCustomEvent(variable)) {
+              addVariable(variable);
+            }
           }
         }
       });

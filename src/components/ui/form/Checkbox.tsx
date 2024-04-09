@@ -47,8 +47,7 @@ const StyledCheckbox = styled.div`
 const CheckboxContainer = styled.div`
   position: relative;
   display: inline-block;
-  vertical-align: middle;
-  top: 2px;
+  top: 1px;
 
   ${MenuItem} > & {
     margin-left: -5px;

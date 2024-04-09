@@ -36,6 +36,7 @@ import {
   isPropertyField,
   isVariableField,
   isActorField,
+  isScriptValueField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import compileEntityEvents from "./compileEntityEvents";
 import {
@@ -57,6 +58,20 @@ import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
+import {
+  isScriptValue,
+  PrecompiledValueFetch,
+  PrecompiledValueRPNOperation,
+  ScriptValue,
+  ValueFunction,
+} from "shared/lib/scriptValue/types";
+import {
+  mapScriptValueLeafNodes,
+  optimiseScriptValue,
+  precompileScriptValue,
+  sortFetchOperations,
+  multiplyScriptValueConst,
+} from "shared/lib/scriptValue/helpers";
 
 export type ScriptOutput = string[];
 
@@ -247,6 +262,16 @@ type ScriptBuilderActorFlags =
   | ".ACTOR_FLAG_COLLISION"
   | ".ACTOR_FLAG_PERSISTENT";
 
+type RPNHandler = {
+  ref: (variable: ScriptBuilderStackVariable) => RPNHandler;
+  refInd: (variable: ScriptBuilderStackVariable) => RPNHandler;
+  refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
+  int8: (value: number | string) => RPNHandler;
+  int16: (value: number | string) => RPNHandler;
+  operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
+  stop: () => void;
+};
+
 // - Helpers --------------
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -415,6 +440,38 @@ const toScriptOperator = (
       return ".SHL";
     case ">>":
       return ".SHR";
+  }
+  assertUnreachable(operator);
+};
+
+const valueFunctionToScriptOperator = (
+  operator: ValueFunction
+): ScriptBuilderRPNOperation => {
+  switch (operator) {
+    case "add":
+      return ".ADD";
+    case "sub":
+      return ".SUB";
+    case "div":
+      return ".DIV";
+    case "mul":
+      return ".MUL";
+    case "eq":
+      return ".EQ";
+    case "ne":
+      return ".NE";
+    case "lt":
+      return ".LT";
+    case "lte":
+      return ".LTE";
+    case "gt":
+      return ".GT";
+    case "gte":
+      return ".GTE";
+    case "min":
+      return ".MIN";
+    case "max":
+      return ".MAX";
   }
   assertUnreachable(operator);
 };
@@ -729,7 +786,12 @@ class ScriptBuilder {
       }
       rpn.stop();
     } else {
-      this._stackPushConst(0);
+      // If expression empty use value 0
+      if (resultVariable !== undefined) {
+        this._setVariableConst(resultVariable, 0);
+      } else {
+        this._stackPushConst(0);
+      }
     }
   };
 
@@ -873,7 +935,10 @@ class ScriptBuilder {
     }
   };
 
-  _setVariableConst = (variable: string, value: ScriptBuilderStackVariable) => {
+  _setVariableConst = (
+    variable: ScriptBuilderVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
@@ -1189,6 +1254,173 @@ class ScriptBuilder {
     };
 
     return rpn;
+  };
+
+  _performFetchOperations = (
+    fetchOps: PrecompiledValueFetch[]
+  ): Record<string, string> => {
+    const localsLookup: Record<string, string> = {};
+    const sortedFetchOps = sortFetchOperations(fetchOps);
+
+    let currentActor = "-1";
+    let currentProperty = "";
+    let currentPropData = "";
+    let prevLocalVar = "";
+    for (const fetchOp of sortedFetchOps) {
+      const localVar = this._declareLocal("local", 1, true);
+      localsLookup[fetchOp.local] = localVar;
+      switch (fetchOp.value.type) {
+        case "rnd": {
+          const min = Math.min(
+            fetchOp.value.valueA?.value ?? 0,
+            fetchOp.value.valueB?.value ?? 0
+          );
+          const max = Math.max(
+            fetchOp.value.valueA?.value ?? 0,
+            fetchOp.value.valueB?.value ?? 0
+          );
+          this._addComment(`-- Rand between ${min} and ${max} (inclusive)`);
+          this._rand(localVar, min, max - min + 1);
+          break;
+        }
+        case "property": {
+          const actorValue = fetchOp.value.target || "player";
+          const propertyValue = fetchOp.value.property || "xpos";
+
+          if (
+            actorValue === currentActor &&
+            propertyValue === currentProperty &&
+            prevLocalVar
+          ) {
+            // If requested prop was fetched previously, reuse local var, don't fetch again
+            localsLookup[fetchOp.local] = prevLocalVar;
+            delete this.localsLookup[localVar];
+            continue;
+          }
+
+          this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
+          if (currentActor !== actorValue) {
+            this.actorSetById(actorValue);
+            currentActor = actorValue;
+            currentPropData = "";
+          }
+          if (propertyValue === "xpos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 1))
+              .int16(8 * 16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "ypos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 2))
+              .int16(8 * 16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "pxpos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 1))
+              .int16(16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "pypos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 2))
+              .int16(16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "direction") {
+            const actorRef = this._declareLocal("actor", 4);
+            this._actorGetDirection(actorRef, localVar);
+          } else if (propertyValue === "frame") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "frame") {
+              this._actorGetAnimFrame(actorRef);
+              currentPropData = "frame";
+            }
+            this._set(localVar, this._localRef(actorRef, 1));
+          } else {
+            throw new Error(`Unsupported property type "${propertyValue}"`);
+          }
+          currentProperty = propertyValue;
+          prevLocalVar = localVar;
+          break;
+        }
+        case "expression": {
+          this._addComment(
+            `-- Evaluate expression ${this._expressionToHumanReadable(
+              fetchOp.value.value
+            )}`
+          );
+          this._stackPushEvaluatedExpression(fetchOp.value.value, localVar);
+          break;
+        }
+        default: {
+          assertUnreachable(fetchOp.value);
+        }
+      }
+    }
+
+    return localsLookup;
+  };
+
+  _performValueRPN = (
+    rpn: RPNHandler,
+    rpnOps: PrecompiledValueRPNOperation[],
+    localsLookup: Record<string, string>
+  ) => {
+    for (const rpnOp of rpnOps) {
+      switch (rpnOp.type) {
+        case "number": {
+          rpn.int16(rpnOp.value ?? 0);
+          break;
+        }
+        case "variable": {
+          rpn.refVariable(rpnOp.value);
+          break;
+        }
+        case "local": {
+          this._markLocalUse(localsLookup[rpnOp.value]);
+          rpn.ref(localsLookup[rpnOp.value]);
+          break;
+        }
+        case "indirect": {
+          rpn.refInd(rpnOp.value);
+          break;
+        }
+        case "direction": {
+          rpn.int16(toASMDir(rpnOp.value));
+          break;
+        }
+        default: {
+          const op = valueFunctionToScriptOperator(rpnOp.type);
+          rpn.operator(op);
+        }
+      }
+    }
   };
 
   _if = (
@@ -2183,6 +2415,60 @@ extern void __mute_mask_${symbol};
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
+    this._actorMoveTo(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorMoveToScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    useCollisions: boolean,
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Move To");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._setConst(
+      this._localRef(actorRef, 3),
+      toASMMoveFlags(moveType, useCollisions)
+    );
+    this._addComment(`-- Move Actor`);
+    this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -3292,10 +3578,7 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Call Script
 
-  callScript = (
-    scriptId: string,
-    input: Dictionary<string | ScriptBuilderUnionValue>
-  ) => {
+  callScript = (scriptId: string, input: Dictionary<string | ScriptValue>) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
 
@@ -3317,18 +3600,44 @@ extern void __mute_mask_${symbol};
     const actorArgs = Object.values(customEvent.actors);
     const variableArgs = Object.values(customEvent.variables);
 
-    const constArgLookup: Record<number, string> = {};
+    const constArgLookup: Record<string, string> = {};
     if (variableArgs) {
       for (const variableArg of variableArgs) {
-        if (variableArg && variableArg.passByReference) {
+        if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+
           if (
             typeof variableValue !== "string" &&
-            variableValue.type === "number"
+            variableValue.type !== "variable" &&
+            variableValue.type !== "number"
           ) {
+            const [rpnOps, fetchOps] = precompileScriptValue(
+              optimiseScriptValue(variableValue)
+            );
             const argRef = this._declareLocal("arg", 1, true);
-            this._setConst(argRef, variableValue.value);
-            constArgLookup[variableValue.value] = argRef;
+
+            if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+              this._setConst(argRef, rpnOps[0].value);
+            } else {
+              const localsLookup = this._performFetchOperations(fetchOps);
+              this._addComment(`-- Calculate value`);
+              const rpn = this._rpn();
+              this._performValueRPN(rpn, rpnOps, localsLookup);
+              rpn.refSet(argRef).stop();
+            }
+
+            constArgLookup[JSON.stringify(variableValue)] = argRef;
+          } else if (variableArg.passByReference) {
+            const variableValue =
+              input?.[`$variable[${variableArg.id}]$`] || "";
+            if (
+              typeof variableValue !== "string" &&
+              variableValue.type === "number"
+            ) {
+              const argRef = this._declareLocal("arg", 1, true);
+              this._setConst(argRef, variableValue.value);
+              constArgLookup[JSON.stringify(variableValue)] = argRef;
+            }
           }
         }
       }
@@ -3356,11 +3665,6 @@ extern void __mute_mask_${symbol};
             if (typeof variableValue === "string") {
               const variableAlias = this.getVariableAlias(variableValue);
               this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
-            } else if (variableValue && variableValue.type === "number") {
-              // Arg is union number
-              const argRef = constArgLookup[variableValue.value];
-              this._stackPushReference(argRef, `Variable ${variableArg.id}`);
-              this._markLocalUse(argRef);
             } else if (variableValue && variableValue.type === "variable") {
               // Arg is a union variable
               const variableAlias = this.getVariableAlias(variableValue.value);
@@ -3373,6 +3677,11 @@ extern void __mute_mask_${symbol};
                   `Variable ${variableArg.id}`
                 );
               }
+            } else {
+              // Arg is a script value
+              const argRef = constArgLookup[JSON.stringify(variableValue)];
+              this._stackPushReference(argRef, `Variable ${variableArg.id}`);
+              this._markLocalUse(argRef);
             }
 
             // End of Pass by Reference ----------
@@ -3399,6 +3708,11 @@ extern void __mute_mask_${symbol};
                 // Arg union value is variable id
                 this._stackPush(variableAlias);
               }
+            } else {
+              // Arg is a script value
+              const argRef = constArgLookup[JSON.stringify(variableValue)];
+              this._stackPush(argRef);
+              this._markLocalUse(argRef);
             }
 
             // End of Pass by Value ----------
@@ -3496,85 +3810,125 @@ extern void __mute_mask_${symbol};
       }
     }
 
-    const script = mapScript(customEvent.script, (scriptEvent) => {
-      if (!scriptEvent.args || scriptEvent.args.__comment) return scriptEvent;
-      // Clone event
-      const e = {
-        ...scriptEvent,
-        args: { ...scriptEvent.args },
-      };
-      Object.keys(e.args).forEach((arg) => {
-        const argValue = e.args[arg];
-        // Update variable fields
-        if (
-          isVariableField(
-            e.command,
-            arg,
-            e.args,
-            this.options.scriptEventHandlers
-          )
-        ) {
+    const script = mapScript(
+      customEvent.script,
+      (event: ScriptEvent): ScriptEvent => {
+        if (!event.args || event.args.__comment) return event;
+        // Clone event
+        const e = {
+          ...event,
+          args: { ...event.args },
+        };
+        Object.keys(e.args).forEach((arg) => {
+          const argValue = e.args[arg];
+          // Update variable fields
           if (
-            isUnionVariableValue(argValue) &&
-            argValue.value &&
-            isVariableCustomEvent(argValue.value)
+            isVariableField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
           ) {
-            e.args[arg] = {
-              ...argValue,
-              value: getArg("variable", argValue.value),
-            };
-          } else if (
-            typeof argValue === "string" &&
-            isVariableCustomEvent(argValue)
-          ) {
-            e.args[arg] = getArg("variable", argValue);
-          }
-        }
-        // Update property fields
-        if (
-          isPropertyField(
-            e.command,
-            arg,
-            e.args,
-            this.options.scriptEventHandlers
-          )
-        ) {
-          const replacePropertyValueActor = (p: string) => {
-            const actorValue = p.replace(/:.*/, "");
-            if (actorValue === "player") {
-              return p;
+            if (
+              isUnionVariableValue(argValue) &&
+              argValue.value &&
+              isVariableCustomEvent(argValue.value)
+            ) {
+              e.args[arg] = {
+                ...argValue,
+                value: getArg("variable", argValue.value),
+              };
+            } else if (
+              typeof argValue === "string" &&
+              isVariableCustomEvent(argValue)
+            ) {
+              e.args[arg] = getArg("variable", argValue);
             }
-            const newActorValue = getArg("actor", actorValue);
-            return {
-              value: newActorValue,
-              property: p.replace(/.*:/, ""),
-            };
-          };
-          if (isUnionPropertyValue(argValue) && argValue.value) {
-            e.args[arg] = {
-              ...argValue,
-              value: replacePropertyValueActor(argValue.value),
-            };
-          } else if (typeof argValue === "string") {
-            e.args[arg] = replacePropertyValueActor(argValue);
           }
-        }
-        // Update actor fields
-        if (
-          isActorField(
-            e.command,
-            arg,
-            e.args,
-            this.options.scriptEventHandlers
-          ) &&
-          typeof argValue === "string"
-        ) {
-          e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
-        }
-      });
-
-      return e;
-    });
+          // Update property fields
+          if (
+            isPropertyField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
+          ) {
+            const replacePropertyValueActor = (p: string) => {
+              const actorValue = p.replace(/:.*/, "");
+              if (actorValue === "player") {
+                return p;
+              }
+              const newActorValue = getArg("actor", actorValue);
+              return {
+                value: newActorValue,
+                property: p.replace(/.*:/, ""),
+              };
+            };
+            if (isUnionPropertyValue(argValue) && argValue.value) {
+              e.args[arg] = {
+                ...argValue,
+                value: replacePropertyValueActor(argValue.value),
+              };
+            } else if (typeof argValue === "string") {
+              e.args[arg] = replacePropertyValueActor(argValue);
+            }
+          }
+          // Update actor fields
+          if (
+            isActorField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            ) &&
+            typeof argValue === "string"
+          ) {
+            e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
+          }
+          // Update script value fields
+          if (
+            isScriptValueField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
+          ) {
+            if (isScriptValue(argValue)) {
+              e.args[arg] = mapScriptValueLeafNodes(argValue, (val) => {
+                if (val.type === "variable") {
+                  const scriptArg = argLookup["variable"].get(val.value);
+                  if (scriptArg?.indirect) {
+                    return {
+                      type: "indirect",
+                      value: scriptArg.symbol,
+                    };
+                  }
+                } else if (val.type === "property") {
+                  const scriptArg = getArg("actor", val.target);
+                  if (scriptArg && typeof scriptArg === "string") {
+                    return {
+                      ...val,
+                      value: scriptArg,
+                    };
+                  } else if (scriptArg && typeof scriptArg !== "string") {
+                    return {
+                      ...val,
+                      target: scriptArg.symbol,
+                      value: scriptArg,
+                    };
+                  }
+                }
+                return val;
+              });
+            }
+          }
+        });
+        return e;
+      }
+    );
 
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
     const symbol = this._getAvailableSymbol(
@@ -3584,12 +3938,7 @@ extern void __mute_mask_${symbol};
     const result = { scriptRef: symbol, argsLen };
     compiledCustomEventScriptCache[customEventId] = result;
 
-    this._compileSubScript("custom", script, symbol, {
-      argLookup,
-      entity: customEvent,
-      entityType: "customEvent",
-      entityScriptKey: "script",
-    });
+    this._compileSubScript("custom", script, symbol, { argLookup });
 
     return result;
   };
@@ -3862,6 +4211,25 @@ extern void __mute_mask_${symbol};
   variableSetToValue = (variable: string, value: number | string) => {
     this._addComment("Variable Set To Value");
     this._setVariableConst(variable, value);
+    this._addNL();
+  };
+
+  variableSetToScriptValue = (variable: string, value: ScriptValue) => {
+    this._addComment("Variable Set To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._setVariableConst(variable, rpnOps[0].value);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      this._setVariableToVariable(variable, rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(variable).stop();
+    }
     this._addNL();
   };
 

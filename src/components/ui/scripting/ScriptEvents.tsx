@@ -278,7 +278,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
 export const ScriptEventFields = styled.div`
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   padding: 5px;
 
   & > * {
@@ -293,6 +293,7 @@ export const ScriptEventFields = styled.div`
 interface ScriptEventFieldProps {
   halfWidth?: boolean;
   inline?: boolean;
+  alignBottom?: boolean;
 }
 
 export const ScriptEventField = styled.div<ScriptEventFieldProps>`
@@ -303,14 +304,21 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
         `
       : ""}
 
-      ${(props) =>
-        props.inline
-          ? css`
-              flex-basis: 0;
-              flex-grow: 0;
-              margin-left: -2px;
-            `
-          : ""}
+  ${(props) =>
+    props.inline
+      ? css`
+          flex-basis: 0;
+          flex-grow: 0;
+          margin-left: -2px;
+        `
+      : ""}
+
+  ${(props) =>
+    props.alignBottom
+      ? css`
+          align-self: flex-end;
+        `
+      : ""}
   }
 
 `;
@@ -419,6 +427,8 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
 
 interface ScriptEventFieldGroupProps {
   halfWidth?: boolean;
+  wrapItems?: boolean;
+  alignBottom?: boolean;
 }
 
 export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProps>`
@@ -428,9 +438,20 @@ export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProp
           flex-basis: 100px;
         `
       : ""}
+  ${(props) =>
+    props.alignBottom
+      ? css`
+          align-self: flex-end;
+        `
+      : ""}      
   & > div {
     margin: -10px;
-    flex-wrap: nowrap;
+    ${(props) =>
+      !props.wrapItems
+        ? css`
+            flex-wrap: nowrap;
+          `
+        : ""}
   }
 `;
 

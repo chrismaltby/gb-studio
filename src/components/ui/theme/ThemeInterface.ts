@@ -60,6 +60,10 @@ export interface ThemeInterface {
       text: string;
       border: string;
     };
+    brackets: {
+      color: string;
+      hoverBackground: string;
+    };
     card: {
       background: string;
       text: string;

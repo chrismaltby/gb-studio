@@ -37,7 +37,6 @@ import {
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
-  UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -61,6 +60,8 @@ import { isStringArray } from "shared/types";
 import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
+import ValueSelect from "components/forms/ValueSelect";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -150,15 +151,6 @@ const ScriptEventFormInput = ({
       onChange(e.value, index);
     },
     [index, onChange]
-  );
-
-  const onChangeUnits = useCallback(
-    (e: UnitType) => {
-      if (field.unitsField) {
-        onChangeArg(field.unitsField, e);
-      }
-    },
-    [field.unitsField, onChangeArg]
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -255,9 +247,6 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(field.placeholder || defaultValue)}
         onChange={onChangeNumberInputField}
-        units={(args[field.unitsField || ""] || field.unitsDefault) as UnitType}
-        unitsAllowed={field.unitsAllowed}
-        onChangeUnits={onChangeUnits}
       />
     );
   } else if (type === "slider") {
@@ -366,6 +355,30 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "value") {
+    const isValueScript = isScriptValue(value);
+    const isDefaultScript = isScriptValue(defaultValue);
+
+    return (
+      <ValueSelect
+        name={id}
+        entityId={entityId}
+        value={
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        includeDirection={
+          isDefaultScript ? defaultValue.type === "direction" : false
+        }
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
   } else if (type === "palette") {
     if (field.paletteType === "ui") {
       return (
@@ -470,11 +483,6 @@ const ScriptEventFormInput = ({
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -631,11 +639,6 @@ const ScriptEventFormInput = ({
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -730,11 +733,6 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );

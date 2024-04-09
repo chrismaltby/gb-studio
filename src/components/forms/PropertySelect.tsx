@@ -44,8 +44,10 @@ const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
-const Wrapper = styled.div`
+export const PropertySelectWrapper = styled.div`
   position: relative;
+  width: 100%;
+  min-width: 78px;
 `;
 
 export const PropertySelect = ({
@@ -235,7 +237,7 @@ export const PropertySelect = ({
   }, [options, value]);
 
   return (
-    <Wrapper>
+    <PropertySelectWrapper>
       <Select
         name={name}
         value={currentValue}
@@ -282,6 +284,6 @@ export const PropertySelect = ({
           onChange={onChangeUnits}
         />
       )}
-    </Wrapper>
+    </PropertySelectWrapper>
   );
 };

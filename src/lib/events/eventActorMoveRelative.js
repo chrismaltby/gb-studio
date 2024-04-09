@@ -67,7 +67,6 @@ const fields = [
     label: l10n("FIELD_USE_COLLISIONS"),
     description: l10n("FIELD_USE_COLLISIONS_DESC"),
     width: "50%",
-    alignCheckbox: true,
     type: "checkbox",
     defaultValue: false,
   },

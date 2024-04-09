@@ -135,10 +135,11 @@ const operatorRegex = new RegExp(
     ")"
 );
 
-const MathTextareaWrapper = styled.div`
+export const MathTextareaWrapper = styled.div`
   position: relative;
   display: inline-block;
   width: 100%;
+  min-width: 91px;
   font-size: ${(props) => props.theme.typography.fontSize};
   font-family: monospace;
 

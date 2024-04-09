@@ -5,6 +5,8 @@ import {
 } from "shared/lib/scripts/scriptDefHelpers";
 import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { scriptValueToString } from "shared/lib/scriptValue/format";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 export const getAutoLabel = (
   command: string,
@@ -26,8 +28,10 @@ export const getAutoLabel = (
 
     const fieldLookup = field.fieldsLookup;
 
-    const extractValue = (arg: unknown): unknown => {
+    const extractValue = (key: string, arg: unknown): unknown => {
+      const fieldType = fieldLookup[key]?.type || "";
       if (
+        fieldType === "union" &&
         arg &&
         typeof arg === "object" &&
         "value" in (arg as { value: unknown })
@@ -46,7 +50,7 @@ export const getAutoLabel = (
       return fieldType;
     };
 
-    const argValue = extractValue(arg);
+    const argValue = extractValue(key, arg);
     const fieldType = extractFieldType(key, arg);
     const fieldDefault =
       arg && (arg as { type: string })?.type
@@ -141,7 +145,14 @@ export const getAutoLabel = (
       return l10nInput(value);
     };
 
-    if (isActorField(command, key, args, scriptEventDefs)) {
+    if (fieldType === "value" && isScriptValue(value)) {
+      return scriptValueToString(value, {
+        variableNameForId: (id) => `||variable:${id}||`,
+        actorNameForId: (id) => `||actor:${id}||`,
+        propertyNameForId,
+        directionForValue,
+      });
+    } else if (isActorField(command, key, args, scriptEventDefs)) {
       return `||actor:${value}||`;
     } else if (isVariableField(command, key, args, scriptEventDefs)) {
       return `||variable:${value}||`;

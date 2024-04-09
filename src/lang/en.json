@@ -759,6 +759,9 @@
   "FIELD_STATE_VARIABLE_DESC": "A variable to store the current state of this event",
   "FIELD_ANIMATION_FRAMES": "Animation Frames",
   "FIELD_ANIMATION_FRAMES_DESC": "The number of animation frames to cycle through.",
+  "FIELD_NUMBER": "Number",
+  "FIELD_PROPERTY": "Property",
+  "FIELD_REMOVE": "Remove",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -138,6 +138,7 @@ const fields = [
         ],
         inline: true,
         defaultValue: "direction",
+        alignBottom: true,
       },
     ],
   },
@@ -186,13 +187,13 @@ const fields = [
   },
   {
     type: "group",
+    alignBottom: true,
     fields: [
       {
         key: "loopAnim",
         label: l10n("FIELD_LOOP_ANIMATION"),
         description: l10n("FIELD_LOOP_ANIMATION_DESC"),
         type: "checkbox",
-        alignCheckbox: true,
         defaultValue: true,
       },
       {
@@ -200,7 +201,6 @@ const fields = [
         label: l10n("FIELD_DESTROY_ON_HIT"),
         description: l10n("FIELD_PROJECTILE_DESTROY_ON_HIT_DESC"),
         type: "checkbox",
-        alignCheckbox: true,
         defaultValue: true,
       },
     ],

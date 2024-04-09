@@ -6,6 +6,7 @@ import React, {
   isValidElement,
   ReactElement,
   ReactNode,
+  useCallback,
 } from "react";
 import styled, { css } from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -23,6 +24,9 @@ export interface DropdownButtonProps {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly style?: CSSProperties;
+  readonly onKeyDown?: (
+    event: React.KeyboardEvent<HTMLButtonElement>
+  ) => boolean;
   readonly onMouseDown?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => void;
@@ -47,7 +51,7 @@ export const MenuWrapper = styled.div<MenuWrapperProps>`
       : ""}
 `;
 
-export const Wrapper = styled.div`
+export const DropdownButtonWrapper = styled.div`
   position: relative;
   flex-shrink: 0;
   [aria-expanded="false"] + ${MenuWrapper} {
@@ -68,6 +72,7 @@ export const ArrowWrapper = styled.div`
 `;
 
 export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
+  id,
   size,
   variant,
   label,
@@ -79,6 +84,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
   offsetY,
   active,
   style,
+  onKeyDown,
   onMouseDown,
 }) => {
   const childArray = Children.toArray(children);
@@ -105,15 +111,27 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
       },
     });
   });
+  const mergedKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (onKeyDown?.(e)) {
+        setIsOpen(false);
+      } else {
+        buttonProps?.onKeyDown?.(e);
+      }
+    },
+    [buttonProps, onKeyDown, setIsOpen]
+  );
 
   return (
-    <Wrapper>
+    <DropdownButtonWrapper>
       <Button
+        id={id}
         title={title}
         size={size}
         variant={variant}
         active={active}
         {...buttonProps}
+        onKeyDown={mergedKeyDown}
         onMouseDown={onMouseDown}
         style={{
           ...style,
@@ -143,7 +161,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
           </RelativePortal>
         </MenuWrapper>
       )}
-    </Wrapper>
+    </DropdownButtonWrapper>
   );
 };
 

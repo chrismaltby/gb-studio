@@ -31,7 +31,6 @@ const fields = [
     label: l10n("FIELD_LOOP_ANIMATION"),
     description: l10n("FIELD_LOOP_ANIMATION_DESC"),
     type: "checkbox",
-    alignCheckbox: true,
     defaultValue: true,
     width: "50%",
   },

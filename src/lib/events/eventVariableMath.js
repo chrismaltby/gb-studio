@@ -151,7 +151,6 @@ const fields = [
       },
     ],
     defaultValue: false,
-    alignCheckbox: true,
   },
 ];
 

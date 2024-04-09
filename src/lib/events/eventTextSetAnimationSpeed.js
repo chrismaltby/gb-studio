@@ -33,7 +33,6 @@ const fields = [
     description: l10n("FIELD_ALLOW_FASTFORWARD_DESC"),
     key: "allowFastForward",
     defaultValue: true,
-    alignCheckbox: true,
   },
 ];
 
