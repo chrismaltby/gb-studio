@@ -20,9 +20,12 @@ const fields = [
     description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
+    flexBasis: 0,
+    minWidth: 150,
   },
   {
     type: "group",
+    wrapItems: true,
     fields: [
       {
         key: "x",
