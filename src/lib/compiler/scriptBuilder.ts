@@ -2557,6 +2557,54 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  actorSetPositionToToScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Set Position");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._addComment(`-- Position Actor`);
+    this.actorSetById(actorId);
+    this._actorSetPosition(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
   actorSetPositionRelative = (
     x = 0,
     y = 0,

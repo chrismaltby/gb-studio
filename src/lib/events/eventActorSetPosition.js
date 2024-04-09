@@ -28,9 +28,7 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
@@ -38,18 +36,15 @@ const fields = [
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          type: "number",
+          value: 0,
         },
       },
       {
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
@@ -57,9 +52,8 @@ const fields = [
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:ypos",
+          type: "number",
+          value: 0,
         },
       },
     ],
@@ -67,24 +61,13 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const {
-    actorSetActive,
-    actorSetPosition,
-    actorSetPositionToVariables,
-    variableFromUnion,
-    temporaryEntityVariable,
-  } = helpers;
-  if (input.x.type === "number" && input.y.type === "number") {
-    // If all inputs are numbers use fixed implementation
-    actorSetActive(input.actorId);
-    actorSetPosition(input.x.value, input.y.value, input.units);
-  } else {
-    // If any value is not a number transfer values into variables and use variable implementation
-    const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
-    const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
-    actorSetActive(input.actorId);
-    actorSetPositionToVariables(xVar, yVar, input.units);
-  }
+  const { actorSetPositionToToScriptValues } = helpers;
+  actorSetPositionToToScriptValues(
+    input.actorId,
+    input.x,
+    input.y,
+    input.units
+  );
 };
 
 module.exports = {
