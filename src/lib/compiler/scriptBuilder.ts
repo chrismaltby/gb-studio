@@ -4741,7 +4741,6 @@ extern void __mute_mask_${symbol};
     }
   };
 
-
   engineFieldSetToScriptValue = (key: string, value: ScriptValue) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
@@ -4769,7 +4768,11 @@ extern void __mute_mask_${symbol};
         }
       } else {
         // Was RPN instructions
-        const engineFieldValueRef = this._declareLocal("engine_field_val", 1, true);
+        const engineFieldValueRef = this._declareLocal(
+          "engine_field_val",
+          1,
+          true
+        );
         const localsLookup = this._performFetchOperations(fetchOps);
         this._addComment(`-- Calculate value`);
         const rpn = this._rpn();
@@ -4779,15 +4782,13 @@ extern void __mute_mask_${symbol};
           this._setMemInt16ToVariable(key, engineFieldValueRef);
         } else {
           this._setMemInt8ToVariable(key, engineFieldValueRef);
-        }        
+        }
       }
       this._addNL();
     }
   };
 
-  engineFieldSetToDefault = (
-    key: string,
-  ) => {
+  engineFieldSetToDefault = (key: string) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
