@@ -49,6 +49,7 @@ export type ScriptEventPresetValue = {
   name: string;
   description?: string;
   groups?: string[] | string;
+  subGroups?: Record<string, string>;
   values: Record<string, unknown>;
 }
 
@@ -58,6 +59,7 @@ export interface ScriptEventDef {
   name?: string;
   description?: string;
   groups?: string[] | string;
+  subGroups?: Record<string, string>;
   deprecated?: boolean;
   isConditional?: boolean;
   editableSymbol?: boolean;

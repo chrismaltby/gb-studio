@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_ACTOR_AT_POSITION";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
+const subGroups = {
+  "EVENT_GROUP_ACTOR": "EVENT_GROUP_CONTROL_FLOW",
+  "EVENT_GROUP_CONTROL_FLOW": "EVENT_GROUP_ACTOR"
+}
 
 const autoLabel = (fetchArg, input) => {
   const unitPostfix =
@@ -101,6 +105,7 @@ module.exports = {
   description: l10n("EVENT_IF_ACTOR_AT_POSITION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   helper: {

@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_ACTOR_DIRECTION";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
+const subGroups = {
+  "EVENT_GROUP_ACTOR": "EVENT_GROUP_CONTROL_FLOW",
+  "EVENT_GROUP_CONTROL_FLOW": "EVENT_GROUP_ACTOR"
+}
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_ACTOR_DIRECTION_LABEL", {
@@ -74,6 +78,7 @@ module.exports = {
   description: l10n("EVENT_IF_ACTOR_DIRECTION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

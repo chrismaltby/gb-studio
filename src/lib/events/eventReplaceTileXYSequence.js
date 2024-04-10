@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_REPLACE_TILE_XY_SEQUENCE";
 const groups = ["EVENT_GROUP_SCENE"];
+const subGroups = {
+  EVENT_GROUP_SCENE: "EVENT_GROUP_TILES",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_REPLACE_TILE_XY_SEQUENCE_LABEL", {
@@ -168,6 +171,7 @@ module.exports = {
   description: l10n("EVENT_REPLACE_TILE_XY_SEQUENCE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   helper: {

@@ -1,6 +1,9 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_LINK_TRANSFER";
+const subGroups = {
+  "EVENT_GROUP_MISC": "EVENT_GROUP_MULTIPLAYER",
+}
 
 const fields = [
   {
@@ -30,6 +33,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  subGroups,
   fields,
   compile,
 };

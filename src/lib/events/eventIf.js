@@ -82,6 +82,9 @@ module.exports = {
       id: "EVENT_IF_TRUE",
       name: l10n("EVENT_IF_TRUE"),
       description: l10n("EVENT_IF_TRUE_DESC"),
+      subGroups: {
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+      },
       values: {
         condition: {
           type: "variable",
@@ -93,6 +96,9 @@ module.exports = {
       id: "EVENT_IF_FALSE",
       name: l10n("EVENT_IF_FALSE"),
       description: l10n("EVENT_IF_FALSE_DESC"),
+      subGroups: {
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+      },
       values: {
         condition: {
           type: "eq",
@@ -111,10 +117,60 @@ module.exports = {
       name: l10n("EVENT_IF_EXPRESSION"),
       description: l10n("EVENT_IF_EXPRESSION_DESC"),
       groups: ["EVENT_GROUP_MATH", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_MATH: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_MATH",
+      },
       values: {
         condition: {
           type: "expression",
           value: "",
+        },
+      },
+    },
+    {
+      id: "EVENT_IF_VALUE",
+      name: l10n("EVENT_IF_VALUE"),
+      description: l10n("EVENT_IF_VALUE_DESC"),
+      groups: ["EVENT_GROUP_VARIABLES", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+      },
+      values: {
+        condition: {
+          type: "eq",
+          valueA: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
+          valueB: {
+            type: "number",
+            value: 0,
+          },
+        },
+      },
+    },
+    {
+      id: "EVENT_IF_VALUE_COMPARE",
+      name: l10n("EVENT_IF_VALUE_COMPARE"),
+      description: l10n("EVENT_IF_VALUE_COMPARE_DESC"),
+      groups: ["EVENT_GROUP_VARIABLES", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+      },
+      values: {
+        condition: {
+          type: "eq",
+          valueA: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
+          valueB: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
         },
       },
     },

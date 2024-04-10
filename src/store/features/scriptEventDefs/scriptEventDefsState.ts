@@ -30,6 +30,7 @@ const buildPresets = (lookup: ScriptEventDefs): ScriptEventDefs => {
             name: p.name,
             description: p.description ?? def.description,
             groups: p.groups ?? def.groups,
+            subGroups: p.subGroups ?? def.subGroups,
           };
         });
       }

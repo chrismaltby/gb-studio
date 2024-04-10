@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_MOVE_TO";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_MOVEMENT",
+};
 const weight = 2;
 
 const autoLabel = (fetchArg, input) => {
@@ -109,6 +112,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_MOVE_TO_DESC"),
   autoLabel,
   groups,
+  subGroups,
   weight,
   fields,
   compile,

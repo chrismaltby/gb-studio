@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_SET_POSITION";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_MOVEMENT",
+};
 
 const autoLabel = (fetchArg, input) => {
   const unitPostfix =
@@ -78,6 +81,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_SET_POSITION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   helper: {

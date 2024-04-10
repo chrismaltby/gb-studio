@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_INPUT";
 const groups = ["EVENT_GROUP_INPUT", "EVENT_GROUP_CONTROL_FLOW"];
+const subGroups = {
+  EVENT_GROUP_INPUT: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_INPUT",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_INPUT_LABEL", {
@@ -66,6 +70,7 @@ module.exports = {
   references: ["/docs/scripting/script-glossary/input#attach-script-to-button"],
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

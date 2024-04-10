@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_TEXT_SET_ANIMATION_SPEED";
 const groups = ["EVENT_GROUP_DIALOGUE"];
+const subGroups = {
+  "EVENT_GROUP_DIALOGUE": "EVENT_GROUP_PROPERTIES"
+}
 
 const fields = [
   {
@@ -47,6 +50,7 @@ module.exports = {
   id,
   description: l10n("EVENT_TEXT_SET_ANIMATION_SPEED_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
 };

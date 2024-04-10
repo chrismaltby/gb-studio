@@ -1105,7 +1105,15 @@
   "EVENT_IF": "If",
   "EVENT_IF_LABEL": "If {condition}",
   "EVENT_IF_DESC": "Conditionally run part of the script if the specified value evaluates to true.",
-  
+  "EVENT_GROUP_MULTIPLAYER": "Multiplayer",
+  "EVENT_GROUP_MOVEMENT": "Movement",
+  "EVENT_GROUP_PROPERTIES": "Properties",
+  "EVENT_GROUP_DEVICE": "Device",
+  "EVENT_GROUP_VISIBILITY": "Visibility",
+  "EVENT_GROUP_SCRIPT": "Script",
+  "EVENT_GROUP_TILES": "Tiles",
+  "EVENT_GROUP_SCENE_STACK": "Scene Stack",
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "File",

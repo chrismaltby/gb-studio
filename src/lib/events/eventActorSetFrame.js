@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_SET_FRAME";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_PROPERTIES",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ACTOR_SET_FRAME_LABEL", {
@@ -42,6 +45,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_SET_FRAME_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };
