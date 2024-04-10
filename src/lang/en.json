@@ -762,6 +762,7 @@
   "FIELD_NUMBER": "Number",
   "FIELD_PROPERTY": "Property",
   "FIELD_REMOVE": "Remove",
+  "FIELD_LAUNCH_AT": "Launch At",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

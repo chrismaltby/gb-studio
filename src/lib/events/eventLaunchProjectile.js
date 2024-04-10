@@ -57,8 +57,21 @@ const fields = [
   },
   {
     type: "group",
-    width: "50%",
     fields: [
+      {
+        label: l10n("FIELD_LAUNCH_AT"),
+        key: "directionType",
+        type: "select",
+        options: [
+          ["direction", l10n("FIELD_FIXED_DIRECTION")],
+          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
+          ["target", l10n("FIELD_ACTOR_TARGET")],
+          ["angle", l10n("FIELD_ANGLE")],
+          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
+        ],
+        defaultValue: "direction",
+        alignBottom: true,
+      },
       {
         key: "otherActorId",
         label: l10n("FIELD_DIRECTION"),
@@ -125,20 +138,6 @@ const fields = [
             eq: "target",
           },
         ],
-      },
-      {
-        key: "directionType",
-        type: "selectbutton",
-        options: [
-          ["direction", l10n("FIELD_FIXED_DIRECTION")],
-          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
-          ["target", l10n("FIELD_ACTOR_TARGET")],
-          ["angle", l10n("FIELD_ANGLE")],
-          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
-        ],
-        inline: true,
-        defaultValue: "direction",
-        alignBottom: true,
       },
     ],
   },
