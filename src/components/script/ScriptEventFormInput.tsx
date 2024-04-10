@@ -367,9 +367,6 @@ const ScriptEventFormInput = ({
           isValueScript ? value : isDefaultScript ? defaultValue : undefined
         }
         onChange={onChangeField}
-        includeDirection={
-          isDefaultScript ? defaultValue.type === "direction" : false
-        }
         min={field.min}
         max={field.max}
         step={field.step}

@@ -214,7 +214,6 @@ interface ValueSelectProps {
   onChange: (newValue: ScriptValue | undefined) => void;
   innerValue?: boolean;
   fixedType?: boolean;
-  includeDirection?: boolean;
   placeholder?: string;
   min?: number;
   max?: number;
@@ -228,7 +227,6 @@ const ValueSelect = ({
   onChange,
   innerValue,
   fixedType,
-  includeDirection,
   placeholder,
   min,
   max,
@@ -374,24 +372,6 @@ const ValueSelect = ({
 
   const menu = useMemo(
     () => [
-      ...(includeDirection && !isValueFn
-        ? [
-            <MenuItem
-              key="direction"
-              onClick={() => {
-                onChange({
-                  type: "direction",
-                  value: "left",
-                });
-              }}
-            >
-              <MenuItemIcon>
-                {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
-              {l10n("FIELD_DIRECTION")}
-            </MenuItem>,
-          ]
-        : []),
       ...(!isValueFn
         ? [
             <MenuItem key="number" onClick={setNumber}>
@@ -440,6 +420,20 @@ const ValueSelect = ({
               </MenuItemIcon>
               {l10n("FIELD_EXPRESSION")}
             </MenuItem>,
+            <MenuItem
+            key="direction"
+            onClick={() => {
+              onChange({
+                type: "direction",
+                value: "left",
+              });
+            }}
+          >
+            <MenuItemIcon>
+              {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
+            </MenuItemIcon>
+            {l10n("FIELD_DIRECTION")}
+          </MenuItem>,            
             <MenuDivider key="divider" />,
           ]
         : []),
@@ -495,7 +489,6 @@ const ValueSelect = ({
     [
       context.type,
       editorType,
-      includeDirection,
       isValueFn,
       onChange,
       setNumber,
