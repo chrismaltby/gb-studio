@@ -45,7 +45,6 @@ import {
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import L10NText from "ui/form/L10NText";
 import { SliderField } from "ui/form/SliderField";
-import { AngleInput } from "ui/form/AngleInput";
 import { Option, Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
