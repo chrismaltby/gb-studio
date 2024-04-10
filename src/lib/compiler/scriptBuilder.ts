@@ -4507,6 +4507,25 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  variablesScriptValueOperation = (
+    setVariable: string,
+    operation: ScriptBuilderRPNOperation,
+    value: ScriptValue,
+  ) => {
+    this._addComment(`Variables ${operation}`);
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const rpn = this._rpn();
+    rpn.refVariable(setVariable)
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.operator(operation);
+    rpn.refSetVariable(setVariable);
+    rpn.stop();
+    this._addNL();
+  };
+
   variableRandomOperation = (
     variable: string,
     operation: ScriptBuilderRPNOperation,
@@ -5388,6 +5407,73 @@ extern void __mute_mask_${symbol};
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable ${operator} Variable`);
     this._ifVariableCmpVariable(operator, variableA, variableB, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifVariableCompareScriptValue = (
+    variable: string,
+    operator: ScriptBuilderComparisonOperator,
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+
+    this._addComment(`If Variable ${operator} Value`);
+
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._ifVariableConst(operator, variable, rpnOps[0].value, trueLabel, 0);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "direction") {
+      this._ifVariableCmpVariable(operator, variable, rpnOps[0].value, trueLabel, 0);
+    } else {
+      this._addComment(`-- Calculate value`);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const ifValueRef = this._declareLocal("if_value", 3, true);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSet(ifValueRef).stop();
+      this._ifVariableCmpVariable(operator, variable, ifValueRef, trueLabel, 0);
+    }
+ 
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifScriptValue = (
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const ifValueRef = this._declareLocal("if_value", 3, true);
+    this._addComment(`If`);
+
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(ifValueRef).stop();
+
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If`);
+    this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
