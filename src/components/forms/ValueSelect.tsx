@@ -38,9 +38,17 @@ import {
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import ScriptEventFormMathArea from "components/script/ScriptEventFormMatharea";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
-import { castEventToInt } from "renderer/lib/helpers/castEventValue";
-import l10n from "shared/lib/lang/l10n";
+import {
+  castEventToBool,
+  castEventToInt,
+} from "renderer/lib/helpers/castEventValue";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import L10NText from "ui/form/L10NText";
+import { SliderField } from "ui/form/SliderField";
+import { AngleInput } from "ui/form/AngleInput";
+import { Option, Select } from "ui/form/Select";
+import { ensureNumber } from "shared/types";
+import { CheckboxField } from "ui/form/CheckboxField";
 
 type ValueFunctionMenuItem = {
   value: ValueFunction;
@@ -207,6 +215,22 @@ const Wrapper = styled.div`
     margin-top: -3px;
   }
 `;
+
+type ValueSelectInputOverride = {
+  topLevelOnly: boolean;
+} & (
+  | {
+      type: "number" | "slider";
+    }
+  | {
+      type: "select";
+      options?: [number, string][];
+    } | {
+      type: "checkbox";
+      checkboxLabel: string;
+    }
+);
+
 interface ValueSelectProps {
   name: string;
   entityId: string;
@@ -218,6 +242,7 @@ interface ValueSelectProps {
   min?: number;
   max?: number;
   step?: number;
+  inputOverride?: ValueSelectInputOverride;
 }
 
 const ValueSelect = ({
@@ -231,6 +256,7 @@ const ValueSelect = ({
   min,
   max,
   step,
+  inputOverride,
 }: ValueSelectProps) => {
   const context = useContext(ScriptEditorContext);
   const editorType = useSelector((state: RootState) => state.editor.type);
@@ -421,19 +447,19 @@ const ValueSelect = ({
               {l10n("FIELD_EXPRESSION")}
             </MenuItem>,
             <MenuItem
-            key="direction"
-            onClick={() => {
-              onChange({
-                type: "direction",
-                value: "left",
-              });
-            }}
-          >
-            <MenuItemIcon>
-              {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
-            {l10n("FIELD_DIRECTION")}
-          </MenuItem>,            
+              key="direction"
+              onClick={() => {
+                onChange({
+                  type: "direction",
+                  value: "left",
+                });
+              }}
+            >
+              <MenuItemIcon>
+                {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {l10n("FIELD_DIRECTION")}
+            </MenuItem>,
             <MenuDivider key="divider" />,
           ]
         : []),
@@ -499,6 +525,14 @@ const ValueSelect = ({
     ]
   );
 
+  const options = (
+    (inputOverride?.type === "select" && inputOverride?.options) ||
+    []
+  ).map(([value, label]) => ({
+    value,
+    label: l10n(label as L10NKey),
+  }));
+
   const dropdownButton = useMemo(() => {
     if (fixedType) {
       return isValueAtom(value) ? (
@@ -525,26 +559,91 @@ const ValueSelect = ({
       <ValueWrapper>
         <InputGroup>
           <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-          <NumberInput
-            id={name}
-            type="number"
-            value={String(
-              value.value !== undefined && value.value !== null
-                ? value.value
-                : ""
+          {((innerValue && !inputOverride?.topLevelOnly) ||
+            !inputOverride ||
+            inputOverride?.type === "number") && (
+            <NumberInput
+              id={name}
+              type="number"
+              value={String(
+                value.value !== undefined && value.value !== null
+                  ? value.value
+                  : ""
+              )}
+              min={innerValue ? undefined : min}
+              max={innerValue ? undefined : max}
+              step={innerValue ? undefined : step}
+              placeholder={innerValue ? "0" : String(placeholder ?? "0")}
+              onChange={(e) => {
+                onChange({
+                  type: "number",
+                  value: castEventToInt(e, 0),
+                });
+              }}
+              onKeyDown={onKeyDown}
+            />
+          )}
+          {inputOverride?.type === "slider" &&
+            (!innerValue || !inputOverride.topLevelOnly) && (
+              <SliderField
+                name={name}
+                value={
+                  value.value !== undefined && value.value !== null
+                    ? value.value
+                    : Number(placeholder ?? 0)
+                }
+                min={!innerValue && min ? min : 0}
+                max={!innerValue && max ? max : 0xffff}
+                placeholder={innerValue ? 0 : Number(placeholder ?? 0)}
+                onChange={(value) => {
+                  console.log("ON CHANGE", value);
+                  if (value !== undefined) {
+                    onChange({
+                      type: "number",
+                      value,
+                    });
+                  }
+                }}
+              />
             )}
-            min={innerValue ? undefined : min}
-            max={innerValue ? undefined : max}
-            step={innerValue ? undefined : step}
-            placeholder={innerValue ? "0" : String(placeholder ?? "0")}
-            onChange={(e) => {
-              onChange({
-                type: "number",
-                value: castEventToInt(e, 0),
-              });
-            }}
-            onKeyDown={onKeyDown}
-          />
+          {inputOverride?.type === "select" &&
+            (!innerValue || !inputOverride.topLevelOnly) && (
+              <Select
+                id={name}
+                name={name}
+                value={
+                  options.find((o) =>
+                    value.value ? o.value === value.value : o.value === value.value
+                  ) || options[0]
+                }
+                options={options}
+                onChange={(e: Option) => {
+                  onChange({
+                    type: "number",
+                    value: ensureNumber(e.value, 0),
+                  });
+                }}
+              />
+            )}
+          {inputOverride?.type === "checkbox" &&
+            (!innerValue || !inputOverride.topLevelOnly) && (
+              <CheckboxField
+                name={name}
+                label={String(inputOverride.checkboxLabel || "")}
+                title={inputOverride.checkboxLabel}                
+                checked={
+                  value.value !== undefined && value.value !== null
+                    ? Boolean(value.value)
+                    : false
+                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  onChange({
+                    type: "number",
+                    value: castEventToBool(e) ? 1 : 0,
+                  });
+                }}
+              />
+            )}
         </InputGroup>
       </ValueWrapper>
     );

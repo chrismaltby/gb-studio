@@ -59,6 +59,10 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
   menuPlacement: "auto",
   menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
 }))`
+  position: relative;
+  width: 100%;
+  min-width: 78px;
+
   .CustomSelect__control {
     height: 28px;
     min-height: 28px;

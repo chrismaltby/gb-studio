@@ -4741,6 +4741,68 @@ extern void __mute_mask_${symbol};
     }
   };
 
+
+  engineFieldSetToScriptValue = (key: string, value: ScriptValue) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.cType;
+      this._addComment(`Engine Field Set To Value`);
+
+      const [rpnOps, fetchOps] = precompileScriptValue(
+        optimiseScriptValue(value)
+      );
+
+      if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+        // Was single number
+        if (is16BitCType(cType)) {
+          this._setConstMemInt16(key, rpnOps[0].value);
+        } else {
+          this._setConstMemInt8(key, rpnOps[0].value);
+        }
+      } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+        // Was single variable
+        if (is16BitCType(cType)) {
+          this._setMemInt16ToVariable(key, rpnOps[0].value);
+        } else {
+          this._setMemInt8ToVariable(key, rpnOps[0].value);
+        }
+      } else {
+        // Was RPN instructions
+        const engineFieldValueRef = this._declareLocal("engine_field_val", 1, true);
+        const localsLookup = this._performFetchOperations(fetchOps);
+        this._addComment(`-- Calculate value`);
+        const rpn = this._rpn();
+        this._performValueRPN(rpn, rpnOps, localsLookup);
+        rpn.refSetVariable(engineFieldValueRef).stop();
+        if (is16BitCType(cType)) {
+          this._setMemInt16ToVariable(key, engineFieldValueRef);
+        } else {
+          this._setMemInt8ToVariable(key, engineFieldValueRef);
+        }        
+      }
+      this._addNL();
+    }
+  };
+
+  engineFieldSetToDefault = (
+    key: string,
+  ) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.cType;
+      const numberValue = Number(engineField.defaultValue || 0);
+      this._addComment(`Engine Field Set To Default`);
+      if (is16BitCType(cType)) {
+        this._setConstMemInt16(key, numberValue);
+      } else {
+        this._setConstMemInt8(key, numberValue);
+      }
+      this._addNL();
+    }
+  };
+
   engineFieldStoreInVariable = (key: string, variable: string) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];

@@ -737,33 +737,39 @@ const ScriptEventFormInput = ({
     const engineField = engineFieldsLookup[args.engineFieldKey as string];
     if (engineField) {
       const fieldType = engineField.type || "number";
-      const updateValueField = {
-        key: "value",
-        type: fieldType,
-        checkboxLabel: l10n(engineField.label as L10NKey),
-        min: clampToCType(
-          setDefault(engineField.min, -Infinity),
-          engineField.cType
-        ),
-        max: clampToCType(
-          setDefault(engineField.max, Infinity),
-          engineField.cType
-        ),
-        options: engineField.options || [],
-        defaultValue: engineField.defaultValue ?? 0,
-      };
+      const engineDefaultValue = {
+        type: "number",
+        value: engineField.defaultValue
+      }
+      const isValueScript = isScriptValue(value);
+      const isDefaultScript = isScriptValue(engineDefaultValue);
+  
       return (
-        <ScriptEventFormInput
-          id={id}
+        <ValueSelect
+          name={id}
           entityId={entityId}
-          type={fieldType}
-          field={updateValueField}
-          value={value}
-          args={args}
-          index={index}
-          defaultValue={updateValueField.defaultValue}
-          onChange={onChange}
-          onChangeArg={onChangeArg}
+          value={
+            isValueScript ? value : isDefaultScript ? engineDefaultValue : undefined
+          }
+          onChange={onChangeField}
+          min={clampToCType(
+            setDefault(engineField.min, -Infinity),
+            engineField.cType
+          )}
+          max={clampToCType(
+            setDefault(engineField.max, Infinity),
+            engineField.cType
+          )}
+          step={field.step}
+          placeholder={String(
+            engineField.defaultValue ?? 0
+          )}
+          inputOverride={{
+            type: fieldType,
+            topLevelOnly: true,
+            options: engineField.options || [],
+            checkboxLabel: l10n(engineField.label as L10NKey),
+          }}
         />
       );
     }

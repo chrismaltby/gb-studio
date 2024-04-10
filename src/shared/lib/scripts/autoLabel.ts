@@ -145,7 +145,7 @@ export const getAutoLabel = (
       return l10nInput(value);
     };
 
-    if (fieldType === "value" && isScriptValue(value)) {
+    if ((fieldType === "value" || fieldType === "engineFieldValue") && isScriptValue(value)) {
       return scriptValueToString(value, {
         variableNameForId: (id) => `||variable:${id}||`,
         actorNameForId: (id) => `||actor:${id}||`,

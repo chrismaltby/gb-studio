@@ -31,12 +31,10 @@ const fields = [
   },
   {
     key: "value",
-    type: "union",
-    types: ["engineFieldValue", "variable"],
-    defaultType: "engineFieldValue",
+    type: "engineFieldValue",
     defaultValue: {
-      engineFieldValue: "ENGINE_FIELD_DEFAULT_VALUE",
-      variable: "LAST_VARIABLE",
+      type: "number",
+      value: 0,
     },
     conditions: [
       {
@@ -48,14 +46,11 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { engineFieldSetToValue, engineFieldSetToVariable } = helpers;
+  const { engineFieldSetToScriptValue, engineFieldSetToDefault } = helpers;
   if (!input.value) {
-    engineFieldSetToValue(input.engineFieldKey);
-  } else if (input.value.type === "variable") {
-    engineFieldSetToVariable(input.engineFieldKey, input.value.value);
-  } else {
-    engineFieldSetToValue(input.engineFieldKey, input.value.value);
+    engineFieldSetToDefault(input.engineFieldKey);
   }
+  engineFieldSetToScriptValue(input.engineFieldKey, input.value)
 };
 
 module.exports = {

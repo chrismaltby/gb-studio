@@ -17,7 +17,8 @@ export const InputGroup = styled.div`
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-  & > div:not(:first-child) ${Select} .CustomSelect__control {
+  & > div:not(:first-child) ${Select} .CustomSelect__control,
+  & > ${Select}:not(:first-child) .CustomSelect__control {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
@@ -35,7 +36,8 @@ export const InputGroup = styled.div`
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  & > div:not(:last-child) ${Select} .CustomSelect__control {
+  & > div:not(:last-child) ${Select} .CustomSelect__control,
+  & > ${Select}:not(:last-child) .CustomSelect__control {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
