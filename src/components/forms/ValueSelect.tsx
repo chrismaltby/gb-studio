@@ -24,9 +24,11 @@ import {
   CrossIcon,
   DivideIcon,
   ExpressionIcon,
+  FalseIcon,
   MinusIcon,
   NumberIcon,
   PlusIcon,
+  TrueIcon,
   VariableIcon,
 } from "ui/icons/Icons";
 import {
@@ -48,6 +50,7 @@ import { SliderField } from "ui/form/SliderField";
 import { Option, Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
+import { Input } from "ui/form/Input";
 
 type ValueFunctionMenuItem = {
   value: ValueFunction;
@@ -81,6 +84,8 @@ const atomIconLookup: Record<ValueAtom, JSX.Element> = {
   indirect: <VariableIcon />,
   expression: <ExpressionIcon />,
   property: <ActorIcon />,
+  true: <TrueIcon />,
+  false: <FalseIcon />,
 };
 
 const operatorMenuItems: ValueFunctionMenuItem[] = [
@@ -224,7 +229,8 @@ type ValueSelectInputOverride = {
   | {
       type: "select";
       options?: [number, string][];
-    } | {
+    }
+  | {
       type: "checkbox";
       checkboxLabel: string;
     }
@@ -460,6 +466,33 @@ const ValueSelect = ({
               {l10n("FIELD_DIRECTION")}
             </MenuItem>,
             <MenuDivider key="divider" />,
+            <MenuItem
+              key="true"
+              onClick={() => {
+                onChange({
+                  type: "true",
+                });
+              }}
+            >
+              <MenuItemIcon>
+                {value.type === "true" ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {l10n("FIELD_TRUE")}
+            </MenuItem>,
+            <MenuItem
+              key="false"
+              onClick={() => {
+                onChange({
+                  type: "false",
+                });
+              }}
+            >
+              <MenuItemIcon>
+                {value.type === "false" ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {l10n("FIELD_FALSE")}
+            </MenuItem>,
+            <MenuDivider key="divider" />,
           ]
         : []),
       ...operatorMenuItems.map((menuItem) => (
@@ -612,7 +645,9 @@ const ValueSelect = ({
                 name={name}
                 value={
                   options.find((o) =>
-                    value.value ? o.value === value.value : o.value === value.value
+                    value.value
+                      ? o.value === value.value
+                      : o.value === value.value
                   ) || options[0]
                 }
                 options={options}
@@ -629,7 +664,7 @@ const ValueSelect = ({
               <CheckboxField
                 name={name}
                 label={String(inputOverride.checkboxLabel || "")}
-                title={inputOverride.checkboxLabel}                
+                title={inputOverride.checkboxLabel}
                 checked={
                   value.value !== undefined && value.value !== null
                     ? Boolean(value.value)
@@ -721,6 +756,24 @@ const ValueSelect = ({
             }}
             entityId={entityId}
           />
+        </InputGroup>
+      </ValueWrapper>
+    );
+  } else if (value.type === "true") {
+    input = (
+      <ValueWrapper>
+        <InputGroup>
+          <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+          <Input value={l10n("FIELD_TRUE")} />
+        </InputGroup>
+      </ValueWrapper>
+    );
+  } else if (value.type === "false") {
+    input = (
+      <ValueWrapper>
+        <InputGroup>
+          <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+          <Input value={l10n("FIELD_FALSE")} />
         </InputGroup>
       </ValueWrapper>
     );

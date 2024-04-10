@@ -35,6 +35,10 @@ export const scriptValueToString = (
         return options.variableNameForId(match);
       }
     );
+  } else if (value.type === "true") {
+    return "true";
+  } else if (value.type === "false") { 
+    return "false";
   } else if (value.type === "add") {
     return `(${scriptValueToString(
       value.valueA,

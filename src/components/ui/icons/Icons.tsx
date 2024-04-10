@@ -604,6 +604,18 @@ export const CompassIcon = () => (
   </svg>
 );
 
+export const TrueIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M21.5 2H2.5V7H9V22H15V7H21.5V2Z" />
+  </svg>
+);
+
+export const FalseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M18.5 2H6V22H12V14.5H17V10.5H12V6.5H18.5V2Z" />
+  </svg>
+);
+
 export const VariableIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

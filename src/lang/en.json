@@ -763,7 +763,9 @@
   "FIELD_PROPERTY": "Property",
   "FIELD_REMOVE": "Remove",
   "FIELD_LAUNCH_AT": "Launch At",
-
+  "FIELD_CONDITION": "Condition",
+  "FIELD_CONDITION_DESC": "The condition to evaluate.",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
   "ASSET_EDIT": "Edit",
@@ -1100,7 +1102,10 @@
   "EVENT_REPLACE_TILE_XY_SEQUENCE": "Replace Tile At Position From Sequence",
   "EVENT_REPLACE_TILE_XY_SEQUENCE_DESC": "Replace a tile at a specified coordinate with another from a tileset in a sequence.",
   "EVENT_REPLACE_TILE_XY_SEQUENCE_LABEL": "Replace Tile At {{x},{y}} From Sequence",
-
+  "EVENT_IF": "If",
+  "EVENT_IF_LABEL": "If {condition}",
+  "EVENT_IF_DESC": "Conditionally run part of the script if the specified value evaluates to true.",
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "File",

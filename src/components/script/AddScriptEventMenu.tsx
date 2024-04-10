@@ -36,6 +36,8 @@ import { EVENT_TEXT } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -142,6 +144,21 @@ const instanciateScriptEvent = (
         } else if (defaultValue !== undefined) {
           replaceValue = defaultValue;
         }
+
+        if (field.type === "value") {
+          replaceValue = isScriptValue(defaultValue)
+            ? mapScriptValueLeafNodes(defaultValue, (node) => {
+                if (node.type === "variable" && node.value === "LAST_VARIABLE") {
+                  return {
+                    ...node,
+                    value: defaultVariableId,
+                  };
+                }
+                return node;
+              })
+            : defaultValue;
+        }
+
         if (field.type === "union") {
           replaceValue = {
             type: field.defaultType,

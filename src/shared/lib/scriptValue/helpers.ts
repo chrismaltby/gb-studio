@@ -198,6 +198,10 @@ export const precompileScriptValue = (
     rpnOperations.push({
       type: input.type,
     });
+  } else if (input.type === "true") {
+    rpnOperations.push({type:"number", value: 1})
+  } else if (input.type === "false") {
+    rpnOperations.push({type:"number", value: 0})  
   } else {
     rpnOperations.push(input);
   }

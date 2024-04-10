@@ -8,7 +8,8 @@ export const InputGroup = styled.div`
   display: flex;
   width: 100%;
 
-  & > div:not(:first-child) ${Input} {
+  & > div:not(:first-child) ${Input},
+  & > ${Input}:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
@@ -27,7 +28,8 @@ export const InputGroup = styled.div`
     border-bottom-left-radius: 0;
   }
 
-  & > div:not(:last-child) ${Input} {
+  & > div:not(:last-child) ${Input},
+  & > ${Input}:not(:last-child) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }

@@ -85,6 +85,12 @@ export type ScriptValueAtom =
   | {
       type: "expression";
       value: string;
+    }
+  | {
+      type: "true";
+    }
+  | {
+      type: "false";
     };
 
 export type ScriptValue =
@@ -125,6 +131,8 @@ export const valueAtoms = [
   "indirect",
   "property",
   "expression",
+  "true",
+  "false",
 ] as const;
 export type ValueAtom = typeof valueAtoms[number];
 
@@ -143,6 +151,10 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
     return true;
   }
+  // Is bool
+  if (scriptValue.type === "true" || scriptValue.type === "false") {
+    return true;
+  }  
   if (
     scriptValue.type === "variable" &&
     typeof scriptValue.value === "string"
