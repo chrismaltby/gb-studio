@@ -44,6 +44,14 @@ export type ScriptEventHelperDef =
       operator: string;
     };
 
+export type ScriptEventPresetValue = {
+  id: string;
+  name: string;
+  description?: string;
+  groups?: string[] | string;
+  values: Record<string, unknown>;
+}
+
 export interface ScriptEventDef {
   id: string;
   fields: ScriptEventFieldSchema[];
@@ -57,6 +65,7 @@ export interface ScriptEventDef {
   waitUntilAfterInitFade?: boolean;
   hasAutoLabel: boolean;
   helper?: ScriptEventHelperDef;
+  presets?: ScriptEventPresetValue[];
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 

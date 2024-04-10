@@ -77,4 +77,46 @@ module.exports = {
   groups,
   fields,
   compile,
+  presets: [
+    {
+      id: "EVENT_IF_TRUE",
+      name: l10n("EVENT_IF_TRUE"),
+      description: l10n("EVENT_IF_TRUE_DESC"),
+      values: {
+        condition: {
+          type: "variable",
+          value: "LAST_VARIABLE",
+        },
+      },
+    },
+    {
+      id: "EVENT_IF_FALSE",
+      name: l10n("EVENT_IF_FALSE"),
+      description: l10n("EVENT_IF_FALSE_DESC"),
+      values: {
+        condition: {
+          type: "eq",
+          valueA: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
+          valueB: {
+            type: "false",
+          },
+        },
+      },
+    },
+    {
+      id: "EVENT_IF_EXPRESSION",
+      name: l10n("EVENT_IF_EXPRESSION"),
+      description: l10n("EVENT_IF_EXPRESSION_DESC"),
+      groups: ["EVENT_GROUP_MATH", "EVENT_GROUP_CONTROL_FLOW"],
+      values: {
+        condition: {
+          type: "expression",
+          value: "",
+        },
+      },
+    },
+  ],
 };

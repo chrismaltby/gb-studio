@@ -33,7 +33,9 @@ import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_TEXT } from "consts";
-import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import {
+  selectScriptEventDefsWithPresets,
+} from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
@@ -97,6 +99,8 @@ const instanciateScriptEvent = (
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEventNormalized, "id"> => {
+  const [command, presetId] = handler.id.split("::");
+
   const flattenFields = (
     fields: ScriptEventFieldSchema[],
     memo: ScriptEventFieldSchema[] = []
@@ -115,11 +119,22 @@ const instanciateScriptEvent = (
 
   const fields = flattenFields(handler.fields || []);
 
+  const preset = presetId
+    ? handler.presets?.find((p) => p.id === presetId)
+    : undefined;
+
   const args = cloneDeep(
     fields.reduce(
       (memo, field) => {
         let replaceValue = null;
         let defaultValue = field.defaultValue;
+
+        // Pull value from preset if available
+        if (preset && preset.values[field.key ?? ""]) {
+          defaultValue = preset.values[field.key ?? ""];
+          replaceValue = defaultValue;
+        }
+
         if (field.type === "union") {
           defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
             field.defaultType || ""
@@ -148,7 +163,10 @@ const instanciateScriptEvent = (
         if (field.type === "value") {
           replaceValue = isScriptValue(defaultValue)
             ? mapScriptValueLeafNodes(defaultValue, (node) => {
-                if (node.type === "variable" && node.value === "LAST_VARIABLE") {
+                if (
+                  node.type === "variable" &&
+                  node.value === "LAST_VARIABLE"
+                ) {
                   return {
                     ...node,
                     value: defaultVariableId,
@@ -190,7 +208,7 @@ const instanciateScriptEvent = (
         }, {} as Dictionary<string[]>)
       : undefined;
   return {
-    command: handler.id,
+    command,
     args,
     ...(children && { children }),
   };
@@ -489,7 +507,7 @@ const AddScriptEventMenu = ({
   );
   const context = useContext(ScriptEditorContext);
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefsWithPresets(state)
   );
 
   useEffect(() => {
@@ -842,7 +860,9 @@ const AddScriptEventMenu = ({
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
-              <React.Fragment key={option.label}>
+              <React.Fragment
+                key={"value" in option ? option.value : option.label}
+              >
                 {option.groupLabel && (
                   <MenuGroup key={option.groupLabel}>
                     {option.groupLabel}
