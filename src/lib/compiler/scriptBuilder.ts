@@ -5833,6 +5833,87 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorDistanceScriptValueFromActor = (
+    actorId: string,
+    distanceValue: ScriptValue,
+    operator: ScriptBuilderComparisonOperator,
+    otherId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const distanceRef = this._declareLocal("distance", 1, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor Distance from Actor`);
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(distanceValue)
+    );
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(distanceRef);
+    rpn.stop();
+
+    this.actorSetById(actorId);
+    this._actorGetPosition(actorRef);
+    this.setActorId(otherActorRef, otherId);
+    this._actorGetPosition(otherActorRef);
+
+    // (x2-x1)^2 + (y2-y1)^2
+    this._rpn() //
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .operator(".ADD")
+      .ref(distanceRef)
+      .ref(distanceRef)
+      .operator(".MUL")
+      .operator(operator)
+      .stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   caseVariableValue = (
     variable: string,
     cases: {

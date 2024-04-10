@@ -37,16 +37,14 @@ const fields = [
         key: "distance",
         label: l10n("FIELD_DISTANCE"),
         description: l10n("FIELD_DISTANCE_DESC"),
-        type: "union",
-        types: ["number", "variable"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         max: 181,
         width: "50%",
         unitsDefault: "tiles",
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
+          type: "number",
+          value: 0,
         },
       },
     ],
@@ -97,11 +95,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    actorSetActive,
-    ifActorDistanceFromActor,
-    ifActorDistanceVariableFromActor,
-    variableFromUnion,
-    temporaryEntityVariable,
+    ifActorDistanceScriptValueFromActor,
   } = helpers;
 
   const operationLookup = {
@@ -117,29 +111,14 @@ const compile = (input, helpers) => {
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
 
-  if (input.distance.type === "number") {
-    actorSetActive(input.actorId);
-    ifActorDistanceFromActor(
-      input.distance.value,
-      operator,
-      input.otherActorId,
-      truePath,
-      falsePath
-    );
-  } else {
-    const distanceVar = variableFromUnion(
-      input.distance,
-      temporaryEntityVariable(0)
-    );
-    actorSetActive(input.actorId);
-    ifActorDistanceVariableFromActor(
-      distanceVar,
-      operator,
-      input.otherActorId,
-      truePath,
-      falsePath
-    );
-  }
+  ifActorDistanceScriptValueFromActor(
+    input.actorId,
+    input.distance,
+    operator,
+    input.otherActorId,
+    truePath,
+    falsePath
+  );
 };
 
 module.exports = {
