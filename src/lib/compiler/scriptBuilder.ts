@@ -4510,7 +4510,7 @@ extern void __mute_mask_${symbol};
   variablesScriptValueOperation = (
     setVariable: string,
     operation: ScriptBuilderRPNOperation,
-    value: ScriptValue,
+    value: ScriptValue
   ) => {
     this._addComment(`Variables ${operation}`);
     const [rpnOps, fetchOps] = precompileScriptValue(
@@ -4518,7 +4518,7 @@ extern void __mute_mask_${symbol};
     );
     const localsLookup = this._performFetchOperations(fetchOps);
     const rpn = this._rpn();
-    rpn.refVariable(setVariable)
+    rpn.refVariable(setVariable);
     this._performValueRPN(rpn, rpnOps, localsLookup);
     rpn.operator(operation);
     rpn.refSetVariable(setVariable);
@@ -4958,6 +4958,61 @@ extern void __mute_mask_${symbol};
       this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
     }
     this._stackPop(1);
+  };
+
+  replaceTileXYScriptValue = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndexValue: ScriptValue,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+    const tileIndex = this._declareLocal("tile_index", 1, true);
+
+    this._addComment(`Replace Tile XY`);
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(tileIndexValue)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(tileIndex);
+    rpn.stop();
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, tileIndex);
+      // Top right tile
+      this._rpn() //
+        .ref(tileIndex)
+        .int8(1)
+        .operator(".ADD")
+        .refSet(tileIndex)
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, tileIndex);
+      // Bottom right tile
+      this._rpn() //
+        .ref(tileIndex)
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(tileIndex)
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, tileIndex);
+      // Bottom left tile
+      this._rpn() //
+        .ref(tileIndex)
+        .int8(1)
+        .operator(".SUB")
+        .refSet(tileIndex)
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, tileIndex);
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, tileIndex);
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -5434,17 +5489,23 @@ extern void __mute_mask_${symbol};
     if (rpnOps.length === 1 && rpnOps[0].type === "number") {
       this._ifVariableConst(operator, variable, rpnOps[0].value, trueLabel, 0);
     } else if (rpnOps.length === 1 && rpnOps[0].type === "direction") {
-      this._ifVariableCmpVariable(operator, variable, rpnOps[0].value, trueLabel, 0);
+      this._ifVariableCmpVariable(
+        operator,
+        variable,
+        rpnOps[0].value,
+        trueLabel,
+        0
+      );
     } else {
       this._addComment(`-- Calculate value`);
       const localsLookup = this._performFetchOperations(fetchOps);
-      const ifValueRef = this._declareLocal("if_value", 3, true);
+      const ifValueRef = this._declareLocal("if_value", 1, true);
       const rpn = this._rpn();
       this._performValueRPN(rpn, rpnOps, localsLookup);
       rpn.refSet(ifValueRef).stop();
       this._ifVariableCmpVariable(operator, variable, ifValueRef, trueLabel, 0);
     }
- 
+
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -5462,7 +5523,7 @@ extern void __mute_mask_${symbol};
       optimiseScriptValue(value)
     );
     const localsLookup = this._performFetchOperations(fetchOps);
-    const ifValueRef = this._declareLocal("if_value", 3, true);
+    const ifValueRef = this._declareLocal("if_value", 1, true);
     this._addComment(`If`);
 
     this._addComment(`-- Calculate value`);

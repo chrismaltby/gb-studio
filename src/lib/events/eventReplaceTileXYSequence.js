@@ -53,30 +53,24 @@ const fields = [
         key: "tileIndex",
         label: l10n("FIELD_FROM_TILE"),
         description: l10n("FIELD_FROM_TILE_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         width: "50%",
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          type: "number",
+          value: 0,
         },
       },
       {
         key: "frames",
         label: l10n("FIELD_ANIMATION_FRAMES"),
         description: l10n("FIELD_ANIMATION_FRAMES_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 1,
         width: "50%",
         defaultValue: {
-          number: 1,
-          variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          type: "number",
+          value: 1,
         },
       },
     ],
@@ -93,49 +87,59 @@ const fields = [
 const compile = (input, helpers) => {
   const {
     replaceTileXYVariable,
-    localVariableFromUnion,
     ifVariableCompare,
+    ifVariableCompareScriptValue,
     variableInc,
     variableAdd,
-    variableSetToUnionValue,
-    markLocalsUsed,
+    variableSetToScriptValue,
     _declareLocal,
-    _rpn,
     _addComment,
     _addNL,
+    markLocalsUsed,
   } = helpers;
 
-  const fromVar = localVariableFromUnion(input.tileIndex);
-  const framesVar = localVariableFromUnion(input.frames);
   const toVar = _declareLocal("to_var", 1, true);
 
   // Calculate max frame
   _addComment("Calculate max frame");
   if (input.tileSize === "16px") {
-    _rpn() //
-      .refVariable(fromVar)
-      .refVariable(framesVar)
-      .int8(1)
-      .operator(".SUB")
-      .int8(2)
-      .operator(".MUL")
-      .operator(".ADD")
-      .refSet(toVar)
-      .stop();
+    variableSetToScriptValue(toVar, {
+      type: "add",
+      valueA: input.tileIndex,
+      valueB: {
+        type: "mul",
+        valueA: {
+          type: "sub",
+          valueA: input.frames,
+          valueB: {
+            type: "number",
+            value: 1,
+          },
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+    });
   } else {
-    _rpn() //
-      .refVariable(fromVar)
-      .refVariable(framesVar)
-      .int8(1)
-      .operator(".SUB")
-      .operator(".ADD")
-      .refSet(toVar)
-      .stop();
+    variableSetToScriptValue(toVar, {
+      type: "add",
+      valueA: input.tileIndex,
+      valueB: {
+        type: "sub",
+        valueA: input.frames,
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+    });
   }
   _addNL();
 
-  ifVariableCompare(input.variable, ".LT", fromVar, () => {
-    variableSetToUnionValue(input.variable, input.tileIndex);
+  ifVariableCompareScriptValue(input.variable, ".LT", input.tileIndex, () => {
+    variableSetToScriptValue(input.variable, input.tileIndex);
   });
 
   replaceTileXYVariable(
@@ -153,10 +157,10 @@ const compile = (input, helpers) => {
   }
 
   ifVariableCompare(input.variable, ".GT", toVar, () => {
-    variableSetToUnionValue(input.variable, input.tileIndex);
+    variableSetToScriptValue(input.variable, input.tileIndex);
   });
 
-  markLocalsUsed(fromVar, framesVar, toVar);
+  markLocalsUsed(toVar);
 };
 
 module.exports = {

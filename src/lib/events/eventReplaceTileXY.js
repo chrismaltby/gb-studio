@@ -53,14 +53,11 @@ const fields = [
         key: "tileIndex",
         label: l10n("FIELD_TILE"),
         description: l10n("FIELD_TILE_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          type: "number",
+          value: 0,
         },
       },
     ],
@@ -68,31 +65,14 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const {
-    replaceTileXY,
-    replaceTileXYVariable,
-    localVariableFromUnion,
-    markLocalsUsed,
-  } = helpers;
-  if (input.tileIndex.type === "number") {
-    replaceTileXY(
-      input.x,
-      input.y,
-      input.tilesetId,
-      input.tileIndex.value,
-      input.tileSize
-    );
-  } else {
-    const indexVar = localVariableFromUnion(input.tileIndex);
-    replaceTileXYVariable(
-      input.x,
-      input.y,
-      input.tilesetId,
-      indexVar,
-      input.tileSize
-    );
-    markLocalsUsed(indexVar);
-  }
+  const { replaceTileXYScriptValue } = helpers;
+  replaceTileXYScriptValue(
+    input.x,
+    input.y,
+    input.tilesetId,
+    input.tileIndex,
+    input.tileSize
+  );
 };
 
 module.exports = {
