@@ -1113,6 +1113,11 @@
   "EVENT_GROUP_SCRIPT": "Script",
   "EVENT_GROUP_TILES": "Tiles",
   "EVENT_GROUP_SCENE_STACK": "Scene Stack",
+  "EVENT_GROUP_OVERLAY": "Overlay",
+  "EVENT_GROUP_RANDOM": "Random",
+  "EVENT_GROUP_RESET": "Reset",
+  "EVENT_GROUP_FLAGS": "Flags",
+  "EVENT_GROUP_ACTIONS" : "Actions",
 
   "// 10": "Menu -----------------------------------------------------",
 

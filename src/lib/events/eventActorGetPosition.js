@@ -4,6 +4,7 @@ const id = "EVENT_ACTOR_GET_POSITION";
 const groups = ["EVENT_GROUP_ACTOR", "EVENT_GROUP_VARIABLES"];
 const subGroups = {
   EVENT_GROUP_ACTOR: "EVENT_GROUP_VARIABLES",
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_ACTOR",
 };
 
 const autoLabel = (fetchArg, _input) => {

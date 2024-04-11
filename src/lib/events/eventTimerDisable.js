@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_TIMER_DISABLE";
 const groups = ["EVENT_GROUP_TIMER"];
+const subGroups = {
+  EVENT_GROUP_TIMER: "EVENT_GROUP_SCRIPT",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_TIMER_DISABLE_LABEL", {
@@ -23,6 +26,7 @@ const fields = [
     ],
     allowNone: false,
     defaultValue: 1,
+    flexBasis: "100%",
   },
   {
     label: l10n("FIELD_TIMER_DISABLE"),
@@ -39,6 +43,7 @@ module.exports = {
   autoLabel,
   description: l10n("EVENT_TIMER_DISABLE_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
 };
