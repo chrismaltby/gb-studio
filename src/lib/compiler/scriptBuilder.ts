@@ -5831,6 +5831,69 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorAtPositionByScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor At Position`);
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    this.actorSetById(actorId);
+    this._actorGetPosition(actorRef);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value EQ
+    rpn.ref(this._localRef(actorRef, 1));
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.operator(".EQ");
+
+    // Y Value EQ
+    rpn.ref(this._localRef(actorRef, 2));
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.operator(".EQ");
+
+    // Both are EQ
+    rpn.operator(".AND");
+    rpn.stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifActorDirection = (
     direction: ActorDirection,
     truePath = [],
