@@ -5915,6 +5915,41 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorDirectionScriptValue = (
+    actorId: string,
+    directionValue: ScriptValue,
+    truePath = [],
+    falsePath = []
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const actorDirRef = this._declareLocal("actor_dir", 1, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor Facing Direction`);
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(directionValue)
+    );
+
+    this.actorSetById(actorId);
+    this._actorGetDirection(actorRef, actorDirRef);
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+
+    this._if(".NE", actorDirRef, ".ARG0", falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifDataSaved = (
     slot = 0,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
