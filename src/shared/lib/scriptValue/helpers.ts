@@ -199,9 +199,9 @@ export const precompileScriptValue = (
       type: input.type,
     });
   } else if (input.type === "true") {
-    rpnOperations.push({type:"number", value: 1})
+    rpnOperations.push({ type: "number", value: 1 });
   } else if (input.type === "false") {
-    rpnOperations.push({type:"number", value: 0})  
+    rpnOperations.push({ type: "number", value: 0 });
   } else {
     rpnOperations.push(input);
   }
@@ -250,5 +250,16 @@ export const addScriptValueConst = (
       type: "number",
       value: num,
     },
+  };
+};
+
+export const addScriptValueToScriptValue = (
+  valueA: ScriptValue,
+  valueB: ScriptValue
+): ScriptValue => {
+  return {
+    type: "add",
+    valueA: valueA,
+    valueB: valueB,
   };
 };

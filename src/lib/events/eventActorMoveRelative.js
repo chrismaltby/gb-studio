@@ -31,11 +31,14 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_RELATIVE_DESC"),
-        type: "number",
+        type: "value",
         min: -31,
         max: 31,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -44,11 +47,14 @@ const fields = [
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_RELATIVE_DESC"),
-        type: "number",
+        type: "value",
         min: -31,
         max: 31,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -64,6 +70,7 @@ const fields = [
     defaultValue: "horizontal",
     flexBasis: 30,
     flexGrow: 0,
+    alignBottom: true,
   },
   {
     key: "useCollisions",
@@ -76,9 +83,9 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveRelative } = helpers;
-  actorSetActive(input.actorId);
-  actorMoveRelative(
+  const { actorMoveRelativeByScriptValues } = helpers;
+  actorMoveRelativeByScriptValues(
+    input.actorId,
     input.x,
     input.y,
     input.useCollisions,
