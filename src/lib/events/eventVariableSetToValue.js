@@ -44,4 +44,32 @@ module.exports = {
   groups,
   fields,
   compile,
+  presets: [
+    {
+      id: "EVENT_SET_TRUE",
+      name: l10n("EVENT_SET_TRUE"),
+      description: l10n("EVENT_SET_TRUE_DESC"),
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_BOOLEAN",
+      },
+      values: {
+        value: {
+          type: "true",
+        },
+      },
+    },
+    {
+      id: "EVENT_SET_FALSE",
+      name: l10n("EVENT_SET_FALSE"),
+      description: l10n("EVENT_SET_FALSE_DESC"),
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_BOOLEAN",
+      },
+      values: {
+        value: {
+          type: "false",
+        },
+      },
+    },
+  ],
 };
