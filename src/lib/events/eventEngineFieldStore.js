@@ -36,6 +36,8 @@ const fields = [
   {
     key: "value",
     type: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     defaultValue: "LAST_VARIABLE",
     conditions: [
       {
