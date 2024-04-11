@@ -67,13 +67,8 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetPositionToToScriptValues } = helpers;
-  actorSetPositionToToScriptValues(
-    input.actorId,
-    input.x,
-    input.y,
-    input.units
-  );
+  const { actorSetPositionToScriptValues } = helpers;
+  actorSetPositionToScriptValues(input.actorId, input.x, input.y, input.units);
 };
 
 module.exports = {

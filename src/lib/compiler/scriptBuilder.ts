@@ -2633,7 +2633,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPositionToToScriptValues = (
+  actorSetPositionToScriptValues = (
     actorId: string,
     valueX: ScriptValue,
     valueY: ScriptValue,
