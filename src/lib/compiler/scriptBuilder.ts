@@ -5558,6 +5558,32 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  whileScriptValue = (
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const loopId = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`While`);
+    this._label(loopId);
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, endLabel, 1);
+    this._compilePath(truePath);
+    this._jump(loopId);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifVariableTrue = (
     variable: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],

@@ -1120,6 +1120,7 @@
   "EVENT_GROUP_ACTIONS" : "Actions",
   "EVENT_GROUP_BOOLEAN": "Boolean",
   "EVENT_GROUP_COUNTER": "Counter",
+  "EVENT_LOOP_WHILE_EXPRESSION": "Loop While Math Expression",
 
   "// 10": "Menu -----------------------------------------------------",
 

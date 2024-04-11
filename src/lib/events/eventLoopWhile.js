@@ -15,13 +15,21 @@ const autoLabel = (fetchArg, args) => {
 
 const fields = [
   {
-    key: "expression",
-    label: l10n("FIELD_EXPRESSION"),
-    description: l10n("FIELD_EXPRESSION_DESC"),
-    type: "matharea",
-    rows: 5,
-    placeholder: "e.g. $health >= 0...",
-    defaultValue: "",
+    key: "condition",
+    label: l10n("FIELD_CONDITION"),
+    description: l10n("FIELD_CONDITION_DESC"),
+    type: "value",
+    defaultValue: {
+      type: "lt",
+      valueA: {
+        type: "variable",
+        value: "LAST_VARIABLE",
+      },
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    },
   },
   {
     key: "true",
@@ -30,9 +38,9 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { whileExpression } = helpers;
+  const { whileScriptValue } = helpers;
   const truePath = input.true;
-  whileExpression(input.expression || "0", truePath);
+  whileScriptValue(input.condition, truePath);
 };
 
 module.exports = {
@@ -42,4 +50,22 @@ module.exports = {
   groups,
   fields,
   compile,
+  presets: [
+    {
+      id: "EVENT_LOOP_WHILE_EXPRESSION",
+      name: l10n("EVENT_LOOP_WHILE_EXPRESSION"),
+      description: l10n("EVENT_LOOP_WHILE_DESC"),
+      groups: ["EVENT_GROUP_MATH", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_MATH: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_MATH",
+      },
+      values: {
+        condition: {
+          type: "expression",
+          value: "",
+        },
+      },
+    },
+  ],
 };
