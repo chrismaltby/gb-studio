@@ -25,12 +25,14 @@ export const Menu = styled.div<MenuProps>`
 `;
 
 export interface MenuItemProps {
+  readonly "data-index"?: number;
   readonly focus?: boolean;
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
+  readonly subMenu?: React.ReactElement<MenuItemProps>[];
 }
 
 export const MenuItem = styled.div<MenuItemProps>`

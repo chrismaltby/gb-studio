@@ -32,6 +32,7 @@ import {
   VariableIcon,
 } from "ui/icons/Icons";
 import {
+  Menu,
   MenuAccelerator,
   MenuDivider,
   MenuItem,
@@ -51,6 +52,8 @@ import { Option, Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import { NestedMenu } from "ui/menu/NestedMenu";
 
 type ValueFunctionMenuItem = {
   value: ValueFunction;
@@ -352,7 +355,9 @@ const ValueSelect = ({
   }, [focus, focusSecondChild, onChange, value]);
 
   const onKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement>): boolean => {
+    (
+      e: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement | HTMLElement>
+    ): boolean => {
       e.persist();
       if (e.metaKey || e.ctrlKey) {
         return false;
@@ -371,7 +376,9 @@ const ValueSelect = ({
           (window.getSelection()?.toString().length ?? 0) > 0;
         if (
           e.currentTarget.nodeName === "BUTTON" ||
-          (e.currentTarget.value.trim().length > 0 && !hasSelection)
+          ("value" in e.currentTarget &&
+            e.currentTarget.value.trim().length > 0 &&
+            !hasSelection)
         ) {
           setValueFunction("sub");
         }
@@ -406,12 +413,31 @@ const ValueSelect = ({
       ...(!isValueFn
         ? [
             <MenuItem key="number" onClick={setNumber}>
+              {/* <RelativePortal
+                pin="top-right"
+                offsetY={-16}
+                offsetX={-5}
+                zIndex={100}
+              >
+                <Menu style={{ zIndex: 10000 }}>
+                  <MenuItem key="number" onClick={setNumber}>
+                    SUB 1
+                  </MenuItem>
+                  <MenuItem key="number" onClick={setNumber}>
+                    SUB 2
+                  </MenuItem>
+                  <MenuItem key="number" onClick={setNumber}>
+                    SUB 3
+                  </MenuItem>
+                </Menu>
+              </RelativePortal> */}
               <MenuItemIcon>
                 {value.type === "number" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_NUMBER")}
               <MenuAccelerator accelerator="n" />
             </MenuItem>,
+
             <MenuItem key="variable" onClick={setVariable}>
               <MenuItemIcon>
                 {value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
@@ -465,7 +491,7 @@ const ValueSelect = ({
               </MenuItemIcon>
               {l10n("FIELD_DIRECTION")}
             </MenuItem>,
-            <MenuDivider key="divider" />,
+            <MenuDivider key="divider1" />,
             <MenuItem
               key="true"
               onClick={() => {
@@ -492,7 +518,7 @@ const ValueSelect = ({
               </MenuItemIcon>
               {l10n("FIELD_FALSE")}
             </MenuItem>,
-            <MenuDivider key="divider" />,
+            <MenuDivider key="divider2" />,
           ]
         : []),
       ...operatorMenuItems.map((menuItem) => (
@@ -521,6 +547,51 @@ const ValueSelect = ({
         </MenuItem>
       )),
       <MenuDivider key="div2" />,
+      <MenuItem
+        key="nestedTest"
+        subMenu={comparisonMenuItems.map((menuItem) => (
+          <MenuItem
+            key={menuItem.value}
+            onClick={() => setValueFunction(menuItem.value)}
+          >
+            <MenuItemIcon>
+              {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+            </MenuItemIcon>
+            {menuItem.label}
+            {menuItem.symbol && (
+              <MenuAccelerator accelerator={menuItem.symbol} />
+            )}
+          </MenuItem>
+        ))}
+      >
+        <MenuItemIcon>
+          <BlankIcon />
+        </MenuItemIcon>
+        Nested Test
+      </MenuItem>,
+
+      <MenuItem
+        key="nestedTest2"
+        subMenu={functionMenuItems.map((menuItem) => (
+          <MenuItem
+            key={menuItem.value}
+            onClick={() => setValueFunction(menuItem.value)}
+          >
+            <MenuItemIcon>
+              {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+            </MenuItemIcon>
+            {menuItem.label}
+            {menuItem.symbol && (
+              <MenuAccelerator accelerator={menuItem.symbol} />
+            )}
+          </MenuItem>
+        ))}
+      >
+        <MenuItemIcon>
+          <BlankIcon />
+        </MenuItemIcon>
+        Nested Test 2
+      </MenuItem>,
 
       ...comparisonMenuItems.map((menuItem) => (
         <MenuItem
