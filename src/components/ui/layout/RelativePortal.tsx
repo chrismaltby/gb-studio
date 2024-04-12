@@ -52,9 +52,11 @@ const pinStyles: Record<PinDirection, CSSProperties> = {
 const MIN_MARGIN = 10;
 
 const Pin = styled.div`
-  background: red;
-  width: 10px;
-  height: 10px;
+  background: transparent;
+  width: 1px;
+  height: 1px;
+  margin-right: -1px;
+  margin-bottom: -1px;
 `;
 
 export const RelativePortal: FC<RelativePortalProps> = ({

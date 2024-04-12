@@ -110,9 +110,8 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     onKeyDown,
     onMouseDown,
   }) => {
+    const isInitialMount = useRef(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    // const menuItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-    // const subMenuItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
     const menuRef = useRef<HTMLDivElement>(null);
     const subMenuRef = useRef<HTMLDivElement>(null);
     const clickedOpen = useRef(false);
@@ -141,13 +140,17 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       }
     ) as ReactElement[];
 
+    const closeMenu = useCallback(() => {
+      setIsOpen(false);
+      setParentMenuIndex(-1);
+    }, []);
+
     // Close menu if window loses focus
     useEffect(() => {
       if (!windowFocus && isOpen) {
-        setIsOpen(false);
-        setParentMenuIndex(-1);
+        closeMenu();
       }
-    }, [isOpen, windowFocus]);
+    }, [closeMenu, isOpen, windowFocus]);
 
     // Handle listening for clicks and auto-hiding the menu
     useEffect(() => {
@@ -171,8 +174,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           }
 
           // Hide dropdown
-          setIsOpen(false);
-          setParentMenuIndex(-1);
+          closeMenu();
         }, 10);
       };
 
@@ -181,7 +183,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
 
       // Return function to remove listener
       return () => document.removeEventListener("click", handleEveryClick);
-    }, [isOpen]);
+    }, [closeMenu, isOpen]);
 
     // Disable scroll when the menu is opened, and revert back when the menu is closed
     useEffect(() => {
@@ -196,28 +198,29 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       return () => document.removeEventListener("keydown", disableArrowScroll);
     }, [isOpen]);
 
+    // Clear submenu timer on unmount
     const closeTimer = useRef<number>();
     useEffect(() => {
-      const currentTimer = closeTimer.current;
       return () => {
-        if (currentTimer) {
-          clearTimeout(currentTimer);
+        if (closeTimer.current) {
+          clearTimeout(closeTimer.current);
         }
       };
     }, []);
 
+    // Handle hover over menu items to display sub menu after a short delay
+    // and close submenu if hovered over a new parent item for a period of time
     const onMenuItemHover = useCallback(
       (itemIndex: number) => {
-        console.log("onMenuItemHover 1");
+        // Clear current timer
         const currentTimer = closeTimer.current;
         if (currentTimer) {
-          console.log("onMenuItemHover 2");
           clearTimeout(currentTimer);
         }
 
-        console.log("onMenuItemHover 3", { itemIndex, parentMenuIndex });
+        // If this is not the currently focused parent item
+        // start a timer to open its submenu
         if (itemIndex !== parentMenuIndex) {
-          console.log("WAS", { itemIndex, parentMenuIndex });
           closeTimer.current = setTimeout(() => {
             setParentMenuIndex(itemIndex);
           }, 300);
@@ -227,68 +230,27 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     );
 
     const moveFocus = useCallback((itemIndex: number, subItemIndex: number) => {
-      console.warn(
-        "MY MOVE FOCUS",
-        itemIndex,
-        subItemIndex,
-        subMenuRef.current
-      );
       currentMenuIndex.current = itemIndex;
       currentSubMenuIndex.current = subItemIndex;
-
-      // const currentTimer = closeTimer.current;
-      // if (currentTimer) {
-      //   clearTimeout(currentTimer);
-      // }
-
-      // if (itemIndex !== parentMenuIndex) {
-      //   console.log("WAS", { itemIndex, parentMenuIndex });
-      //   closeTimer.current = setTimeout(() => {
-      //     setParentMenuIndex(itemIndex);
-      //   }, 300);
-      // }
-
-      // setTimeout(() => {
+      // Find parent menu item to focus
       if (menuRef.current && itemIndex > -1) {
         const el = menuRef.current.querySelector(
           `[data-index="${itemIndex}"]`
         ) as HTMLDivElement;
-        console.log("menuRef.current", menuRef.current, "EL", el);
         if (el) {
-          console.log("FOCUS EL!!", el);
-
           el.focus();
         }
       }
-      // setTimeout(() => {
+      // Find sub menu item to focus
       if (subMenuRef.current && subItemIndex > -1) {
         const el = subMenuRef.current.querySelector(
           `[data-index="${subItemIndex}"]`
         ) as HTMLDivElement;
-        console.log("SUB menuRef.current", menuRef.current, "EL", el);
         if (el) {
-          console.log("SUB FOCUS EL!!", el);
           el.focus();
         }
       }
-      // }, 100);
-
-      // }, 1000);
     }, []);
-
-    // const {
-    //   buttonProps,
-    //   itemProps,
-    //   subItemProps,
-    //   isOpen,
-    //   setIsOpen,
-    //   isSubMenuOpen,
-    //   setIsSubMenuOpen,
-    //   moveFocus,
-    // } = useDropdownMenu(
-    //   menuItemChildren.length,
-    //   subMenuItemChildren?.length ?? 0
-    // );
 
     const onMenuKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLElement>) => {
@@ -311,20 +273,17 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
 
         if (key === "Escape") {
           if (parentMenuIndex > -1) {
-            // setIsSubMenuOpen(false);
             setParentMenuIndex(-1);
-            // moveFocus(currentMenuIndex.current ?? 0, -1);
           } else {
-            setIsOpen(false);
+            closeMenu();
             buttonRef.current?.focus();
           }
           return;
         } else if (key === "Tab") {
-          setIsOpen(false);
+          closeMenu();
           return;
         } else if (key === "Enter") {
           e.currentTarget.click();
-          // setIsOpen(false);
           return;
         }
 
@@ -377,13 +336,16 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         }
       },
       [
+        closeMenu,
         menuItemChildren.length,
         moveFocus,
+        onKeyDown,
         parentMenuIndex,
         subMenuItemChildren.length,
       ]
     );
 
+    // Inject sub menu props into sub menu components
     const subMenuChildrenWithProps = subMenuChildArray.map((child) => {
       if (
         !isValidElement<MenuItemProps & React.HTMLAttributes<HTMLDivElement>>(
@@ -395,28 +357,21 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       }
       const itemIndex = subMenuChildArray.indexOf(child);
       return cloneElement(child, {
-        // ...subItemProps[itemIndex],
-        // ...{
-        //   ref: (a: unknown) => {
-        //     console.log("SUB HERE???", itemIndex, a);
-        //     subMenuItemRefs.current[itemIndex] = a as HTMLAnchorElement;
-        //   },
-        // },
         "data-index": itemIndex,
         tabIndex: -1,
         role: "menuitem",
         onKeyDown: onMenuKeyDown,
         onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-          setIsOpen(false);
+          closeMenu();
           child.props.onClick?.(e);
         },
         onMouseEnter: () => {
-          console.log("MOVE CHILD FOCUS", itemIndex);
           moveFocus(parentMenuIndex, itemIndex);
         },
       });
     });
 
+    // Inject menu props into menu components
     const childrenWithProps = useMemo(
       () =>
         childArray.map((child) => {
@@ -430,29 +385,17 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           }
           const itemIndex = menuItemChildren.indexOf(child);
           return cloneElement(child, {
-            // ...itemProps[itemIndex],
-            // ...{
-            //   ref: (a: unknown) => {
-            //     console.log("HERE???", itemIndex, a);
-            //     menuItemRefs.current[itemIndex] = a as HTMLAnchorElement;
-            //   },
-            // },
             "data-index": itemIndex,
             tabIndex: -1,
             role: "menuitem",
             onKeyDown: onMenuKeyDown,
             onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               if (child.props.subMenu) {
-                // if (parentMenuIndex === itemIndex) {
-                //   // setIsSubMenuOpen(false);
-                //   setParentMenuIndex(-1);
-                // } else {
+                // If menu includes a sub menu open it
+                // keeping full menu open
                 setParentMenuIndex(itemIndex);
-                // setIsSubMenuOpen(true);
-                // }
               } else {
-                console.log("AAA");
-                setIsOpen(false);
+                closeMenu();
               }
               child.props.onClick?.(e);
             },
@@ -483,6 +426,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         }),
       [
         childArray,
+        closeMenu,
         menuDirection,
         menuItemChildren,
         menuWidth,
@@ -494,22 +438,17 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       ]
     );
 
-    // console.log("childrenWithProps", childrenWithProps);
-
-    // console.log(
-    //   "subMenuRefs.currentsubMenuRefs.currentsubMenuRefs.current",
-    //   menuItemRefs.current
-    // );
-
+    // Handle keyboard events when button has focus
     const onButtonKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLButtonElement>) => {
-        console.log("IS KEYBOARD EVENT!!!!");
-
+        // If keydown handler has been provided and it returns true
+        // override default keyboard handling and close any open menus
         if (onKeyDown?.(e)) {
-          setIsOpen(false);
+          closeMenu();
         } else {
           const { key } = e;
-          console.warn("IS KEYBOARD EVENT", key);
+
+          // Ignore any keys not handled by button
           if (!["Enter", " ", "Tab", "ArrowDown", "Escape"].includes(key)) {
             return;
           }
@@ -519,52 +458,47 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
             clickedOpen.current &&
             isOpen
           ) {
-            console.log("TRIED TO PREVENT DEFAUT");
+            // Handle the case when the button was clicked to open menu
+            // Tab or ArrowDown should focus on first item
             e.preventDefault();
             moveFocus(0, -1);
           } else if (key === "Escape") {
-            setIsOpen(false);
-            // setIsSubMenuOpen(false);
-            setParentMenuIndex(-1);
+            // Pressing escape on button focus will always close the menu
+            closeMenu();
           } else if (key !== "Tab") {
             e.preventDefault();
-            console.log("TRIED TO PREVENT DEFAUT2");
-
             setIsOpen(true);
-            // setIsSubMenuOpen(false);
             setParentMenuIndex(-1);
           }
         }
       },
-      [isOpen, moveFocus, onKeyDown, setIsOpen, setParentMenuIndex]
+      [closeMenu, isOpen, moveFocus, onKeyDown]
     );
 
+    // When clicking button toggle open state
+    // and close any sub menus
     const onButtonClick = useCallback(
       (_e: React.MouseEvent) => {
         clickedOpen.current = !isOpen;
         setIsOpen(!isOpen);
-        // setIsSubMenuOpen(false);
         setParentMenuIndex(-1);
       },
       [isOpen, setIsOpen]
     );
 
+    // Store menu width for using to offset sub menu to
+    // left or right depending on space available
     useLayoutEffect(() => {
-      // const rect = menuRef.current?.getBoundingClientRect();
       const contentsWidth = menuRef.current?.offsetWidth || 0;
       setMenuWidth(contentsWidth);
     }, [isOpen]);
 
     // Focus the first item when the menu opens
-    const firstRun = useRef(true);
     useEffect(() => {
-      // Stop if this is the first fire of the Hook, and update the ref
-      if (firstRun.current) {
-        firstRun.current = false;
+      if (isInitialMount.current) {
         return;
       }
-
-      // If the menu is currently open focus on the first item in the menu
+      // If opened menu without clicking auto focus on first element
       if (isOpen && !clickedOpen.current) {
         moveFocus(0, -1);
       } else if (!isOpen) {
@@ -572,21 +506,28 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       }
     }, [isOpen, moveFocus]);
 
-    const isFirstSubMenuChange = useRef(true);
+    // Focus on first submenu item when submenu first opens
     useEffect(() => {
-      if (isFirstSubMenuChange.current) {
-        isFirstSubMenuChange.current = false;
+      if (isInitialMount.current) {
         return;
       }
-      if (parentMenuIndex > -1) {
-        console.log("NOW OPEN!!", currentMenuIndex.current);
+      if (
+        parentMenuIndex > -1 &&
+        menuItemChildren[parentMenuIndex]?.props.subMenu
+      ) {
+        // If sub menu open focus on first element
         moveFocus(currentMenuIndex.current, 0);
       } else {
-        console.log("NOW CLOSED!!", currentMenuIndex.current);
+        // If sub menu closed focus on previous parent
         moveFocus(currentMenuIndex.current, -1);
         setParentMenuIndex(-1);
       }
-    }, [parentMenuIndex, moveFocus]);
+    }, [parentMenuIndex, moveFocus, menuItemChildren]);
+
+    // Track if this is the initial mount for auto focus handling
+    useEffect(() => {
+      isInitialMount.current = false;
+    }, []);
 
     return (
       <DropdownButtonWrapper>
@@ -615,8 +556,6 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           }}
         >
           {label}
-          {menuWidth}
-
           {showArrow && (
             <ArrowWrapper>
               <CaretDownIcon />
@@ -632,19 +571,6 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
             >
               <Menu role="menu" ref={menuRef}>
                 {childrenWithProps}
-                {/* {isSubMenuOpen && (
-                  <SubMenuWrapper menuDirection={menuDirection}>
-                    <RelativePortal
-                      pin={menuDirection === "left" ? "top-left" : "top-right"}
-                      offsetX={offsetX}
-                      offsetY={offsetY}
-                    >
-                      <Menu role="menu" ref={subMenuRef}>
-                        {subMenuChildrenWithProps}
-                      </Menu>
-                    </RelativePortal>
-                  </SubMenuWrapper>
-                )} */}
               </Menu>
             </RelativePortal>
           </MenuWrapper>
