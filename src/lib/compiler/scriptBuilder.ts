@@ -459,6 +459,8 @@ const valueFunctionToScriptOperator = (
       return ".DIV";
     case "mul":
       return ".MUL";
+    case "mod":
+      return ".MOD";
     case "eq":
       return ".EQ";
     case "ne":

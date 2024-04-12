@@ -38,6 +38,11 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: Math.floor(optimisedA.value / optimisedB.value),
         };
+      } else if (input.type === "mod") {
+        return {
+          type: "number",
+          value: Math.floor(optimisedA.value % optimisedB.value),
+        };
       } else if (input.type === "gt") {
         return {
           type: "number",

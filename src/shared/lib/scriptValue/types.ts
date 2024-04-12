@@ -20,6 +20,11 @@ export type RPNOperation =
       valueB?: ScriptValue;
     }
   | {
+      type: "mod";
+      valueA?: ScriptValue;
+      valueB?: ScriptValue;
+    }
+  | {
       type: "eq";
       valueA?: ScriptValue;
       valueB?: ScriptValue;
@@ -128,6 +133,7 @@ export const valueFunctions = [
   "sub",
   "mul",
   "div",
+  "mod",
   "min",
   "max",
   "eq",
@@ -287,6 +293,9 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "div";
+    }
+  | {
+      type: "mod";
     }
   | {
       type: "eq";

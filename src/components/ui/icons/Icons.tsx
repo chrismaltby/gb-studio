@@ -588,6 +588,14 @@ export const DivideIcon = () => (
   </svg>
 );
 
+export const ModuloIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M21 1H16L3 22.5H8L21 1Z" />
+    <circle cx="2" cy="5" r="4" />
+    <circle cx="22" cy="19" r="4" />
+  </svg>
+);
+
 export const DiceIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path

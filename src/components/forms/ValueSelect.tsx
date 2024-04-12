@@ -26,6 +26,7 @@ import {
   ExpressionIcon,
   FalseIcon,
   MinusIcon,
+  ModuloIcon,
   NumberIcon,
   PlusIcon,
   TrueIcon,
@@ -69,6 +70,7 @@ const operatorIconLookup: Partial<Record<ValueFunction, JSX.Element>> = {
   sub: <MinusIcon />,
   mul: <CrossIcon />,
   div: <DivideIcon />,
+  mod: <ModuloIcon />,
   eq: <TextIcon>==</TextIcon>,
   ne: <TextIcon>!=</TextIcon>,
   gt: <TextIcon>&gt;</TextIcon>,
@@ -111,6 +113,11 @@ const operatorMenuItems: ValueFunctionMenuItem[] = [
     value: "div",
     label: <L10NText l10nKey="FIELD_DIV_VARIABLE" />,
     symbol: "/",
+  },
+  {
+    value: "mod",
+    label: <L10NText l10nKey="FIELD_MOD_VARIABLE" />,
+    symbol: "%",
   },
 ];
 

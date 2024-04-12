@@ -59,6 +59,11 @@ export const scriptValueToString = (
       value.valueA,
       options
     )} / ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "mod") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} % ${scriptValueToString(value.valueB, options)})`;
   } else if (value.type === "gt") {
     return `(${scriptValueToString(
       value.valueA,
