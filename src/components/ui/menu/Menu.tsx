@@ -32,7 +32,7 @@ export interface MenuItemProps {
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
-  readonly subMenu?: React.ReactElement<MenuItemProps>[];
+  readonly subMenu?: React.ReactElement[];
 }
 
 export const MenuItem = styled.div<MenuItemProps>`
@@ -142,4 +142,16 @@ export const MenuOverlay = styled.div`
   right: 0px;
   bottom: 0px;
   z-index: 1000;
+`;
+
+export const MenuItemCaret = styled.div`
+  flex-grow: 1;
+  text-align: right;
+  margin-left: 5px;
+  svg {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    fill: ${(props) => props.theme.colors.text};
+  }
 `;

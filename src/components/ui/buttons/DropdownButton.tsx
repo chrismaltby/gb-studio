@@ -15,8 +15,8 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { CaretDownIcon } from "ui/icons/Icons";
-import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
+import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
+import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
 import { Button, ButtonProps } from "./Button";
 import useWindowFocus from "ui/hooks/use-window-focus";
 
@@ -406,6 +406,11 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
             children: (
               <>
                 {child.props.children}
+                {child.props.subMenu && (
+                  <MenuItemCaret>
+                    <CaretRightIcon />
+                  </MenuItemCaret>
+                )}
                 {itemIndex === parentMenuIndex && child.props.subMenu && (
                   <SubMenuWrapper menuDirection={menuDirection}>
                     <RelativePortal

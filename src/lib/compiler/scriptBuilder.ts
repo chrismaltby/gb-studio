@@ -180,7 +180,8 @@ type ScriptBuilderComparisonOperator =
   | ".LT"
   | ".LTE"
   | ".AND"
-  | ".OR";
+  | ".OR"
+  | ".NOT";
 
 type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -474,6 +475,12 @@ const valueFunctionToScriptOperator = (
       return ".MIN";
     case "max":
       return ".MAX";
+    case "and":
+      return ".AND";
+    case "or":
+      return ".OR";
+    case "not":
+      return ".NOT";
   }
   assertUnreachable(operator);
 };

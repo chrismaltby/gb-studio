@@ -78,6 +78,21 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: Math.max(optimisedA.value, optimisedB.value),
         };
+      } else if (input.type === "and") {
+        return {
+          type: "number",
+          value: optimisedA.value && optimisedB.value,
+        };
+      } else if (input.type === "or") {
+        return {
+          type: "number",
+          value: optimisedA.value || optimisedB.value,
+        };
+      } else if (input.type === "not") {
+        return {
+          type: "number",
+          value: boolToInt(!optimisedA.value),
+        };
       }
     }
 

@@ -75,6 +75,9 @@ const operatorIconLookup: Partial<Record<ValueFunction, JSX.Element>> = {
   gte: <TextIcon>&gt;=</TextIcon>,
   lt: <TextIcon>&lt;</TextIcon>,
   lte: <TextIcon>&lt;=</TextIcon>,
+  and: <TextIcon>&amp;&amp;</TextIcon>,
+  or: <TextIcon>||</TextIcon>,
+  not: <TextIcon>!</TextIcon>,
 };
 
 const atomIconLookup: Record<ValueAtom, JSX.Element> = {
@@ -152,6 +155,24 @@ const functionMenuItems: ValueFunctionMenuItem[] = [
     value: "max",
     label: "Max",
     symbol: "M",
+  },
+];
+
+const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
+  {
+    value: "and",
+    label: <L10NText l10nKey="FIELD_AND" />,
+    symbol: "&",
+  },
+  {
+    value: "or",
+    label: <L10NText l10nKey="FIELD_OR" />,
+    symbol: "|",
+  },
+  {
+    value: "not",
+    label: <L10NText l10nKey="FIELD_NOT" />,
+    symbol: "!",
   },
 ];
 
@@ -389,29 +410,117 @@ const ValueSelect = ({
     [setNumber, setRandom, setValueFunction, setVariable]
   );
 
+  const mathMenu = useMemo(
+    () => [
+      ...operatorMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+        >
+          <MenuItemIcon>
+            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+      <MenuDivider key="div1" />,
+      ...functionMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+        >
+          <MenuItemIcon>
+            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+      <MenuDivider key="div2" />,
+      <MenuItem key="rnd" onClick={setRandom}>
+        <MenuItemIcon>
+          {value.type === "rnd" ? <CheckIcon /> : <BlankIcon />}
+        </MenuItemIcon>
+        {l10n("FIELD_RANDOM")}
+        <MenuAccelerator accelerator="r" />
+      </MenuItem>,
+    ],
+    [setRandom, setValueFunction, value.type]
+  );
+
+  const booleanMenu = useMemo(
+    () => [
+      <MenuItem
+        key="true"
+        onClick={() => {
+          onChange({
+            type: "true",
+          });
+        }}
+      >
+        <MenuItemIcon>
+          {value.type === "true" ? <CheckIcon /> : <BlankIcon />}
+        </MenuItemIcon>
+        {l10n("FIELD_TRUE")}
+        <MenuAccelerator accelerator="t" />
+      </MenuItem>,
+      <MenuItem
+        key="false"
+        onClick={() => {
+          onChange({
+            type: "false",
+          });
+        }}
+      >
+        <MenuItemIcon>
+          {value.type === "false" ? <CheckIcon /> : <BlankIcon />}
+        </MenuItemIcon>
+        {l10n("FIELD_FALSE")}
+        <MenuAccelerator accelerator="f" />
+      </MenuItem>,
+      <MenuDivider key="div1" />,
+      ...booleanOperatorMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+        >
+          <MenuItemIcon>
+            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+    ],
+    [onChange, setValueFunction, value.type]
+  );
+
+  const comparisonMenu = useMemo(
+    () => [
+      ...comparisonMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+        >
+          <MenuItemIcon>
+            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+    ],
+    [setValueFunction, value.type]
+  );
+
+  console.log({ mathMenu });
+
   const menu = useMemo(
     () => [
       ...(!isValueFn
         ? [
             <MenuItem key="number" onClick={setNumber}>
-              {/* <RelativePortal
-                pin="top-right"
-                offsetY={-16}
-                offsetX={-5}
-                zIndex={100}
-              >
-                <Menu style={{ zIndex: 10000 }}>
-                  <MenuItem key="number" onClick={setNumber}>
-                    SUB 1
-                  </MenuItem>
-                  <MenuItem key="number" onClick={setNumber}>
-                    SUB 2
-                  </MenuItem>
-                  <MenuItem key="number" onClick={setNumber}>
-                    SUB 3
-                  </MenuItem>
-                </Menu>
-              </RelativePortal> */}
               <MenuItemIcon>
                 {value.type === "number" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
@@ -443,6 +552,7 @@ const ValueSelect = ({
                 {value.type === "property" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_PROPERTY")}
+              <MenuAccelerator accelerator="p" />
             </MenuItem>,
             <MenuItem
               key="expression"
@@ -457,6 +567,7 @@ const ValueSelect = ({
                 {value.type === "expression" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_EXPRESSION")}
+              <MenuAccelerator accelerator="e" />
             </MenuItem>,
             <MenuItem
               key="direction"
@@ -471,139 +582,39 @@ const ValueSelect = ({
                 {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_DIRECTION")}
+              <MenuAccelerator accelerator="d" />
             </MenuItem>,
             <MenuDivider key="divider1" />,
-            <MenuItem
-              key="true"
-              onClick={() => {
-                onChange({
-                  type: "true",
-                });
-              }}
-            >
-              <MenuItemIcon>
-                {value.type === "true" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
-              {l10n("FIELD_TRUE")}
-            </MenuItem>,
-            <MenuItem
-              key="false"
-              onClick={() => {
-                onChange({
-                  type: "false",
-                });
-              }}
-            >
-              <MenuItemIcon>
-                {value.type === "false" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
-              {l10n("FIELD_FALSE")}
-            </MenuItem>,
-            <MenuDivider key="divider2" />,
           ]
         : []),
-      ...operatorMenuItems.map((menuItem) => (
-        <MenuItem
-          key={menuItem.value}
-          onClick={() => setValueFunction(menuItem.value)}
-        >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
-          {menuItem.label}
-          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
-        </MenuItem>
-      )),
-      <MenuDivider key="div1" />,
-      ...functionMenuItems.map((menuItem) => (
-        <MenuItem
-          key={menuItem.value}
-          onClick={() => setValueFunction(menuItem.value)}
-        >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
-          {menuItem.label}
-          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
-        </MenuItem>
-      )),
-      <MenuDivider key="div2" />,
-      <MenuItem
-        key="nestedTest"
-        subMenu={comparisonMenuItems.map((menuItem) => (
-          <MenuItem
-            key={menuItem.value}
-            onClick={() => setValueFunction(menuItem.value)}
-          >
-            <MenuItemIcon>
-              {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
-            {menuItem.label}
-            {menuItem.symbol && (
-              <MenuAccelerator accelerator={menuItem.symbol} />
-            )}
-          </MenuItem>
-        ))}
-      >
+      <MenuItem key="mathMenu" subMenu={mathMenu}>
         <MenuItemIcon>
           <BlankIcon />
         </MenuItemIcon>
-        Nested Test
+        {l10n("EVENT_GROUP_MATH")}
       </MenuItem>,
-
-      <MenuItem
-        key="nestedTest2"
-        subMenu={functionMenuItems.map((menuItem) => (
-          <MenuItem
-            key={menuItem.value}
-            onClick={() => setValueFunction(menuItem.value)}
-          >
-            <MenuItemIcon>
-              {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
-            {menuItem.label}
-            {menuItem.symbol && (
-              <MenuAccelerator accelerator={menuItem.symbol} />
-            )}
-          </MenuItem>
-        ))}
-      >
+      <MenuItem key="booleanMenu" subMenu={booleanMenu}>
         <MenuItemIcon>
           <BlankIcon />
         </MenuItemIcon>
-        Nested Test 2
+        {l10n("FIELD_BOOLEAN")}
       </MenuItem>,
-
-      ...comparisonMenuItems.map((menuItem) => (
-        <MenuItem
-          key={menuItem.value}
-          onClick={() => setValueFunction(menuItem.value)}
-        >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
-          {menuItem.label}
-          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
-        </MenuItem>
-      )),
-      <MenuDivider key="div3" />,
-
-      <MenuItem key="rnd" onClick={setRandom}>
+      <MenuItem key="comparisonMenu" subMenu={comparisonMenu}>
         <MenuItemIcon>
-          {value.type === "rnd" ? <CheckIcon /> : <BlankIcon />}
+          <BlankIcon />
         </MenuItemIcon>
-        {l10n("FIELD_RANDOM")}
-        <MenuAccelerator accelerator="r" />
+        {l10n("FIELD_COMPARISON")}
       </MenuItem>,
     ],
     [
+      booleanMenu,
+      comparisonMenu,
       context.type,
       editorType,
       isValueFn,
+      mathMenu,
       onChange,
       setNumber,
-      setRandom,
-      setValueFunction,
       setVariable,
       value.type,
     ]

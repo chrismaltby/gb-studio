@@ -37,7 +37,7 @@ export const scriptValueToString = (
     );
   } else if (value.type === "true") {
     return "true";
-  } else if (value.type === "false") { 
+  } else if (value.type === "false") {
     return "false";
   } else if (value.type === "add") {
     return `(${scriptValueToString(
@@ -99,6 +99,18 @@ export const scriptValueToString = (
       value.valueA,
       options
     )},${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "and") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} && ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "or") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} || ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "not") {
+    return `!(${scriptValueToString(value.valueA, options)})`;
   } else if (value.type === "rnd") {
     return `rnd(${scriptValueToString(
       value.valueA,

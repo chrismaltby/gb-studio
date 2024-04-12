@@ -58,6 +58,21 @@ export type RPNOperation =
       type: "max";
       valueA?: ScriptValue;
       valueB?: ScriptValue;
+    }
+  | {
+      type: "and";
+      valueA?: ScriptValue;
+      valueB?: ScriptValue;
+    }
+  | {
+      type: "or";
+      valueA?: ScriptValue;
+      valueB?: ScriptValue;
+    }
+  | {
+      type: "not";
+      valueA?: ScriptValue;
+      valueB?: ScriptValue;
     };
 
 export type ScriptValueAtom =
@@ -121,6 +136,9 @@ export const valueFunctions = [
   "gte",
   "lt",
   "lte",
+  "and",
+  "or",
+  "not",
 ] as const;
 export type ValueFunction = typeof valueFunctions[number];
 
@@ -154,7 +172,7 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   // Is bool
   if (scriptValue.type === "true" || scriptValue.type === "false") {
     return true;
-  }  
+  }
   if (
     scriptValue.type === "variable" &&
     typeof scriptValue.value === "string"
@@ -293,4 +311,13 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "max";
+    }
+  | {
+      type: "and";
+    }
+  | {
+      type: "or";
+    }
+  | {
+      type: "not";
     };
