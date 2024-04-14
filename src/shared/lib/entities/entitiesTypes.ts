@@ -525,6 +525,7 @@ export interface ScriptEventFieldSchema {
   hideLabel?: boolean;
   description?: string;
   hasPostUpdateFn?: boolean;
+  singleLine?: boolean;
 }
 
 export type EntityKey = keyof EntitiesState;

@@ -16,6 +16,7 @@ interface ScriptEventFormTextAreaProps {
   placeholder?: string;
   entityId: string;
   maxlength?: number;
+  singleLine?: boolean;
   onChange: (newValue: string) => void;
 }
 
@@ -24,6 +25,7 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   value,
   placeholder,
   maxlength,
+  singleLine = false,
   onChange,
   entityId,
 }) => {
@@ -53,6 +55,7 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
       fonts={fonts}
       placeholder={placeholder}
       maxlength={maxlength}
+      singleLine={singleLine}
     />
   );
 };
