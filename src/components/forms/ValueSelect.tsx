@@ -4,9 +4,11 @@ import { VariableSelect } from "components/forms/VariableSelect";
 import {
   isValueAtom,
   isValueOperation,
+  isValueUnaryOperatorType,
   ScriptValue,
-  ValueAtom,
-  ValueFunction,
+  ValueAtomType,
+  ValueOperatorType,
+  ValueUnaryOperatorType,
 } from "shared/lib/scriptValue/types";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
@@ -27,6 +29,7 @@ import {
   FalseIcon,
   MinusIcon,
   ModuloIcon,
+  NotIcon,
   NumberIcon,
   PlusIcon,
   TrueIcon,
@@ -54,7 +57,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
 
 type ValueFunctionMenuItem = {
-  value: ValueFunction;
+  value: ValueOperatorType | ValueUnaryOperatorType;
   label: React.ReactNode;
   symbol?: string;
 };
@@ -65,7 +68,18 @@ const TextIcon = styled.div`
   font-style: italic;
 `;
 
-const operatorIconLookup: Partial<Record<ValueFunction, JSX.Element>> = {
+const iconLookup: Record<
+  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType,
+  JSX.Element
+> = {
+  number: <NumberIcon />,
+  direction: <CompassIcon />,
+  variable: <VariableIcon />,
+  indirect: <VariableIcon />,
+  expression: <ExpressionIcon />,
+  property: <ActorIcon />,
+  true: <TrueIcon />,
+  false: <FalseIcon />,
   add: <PlusIcon />,
   sub: <MinusIcon />,
   mul: <CrossIcon />,
@@ -79,18 +93,9 @@ const operatorIconLookup: Partial<Record<ValueFunction, JSX.Element>> = {
   lte: <TextIcon>&lt;=</TextIcon>,
   and: <TextIcon>&amp;&amp;</TextIcon>,
   or: <TextIcon>||</TextIcon>,
-  not: <TextIcon>!</TextIcon>,
-};
-
-const atomIconLookup: Record<ValueAtom, JSX.Element> = {
-  number: <NumberIcon />,
-  direction: <CompassIcon />,
-  variable: <VariableIcon />,
-  indirect: <VariableIcon />,
-  expression: <ExpressionIcon />,
-  property: <ActorIcon />,
-  true: <TrueIcon />,
-  false: <FalseIcon />,
+  not: <NotIcon />,
+  min: <TextIcon>min</TextIcon>,
+  max: <TextIcon>max</TextIcon>,
 };
 
 const operatorMenuItems: ValueFunctionMenuItem[] = [
@@ -130,7 +135,7 @@ const comparisonMenuItems: ValueFunctionMenuItem[] = [
   {
     value: "ne",
     label: <L10NText l10nKey="FIELD_NE" />,
-    symbol: "!",
+    symbol: "N",
   },
   {
     value: "gt",
@@ -140,6 +145,7 @@ const comparisonMenuItems: ValueFunctionMenuItem[] = [
   {
     value: "gte",
     label: <L10NText l10nKey="FIELD_GTE" />,
+    symbol: "G",
   },
   {
     value: "lt",
@@ -149,6 +155,7 @@ const comparisonMenuItems: ValueFunctionMenuItem[] = [
   {
     value: "lte",
     label: <L10NText l10nKey="FIELD_LTE" />,
+    symbol: "L",
   },
 ];
 
@@ -255,7 +262,7 @@ interface ValueSelectProps {
   name: string;
   entityId: string;
   value?: ScriptValue;
-  onChange: (newValue: ScriptValue | undefined) => void;
+  onChange: (newValue: ScriptValue) => void;
   innerValue?: boolean;
   fixedType?: boolean;
   placeholder?: string;
@@ -315,22 +322,67 @@ const ValueSelect = ({
     });
   }, [context.type, onChange]);
 
+  const setProperty = useCallback(() => {
+    onChange({
+      type: "property",
+      target:
+        context.type === "entity" && editorType === "actor"
+          ? "$self$"
+          : "player",
+      property: "xpos",
+    });
+  }, [context.type, editorType, onChange]);
+
+  const setExpression = useCallback(() => {
+    onChange({
+      type: "expression",
+      value: "",
+    });
+  }, [onChange]);
+
+  const setDirection = useCallback(() => {
+    onChange({
+      type: "direction",
+      value: "left",
+    });
+  }, [onChange]);
+
+  const setBool = useCallback(
+    (bool: boolean) => {
+      onChange({
+        type: bool ? "true" : "false",
+      });
+    },
+    [onChange]
+  );
+
   const setValueFunction = useCallback(
-    (type: ValueFunction) => {
-      if (isValueOperation(value) || value.type === "rnd") {
+    (type: ValueOperatorType | ValueUnaryOperatorType) => {
+      if (isValueUnaryOperatorType(type)) {
         onChange({
           type,
-          valueA: value.valueA,
-          valueB: value.valueB,
+          value,
         });
         focus();
       } else {
-        onChange({
-          type,
-          valueA: value,
-          valueB: undefined,
-        });
-        focusSecondChild();
+        if (isValueOperation(value)) {
+          onChange({
+            type,
+            valueA: value.valueA,
+            valueB: value.valueB,
+          });
+          focus();
+        } else {
+          onChange({
+            type,
+            valueA: value,
+            valueB: {
+              type: "number",
+              value: 0,
+            },
+          });
+          focusSecondChild();
+        }
       }
     },
     [focus, focusSecondChild, onChange, value]
@@ -375,6 +427,16 @@ const ValueSelect = ({
         setNumber();
       } else if (e.key === "$") {
         setVariable();
+      } else if (e.key === "p") {
+        setProperty();
+      } else if (e.key === "e") {
+        setExpression();
+      } else if (e.key === "d") {
+        setDirection();
+      } else if (e.key === "t") {
+        setBool(true);
+      } else if (e.key === "f") {
+        setBool(false);
       } else if (e.key === "+") {
         setValueFunction("add");
       } else if (e.key === "-") {
@@ -395,26 +457,47 @@ const ValueSelect = ({
         setValueFunction("mul");
       } else if (e.key === "/") {
         setValueFunction("div");
+      } else if (e.key === "%") {
+        setValueFunction("mod");
       } else if (e.key === "m") {
         setValueFunction("min");
       } else if (e.key === "M") {
         setValueFunction("max");
       } else if (e.key === "=") {
         setValueFunction("eq");
-      } else if (e.key === "!") {
+      } else if (e.key === "N") {
         setValueFunction("ne");
       } else if (e.key === ">") {
         setValueFunction("gt");
       } else if (e.key === "<") {
         setValueFunction("lt");
+      } else if (e.key === "G") {
+        setValueFunction("gte");
+      } else if (e.key === "L") {
+        setValueFunction("lte");
       } else if (e.key === "r") {
         setRandom();
+      } else if (e.key === "&") {
+        setValueFunction("and");
+      } else if (e.key === "|") {
+        setValueFunction("or");
+      } else if (e.key === "!") {
+        setValueFunction("not");
       } else {
         return false;
       }
       return true;
     },
-    [setNumber, setRandom, setValueFunction, setVariable]
+    [
+      setBool,
+      setDirection,
+      setExpression,
+      setNumber,
+      setProperty,
+      setRandom,
+      setValueFunction,
+      setVariable,
+    ]
   );
 
   const mathMenu = useMemo(
@@ -542,49 +625,21 @@ const ValueSelect = ({
               {l10n("FIELD_VARIABLE")}
               <MenuAccelerator accelerator="$" />
             </MenuItem>,
-            <MenuItem
-              key="property"
-              onClick={() => {
-                onChange({
-                  type: "property",
-                  target:
-                    context.type === "entity" && editorType === "actor"
-                      ? "$self$"
-                      : "player",
-                  property: "xpos",
-                });
-              }}
-            >
+            <MenuItem key="property" onClick={setProperty}>
               <MenuItemIcon>
                 {value.type === "property" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_PROPERTY")}
               <MenuAccelerator accelerator="p" />
             </MenuItem>,
-            <MenuItem
-              key="expression"
-              onClick={() => {
-                onChange({
-                  type: "expression",
-                  value: "",
-                });
-              }}
-            >
+            <MenuItem key="expression" onClick={setExpression}>
               <MenuItemIcon>
                 {value.type === "expression" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_EXPRESSION")}
               <MenuAccelerator accelerator="e" />
             </MenuItem>,
-            <MenuItem
-              key="direction"
-              onClick={() => {
-                onChange({
-                  type: "direction",
-                  value: "left",
-                });
-              }}
-            >
+            <MenuItem key="direction" onClick={setDirection}>
               <MenuItemIcon>
                 {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
@@ -642,13 +697,13 @@ const ValueSelect = ({
     if (fixedType) {
       return isValueAtom(value) ? (
         <Button size="small" disabled>
-          {atomIconLookup[value.type]}
+          {iconLookup[value.type]}
         </Button>
       ) : null;
     }
     return isValueAtom(value) ? (
       <DropdownButton
-        label={atomIconLookup[value.type]}
+        label={iconLookup[value.type]}
         size="small"
         showArrow={false}
         onKeyDown={onKeyDown}
@@ -837,7 +892,7 @@ const ValueSelect = ({
         <ValueWrapper>
           <InputGroup>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-            <Input value={l10n("FIELD_TRUE")} />
+            <Input value={l10n("FIELD_TRUE")} onKeyDown={onKeyDown} />
           </InputGroup>
         </ValueWrapper>
       );
@@ -846,7 +901,7 @@ const ValueSelect = ({
         <ValueWrapper>
           <InputGroup>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-            <Input value={l10n("FIELD_FALSE")} />
+            <Input value={l10n("FIELD_FALSE")} onKeyDown={onKeyDown} />
           </InputGroup>
         </ValueWrapper>
       );
@@ -1024,6 +1079,49 @@ const ValueSelect = ({
           </BracketsWrapper>
         </BracketsWrapper>
       );
+    } else if (value.type === "not") {
+      return (
+        <BracketsWrapper isFunction>
+          <OperatorWrapper>
+            <DropdownButton
+              id={name}
+              label={<NotIcon />}
+              showArrow={false}
+              variant="transparent"
+              size="small"
+              onKeyDown={onKeyDown}
+            >
+              {menu}
+              <MenuDivider />
+              <MenuItem
+                onClick={() => {
+                  onChange(value.value);
+                  focus();
+                }}
+              >
+                <MenuItemIcon>
+                  <BlankIcon />
+                </MenuItemIcon>
+                {l10n("FIELD_REMOVE")}
+              </MenuItem>
+            </DropdownButton>
+          </OperatorWrapper>
+          <BracketsWrapper>
+            <ValueSelect
+              name={`${name}_valueA`}
+              entityId={entityId}
+              value={value.value}
+              onChange={(newValue) => {
+                onChange({
+                  ...value,
+                  value: newValue,
+                });
+              }}
+              innerValue
+            />
+          </BracketsWrapper>
+        </BracketsWrapper>
+      );
     } else if (isValueOperation(value)) {
       return (
         <BracketsWrapper>
@@ -1042,7 +1140,7 @@ const ValueSelect = ({
           <OperatorWrapper>
             <DropdownButton
               id={name}
-              label={operatorIconLookup[value.type]}
+              label={iconLookup[value.type]}
               showArrow={false}
               variant="transparent"
               size="small"

@@ -596,6 +596,13 @@ export const ModuloIcon = () => (
   </svg>
 );
 
+export const NotIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <rect x="9" y="0" width="6" height="15" rx="4"></rect>
+    <circle cx="12" cy="20" r="3"></circle>
+  </svg>
+);
+
 export const DiceIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path

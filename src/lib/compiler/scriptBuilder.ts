@@ -63,7 +63,8 @@ import {
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
   ScriptValue,
-  ValueFunction,
+  ValueOperatorType,
+  ValueUnaryOperatorType,
 } from "shared/lib/scriptValue/types";
 import {
   mapScriptValueLeafNodes,
@@ -448,7 +449,7 @@ const toScriptOperator = (
 };
 
 const valueFunctionToScriptOperator = (
-  operator: ValueFunction
+  operator: ValueOperatorType | ValueUnaryOperatorType
 ): ScriptBuilderRPNOperation => {
   switch (operator) {
     case "add":

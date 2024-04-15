@@ -115,7 +115,7 @@ export const scriptValueToString = (
       options
     )} || ${scriptValueToString(value.valueB, options)})`;
   } else if (value.type === "not") {
-    return `!(${scriptValueToString(value.valueA, options)})`;
+    return `!(${scriptValueToString(value.value, options)})`;
   } else if (value.type === "rnd") {
     return `rnd(${scriptValueToString(
       value.valueA,
@@ -125,7 +125,7 @@ export const scriptValueToString = (
     return `INDIRECT`;
   }
 
-  assertUnreachable(value);
+  assertUnreachable(value.type);
 
   return "";
 };

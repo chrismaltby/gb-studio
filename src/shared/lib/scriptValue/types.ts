@@ -1,84 +1,75 @@
-export type RPNOperation =
-  | {
-      type: "add";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "sub";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "mul";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "div";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "mod";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "eq";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "ne";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "gt";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "gte";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "lt";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "lte";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "min";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "max";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "and";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "or";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    }
-  | {
-      type: "not";
-      valueA?: ScriptValue;
-      valueB?: ScriptValue;
-    };
+export const valueAtomTypes = [
+  "number",
+  "direction",
+  "variable",
+  "indirect",
+  "property",
+  "expression",
+  "true",
+  "false",
+] as const;
+export type ValueAtomType = typeof valueAtomTypes[number];
+
+export const valueOperatorTypes = [
+  "add",
+  "sub",
+  "mul",
+  "div",
+  "mod",
+  "min",
+  "max",
+  "eq",
+  "ne",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "and",
+  "or",
+] as const;
+export type ValueOperatorType = typeof valueOperatorTypes[number];
+
+export const valueUnaryOperatorTypes = ["not"] as const;
+export type ValueUnaryOperatorType = typeof valueUnaryOperatorTypes[number];
+
+export type ValueType =
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType;
+
+export const isValueAtomType = (type: unknown): type is ValueAtomType =>
+  valueAtomTypes.includes(type as ValueAtomType);
+
+export const isValueOperatorType = (type: unknown): type is ValueOperatorType =>
+  valueOperatorTypes.includes(type as ValueOperatorType);
+
+export const isValueUnaryOperatorType = (
+  type: unknown
+): type is ValueUnaryOperatorType =>
+  valueUnaryOperatorTypes.includes(type as ValueUnaryOperatorType);
+
+export type RPNUnaryOperation = {
+  type: ValueUnaryOperatorType;
+  value: ScriptValue;
+};
+
+export type RPNOperation = {
+  type: ValueOperatorType;
+  valueA: ScriptValue;
+  valueB: ScriptValue;
+};
+
+export type RPNRandomOperation = {
+  type: "rnd";
+  valueA: {
+    type: "number";
+    value: number;
+  };
+  valueB: {
+    type: "number";
+    value: number;
+  };
+};
 
 export type ScriptValueAtom =
   | {
@@ -115,53 +106,12 @@ export type ScriptValueAtom =
 
 export type ScriptValue =
   | RPNOperation
-  | ScriptValueAtom
-  | {
-      type: "rnd";
-      valueA?: {
-        type: "number";
-        value: number;
-      };
-      valueB?: {
-        type: "number";
-        value: number;
-      };
-    };
-
-export const valueFunctions = [
-  "add",
-  "sub",
-  "mul",
-  "div",
-  "mod",
-  "min",
-  "max",
-  "eq",
-  "ne",
-  "gt",
-  "gte",
-  "lt",
-  "lte",
-  "and",
-  "or",
-  "not",
-] as const;
-export type ValueFunction = typeof valueFunctions[number];
-
-export const valueAtoms = [
-  "number",
-  "direction",
-  "variable",
-  "indirect",
-  "property",
-  "expression",
-  "true",
-  "false",
-] as const;
-export type ValueAtom = typeof valueAtoms[number];
+  | RPNUnaryOperation
+  | RPNRandomOperation
+  | ScriptValueAtom;
 
 export type ValueFunctionMenuItem = {
-  value: ValueFunction;
+  value: ValueOperatorType;
   label: string;
   symbol: string;
 };
@@ -212,6 +162,12 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
     return true;
   }
   if (
+    isUnaryOperation(scriptValue) &&
+    (isScriptValue(scriptValue.value) || !scriptValue.value)
+  ) {
+    return true;
+  }
+  if (
     scriptValue.type === "rnd" &&
     (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
     (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
@@ -222,18 +178,35 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   return false;
 };
 
-export type ScriptValueFunction = ScriptValue & { type: ValueFunction };
+export type ScriptValueFunction = ScriptValue & { type: ValueOperatorType };
+export type ScriptValueUnaryOperation = ScriptValue & {
+  type: ValueUnaryOperatorType;
+};
+
+export const isUnaryOperation = (
+  value?: ScriptValue
+): value is ScriptValueUnaryOperation => {
+  return (
+    !!value &&
+    valueUnaryOperatorTypes.includes(
+      value.type as unknown as ValueUnaryOperatorType
+    )
+  );
+};
 
 export const isValueOperation = (
   value?: ScriptValue
 ): value is ScriptValueFunction => {
   return (
-    !!value && valueFunctions.includes(value.type as unknown as ValueFunction)
+    !!value &&
+    valueOperatorTypes.includes(value.type as unknown as ValueOperatorType)
   );
 };
 
 export const isValueAtom = (value?: ScriptValue): value is ScriptValueAtom => {
-  return !!value && valueAtoms.includes(value.type as unknown as ValueAtom);
+  return (
+    !!value && valueAtomTypes.includes(value.type as unknown as ValueAtomType)
+  );
 };
 
 export type PrecompiledValueFetch = {
@@ -283,50 +256,5 @@ export type PrecompiledValueRPNOperation =
       value: string;
     }
   | {
-      type: "add";
-    }
-  | {
-      type: "sub";
-    }
-  | {
-      type: "mul";
-    }
-  | {
-      type: "div";
-    }
-  | {
-      type: "mod";
-    }
-  | {
-      type: "eq";
-    }
-  | {
-      type: "ne";
-    }
-  | {
-      type: "gt";
-    }
-  | {
-      type: "gte";
-    }
-  | {
-      type: "lt";
-    }
-  | {
-      type: "lte";
-    }
-  | {
-      type: "min";
-    }
-  | {
-      type: "max";
-    }
-  | {
-      type: "and";
-    }
-  | {
-      type: "or";
-    }
-  | {
-      type: "not";
+      type: ValueOperatorType | ValueUnaryOperatorType;
     };

@@ -1,8 +1,10 @@
+import { assertUnreachable } from "./format";
 import {
   PrecompiledValueRPNOperation,
   PrecompiledValueFetch,
   isValueOperation,
   ScriptValue,
+  isUnaryOperation,
 } from "./types";
 
 const boolToInt = (val: boolean) => (val ? 1 : 0);
@@ -12,7 +14,7 @@ const zero = {
 } as const;
 
 export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
-  if ("valueA" in input && input.type !== "rnd") {
+  if (isValueOperation(input)) {
     const optimisedA = input.valueA ? optimiseScriptValue(input.valueA) : zero;
     const optimisedB = input.valueB ? optimiseScriptValue(input.valueB) : zero;
 
@@ -93,18 +95,32 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: optimisedA.value || optimisedB.value,
         };
-      } else if (input.type === "not") {
-        return {
-          type: "number",
-          value: boolToInt(!optimisedA.value),
-        };
       }
+      assertUnreachable(input.type);
     }
 
     return {
       ...input,
       valueA: optimisedA,
       valueB: optimisedB,
+    };
+  }
+  if (isUnaryOperation(input)) {
+    const optimisedValue = input.value
+      ? optimiseScriptValue(input.value)
+      : zero;
+    if (optimisedValue?.type === "number") {
+      if (input.type === "not") {
+        return {
+          type: "number",
+          value: boolToInt(!optimisedValue.value),
+        };
+      }
+      assertUnreachable(input);
+    }
+    return {
+      ...input,
+      value: optimisedValue,
     };
   }
   return input;
@@ -127,7 +143,7 @@ export const mapScriptValueLeafNodes = (
   input: ScriptValue,
   fn: (val: ScriptValue) => ScriptValue
 ): ScriptValue => {
-  if ("valueA" in input && input.type !== "rnd") {
+  if (isValueOperation(input)) {
     const mappedA = input.valueA && mapScriptValueLeafNodes(input.valueA, fn);
     const mappedB = input.valueB && mapScriptValueLeafNodes(input.valueB, fn);
     return {
@@ -136,12 +152,14 @@ export const mapScriptValueLeafNodes = (
       valueB: mappedB,
     };
   }
-
-  if (!isValueOperation(input) && input.type !== "rnd") {
-    return fn(input);
+  if (isUnaryOperation(input)) {
+    const mapped = input.value && mapScriptValueLeafNodes(input.value, fn);
+    return {
+      ...input,
+      value: mapped,
+    };
   }
-
-  return input;
+  return fn(input);
 };
 
 export const extractScriptValueActorIds = (input: ScriptValue): string[] => {
@@ -210,6 +228,18 @@ export const precompileScriptValue = (
     if (input.valueB) {
       precompileScriptValue(
         input.valueB,
+        localsLabel,
+        rpnOperations,
+        fetchOperations
+      );
+    }
+    rpnOperations.push({
+      type: input.type,
+    });
+  } else if (isUnaryOperation(input)) {
+    if (input.value) {
+      precompileScriptValue(
+        input.value,
         localsLabel,
         rpnOperations,
         fetchOperations
