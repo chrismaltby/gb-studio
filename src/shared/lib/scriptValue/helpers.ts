@@ -1,3 +1,4 @@
+import { wrap8Bit } from "shared/lib/helpers/8bit";
 import { assertUnreachable } from "./format";
 import {
   PrecompiledValueRPNOperation,
@@ -120,6 +121,16 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: optimisedA.value ^ optimisedB.value,
         };
+      } else if (input.type === "atan2") {
+        return {
+          type: "number",
+          value: Math.floor(
+            wrap8Bit(
+              Math.atan2(optimisedA.value, optimisedB.value) * (128 / Math.PI) +
+                64
+            )
+          ),
+        };
       }
       assertUnreachable(input.type);
     }
@@ -140,6 +151,16 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
         return {
           type: "number",
           value: boolToInt(!optimisedValue.value),
+        };
+      } else if (type === "abs") {
+        return {
+          type: "number",
+          value: Math.floor(Math.abs(optimisedValue.value)),
+        };
+      } else if (type === "isqrt") {
+        return {
+          type: "number",
+          value: Math.floor(1 / Math.sqrt(optimisedValue.value)),
         };
       } else if (type === "bNOT") {
         return {

@@ -211,6 +211,7 @@ type ScriptBuilderRPNOperation =
   | ".MIN"
   | ".MAX"
   | ".ATAN2"
+  | ".ISQRT"
   | ".SHL"
   | ".SHR"
   | ScriptBuilderComparisonOperator;
@@ -482,6 +483,12 @@ const valueFunctionToScriptOperator = (
       return ".AND";
     case "or":
       return ".OR";
+    case "abs":
+      return ".ABS";
+    case "atan2":
+      return ".ATAN2";
+    case "isqrt":
+      return ".ISQRT";
     case "not":
       return ".NOT";
     case "shl":

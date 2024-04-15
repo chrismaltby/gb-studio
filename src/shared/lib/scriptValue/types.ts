@@ -26,6 +26,7 @@ export const valueOperatorTypes = [
   "lte",
   "and",
   "or",
+  "atan2",
   // Bitwise
   "shl",
   "shr",
@@ -37,6 +38,8 @@ export type ValueOperatorType = typeof valueOperatorTypes[number];
 
 export const valueUnaryOperatorTypes = [
   "not",
+  "isqrt",
+  "abs",
   // Bitwise
   "bNOT",
 ] as const;
@@ -57,6 +60,29 @@ export const isValueUnaryOperatorType = (
   type: unknown
 ): type is ValueUnaryOperatorType =>
   valueUnaryOperatorTypes.includes(type as ValueUnaryOperatorType);
+
+const infixOperators = [
+  "add",
+  "sub",
+  "mul",
+  "div",
+  "mod",
+  "eq",
+  "ne",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "and",
+  "or",
+  "shl",
+  "shr",
+  "bAND",
+  "bOR",
+  "bXOR",
+];
+export const isInfix = (type: ValueOperatorType) =>
+  infixOperators.includes(type);
 
 export type RPNUnaryOperation = {
   type: ValueUnaryOperatorType;

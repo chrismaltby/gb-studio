@@ -2,6 +2,8 @@ import DirectionPicker from "components/forms/DirectionPicker";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import {
+  isInfix,
+  isUnaryOperation,
   isValueAtom,
   isValueOperation,
   isValueUnaryOperatorType,
@@ -32,6 +34,7 @@ import {
   NotIcon,
   NumberIcon,
   PlusIcon,
+  SquareRootIcon,
   TrueIcon,
   VariableIcon,
 } from "ui/icons/Icons";
@@ -98,6 +101,9 @@ const iconLookup: Record<
   not: <NotIcon />,
   min: <TextIcon>min</TextIcon>,
   max: <TextIcon>max</TextIcon>,
+  abs: <TextIcon>abs</TextIcon>,
+  atan2: <TextIcon>atan2</TextIcon>,
+  isqrt: <SquareRootIcon />,
   // bitwise
   shl: <TextIcon>&lt;&lt;</TextIcon>,
   shr: <TextIcon>&gt;&gt;</TextIcon>,
@@ -105,6 +111,48 @@ const iconLookup: Record<
   bOR: <TextIcon>|</TextIcon>,
   bXOR: <TextIcon>^</TextIcon>,
   bNOT: <TextIcon>~</TextIcon>,
+};
+
+const l10nKeyLookup: Record<
+  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType,
+  L10NKey
+> = {
+  // Value
+  number: "FIELD_NUMBER",
+  direction: "FIELD_DIRECTION",
+  variable: "FIELD_VARIABLE",
+  indirect: "FIELD_VARIABLE",
+  expression: "FIELD_EXPRESSION",
+  property: "FIELD_PROPERTY",
+  true: "FIELD_TRUE",
+  false: "FIELD_FALSE",
+  // Math
+  add: "FIELD_ADD_VALUE",
+  sub: "FIELD_SUB_VALUE",
+  mul: "FIELD_MUL_VARIABLE",
+  div: "FIELD_DIV_VARIABLE",
+  mod: "FIELD_MOD_VARIABLE",
+  eq: "FIELD_EQ",
+  ne: "FIELD_NE",
+  gt: "FIELD_GT",
+  gte: "FIELD_GTE",
+  lt: "FIELD_LT",
+  lte: "FIELD_LTE",
+  and: "FIELD_AND",
+  or: "FIELD_OR",
+  not: "FIELD_NOT",
+  min: "FIELD_MIN",
+  max: "FIELD_MAX",
+  abs: "FIELD_ABSOLUTE_VALUE",
+  atan2: "FIELD_ATAN2",
+  isqrt: "FIELD_SQUARE_ROOT",
+  // bitwise
+  shl: "FIELD_LEFT_SHIFT",
+  shr: "FIELD_RIGHT_SHIFT",
+  bAND: "FIELD_BITWISE_AND",
+  bOR: "FIELD_BITWISE_OR",
+  bXOR: "FIELD_BITWISE_XOR",
+  bNOT: "FIELD_BITWISE_NOT",
 };
 
 const operatorMenuItems: ValueFunctionMenuItem[] = [
@@ -188,6 +236,9 @@ const functionMenuItems: ValueFunctionMenuItem[] = [
     label: "Max",
     symbol: "M",
   },
+  { value: "abs", label: <L10NText l10nKey="FIELD_ABSOLUTE_VALUE" /> },
+  { value: "atan2", label: "atan2" },
+  { value: "isqrt", label: <L10NText l10nKey="FIELD_SQUARE_ROOT" /> },
 ];
 
 const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
@@ -737,7 +788,7 @@ const ValueSelect = ({
   const dropdownButton = useMemo(() => {
     if (fixedType) {
       return isValueAtom(value) ? (
-        <Button size="small" disabled>
+        <Button size="small" title={l10n(l10nKeyLookup[value.type])} disabled>
           {iconLookup[value.type]}
         </Button>
       ) : null;
@@ -745,6 +796,7 @@ const ValueSelect = ({
     return isValueAtom(value) ? (
       <DropdownButton
         label={iconLookup[value.type]}
+        title={l10n(l10nKeyLookup[value.type])}
         size="small"
         showArrow={false}
         onKeyDown={onKeyDown}
@@ -1007,168 +1059,14 @@ const ValueSelect = ({
           </BracketsWrapper>
         </BracketsWrapper>
       );
-    } else if (value.type === "min") {
-      return (
-        <BracketsWrapper isFunction>
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={<TextIcon>min</TextIcon>}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.valueA);
-                  focus();
-                }}
-              >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
-          </OperatorWrapper>
-          <BracketsWrapper>
-            <ValueSelect
-              name={`${name}_valueA`}
-              entityId={entityId}
-              value={value.valueA}
-              onChange={(newValue) => {
-                onChange({
-                  ...value,
-                  valueA: newValue,
-                });
-              }}
-              innerValue
-            />
-            ,
-            <ValueSelect
-              name={`${name}_valueB`}
-              entityId={entityId}
-              value={value.valueB}
-              onChange={(newValue) => {
-                onChange({
-                  ...value,
-                  valueB: newValue,
-                });
-              }}
-              innerValue
-            />
-          </BracketsWrapper>
-        </BracketsWrapper>
-      );
-    } else if (value.type === "max") {
-      return (
-        <BracketsWrapper isFunction>
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={<TextIcon>max</TextIcon>}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.valueA);
-                  focus();
-                }}
-              >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
-          </OperatorWrapper>
-          <BracketsWrapper>
-            <ValueSelect
-              name={`${name}_valueA`}
-              entityId={entityId}
-              value={value.valueA}
-              onChange={(newValue) => {
-                onChange({
-                  ...value,
-                  valueA: newValue,
-                });
-              }}
-              innerValue
-            />
-            ,
-            <ValueSelect
-              name={`${name}_valueB`}
-              entityId={entityId}
-              value={value.valueB}
-              onChange={(newValue) => {
-                onChange({
-                  ...value,
-                  valueB: newValue,
-                });
-              }}
-              innerValue
-            />
-          </BracketsWrapper>
-        </BracketsWrapper>
-      );
-    } else if (value.type === "not") {
-      return (
-        <BracketsWrapper isFunction>
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={<NotIcon />}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.value);
-                  focus();
-                }}
-              >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
-          </OperatorWrapper>
-          <BracketsWrapper>
-            <ValueSelect
-              name={`${name}_valueA`}
-              entityId={entityId}
-              value={value.value}
-              onChange={(newValue) => {
-                onChange({
-                  ...value,
-                  value: newValue,
-                });
-              }}
-              innerValue
-            />
-          </BracketsWrapper>
-        </BracketsWrapper>
-      );
-    } else if (value.type === "bNOT") {
+    } else if (isUnaryOperation(value)) {
       return (
         <BracketsWrapper isFunction>
           <OperatorWrapper>
             <DropdownButton
               id={name}
               label={iconLookup[value.type]}
+              title={l10n(l10nKeyLookup[value.type])}
               showArrow={false}
               variant="transparent"
               size="small"
@@ -1206,58 +1104,118 @@ const ValueSelect = ({
         </BracketsWrapper>
       );
     } else if (isValueOperation(value)) {
-      return (
-        <BracketsWrapper>
-          <ValueSelect
-            name={`${name}_valueA`}
-            entityId={entityId}
-            value={value.valueA}
-            onChange={(newValue) => {
-              onChange({
-                ...value,
-                valueA: newValue,
-              });
-            }}
-            innerValue
-          />
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={iconLookup[value.type]}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.valueA);
-                  focus();
-                }}
+      if (isInfix(value.type)) {
+        return (
+          <BracketsWrapper>
+            <ValueSelect
+              name={`${name}_valueA`}
+              entityId={entityId}
+              value={value.valueA}
+              onChange={(newValue) => {
+                onChange({
+                  ...value,
+                  valueA: newValue,
+                });
+              }}
+              innerValue
+            />
+            <OperatorWrapper>
+              <DropdownButton
+                id={name}
+                label={iconLookup[value.type]}
+                title={l10n(l10nKeyLookup[value.type])}
+                showArrow={false}
+                variant="transparent"
+                size="small"
+                onKeyDown={onKeyDown}
               >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
-          </OperatorWrapper>
-          <ValueSelect
-            name={`${name}_valueB`}
-            entityId={entityId}
-            value={value.valueB}
-            onChange={(newValue) => {
-              onChange({
-                ...value,
-                valueB: newValue,
-              });
-            }}
-            innerValue
-          />
-        </BracketsWrapper>
-      );
+                {menu}
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    onChange(value.valueA);
+                    focus();
+                  }}
+                >
+                  <MenuItemIcon>
+                    <BlankIcon />
+                  </MenuItemIcon>
+                  {l10n("FIELD_REMOVE")}
+                </MenuItem>
+              </DropdownButton>
+            </OperatorWrapper>
+            <ValueSelect
+              name={`${name}_valueB`}
+              entityId={entityId}
+              value={value.valueB}
+              onChange={(newValue) => {
+                onChange({
+                  ...value,
+                  valueB: newValue,
+                });
+              }}
+              innerValue
+            />
+          </BracketsWrapper>
+        );
+      } else {
+        return (
+          <BracketsWrapper isFunction>
+            <OperatorWrapper>
+              <DropdownButton
+                id={name}
+                label={iconLookup[value.type]}
+                title={l10n(l10nKeyLookup[value.type])}
+                showArrow={false}
+                variant="transparent"
+                size="small"
+                onKeyDown={onKeyDown}
+              >
+                {menu}
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    onChange(value.valueA);
+                    focus();
+                  }}
+                >
+                  <MenuItemIcon>
+                    <BlankIcon />
+                  </MenuItemIcon>
+                  {l10n("FIELD_REMOVE")}
+                </MenuItem>
+              </DropdownButton>
+            </OperatorWrapper>
+            <BracketsWrapper>
+              <ValueSelect
+                name={`${name}_valueA`}
+                entityId={entityId}
+                value={value.valueA}
+                onChange={(newValue) => {
+                  onChange({
+                    ...value,
+                    valueA: newValue,
+                  });
+                }}
+                innerValue
+              />
+              ,
+              <ValueSelect
+                name={`${name}_valueB`}
+                entityId={entityId}
+                value={value.valueB}
+                onChange={(newValue) => {
+                  onChange({
+                    ...value,
+                    valueB: newValue,
+                  });
+                }}
+                innerValue
+              />
+            </BracketsWrapper>
+          </BracketsWrapper>
+        );
+      }
     }
     return null;
   }, [
