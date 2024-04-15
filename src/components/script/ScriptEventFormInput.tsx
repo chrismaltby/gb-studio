@@ -56,7 +56,7 @@ import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";
-import { isStringArray } from "shared/types";
+import { ensureMaybeNumber, isStringArray } from "shared/types";
 import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
@@ -88,10 +88,10 @@ const ConnectButton = styled.div`
 const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
-    if (unionArg.type === "variable" || unionArg.type === "property") {
-      return undefined;
+    if (unionArg.type === "number" || unionArg.type === "direction") {
+      return unionArg.value;
     }
-    return unionArg.value;
+    return undefined;
   }
   return arg;
 };
@@ -617,7 +617,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           direction={argValue(args.direction) as ActorDirection}
-          frame={argValue(args.frame) as number | undefined}
+          frame={ensureMaybeNumber(argValue(args.frame), undefined)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -739,17 +739,21 @@ const ScriptEventFormInput = ({
       const fieldType = engineField.type || "number";
       const engineDefaultValue = {
         type: "number",
-        value: engineField.defaultValue
-      }
+        value: engineField.defaultValue,
+      };
       const isValueScript = isScriptValue(value);
       const isDefaultScript = isScriptValue(engineDefaultValue);
-  
+
       return (
         <ValueSelect
           name={id}
           entityId={entityId}
           value={
-            isValueScript ? value : isDefaultScript ? engineDefaultValue : undefined
+            isValueScript
+              ? value
+              : isDefaultScript
+              ? engineDefaultValue
+              : undefined
           }
           onChange={onChangeField}
           min={clampToCType(
@@ -761,9 +765,7 @@ const ScriptEventFormInput = ({
             engineField.cType
           )}
           step={field.step}
-          placeholder={String(
-            engineField.defaultValue ?? 0
-          )}
+          placeholder={String(engineField.defaultValue ?? 0)}
           inputOverride={{
             type: fieldType,
             topLevelOnly: true,

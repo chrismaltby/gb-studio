@@ -57,6 +57,9 @@ const SpriteSheetCanvas = ({
   if (flipX) {
     animationIndex = 0;
   }
+  if (animationIndex < 0) {
+    animationIndex = 3;
+  }
 
   const animationId = animations[animationIndex] || "";
 
