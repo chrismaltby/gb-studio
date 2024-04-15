@@ -356,7 +356,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       ) {
         return child;
       }
-      const itemIndex = subMenuChildArray.indexOf(child);
+      const itemIndex = subMenuItemChildren.indexOf(child);
       return cloneElement(child, {
         "data-index": itemIndex,
         tabIndex: -1,
