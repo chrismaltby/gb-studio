@@ -434,7 +434,7 @@ test("should replace missing values with 0", () => {
       type: "variable",
       value: "5",
     },
-  };
+  } as ScriptValue;
   expect(optimiseScriptValue(input)).toEqual({
     type: "add",
     valueA: {
@@ -455,7 +455,7 @@ test("should replace missing values with 0 and collapse where possible", () => {
       type: "number",
       value: 5,
     },
-  };
+  } as ScriptValue;
   expect(optimiseScriptValue(input)).toEqual({
     type: "number",
     value: 5,

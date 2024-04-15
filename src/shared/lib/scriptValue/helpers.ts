@@ -106,17 +106,18 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
     };
   }
   if (isUnaryOperation(input)) {
+    const type = input.type;
     const optimisedValue = input.value
       ? optimiseScriptValue(input.value)
       : zero;
     if (optimisedValue?.type === "number") {
-      if (input.type === "not") {
+      if (type === "not") {
         return {
           type: "number",
           value: boolToInt(!optimisedValue.value),
         };
       }
-      assertUnreachable(input);
+      assertUnreachable(type);
     }
     return {
       ...input,

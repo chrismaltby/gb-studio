@@ -9,15 +9,18 @@ test("Should set player frame", () => {
       actorId: "player",
       frame: {
         type: "number",
-        value: 4
-      }
+        value: 4,
+      },
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetFrame: mockActorSetFrame
+      actorSetFrameToScriptValue: mockActorSetFrame,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetFrame).toBeCalledWith(4);
+  expect(mockactorSetActive).not.toBeCalled();
+  expect(mockActorSetFrame).toBeCalledWith("player", {
+    type: "number",
+    value: 4,
+  });
 });
