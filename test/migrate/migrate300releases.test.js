@@ -7,6 +7,7 @@ import {
   migrateFrom310r3To311r1Event,
   migrateFrom320r1To320r2Event,
   migrateFrom320r2To330r1Settings,
+  migrateFrom330r2To330r3Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -639,5 +640,260 @@ test("should migrate missing customColorsEnabled to colorMode=mono", () => {
     settings: {
       colorMode: "mono",
     },
+  });
+});
+
+test("should migrate EVENT_IF_TRUE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_TRUE",
+    args: {
+      variable: "L2",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: { type: "variable", value: "L2" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_FALSE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_FALSE",
+    args: {
+      variable: "L2",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: { type: "not", value: { type: "variable", value: "L2" } },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE",
+    args: {
+      variable: "L2",
+      operator: "==",
+      comparator: 8,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "eq",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "number", value: 8 },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE_COMPARE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE_COMPARE",
+    args: {
+      vectorX: "L2",
+      operator: ">=",
+      vectorY: "L3",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "gte",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "variable", value: "L3" },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_SET_TRUE to EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_TRUE",
+    args: {
+      variable: "L1",
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "L1",
+      value: { type: "true" },
+    },
+  });
+});
+
+test("should migrate EVENT_SET_FALSE to EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_FALSE",
+    args: {
+      variable: "L3",
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "L3",
+      value: { type: "false" },
+    },
+  });
+});
+
+test("should migrate EVENT_LOOP_WHILE to convert expression to a script value", () => {
+  const oldEvent = {
+    command: "EVENT_LOOP_WHILE",
+    args: {
+      expression: "5 < 10",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_LOOP_WHILE",
+    args: {
+      condition: { type: "expression", value: "5 < 10" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_ACTOR_MOVE_RELATIVE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_RELATIVE",
+    args: {
+      x: 5,
+      y: -4,
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_RELATIVE",
+    args: {
+      x: { type: "number", value: 5 },
+      y: { type: "number", value: -4 },
+    },
+  });
+});
+
+test("should migrate EVENT_ACTOR_SET_POSITION_RELATIVE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_POSITION_RELATIVE",
+    args: {
+      x: 5,
+      y: -4,
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_POSITION_RELATIVE",
+    args: {
+      x: { type: "number", value: 5 },
+      y: { type: "number", value: -4 },
+    },
+  });
+});
+
+test("should migrate EVENT_IF_ACTOR_AT_POSITION to use script values for coordinates, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_ACTOR_AT_POSITION",
+    args: {
+      actor: "player",
+      x: 7,
+      y: 8,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_ACTOR_AT_POSITION",
+    args: {
+      actor: "player",
+      x: { type: "number", value: 7 },
+      y: { type: "number", value: 8 },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_ACTOR_DIRECTION to use script value for direction, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_ACTOR_DIRECTION",
+    args: {
+      actor: "player",
+      direction: "right",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_ACTOR_DIRECTION",
+    args: {
+      actor: "player",
+      direction: { type: "direction", value: "right" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE to EVENT_IF, storing string number values as valid script value numbers", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE",
+    args: {
+      variable: "12",
+      operator: "==",
+      comparator: "0",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "eq",
+        valueA: {
+          type: "variable",
+          value: "12",
+        },
+        valueB: {
+          type: "number",
+          value: 0,
+        },
+      },
+    },
+    children: oldEvent.children,
   });
 });
