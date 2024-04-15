@@ -257,6 +257,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         const { key } = e;
 
         if (onKeyDown?.(e)) {
+          closeMenu();
           return;
         }
 
