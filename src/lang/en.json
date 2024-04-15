@@ -770,7 +770,13 @@
   "FIELD_AND": "And",
   "FIELD_OR": "Or",
   "FIELD_NOT": "Not",
-  
+  "FIELD_LEFT_SHIFT": "Left Shift",
+  "FIELD_RIGHT_SHIFT": "Right Shift",
+  "FIELD_BITWISE_AND": "Bitwise AND",
+  "FIELD_BITWISE_OR": "Bitwise OR",
+  "FIELD_BITWISE_XOR": "Bitwise XOR",
+  "FIELD_BITWISE_NOT": "Bitwise NOT",
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
   "ASSET_EDIT": "Edit",

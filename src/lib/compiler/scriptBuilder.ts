@@ -484,6 +484,18 @@ const valueFunctionToScriptOperator = (
       return ".OR";
     case "not":
       return ".NOT";
+    case "shl":
+      return ".SHL";
+    case "shr":
+      return ".SHR";
+    case "bAND":
+      return ".B_AND";
+    case "bOR":
+      return ".B_OR";
+    case "bXOR":
+      return ".B_XOR";
+    case "bNOT":
+      return ".B_NOT";
   }
   assertUnreachable(operator);
 };

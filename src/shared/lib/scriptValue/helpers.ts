@@ -95,6 +95,31 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: optimisedA.value || optimisedB.value,
         };
+      } else if (input.type === "shl") {
+        return {
+          type: "number",
+          value: optimisedA.value << optimisedB.value,
+        };
+      } else if (input.type === "shr") {
+        return {
+          type: "number",
+          value: optimisedA.value >> optimisedB.value,
+        };
+      } else if (input.type === "bAND") {
+        return {
+          type: "number",
+          value: optimisedA.value & optimisedB.value,
+        };
+      } else if (input.type === "bOR") {
+        return {
+          type: "number",
+          value: optimisedA.value | optimisedB.value,
+        };
+      } else if (input.type === "bXOR") {
+        return {
+          type: "number",
+          value: optimisedA.value ^ optimisedB.value,
+        };
       }
       assertUnreachable(input.type);
     }
@@ -115,6 +140,11 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
         return {
           type: "number",
           value: boolToInt(!optimisedValue.value),
+        };
+      } else if (type === "bNOT") {
+        return {
+          type: "number",
+          value: ~optimisedValue.value,
         };
       }
       assertUnreachable(type);

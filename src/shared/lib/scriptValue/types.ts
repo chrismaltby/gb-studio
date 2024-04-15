@@ -26,10 +26,20 @@ export const valueOperatorTypes = [
   "lte",
   "and",
   "or",
+  // Bitwise
+  "shl",
+  "shr",
+  "bAND",
+  "bOR",
+  "bXOR",
 ] as const;
 export type ValueOperatorType = typeof valueOperatorTypes[number];
 
-export const valueUnaryOperatorTypes = ["not"] as const;
+export const valueUnaryOperatorTypes = [
+  "not",
+  // Bitwise
+  "bNOT",
+] as const;
 export type ValueUnaryOperatorType = typeof valueUnaryOperatorTypes[number];
 
 export type ValueType =

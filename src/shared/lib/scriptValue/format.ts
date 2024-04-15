@@ -116,6 +116,33 @@ export const scriptValueToString = (
     )} || ${scriptValueToString(value.valueB, options)})`;
   } else if (value.type === "not") {
     return `!(${scriptValueToString(value.value, options)})`;
+  } else if (value.type === "shl") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} << ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "shr") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} >> ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "bAND") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} & ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "bOR") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} | ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "bXOR") {
+    return `(${scriptValueToString(
+      value.valueA,
+      options
+    )} ^ ${scriptValueToString(value.valueB, options)})`;
+  } else if (value.type === "bNOT") {
+    return `~(${scriptValueToString(value.value, options)})`;
   } else if (value.type === "rnd") {
     return `rnd(${scriptValueToString(
       value.valueA,

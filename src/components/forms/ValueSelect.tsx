@@ -72,6 +72,7 @@ const iconLookup: Record<
   ValueAtomType | ValueOperatorType | ValueUnaryOperatorType,
   JSX.Element
 > = {
+  // Value
   number: <NumberIcon />,
   direction: <CompassIcon />,
   variable: <VariableIcon />,
@@ -80,6 +81,7 @@ const iconLookup: Record<
   property: <ActorIcon />,
   true: <TrueIcon />,
   false: <FalseIcon />,
+  // Math
   add: <PlusIcon />,
   sub: <MinusIcon />,
   mul: <CrossIcon />,
@@ -96,6 +98,13 @@ const iconLookup: Record<
   not: <NotIcon />,
   min: <TextIcon>min</TextIcon>,
   max: <TextIcon>max</TextIcon>,
+  // bitwise
+  shl: <TextIcon>&lt;&lt;</TextIcon>,
+  shr: <TextIcon>&gt;&gt;</TextIcon>,
+  bAND: <TextIcon>&amp;</TextIcon>,
+  bOR: <TextIcon>|</TextIcon>,
+  bXOR: <TextIcon>^</TextIcon>,
+  bNOT: <TextIcon>~</TextIcon>,
 };
 
 const operatorMenuItems: ValueFunctionMenuItem[] = [
@@ -157,6 +166,15 @@ const comparisonMenuItems: ValueFunctionMenuItem[] = [
     label: <L10NText l10nKey="FIELD_LTE" />,
     symbol: "L",
   },
+];
+
+const bitwiseMenuItems: ValueFunctionMenuItem[] = [
+  { value: "shl", label: <L10NText l10nKey="FIELD_LEFT_SHIFT" /> },
+  { value: "shr", label: <L10NText l10nKey="FIELD_RIGHT_SHIFT" /> },
+  { value: "bAND", label: <L10NText l10nKey="FIELD_BITWISE_AND" /> },
+  { value: "bOR", label: <L10NText l10nKey="FIELD_BITWISE_OR" /> },
+  { value: "bXOR", label: <L10NText l10nKey="FIELD_BITWISE_XOR" /> },
+  { value: "bNOT", label: <L10NText l10nKey="FIELD_BITWISE_NOT" /> },
 ];
 
 const functionMenuItems: ValueFunctionMenuItem[] = [
@@ -604,7 +622,23 @@ const ValueSelect = ({
     [setValueFunction, value.type]
   );
 
-  console.log({ mathMenu });
+  const bitwiseMenu = useMemo(
+    () => [
+      ...bitwiseMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+        >
+          <MenuItemIcon>
+            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+    ],
+    [setValueFunction, value.type]
+  );
 
   const menu = useMemo(
     () => [
@@ -667,16 +701,23 @@ const ValueSelect = ({
         </MenuItemIcon>
         {l10n("FIELD_COMPARISON")}
       </MenuItem>,
+      <MenuItem key="bitwiseMenu" subMenu={bitwiseMenu}>
+        <MenuItemIcon>
+          <BlankIcon />
+        </MenuItemIcon>
+        {l10n("FIELD_BITWISE")}
+      </MenuItem>,
     ],
     [
+      bitwiseMenu,
       booleanMenu,
       comparisonMenu,
-      context.type,
-      editorType,
       isValueFn,
       mathMenu,
-      onChange,
+      setDirection,
+      setExpression,
       setNumber,
+      setProperty,
       setVariable,
       value.type,
     ]
@@ -756,7 +797,6 @@ const ValueSelect = ({
                   max={!innerValue && max ? max : 0xffff}
                   placeholder={innerValue ? 0 : Number(placeholder ?? 0)}
                   onChange={(value) => {
-                    console.log("ON CHANGE", value);
                     if (value !== undefined) {
                       onChange({
                         type: "number",
@@ -1086,6 +1126,49 @@ const ValueSelect = ({
             <DropdownButton
               id={name}
               label={<NotIcon />}
+              showArrow={false}
+              variant="transparent"
+              size="small"
+              onKeyDown={onKeyDown}
+            >
+              {menu}
+              <MenuDivider />
+              <MenuItem
+                onClick={() => {
+                  onChange(value.value);
+                  focus();
+                }}
+              >
+                <MenuItemIcon>
+                  <BlankIcon />
+                </MenuItemIcon>
+                {l10n("FIELD_REMOVE")}
+              </MenuItem>
+            </DropdownButton>
+          </OperatorWrapper>
+          <BracketsWrapper>
+            <ValueSelect
+              name={`${name}_valueA`}
+              entityId={entityId}
+              value={value.value}
+              onChange={(newValue) => {
+                onChange({
+                  ...value,
+                  value: newValue,
+                });
+              }}
+              innerValue
+            />
+          </BracketsWrapper>
+        </BracketsWrapper>
+      );
+    } else if (value.type === "bNOT") {
+      return (
+        <BracketsWrapper isFunction>
+          <OperatorWrapper>
+            <DropdownButton
+              id={name}
+              label={iconLookup[value.type]}
               showArrow={false}
               variant="transparent"
               size="small"
