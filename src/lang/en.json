@@ -781,6 +781,8 @@
   "FIELD_ATAN2": "atan2",
   "FIELD_MIN": "Min",
   "FIELD_MAX": "Max",
+  "FIELD_COPY_VALUE": "Copy Value",
+  "FIELD_PASTE_VALUE": "Paste Value",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

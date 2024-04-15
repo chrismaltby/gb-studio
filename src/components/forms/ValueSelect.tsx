@@ -12,7 +12,7 @@ import {
   ValueOperatorType,
   ValueUnaryOperatorType,
 } from "shared/lib/scriptValue/types";
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
@@ -58,6 +58,17 @@ import { Option, Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
+import {
+  DragSourceMonitor,
+  DropTargetMonitor,
+  useDrag,
+  useDrop,
+} from "react-dnd";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { ClipboardTypeScriptValue } from "store/features/clipboard/clipboardTypes";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { copy, paste } from "store/features/clipboard/clipboardHelpers";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;
@@ -259,25 +270,50 @@ const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
   },
 ];
 
+interface ValueWrapperProps {
+  isOver: boolean;
+}
+
 const OperatorWrapper = styled.div`
   min-width: 24px;
   flex-shrink: 0;
   flex-grow: 0;
 `;
 
-const ValueWrapper = styled.div`
+const dropTargetStyle = css`
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 4px;
+    border: 2px solid ${(props) => props.theme.colors.highlight};
+    background: rgba(128, 128, 128, 0.5);
+    pointer-events: none;
+  }
+`;
+
+const ValueWrapper = styled.div<ValueWrapperProps>`
+  position: relative;
   display: flex;
   flex-grow: 1;
   align-items: center;
   min-width: 98px;
   flex-basis: 130px;
+  ${(props) => (props.isOver ? dropTargetStyle : "")}
 `;
+
+const DropWrapper = styled.div``;
 
 interface BracketsWrapperProps {
   isFunction?: boolean;
+  isOver?: boolean;
 }
 
 const BracketsWrapper = styled.div<BracketsWrapperProps>`
+  position: relative;
   display: flex;
   align-items: center;
   border-radius: 8px;
@@ -302,6 +338,8 @@ const BracketsWrapper = styled.div<BracketsWrapperProps>`
   &:hover:not(:has(&:hover)) {
     background: ${(props) => props.theme.colors.brackets.hoverBackground};
   }
+
+  ${(props) => (props.isOver ? dropTargetStyle : "")}
 `;
 
 const Wrapper = styled.div`
@@ -354,9 +392,34 @@ const ValueSelect = ({
   step,
   inputOverride,
 }: ValueSelectProps) => {
+  const dispatch = useAppDispatch();
   const context = useContext(ScriptEditorContext);
   const editorType = useSelector((state: RootState) => state.editor.type);
   const isValueFn = isValueOperation(value);
+  const dragRef = useRef<HTMLDivElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
+  );
+
+  const onCopyValue = useCallback(() => {
+    copy({
+      format: ClipboardTypeScriptValue,
+      data: { value },
+    });
+  }, [value]);
+
+  const onPasteValue = useCallback(async () => {
+    const data = await paste(ClipboardTypeScriptValue);
+    if (data) {
+      onChange(data.data.value);
+    }
+  }, [onChange]);
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const focus = useCallback(() => {
     setTimeout(() => {
@@ -758,13 +821,31 @@ const ValueSelect = ({
         </MenuItemIcon>
         {l10n("FIELD_BITWISE")}
       </MenuItem>,
+      <MenuDivider key="divider2" />,
+      <MenuItem key="copy" onClick={onCopyValue}>
+        <MenuItemIcon>
+          <BlankIcon />
+        </MenuItemIcon>
+        {l10n("FIELD_COPY_VALUE")}
+      </MenuItem>,
+      clipboardFormat === ClipboardTypeScriptValue && (
+        <MenuItem key="paste" onClick={onPasteValue}>
+          <MenuItemIcon>
+            <BlankIcon />
+          </MenuItemIcon>
+          {l10n("FIELD_PASTE_VALUE")}
+        </MenuItem>
+      ),
     ],
     [
       bitwiseMenu,
       booleanMenu,
+      clipboardFormat,
       comparisonMenu,
       isValueFn,
       mathMenu,
+      onCopyValue,
+      onPasteValue,
       setDirection,
       setExpression,
       setNumber,
@@ -785,6 +866,39 @@ const ValueSelect = ({
     [inputOverride]
   );
 
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.SCRIPT_VALUE,
+    collect(monitor) {
+      return {
+        isOver: monitor.isOver({ shallow: true }),
+      };
+    },
+    drop(item: ScriptValue, monitor: DropTargetMonitor) {
+      const didDrop = monitor.didDrop();
+      if (didDrop) {
+        return;
+      }
+      onChange(item);
+    },
+  });
+
+  const [_, drag, dragPreview] = useDrag({
+    type: ItemTypes.SCRIPT_VALUE,
+    item: (): ScriptValue => {
+      return value;
+    },
+    options: {
+      dropEffect: "copy",
+    },
+    collect: (monitor: DragSourceMonitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  drag(dragRef);
+  drop(dropRef);
+  dragPreview(previewRef);
+
   const dropdownButton = useMemo(() => {
     if (fixedType) {
       return isValueAtom(value) ? (
@@ -794,23 +908,26 @@ const ValueSelect = ({
       ) : null;
     }
     return isValueAtom(value) ? (
-      <DropdownButton
-        label={iconLookup[value.type]}
-        title={l10n(l10nKeyLookup[value.type])}
-        size="small"
-        showArrow={false}
-        onKeyDown={onKeyDown}
-      >
-        {menu}
-      </DropdownButton>
+      <DropWrapper ref={dragRef}>
+        <DropdownButton
+          label={iconLookup[value.type]}
+          title={l10n(l10nKeyLookup[value.type])}
+          size="small"
+          showArrow={false}
+          onKeyDown={onKeyDown}
+          onMouseDown={onFetchClipboard}
+        >
+          {menu}
+        </DropdownButton>
+      </DropWrapper>
     ) : null;
-  }, [fixedType, menu, onKeyDown, value]);
+  }, [fixedType, menu, onFetchClipboard, onKeyDown, value]);
 
   const input = useMemo(() => {
     if (value.type === "number") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             {((innerValue && !inputOverride?.topLevelOnly) ||
               !inputOverride ||
@@ -903,8 +1020,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "direction") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <DirectionPicker
               id={name}
@@ -921,8 +1038,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "variable") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <VariableSelect
               name={name}
@@ -940,8 +1057,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "property") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <PropertySelect
               name={name}
@@ -961,8 +1078,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "expression") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <ScriptEventFormMathArea
               id={name}
@@ -981,8 +1098,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "true") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <Input value={l10n("FIELD_TRUE")} onKeyDown={onKeyDown} />
           </InputGroup>
@@ -990,8 +1107,8 @@ const ValueSelect = ({
       );
     } else if (value.type === "false") {
       return (
-        <ValueWrapper>
-          <InputGroup>
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <Input value={l10n("FIELD_FALSE")} onKeyDown={onKeyDown} />
           </InputGroup>
@@ -999,30 +1116,33 @@ const ValueSelect = ({
       );
     } else if (value.type === "rnd") {
       return (
-        <BracketsWrapper isFunction>
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={<TextIcon>rnd</TextIcon>}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.valueA);
-                  focus();
-                }}
+        <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
+          <OperatorWrapper ref={dropRef}>
+            <DropWrapper ref={dragRef}>
+              <DropdownButton
+                id={name}
+                label={<TextIcon>rnd</TextIcon>}
+                showArrow={false}
+                variant="transparent"
+                size="small"
+                onKeyDown={onKeyDown}
+                onMouseDown={onFetchClipboard}
               >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
+                {menu}
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    onChange(value.valueA);
+                    focus();
+                  }}
+                >
+                  <MenuItemIcon>
+                    <BlankIcon />
+                  </MenuItemIcon>
+                  {l10n("FIELD_REMOVE")}
+                </MenuItem>
+              </DropdownButton>
+            </DropWrapper>
           </OperatorWrapper>
           <BracketsWrapper>
             <ValueSelect
@@ -1061,31 +1181,34 @@ const ValueSelect = ({
       );
     } else if (isUnaryOperation(value)) {
       return (
-        <BracketsWrapper isFunction>
-          <OperatorWrapper>
-            <DropdownButton
-              id={name}
-              label={iconLookup[value.type]}
-              title={l10n(l10nKeyLookup[value.type])}
-              showArrow={false}
-              variant="transparent"
-              size="small"
-              onKeyDown={onKeyDown}
-            >
-              {menu}
-              <MenuDivider />
-              <MenuItem
-                onClick={() => {
-                  onChange(value.value);
-                  focus();
-                }}
+        <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
+          <OperatorWrapper ref={dropRef}>
+            <DropWrapper ref={dragRef}>
+              <DropdownButton
+                id={name}
+                label={iconLookup[value.type]}
+                title={l10n(l10nKeyLookup[value.type])}
+                showArrow={false}
+                variant="transparent"
+                size="small"
+                onKeyDown={onKeyDown}
+                onMouseDown={onFetchClipboard}
               >
-                <MenuItemIcon>
-                  <BlankIcon />
-                </MenuItemIcon>
-                {l10n("FIELD_REMOVE")}
-              </MenuItem>
-            </DropdownButton>
+                {menu}
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    onChange(value.value);
+                    focus();
+                  }}
+                >
+                  <MenuItemIcon>
+                    <BlankIcon />
+                  </MenuItemIcon>
+                  {l10n("FIELD_REMOVE")}
+                </MenuItem>
+              </DropdownButton>
+            </DropWrapper>
           </OperatorWrapper>
           <BracketsWrapper>
             <ValueSelect
@@ -1106,7 +1229,7 @@ const ValueSelect = ({
     } else if (isValueOperation(value)) {
       if (isInfix(value.type)) {
         return (
-          <BracketsWrapper>
+          <BracketsWrapper ref={previewRef} isOver={isOver}>
             <ValueSelect
               name={`${name}_valueA`}
               entityId={entityId}
@@ -1119,30 +1242,33 @@ const ValueSelect = ({
               }}
               innerValue
             />
-            <OperatorWrapper>
-              <DropdownButton
-                id={name}
-                label={iconLookup[value.type]}
-                title={l10n(l10nKeyLookup[value.type])}
-                showArrow={false}
-                variant="transparent"
-                size="small"
-                onKeyDown={onKeyDown}
-              >
-                {menu}
-                <MenuDivider />
-                <MenuItem
-                  onClick={() => {
-                    onChange(value.valueA);
-                    focus();
-                  }}
+            <OperatorWrapper ref={dropRef}>
+              <DropWrapper ref={dragRef}>
+                <DropdownButton
+                  id={name}
+                  label={iconLookup[value.type]}
+                  title={l10n(l10nKeyLookup[value.type])}
+                  showArrow={false}
+                  variant="transparent"
+                  size="small"
+                  onKeyDown={onKeyDown}
+                  onMouseDown={onFetchClipboard}
                 >
-                  <MenuItemIcon>
-                    <BlankIcon />
-                  </MenuItemIcon>
-                  {l10n("FIELD_REMOVE")}
-                </MenuItem>
-              </DropdownButton>
+                  {menu}
+                  <MenuDivider />
+                  <MenuItem
+                    onClick={() => {
+                      onChange(value.valueA);
+                      focus();
+                    }}
+                  >
+                    <MenuItemIcon>
+                      <BlankIcon />
+                    </MenuItemIcon>
+                    {l10n("FIELD_REMOVE")}
+                  </MenuItem>
+                </DropdownButton>
+              </DropWrapper>
             </OperatorWrapper>
             <ValueSelect
               name={`${name}_valueB`}
@@ -1160,31 +1286,34 @@ const ValueSelect = ({
         );
       } else {
         return (
-          <BracketsWrapper isFunction>
-            <OperatorWrapper>
-              <DropdownButton
-                id={name}
-                label={iconLookup[value.type]}
-                title={l10n(l10nKeyLookup[value.type])}
-                showArrow={false}
-                variant="transparent"
-                size="small"
-                onKeyDown={onKeyDown}
-              >
-                {menu}
-                <MenuDivider />
-                <MenuItem
-                  onClick={() => {
-                    onChange(value.valueA);
-                    focus();
-                  }}
+          <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
+            <OperatorWrapper ref={dropRef}>
+              <DropWrapper ref={dragRef}>
+                <DropdownButton
+                  id={name}
+                  label={iconLookup[value.type]}
+                  title={l10n(l10nKeyLookup[value.type])}
+                  showArrow={false}
+                  variant="transparent"
+                  size="small"
+                  onKeyDown={onKeyDown}
+                  onMouseDown={onFetchClipboard}
                 >
-                  <MenuItemIcon>
-                    <BlankIcon />
-                  </MenuItemIcon>
-                  {l10n("FIELD_REMOVE")}
-                </MenuItem>
-              </DropdownButton>
+                  {menu}
+                  <MenuDivider />
+                  <MenuItem
+                    onClick={() => {
+                      onChange(value.valueA);
+                      focus();
+                    }}
+                  >
+                    <MenuItemIcon>
+                      <BlankIcon />
+                    </MenuItemIcon>
+                    {l10n("FIELD_REMOVE")}
+                  </MenuItem>
+                </DropdownButton>
+              </DropWrapper>
             </OperatorWrapper>
             <BracketsWrapper>
               <ValueSelect
@@ -1224,12 +1353,13 @@ const ValueSelect = ({
     focus,
     innerValue,
     inputOverride,
-    // isHovered,
+    isOver,
     max,
     menu,
     min,
     name,
     onChange,
+    onFetchClipboard,
     onKeyDown,
     options,
     placeholder,
