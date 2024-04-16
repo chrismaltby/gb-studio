@@ -783,6 +783,7 @@
   "FIELD_MAX": "Max",
   "FIELD_COPY_VALUE": "Copy Value",
   "FIELD_PASTE_VALUE": "Paste Value",
+  "FIELD_STACK": "Stack",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

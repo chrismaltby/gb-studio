@@ -8,12 +8,14 @@ interface SplitPaneHeaderProps {
   children: ReactNode;
   buttons?: ReactNode;
   collapsed: boolean;
+  sticky?: boolean;
   onToggle?: () => void;
 }
 
 interface WrapperProps {
   variant?: "normal" | "secondary";
   collapsible: boolean;
+  sticky?: boolean;
 }
 
 export const Wrapper = styled.div<WrapperProps>`
@@ -51,6 +53,15 @@ export const Wrapper = styled.div<WrapperProps>`
       : css`
           padding-left: 10px;
         `};
+
+  ${(props) =>
+    props.sticky
+      ? css`
+          position: sticky;
+          top: 0;
+          z-index: 1;
+        `
+      : ""}
 
   > span {
     flex-grow: 1;
@@ -98,13 +109,19 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   onToggle,
   collapsed,
   variant,
+  sticky,
 }) => {
   const stopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   }, []);
 
   return (
-    <Wrapper onClick={onToggle} collapsible={!!onToggle} variant={variant}>
+    <Wrapper
+      onClick={onToggle}
+      collapsible={!!onToggle}
+      variant={variant}
+      sticky={sticky}
+    >
       {onToggle && (
         <CollapseIcon collapsed={collapsed}>
           <TriangleIcon />

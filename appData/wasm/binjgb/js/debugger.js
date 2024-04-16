@@ -13,6 +13,9 @@ const MAX_GLOBAL_VARS = "MAX_GLOBAL_VARS";
 
 // Helpers
 
+const toAddrHex = (value) =>
+  ("0000" + value.toString(16).toUpperCase()).slice(-4);
+
 const parseDebuggerSymbol = (input) => {
   const match = input.match(
     /GBVM\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)/
@@ -88,10 +91,20 @@ class Debug {
           while (firstCtx !== 0) {
             const ctxAddr = debug.readMemInt16(firstCtx);
             const ctxBank = debug.readMem(firstCtx + 2);
+            const ctxStackPtrAddr = debug.readMemInt16(firstCtx + 8);
+            const ctxStackBaseAddr = debug.readMemInt16(firstCtx + 10);
+
             const closestAddr = debug.getClosestAddress(ctxBank, ctxAddr);
             const closestSymbol = debug.getSymbol(ctxBank, closestAddr);
             const closestGBVMSymbol = parseDebuggerSymbol(closestSymbol);
             const prevCtx = prevCtxs[scriptContexts.length];
+
+            let stackString = "";
+            for (var i = ctxStackBaseAddr; i < ctxStackPtrAddr + 4; i += 2) {
+              stackString += `${i === ctxStackPtrAddr ? "->" : "  "}${toAddrHex(
+                i
+              )}: ${debug.readMemInt16(i)}\n`;
+            }
 
             const ctxData = {
               address: ctxAddr,
@@ -102,6 +115,7 @@ class Debug {
               closestGBVMSymbol,
               prevClosestSymbol: prevCtx?.closestSymbol,
               prevClosestGBVMSymbol: prevCtx?.closestGBVMSymbol,
+              stackString,
             };
 
             scriptContexts.push(ctxData);

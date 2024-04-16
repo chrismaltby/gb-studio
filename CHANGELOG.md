@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for `Actor Move Relative`, `Actor Set Position Relative` and `If Actor At Position` to use variables as coordinate inputs
 - Add ability for almost every script event input that supports variables to use advanced values, click the button to the left of the value input to select value types, and combine them with math operators
 - Add ability to use variables within Menu and Choice events [@pau-tomas](https://github.com/pau-tomas)
+- Add stack preview mode to debugger
 
 ### Changed
 

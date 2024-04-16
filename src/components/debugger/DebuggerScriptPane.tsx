@@ -24,6 +24,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { TabBar } from "ui/tabs/Tabs";
 import API from "renderer/lib/api";
 import DebuggerScriptCtxBreadcrumb from "components/debugger/DebuggerScriptCtxBreadcrumb";
+import { StackIcon } from "ui/icons/Icons";
 
 interface DebuggerScriptPaneProps {
   collapsible?: boolean;
@@ -64,6 +65,23 @@ const Content = styled.div`
   max-height: calc(100% - 31px);
 `;
 
+const ScriptWrapper = styled.div`
+  position: relative;
+`;
+
+const StackWrapper = styled.div`
+  position: sticky;
+  max-height: 150px;
+  bottom: 0;
+  overflow: auto;
+  font-family: "Courier New", monospace;
+  white-space: pre;
+  background: #fff;
+  padding: 10px;
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
+  background: ${(props) => props.theme.colors.input.background};
+`;
+
 const ScriptPath = styled.div`
   padding: 5px 10px;
   color: ${(props) => props.theme.colors.input.text};
@@ -102,6 +120,7 @@ const CodeEditorWrapper = styled.div`
 const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   const dispatch = useAppDispatch();
   const [thread, setThread] = useState(0);
+  const [showStack, setShowStack] = useState(false);
 
   const isPaused = useAppSelector((state) => state.debug.isPaused);
   const scriptContexts = useAppSelector((state) => state.debug.scriptContexts);
@@ -130,6 +149,10 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       })
     );
   }, [dispatch]);
+
+  const onToggleViewStack = useCallback(() => {
+    setShowStack(!showStack);
+  }, [showStack]);
 
   const onToggleCollapsed = useCallback(() => {
     dispatch(settingsActions.toggleDebuggerPaneCollapsed("script"));
@@ -240,12 +263,21 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   return (
     <>
       <SplitPaneHeader
+        sticky
         onToggle={collapsible ? onToggleCollapsed : undefined}
         collapsed={isCollapsed}
         variant="secondary"
         buttons={
           !isCollapsed && (
             <>
+              <Button
+                size="small"
+                variant={showStack ? "primary" : "transparent"}
+                title={l10n("FIELD_STACK")}
+                onClick={onToggleViewStack}
+              >
+                <StackIcon />
+              </Button>
               <Button
                 size="small"
                 variant={
@@ -302,29 +334,34 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
               <DebuggerScriptCtxBreadcrumb context={scriptCtx} />
             </ScriptPath>
           )}
-          <ScrollWrapper scrollable={!collapsible}>
-            {viewScriptType === "editor" && scriptCtx ? (
-              <ScriptEditorContext.Provider value={scriptCtx}>
-                <ScriptEditor
-                  value={currentScript}
-                  showAutoFadeIndicator={
-                    scriptCtx.type === "entity" &&
-                    scriptCtx.entityType === "scene" &&
-                    scriptCtx.scriptKey === "script"
-                  }
-                />
-              </ScriptEditorContext.Provider>
-            ) : undefined}
-            {viewScriptType === "gbvm" && currentGBVMScript ? (
-              <CodeEditorWrapper>
-                <CodeEditor
-                  value={currentGBVMScript}
-                  onChange={() => {}}
-                  currentLineNum={currentScriptLineNum}
-                />
-              </CodeEditorWrapper>
-            ) : undefined}
-          </ScrollWrapper>
+          <ScriptWrapper>
+            <ScrollWrapper scrollable={!collapsible}>
+              {viewScriptType === "editor" && scriptCtx ? (
+                <ScriptEditorContext.Provider value={scriptCtx}>
+                  <ScriptEditor
+                    value={currentScript}
+                    showAutoFadeIndicator={
+                      scriptCtx.type === "entity" &&
+                      scriptCtx.entityType === "scene" &&
+                      scriptCtx.scriptKey === "script"
+                    }
+                  />
+                </ScriptEditorContext.Provider>
+              ) : undefined}
+              {viewScriptType === "gbvm" && currentGBVMScript ? (
+                <CodeEditorWrapper>
+                  <CodeEditor
+                    value={currentGBVMScript}
+                    onChange={() => {}}
+                    currentLineNum={currentScriptLineNum}
+                  />
+                </CodeEditorWrapper>
+              ) : undefined}
+            </ScrollWrapper>
+            {showStack && (
+              <StackWrapper>{currentThread.stackString}</StackWrapper>
+            )}
+          </ScriptWrapper>
         </Content>
       )}
     </>

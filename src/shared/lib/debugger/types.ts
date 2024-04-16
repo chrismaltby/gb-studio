@@ -14,6 +14,7 @@ export type DebuggerScriptContext = {
     entityId: string;
     scriptKey: string;
   };
+  stackString: string;
 };
 
 export type DebuggerDataPacket =
