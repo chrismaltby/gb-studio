@@ -37,7 +37,6 @@ import {
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
-  UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -57,10 +56,12 @@ import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";
-import { isStringArray } from "shared/types";
+import { ensureMaybeNumber, isStringArray } from "shared/types";
 import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
+import ValueSelect from "components/forms/ValueSelect";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -87,10 +88,10 @@ const ConnectButton = styled.div`
 const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
-    if (unionArg.type === "variable" || unionArg.type === "property") {
-      return undefined;
+    if (unionArg.type === "number" || unionArg.type === "direction") {
+      return unionArg.value;
     }
-    return unionArg.value;
+    return undefined;
   }
   return arg;
 };
@@ -150,15 +151,6 @@ const ScriptEventFormInput = ({
       onChange(e.value, index);
     },
     [index, onChange]
-  );
-
-  const onChangeUnits = useCallback(
-    (e: UnitType) => {
-      if (field.unitsField) {
-        onChangeArg(field.unitsField, e);
-      }
-    },
-    [field.unitsField, onChangeArg]
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -256,9 +248,6 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(field.placeholder || defaultValue)}
         onChange={onChangeNumberInputField}
-        units={(args[field.unitsField || ""] || field.unitsDefault) as UnitType}
-        unitsAllowed={field.unitsAllowed}
-        onChangeUnits={onChangeUnits}
       />
     );
   } else if (type === "slider") {
@@ -367,6 +356,27 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "value") {
+    const isValueScript = isScriptValue(value);
+    const isDefaultScript = isScriptValue(defaultValue);
+
+    return (
+      <ValueSelect
+        name={id}
+        entityId={entityId}
+        value={
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
   } else if (type === "palette") {
     if (field.paletteType === "ui") {
       return (
@@ -471,11 +481,6 @@ const ScriptEventFormInput = ({
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -613,7 +618,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           direction={argValue(args.direction) as ActorDirection}
-          frame={argValue(args.frame) as number | undefined}
+          frame={ensureMaybeNumber(argValue(args.frame), undefined)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -632,11 +637,6 @@ const ScriptEventFormInput = ({
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -731,11 +731,6 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -743,33 +738,41 @@ const ScriptEventFormInput = ({
     const engineField = engineFieldsLookup[args.engineFieldKey as string];
     if (engineField) {
       const fieldType = engineField.type || "number";
-      const updateValueField = {
-        key: "value",
-        type: fieldType,
-        checkboxLabel: l10n(engineField.label as L10NKey),
-        min: clampToCType(
-          setDefault(engineField.min, -Infinity),
-          engineField.cType
-        ),
-        max: clampToCType(
-          setDefault(engineField.max, Infinity),
-          engineField.cType
-        ),
-        options: engineField.options || [],
-        defaultValue: engineField.defaultValue ?? 0,
+      const engineDefaultValue = {
+        type: "number",
+        value: engineField.defaultValue,
       };
+      const isValueScript = isScriptValue(value);
+      const isDefaultScript = isScriptValue(engineDefaultValue);
+
       return (
-        <ScriptEventFormInput
-          id={id}
+        <ValueSelect
+          name={id}
           entityId={entityId}
-          type={fieldType}
-          field={updateValueField}
-          value={value}
-          args={args}
-          index={index}
-          defaultValue={updateValueField.defaultValue}
-          onChange={onChange}
-          onChangeArg={onChangeArg}
+          value={
+            isValueScript
+              ? value
+              : isDefaultScript
+              ? engineDefaultValue
+              : undefined
+          }
+          onChange={onChangeField}
+          min={clampToCType(
+            setDefault(engineField.min, -Infinity),
+            engineField.cType
+          )}
+          max={clampToCType(
+            setDefault(engineField.max, Infinity),
+            engineField.cType
+          )}
+          step={field.step}
+          placeholder={String(engineField.defaultValue ?? 0)}
+          inputOverride={{
+            type: fieldType,
+            topLevelOnly: true,
+            options: engineField.options || [],
+            checkboxLabel: l10n(engineField.label as L10NKey),
+          }}
         />
       );
     }

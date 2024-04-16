@@ -498,8 +498,10 @@ export interface ScriptEventFieldSchema {
   width?: string;
   flexBasis?: string | number;
   flexGrow?: number;
+  alignBottom?: boolean;
+  wrapItems?: boolean;
+  minWidth?: string | number;
   values?: Record<string, string>;
-  alignCheckbox?: boolean;
   placeholder?: string;
   rows?: number;
   maxLength?: number;

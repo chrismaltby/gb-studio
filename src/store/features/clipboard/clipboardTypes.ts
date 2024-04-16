@@ -10,6 +10,7 @@ import {
   CustomEventNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
+import { ScriptValue } from "shared/lib/scriptValue/types";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
 export const ClipboardTypeMetaspriteTiles = "gbstudio.metaspritetiles";
@@ -19,6 +20,7 @@ export const ClipboardTypePaletteIds = "gbstudio.palettes";
 export const ClipboardTypeTriggers = " gbstudio.triggers";
 export const ClipboardTypeActors = " gbstudio.actors";
 export const ClipboardTypeScenes = " gbstudio.scenes";
+export const ClipboardTypeScriptValue = " gbstudio.value";
 
 export type NarrowClipboardType<T, N> = T extends { format: N } ? T : never;
 
@@ -71,6 +73,10 @@ export type ClipboardScenes = {
   customEvents: CustomEventNormalized[];
 };
 
+export type ClipboardScriptValue = {
+  value: ScriptValue;
+};
+
 export type ClipboardType =
   | {
       format: typeof ClipboardTypeMetaspriteTiles;
@@ -103,6 +109,10 @@ export type ClipboardType =
   | {
       format: typeof ClipboardTypeScenes;
       data: ClipboardScenes;
+    }
+  | {
+      format: typeof ClipboardTypeScriptValue;
+      data: ClipboardScriptValue;
     };
 
 export type ClipboardFormat = ClipboardType["format"];
@@ -116,4 +126,5 @@ export const ClipboardTypes: ClipboardFormat[] = [
   ClipboardTypeTriggers,
   ClipboardTypeActors,
   ClipboardTypeScenes,
+  ClipboardTypeScriptValue,
 ];

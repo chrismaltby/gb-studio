@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SET_TIMER_SCRIPT";
 const groups = ["EVENT_GROUP_TIMER"];
+const subGroups = {
+  EVENT_GROUP_TIMER: "EVENT_GROUP_SCRIPT",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_SET_TIMER_SCRIPT_LABEL", {
@@ -108,6 +111,7 @@ module.exports = {
   autoLabel,
   description: l10n("EVENT_SET_TIMER_SCRIPT_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
   editableSymbol: true,

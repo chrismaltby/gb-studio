@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_CLEAR_FLAGS";
 const groups = ["EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_FLAGS",
+};
 
 const autoLabel = (fetchArg, input) => {
   const flags = [
@@ -234,6 +237,7 @@ module.exports = {
   description: l10n("EVENT_CLEAR_FLAGS_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

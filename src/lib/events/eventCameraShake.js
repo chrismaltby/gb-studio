@@ -75,6 +75,7 @@ const fields = [
         defaultValue: "horizontal",
         flexBasis: 30,
         flexGrow: 0,
+        alignBottom: true,
       },
     ],
   },
@@ -82,26 +83,18 @@ const fields = [
     key: "magnitude",
     label: l10n("FIELD_MAGNITUDE"),
     description: l10n("FIELD_MAGNITUDE_DESC"),
-    type: "union",
-    types: ["number", "variable", "property"],
-    defaultType: "number",
+    type: "value",
     min: 1,
     max: 255,
     defaultValue: {
-      number: 5,
-      variable: "LAST_VARIABLE",
-      property: "$self$:xpos",
+      type: "number",
+      value: 5,
     },
   },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    cameraShake,
-    cameraShakeVariables,
-    variableFromUnion,
-    temporaryEntityVariable,
-  } = helpers;
+  const { cameraShakeScriptValue } = helpers;
   let frames = 0;
   if (input.units === "frames") {
     frames = typeof input.frames === "number" ? input.frames : 30;
@@ -131,18 +124,8 @@ const compile = (input, helpers) => {
       shouldShakeY = false;
   }
 
-  if (input.magnitude.type === "number") {
-    if (frames > 0) {
-      cameraShake(shouldShakeX, shouldShakeY, frames, input.magnitude.value);
-    }
-  } else {
-    const magnitudeVar = variableFromUnion(
-      input.magnitude,
-      temporaryEntityVariable(0)
-    );
-    if (frames > 0) {
-      cameraShakeVariables(shouldShakeX, shouldShakeY, frames, magnitudeVar);
-    }
+  if (frames > 0) {
+    cameraShakeScriptValue(shouldShakeX, shouldShakeY, frames, input.magnitude);
   }
 };
 

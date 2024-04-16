@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
+const subGroups = {
+  "EVENT_GROUP_ACTOR": "EVENT_GROUP_CONTROL_FLOW",
+  "EVENT_GROUP_CONTROL_FLOW": "EVENT_GROUP_ACTOR"
+}
 
 const autoLabel = (fetchArg) => {
   const distance = fetchArg("distance");
@@ -37,16 +41,14 @@ const fields = [
         key: "distance",
         label: l10n("FIELD_DISTANCE"),
         description: l10n("FIELD_DISTANCE_DESC"),
-        type: "union",
-        types: ["number", "variable"],
-        defaultType: "number",
+        type: "value",
         min: 0,
         max: 181,
         width: "50%",
         unitsDefault: "tiles",
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
+          type: "number",
+          value: 0,
         },
       },
     ],
@@ -97,11 +99,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    actorSetActive,
-    ifActorDistanceFromActor,
-    ifActorDistanceVariableFromActor,
-    variableFromUnion,
-    temporaryEntityVariable,
+    ifActorDistanceScriptValueFromActor,
   } = helpers;
 
   const operationLookup = {
@@ -117,29 +115,14 @@ const compile = (input, helpers) => {
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
 
-  if (input.distance.type === "number") {
-    actorSetActive(input.actorId);
-    ifActorDistanceFromActor(
-      input.distance.value,
-      operator,
-      input.otherActorId,
-      truePath,
-      falsePath
-    );
-  } else {
-    const distanceVar = variableFromUnion(
-      input.distance,
-      temporaryEntityVariable(0)
-    );
-    actorSetActive(input.actorId);
-    ifActorDistanceVariableFromActor(
-      distanceVar,
-      operator,
-      input.otherActorId,
-      truePath,
-      falsePath
-    );
-  }
+  ifActorDistanceScriptValueFromActor(
+    input.actorId,
+    input.distance,
+    operator,
+    input.otherActorId,
+    truePath,
+    falsePath
+  );
 };
 
 module.exports = {
@@ -147,6 +130,7 @@ module.exports = {
   description: l10n("EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   helper: {

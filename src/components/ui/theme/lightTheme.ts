@@ -63,6 +63,10 @@ const lightTheme: ThemeInterface = {
       text: "#3b3a3b",
       border: "#d4d4d4",
     },
+    brackets: {
+      color: "#d4d4d4",
+      hoverBackground: "#f2f2f2",
+    },
     card: {
       background: "#ffffff",
       text: "#3b3a3b",

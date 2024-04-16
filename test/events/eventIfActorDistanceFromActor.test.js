@@ -5,7 +5,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
   const mockIfActorDistanceFromActor = jest.fn();
   const mockIfActorDistanceVariableFromActor = jest.fn();
   const mockVariableFromUnion = jest.fn().mockReturnValue(10);
-  const mockTemporaryEntityVariable  = jest.fn().mockReturnValue("ok");
+  const mockTemporaryEntityVariable = jest.fn().mockReturnValue("ok");
   const truePath = [{ command: "EVENT_END", id: "abc" }];
   const falsePath = [{ command: "EVENT_END", id: "def" }];
   compile(
@@ -15,25 +15,33 @@ test("Should be able to conditionally execute if actor is within range of actor"
       operator: "<=",
       distance: {
         type: "number",
-        value: 5
+        value: 5,
       },
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
       actorSetActive: mockActorSetActive,
-      ifActorDistanceFromActor: mockIfActorDistanceFromActor,
+      ifActorDistanceScriptValueFromActor: mockIfActorDistanceFromActor,
       variableFromUnion: mockVariableFromUnion,
-      temporaryEntityVariable: mockTemporaryEntityVariable
+      temporaryEntityVariable: mockTemporaryEntityVariable,
     }
   );
-  expect(mockActorSetActive).toBeCalledWith("actor1");
-  expect(mockIfActorDistanceFromActor).toBeCalledWith(5, ".LTE", "actor2", truePath, falsePath);
+  expect(mockIfActorDistanceFromActor).toBeCalledWith(
+    "actor1",
+    { type: "number", value: 5 },
+    ".LTE",
+    "actor2",
+    truePath,
+    falsePath
+  );
+  expect(mockActorSetActive).not.toBeCalled();
   expect(mockVariableFromUnion).not.toBeCalled();
   expect(mockTemporaryEntityVariable).not.toBeCalled();
 
   let variable = {
     type: "variable",
+    value: "L0",
   };
 
   compile(
@@ -43,18 +51,25 @@ test("Should be able to conditionally execute if actor is within range of actor"
       operator: "==",
       distance: variable,
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
       actorSetActive: mockActorSetActive,
-      ifActorDistanceVariableFromActor: mockIfActorDistanceVariableFromActor,
+      ifActorDistanceScriptValueFromActor: mockIfActorDistanceVariableFromActor,
       variableFromUnion: mockVariableFromUnion,
-      temporaryEntityVariable: mockTemporaryEntityVariable
+      temporaryEntityVariable: mockTemporaryEntityVariable,
     }
   );
-  
-  expect(mockActorSetActive).toBeCalledWith("actor1");
-  expect(mockIfActorDistanceVariableFromActor).toBeCalledWith(10, ".EQ", "actor2", truePath, falsePath);
-  expect(mockVariableFromUnion).toBeCalledWith(variable, "ok");
-  expect(mockTemporaryEntityVariable).toBeCalledWith(0);
+
+  expect(mockIfActorDistanceVariableFromActor).toBeCalledWith(
+    "actor1",
+    { type: "variable", value: "L0" },
+    ".EQ",
+    "actor2",
+    truePath,
+    falsePath
+  );
+  expect(mockActorSetActive).not.toBeCalled();
+  expect(mockVariableFromUnion).not.toBeCalled();
+  expect(mockTemporaryEntityVariable).not.toBeCalled();
 });

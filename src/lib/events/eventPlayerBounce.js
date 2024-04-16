@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_PLAYER_BOUNCE";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "GAMETYPE_PLATFORMER",
+};
 
 const fields = [
   {
@@ -30,6 +33,7 @@ module.exports = {
   id,
   description: l10n("EVENT_PLAYER_BOUNCE_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
 };

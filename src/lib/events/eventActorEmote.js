@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_EMOTE";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_ACTIONS",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ACTOR_EMOTE_LABEL", {
@@ -38,6 +41,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_EMOTE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   waitUntilAfterInitFade: true,

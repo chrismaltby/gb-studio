@@ -50,14 +50,10 @@ const getScriptEventFields = (
         return {
           label: `${v?.name || ""}`,
           key: `$variable[${v?.id || ""}]$`,
-          type: "union",
-          types: ["number", "variable"],
-          defaultType: "variable",
-          min: -32768,
-          max: 32767,
+          type: "value",
           defaultValue: {
-            number: 0,
-            variable: "LAST_VARIABLE",
+            type: "variable",
+            value: "0",
           },
         };
       }) || [];

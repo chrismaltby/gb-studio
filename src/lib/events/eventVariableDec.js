@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_DEC_VALUE";
 const groups = ["EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_COUNTER",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_DEC_VALUE_LABEL", { variable: fetchArg("variable") });
@@ -27,6 +30,7 @@ module.exports = {
   description: l10n("EVENT_DEC_VALUE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

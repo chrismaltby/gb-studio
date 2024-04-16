@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_FLAGS_COMPARE";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
+const subGroups = {
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_FLAGS_COMPARE_LABEL", {
@@ -108,6 +111,7 @@ module.exports = {
   description: l10n("EVENT_IF_FLAGS_COMPARE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

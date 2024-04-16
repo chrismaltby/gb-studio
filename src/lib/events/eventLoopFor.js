@@ -10,7 +10,7 @@ const autoLabel = (fetchArg) => {
     comparison: fetchArg("comparison"),
     to: fetchArg("to"),
     operation: fetchArg("operation"),
-    val: fetchArg("val"),
+    val: fetchArg("value"),
   });
 };
 
@@ -29,14 +29,12 @@ const fields = [
         key: "from",
         label: l10n("FIELD_FROM"),
         description: l10n("FIELD_FROM_FOR_DESC"),
-        type: "union",
-        types: ["number", "variable"],
-        defaultType: "number",
+        type: "value",
         min: -32768,
         max: 32767,
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
+          type: "number",
+          value: 0,
         },
       },
       {
@@ -50,14 +48,12 @@ const fields = [
         key: "to",
         label: l10n("FIELD_TO"),
         description: l10n("FIELD_TO_FOR_DESC"),
-        type: "union",
-        types: ["number", "variable"],
-        defaultType: "number",
+        type: "value",
         min: -32768,
         max: 32767,
         defaultValue: {
-          number: 10,
-          variable: "LAST_VARIABLE",
+          type: "number",
+          value: 10,
         },
       },
     ],
@@ -77,14 +73,12 @@ const fields = [
         key: "value",
         label: l10n("FIELD_VALUE"),
         description: l10n("FIELD_VALUE_FOR_DESC"),
-        type: "union",
-        types: ["number", "variable"],
-        defaultType: "number",
+        type: "value",
         min: -32768,
         max: 32767,
         defaultValue: {
-          number: 1,
-          variable: "LAST_VARIABLE",
+          type: "number",
+          value: 1,
         },
       },
     ],
@@ -102,12 +96,9 @@ const compile = (input, helpers) => {
     labelGoto,
     getNextLabel,
     compileEvents,
-    ifVariableValue,
-    ifVariableCompare,
-    variableValueOperation,
-    variablesOperation,
-    variableSetToValue,
-    variableCopy,
+    ifVariableCompareScriptValue,
+    variablesScriptValueOperation,
+    variableSetToScriptValue,
   } = helpers;
   const comparisonLookup = {
     "==": ".EQ",
@@ -129,16 +120,11 @@ const compile = (input, helpers) => {
   const operation = operationLookup[input.operation];
 
   const loopId = getNextLabel();
-  let ifOp = input.to.type === "number" ? ifVariableValue : ifVariableCompare;
-  let performOp =
-    input.value.type === "number" ? variableValueOperation : variablesOperation;
-  let setOp = input.from.type === "number" ? variableSetToValue : variableCopy;
-
-  setOp(input.variable, input.from.value);
+  variableSetToScriptValue(input.variable, input.from);
   labelDefine(loopId);
-  ifOp(input.variable, comparison, input.to.value, () => {
+  ifVariableCompareScriptValue(input.variable, comparison, input.to, () => {
     compileEvents(input.true);
-    performOp(input.variable, operation, input.value.value);
+    variablesScriptValueOperation(input.variable, operation, input.value);
     labelGoto(loopId);
   });
 };
