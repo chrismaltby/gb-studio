@@ -83,7 +83,7 @@ const TextIcon = styled.div`
 `;
 
 const iconLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType,
+  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
   JSX.Element
 > = {
   // Value
@@ -115,6 +115,7 @@ const iconLookup: Record<
   abs: <TextIcon>abs</TextIcon>,
   atan2: <TextIcon>atan2</TextIcon>,
   isqrt: <SquareRootIcon />,
+  rnd: <TextIcon>rnd</TextIcon>,
   // bitwise
   shl: <TextIcon>&lt;&lt;</TextIcon>,
   shr: <TextIcon>&gt;&gt;</TextIcon>,
@@ -125,7 +126,7 @@ const iconLookup: Record<
 };
 
 const l10nKeyLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType,
+  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
   L10NKey
 > = {
   // Value
@@ -157,6 +158,7 @@ const l10nKeyLookup: Record<
   abs: "FIELD_ABSOLUTE_VALUE",
   atan2: "FIELD_ATAN2",
   isqrt: "FIELD_SQUARE_ROOT",
+  rnd: "FIELD_RANDOM",
   // bitwise
   shl: "FIELD_LEFT_SHIFT",
   shr: "FIELD_RIGHT_SHIFT",
@@ -907,7 +909,13 @@ const ValueSelect = ({
         </Button>
       ) : null;
     }
-    return isValueAtom(value) ? (
+
+    const isOperation =
+      isUnaryOperation(value) ||
+      isValueOperation(value) ||
+      value.type === "rnd";
+
+    return (
       <DropWrapper ref={dragRef}>
         <DropdownButton
           label={iconLookup[value.type]}
@@ -916,12 +924,40 @@ const ValueSelect = ({
           showArrow={false}
           onKeyDown={onKeyDown}
           onMouseDown={onFetchClipboard}
+          variant={isOperation ? "transparent" : "normal"}
         >
           {menu}
+          {isOperation ? <MenuDivider /> : null}
+          {isUnaryOperation(value) ? (
+            <MenuItem
+              onClick={() => {
+                onChange(value.value);
+                focus();
+              }}
+            >
+              <MenuItemIcon>
+                <BlankIcon />
+              </MenuItemIcon>
+              {l10n("FIELD_REMOVE")}
+            </MenuItem>
+          ) : null}
+          {isValueOperation(value) || value.type === "rnd" ? (
+            <MenuItem
+              onClick={() => {
+                onChange(value.valueA);
+                focus();
+              }}
+            >
+              <MenuItemIcon>
+                <BlankIcon />
+              </MenuItemIcon>
+              {l10n("FIELD_REMOVE")}
+            </MenuItem>
+          ) : null}
         </DropdownButton>
       </DropWrapper>
-    ) : null;
-  }, [fixedType, menu, onFetchClipboard, onKeyDown, value]);
+    );
+  }, [fixedType, focus, menu, onChange, onFetchClipboard, onKeyDown, value]);
 
   const input = useMemo(() => {
     if (value.type === "number") {
@@ -1117,33 +1153,7 @@ const ValueSelect = ({
     } else if (value.type === "rnd") {
       return (
         <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
-          <OperatorWrapper ref={dropRef}>
-            <DropWrapper ref={dragRef}>
-              <DropdownButton
-                id={name}
-                label={<TextIcon>rnd</TextIcon>}
-                showArrow={false}
-                variant="transparent"
-                size="small"
-                onKeyDown={onKeyDown}
-                onMouseDown={onFetchClipboard}
-              >
-                {menu}
-                <MenuDivider />
-                <MenuItem
-                  onClick={() => {
-                    onChange(value.valueA);
-                    focus();
-                  }}
-                >
-                  <MenuItemIcon>
-                    <BlankIcon />
-                  </MenuItemIcon>
-                  {l10n("FIELD_REMOVE")}
-                </MenuItem>
-              </DropdownButton>
-            </DropWrapper>
-          </OperatorWrapper>
+          <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
           <BracketsWrapper>
             <ValueSelect
               name={`${name}_valueA`}
@@ -1182,34 +1192,7 @@ const ValueSelect = ({
     } else if (isUnaryOperation(value)) {
       return (
         <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
-          <OperatorWrapper ref={dropRef}>
-            <DropWrapper ref={dragRef}>
-              <DropdownButton
-                id={name}
-                label={iconLookup[value.type]}
-                title={l10n(l10nKeyLookup[value.type])}
-                showArrow={false}
-                variant="transparent"
-                size="small"
-                onKeyDown={onKeyDown}
-                onMouseDown={onFetchClipboard}
-              >
-                {menu}
-                <MenuDivider />
-                <MenuItem
-                  onClick={() => {
-                    onChange(value.value);
-                    focus();
-                  }}
-                >
-                  <MenuItemIcon>
-                    <BlankIcon />
-                  </MenuItemIcon>
-                  {l10n("FIELD_REMOVE")}
-                </MenuItem>
-              </DropdownButton>
-            </DropWrapper>
-          </OperatorWrapper>
+          <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
           <BracketsWrapper>
             <ValueSelect
               name={`${name}_valueA`}
@@ -1242,34 +1225,7 @@ const ValueSelect = ({
               }}
               innerValue
             />
-            <OperatorWrapper ref={dropRef}>
-              <DropWrapper ref={dragRef}>
-                <DropdownButton
-                  id={name}
-                  label={iconLookup[value.type]}
-                  title={l10n(l10nKeyLookup[value.type])}
-                  showArrow={false}
-                  variant="transparent"
-                  size="small"
-                  onKeyDown={onKeyDown}
-                  onMouseDown={onFetchClipboard}
-                >
-                  {menu}
-                  <MenuDivider />
-                  <MenuItem
-                    onClick={() => {
-                      onChange(value.valueA);
-                      focus();
-                    }}
-                  >
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
-                    {l10n("FIELD_REMOVE")}
-                  </MenuItem>
-                </DropdownButton>
-              </DropWrapper>
-            </OperatorWrapper>
+            <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
             <ValueSelect
               name={`${name}_valueB`}
               entityId={entityId}
@@ -1287,34 +1243,7 @@ const ValueSelect = ({
       } else {
         return (
           <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
-            <OperatorWrapper ref={dropRef}>
-              <DropWrapper ref={dragRef}>
-                <DropdownButton
-                  id={name}
-                  label={iconLookup[value.type]}
-                  title={l10n(l10nKeyLookup[value.type])}
-                  showArrow={false}
-                  variant="transparent"
-                  size="small"
-                  onKeyDown={onKeyDown}
-                  onMouseDown={onFetchClipboard}
-                >
-                  {menu}
-                  <MenuDivider />
-                  <MenuItem
-                    onClick={() => {
-                      onChange(value.valueA);
-                      focus();
-                    }}
-                  >
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
-                    {l10n("FIELD_REMOVE")}
-                  </MenuItem>
-                </DropdownButton>
-              </DropWrapper>
-            </OperatorWrapper>
+            <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
             <BracketsWrapper>
               <ValueSelect
                 name={`${name}_valueA`}
@@ -1350,16 +1279,13 @@ const ValueSelect = ({
   }, [
     dropdownButton,
     entityId,
-    focus,
     innerValue,
     inputOverride,
     isOver,
     max,
-    menu,
     min,
     name,
     onChange,
-    onFetchClipboard,
     onKeyDown,
     options,
     placeholder,
