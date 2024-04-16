@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -834,6 +835,11 @@ const AddScriptEventMenu = ({
     []
   );
 
+  const highlightWords = useMemo(
+    () => searchTerm.split(" ").filter((i) => i),
+    [searchTerm]
+  );
+
   const menuHeight =
     MENU_HEADER_HEIGHT +
     allOptions.length * MENU_ITEM_HEIGHT +
@@ -896,10 +902,10 @@ const AddScriptEventMenu = ({
                     "event" in option ? option.event.description : undefined
                   }
                 >
-                  {searchTerm.length > 0 ? (
+                  {searchTerm.length > 0 && highlightWords.length > 0 ? (
                     <HighlightWords
                       text={option.label}
-                      words={searchTerm.split(" ")}
+                      words={highlightWords}
                     />
                   ) : (
                     option.label
