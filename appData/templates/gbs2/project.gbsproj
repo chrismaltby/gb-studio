@@ -2,7 +2,7 @@
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
     "_version": "3.3.0",
-    "_release": "2",
+    "_release": "3",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -81,10 +81,14 @@
                         },
                         {
                             "id": "ef31c786-4d05-4ec4-9828-0b20bea82a50",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "13",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "13"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -99,9 +103,12 @@
                                     },
                                     {
                                         "id": "d63037fd-1207-4d62-a104-170f4c817eeb",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "0"
+                                            "variable": "0",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ],
@@ -178,8 +185,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "useCollisions": true,
                                             "verticalFirst": false,
                                             "__collapse": false
@@ -192,8 +205,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "useCollisions": true,
                                             "verticalFirst": false,
                                             "__collapse": false
@@ -206,8 +225,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": -2,
-                                            "y": 0,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "useCollisions": true,
                                             "verticalFirst": false,
                                             "__collapse": false
@@ -220,8 +245,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": 2,
-                                            "y": 0,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "useCollisions": true,
                                             "verticalFirst": false,
                                             "__collapse": false
@@ -279,9 +310,12 @@
                         },
                         {
                             "id": "c585ca68-8cb8-4a26-bcff-072845e80702",
-                            "command": "EVENT_SET_TRUE",
+                            "command": "EVENT_SET_VALUE",
                             "args": {
-                                "variable": "13"
+                                "variable": "13",
+                                "value": {
+                                    "type": "true"
+                                }
                             }
                         }
                     ],
@@ -308,9 +342,13 @@
                     "script": [
                         {
                             "id": "81f7693e-8544-4bb2-bf47-b8963fe90982",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
-                                "variable": "15"
+                                "variable": "15",
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "15"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -323,9 +361,12 @@
                                     },
                                     {
                                         "id": "be420a1a-743e-4afc-a997-daf721708b34",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "4"
+                                            "variable": "4",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ],
@@ -381,9 +422,12 @@
                         },
                         {
                             "id": "0830a973-dd64-44ad-ad07-a677a31a27aa",
-                            "command": "EVENT_SET_TRUE",
+                            "command": "EVENT_SET_VALUE",
                             "args": {
-                                "variable": "15"
+                                "variable": "15",
+                                "value": {
+                                    "type": "true"
+                                }
                             }
                         },
                         {
@@ -471,9 +515,12 @@
                         },
                         {
                             "id": "226d1384-37ce-44f8-a831-aa3f84c9e478",
-                            "command": "EVENT_SET_TRUE",
+                            "command": "EVENT_SET_VALUE",
                             "args": {
-                                "variable": "10"
+                                "variable": "10",
+                                "value": {
+                                    "type": "true"
+                                }
                             }
                         }
                     ],
@@ -639,8 +686,14 @@
                             "command": "EVENT_ACTOR_MOVE_RELATIVE",
                             "args": {
                                 "actorId": "$self$",
-                                "x": 3,
-                                "y": 0,
+                                "x": {
+                                    "type": "number",
+                                    "value": 3
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "value": 0
+                                },
                                 "moveType": "horizontal",
                                 "useCollisions": false
                             }
@@ -688,8 +741,14 @@
                             "command": "EVENT_ACTOR_MOVE_RELATIVE",
                             "args": {
                                 "actorId": "$self$",
-                                "x": -3,
-                                "y": 0,
+                                "x": {
+                                    "type": "number",
+                                    "value": -3
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "value": 0
+                                },
                                 "moveType": "horizontal",
                                 "useCollisions": false
                             }
@@ -748,8 +807,14 @@
                             "command": "EVENT_ACTOR_MOVE_RELATIVE",
                             "args": {
                                 "actorId": "$self$",
-                                "x": 0,
-                                "y": 1,
+                                "x": {
+                                    "type": "number",
+                                    "value": 0
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "value": 1
+                                },
                                 "moveType": "horizontal",
                                 "useCollisions": false
                             }
@@ -792,10 +857,17 @@
                     "script": [
                         {
                             "id": "53a22ae2-ebb9-4439-bbec-facedf0122dc",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "10",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "10"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -804,8 +876,14 @@
                                         "command": "EVENT_IF_ACTOR_AT_POSITION",
                                         "args": {
                                             "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                                            "x": 47,
-                                            "y": 25,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 47
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 25
+                                            },
                                             "__collapseElse": false
                                         },
                                         "children": {
@@ -887,10 +965,17 @@
                     "script": [
                         {
                             "id": "821c37fd-bef5-46cb-991f-921f9f9f942c",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "10",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "10"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -899,8 +984,14 @@
                                         "command": "EVENT_IF_ACTOR_AT_POSITION",
                                         "args": {
                                             "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                                            "x": 47,
-                                            "y": 25,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 47
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 25
+                                            },
                                             "__collapseElse": false,
                                             "__collapse": false
                                         },
@@ -999,10 +1090,17 @@
                     "script": [
                         {
                             "id": "8ca632e3-9666-4b6f-9c7b-0dbf2982d3b4",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "10",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "10"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -1011,8 +1109,14 @@
                                         "command": "EVENT_IF_ACTOR_AT_POSITION",
                                         "args": {
                                             "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                                            "x": 36,
-                                            "y": 24,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 36
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 24
+                                            },
                                             "__collapseElse": false,
                                             "__collapse": false
                                         },
@@ -1111,10 +1215,17 @@
                     "script": [
                         {
                             "id": "1997bb15-926b-4f8c-a7da-96213438869f",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "10",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "10"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -1123,8 +1234,14 @@
                                         "command": "EVENT_IF_ACTOR_AT_POSITION",
                                         "args": {
                                             "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                                            "x": 36,
-                                            "y": 24,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 36
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 24
+                                            },
                                             "__collapseElse": false,
                                             "__collapse": false
                                         },
@@ -1224,8 +1341,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
-                                            "x": 0,
-                                            "y": 1,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 1
+                                            },
                                             "moveType": "horizontal",
                                             "useCollisions": false
                                         }
@@ -1264,8 +1387,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": -2,
-                                            "y": 0,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "horizontal",
                                             "useCollisions": false
                                         }
@@ -1305,8 +1434,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
-                                            "x": 0,
-                                            "y": -1,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -1
+                                            },
                                             "moveType": "horizontal",
                                             "useCollisions": false
                                         }
@@ -1320,9 +1455,12 @@
                                     },
                                     {
                                         "id": "2ccc46ed-fda5-4861-827f-cff47764b1e0",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "6"
+                                            "variable": "6",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ]
@@ -7826,9 +7964,12 @@
                         },
                         {
                             "id": "ac4ebd76-c81c-4f85-91f9-29cef760538c",
-                            "command": "EVENT_SET_TRUE",
+                            "command": "EVENT_SET_VALUE",
                             "args": {
-                                "variable": "3"
+                                "variable": "3",
+                                "value": {
+                                    "type": "true"
+                                }
                             }
                         }
                     ],
@@ -7910,10 +8051,14 @@
                         },
                         {
                             "id": "4a6cab4d-d51e-411f-9283-57821e6700ef",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "L0"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -8790,9 +8935,16 @@
                     "script": [
                         {
                             "id": "8208a6a1-7d0e-465b-ac1f-16868e6d250e",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
-                                "variable": "14"
+                                "variable": "14",
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "14"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -8829,9 +8981,12 @@
                                     },
                                     {
                                         "id": "f06cbcf4-9788-46ed-80bb-f7aca4ec925f",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "2"
+                                            "variable": "2",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ]
@@ -8860,9 +9015,16 @@
                     "script": [
                         {
                             "id": "63aff028-03a3-4bf4-9aac-afed5fc88ad2",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
-                                "variable": "14"
+                                "variable": "14",
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "14"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -8876,9 +9038,12 @@
                                     },
                                     {
                                         "id": "7208df0d-07a9-439b-b6e2-e2338fd43bc1",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "14"
+                                            "variable": "14",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ],
@@ -8890,9 +9055,12 @@
                                     },
                                     {
                                         "id": "c5a073ce-ee23-47dc-8849-8e9d7ef26add",
-                                        "command": "EVENT_SET_FALSE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "14"
+                                            "variable": "14",
+                                            "value": {
+                                                "type": "false"
+                                            }
                                         }
                                     }
                                 ]
@@ -10301,11 +10469,15 @@
                             },
                             {
                                 "id": "9e757f17-62ae-4fb5-990f-a9d337d7f07d",
-                                "command": "EVENT_IF_TRUE",
+                                "command": "EVENT_IF",
                                 "args": {
                                     "variable": "L0",
                                     "__collapse": false,
-                                    "__collapseElse": false
+                                    "__collapseElse": false,
+                                    "condition": {
+                                        "type": "variable",
+                                        "value": "L0"
+                                    }
                                 },
                                 "children": {
                                     "true": [
@@ -10798,8 +10970,14 @@
                             "command": "EVENT_IF_ACTOR_AT_POSITION",
                             "args": {
                                 "actorId": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
-                                "x": 15,
-                                "y": 10,
+                                "x": {
+                                    "type": "number",
+                                    "value": 15
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "value": 10
+                                },
                                 "__collapse": false,
                                 "__collapseElse": false
                             },
@@ -10818,8 +10996,14 @@
                                         "command": "EVENT_IF_ACTOR_AT_POSITION",
                                         "args": {
                                             "actorId": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
-                                            "x": 15,
-                                            "y": 10,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 15
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 10
+                                            },
                                             "__collapseElse": true
                                         },
                                         "children": {
@@ -10833,9 +11017,12 @@
                                                 },
                                                 {
                                                     "id": "fa55067d-67a7-431e-bc63-f324dd08852f",
-                                                    "command": "EVENT_SET_TRUE",
+                                                    "command": "EVENT_SET_VALUE",
                                                     "args": {
-                                                        "variable": "1"
+                                                        "variable": "1",
+                                                        "value": {
+                                                            "type": "true"
+                                                        }
                                                     }
                                                 },
                                                 {
@@ -10861,10 +11048,13 @@
                         },
                         {
                             "id": "c3809f94-82d3-4acb-829c-a5d0b4baca21",
-                            "command": "EVENT_SET_TRUE",
+                            "command": "EVENT_SET_VALUE",
                             "args": {
                                 "variable": "16",
-                                "__collapse": false
+                                "__collapse": false,
+                                "value": {
+                                    "type": "true"
+                                }
                             }
                         }
                     ],
@@ -10979,10 +11169,17 @@
                     "startScript": [
                         {
                             "id": "b1d1a0dd-3c32-4881-ad85-a1cb42386bf4",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "1",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "1"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -11050,11 +11247,15 @@
                     "script": [
                         {
                             "id": "ba8e33ae-abb6-4813-9983-d09e929e43de",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "1",
                                 "__collapseElse": false,
-                                "__disableElse": true
+                                "__disableElse": true,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "1"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -12168,11 +12369,15 @@
                         "true": [
                             {
                                 "id": "648db27d-c819-42ea-9acb-45e2e4a54857",
-                                "command": "EVENT_IF_TRUE",
+                                "command": "EVENT_IF",
                                 "args": {
                                     "variable": "16",
                                     "__collapseElse": true,
-                                    "__disableElse": true
+                                    "__disableElse": true,
+                                    "condition": {
+                                        "type": "variable",
+                                        "value": "16"
+                                    }
                                 },
                                 "children": {
                                     "true": [
@@ -13258,12 +13463,16 @@
                     "startScript": [
                         {
                             "id": "b6fb4423-b40f-412c-9627-8c4c32925b80",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "0",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "0"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -13305,12 +13514,16 @@
                     "startScript": [
                         {
                             "id": "04611271-d567-4ab7-978a-ec267dfb9fca",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "1",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "1"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -13352,12 +13565,16 @@
                     "startScript": [
                         {
                             "id": "a9fd8357-40f2-4f70-aeb2-2f35ba0f264b",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "2",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "2"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -13399,12 +13616,16 @@
                     "startScript": [
                         {
                             "id": "9dcf896a-e20c-4f72-98bf-15a460cebc1a",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "3",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "3"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -13446,12 +13667,16 @@
                     "startScript": [
                         {
                             "id": "e5e8c4c3-dc57-4166-afd4-edffbc0dde1a",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "4",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "4"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -13493,12 +13718,16 @@
                     "startScript": [
                         {
                             "id": "e169421e-3ef5-487f-8a9d-46f2f9356ff4",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "5",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "5"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -22816,8 +23045,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -22827,8 +23062,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -22860,8 +23101,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -22871,8 +23118,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23003,8 +23256,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23014,8 +23273,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23047,8 +23312,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23058,8 +23329,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23190,8 +23467,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23201,8 +23484,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23234,8 +23523,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23245,8 +23540,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23377,8 +23678,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23388,8 +23695,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23421,8 +23734,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23432,8 +23751,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23564,8 +23889,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23575,8 +23906,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23608,8 +23945,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23619,8 +23962,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23751,8 +24100,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23762,8 +24117,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23795,8 +24156,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23806,8 +24173,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23938,8 +24311,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23949,8 +24328,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23982,8 +24367,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -23993,8 +24384,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 0,
-                                            "y": -2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -2
+                                            },
                                             "moveType": "vertical",
                                             "useCollisions": false
                                         }
@@ -24125,8 +24522,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -4,
-                                            "y": -4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24136,8 +24539,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 4,
-                                            "y": 4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24169,8 +24578,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -4,
-                                            "y": 4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24180,8 +24595,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 4,
-                                            "y": -4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24358,8 +24779,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24369,8 +24796,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24402,8 +24835,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24413,8 +24852,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24591,8 +25036,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24602,8 +25053,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24635,8 +25092,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24646,8 +25109,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24824,8 +25293,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24835,8 +25310,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24868,8 +25349,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -24879,8 +25366,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25057,8 +25550,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25068,8 +25567,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25101,8 +25606,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": 6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25112,8 +25623,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25290,8 +25807,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25301,8 +25824,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25334,8 +25863,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25345,8 +25880,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25523,8 +26064,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -5,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -5
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25534,8 +26081,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25567,8 +26120,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 6,
-                                            "y": -6,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 6
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -6
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25578,8 +26137,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -20,
-                                            "y": null,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -20
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25756,8 +26321,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -4,
-                                            "y": -4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25767,8 +26338,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 4,
-                                            "y": 4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25800,8 +26377,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": -4,
-                                            "y": 4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -25811,8 +26394,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "0",
-                                            "x": 4,
-                                            "y": -4,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 4
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": -4
+                                            },
                                             "moveType": "diagonal",
                                             "useCollisions": false
                                         }
@@ -26056,8 +26645,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "$self$",
-                        "x": 4,
-                        "y": 0,
+                        "x": {
+                            "type": "number",
+                            "value": 4
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "moveType": "horizontal",
                         "useCollisions": false
                     }
@@ -27206,12 +27801,16 @@
                     "startScript": [
                         {
                             "id": "191f3750-5a1e-4f05-aa1b-bbf53c912a3e",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "6",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "6"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -27253,12 +27852,16 @@
                     "startScript": [
                         {
                             "id": "e04a6094-f651-4a18-9003-7b62eb58307e",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "7",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "7"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -27300,12 +27903,16 @@
                     "startScript": [
                         {
                             "id": "e6979f84-d91e-41f9-bf5d-5e06a329f436",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "8",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "8"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -27347,12 +27954,16 @@
                     "startScript": [
                         {
                             "id": "79193e57-e3f2-470f-ba83-8b8f40972d0a",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "9",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "9"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -27394,12 +28005,16 @@
                     "startScript": [
                         {
                             "id": "836801c5-e792-4fa0-9943-fcc922d8ee7e",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "10",
                                 "__collapseElse": true,
                                 "__label": "Quest Check",
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "10"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -33311,8 +33926,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": -4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": -4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -33324,8 +33945,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": 4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": 4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -33376,9 +34003,12 @@
                                             "true": [
                                                 {
                                                     "id": "a89195c2-b1c5-4e47-9ecb-a740b7196762",
-                                                    "command": "EVENT_SET_TRUE",
+                                                    "command": "EVENT_SET_VALUE",
                                                     "args": {
-                                                        "variable": "V0"
+                                                        "variable": "V0",
+                                                        "value": {
+                                                            "type": "true"
+                                                        }
                                                     }
                                                 },
                                                 {
@@ -33483,11 +34113,15 @@
                                 "script": [
                                     {
                                         "id": "e35c9478-d3ba-45f7-9e14-5eb38239eebb",
-                                        "command": "EVENT_IF_TRUE",
+                                        "command": "EVENT_IF",
                                         "args": {
                                             "variable": "V1",
                                             "__collapseElse": false,
-                                            "__disableElse": true
+                                            "__disableElse": true,
+                                            "condition": {
+                                                "type": "variable",
+                                                "value": "V1"
+                                            }
                                         },
                                         "children": {
                                             "true": [
@@ -33539,12 +34173,19 @@
                     "script": [
                         {
                             "id": "0846c4dc-f631-429b-9a84-ee2dab5b76e1",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
                                 "__collapseElse": false,
                                 "__disableElse": true,
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "L0"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -33570,9 +34211,12 @@
                                     },
                                     {
                                         "id": "96e63d51-0006-4f7d-9e0e-28186f6dc0ca",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ],
@@ -33581,13 +34225,24 @@
                         },
                         {
                             "id": "584589d0-422d-4abf-bf45-949db9f534f3",
-                            "command": "EVENT_IF_VALUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "12",
                                 "operator": "==",
                                 "comparator": "0",
                                 "__collapseElse": false,
-                                "__collapse": false
+                                "__collapse": false,
+                                "condition": {
+                                    "type": "eq",
+                                    "valueA": {
+                                        "type": "variable",
+                                        "value": "12"
+                                    },
+                                    "valueB": {
+                                        "type": "number",
+                                        "value": 0
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -33623,9 +34278,12 @@
                                     },
                                     {
                                         "id": "de6e9177-51ea-4573-b448-96538026fefb",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "7"
+                                            "variable": "7",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ],
@@ -33699,8 +34357,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": -4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": -4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -33712,8 +34376,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": 4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": 4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -33764,9 +34434,12 @@
                                             "true": [
                                                 {
                                                     "id": "a89195c2-b1c5-4e47-9ecb-a740b7196762",
-                                                    "command": "EVENT_SET_TRUE",
+                                                    "command": "EVENT_SET_VALUE",
                                                     "args": {
-                                                        "variable": "V0"
+                                                        "variable": "V0",
+                                                        "value": {
+                                                            "type": "true"
+                                                        }
                                                     }
                                                 },
                                                 {
@@ -33871,11 +34544,15 @@
                                 "script": [
                                     {
                                         "id": "86de7696-47f3-4c3d-a1a1-653f953a70d0",
-                                        "command": "EVENT_IF_TRUE",
+                                        "command": "EVENT_IF",
                                         "args": {
                                             "variable": "1",
                                             "__collapseElse": false,
-                                            "__disableElse": true
+                                            "__disableElse": true,
+                                            "condition": {
+                                                "type": "variable",
+                                                "value": "1"
+                                            }
                                         },
                                         "children": {
                                             "true": [
@@ -33950,8 +34627,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": -4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": -4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -33963,8 +34646,14 @@
                                                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                                     "args": {
                                                         "actorId": "0",
-                                                        "x": 4,
-                                                        "y": 0,
+                                                        "x": {
+                                                            "type": "number",
+                                                            "value": 4
+                                                        },
+                                                        "y": {
+                                                            "type": "number",
+                                                            "value": 0
+                                                        },
                                                         "moveType": "horizontal",
                                                         "useCollisions": true
                                                     }
@@ -34015,9 +34704,12 @@
                                             "true": [
                                                 {
                                                     "id": "a89195c2-b1c5-4e47-9ecb-a740b7196762",
-                                                    "command": "EVENT_SET_TRUE",
+                                                    "command": "EVENT_SET_VALUE",
                                                     "args": {
-                                                        "variable": "V0"
+                                                        "variable": "V0",
+                                                        "value": {
+                                                            "type": "true"
+                                                        }
                                                     }
                                                 },
                                                 {
@@ -34122,11 +34814,15 @@
                                 "script": [
                                     {
                                         "id": "221a121c-9fda-44ef-a43d-e47ed3c0deee",
-                                        "command": "EVENT_IF_TRUE",
+                                        "command": "EVENT_IF",
                                         "args": {
                                             "variable": "1",
                                             "__collapseElse": false,
-                                            "__disableElse": true
+                                            "__disableElse": true,
+                                            "condition": {
+                                                "type": "variable",
+                                                "value": "1"
+                                            }
                                         },
                                         "children": {
                                             "true": [
@@ -34219,10 +34915,14 @@
                         },
                         {
                             "id": "788e7d33-2657-4f44-b620-9d28e9b916fb",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "L0"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -34316,19 +35016,29 @@
                     "script": [
                         {
                             "id": "e07e7b76-8205-4bc3-abd5-189325fbb959",
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
                                 "__collapseElse": false,
-                                "__disableElse": true
+                                "__disableElse": true,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "L0"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
                                     {
                                         "id": "b4de53c7-94a0-4d55-a56c-e151989a8a31",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     },
                                     {
@@ -34595,8 +35305,14 @@
                     "command": "EVENT_IF_ACTOR_AT_POSITION",
                     "args": {
                         "actorId": "98159e3a-0bfe-44ec-8312-9dcef04c253f",
-                        "x": 0,
-                        "y": 0,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "__collapseElse": false,
                         "__disableElse": true
                     },
@@ -34618,8 +35334,14 @@
                     "command": "EVENT_IF_ACTOR_AT_POSITION",
                     "args": {
                         "actorId": "2f01ca47-9361-4271-b1f2-75d55e85bf1f",
-                        "x": 0,
-                        "y": 0,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "__collapseElse": false,
                         "__disableElse": true
                     },
@@ -34641,8 +35363,14 @@
                     "command": "EVENT_IF_ACTOR_AT_POSITION",
                     "args": {
                         "actorId": "4159e95b-34e4-42e8-bf25-67f2078e804f",
-                        "x": 0,
-                        "y": 0,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "__collapseElse": false,
                         "__disableElse": true
                     },
@@ -35721,10 +36449,14 @@
                     "script": [
                         {
                             "id": "c8f60bb4-d40a-4994-b819-e18b569372a0",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "5",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "5"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -35750,9 +36482,12 @@
                                     },
                                     {
                                         "id": "afb820b9-6653-44af-b38b-b2cfa488b79d",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "5"
+                                            "variable": "5",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ]
@@ -35819,10 +36554,14 @@
                         },
                         {
                             "id": "ea135f93-3268-4d02-b40e-4ff661d12515",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "L0"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -37052,8 +37791,14 @@
                             "command": "EVENT_IF_ACTOR_AT_POSITION",
                             "args": {
                                 "actorId": "685ffbff-21f7-4d22-9a61-7cf2c20d8125",
-                                "x": 4,
-                                "y": 10,
+                                "x": {
+                                    "type": "number",
+                                    "value": 4
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "value": 10
+                                },
                                 "__collapseElse": false
                             },
                             "children": {
@@ -37136,9 +37881,12 @@
                                     },
                                     {
                                         "id": "2cf9181e-526a-41c2-9237-5a463e30b242",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "8"
+                                            "variable": "8",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     },
                                     {
@@ -37190,8 +37938,14 @@
                                         "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                         "args": {
                                             "actorId": "$self$",
-                                            "x": 0,
-                                            "y": 2,
+                                            "x": {
+                                                "type": "number",
+                                                "value": 0
+                                            },
+                                            "y": {
+                                                "type": "number",
+                                                "value": 2
+                                            },
                                             "moveType": "horizontal",
                                             "useCollisions": false
                                         }
@@ -38453,10 +39207,14 @@
                     "startScript": [
                         {
                             "id": "7ef18fac-6a8e-4ec8-a4a0-c452e46047e4",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "9",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "9"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -38476,10 +39234,14 @@
                     "script": [
                         {
                             "id": "ea4b563c-2be6-4022-845d-a436911059c5",
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "9",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "9"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -38513,9 +39275,12 @@
                                     },
                                     {
                                         "id": "65f97ab7-ef10-4ce2-899c-946a6cf420e3",
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "9"
+                                            "variable": "9",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         }
                                     }
                                 ]
@@ -41420,10 +42185,17 @@
                     "symbol": "actor_18",
                     "script": [
                         {
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "L0"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -41436,16 +42208,22 @@
                                         "id": "2b34a437-e3c5-4f19-8923-3b9ee5e928fb"
                                     },
                                     {
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         },
                                         "id": "b8aa88dc-5c90-4c11-81ab-69ab20a85ecf"
                                     },
                                     {
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "17"
+                                            "variable": "17",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         },
                                         "id": "f89dabf9-73d5-43de-a4fb-518a792c8dab"
                                     }
@@ -41457,16 +42235,22 @@
                                         "id": "421d4689-03e0-4466-989e-5e7c9acd8e0c"
                                     },
                                     {
-                                        "command": "EVENT_SET_FALSE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "false"
+                                            }
                                         },
                                         "id": "262a5994-9ee9-4716-adb2-baed6aae3410"
                                     },
                                     {
-                                        "command": "EVENT_SET_FALSE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "17"
+                                            "variable": "17",
+                                            "value": {
+                                                "type": "false"
+                                            }
                                         },
                                         "id": "09ae63e7-d877-4a35-b473-eb0a8b505008"
                                     }
@@ -41499,10 +42283,17 @@
                     "symbol": "actor_19",
                     "script": [
                         {
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "L0",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "L0"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -41515,16 +42306,22 @@
                                         "id": "c56f5ddc-f645-41c3-a271-4e01d1e26183"
                                     },
                                     {
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         },
                                         "id": "b32af78a-93a4-4398-bc13-3b547217c3c5"
                                     },
                                     {
-                                        "command": "EVENT_SET_TRUE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "17"
+                                            "variable": "17",
+                                            "value": {
+                                                "type": "true"
+                                            }
                                         },
                                         "id": "dd32bcb9-67c6-4a48-b722-3f18141967f8"
                                     }
@@ -41536,16 +42333,22 @@
                                         "id": "31d154ee-8f10-4c7d-bb8d-8c613961ea72"
                                     },
                                     {
-                                        "command": "EVENT_SET_FALSE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "L0"
+                                            "variable": "L0",
+                                            "value": {
+                                                "type": "false"
+                                            }
                                         },
                                         "id": "d23cd218-ae5c-498a-9c14-dd036b4c0173"
                                     },
                                     {
-                                        "command": "EVENT_SET_FALSE",
+                                        "command": "EVENT_SET_VALUE",
                                         "args": {
-                                            "variable": "17"
+                                            "variable": "17",
+                                            "value": {
+                                                "type": "false"
+                                            }
                                         },
                                         "id": "8b5551d0-767f-44c6-b760-8f2003eb693a"
                                     }
@@ -41578,10 +42381,17 @@
                     "symbol": "actor_20",
                     "script": [
                         {
-                            "command": "EVENT_IF_FALSE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "17",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "not",
+                                    "value": {
+                                        "type": "variable",
+                                        "value": "17"
+                                    }
+                                }
                             },
                             "children": {
                                 "true": [
@@ -41626,10 +42436,14 @@
                     "startScript": [],
                     "updateScript": [
                         {
-                            "command": "EVENT_IF_TRUE",
+                            "command": "EVENT_IF",
                             "args": {
                                 "variable": "17",
-                                "__collapseElse": false
+                                "__collapseElse": false,
+                                "condition": {
+                                    "type": "variable",
+                                    "value": "17"
+                                }
                             },
                             "children": {
                                 "true": [
@@ -69705,11 +70519,15 @@
             "script": [
                 {
                     "id": "e35c9478-d3ba-45f7-9e14-5eb38239eebb",
-                    "command": "EVENT_IF_TRUE",
+                    "command": "EVENT_IF",
                     "args": {
                         "variable": "V1",
                         "__collapseElse": false,
-                        "__disableElse": true
+                        "__disableElse": true,
+                        "condition": {
+                            "type": "variable",
+                            "value": "V1"
+                        }
                     },
                     "children": {
                         "true": [
@@ -69770,8 +70588,14 @@
                                 "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                 "args": {
                                     "actorId": "0",
-                                    "x": -4,
-                                    "y": 0,
+                                    "x": {
+                                        "type": "number",
+                                        "value": -4
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 0
+                                    },
                                     "moveType": "horizontal",
                                     "useCollisions": true
                                 }
@@ -69783,8 +70607,14 @@
                                 "command": "EVENT_ACTOR_MOVE_RELATIVE",
                                 "args": {
                                     "actorId": "0",
-                                    "x": 4,
-                                    "y": 0,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 4
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 0
+                                    },
                                     "moveType": "horizontal",
                                     "useCollisions": true
                                 }
@@ -69838,9 +70668,12 @@
                         "true": [
                             {
                                 "id": "a89195c2-b1c5-4e47-9ecb-a740b7196762",
-                                "command": "EVENT_SET_TRUE",
+                                "command": "EVENT_SET_VALUE",
                                 "args": {
-                                    "variable": "V0"
+                                    "variable": "V0",
+                                    "value": {
+                                        "type": "true"
+                                    }
                                 }
                             },
                             {
@@ -70038,8 +70871,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 0,
-                        "y": -2,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -2
+                        },
                         "moveType": "vertical",
                         "useCollisions": false
                     }
@@ -70049,8 +70888,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 0,
-                        "y": 2,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 2
+                        },
                         "moveType": "vertical",
                         "useCollisions": false
                     }
@@ -70082,8 +70927,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 0,
-                        "y": 2,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 2
+                        },
                         "moveType": "vertical",
                         "useCollisions": false
                     }
@@ -70093,8 +70944,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 0,
-                        "y": -2,
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -2
+                        },
                         "moveType": "vertical",
                         "useCollisions": false
                     }
@@ -70119,8 +70976,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -4,
-                        "y": -4,
+                        "x": {
+                            "type": "number",
+                            "value": -4
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -4
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70130,8 +70993,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 4,
-                        "y": 4,
+                        "x": {
+                            "type": "number",
+                            "value": 4
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 4
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70163,8 +71032,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -4,
-                        "y": 4,
+                        "x": {
+                            "type": "number",
+                            "value": -4
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 4
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70174,8 +71049,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 4,
-                        "y": -4,
+                        "x": {
+                            "type": "number",
+                            "value": 4
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -4
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70200,8 +71081,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -5,
-                        "y": null,
+                        "x": {
+                            "type": "number",
+                            "value": -5
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70211,8 +71098,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 6,
-                        "y": 6,
+                        "x": {
+                            "type": "number",
+                            "value": 6
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 6
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70244,8 +71137,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 6,
-                        "y": 6,
+                        "x": {
+                            "type": "number",
+                            "value": 6
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 6
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70255,8 +71154,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -20,
-                        "y": null,
+                        "x": {
+                            "type": "number",
+                            "value": -20
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70280,8 +71185,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -5,
-                        "y": null,
+                        "x": {
+                            "type": "number",
+                            "value": -5
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70291,8 +71202,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 6,
-                        "y": -6,
+                        "x": {
+                            "type": "number",
+                            "value": 6
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -6
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70324,8 +71241,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": 6,
-                        "y": -6,
+                        "x": {
+                            "type": "number",
+                            "value": 6
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": -6
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }
@@ -70335,8 +71258,14 @@
                     "command": "EVENT_ACTOR_MOVE_RELATIVE",
                     "args": {
                         "actorId": "0",
-                        "x": -20,
-                        "y": null,
+                        "x": {
+                            "type": "number",
+                            "value": -20
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
                         "moveType": "diagonal",
                         "useCollisions": false
                     }

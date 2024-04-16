@@ -44,11 +44,12 @@ import {
   isUnionValue,
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
+import { ValueOperatorType } from "shared/lib/scriptValue/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "2";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -1977,6 +1978,202 @@ export const migrateFrom320r2To330r1Settings = (
   };
 };
 
+/* Version 3.3.0 r3 updates many events to support script values and deprecates some events that
+ * have now become possible to implement with a single script value based option
+ */
+export const migrateFrom330r2To330r3Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  type OldOperator = "==" | "!=" | "<" | ">" | "<=" | ">=";
+  const operatorMap: Record<OldOperator, ValueOperatorType> = {
+    "==": "eq",
+    "!=": "ne",
+    "<": "lt",
+    ">": "gt",
+    "<=": "lte",
+    ">=": "gte",
+  };
+  const migrateOperator = (oldOperator: unknown): ValueOperatorType => {
+    return operatorMap[oldOperator as OldOperator] ?? "eq";
+  };
+
+  if (event.args && event.command === "EVENT_IF_TRUE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_IF",
+      args: {
+        ...event.args,
+        condition: {
+          type: "variable",
+          value: event.args.variable,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_IF_FALSE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_IF",
+      args: {
+        ...event.args,
+        condition: {
+          type: "not",
+          value: {
+            type: "variable",
+            value: event.args.variable,
+          },
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_IF_VALUE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_IF",
+      args: {
+        ...event.args,
+        condition: {
+          type: migrateOperator(event.args.operator),
+          valueA: {
+            type: "variable",
+            value: event.args.variable,
+          },
+          valueB: {
+            type: "number",
+            value: parseInt(String(event.args.comparator)) || 0,
+          },
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_IF_VALUE_COMPARE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_IF",
+      args: {
+        ...event.args,
+        condition: {
+          type: migrateOperator(event.args.operator),
+          valueA: {
+            type: "variable",
+            value: event.args.vectorX,
+          },
+          valueB: {
+            type: "variable",
+            value: event.args.vectorY,
+          },
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_SET_TRUE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_SET_VALUE",
+      args: {
+        ...event.args,
+        value: {
+          type: "true",
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_SET_FALSE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_SET_VALUE",
+      args: {
+        ...event.args,
+        value: {
+          type: "false",
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_LOOP_WHILE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        condition: {
+          type: "expression",
+          value: event.args.expression,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_ACTOR_MOVE_RELATIVE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: parseInt(String(event.args.x)) || 0,
+        },
+        y: {
+          type: "number",
+          value: parseInt(String(event.args.y)) || 0,
+        },
+      },
+    });
+  } else if (
+    event.args &&
+    event.command === "EVENT_ACTOR_SET_POSITION_RELATIVE"
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: parseInt(String(event.args.x)) || 0,
+        },
+        y: {
+          type: "number",
+          value: parseInt(String(event.args.y)) || 0,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_IF_ACTOR_AT_POSITION") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: parseInt(String(event.args.x)) || 0,
+        },
+        y: {
+          type: "number",
+          value: parseInt(String(event.args.y)) || 0,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_IF_ACTOR_DIRECTION") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        direction: {
+          type: "direction",
+          value: event.args.direction ?? "up",
+        },
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom330r2To330r3Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, migrateFrom330r2To330r3Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, migrateFrom330r2To330r3Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2142,6 +2339,10 @@ const migrateProject = (
     if (release === "1") {
       data = migrateFrom320r2To330r1Settings(data as ProjectDataV320r2);
       release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom330r2To330r3Events(data);
+      release = "3";
     }
   }
 

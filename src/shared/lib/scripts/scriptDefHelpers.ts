@@ -94,3 +94,15 @@ export const isPropertyField = (
     isFieldVisible(field, args)
   );
 };
+
+export const isScriptValueField = (
+  cmd: string,
+  fieldName: string,
+  args: ScriptEventArgs,
+  scriptEventDefs: ScriptEventDefs
+) => {
+  const event = scriptEventDefs[cmd];
+  if (!event) return false;
+  const field = getField(cmd, fieldName, scriptEventDefs);
+  return field && field.type === "value" && isFieldVisible(field, args);
+};

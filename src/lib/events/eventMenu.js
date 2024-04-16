@@ -112,7 +112,6 @@ const fields = [].concat(
     label: l10n("FIELD_LAST_OPTION_CANCELS"),
     description: l10n("FIELD_LAST_OPTION_CANCELS_DESC"),
     key: "cancelOnLastOption",
-    alignCheckbox: true,
   },
   {
     type: "checkbox",
@@ -120,7 +119,6 @@ const fields = [].concat(
     description: l10n("FIELD_CANCEL_IF_B_DESC"),
     key: "cancelOnB",
     defaultValue: true,
-    alignCheckbox: true,
   },
   {
     key: "layout",

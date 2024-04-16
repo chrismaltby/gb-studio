@@ -17,11 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add shortcut to search scenes when in world mode by pressing `/`
 - Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
 - Add native Mac ARM support for M1/M2/M3+ devices
+- Add support for `<<` and `>>` operators in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
 - Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
 - Add event "Replace Tile At Position" and "Replace Tile From Sequence" to update background tiles, calling "Replace Tile From Sequence" repeatedly will cycle through animation  frames
 - Add new asset folder "Tilesets" for use in "Replace Tile" events
 - Add ability for plugins to define additional scene types by including defined types (e.g. `"sceneTypes": [{"key": "RACING", "label": "Racing 2D"}]`) in `engine.json` [@pau-tomas](https://github.com/pau-tomas)
+- Add ability for `Actor Move Relative`, `Actor Set Position Relative` and `If Actor At Position` to use variables as coordinate inputs
+- Add ability for almost every script event input that supports variables to use advanced values, click the button to the left of the value input to select value types, and combine them with math operators
 
 ### Changed
 
@@ -29,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Updated code generation to reduce access to stack [@pau-tomas](https://github.com/pau-tomas)
 - Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
+- Improved organisation of "Add Event" menu by grouping related event types
 
 ### Fixed
 

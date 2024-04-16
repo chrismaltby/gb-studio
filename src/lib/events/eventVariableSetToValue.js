@@ -17,42 +17,24 @@ const fields = [
     description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
+    flexBasis: 0,
+    minWidth: 150,
   },
   {
     key: "value",
     label: l10n("FIELD_VALUE"),
     description: l10n("FIELD_VALUE_SET_DESC"),
-    type: "union",
-    types: ["number", "variable", "property"],
-    defaultType: "number",
-    min: -32768,
-    max: 32767,
+    type: "value",
     defaultValue: {
-      number: 0,
-      variable: "LAST_VARIABLE",
-      property: "$self$:xpos",
+      type: "number",
+      value: 0,
     },
   },
 ];
 
 const compile = (input, helpers) => {
-  const { variableSetToUnionValue } = helpers;
-
-  if (input.value.type === "number") {
-    const value = parseInt(input.value.value, 10);
-    if (value === 1) {
-      const { variableSetToTrue } = helpers;
-      variableSetToTrue(input.variable);
-    } else if (value === 0 || isNaN(value)) {
-      const { variableSetToFalse } = helpers;
-      variableSetToFalse(input.variable);
-    } else {
-      const { variableSetToValue } = helpers;
-      variableSetToValue(input.variable, value);
-    }
-  } else {
-    variableSetToUnionValue(input.variable, input.value);
-  }
+  const { variableSetToScriptValue } = helpers;
+  variableSetToScriptValue(input.variable, input.value);
 };
 
 module.exports = {
@@ -62,4 +44,32 @@ module.exports = {
   groups,
   fields,
   compile,
+  presets: [
+    {
+      id: "EVENT_SET_TRUE",
+      name: l10n("EVENT_SET_TRUE"),
+      description: l10n("EVENT_SET_TRUE_DESC"),
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_BOOLEAN",
+      },
+      values: {
+        value: {
+          type: "true",
+        },
+      },
+    },
+    {
+      id: "EVENT_SET_FALSE",
+      name: l10n("EVENT_SET_FALSE"),
+      description: l10n("EVENT_SET_FALSE_DESC"),
+      subGroups: {
+        EVENT_GROUP_VARIABLES: "EVENT_GROUP_BOOLEAN",
+      },
+      values: {
+        value: {
+          type: "false",
+        },
+      },
+    },
+  ],
 };

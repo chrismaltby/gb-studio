@@ -3,7 +3,8 @@ import { Associativity, Token } from "./types";
 
 const shuntingYard = (input: Token[]): Token[] => {
   if (input.length === 0) {
-    throw new Error("Input was empty");
+    // Input was empty
+    return [{ type: "VAL", value: 0 }];
   }
 
   const output: Token[] = [];

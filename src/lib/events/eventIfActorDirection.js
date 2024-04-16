@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_ACTOR_DIRECTION";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_ACTOR",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_ACTOR_DIRECTION_LABEL", {
@@ -22,8 +26,11 @@ const fields = [
     key: "direction",
     label: l10n("FIELD_DIRECTION"),
     description: l10n("FIELD_DIRECTION_DESC"),
-    type: "direction",
-    defaultValue: "up",
+    type: "value",
+    defaultValue: {
+      type: "direction",
+      value: "up",
+    },
   },
   {
     key: "true",
@@ -62,11 +69,15 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, ifActorDirection } = helpers;
+  const { ifActorDirectionScriptValue } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  actorSetActive(input.actorId);
-  ifActorDirection(input.direction, truePath, falsePath);
+  ifActorDirectionScriptValue(
+    input.actorId,
+    input.direction,
+    truePath,
+    falsePath
+  );
 };
 
 module.exports = {
@@ -74,6 +85,7 @@ module.exports = {
   description: l10n("EVENT_IF_ACTOR_DIRECTION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

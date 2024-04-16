@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_COLOR_SUPPORTED";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_COLOR"];
+const subGroups = {
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_DEVICE",
+  EVENT_GROUP_COLOR: "EVENT_GROUP_CONTROL_FLOW",
+};
 
 const fields = [
   {
@@ -51,6 +55,7 @@ module.exports = {
   id,
   description: l10n("EVENT_IF_COLOR_SUPPORTED_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
 };

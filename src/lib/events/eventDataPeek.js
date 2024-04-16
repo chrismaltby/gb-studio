@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_PEEK_DATA";
 const groups = ["EVENT_GROUP_SAVE_DATA", "EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  "EVENT_GROUP_SAVE_DATA": "EVENT_GROUP_VARIABLES",
+  "EVENT_GROUP_VARIABLES": "EVENT_GROUP_SAVE_DATA"
+}
 
 const fields = [
   {
@@ -59,6 +63,7 @@ module.exports = {
   id,
   description: l10n("EVENT_PEEK_DATA_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
 };

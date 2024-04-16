@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventCameraMoveTo";
 
 test("Should be able to move camera position", () => {
-  const mockCameraMoveTo = jest.fn();
+  const mockCameraMoveToScriptValues = jest.fn();
 
   compile(
     {
@@ -17,8 +17,13 @@ test("Should be able to move camera position", () => {
       units: "tiles",
     },
     {
-      cameraMoveTo: mockCameraMoveTo,
+      cameraMoveToScriptValues: mockCameraMoveToScriptValues,
     }
   );
-  expect(mockCameraMoveTo).toBeCalledWith(5, 9, 1, "tiles");
+  expect(mockCameraMoveToScriptValues).toBeCalledWith(
+    { type: "number", value: 5 },
+    { type: "number", value: 9 },
+    1,
+    "tiles"
+  );
 });

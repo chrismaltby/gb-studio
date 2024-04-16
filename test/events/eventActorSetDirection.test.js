@@ -15,15 +15,17 @@ test("Should set player direction", () => {
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetDirection).toBeCalledWith("up");
+  expect(mockActorSetDirection).toBeCalledWith("player", {
+    type: "direction",
+    value: "up",
+  });
+  expect(mockactorSetActive).not.toBeCalled();
 });
 
 test("Should set actor direction", () => {
-  const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
 
   compile(
@@ -42,16 +44,16 @@ test("Should set actor direction", () => {
           },
         ],
       },
-      actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetDirection).toBeCalledWith("right");
+  expect(mockActorSetDirection).toBeCalledWith("abc", {
+    type: "direction",
+    value: "right",
+  });
 });
 
 test("Should set frame of actor using static movement", () => {
-  const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
 
   compile(
@@ -78,16 +80,16 @@ test("Should set frame of actor using static movement", () => {
           numFrames: 6,
         },
       ],
-      actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetDirection).toBeCalledWith("up");
+  expect(mockActorSetDirection).toBeCalledWith("abc", {
+    type: "direction",
+    value: "up",
+  });
 });
 
 test("Should set flip actor using static movement when facing left", () => {
-  const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
 
   compile(
@@ -114,16 +116,16 @@ test("Should set flip actor using static movement when facing left", () => {
           numFrames: 6,
         },
       ],
-      actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetDirection).toBeCalledWith("left");
+  expect(mockActorSetDirection).toBeCalledWith("abc", {
+    type: "direction",
+    value: "left",
+  });
 });
 
 test("Should not set frame if spritesheet has no frames", () => {
-  const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
 
   compile(
@@ -149,13 +151,14 @@ test("Should not set frame if spritesheet has no frames", () => {
           id: "def",
         },
       ],
-      actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
 
-  expect(mockactorSetActive).lastCalledWith("abc");
-  expect(mockActorSetDirection).lastCalledWith("left");
+  expect(mockActorSetDirection).lastCalledWith("abc", {
+    type: "direction",
+    value: "left",
+  });
 
   compile(
     {
@@ -176,11 +179,12 @@ test("Should not set frame if spritesheet has no frames", () => {
         ],
       },
       sprites: [],
-      actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection,
+      actorSetDirectionToScriptValue: mockActorSetDirection,
     }
   );
 
-  expect(mockactorSetActive).lastCalledWith("abc");
-  expect(mockActorSetDirection).lastCalledWith("right");
+  expect(mockActorSetDirection).lastCalledWith("abc", {
+    type: "direction",
+    value: "right",
+  });
 });

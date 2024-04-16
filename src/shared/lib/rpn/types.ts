@@ -17,6 +17,8 @@ export const operatorSymbols = [
   ">=",
   "&&",
   "||",
+  "<<",
+  ">>",
 ] as const;
 export type OperatorSymbol = typeof operatorSymbols[number];
 

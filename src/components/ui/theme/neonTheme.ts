@@ -64,6 +64,10 @@ const neonTheme: ThemeInterface = {
       text: "#f5dcec",
       border: "#540d6e",
     },
+    brackets: {
+      color: "#000000",
+      hoverBackground: "#222222",
+    },
     card: {
       background: "#ffffff",
       text: "#3b3a3b",

@@ -63,6 +63,10 @@ const darkTheme: ThemeInterface = {
       text: "#b7babb",
       border: "#333333",
     },
+    brackets: {
+      color: "#000000",
+      hoverBackground: "#222222",
+    },
     card: {
       background: "#3e4142",
       text: "#b7babb",

@@ -7,6 +7,7 @@ import {
   ClipboardPaletteIds,
   ClipboardScenes,
   ClipboardScriptEvents,
+  ClipboardScriptValue,
   ClipboardSpriteState,
   ClipboardTriggers,
   ClipboardType,
@@ -17,10 +18,12 @@ import {
   ClipboardTypes,
   ClipboardTypeScenes,
   ClipboardTypeScriptEvents,
+  ClipboardTypeScriptValue,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
   NarrowClipboardType,
 } from "./clipboardTypes";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 const decoder = new TextDecoder("utf-8");
 
@@ -118,6 +121,16 @@ const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
   );
 };
 
+const isClipboardScriptValue = (
+  input: unknown
+): input is ClipboardScriptValue => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { value?: unknown } = input;
+  return "value" in wide && isScriptValue(wide.value);
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   API.clipboard.writeBuffer(payload.format, buffer);
@@ -191,6 +204,13 @@ export const paste = async <T extends ClipboardFormat>(
     if (isClipboardScenes(data)) {
       return {
         format: ClipboardTypeScenes,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeScriptValue) {
+    if (isClipboardScriptValue(data)) {
+      return {
+        format: ClipboardTypeScriptValue,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

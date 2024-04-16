@@ -1,6 +1,9 @@
 import React, { memo, useCallback } from "react";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
-import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
+import {
+  ScriptEventFieldSchema,
+  UnitType,
+} from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
@@ -15,6 +18,7 @@ import { TabBar } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -187,6 +191,24 @@ const ScriptEventFormField = memo(
       );
     }
 
+    const { unitsField, unitsAllowed } = field;
+    const labelWithUnits = unitsField ? (
+      <>
+        {label}
+        <UnitSelectLabelButton
+          value={
+            (args?.[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          allowedValues={unitsAllowed}
+          onChange={(value) => {
+            setArgValue(unitsField, value);
+          }}
+        />
+      </>
+    ) : (
+      label
+    );
+
     if (field.type === "break") {
       return <FlexBreak />;
     }
@@ -269,7 +291,11 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+          style={{
+            flexBasis: field.flexBasis,
+            flexGrow: field.flexGrow,
+            minWidth: field.minWidth,
+          }}
         >
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
@@ -287,7 +313,12 @@ const ScriptEventFormField = memo(
       <ScriptEventField
         halfWidth={field.width === "50%"}
         inline={field.inline}
-        style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+        alignBottom={field.alignBottom || field.type === "checkbox"}
+        style={{
+          flexBasis: field.flexBasis,
+          flexGrow: field.flexGrow,
+          minWidth: field.minWidth,
+        }}
       >
         <FormField
           name={genKey(scriptEventId, field.key || "")}
@@ -296,11 +327,10 @@ const ScriptEventFormField = memo(
             field.type !== "checkbox" &&
             field.type !== "group" &&
             !field.hideLabel
-              ? label
+              ? labelWithUnits
               : ""
           }
           title={field.description}
-          alignCheckbox={field.alignCheckbox}
         >
           {inputField}
         </FormField>

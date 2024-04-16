@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_ACTOR_AT_POSITION";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_ACTOR",
+};
 
 const autoLabel = (fetchArg, input) => {
   const unitPostfix =
@@ -28,11 +32,14 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -41,11 +48,14 @@ const fields = [
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -89,11 +99,17 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, ifActorAtPosition } = helpers;
+  const { ifActorAtPositionByScriptValues } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  actorSetActive(input.actorId);
-  ifActorAtPosition(input.x, input.y, truePath, falsePath, input.units);
+  ifActorAtPositionByScriptValues(
+    input.actorId,
+    input.x,
+    input.y,
+    truePath,
+    falsePath,
+    input.units
+  );
 };
 
 module.exports = {
@@ -101,6 +117,7 @@ module.exports = {
   description: l10n("EVENT_IF_ACTOR_AT_POSITION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   helper: {
