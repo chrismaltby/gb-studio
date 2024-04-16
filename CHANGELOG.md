@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
 - Improved organisation of "Add Event" menu by grouping related event types
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD)
+- Add Event Menu highlights matching text when searching
 
 ### Fixed
 

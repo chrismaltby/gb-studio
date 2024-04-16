@@ -38,6 +38,7 @@ import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import { HighlightWords } from "ui/util/HighlightWords";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -895,7 +896,15 @@ const AddScriptEventMenu = ({
                     "event" in option ? option.event.description : undefined
                   }
                 >
-                  {option.label}
+                  {searchTerm.length > 0 ? (
+                    <HighlightWords
+                      text={option.label}
+                      words={searchTerm.split(" ")}
+                    />
+                  ) : (
+                    option.label
+                  )}
+
                   {"options" in option ? (
                     <MenuItemCaret>
                       <CaretRightIcon />
