@@ -30,6 +30,7 @@ interface DialogueTextareaWrapperProps {
 
 const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
   position: relative;
+  z-index: 0;
   display: inline-block;
   width: 100%;
   font-size: ${(props) => props.theme.typography.fontSize};

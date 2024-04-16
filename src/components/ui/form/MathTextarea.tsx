@@ -137,6 +137,7 @@ const operatorRegex = new RegExp(
 
 export const MathTextareaWrapper = styled.div`
   position: relative;
+  z-index: 0;
   display: inline-block;
   width: 100%;
   min-width: 91px;
