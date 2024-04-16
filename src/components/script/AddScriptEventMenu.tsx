@@ -850,7 +850,7 @@ const AddScriptEventMenu = ({
           isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
-          <SelectMenuTitle>Add Event</SelectMenuTitle>
+          <SelectMenuTitle>{l10n("SIDEBAR_ADD_EVENT")}</SelectMenuTitle>
           <SelectMenuTitle>
             {renderCategoryIndex > -1 && options[renderCategoryIndex]?.label}
           </SelectMenuTitle>
