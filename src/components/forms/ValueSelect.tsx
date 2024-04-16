@@ -346,6 +346,8 @@ const BracketsWrapper = styled.div<BracketsWrapperProps>`
 
 const Wrapper = styled.div`
   display: flex;
+  position: relative;
+  z-index: 0;
   > ${BracketsWrapper}:first-child {
     margin-top: -3px;
   }
