@@ -574,17 +574,7 @@ const ValueSelect = ({
       } else if (e.key === "+") {
         setValueFunction("add");
       } else if (e.key === "-") {
-        // Need to check input isn't empty
-        // to still allow negative numbers in number fields
-        const hasSelection =
-          e.currentTarget instanceof HTMLInputElement &&
-          (window.getSelection()?.toString().length ?? 0) > 0;
-        if (
-          e.currentTarget.nodeName === "BUTTON" ||
-          ("value" in e.currentTarget &&
-            e.currentTarget.value.trim().length > 0 &&
-            !hasSelection)
-        ) {
+        if (e.currentTarget.nodeName === "BUTTON") {
           setValueFunction("sub");
         }
       } else if (e.key === "*") {
