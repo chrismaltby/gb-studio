@@ -205,6 +205,7 @@ const ScriptEventFormInput = ({
         id={id}
         value={String(value || "")}
         placeholder={field.placeholder}
+        singleLine={field.singleLine}
         onChange={onChangeField}
         entityId={entityId}
       />

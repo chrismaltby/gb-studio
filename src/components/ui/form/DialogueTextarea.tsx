@@ -24,7 +24,11 @@ const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
 
-const DialogueTextareaWrapper = styled.div`
+interface DialogueTextareaWrapperProps {
+  singleLine?: boolean;
+}
+
+const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
   position: relative;
   display: inline-block;
   width: 100%;
@@ -40,8 +44,8 @@ const DialogueTextareaWrapper = styled.div`
     background: ${(props) => props.theme.colors.input.background};
     border-radius: 4px;
     padding: 5px;
-    min-height: 38px;
     line-height: 16px;
+    ${(props) => (!props.singleLine ? `min-height: 38px;` : "")}
   }
 
   .MentionsInput__highlighter {
@@ -204,6 +208,7 @@ export interface DialogueTextareaProps {
   entityId: string;
   fonts: Font[];
   maxlength?: number;
+  singleLine?: boolean;
   onChange: (newValue: string) => void;
 }
 
@@ -225,6 +230,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   fonts,
   entityId,
   placeholder,
+  singleLine = false,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
@@ -298,7 +304,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   }, [handleCopy]);
 
   return (
-    <DialogueTextareaWrapper>
+    <DialogueTextareaWrapper singleLine={singleLine}>
       {editMode && (
         <RelativePortal
           offsetX={editMode.x}
@@ -392,6 +398,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       )}
       <MentionsInput
         id={id}
+        singleLine={singleLine}
         className="MentionsInput"
         value={value}
         placeholder={placeholder}
