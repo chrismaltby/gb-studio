@@ -97,3 +97,14 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
 
+## Note For Translators
+
+If you'd like to help contribute new language localisations to GB Studio you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
+
+If you're looking to update an existing translation with content that is missing, there is a handy script that lists keys found in the English localisation that are not found and copies them to your localisation
+
+```bash
+npm run missing-translations lang
+# e.g. npm run missing-translations de
+# e.g. npm run missing-translations en-GB
+```
