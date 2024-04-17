@@ -17,6 +17,7 @@ import {
 import { TileCanvas } from "components/world/TileCanvas";
 import uniq from "lodash/uniq";
 import styled from "styled-components";
+import l10n from "shared/lib/lang/l10n";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
@@ -81,7 +82,9 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
         ? ([
             {
               label: "",
-              options: [{ value: "", label: optionalLabel || "None" }],
+              options: [
+                { value: "", label: optionalLabel || l10n("FIELD_NONE") },
+              ],
             },
           ] as OptGroup[])
         : ([] as OptGroup[])
@@ -122,11 +125,13 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
           return (
             <OptionLabelWithPreview
               preview={
-                <TileCanvas
-                  tilesetId={option.value}
-                  tileIndex={tileIndex}
-                  tileSize={units as GridUnitType}
-                />
+                option.value ? (
+                  <TileCanvas
+                    tilesetId={option.value}
+                    tileIndex={tileIndex}
+                    tileSize={units as GridUnitType}
+                  />
+                ) : null
               }
             >
               {option.label}
@@ -137,11 +142,13 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
           SingleValue: () => (
             <SingleValueWithPreview
               preview={
-                <TileCanvas
-                  tilesetId={value || ""}
-                  tileIndex={tileIndex}
-                  tileSize={units as GridUnitType}
-                />
+                value ? (
+                  <TileCanvas
+                    tilesetId={value}
+                    tileIndex={tileIndex}
+                    tileSize={units as GridUnitType}
+                  />
+                ) : null
               }
             >
               {currentValue?.label}

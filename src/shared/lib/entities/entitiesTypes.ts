@@ -384,6 +384,7 @@ export type Scene = {
   width: number;
   height: number;
   backgroundId: string;
+  tilesetId: string;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];

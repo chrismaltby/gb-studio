@@ -37,7 +37,12 @@ import { SettingsState } from "store/features/settings/settingsState";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
 import { Button } from "ui/buttons/Button";
-import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
+import {
+  LockIcon,
+  LockOpenIcon,
+  ParallaxIcon,
+  JigsawIcon,
+} from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
 } from "components/forms/ParallaxSelect";
@@ -58,6 +63,7 @@ import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import { TilesetSelect } from "components/forms/TilesetSelect";
 
 interface SceneEditorProps {
   id: string;
@@ -129,6 +135,10 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
+  const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
+    !!scene?.tilesetId
+  );
+
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
   );
@@ -270,6 +280,11 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     [onChangeSceneProp]
   );
 
+  const onChangeTilesetdId = useCallback(
+    (e: string) => onChangeSceneProp("tilesetId", e),
+    [onChangeSceneProp]
+  );
+
   const onChangeParallax = useCallback(
     (value: SceneParallaxLayer[] | undefined) =>
       onChangeSceneProp("parallax", value),
@@ -321,6 +336,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const onAddNotes = () => {
     setNotesOpen(true);
   };
+
+  const onToggleCommonTileset = useCallback(() => {
+    if (commonTilesetOpen) {
+      onChangeSceneProp("tilesetId", "");
+      setCommonTilesetOpen(false);
+    } else {
+      setCommonTilesetOpen(true);
+    }
+  }, [commonTilesetOpen, onChangeSceneProp]);
 
   const onToggleLockScriptEditor = () => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
@@ -439,6 +463,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
   const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
   const showParallaxOptions = showParallaxButton && scene.parallax;
+  const showCommonTilesetButton = scene.type !== "LOGO";
 
   const scriptButton = (
     <ScriptEditorDropdownButton
@@ -579,23 +604,57 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     is360={scene.type === "LOGO"}
                     includeInfo
                   />
-                  {showParallaxButton && (
-                    <Button
-                      style={{
-                        padding: "5px 0",
-                        minWidth: 28,
-                        marginLeft: 10,
-                      }}
-                      variant={scene?.parallax ? "primary" : undefined}
-                      onClick={onToggleParallaxSettings}
-                      title={l10n("FIELD_PARALLAX")}
-                    >
-                      <ParallaxIcon />
-                    </Button>
-                  )}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {showParallaxButton && (
+                      <Button
+                        style={{
+                          padding: "5px 0",
+                          minWidth: 28,
+                          marginLeft: 10,
+                          marginBottom: 5,
+                        }}
+                        variant={scene?.parallax ? "primary" : "transparent"}
+                        onClick={onToggleParallaxSettings}
+                        title={l10n("FIELD_PARALLAX")}
+                      >
+                        <ParallaxIcon />
+                      </Button>
+                    )}
+                    {showCommonTilesetButton && (
+                      <Button
+                        style={{
+                          padding: "5px 0",
+                          minWidth: 28,
+                          marginLeft: 10,
+                        }}
+                        variant={commonTilesetOpen ? "primary" : "transparent"}
+                        onClick={onToggleCommonTileset}
+                        title={l10n("FIELD_COMMON_TILESET")}
+                      >
+                        <JigsawIcon />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </FormField>
             </FormRow>
+
+            {commonTilesetOpen && (
+              <FormRow>
+                <FormField
+                  name="tilesetId"
+                  label={l10n("FIELD_COMMON_TILESET")}
+                  title={l10n("FIELD_COMMON_TILESET_DESC")}
+                >
+                  <TilesetSelect
+                    name="tilesetId"
+                    value={scene.tilesetId}
+                    onChange={onChangeTilesetdId}
+                    optional
+                  />
+                </FormField>
+              </FormRow>
+            )}
 
             <FormRow>
               <BackgroundWarnings id={scene.backgroundId} />
