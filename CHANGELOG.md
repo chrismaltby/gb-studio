@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to use variables within Menu and Choice events [@pau-tomas](https://github.com/pau-tomas)
 - Add stack preview mode to debugger
 - Native support for Macs with Apple silicon without needing Rosetta
+- Add ability to set common tilesets between scenes, the common tiles will always be loaded in a consistent order between scenes sharing the same common tileset
+- Add ability to set Fade Speed as "Instant" when switching scenes, combine this with use of common tilesets in both scenes to enable seamless scene switching
 
 ### Changed
 
