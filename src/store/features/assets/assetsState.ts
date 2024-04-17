@@ -4,6 +4,7 @@ type BackgroundAsset = {
   id: string;
   is360: boolean;
   isCGBOnly: boolean;
+  tilesetId?: string;
   warnings: string[];
   numTiles: number;
   lookup: number[];
@@ -28,6 +29,7 @@ const assetsSlice = createSlice({
       state,
       _action: PayloadAction<{
         backgroundId: string;
+        tilesetId?: string;
         is360: boolean;
       }>
     ) => {
@@ -38,6 +40,7 @@ const assetsSlice = createSlice({
       action: PayloadAction<{
         id: string;
         is360: boolean;
+        tilesetId?: string;
         isCGBOnly: boolean;
         warnings: string[];
         numTiles: number;
@@ -48,6 +51,7 @@ const assetsSlice = createSlice({
       state.backgrounds[action.payload.id] = {
         id: action.payload.id,
         is360: action.payload.is360,
+        tilesetId: action.payload.tilesetId,
         isCGBOnly: action.payload.isCGBOnly,
         warnings: action.payload.warnings,
         numTiles: action.payload.numTiles,

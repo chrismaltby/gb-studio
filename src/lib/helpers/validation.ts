@@ -1,6 +1,9 @@
 import l10n from "shared/lib/lang/l10n";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
-import type { BackgroundData } from "shared/lib/entities/entitiesTypes";
+import type {
+  BackgroundData,
+  Tileset,
+} from "shared/lib/entities/entitiesTypes";
 import {
   toTileLookup,
   tilesAndLookupToTilemap,
@@ -19,8 +22,22 @@ export interface BackgroundInfo {
   lookup: number[];
 }
 
+const mergeCommonTiles = async (
+  tileData: Uint8Array[],
+  commonTileset: Tileset | undefined,
+  projectPath: string
+) => {
+  if (!commonTileset) {
+    return tileData;
+  }
+  const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+  const commonTileData = await readFileToTilesDataArray(commonFilename);
+  return [...commonTileData, ...tileData];
+};
+
 export const getBackgroundInfo = async (
   background: BackgroundData,
+  commonTileset: Tileset | undefined,
   is360: boolean,
   isCGBOnly: boolean,
   projectPath: string,
@@ -33,7 +50,12 @@ export const getBackgroundInfo = async (
   if (!tilesetLength) {
     const filename = assetFilename(projectPath, "backgrounds", background);
     const tileData = await readFileToTilesDataArray(filename);
-    const tilesetLookup = toTileLookup(tileData);
+    const tileDataWithCommon = await mergeCommonTiles(
+      tileData,
+      commonTileset,
+      projectPath
+    );
+    const tilesetLookup = toTileLookup(tileDataWithCommon);
     tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
     tilesetLength = Object.keys(tilesetLookup).length;
   }

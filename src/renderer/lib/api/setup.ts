@@ -23,6 +23,7 @@ import type { SettingsState } from "store/features/settings/settingsState";
 import type {
   Background,
   SpriteSheetData,
+  Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
@@ -208,12 +209,14 @@ const APISetup = {
       ),
     getBackgroundInfo: (
       background: Background,
+      tileset: Tileset | undefined,
       is360: boolean,
       cgbOnly: boolean
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
         "project:get-background-info",
         background,
+        tileset,
         is360,
         cgbOnly
       ),

@@ -14,6 +14,7 @@ interface BackgroundSelectProps {
   name: string;
   value?: string;
   is360: boolean;
+  tilesetId: string;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
 }
@@ -143,6 +144,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   value,
   onChange,
   is360,
+  tilesetId,
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -165,11 +167,12 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
       dispatch(
         assetsActions.loadBackgroundAssetInfo({
           backgroundId: value,
+          tilesetId,
           is360,
         })
       );
     }
-  }, [dispatch, value, is360]);
+  }, [dispatch, value, is360, tilesetId]);
 
   useEffect(() => {
     if (buttonFocus) {

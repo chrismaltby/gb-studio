@@ -600,6 +600,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                   <BackgroundSelectButton
                     name="backgroundId"
                     value={scene.backgroundId}
+                    tilesetId={scene.tilesetId}
                     onChange={onChangeBackgroundId}
                     is360={scene.type === "LOGO"}
                     includeInfo

@@ -51,6 +51,7 @@ import ejectBuild from "lib/compiler/ejectBuild";
 import type {
   Background,
   SpriteSheetData,
+  Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
@@ -1317,9 +1318,15 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:get-background-info",
-  (_event, background: Background, is360: boolean, cgbOnly: boolean) => {
+  (
+    _event,
+    background: Background,
+    tileset: Tileset | undefined,
+    is360: boolean,
+    cgbOnly: boolean
+  ) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, is360, cgbOnly, projectRoot);
+    return getBackgroundInfo(background, tileset, is360, cgbOnly, projectRoot);
   }
 );
 

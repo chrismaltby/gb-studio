@@ -134,6 +134,7 @@ const compileImage = async (
 
   const backgroundInfo = await getBackgroundInfo(
     img,
+    undefined,
     false,
     cgbOnly,
     projectPath,
