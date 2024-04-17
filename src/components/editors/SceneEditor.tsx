@@ -651,6 +651,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     name="tilesetId"
                     value={scene.tilesetId}
                     onChange={onChangeTilesetdId}
+                    includeBackgrounds
                     optional
                   />
                 </FormField>

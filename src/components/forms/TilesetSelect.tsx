@@ -1,10 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { tilesetSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesState";
 import {
   UnitType,
   Tileset,
   GridUnitType,
+  Background,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
@@ -18,6 +22,7 @@ import { TileCanvas } from "components/world/TileCanvas";
 import uniq from "lodash/uniq";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
@@ -27,6 +32,7 @@ interface TilesetSelectProps extends SelectCommonProps {
   units?: UnitType;
   optional?: boolean;
   optionalLabel?: string;
+  includeBackgrounds?: boolean;
 }
 
 interface TilesetOption extends Option {
@@ -35,6 +41,14 @@ interface TilesetOption extends Option {
 
 const Wrapper = styled.div`
   position: relative;
+`;
+
+const Thumbnail = styled.div`
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 
 const buildOptions = (
@@ -60,42 +74,70 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   units,
   optional,
   optionalLabel,
+  includeBackgrounds,
   ...selectProps
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
+  const backgrounds = useAppSelector((state) =>
+    backgroundSelectors.selectAll(state)
+  );
+  const backgroundsLookup = useAppSelector((state) =>
+    backgroundSelectors.selectEntities(state)
+  );
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentTileset, setCurrentTileset] = useState<Tileset>();
+  const [currentTileset, setCurrentTileset] = useState<Tileset | Background>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
     const plugins = uniq(tilesets.map((s) => s.plugin || "")).sort();
-    const options = plugins.reduce(
-      (memo, plugin) => {
-        buildOptions(
-          memo,
-          plugin,
-          tilesets.filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
-        );
-        return memo;
-      },
-      optional
-        ? ([
+    const bgPlugins = includeBackgrounds
+      ? uniq(tilesets.map((s) => s.plugin || "")).sort()
+      : [];
+
+    const options = [
+      ...(optional
+        ? [
             {
               label: "",
               options: [
                 { value: "", label: optionalLabel || l10n("FIELD_NONE") },
               ],
             },
-          ] as OptGroup[])
-        : ([] as OptGroup[])
-    );
-
+          ]
+        : []),
+      ...plugins.reduce((memo, plugin) => {
+        buildOptions(
+          memo,
+          plugin,
+          tilesets.filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+        );
+        return memo;
+      }, [] as OptGroup[]),
+      ...(includeBackgrounds
+        ? bgPlugins.reduce((memo, plugin) => {
+            buildOptions(
+              memo,
+              plugin || l10n("FIELD_BACKGROUNDS"),
+              backgrounds.filter((s) =>
+                plugin ? s.plugin === plugin : !s.plugin
+              )
+            );
+            return memo;
+          }, [] as OptGroup[])
+        : []),
+    ];
     setOptions(options);
-  }, [tilesets, optional, optionalLabel]);
+  }, [tilesets, optional, optionalLabel, includeBackgrounds, backgrounds]);
 
   useEffect(() => {
-    setCurrentTileset(tilesets.find((v) => v.id === value));
-  }, [tilesets, value]);
+    const background = includeBackgrounds
+      ? backgrounds.find((v) => v.id === value)
+      : undefined;
+    const defaultTileset = !optional ? tilesets[0] : undefined;
+    const tileset =
+      background ?? tilesets.find((v) => v.id === value) ?? defaultTileset;
+    setCurrentTileset(tileset);
+  }, [backgrounds, includeBackgrounds, optional, tilesets, value]);
 
   useEffect(() => {
     if (currentTileset) {
@@ -122,15 +164,26 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
         options={options}
         onChange={onSelectChange}
         formatOptionLabel={(option: TilesetOption) => {
+          const background = backgroundsLookup[option.value];
           return (
             <OptionLabelWithPreview
               preview={
                 option.value ? (
-                  <TileCanvas
-                    tilesetId={option.value}
-                    tileIndex={tileIndex}
-                    tileSize={units as GridUnitType}
-                  />
+                  background ? (
+                    <Thumbnail
+                      style={{
+                        backgroundImage:
+                          background &&
+                          assetURLStyleProp("backgrounds", background),
+                      }}
+                    />
+                  ) : (
+                    <TileCanvas
+                      tilesetId={option.value}
+                      tileIndex={tileIndex}
+                      tileSize={units as GridUnitType}
+                    />
+                  )
                 ) : null
               }
             >
@@ -143,11 +196,21 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
             <SingleValueWithPreview
               preview={
                 value ? (
-                  <TileCanvas
-                    tilesetId={value}
-                    tileIndex={tileIndex}
-                    tileSize={units as GridUnitType}
-                  />
+                  backgroundsLookup[value] ? (
+                    <Thumbnail
+                      style={{
+                        backgroundImage:
+                          currentTileset &&
+                          assetURLStyleProp("backgrounds", currentTileset),
+                      }}
+                    />
+                  ) : (
+                    <TileCanvas
+                      tilesetId={value}
+                      tileIndex={tileIndex}
+                      tileSize={units as GridUnitType}
+                    />
+                  )
                 ) : null
               }
             >

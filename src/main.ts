@@ -1321,7 +1321,7 @@ ipcMain.handle(
   (
     _event,
     background: Background,
-    tileset: Tileset | undefined,
+    tileset: Tileset | Background | undefined,
     is360: boolean,
     cgbOnly: boolean
   ) => {

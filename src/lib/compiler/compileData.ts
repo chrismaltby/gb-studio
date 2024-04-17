@@ -264,13 +264,16 @@ export const precompileBackgrounds = async (
       scenes.find((scene) => scene.backgroundId === background.id)
   );
 
-  const tilesetLookup = keyBy(tilesets, "id");
+  const allTilesetsLookup = keyBy(tilesets, "id");
+  const allBackgroundsLookup = keyBy(backgrounds, "id");
 
   const commonTilesetsLookup = scenes.reduce((memo, scene) => {
     if (!scene.backgroundId || !scene.tilesetId) {
       return memo;
     }
-    const tileset = tilesetLookup[scene.tilesetId];
+    const tileset =
+      allBackgroundsLookup[scene.tilesetId] ||
+      allTilesetsLookup[scene.tilesetId];
     if (memo[scene.backgroundId]) {
       if (!memo[scene.backgroundId].find((t) => t.id === scene.tilesetId)) {
         memo[scene.backgroundId].push(tileset);

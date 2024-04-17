@@ -15,10 +15,9 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
         state,
         action.payload.backgroundId
       );
-      const tileset = tilesetSelectors.selectById(
-        state,
-        action.payload.tilesetId ?? ""
-      );
+      const tileset =
+        backgroundSelectors.selectById(state, action.payload.tilesetId ?? "") ||
+        tilesetSelectors.selectById(state, action.payload.tilesetId ?? "");
       const tilesetId = tileset?.id;
 
       const isCGBOnly = state.project.present.settings.colorMode === "color";

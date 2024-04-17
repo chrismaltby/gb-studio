@@ -85,20 +85,23 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
 
 const mergeCommonTiles = async (
   tileData: Uint8Array[],
-  commonTileset: TilesetData | undefined,
+  commonTileset: TilesetData | BackgroundData | undefined,
   projectPath: string
 ) => {
   if (!commonTileset) {
     return tileData;
   }
-  const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+  const commonFilename =
+    "tileColors" in commonTileset
+      ? assetFilename(projectPath, "backgrounds", commonTileset)
+      : assetFilename(projectPath, "tilesets", commonTileset);
   const commonTileData = await readFileToTilesDataArray(commonFilename);
   return [...commonTileData, ...tileData];
 };
 
 const compileImage = async (
   img: BackgroundData,
-  commonTileset: TilesetData | undefined,
+  commonTileset: TilesetData | BackgroundData | undefined,
   is360: boolean,
   cgbOnly: boolean,
   projectPath: string,
@@ -195,7 +198,7 @@ const compileImage = async (
 
 const compileImages = async (
   imgs: BackgroundData[],
-  commonTilesetsLookup: Record<string, TilesetData[]>,
+  commonTilesetsLookup: Record<string, (TilesetData | BackgroundData)[]>,
   generate360Ids: string[],
   cgbOnly: boolean,
   projectPath: string,

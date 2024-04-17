@@ -24,20 +24,23 @@ export interface BackgroundInfo {
 
 const mergeCommonTiles = async (
   tileData: Uint8Array[],
-  commonTileset: Tileset | undefined,
+  commonTileset: Tileset | BackgroundData | undefined,
   projectPath: string
 ) => {
   if (!commonTileset) {
     return tileData;
   }
-  const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+  const commonFilename =
+    "tileColors" in commonTileset
+      ? assetFilename(projectPath, "backgrounds", commonTileset)
+      : assetFilename(projectPath, "tilesets", commonTileset);
   const commonTileData = await readFileToTilesDataArray(commonFilename);
   return [...commonTileData, ...tileData];
 };
 
 export const getBackgroundInfo = async (
   background: BackgroundData,
-  commonTileset: Tileset | undefined,
+  commonTileset: Tileset | BackgroundData | undefined,
   is360: boolean,
   isCGBOnly: boolean,
   projectPath: string,
