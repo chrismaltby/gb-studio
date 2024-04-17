@@ -41,6 +41,9 @@ test("Should trigger call to check background assets", async () => {
               },
               ids: ["bg1"],
             },
+            tilesets: {
+              entities: {},
+            },
           },
           settings: {
             colorMode: "mono",
@@ -111,6 +114,9 @@ test("Should not trigger call to check background assets if already cached asset
               },
               ids: ["bg1"],
             },
+            tilesets: {
+              entities: {},
+            },
           },
           settings: {
             colorMode: "mono",
@@ -169,6 +175,9 @@ test("Should trigger call to check background assets if cache has expired", asyn
                 },
               },
               ids: ["bg1"],
+            },
+            tilesets: {
+              entities: {},
             },
           },
           settings: {
