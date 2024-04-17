@@ -37,6 +37,7 @@ import {
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
+  UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -637,6 +638,9 @@ const ScriptEventFormInput = ({
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
         />
       </OffscreenSkeletonInput>
     );

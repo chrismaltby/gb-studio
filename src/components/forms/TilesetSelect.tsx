@@ -8,13 +8,14 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
+  OptGroup,
   Select,
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
 import { TileCanvas } from "components/world/TileCanvas";
-import { UnitsSelectButtonInputOverlay } from "components/forms/UnitsSelectButtonInputOverlay";
+import uniq from "lodash/uniq";
 import styled from "styled-components";
 
 interface TilesetSelectProps extends SelectCommonProps {
@@ -23,11 +24,8 @@ interface TilesetSelectProps extends SelectCommonProps {
   tileIndex?: number;
   onChange?: (newId: string) => void;
   units?: UnitType;
-  unitsAllowed?: UnitType[];
-  onChangeUnits?: (newUnits: UnitType) => void;
   optional?: boolean;
   optionalLabel?: string;
-  optionalDefaultTilesetId?: string;
 }
 
 interface TilesetOption extends Option {
@@ -38,45 +36,59 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
+const buildOptions = (
+  memo: OptGroup[],
+  plugin: string | undefined,
+  tilesets: Tileset[]
+) => {
+  memo.push({
+    label: plugin ? plugin : "",
+    options: tilesets.map((tileset) => {
+      return {
+        value: tileset.id,
+        label: tileset.name,
+      };
+    }),
+  });
+};
+
 export const TilesetSelect: FC<TilesetSelectProps> = ({
   value,
   tileIndex,
   onChange,
   units,
-  unitsAllowed,
-  onChangeUnits,
   optional,
   optionalLabel,
-  optionalDefaultTilesetId,
   ...selectProps
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
-  const [options, setOptions] = useState<TilesetOption[]>([]);
+  const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentTileset, setCurrentTileset] = useState<Tileset>();
-  const [currentValue, setCurrentValue] = useState<TilesetOption>();
+  const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
-    setOptions(
-      ([] as TilesetOption[]).concat(
-        optional
-          ? ([
-              {
-                value: "",
-                label: optionalLabel || "None",
-                tileset: tilesets.find(
-                  (p) => p.id === optionalDefaultTilesetId
-                ),
-              },
-            ] as TilesetOption[])
-          : ([] as TilesetOption[]),
-        tilesets.map((tileset) => ({
-          value: tileset.id,
-          label: tileset.name,
-          tileset,
-        }))
-      )
+    const plugins = uniq(tilesets.map((s) => s.plugin || "")).sort();
+    const options = plugins.reduce(
+      (memo, plugin) => {
+        buildOptions(
+          memo,
+          plugin,
+          tilesets.filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+        );
+        return memo;
+      },
+      optional
+        ? ([
+            {
+              label: "",
+              options: [{ value: "", label: optionalLabel || "None" }],
+            },
+          ] as OptGroup[])
+        : ([] as OptGroup[])
     );
-  }, [tilesets, optional, optionalDefaultTilesetId, optionalLabel]);
+
+    setOptions(options);
+  }, [tilesets, optional, optionalLabel]);
 
   useEffect(() => {
     setCurrentTileset(tilesets.find((v) => v.id === value));
@@ -87,34 +99,14 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
       setCurrentValue({
         value: currentTileset.id,
         label: `${currentTileset.name}`,
-        tileset: currentTileset,
       });
     } else if (optional) {
-      const optionalTileset = tilesets.find(
-        (p) => p.id === optionalDefaultTilesetId
-      );
       setCurrentValue({
         value: "",
         label: optionalLabel || "None",
-        tileset: optionalTileset as Tileset,
       });
-    } else {
-      const firstTileset = tilesets[0];
-      if (firstTileset) {
-        setCurrentValue({
-          value: firstTileset.id,
-          label: `${firstTileset.name}`,
-          tileset: firstTileset,
-        });
-      }
     }
-  }, [
-    currentTileset,
-    tilesets,
-    optional,
-    optionalDefaultTilesetId,
-    optionalLabel,
-  ]);
+  }, [currentTileset, optional, optionalLabel]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);
@@ -158,15 +150,6 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
         }}
         {...selectProps}
       />
-      {units && (
-        <UnitsSelectButtonInputOverlay
-          parentValue={String(currentValue?.label) ?? ""}
-          parentValueOffset={24}
-          value={units}
-          allowedValues={unitsAllowed}
-          onChange={onChangeUnits}
-        />
-      )}
     </Wrapper>
   );
 };
