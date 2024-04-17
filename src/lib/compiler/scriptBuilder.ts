@@ -3773,9 +3773,9 @@ extern void __mute_mask_${symbol};
 
     this._addComment(`-- Move Camera`);
     if (speed === 0) {
-      this._cameraSetPos(".ARG1");
+      this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
     }
 
     this._assertStackNeutral(stackPtr);
