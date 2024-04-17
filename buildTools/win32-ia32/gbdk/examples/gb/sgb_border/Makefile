@@ -9,7 +9,7 @@ PNG2ASSET = $(GBDK_HOME)bin/png2asset
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 

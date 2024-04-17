@@ -77,6 +77,9 @@
 */
 #define M_NO_INTERP  0x08U
 
+/** The nineth bit of the tile id
+*/
+#define S_BANK       0x01U
 /** If set the background tile will be flipped horizontally.
  */
 #define S_FLIPX      0x02U
@@ -92,10 +95,11 @@
 /** Dummy function used by other platforms.
     Required for the png2asset tool's metasprite output.
 */
-#define S_PAL(n)     0
+#define S_PAL(n)     (((n) & 0x01U) << 3)
 
 // VDP helper macros
-#define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__critical{VDP_CMD=(shadow_##REG),VDP_CMD=REG;}
+#define __WRITE_VDP_REG_UNSAFE(REG, v) shadow_##REG=(v),VDP_CMD=(shadow_##REG),VDP_CMD=REG
+#define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__asm__("di");VDP_CMD=(shadow_##REG);VDP_CMD=REG;__asm__("ei")
 #define __READ_VDP_REG(REG) shadow_##REG
 
 void WRITE_VDP_CMD(uint16_t cmd) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
@@ -269,6 +273,10 @@ void refresh_OAM(void);
 #define SHOW_LEFT_COLUMN \
 	__WRITE_VDP_REG(VDP_R0, __READ_VDP_REG(VDP_R0) &= (~R0_LCB))
 
+/** Sets border color
+ */
+#define SET_BORDER_COLOR(C) __WRITE_VDP_REG(VDP_R7, ((C) | 0xf0u))
+
 /** Turns on the background layer.
     Not yet implemented
 */
@@ -290,14 +298,14 @@ void refresh_OAM(void);
 #define HIDE_WIN
 
 /** Turns on the sprites layer.
-    Not yet implemented
 */
-#define SHOW_SPRITES
+#define SHOW_SPRITES \
+    (_sprites_OFF = 0)
 
 /** Turns off the sprites layer.
-    Not yet implemented
 */
-#define HIDE_SPRITES
+#define HIDE_SPRITES \
+    (_sprites_OFF = 1)
 
 /** Sets sprite size to 8x16 pixels, two tiles one above the other.
 */
@@ -321,6 +329,16 @@ void refresh_OAM(void);
     Will wrap around every ~18 minutes (unsigned 16 bits = 65535 / 60 / 60 = 18.2)
 */
 extern volatile uint16_t sys_time;
+
+
+/** Return R register for the DIV_REG emulation
+
+    Increments once per CPU instruction (fetches the Z80 CPU R register)
+
+*/
+uint8_t get_r_reg(void) PRESERVES_REGS(b, c, d, e, h, l, iyh, iyl);
+
+#define DIV_REG get_r_reg()
 
 /** Tracks current active ROM bank in frame 1
 */
@@ -457,6 +475,34 @@ uint8_t joypad_init(uint8_t npads, joypads_t * joypads) Z88DK_CALLEE;
 */
 void joypad_ex(joypads_t * joypads) Z88DK_FASTCALL PRESERVES_REGS(iyh, iyl);
 
+/** Enables unmasked interrupts
+
+    @note Use @ref CRITICAL {...} instead for creating a block of
+          of code which should execute with interrupts  temporarily
+          turned off.
+
+    @see disable_interrupts, set_interrupts, CRITICAL
+*/
+inline void enable_interrupts(void) PRESERVES_REGS(a, b, c, d, e, h, l, iyh, iyl) {
+    __asm__("ei");
+}
+
+/** Disables interrupts
+
+    @note Use @ref CRITICAL {...} instead for creating a block of
+          of code which should execute with interrupts  temporarily
+          turned off.
+
+    This function may be called as many times as you like;
+    however the first call to @ref enable_interrupts will re-enable
+    them.
+
+    @see enable_interrupts, set_interrupts, CRITICAL
+*/
+inline void disable_interrupts(void) PRESERVES_REGS(a, b, c, d, e, h, l, iyh, iyl) {
+    __asm__("di");
+}
+
 
 #if defined(__TARGET_sms)
 
@@ -531,24 +577,42 @@ inline void cpu_fast(void) {}
 void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define set_bkg_palette_entry set_palette_entry
 #define set_sprite_palette_entry(palette,entry,rgb_data) set_palette_entry(1,entry,rgb_data)
+
+
+/** Set color palette(s)
+
+    @param first_palette  Index of the first 16 color palette to write (0-1)
+    @param nb_palettes    Number of palettes to write (1-2, max depends on first_palette)
+    @param rgb_data       Pointer to source palette data
+
+    Writes __nb_palettes__ to palette data starting
+    at __first_palette__, Palette data is sourced from __rgb_data__.
+
+    \li Palette 0 can be used for the Background.
+    \li Palette 1 is shared between Background and Sprites.
+
+    On the Game Gear
+    \li Each Palette is 32 bytes in size: 16 colors x 2 bytes per palette color entry.
+    \li Each color (16 per palette) is packed as BGR-444 format (x:4:4:4, MSBits [15..12] are unused).
+    \li Each component (R, G, B) may have values from 0 - 15 (4 bits), 15 is brightest.
+
+    On the SMS
+    \li On SMS each Palette is 16 bytes in size: 16 colors x 1 byte per palette color entry.
+    \li Each color (16 per palette) is packed as BGR-222 format (x:2:2:2, MSBits [7..6] are unused).
+    \li Each component (R, G, B) may have values from 0 - 3 (2 bits), 3 is brightest.
+
+    @see RGB(), set_sprite_palette(), set_bkg_palette(), set_palette_entry(), set_sprite_palette_entry(), set_bkg_palette_entry(), set_sprite_palette()
+*/
 void set_palette(uint8_t first_palette, uint8_t nb_palettes, const palette_color_t *rgb_data) Z88DK_CALLEE;
 #define set_bkg_palette set_palette
 #define set_sprite_palette(first_palette,nb_palettes,rgb_data) set_palette(1,1,rgb_data)
 
-void set_native_tile_data(uint16_t start, uint16_t ntiles, const void *src) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
-inline void set_bkg_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
-    set_native_tile_data(start, ntiles, src);
-}
-inline void set_bkg_native_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) {
-    set_bkg_4bpp_data(first_tile, nb_tiles, data);
-}
+void set_native_tile_data(uint16_t start, uint16_t ntiles, const void *src) PRESERVES_REGS(iyh, iyl);
+void set_bkg_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) PRESERVES_REGS(iyh, iyl);
+void set_bkg_native_data(uint16_t start, uint16_t ntiles, const void *src) PRESERVES_REGS(iyh, iyl);
 
-inline void set_sprite_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
-    set_native_tile_data((uint8_t)(start) + 0x100u, ntiles, src);
-}
-inline void set_sprite_native_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) {
-    set_sprite_4bpp_data(first_tile, nb_tiles, data);
-}
+void set_sprite_4bpp_data(uint8_t start, uint16_t ntiles, const void *src) PRESERVES_REGS(iyh, iyl);
+void set_sprite_native_data(uint8_t start, uint16_t ntiles, const void *src) PRESERVES_REGS(iyh, iyl);
 
 #define COMPAT_PALETTE(C0,C1,C2,C3) (((uint16_t)(C3) << 12) | ((uint16_t)(C2) << 8) | ((uint16_t)(C1) << 4) | (uint16_t)(C0))
 extern uint16_t _current_2bpp_palette;
@@ -683,6 +747,8 @@ extern volatile uint8_t _shadow_OAM_base;
     @see @ref docs_consoles_safe_display_controller_access
 */
 extern volatile uint8_t _shadow_OAM_OFF;
+
+extern volatile uint8_t _sprites_OFF;
 
 /** Disable shadow OAM to VRAM copy on each VBlank
 */

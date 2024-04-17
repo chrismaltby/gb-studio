@@ -15,7 +15,7 @@ LCCFLAGS += -Wl-yt1 -Wl-yo4
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 

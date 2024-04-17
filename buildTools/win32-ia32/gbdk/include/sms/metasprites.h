@@ -14,6 +14,7 @@
 #ifndef _METASPRITES_H_INCLUDE
 #define _METASPRITES_H_INCLUDE
 
+#include <sms/sms.h>
 #include <sms/hardware.h>
 #include <types.h>
 #include <stdint.h>

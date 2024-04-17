@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved organisation of "Add Event" menu by grouping related event types
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD)
 - Add Event Menu highlights matching text when searching
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 
 ### Fixed
 

@@ -26,7 +26,7 @@ LCCFLAGS += -Wl-j -Wm-yS -Wm-yoA -Wm-ya4 -autobank -Wb-ext=.rel -Wb-v # MBC + Au
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 

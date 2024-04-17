@@ -70,6 +70,9 @@
 */
 #define M_NO_INTERP  0x08U
 
+/** The nineth bit of the tile id
+*/
+#define S_BANK       0x01U
 /** If set the background tile will be flipped horizontally.
  */
 #define S_FLIPX      0x02U
@@ -85,10 +88,11 @@
 /** Defines how palette number is encoded in OAM.
     Required for the png2asset tool's metasprite output.
 */
-#define S_PAL(n)     n
+#define S_PAL(n)     (((n) & 0x01U) << 3)
 
 // VDP helper macros
-#define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__critical{VDP_CMD=(shadow_##REG),VDP_CMD=REG;}
+#define __WRITE_VDP_REG_UNSAFE(REG, v) shadow_##REG=(v),VDP_CMD=(shadow_##REG),VDP_CMD=REG
+#define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__asm__("di");VDP_CMD=(shadow_##REG);VDP_CMD=REG;__asm__("ei")
 #define __READ_VDP_REG(REG) shadow_##REG
 
 void WRITE_VDP_CMD(uint16_t cmd) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
@@ -262,6 +266,10 @@ void refresh_OAM(void);
 #define SHOW_LEFT_COLUMN \
 	__WRITE_VDP_REG(VDP_R0, __READ_VDP_REG(VDP_R0) &= (~R0_LCB))
 
+/** Sets border color
+ */
+#define SET_BORDER_COLOR(C) __WRITE_VDP_REG(VDP_R7, ((C) | 0xf0u))
+
 /** Turns on the background layer.
     Not yet implemented
 */
@@ -314,6 +322,15 @@ void refresh_OAM(void);
     Will wrap around every ~18 minutes (unsigned 16 bits = 65535 / 60 / 60 = 18.2)
 */
 extern volatile uint16_t sys_time;
+
+/** Return R register for the DIV_REG emulation
+
+    Increments once per CPU instruction (fetches the Z80 CPU R register)
+
+*/
+uint8_t get_r_reg(void) PRESERVES_REGS(b, c, d, e, h, l, iyh, iyl);
+
+#define DIV_REG get_r_reg()
 
 /** Tracks current active ROM bank in frame 1
 */
@@ -449,6 +466,35 @@ uint8_t joypad_init(uint8_t npads, joypads_t * joypads) Z88DK_CALLEE;
     @see joypad_init(), joypads_t
 */
 void joypad_ex(joypads_t * joypads) Z88DK_FASTCALL PRESERVES_REGS(iyh, iyl);
+
+
+/** Enables unmasked interrupts
+
+    @note Use @ref CRITICAL {...} instead for creating a block of
+          of code which should execute with interrupts  temporarily
+          turned off.
+
+    @see disable_interrupts, set_interrupts, CRITICAL
+*/
+inline void enable_interrupts(void) PRESERVES_REGS(a, b, c, d, e, h, l, iyh, iyl) {
+    __asm__("ei");
+}
+
+/** Disables interrupts
+
+    @note Use @ref CRITICAL {...} instead for creating a block of
+          of code which should execute with interrupts  temporarily
+          turned off.
+
+    This function may be called as many times as you like;
+    however the first call to @ref enable_interrupts will re-enable
+    them.
+
+    @see enable_interrupts, set_interrupts, CRITICAL
+*/
+inline void disable_interrupts(void) PRESERVES_REGS(a, b, c, d, e, h, l, iyh, iyl) {
+    __asm__("di");
+}
 
 
 #if defined(__TARGET_msxdos)

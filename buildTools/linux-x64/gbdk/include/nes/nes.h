@@ -467,9 +467,7 @@ void wait_vbl_done(void) NO_OVERLAY_LOCALS;
 */
 void display_on(void) NO_OVERLAY_LOCALS;
 
-/** Turns the display off.
-
-    Waits until the VBL interrupt before turning the display off.
+/** Turns the display off immediately.
     @see DISPLAY_ON
 */
 void display_off(void) NO_OVERLAY_LOCALS;
@@ -501,6 +499,11 @@ void refresh_OAM(void) NO_OVERLAY_LOCALS;
 */
 #define SHOW_LEFT_COLUMN \
     shadow_PPUMASK |= (PPUMASK_SHOW_BG_LC | PPUMASK_SHOW_SPR_LC);
+
+/** Does nothing for NES
+    not implemented yet
+ */
+#define SET_BORDER_COLOR(C)
 
 /** Turns on the background layer.
     Sets bit 0 of the LCDC register to 1.

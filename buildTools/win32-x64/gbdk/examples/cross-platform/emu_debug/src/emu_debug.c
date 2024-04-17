@@ -155,7 +155,7 @@ int main(void)
 
     uint8_t var0 = 16;
     int16_t var1 = -10;
-    EMU_printf("var0: %hd; var1: %d; var0*var1=%d", (uint8_t)var0, var1, var0 * var1);
+    EMU_printf("var0: %hd; var1: %d; var0*var1=%d\n", (uint8_t)var0, var1, var0 * var1);
 
     // The EMU_TEXT() macro will accept a non-quoted string
     EMU_TEXT("The End");

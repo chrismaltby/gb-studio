@@ -1,5 +1,5 @@
 XL3
-H 16 areas 2F global symbols
+H 16 areas 30 global symbols
 M Runtime
 S l__DATA Ref000000
 S _main Ref000000
@@ -16,9 +16,9 @@ S _set_default_palette Ref000000
 A _CODE size 0 flags 0 addr 0
 A _HEADER size 0 flags 8 addr 0
 A _HEADER0 size 6 flags 8 addr 0
-A _HEADER1 size E flags 8 addr 10
+A _HEADER1 size 9 flags 8 addr 10
 S _WRITE_VDP_CMD Def000010
-A _HEADER2 size E flags 8 addr 20
+A _HEADER2 size 9 flags 8 addr 20
 S _WRITE_VDP_DATA Def000020
 A _HEADER3 size 1 flags 8 addr 30
 S .call_hl Def000030
@@ -35,16 +35,17 @@ S _wait_vbl_done Def000026
 A _BASE size 0 flags 0 addr 0
 A _CODE_0 size 0 flags 0 addr 0
 A _LIT size 0 flags 0 addr 0
-A _INITIALIZER size 12 flags 0 addr 0
+A _INITIALIZER size 13 flags 0 addr 0
 A _GSINIT size C flags 0 addr 0
 S .gsinit Def000000
 A _GSFINAL size 1 flags 0 addr 0
 A _DATA size 2 flags 0 addr 0
 S __SYSTEM Def000001
 S __BIOS Def000000
-A _INITIALIZED size 12 flags 0 addr 0
+A _INITIALIZED size 13 flags 0 addr 0
 S _VDP_ATTR_SHIFT Def00000E
 S _shadow_VDP_R10 Def00000A
+S __sprites_OFF Def000011
 S _sys_time Def00000B
 S _shadow_VDP_RSCX Def000008
 S _shadow_VDP_RSCY Def000009
@@ -54,7 +55,7 @@ S _shadow_VDP_R2 Def000002
 S _shadow_VDP_R3 Def000003
 S _shadow_VDP_R4 Def000004
 S .shadow_VDP_end Def00000B
-S .mode Def000011
+S .mode Def000012
 S _shadow_VDP_R5 Def000005
 S _shadow_VDP_R6 Def000006
 S _shadow_VDP_R7 Def000007
@@ -78,21 +79,13 @@ T 10 00 00
 R 00 00 03 00
 T 10 00 00
 R 00 00 03 00
-T 10 00 00 ED 57 7D F3 D3 BF 7C E2 1B 00 FB
-R 00 00 03 00 00 0B 03 00
-T 1B 00 00
-R 00 00 03 00
-T 1B 00 00 D3 BF C9
+T 10 00 00 7D F3 D3 BF 7C FB D3 BF C9
 R 00 00 03 00
 T 20 00 00
 R 00 00 04 00
 T 20 00 00
 R 00 00 04 00
-T 20 00 00 ED 57 7D F3 D3 BE 7C E2 2B 00 FB
-R 00 00 04 00 00 0B 04 00
-T 2B 00 00
-R 00 00 04 00
-T 2B 00 00 D3 BE C9
+T 20 00 00 7D F3 D3 BE 7C FB D3 BE C9
 R 00 00 04 00
 T 30 00 00
 R 00 00 05 00
@@ -278,7 +271,11 @@ T 11 00 00
 R 00 00 11 00
 T 11 00 00
 R 00 00 11 00
+T 12 00 00
+R 00 00 11 00
+T 12 00 00
+R 00 00 11 00
 T 00 00 00 06 E0 F7 FF FF BF FF F0 00 00 FF 00 00
 R 00 00 0D 00
-T 0D 00 00 00 00 00 00 00 00 03
+T 0D 00 00 00 00 00 00 00 00 00 03
 R 00 00 0D 00 8B 05 06 00

@@ -28,7 +28,7 @@ LCCFLAGS += $(LCCFLAGS_$(EXT)) # This adds the current platform specific LCC Fla
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 

@@ -10,7 +10,7 @@ BINS	= snes_joypads.nes
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 

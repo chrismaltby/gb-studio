@@ -249,26 +249,20 @@
         ;; Macro definitions
 
 .macro VDP_WRITE_DATA regH regL ?lbl
-        ld a, i
         ld a, regL
         di
-        out (#.VDP_DATA), a     ; 11
-        ld a, regH              ; 4
-        jp po, lbl              ; 7/12
-        ei                      ; 4 (total: 26/27)
-lbl:
+        out (#.VDP_DATA), a
+        ld a, regH
+        ei
         out (#.VDP_DATA), a
 .endm
 
 .macro VDP_WRITE_CMD regH regL ?lbl
-        ld a, i
         ld a, regL
         di
         out (#.VDP_CMD), a
         ld a, regH
-        jp po, lbl
         ei
-lbl:
         out (#.VDP_CMD), a
 .endm
 

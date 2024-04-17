@@ -16,7 +16,7 @@ LCCFLAGS += -Wm-yt0x19 -Wm-yoA -autobank -I$(OBJDIR)
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
+	LCCFLAGS += -debug -v -Wl-u
 endif
 
 
