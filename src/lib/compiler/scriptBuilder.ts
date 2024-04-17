@@ -4367,11 +4367,13 @@ extern void __mute_mask_${symbol};
     const { scenes } = this.options;
     const scene = scenes.find((s) => s.id === sceneId);
     if (scene) {
-      this._setConstMemInt8(
-        "fade_frames_per_step",
-        fadeSpeeds[fadeSpeed] ?? 0x3
-      );
-      this._fadeOut(true);
+      if (fadeSpeed > 0) {
+        this._setConstMemInt8(
+          "fade_frames_per_step",
+          fadeSpeeds[fadeSpeed] ?? 0x3
+        );
+        this._fadeOut(true);
+      }
       this._setConst(actorRef, 0);
       this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
       this._setConst(this._localRef(actorRef, 2), y * 8 * 16);

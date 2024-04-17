@@ -551,6 +551,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={Number(value ?? 2)}
           onChange={onChangeField}
+          allowNone={field.allowNone}
         />
       </OffscreenSkeletonInput>
     );
