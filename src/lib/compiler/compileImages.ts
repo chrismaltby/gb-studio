@@ -6,7 +6,7 @@ import {
   toTileLookup,
 } from "shared/lib/tiles/tileData";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
-import { BackgroundData } from "shared/lib/entities/entitiesTypes";
+import { BackgroundData, TilesetData } from "shared/lib/entities/entitiesTypes";
 import promiseLimit from "lib/helpers/promiseLimit";
 import { FLAG_VRAM_BANK_1 } from "consts";
 
@@ -14,6 +14,7 @@ const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
 
 type PrecompiledBackgroundData = BackgroundData & {
+  commonTilesetId?: string;
   vramData: [number[], number[]];
   tilemap: number[];
   attr: number[];
@@ -82,8 +83,22 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
   return arr.concat(Array(len - arr.length).fill(padding));
 };
 
+const mergeCommonTiles = async (
+  tileData: Uint8Array[],
+  commonTileset: TilesetData | undefined,
+  projectPath: string
+) => {
+  if (!commonTileset) {
+    return tileData;
+  }
+  const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+  const commonTileData = await readFileToTilesDataArray(commonFilename);
+  return [...commonTileData, ...tileData];
+};
+
 const compileImage = async (
   img: BackgroundData,
+  commonTileset: TilesetData | undefined,
   is360: boolean,
   cgbOnly: boolean,
   projectPath: string,
@@ -108,7 +123,12 @@ const compileImage = async (
     ? imageTileAllocationColorOnly
     : imageTileAllocationDefault;
 
-  const tilesetLookup = toTileLookup(tileData) ?? {};
+  const tileDataWithCommon = await mergeCommonTiles(
+    tileData,
+    commonTileset,
+    projectPath
+  );
+  const tilesetLookup = toTileLookup(tileDataWithCommon) ?? {};
   const uniqueTiles = Object.values(tilesetLookup);
   const tilemap = tilesAndLookupToTilemap(tileData, tilesetLookup);
 
@@ -162,6 +182,10 @@ const compileImage = async (
 
   return {
     ...img,
+    symbol: commonTileset
+      ? `${img.symbol}_${commonTileset.symbol}`
+      : img.symbol,
+    commonTilesetId: commonTileset?.id,
     vramData,
     tilemap,
     attr,
@@ -170,6 +194,7 @@ const compileImage = async (
 
 const compileImages = async (
   imgs: BackgroundData[],
+  commonTilesetsLookup: Record<string, TilesetData[]>,
   generate360Ids: string[],
   cgbOnly: boolean,
   projectPath: string,
@@ -177,16 +202,33 @@ const compileImages = async (
 ): Promise<PrecompiledBackgroundData[]> => {
   return promiseLimit(
     10,
-    imgs.map(
-      (img) => () =>
-        compileImage(
-          img,
-          generate360Ids.includes(img.id),
-          cgbOnly,
-          projectPath,
-          { warnings }
-        )
-    )
+    imgs
+      .map((img) => {
+        const commonTilesets = commonTilesetsLookup[img.id] ?? [];
+        return [
+          () =>
+            compileImage(
+              img,
+              undefined,
+              generate360Ids.includes(img.id),
+              cgbOnly,
+              projectPath,
+              { warnings }
+            ),
+          ...commonTilesets.map((commonTileset) => {
+            return () =>
+              compileImage(
+                img,
+                commonTileset,
+                generate360Ids.includes(img.id),
+                cgbOnly,
+                projectPath,
+                { warnings }
+              );
+          }),
+        ];
+      })
+      .flat()
   );
 };
 

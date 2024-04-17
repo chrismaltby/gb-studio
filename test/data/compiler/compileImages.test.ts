@@ -15,6 +15,7 @@ test("should compile images", async () => {
   ] as BackgroundData[];
   const res = await compileImages(
     backgroundData,
+    {},
     [],
     false,
     `${__dirname}/_files/`,
@@ -33,6 +34,7 @@ test("should compile split large images into two tilesets for CGB mode", async (
   ] as BackgroundData[];
   const res = await compileImages(
     backgroundData,
+    {},
     [],
     true,
     `${__dirname}/_files/`,
@@ -52,6 +54,7 @@ test("should compile large images into one overflowing bank when not in color on
   ] as BackgroundData[];
   const res = await compileImages(
     backgroundData,
+    {},
     [],
     false,
     `${__dirname}/_files/`,
@@ -70,6 +73,7 @@ test("should split tiles into two banks when in color only mode, filling first 1
   ] as BackgroundData[];
   const res = await compileImages(
     backgroundData,
+    {},
     [],
     true,
     `${__dirname}/_files/`,

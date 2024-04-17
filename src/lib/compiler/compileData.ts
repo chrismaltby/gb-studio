@@ -224,6 +224,7 @@ const ensureProjectAsset = async (
 export const precompileBackgrounds = async (
   backgrounds: BackgroundData[],
   scenes: Scene[],
+  tilesets: TilesetData[],
   customEventsLookup: Dictionary<CustomEvent>,
   cgbOnly: boolean,
   projectRoot: string,
@@ -263,6 +264,23 @@ export const precompileBackgrounds = async (
       scenes.find((scene) => scene.backgroundId === background.id)
   );
 
+  const tilesetLookup = keyBy(tilesets, "id");
+
+  const commonTilesetsLookup = scenes.reduce((memo, scene) => {
+    if (!scene.backgroundId || !scene.tilesetId) {
+      return memo;
+    }
+    const tileset = tilesetLookup[scene.tilesetId];
+    if (memo[scene.backgroundId]) {
+      if (!memo[scene.backgroundId].find((t) => t.id === scene.tilesetId)) {
+        memo[scene.backgroundId].push(tileset);
+      }
+    } else {
+      memo[scene.backgroundId] = [tileset];
+    }
+    return memo;
+  }, {} as Record<string, TilesetData[]>);
+
   // List of ids to generate 360 tiles
   const generate360Ids = usedBackgrounds
     .filter((background) =>
@@ -275,6 +293,7 @@ export const precompileBackgrounds = async (
   const backgroundLookup = indexById(usedBackgrounds);
   const backgroundsData = await compileImages(
     usedBackgrounds,
+    commonTilesetsLookup,
     generate360Ids,
     cgbOnly,
     projectRoot,
@@ -977,7 +996,9 @@ export const precompileScenes = (
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const background = usedBackgrounds.find(
-      (background) => background.id === scene.backgroundId
+      (background) =>
+        background.id === scene.backgroundId &&
+        (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
     );
     if (!background) {
       throw new Error(
@@ -1213,6 +1234,7 @@ const precompile = async (
   } = await precompileBackgrounds(
     projectData.backgrounds,
     projectData.scenes,
+    projectData.tilesets,
     customEventsLookup,
     cgbOnly,
     projectRoot,

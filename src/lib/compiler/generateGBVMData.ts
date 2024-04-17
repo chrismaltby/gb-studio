@@ -15,6 +15,7 @@ import { dirEnum } from "./helpers";
 
 export interface PrecompiledBackground {
   id: string;
+  commonTilesetId?: string;
   symbol: string;
   name: string;
   width: number;

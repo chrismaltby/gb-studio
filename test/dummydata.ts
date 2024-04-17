@@ -42,6 +42,7 @@ export const dummySceneNormalized: SceneNormalized = {
   name: "Scene",
   symbol: "scene_0",
   backgroundId: "",
+  tilesetId: "",
   x: 0,
   y: 0,
   width: 20,
