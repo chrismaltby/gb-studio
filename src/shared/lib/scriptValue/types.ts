@@ -1,3 +1,5 @@
+import { ensureTypeGenerator } from "shared/types";
+
 export const valueAtomTypes = [
   "number",
   "direction",
@@ -245,6 +247,23 @@ export const isValueAtom = (value?: ScriptValue): value is ScriptValueAtom => {
   );
 };
 
+export const isValueNumber = (
+  value: unknown
+): value is {
+  type: "number";
+  value: number;
+} => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const scriptValue = value as ScriptValue;
+  // Is a number
+  if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
+    return true;
+  }
+  return false;
+};
+
 export type PrecompiledValueFetch = {
   local: string;
   value:
@@ -294,3 +313,5 @@ export type PrecompiledValueRPNOperation =
   | {
       type: ValueOperatorType | ValueUnaryOperatorType;
     };
+
+export const ensureScriptValue = ensureTypeGenerator(isScriptValue);

@@ -29,6 +29,8 @@ import {
   walkNormalizedTriggerScripts,
 } from "shared/lib/scripts/walk";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ensureScriptValue } from "shared/lib/scriptValue/types";
+import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
 
 interface ConnectionsProps {
   width: number;
@@ -107,6 +109,11 @@ interface ConnectionProps {
   qy: number;
 }
 
+const defaultCoord = {
+  type: "number",
+  value: 0,
+} as const;
+
 const calculateTransitionCoords = ({
   type,
   scriptEvent,
@@ -123,10 +130,22 @@ const calculateTransitionCoords = ({
   const destX = destScene.x;
   const destY = destScene.y;
 
+  const scriptEventX = optimiseScriptValue(
+    ensureScriptValue(scriptEvent.args?.x, defaultCoord)
+  );
+  const scriptEventY = optimiseScriptValue(
+    ensureScriptValue(scriptEvent.args?.y, defaultCoord)
+  );
+
   const x1 = startX + (entityX + entityWidth / 2) * 8;
-  const x2 = destX + Number(scriptEvent.args?.x || 0) * 8 + 5;
+  const x2 =
+    destX + (scriptEventX.type === "number" ? scriptEventX.value : 0) * 8 + 5;
   const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
-  const y2 = 20 + destY + Number(scriptEvent.args?.y || 0) * 8 + 5;
+  const y2 =
+    20 +
+    destY +
+    (scriptEventY.type === "number" ? scriptEventY.value : 0) * 8 +
+    5;
 
   const xDiff = Math.abs(x1 - x2);
   const yDiff = Math.abs(y1 - y2);
