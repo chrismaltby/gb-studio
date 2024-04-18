@@ -44,12 +44,16 @@ import {
   isUnionValue,
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
-import { ValueOperatorType } from "shared/lib/scriptValue/types";
+import {
+  ScriptValue,
+  ValueOperatorType,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "4";
+export const LATEST_PROJECT_MINOR_VERSION = "5";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2174,7 +2178,7 @@ const migrateFrom330r2To330r3Events = (data: ProjectData): ProjectData => {
   };
 };
 
-/* Version 3.3.0 r5 updates the Scene Change event to allow script values
+/* Version 3.3.0 r4 updates the Scene Change event to allow script values
  */
 export const migrateFrom330r3To330r4Event = (
   event: ScriptEvent
@@ -2209,6 +2213,157 @@ const migrateFrom330r3To330r4Events = (data: ProjectData): ProjectData => {
       return {
         ...customEvent,
         script: mapScript(customEvent.script, migrateFrom330r3To330r4Event),
+      };
+    }),
+  };
+};
+
+/* Version 3.3.0 r5 migrates events supporting property union types to the script value representation
+ */
+export const migrateFrom330r4To330r5Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+  interface OldProperty {
+    type: "property";
+    value: string;
+  }
+  const validProperties = [
+    "xpos",
+    "ypos",
+    "pxpos",
+    "pypos",
+    "direction",
+    "frame",
+  ];
+  const isOldProperty = (value: unknown): value is OldProperty => {
+    if (
+      value &&
+      typeof value === "object" &&
+      "type" in value &&
+      (value as OldProperty).type === "property" &&
+      "value" in value &&
+      typeof (value as OldProperty).value === "string" &&
+      !("target" in value)
+    ) {
+      return true;
+    }
+    return false;
+  };
+  const migratePropertyValues = (value: unknown): ScriptValue => {
+    if (isOldProperty(value)) {
+      const [target, property] = value.value.split(":");
+      if (validProperties.includes(property)) {
+        return {
+          type: "property",
+          target,
+          property,
+        };
+      } else {
+        return {
+          type: "number",
+          value: 0,
+        };
+      }
+    }
+    if (isScriptValue(value)) {
+      return value;
+    }
+    return {
+      type: "number",
+      value: 0,
+    };
+  };
+
+  if (event.args && event.command === "EVENT_ACTOR_SET_POSITION") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: migratePropertyValues(event.args.x),
+        y: migratePropertyValues(event.args.y),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_ACTOR_SET_DIRECTION") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        direction: migratePropertyValues(event.args.direction),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_ACTOR_SET_FRAME") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        frame: migratePropertyValues(event.args.frame),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_ACTOR_MOVE_TO") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: migratePropertyValues(event.args.x),
+        y: migratePropertyValues(event.args.y),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_CAMERA_MOVE_TO") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: migratePropertyValues(event.args.x),
+        y: migratePropertyValues(event.args.y),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_CAMERA_SHAKE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        magnitude: migratePropertyValues(event.args.magnitude),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_REPLACE_TILE_XY") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        tileIndex: migratePropertyValues(event.args.tileIndex),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_REPLACE_TILE_XY_SEQUENCE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        tileIndex: migratePropertyValues(event.args.tileIndex),
+        frames: migratePropertyValues(event.args.frames),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_SET_VALUE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        value: migratePropertyValues(event.args.value),
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom330r4To330r5Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, migrateFrom330r4To330r5Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, migrateFrom330r4To330r5Event),
       };
     }),
   };
@@ -2387,6 +2542,10 @@ const migrateProject = (
     if (release === "3") {
       data = migrateFrom330r3To330r4Events(data);
       release = "4";
+    }
+    if (release === "4") {
+      data = migrateFrom330r4To330r5Events(data);
+      release = "5";
     }
   }
 

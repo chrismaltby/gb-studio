@@ -154,6 +154,15 @@ export type ValueFunctionMenuItem = {
   symbol: string;
 };
 
+const validProperties = [
+  "xpos",
+  "ypos",
+  "pxpos",
+  "pypos",
+  "direction",
+  "frame",
+];
+
 export const isScriptValue = (value: unknown): value is ScriptValue => {
   if (!value || typeof value !== "object") {
     return false;
@@ -176,7 +185,8 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   if (
     scriptValue.type === "property" &&
     typeof scriptValue.target === "string" &&
-    typeof scriptValue.property === "string"
+    typeof scriptValue.property === "string" &&
+    validProperties.includes(scriptValue.property)
   ) {
     return true;
   }

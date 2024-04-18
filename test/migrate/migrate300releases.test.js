@@ -9,6 +9,7 @@ import {
   migrateFrom320r2To330r1Settings,
   migrateFrom330r2To330r3Event,
   migrateFrom330r3To330r4Event,
+  migrateFrom330r4To330r5Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -916,6 +917,313 @@ test("should migrate EVENT_SWITCH_SCENE to use script values for coordinates", (
       x: { type: "number", value: 7 },
       y: { type: "number", value: 9 },
       direction: "down",
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should keep valid values and zero out invalid when migrate property values in EVENT_ACTOR_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "number",
+        value: 5,
+      },
+      y: 9,
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "number",
+        value: 5,
+      },
+      y: {
+        type: "number",
+        value: 0,
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_POSITION", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_POSITION",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_POSITION",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_CAMERA_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_DIRECTION", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_DIRECTION",
+    args: {
+      actorId: "player",
+      direction: {
+        type: "property",
+        value: "player:direction",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_DIRECTION",
+    args: {
+      actorId: "player",
+      direction: {
+        type: "property",
+        target: "player",
+        property: "direction",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_FRAME", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_FRAME",
+    args: {
+      actorId: "player",
+      frame: {
+        type: "property",
+        value: "player:frame",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_FRAME",
+    args: {
+      actorId: "player",
+      frame: {
+        type: "property",
+        target: "player",
+        property: "frame",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_CAMERA_SHAKE", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      magnitude: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      magnitude: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_REPLACE_TILE_XY", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_REPLACE_TILE_XY_SEQUENCE", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        value: "player:xpos",
+      },
+      frames: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      frames: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should strip invalid property values in EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        value: "player:foo",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "number",
+        value: 0,
+      },
     },
   });
 });

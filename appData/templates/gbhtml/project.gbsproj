@@ -2,7 +2,7 @@
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
     "_version": "3.3.0",
-    "_release": "4",
+    "_release": "5",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
