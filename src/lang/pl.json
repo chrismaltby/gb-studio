@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1435240417",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1437240418",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -784,6 +784,8 @@
   "FIELD_COPY_VALUE": "Kopiuj wartość",
   "FIELD_PASTE_VALUE": "Wklej wartość",
   "FIELD_STACK": "Stack (Stos)",
+  "FIELD_COMMON_TILESET": "Wspólne Tilesety",
+  "FIELD_COMMON_TILESET_DESC": "Ustawienie wspólnego zestawu tilesetów dla sceny spowoduje, że wybrane tafle tilesetu zawsze będą wczytywane w tej samej kolejności. Ostrożne użycie tego na dwóch scenach pozwoli na płynne przejścia między scenami (bez efektu przejścia) i bez błędów wczytywania tafli (tile gliching).",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
