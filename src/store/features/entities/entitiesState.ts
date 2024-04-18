@@ -100,7 +100,11 @@ import {
   extractScriptValueActorIds,
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
-import { isScriptValue, ScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isScriptValue,
+  isValueNumber,
+  ScriptValue,
+} from "shared/lib/scriptValue/types";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2807,11 +2811,16 @@ const editScriptEventDestination: CaseReducer<
   if (!scriptEvent || !scriptEvent.args) {
     return;
   }
+
   scriptEvent.args = {
     ...scriptEvent.args,
     sceneId: action.payload.destSceneId,
-    x: action.payload.x,
-    y: action.payload.y,
+    x: isValueNumber(scriptEvent.args.x)
+      ? { type: "number", value: action.payload.x }
+      : scriptEvent.args.x,
+    y: isValueNumber(scriptEvent.args.y)
+      ? { type: "number", value: action.payload.y }
+      : scriptEvent.args.y,
   };
 };
 

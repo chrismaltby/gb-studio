@@ -3773,9 +3773,9 @@ extern void __mute_mask_${symbol};
 
     this._addComment(`-- Move Camera`);
     if (speed === 0) {
-      this._cameraSetPos(".ARG1");
+      this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
     }
 
     this._assertStackNeutral(stackPtr);
@@ -4382,6 +4382,70 @@ extern void __mute_mask_${symbol};
       if (asmDir) {
         this._actorSetDirection(actorRef, asmDir);
       }
+      this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
+      this._importFarPtrData(scene.symbol);
+      this._addNL();
+    }
+  };
+
+  sceneSwitchUsingScriptValues = (
+    sceneId: string,
+    x: ScriptValue,
+    y: ScriptValue,
+    direction: ActorDirection = "down",
+    fadeSpeed = 2
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Load Scene");
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+
+    if (scene) {
+      if (fadeSpeed > 0) {
+        this._setConstMemInt8(
+          "fade_frames_per_step",
+          fadeSpeeds[fadeSpeed] ?? 0x3
+        );
+        this._fadeOut(true);
+      }
+
+      const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+        optimiseScriptValue(multiplyScriptValueConst(x, 8 * 16)),
+        "x"
+      );
+      const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+        optimiseScriptValue(multiplyScriptValueConst(y, 8 * 16)),
+        "y"
+      );
+
+      const localsLookup = this._performFetchOperations([
+        ...fetchOpsX,
+        ...fetchOpsY,
+      ]);
+
+      const rpn = this._rpn();
+
+      this._addComment(`-- Calculate coordinate values`);
+
+      // X Value
+      this._performValueRPN(rpn, rpnOpsX, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 1));
+
+      // Y Value
+      this._performValueRPN(rpn, rpnOpsY, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 2));
+      rpn.stop();
+
+      // Move
+      this._setConst(actorRef, 0);
+      this._actorSetPosition(actorRef);
+
+      // Dir
+      const asmDir = toASMDir(direction);
+      if (asmDir) {
+        this._actorSetDirection(actorRef, asmDir);
+      }
+
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(scene.symbol);
       this._addNL();

@@ -8,6 +8,7 @@ import {
   migrateFrom320r1To320r2Event,
   migrateFrom320r2To330r1Settings,
   migrateFrom330r2To330r3Event,
+  migrateFrom330r3To330r4Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -895,5 +896,26 @@ test("should migrate EVENT_IF_VALUE to EVENT_IF, storing string number values as
       },
     },
     children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_SWITCH_SCENE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_SWITCH_SCENE",
+    args: {
+      sceneId: "scene1",
+      x: 7,
+      y: 9,
+      direction: "down",
+    },
+  };
+  expect(migrateFrom330r3To330r4Event(oldEvent)).toMatchObject({
+    command: "EVENT_SWITCH_SCENE",
+    args: {
+      sceneId: "scene1",
+      x: { type: "number", value: 7 },
+      y: { type: "number", value: 9 },
+      direction: "down",
+    },
   });
 });
