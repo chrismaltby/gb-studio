@@ -49,7 +49,7 @@ import { ValueOperatorType } from "shared/lib/scriptValue/types";
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "3";
+export const LATEST_PROJECT_MINOR_VERSION = "4";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2174,6 +2174,46 @@ const migrateFrom330r2To330r3Events = (data: ProjectData): ProjectData => {
   };
 };
 
+/* Version 3.3.0 r5 updates the Scene Change event to allow script values
+ */
+export const migrateFrom330r3To330r4Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_SWITCH_SCENE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: parseInt(String(event.args.x)) || 0,
+        },
+        y: {
+          type: "number",
+          value: parseInt(String(event.args.y)) || 0,
+        },
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom330r3To330r4Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, migrateFrom330r3To330r4Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, migrateFrom330r3To330r4Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2343,6 +2383,10 @@ const migrateProject = (
     if (release === "2") {
       data = migrateFrom330r2To330r3Events(data);
       release = "3";
+    }
+    if (release === "3") {
+      data = migrateFrom330r3To330r4Events(data);
+      release = "4";
     }
   }
 
