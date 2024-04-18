@@ -2251,10 +2251,13 @@
                             "args": {
                                 "variable": "2",
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "2"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -2330,10 +2333,13 @@
                             "args": {
                                 "variable": "2",
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "2"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },

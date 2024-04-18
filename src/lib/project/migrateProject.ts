@@ -2022,10 +2022,13 @@ export const migrateFrom330r2To330r3Event = (
       args: {
         ...event.args,
         condition: {
-          type: "not",
-          value: {
+          type: "eq",
+          valueA: {
             type: "variable",
             value: event.args.variable,
+          },
+          valueB: {
+            type: "false",
           },
         },
       },

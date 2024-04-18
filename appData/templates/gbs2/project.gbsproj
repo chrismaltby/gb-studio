@@ -898,10 +898,13 @@
                                 "variable": "10",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "10"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -1006,10 +1009,13 @@
                                 "variable": "10",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "10"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -1131,10 +1137,13 @@
                                 "variable": "10",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "10"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -1256,10 +1265,13 @@
                                 "variable": "10",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "10"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -8993,10 +9005,13 @@
                             "args": {
                                 "variable": "14",
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "14"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -9073,10 +9088,13 @@
                             "args": {
                                 "variable": "14",
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "14"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -11252,10 +11270,13 @@
                                 "variable": "1",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "1"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -34300,10 +34321,13 @@
                                 "__disableElse": true,
                                 "__collapse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "L0"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -35142,10 +35166,13 @@
                                 "__collapseElse": false,
                                 "__disableElse": true,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "L0"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -42394,10 +42421,13 @@
                                 "variable": "L0",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "L0"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -42492,10 +42522,13 @@
                                 "variable": "L0",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "L0"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },
@@ -42590,10 +42623,13 @@
                                 "variable": "17",
                                 "__collapseElse": false,
                                 "condition": {
-                                    "type": "not",
-                                    "value": {
+                                    "type": "eq",
+                                    "valueA": {
                                         "type": "variable",
                                         "value": "17"
+                                    },
+                                    "valueB": {
+                                        "type": "false"
                                     }
                                 }
                             },

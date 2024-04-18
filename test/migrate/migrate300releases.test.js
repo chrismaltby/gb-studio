@@ -679,7 +679,11 @@ test("should migrate EVENT_IF_FALSE to EVENT_IF, keeping conditional branches as
   expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
     command: "EVENT_IF",
     args: {
-      condition: { type: "not", value: { type: "variable", value: "L2" } },
+      condition: {
+        type: "eq",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "false" },
+      },
     },
     children: oldEvent.children,
   });

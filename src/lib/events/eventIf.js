@@ -87,8 +87,14 @@ module.exports = {
       },
       values: {
         condition: {
-          type: "variable",
-          value: "LAST_VARIABLE",
+          type: "eq",
+          valueA: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
+          valueB: {
+            type: "true",
+          },
         },
       },
     },
@@ -101,10 +107,13 @@ module.exports = {
       },
       values: {
         condition: {
-          type: "not",
-          value: {
+          type: "eq",
+          valueA: {
             type: "variable",
             value: "LAST_VARIABLE",
+          },
+          valueB: {
+            type: "false",
           },
         },
       },
