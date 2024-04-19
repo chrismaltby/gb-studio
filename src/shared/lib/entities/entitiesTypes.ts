@@ -148,6 +148,8 @@ export type Background = {
   imageWidth: number;
   imageHeight: number;
   tileColors: number[];
+  monoOverrideId?: string;
+  autoColor?: boolean;
   plugin?: string;
   inode: string;
   _v: number;

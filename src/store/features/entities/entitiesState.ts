@@ -105,6 +105,8 @@ import {
   isValueNumber,
   ScriptValue,
 } from "shared/lib/scriptValue/types";
+import keyBy from "lodash/keyBy";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -279,6 +281,7 @@ const loadProject: CaseReducer<
     entities.engineFieldValues || {}
   );
   fixAllScenesWithModifiedBackgrounds(state);
+  updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
 };
 
@@ -295,6 +298,7 @@ const loadBackground: CaseReducer<
     ["id", "symbol"]
   );
   fixAllScenesWithModifiedBackgrounds(state);
+  updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
 };
 
@@ -306,6 +310,7 @@ const removeBackground: CaseReducer<
   }>
 > = (state, action) => {
   removeAssetEntity(state.backgrounds, backgroundsAdapter, action.payload);
+  updateMonoOverrideIds(state);
 };
 
 const loadSprite: CaseReducer<
@@ -1304,6 +1309,36 @@ const setBackgroundSymbol: CaseReducer<
     action.payload.backgroundId,
     action.payload.symbol
   );
+};
+
+const editBackgroundAutoColor: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ backgroundId: string; autoColor: boolean }>
+> = (state, action) => {
+  const background = localBackgroundSelectors.selectById(
+    state,
+    action.payload.backgroundId
+  );
+  if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        autoColor: action.payload.autoColor,
+      },
+    });
+  }
+};
+
+const updateMonoOverrideIds = (state: EntitiesState) => {
+  const backgrounds = localBackgroundSelectors.selectAll(state);
+  const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
+  const getMonoKey = (b: Background) =>
+    `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
+  const monoOverrideLookup = keyBy(backgrounds, getKey);
+  backgrounds.forEach((b) => {
+    const monoKey = getMonoKey(b);
+    b.monoOverrideId = monoOverrideLookup[monoKey]?.id;
+  });
 };
 
 /**************************************************************************
@@ -3040,6 +3075,7 @@ const entitiesSlice = createSlice({
      */
 
     setBackgroundSymbol,
+    editBackgroundAutoColor,
 
     /**************************************************************************
      * Sprites

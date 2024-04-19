@@ -94,3 +94,31 @@ export const readFileToTilesDataArray = async (
   }
   return output;
 };
+
+/**
+ * Convert an indexed image into an array of GB 2bpp data array (one array per tile)
+ * @param filename Tiles image filename
+ * @returns Array of Uint8Array of 2bpp tile data
+ */
+export const indexedImageToTilesDataArray = (
+  img: IndexedImage
+): Uint8Array[] => {
+  const xTiles = Math.floor(img.width / TILE_SIZE);
+  const yTiles = Math.floor(img.height / TILE_SIZE);
+  const output = [];
+  for (let tyi = 0; tyi < yTiles; tyi++) {
+    for (let txi = 0; txi < xTiles; txi++) {
+      const tileData = indexedImageTo2bppTileData(
+        sliceIndexedImage(
+          img,
+          txi * TILE_SIZE,
+          tyi * TILE_SIZE,
+          TILE_SIZE,
+          TILE_SIZE
+        )
+      );
+      output.push(tileData);
+    }
+  }
+  return output;
+};

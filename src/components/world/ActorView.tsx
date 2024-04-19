@@ -1,13 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-
-import { DMG_PALETTE, MIDDLE_MOUSE, TILE_SIZE } from "consts";
-import {
-  actorSelectors,
-  paletteSelectors,
-} from "store/features/entities/entitiesState";
+import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
+import { actorSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
-import { getSettings } from "store/features/settings/settingsState";
 import styled, { css } from "styled-components";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -71,25 +66,12 @@ const ActorView = memo(
     const isDragging = useAppSelector(
       (state) => selected && state.editor.dragging
     );
-    const settings = useAppSelector((state) => getSettings(state));
-    const palettesLookup = useAppSelector((state) =>
-      paletteSelectors.selectEntities(state)
-    );
     const showSprite = useAppSelector((state) => state.editor.zoom > 80);
-    const gbcEnabled = settings.colorMode !== "mono";
-    const palette: Palette = useMemo(
-      () =>
-        gbcEnabled
-          ? (palettesLookup[actor?.paletteId ?? ""] ||
-              palettesLookup[settings.defaultSpritePaletteId]) ??
-            DMG_PALETTE
-          : DMG_PALETTE,
-      [
-        actor?.paletteId,
-        gbcEnabled,
-        palettesLookup,
-        settings.defaultSpritePaletteId,
-      ]
+    const previewAsMono = useAppSelector(
+      (state) =>
+        state.project.present.settings.colorMode === "mono" ||
+        (state.project.present.settings.colorMode === "mixed" &&
+          state.project.present.settings.previewAsMono)
     );
 
     const onMouseUp = useCallback(() => {
@@ -138,8 +120,8 @@ const ActorView = memo(
                 spriteSheetId={actor.spriteSheetId}
                 direction={actor.direction}
                 frame={0}
-                palette={palette}
                 palettes={palettes}
+                previewAsMono={previewAsMono}
                 offsetPosition
               />
             </CanvasWrapper>

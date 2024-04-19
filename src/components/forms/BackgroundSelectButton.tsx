@@ -9,6 +9,7 @@ import { BackgroundSelect } from "./BackgroundSelect";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 interface BackgroundSelectProps {
   name: string;
@@ -139,6 +140,20 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
+export const Pill = styled.span`
+  color: ${(props) => props.theme.colors.button.text};
+  background: ${(props) => props.theme.colors.list.activeBackground};
+  border: 0px;
+  border-radius: 16px;
+  padding: 3px 2px;
+  margin-left: 3px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+
+  :active {
+    background: ${(props) => props.theme.colors.list.selectedBackground};
+  }
+`;
+
 export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   name,
   value,
@@ -159,6 +174,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   );
   const isCGBOnly = useAppSelector(
     (state) => state.project.present.settings.colorMode === "color"
+  );
+  const isColor = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const dispatch = useAppDispatch();
 
@@ -262,7 +280,21 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           )}
           {includeInfo && (
             <SpriteInfo>
-              <SpriteInfoTitle>{background?.name}</SpriteInfoTitle>
+              <SpriteInfoTitle>
+                {background?.name}
+                {isColor && background?.autoColor && background.monoOverrideId && (
+                  <Pill
+                    title={l10n("FIELD_MONO_OVERRIDE_DESC", {
+                      filename: background.filename,
+                      tilesFilename: monoOverrideForFilename(
+                        background.filename
+                      ),
+                    })}
+                  >
+                    +
+                  </Pill>
+                )}
+              </SpriteInfoTitle>
 
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>

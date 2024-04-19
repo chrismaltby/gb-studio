@@ -13,6 +13,7 @@ import {
 import { Background } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
+import { isMonoOverride } from "shared/lib/assets/backgrounds";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -52,7 +53,11 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
       memo.push({
         label: plugin,
         options: backgrounds
-          .filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+          .filter(
+            (s) =>
+              !isMonoOverride(s.filename) &&
+              (plugin ? s.plugin === plugin : !s.plugin)
+          )
           .map((background) => {
             return {
               label: background.name,

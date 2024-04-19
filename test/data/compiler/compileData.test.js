@@ -565,6 +565,6 @@ test.only("should include extra backgrounds when using common tilesets", async (
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(3);
-  expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
+  expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
   expect(backgroundLookup["3b"]).toBeUndefined();
 });

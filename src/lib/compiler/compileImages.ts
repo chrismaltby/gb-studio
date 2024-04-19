@@ -5,10 +5,25 @@ import {
   tilesAndLookupToTilemap,
   toTileLookup,
 } from "shared/lib/tiles/tileData";
-import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
-import { BackgroundData, TilesetData } from "shared/lib/entities/entitiesTypes";
+import {
+  readFileToTilesDataArray,
+  indexedImageToTilesDataArray,
+} from "lib/tiles/readFileToTiles";
+import {
+  BackgroundData,
+  Palette,
+  TilesetData,
+} from "shared/lib/entities/entitiesTypes";
 import promiseLimit from "lib/helpers/promiseLimit";
 import { FLAG_VRAM_BANK_1 } from "consts";
+import { fileExists } from "lib/helpers/fs/fileExists";
+import {
+  readFileToPalettes,
+  readFileToPalettesUsingTiles,
+} from "lib/tiles/readFileToPalettes";
+import type { ColorModeSetting } from "store/features/settings/settingsState";
+import l10n from "shared/lib/lang/l10n";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -18,6 +33,7 @@ type PrecompiledBackgroundData = BackgroundData & {
   vramData: [number[], number[]];
   tilemap: number[];
   attr: number[];
+  autoPalettes?: Palette[];
 };
 
 type CompileImageOptions = {
@@ -96,18 +112,39 @@ const mergeCommonTiles = async (
   return [...commonTileData, ...tileData];
 };
 
+enum ImageColorMode {
+  MANUAL,
+  AUTO_COLOR,
+  AUTO_COLOR_WITH_DMG,
+}
+
 const compileImage = async (
   img: BackgroundData,
   commonTileset: TilesetData | undefined,
   is360: boolean,
-  cgbOnly: boolean,
+  colorMode: ColorModeSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData> => {
+  let autoColorMode = ImageColorMode.MANUAL;
+  const cgbOnly = colorMode === "color";
   const filename = assetFilename(projectPath, "backgrounds", img);
-  const tileData = await readFileToTilesDataArray(filename);
+  const dmgFilename = monoOverrideForFilename(filename);
+
+  if (img.autoColor && colorMode !== "mono") {
+    const useDmgImg = img.monoOverrideId && (await fileExists(dmgFilename));
+    autoColorMode = useDmgImg
+      ? ImageColorMode.AUTO_COLOR_WITH_DMG
+      : ImageColorMode.AUTO_COLOR;
+  }
+
+  const tilesFileName =
+    autoColorMode === ImageColorMode.AUTO_COLOR_WITH_DMG
+      ? dmgFilename
+      : filename;
 
   if (is360) {
+    const tileData = await readFileToTilesDataArray(tilesFileName);
     const tilemap = Array.from(Array(360)).map((_, i) => i);
     const tiles = tileArrayToTileData(tileData);
     const attr = padArrayEnd(img.tileColors || [], tilemap.length, 0);
@@ -122,6 +159,47 @@ const compileImage = async (
   const tileAllocationStrategy = cgbOnly
     ? imageTileAllocationColorOnly
     : imageTileAllocationDefault;
+
+  let tileData: Uint8Array[] = [];
+  let autoTileColors: number[] = [];
+  let autoPalettes: Palette[] | undefined = undefined;
+  if (autoColorMode === ImageColorMode.AUTO_COLOR) {
+    // Extract both tiles and colors from color PNG
+    const paletteData = await readFileToPalettes(filename);
+    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    autoTileColors = paletteData.map;
+    autoPalettes = paletteData.palettes.map((colors, index) => ({
+      id: `${img.id}_p${index}`,
+      name: `${img.name} Palette ${index}`,
+      colors,
+    }));
+  } else if (autoColorMode === ImageColorMode.AUTO_COLOR_WITH_DMG) {
+    // Extract colors from color PNG and tiles from .mono PNG
+    const paletteData = await readFileToPalettesUsingTiles(
+      filename,
+      tilesFileName
+    );
+    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    autoTileColors = paletteData.map;
+    autoPalettes = paletteData.palettes.map((colors, index) => ({
+      id: `${img.id}_p${index}`,
+      name: `${img.name} Palette ${index}`,
+      colors,
+    }));
+  } else {
+    // Extract tiles from PNG and use manual color data
+    tileData = await readFileToTilesDataArray(tilesFileName);
+  }
+
+  // Warn if auto palettes extracted too many unique palettes
+  if (autoPalettes && autoPalettes.length > 8) {
+    warnings(
+      `${img.filename}: ${l10n("WARNING_BACKGROUND_TOO_MANY_PALETTES", {
+        paletteLength: autoPalettes.length,
+        maxPaletteLength: 8,
+      })}`
+    );
+  }
 
   const tileDataWithCommon = await mergeCommonTiles(
     tileData,
@@ -157,7 +235,11 @@ const compileImage = async (
 
   // Determine tilemap attrs
   const attr = padArrayEnd(img.tileColors || [], tilemap.length, 0).map(
-    (attr, index) => {
+    (manualAttr, index) => {
+      const attr =
+        autoTileColors[index] !== undefined
+          ? (manualAttr & 0xf8) + (autoTileColors[index] & 0x7)
+          : manualAttr;
       const tile = tilemap[index];
       const { inVRAM2, tileIndex } = tileAllocationStrategy(
         tile,
@@ -190,6 +272,7 @@ const compileImage = async (
     vramData,
     tilemap,
     attr,
+    autoPalettes,
   };
 };
 
@@ -197,7 +280,7 @@ const compileImages = async (
   imgs: BackgroundData[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
   generate360Ids: string[],
-  cgbOnly: boolean,
+  colorMode: ColorModeSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData[]> => {
@@ -212,7 +295,7 @@ const compileImages = async (
               img,
               undefined,
               generate360Ids.includes(img.id),
-              cgbOnly,
+              colorMode,
               projectPath,
               { warnings }
             ),
@@ -222,7 +305,7 @@ const compileImages = async (
                 img,
                 commonTileset,
                 generate360Ids.includes(img.id),
-                cgbOnly,
+                colorMode,
                 projectPath,
                 { warnings }
               );

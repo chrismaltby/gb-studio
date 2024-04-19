@@ -91,6 +91,23 @@ export const ArrowWrapper = styled.div`
   }
 `;
 
+export const InlineDropdownWrapper = styled.div`
+  display: inline-flex;
+  pointer-events: all;
+  margin: -6px 3px;
+
+  ${Button} {
+    opacity: 0.5;
+    padding: 1px;
+    min-width: 0;
+    height: 18px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+`;
+
 const emptyArr: React.ReactNode[] = [];
 
 export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(

@@ -15,6 +15,7 @@ import {
   EyeClosedIcon,
   PriorityTileIcon,
   SlopeIcon,
+  AutoColorIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -154,6 +155,9 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     useAppSelector((state) => state.editor);
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
+  );
+  const background = useAppSelector((state) =>
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
   );
   const selectedTool = useAppSelector((state) => state.editor.tool);
   const visible = validTools.includes(selectedTool);
@@ -447,6 +451,16 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     );
   }, [dispatch, showCollisionExtraTiles]);
 
+  const onToggleAutoColor = useCallback(() => {
+    scene?.backgroundId &&
+      dispatch(
+        entitiesActions.editBackgroundAutoColor({
+          backgroundId: scene.backgroundId,
+          autoColor: !background?.autoColor,
+        })
+      );
+  }, [dispatch, scene?.backgroundId, background]);
+
   const onMouseUp = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -545,6 +559,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         )}
         <FloatingPanelDivider />
         {showPalettes &&
+          !background?.autoColor &&
           paletteIndexes.map((paletteIndex) => (
             <Button
               variant="transparent"
@@ -562,11 +577,25 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               />
             </Button>
           ))}
+        {showPalettes && background && (
+          <Button
+            variant="transparent"
+            onClick={onToggleAutoColor}
+            active={background.autoColor}
+            title={l10n("FIELD_AUTO_COLOR")}
+          >
+            <AutoColorIcon />
+          </Button>
+        )}
         {showPalettes && <FloatingPanelDivider />}
         {showPalettes && (
           <Button
             variant="transparent"
-            onClick={setSelectedPalette(TILE_COLOR_PROP_PRIORITY)}
+            onClick={
+              TILE_COLOR_PROP_PRIORITY !== selectedPalette
+                ? setSelectedPalette(TILE_COLOR_PROP_PRIORITY)
+                : setSelectedPalette(0)
+            }
             active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
             title={l10n("TOOL_TILE_PRIORITY")}
           >

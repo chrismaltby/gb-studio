@@ -27,7 +27,6 @@ import { Checkbox } from "ui/form/Checkbox";
 import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
 import { CheckboxField } from "ui/form/CheckboxField";
 import DirectionPicker from "components/forms/DirectionPicker";
-import { DMG_PALETTE } from "consts";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
@@ -130,13 +129,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
   );
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
-  );
-  const defaultSpritePaletteId = useAppSelector(
-    (state) =>
-      state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
-  );
-  const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
   );
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
@@ -482,11 +474,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   value={actor.spriteSheetId}
                   direction={actor.direction}
                   frame={0}
-                  paletteId={
-                    colorsEnabled
-                      ? actor.paletteId || defaultSpritePaletteId
-                      : undefined
-                  }
                   onChange={onChangeSpriteSheetId}
                   includeInfo
                 />

@@ -1,10 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import {
-  paletteSelectors,
-  spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ActorDirection, SpriteSheet } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
@@ -21,7 +18,6 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   value?: string;
   direction?: ActorDirection;
   frame?: number;
-  paletteId?: string;
   onChange?: (newId: string) => void;
   filter?: (spriteSheet: SpriteSheet) => boolean;
   optional?: boolean;
@@ -48,7 +44,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   value,
   direction,
   frame,
-  paletteId,
   onChange,
   filter,
   optional,
@@ -57,9 +52,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
 }) => {
   const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
-  );
-  const palette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, paletteId || "")
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] = useState<SpriteSheet>();
@@ -129,7 +121,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={option.value}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             }
           >
@@ -145,7 +136,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || ""}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             }
           >

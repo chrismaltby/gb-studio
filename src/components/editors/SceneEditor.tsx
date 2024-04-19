@@ -4,7 +4,10 @@ import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  sceneSelectors,
+} from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -24,8 +27,11 @@ import {
   SceneParallaxLayer,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import {
+  DropdownButton,
+  InlineDropdownWrapper,
+} from "ui/buttons/DropdownButton";
 import { NoteField } from "ui/form/NoteField";
 import { SceneTypeSelect } from "components/forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "components/forms/BackgroundSelectButton";
@@ -42,6 +48,8 @@ import {
   LockOpenIcon,
   ParallaxIcon,
   JigsawIcon,
+  BlankIcon,
+  CheckIcon,
 } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
@@ -130,6 +138,9 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id)
+  );
+  const background = useAppSelector((state) =>
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
   );
   const clipboardFormat = useAppSelector(
     (state) => state.clipboard.data?.format
@@ -349,6 +360,19 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const onToggleLockScriptEditor = () => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
   };
+
+  const onChangeAutoColor = useCallback(
+    (value: boolean) => {
+      scene?.backgroundId &&
+        dispatch(
+          entitiesActions.editBackgroundAutoColor({
+            backgroundId: scene.backgroundId,
+            autoColor: value,
+          })
+        );
+    },
+    [dispatch, scene?.backgroundId]
+  );
 
   const onToggleParallaxSettings = () => {
     dispatch(
@@ -606,33 +630,33 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     includeInfo
                   />
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    {showParallaxButton && (
-                      <Button
-                        style={{
-                          padding: "5px 0",
-                          minWidth: 28,
-                          marginLeft: 10,
-                          marginBottom: 5,
-                        }}
-                        variant={scene?.parallax ? "primary" : "transparent"}
-                        onClick={onToggleParallaxSettings}
-                        title={l10n("FIELD_PARALLAX")}
-                      >
-                        <ParallaxIcon />
-                      </Button>
-                    )}
                     {showCommonTilesetButton && (
                       <Button
                         style={{
                           padding: "5px 0",
                           minWidth: 28,
-                          marginLeft: 10,
+                          marginLeft: 4,
+                          marginBottom: 4,
                         }}
                         variant={commonTilesetOpen ? "primary" : "transparent"}
                         onClick={onToggleCommonTileset}
                         title={l10n("FIELD_COMMON_TILESET")}
                       >
                         <JigsawIcon />
+                      </Button>
+                    )}
+                    {showParallaxButton && (
+                      <Button
+                        style={{
+                          padding: "5px 0",
+                          minWidth: 28,
+                          marginLeft: 4,
+                        }}
+                        variant={scene?.parallax ? "primary" : "transparent"}
+                        onClick={onToggleParallaxSettings}
+                        title={l10n("FIELD_PARALLAX")}
+                      >
+                        <ParallaxIcon />
                       </Button>
                     )}
                   </div>
@@ -690,26 +714,66 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
-                    label={l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                    label={
+                      <>
+                        {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                        <InlineDropdownWrapper>
+                          <DropdownButton
+                            size="small"
+                            variant="transparent"
+                            showArrow={false}
+                            label={l10n(
+                              background?.autoColor
+                                ? "FIELD_AUTOMATIC"
+                                : "FIELD_MANUAL"
+                            )}
+                          >
+                            <MenuItem onClick={() => onChangeAutoColor(true)}>
+                              <MenuItemIcon>
+                                {background?.autoColor ? (
+                                  <CheckIcon />
+                                ) : (
+                                  <BlankIcon />
+                                )}
+                              </MenuItemIcon>
+                              {l10n("FIELD_AUTOMATIC")}
+                            </MenuItem>
+                            <MenuItem onClick={() => onChangeAutoColor(false)}>
+                              <MenuItemIcon>
+                                {!background?.autoColor ? (
+                                  <CheckIcon />
+                                ) : (
+                                  <BlankIcon />
+                                )}
+                              </MenuItemIcon>
+                              {l10n("FIELD_MANUAL")}
+                            </MenuItem>
+                          </DropdownButton>
+                        </InlineDropdownWrapper>
+                      </>
+                    }
                   >
-                    <PaletteButtons>
-                      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                        <PaletteSelectButton
-                          key={index}
-                          name={`scenePalette${index}`}
-                          value={
-                            (scene.paletteIds && scene.paletteIds[index]) || ""
-                          }
-                          onChange={onEditPaletteId(index)}
-                          slotNumber={index + 1}
-                          optional
-                          optionalDefaultPaletteId={
-                            defaultBackgroundPaletteIds[index] || ""
-                          }
-                          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                        />
-                      ))}
-                    </PaletteButtons>
+                    {!background?.autoColor && (
+                      <PaletteButtons>
+                        {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                          <PaletteSelectButton
+                            key={index}
+                            name={`scenePalette${index}`}
+                            value={
+                              (scene.paletteIds && scene.paletteIds[index]) ||
+                              ""
+                            }
+                            onChange={onEditPaletteId(index)}
+                            slotNumber={index + 1}
+                            optional
+                            optionalDefaultPaletteId={
+                              defaultBackgroundPaletteIds[index] || ""
+                            }
+                            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                          />
+                        ))}
+                      </PaletteButtons>
+                    )}
                   </FormField>
                 </FormRow>
 
@@ -756,7 +820,6 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                       name="playerSpriteSheetId"
                       value={scene.playerSpriteSheetId}
                       direction={isStartingScene ? startDirection : "down"}
-                      paletteId={undefined}
                       onChange={onChangePlayerSpriteSheetId}
                       includeInfo
                       optional

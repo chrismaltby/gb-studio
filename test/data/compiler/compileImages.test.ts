@@ -17,7 +17,7 @@ test("should compile images", async () => {
     backgroundData,
     {},
     [],
-    false,
+    "mixed",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -36,7 +36,7 @@ test("should compile split large images into two tilesets for CGB mode", async (
     backgroundData,
     {},
     [],
-    true,
+    "color",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -56,7 +56,7 @@ test("should compile large images into one overflowing bank when not in color on
     backgroundData,
     {},
     [],
-    false,
+    "mixed",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -75,7 +75,7 @@ test("should split tiles into two banks when in color only mode, filling first 1
     backgroundData,
     {},
     [],
-    true,
+    "color",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
