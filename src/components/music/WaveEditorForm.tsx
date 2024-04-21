@@ -5,6 +5,7 @@ import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { FormRow, FormField } from "ui/form/FormLayout";
 import { ThemeContext } from "styled-components";
+import { WaveEditorInput } from "components/music/WaveEditorInput";
 
 interface WaveEditorFormProps {
   waveId: number;
@@ -187,6 +188,9 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
           }}
           height={120}
         />
+      </FormRow>
+      <FormRow>
+        <WaveEditorInput waveId={waveId} onEditWave={onEditWave} />
       </FormRow>
     </>
   );
