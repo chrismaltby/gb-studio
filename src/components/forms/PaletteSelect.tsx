@@ -12,6 +12,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
+import l10n from "shared/lib/lang/l10n";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
@@ -23,6 +24,7 @@ interface PaletteSelectProps extends SelectCommonProps {
   optionalLabel?: string;
   optionalDefaultPaletteId?: string;
   canKeep?: boolean;
+  canRestore?: boolean;
   keepLabel?: string;
 }
 
@@ -46,6 +48,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   optionalLabel,
   optionalDefaultPaletteId,
   canKeep,
+  canRestore,
   keepLabel,
   ...selectProps
 }) => {
@@ -62,6 +65,14 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               {
                 value: "keep",
                 label: keepLabel || "Keep",
+              },
+            ] as PaletteOption[])
+          : [],
+        canRestore
+          ? ([
+              {
+                value: "restore",
+                label: l10n("FIELD_RESTORE_DEFAULT"),
               },
             ] as PaletteOption[])
           : [],
@@ -91,6 +102,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   }, [
     palettes,
     canKeep,
+    canRestore,
     keepLabel,
     optional,
     optionalDefaultPaletteId,
@@ -110,6 +122,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
       setCurrentValue({
         value: "keep",
         label: keepLabel || "Keep",
+      });
+    } else if (canRestore && value === "restore") {
+      setCurrentValue({
+        value: "restore",
+        label: l10n("FIELD_RESTORE_DEFAULT"),
       });
     } else if (currentPalette) {
       setCurrentValue({
@@ -141,6 +158,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     canKeep,
     keepLabel,
     value,
+    canRestore,
   ]);
 
   const onSelectChange = (newValue: Option) => {

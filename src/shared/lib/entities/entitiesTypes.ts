@@ -518,6 +518,7 @@ export interface ScriptEventFieldSchema {
   paletteType?: "background" | "ui" | "emote" | "sprite";
   paletteIndex?: number;
   canKeep?: boolean;
+  canRestore?: boolean;
   includePlayer?: boolean;
   defaultType?: string;
   types?: string[];

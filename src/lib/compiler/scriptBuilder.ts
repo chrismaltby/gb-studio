@@ -5353,7 +5353,7 @@ extern void __mute_mask_${symbol};
   // Palettes
 
   paletteSetBackground = (paletteIds: string[]) => {
-    const { palettes, settings } = this.options;
+    const { palettes, settings, scene } = this.options;
 
     let mask = 0;
     const writePalettes: Palette[] = [];
@@ -5363,8 +5363,20 @@ extern void __mute_mask_${symbol};
       if (paletteId === "keep") {
         continue;
       }
+      let palette = getPalette(palettes, paletteId, defaultPaletteId);
+      if (paletteId === "restore") {
+        if (scene.background.autoPalettes) {
+          // Restore from auto palette
+          palette = scene.background.autoPalettes[i] ?? palette;
+        } else {
+          // Restore from manual palette
+          const scenePaletteId =
+            scene.paletteIds[i] ?? settings.defaultBackgroundPaletteIds[i];
+          palette = getPalette(palettes, scenePaletteId, defaultPaletteId);
+        }
+      }
       mask += 1 << i;
-      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
+      writePalettes.push(palette);
     }
 
     if (mask === 0) {
