@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to "Preview as Monochrome" when using mixed color mode by toggling button at bottom left of World view
 - Add ability to provide color PNGs for backgrounds and extract palettes automatically by either clicking "Auto Color" button in brush toolbar or using dropdown on Scene sidebar next to "Background Palettes" label
 - Add ability to override tile data for auto colored backgrounds by providing a matching *.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
+- Add ability to edit waveforms in music editor using keyboard with ability to copy/paste [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 

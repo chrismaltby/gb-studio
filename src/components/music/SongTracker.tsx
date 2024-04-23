@@ -737,16 +737,22 @@ export const SongTracker = ({
     setSelectionRect(undefined);
   }, []);
 
-  const onCopy = useCallback(() => {
-    if (pattern && selectedTrackerFields) {
-      // const parsedSelectedPattern = parsePatternToClipboard(pattern);
-      const parsedSelectedPattern = parsePatternFieldsToClipboard(
-        pattern,
-        selectedTrackerFields
-      );
-      dispatch(clipboardActions.copyText(parsedSelectedPattern));
-    }
-  }, [dispatch, pattern, selectedTrackerFields]);
+  const onCopy = useCallback(
+    (e) => {
+      if (e.target.nodeName === "INPUT") {
+        return;
+      }
+      if (pattern && selectedTrackerFields) {
+        // const parsedSelectedPattern = parsePatternToClipboard(pattern);
+        const parsedSelectedPattern = parsePatternFieldsToClipboard(
+          pattern,
+          selectedTrackerFields
+        );
+        dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      }
+    },
+    [dispatch, pattern, selectedTrackerFields]
+  );
 
   const onCut = useCallback(() => {
     if (pattern && selectedTrackerFields) {
