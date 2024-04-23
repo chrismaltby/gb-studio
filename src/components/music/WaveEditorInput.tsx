@@ -164,7 +164,11 @@ export const WaveEditorInput = ({
   }, [handleKeyDown, hasFocus]);
 
   const onCopy = useCallback(() => {
-    dispatch(clipboardActions.copyText(wave.join("")));
+    dispatch(
+      clipboardActions.copyText(
+        wave.map((value) => value.toString(16).toUpperCase()).join("")
+      )
+    );
   }, [dispatch, wave]);
 
   const onCut = useCallback(() => {

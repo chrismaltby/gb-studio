@@ -868,17 +868,23 @@ export const SongPianoRoll = ({
     };
   }, [onKeyDown, onKeyUp]);
 
-  // Clipoard
-  const onCopy = useCallback(() => {
-    if (pattern) {
-      const parsedSelectedPattern = parsePatternToClipboard(
-        pattern,
-        selectedChannel,
-        selectedPatternCells
-      );
-      dispatch(clipboardActions.copyText(parsedSelectedPattern));
-    }
-  }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
+  // Clipboard
+  const onCopy = useCallback(
+    (e) => {
+      if (e.target.nodeName === "INPUT") {
+        return;
+      }
+      if (pattern) {
+        const parsedSelectedPattern = parsePatternToClipboard(
+          pattern,
+          selectedChannel,
+          selectedPatternCells
+        );
+        dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      }
+    },
+    [selectedChannel, dispatch, pattern, selectedPatternCells]
+  );
 
   const onCut = useCallback(() => {
     if (pattern) {
