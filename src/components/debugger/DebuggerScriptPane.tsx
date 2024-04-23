@@ -25,6 +25,7 @@ import { TabBar } from "ui/tabs/Tabs";
 import API from "renderer/lib/api";
 import DebuggerScriptCtxBreadcrumb from "components/debugger/DebuggerScriptCtxBreadcrumb";
 import { StackIcon } from "ui/icons/Icons";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface DebuggerScriptPaneProps {
   collapsible?: boolean;
@@ -278,6 +279,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
               >
                 <StackIcon />
               </Button>
+              <FixedSpacer width={5} />
               <Button
                 size="small"
                 variant={
