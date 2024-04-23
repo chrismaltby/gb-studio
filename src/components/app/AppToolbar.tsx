@@ -12,6 +12,8 @@ import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import electronActions from "store/features/electron/electronActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
+import settingsActions from "store/features/settings/settingsActions";
 import buildGameActions, {
   BuildType,
 } from "store/features/buildGame/buildGameActions";
@@ -151,6 +153,11 @@ const AppToolbar: FC = () => {
     dispatch(electronActions.openFolder("/"));
   }, [dispatch]);
 
+  const openBuildLog = useCallback(() => {
+    dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+    dispatch(debuggerActions.setIsLogOpen(true));
+  }, [dispatch]);
+
   // Handle focusing search when pressing "/"
   const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (
@@ -264,13 +271,13 @@ const AppToolbar: FC = () => {
       </DropdownButton>
       <FixedSpacer width={10} />
       {cancelling ? (
-        <Button title={l10n("BUILD_CANCELLING")} onClick={setSection("build")}>
+        <Button title={l10n("BUILD_CANCELLING")} onClick={openBuildLog}>
           <DotsIcon />
         </Button>
       ) : (
         <Button
           title={l10n("TOOLBAR_RUN")}
-          onClick={running ? setSection("build") : onRun}
+          onClick={running ? openBuildLog : onRun}
         >
           {running ? <LoadingIcon /> : <PlayIcon />}
         </Button>

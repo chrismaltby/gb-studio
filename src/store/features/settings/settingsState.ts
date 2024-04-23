@@ -3,6 +3,7 @@ import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
+import consoleActions from "store/features/console/consoleActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 export type ColorModeSetting = "mono" | "mixed" | "color";
@@ -165,12 +166,17 @@ const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
-      return {
-        ...state,
-        ...action.payload.data.settings,
-      };
-    }),
+    builder
+      .addCase(projectActions.loadProject.fulfilled, (state, action) => {
+        return {
+          ...state,
+          ...action.payload.data.settings,
+        };
+      })
+      // Switch to debugger on any errors
+      .addCase(consoleActions.stdErr, (state, _action) => {
+        state.debuggerEnabled = true;
+      }),
 });
 
 export const getSettings = (state: RootState) => state.project.present.settings;

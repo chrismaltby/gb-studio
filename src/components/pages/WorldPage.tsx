@@ -19,7 +19,6 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerPanes from "components/debugger/DebuggerPanes";
-import API from "renderer/lib/api";
 import DebuggerControls from "components/debugger/DebuggerControls";
 
 const Wrapper = styled.div`
@@ -127,22 +126,19 @@ const WorldPage = () => {
     }
   }, [debuggerPaneHeight, dispatch, setDebuggerPaneSize, windowHeight]);
 
+  // Keep track of if debugger is visible
+  // If not and it has become visible open to default height
+  const debugOpenRef = useRef(debuggerEnabled);
   useEffect(() => {
-    const unsubscribe = API.events.debugger.data.subscribe((_, packet) => {
-      switch (packet.action) {
-        case "initialized": {
-          if (debuggerPaneHeight <= 30) {
-            setDebuggerPaneSize(windowHeight * 0.5);
-          }
-          unsubscribe();
-          break;
-        }
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
+    if (
+      debuggerEnabled &&
+      debugOpenRef.current !== debuggerEnabled &&
+      debuggerPaneHeight <= 30
+    ) {
+      setDebuggerPaneSize(windowHeight * 0.5);
+    }
+    debugOpenRef.current = debuggerEnabled;
+  }, [debuggerEnabled, debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;
@@ -283,7 +279,7 @@ const WorldPage = () => {
           <SplitPaneHeader
             onToggle={toggleDebuggerPane}
             collapsed={debuggerPaneHeight <= 30}
-            buttons={debuggerPaneHeight > 30 && <DebuggerControls />}
+            buttons={<DebuggerControls />}
           >
             {l10n("FIELD_DEBUGGER")}
           </SplitPaneHeader>

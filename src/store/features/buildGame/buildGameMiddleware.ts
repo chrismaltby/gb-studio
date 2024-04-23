@@ -1,7 +1,8 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import consoleActions from "store/features/console/consoleActions";
-import navigationActions from "store/features/navigation/navigationActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
+import settingsActions from "store/features/settings/settingsActions";
 import { denormalizeProject } from "store/features/project/projectActions";
 import actions from "./buildGameActions";
 import API from "renderer/lib/api";
@@ -41,7 +42,8 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           sceneTypes,
         });
       } catch (e) {
-        dispatch(navigationActions.setSection("build"));
+        dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(debuggerActions.setIsLogOpen(true));
       }
 
       dispatch(consoleActions.completeConsole());
@@ -75,7 +77,8 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           exportType
         );
       } catch (e) {
-        dispatch(navigationActions.setSection("build"));
+        dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(debuggerActions.setIsLogOpen(true));
       }
 
       dispatch(consoleActions.completeConsole());

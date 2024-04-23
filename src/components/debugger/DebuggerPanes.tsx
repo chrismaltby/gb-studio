@@ -11,6 +11,7 @@ import DebuggerPausedPane from "components/debugger/DebuggerPausedPane";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
+import DebuggerBuildLog from "components/debugger/DebuggerBuildLog";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -61,6 +62,8 @@ const DebuggerPanes = () => {
 
   const initialized = useAppSelector((state) => state.debug.initialized);
   const buildStatus = useAppSelector((state) => state.console.status);
+  const isLogOpen = useAppSelector((state) => state.debug.isLogOpen);
+
   const running = buildStatus === "running";
 
   const onRun = useCallback(() => {
@@ -80,6 +83,14 @@ const DebuggerPanes = () => {
     : wrapperSize.width > 560
     ? 2
     : 1;
+
+  if (isLogOpen) {
+    return (
+      <Wrapper ref={wrapperEl}>
+        <DebuggerBuildLog />
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper ref={wrapperEl}>
