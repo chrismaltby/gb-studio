@@ -93,6 +93,7 @@ interface ScriptEventHeaderProps {
 }
 
 export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
+  scroll-margin-top: 32px;
   position: relative;
   display: flex;
   align-items: center;
