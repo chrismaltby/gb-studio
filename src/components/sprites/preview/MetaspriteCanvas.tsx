@@ -17,6 +17,7 @@ interface MetaspriteCanvasProps {
   metaspriteId: string;
   flipX?: boolean;
   palettes?: Palette[];
+  previewAsMono?: boolean;
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -27,6 +28,7 @@ export const MetaspriteCanvas = memo(
     metaspriteId,
     flipX = false,
     palettes,
+    previewAsMono,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
     const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
@@ -108,6 +110,7 @@ export const MetaspriteCanvas = memo(
         flipX,
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
+        previewAsMono,
       });
     }, [
       canvasRef,
@@ -118,6 +121,7 @@ export const MetaspriteCanvas = memo(
       height,
       flipX,
       workerId,
+      previewAsMono,
     ]);
 
     return (

@@ -277,6 +277,7 @@ export const dummyProjectData: ProjectData = {
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
     colorMode: "mono",
+    previewAsMono: false,
   },
 };
 

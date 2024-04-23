@@ -113,6 +113,7 @@ import type {
 } from "store/features/engine/engineState";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
+  ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
 } from "store/features/settings/settingsState";
@@ -226,7 +227,7 @@ export const precompileBackgrounds = async (
   scenes: Scene[],
   tilesets: TilesetData[],
   customEventsLookup: Dictionary<CustomEvent>,
-  cgbOnly: boolean,
+  colorMode: ColorModeSetting,
   projectRoot: string,
   tmpPath: string,
   {
@@ -290,12 +291,11 @@ export const precompileBackgrounds = async (
     )
     .map((background) => background.id);
 
-  const backgroundLookup = indexById(usedBackgrounds);
   const backgroundsData = await compileImages(
     usedBackgrounds,
     commonTilesetsLookup,
     generate360Ids,
-    cgbOnly,
+    colorMode,
     projectRoot,
     {
       warnings,
@@ -360,6 +360,8 @@ export const precompileBackgrounds = async (
     }
   );
 
+  const backgroundLookup = indexById(usedBackgroundsWithData);
+
   return {
     usedBackgrounds: usedBackgroundsWithData,
     usedTilesets,
@@ -372,7 +374,8 @@ export const precompileBackgrounds = async (
 export const precompilePalettes = async (
   scenes: Scene[],
   settings: SettingsState,
-  palettes: Palette[]
+  palettes: Palette[],
+  backgrounds: Dictionary<PrecompiledBackground>
 ) => {
   const usedPalettes: PrecompiledPalette[] = [];
   const usedPalettesCache: Record<string, number> = {};
@@ -394,6 +397,21 @@ export const precompilePalettes = async (
     return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
   };
 
+  const getBackgroundPalette = (
+    index: number,
+    sceneBackgroundPaletteIds: string[],
+    defaultBackgroundPaletteIds: string[],
+    autoPalettes?: Palette[]
+  ) => {
+    if (autoPalettes?.[index]) {
+      return autoPalettes[index];
+    }
+    return getPalette(
+      sceneBackgroundPaletteIds[index],
+      defaultBackgroundPaletteIds[index]
+    );
+  };
+
   const getSpritePalette = (id: string, fallbackId: string): Palette => {
     const p = getPalette(id, fallbackId);
     return {
@@ -408,6 +426,10 @@ export const precompilePalettes = async (
     const scene = scenes[i];
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
+    const background = backgrounds[scene.backgroundId];
+    if (background?.autoPalettes?.[0]) {
+    }
+
     const scenePalette = {
       dmg: [
         ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"] as [
@@ -419,37 +441,53 @@ export const precompilePalettes = async (
       ],
       colors: isColor
         ? [
-            getPalette(
-              sceneBackgroundPaletteIds[0],
-              defaultBackgroundPaletteIds[0]
+            getBackgroundPalette(
+              0,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[1],
-              defaultBackgroundPaletteIds[1]
+            getBackgroundPalette(
+              1,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[2],
-              defaultBackgroundPaletteIds[2]
+            getBackgroundPalette(
+              2,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[3],
-              defaultBackgroundPaletteIds[3]
+            getBackgroundPalette(
+              3,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[4],
-              defaultBackgroundPaletteIds[4]
+            getBackgroundPalette(
+              4,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[5],
-              defaultBackgroundPaletteIds[5]
+            getBackgroundPalette(
+              5,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[6],
-              defaultBackgroundPaletteIds[6]
+            getBackgroundPalette(
+              6,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
-            getPalette(
-              sceneBackgroundPaletteIds[7],
-              defaultBackgroundPaletteIds[7]
+            getBackgroundPalette(
+              7,
+              sceneBackgroundPaletteIds,
+              defaultBackgroundPaletteIds,
+              background?.autoPalettes
             ),
           ].map((p) => p.colors)
         : undefined,
@@ -1210,7 +1248,8 @@ const precompile = async (
   const customEventsLookup = keyBy(projectData.customEvents, "id");
   const variablesLookup = keyBy(projectData.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
-  const cgbOnly = projectData.settings.colorMode === "color";
+  const colorMode = projectData.settings.colorMode;
+  const cgbOnly = colorMode === "color";
 
   const usedAssets = determineUsedAssets({
     scenes: projectData.scenes,
@@ -1236,7 +1275,7 @@ const precompile = async (
     projectData.scenes,
     projectData.tilesets,
     customEventsLookup,
-    cgbOnly,
+    colorMode,
     projectRoot,
     tmpPath,
     { warnings }
@@ -1337,7 +1376,8 @@ const precompile = async (
   } = await precompilePalettes(
     projectData.scenes,
     projectData.settings,
-    projectData.palettes
+    projectData.palettes,
+    backgroundLookup
   );
 
   const usedSounds = Object.values(usedAssets.usedSoundsLookup) as SoundData[];

@@ -13,8 +13,8 @@ interface SpriteSheetCanvasProps {
   spriteSheetId: string;
   direction?: ActorDirection;
   frame?: number;
-  palette?: Palette;
   palettes?: Palette[];
+  previewAsMono?: boolean;
   offsetPosition?: boolean;
 }
 
@@ -29,6 +29,7 @@ const SpriteSheetCanvas = ({
   direction = "down",
   frame = 0,
   palettes,
+  previewAsMono,
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
@@ -89,6 +90,7 @@ const SpriteSheetCanvas = ({
         metaspriteId={metaspriteId}
         palettes={palettes}
         flipX={flipX}
+        previewAsMono={previewAsMono}
       />
     </Wrapper>
   );

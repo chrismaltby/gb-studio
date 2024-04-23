@@ -2,10 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import {
-  paletteSelectors,
-  spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -18,7 +15,6 @@ interface SpriteSheetSelectProps {
   direction?: ActorDirection;
   includeInfo?: boolean;
   frame?: number;
-  paletteId?: string;
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
@@ -139,7 +135,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   value,
   direction,
   frame,
-  paletteId,
   onChange,
   includeInfo,
   optional,
@@ -150,9 +145,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   const timerRef = useRef<number | null>(null);
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, value || optionalValue || "")
-  );
-  const palette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, paletteId || "")
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
@@ -239,7 +231,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || optionalValue || ""}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             </PreviewWrapper>
           ) : (
@@ -271,7 +262,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 value={value}
                 frame={frame}
                 direction={direction}
-                paletteId={paletteId}
                 onChange={onSelectChange}
                 onBlur={closeMenu}
                 optional={optional}

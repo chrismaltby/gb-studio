@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set common tilesets between scenes, the common tiles will always be loaded in a consistent order between scenes sharing the same common tileset
 - Add ability to set Fade Speed as "Instant" when switching scenes, combine this with use of common tilesets in both scenes to enable seamless scene switching
 - Add ability to use variables, advanced values and expressions for coordinates in Change Scene event
+- Add ability to "Preview as Monochrome" when using mixed color mode by toggling button at bottom left of World view
+- Add ability to provide color PNGs for backgrounds and extract palettes automatically by either clicking "Auto Color" button in brush toolbar or using dropdown on Scene sidebar next to "Background Palettes" label
+- Add ability to override tile data for auto colored backgrounds by providing a matching *.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
 
 ### Changed
 

@@ -108,6 +108,10 @@ const loadProject = async (
             oldBackground?.tileColors !== undefined
               ? oldBackground.tileColors
               : [],
+          autoColor:
+            oldBackground?.autoColor !== undefined
+              ? oldBackground.autoColor
+              : false,
         };
       }
       return {

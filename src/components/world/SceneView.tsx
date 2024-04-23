@@ -29,6 +29,7 @@ import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetURL } from "shared/lib/helpers/assets";
+import AutoColorizedImage from "components/world/AutoColorizedImage";
 
 const TILE_SIZE = 8;
 
@@ -165,6 +166,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
   );
+  const tilesOverride = useAppSelector((state) =>
+    background && background.monoOverrideId
+      ? backgroundSelectors.selectById(state, background.monoOverrideId ?? "")
+      : undefined
+  );
 
   const selected = useAppSelector((state) => state.editor.scene === id);
 
@@ -182,6 +188,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const gbcEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
+  );
+  const previewAsMono = useAppSelector(
+    (state) =>
+      state.project.present.settings.colorMode === "mixed" &&
+      state.project.present.settings.previewAsMono
   );
 
   const tool = useAppSelector((state) => state.editor.tool);
@@ -509,15 +520,31 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         }}
       >
         {background && (
-          <ColorizedImage
-            width={scene.width * TILE_SIZE}
-            height={scene.height * TILE_SIZE}
-            src={assetURL("backgrounds", background)}
-            tiles={tileColors}
-            palettes={palettes}
-          />
+          <>
+            {gbcEnabled && background.autoColor ? (
+              <AutoColorizedImage
+                width={scene.width * TILE_SIZE}
+                height={scene.height * TILE_SIZE}
+                src={assetURL("backgrounds", background)}
+                tilesSrc={
+                  tilesOverride
+                    ? assetURL("backgrounds", tilesOverride)
+                    : undefined
+                }
+                previewAsMono={previewAsMono}
+              />
+            ) : (
+              <ColorizedImage
+                width={scene.width * TILE_SIZE}
+                height={scene.height * TILE_SIZE}
+                src={assetURL("backgrounds", background)}
+                tiles={tileColors}
+                palettes={palettes}
+                previewAsMono={previewAsMono}
+              />
+            )}
+          </>
         )}
-
         {showCollisions && (
           <SceneOverlay>
             <SceneCollisions

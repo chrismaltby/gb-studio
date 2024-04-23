@@ -4,6 +4,7 @@ import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
+  Palette,
   Scene,
   SceneParallaxLayer,
   Trigger,
@@ -24,6 +25,7 @@ export interface PrecompiledBackground {
   cgbTileset?: PrecompiledTileData;
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
+  autoPalettes?: Palette[];
 }
 
 export interface ProjectileData {

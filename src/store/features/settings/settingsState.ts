@@ -83,6 +83,7 @@ export type SettingsState = {
   debuggerBreakpoints: BreakpointData[];
   debuggerWatchedVariables: string[];
   colorMode: ColorModeSetting;
+  previewAsMono: boolean;
 };
 
 export const initialState: SettingsState = defaultProjectSettings;

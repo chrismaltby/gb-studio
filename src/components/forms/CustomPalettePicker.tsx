@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Solver from "3x3-equation-solver";
 import l10n from "shared/lib/lang/l10n";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors } from "store/features/entities/entitiesState";
@@ -13,6 +12,7 @@ import { NumberField } from "ui/form/NumberField";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { GBCHexToClosestHex } from "shared/lib/color/gbcColors";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -137,26 +137,6 @@ const hexToGBCHex = (hex: string) => {
 const decimalToHexString = (number: number) => {
   const ret = number.toString(16).toUpperCase();
   return ret.length === 1 ? `0${ret}` : ret;
-};
-
-// GBC representative Hex value => Closest matching 24-bit hex value =>
-const GBCHexToClosestHex = (hex: string) => {
-  if (hex.toLowerCase() === "ff0000") return hex; // otherwise comes back as 31,3,0
-  const r = Math.floor(hexToDecimal(hex.substring(0, 2)));
-  const g = Math.floor(hexToDecimal(hex.substring(2, 4)));
-  const b = Math.floor(hexToDecimal(hex.substring(4)));
-  const [r2, g2, b2] = Solver([
-    [13, 2, 1, r << 1],
-    [0, 3, 1, g >> 1],
-    [3, 2, 11, b << 1],
-  ]);
-  return (
-    (Math.round(255 * (clamp31(r2) / 31)) << 16) +
-    (Math.round(255 * (clamp31(g2) / 31)) << 8) +
-    Math.round(255 * (clamp31(b2) / 31))
-  )
-    .toString(16)
-    .padStart(6, "0");
 };
 
 const HSVtoRGB = (h: number, s: number, v: number) => {

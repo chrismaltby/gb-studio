@@ -26,7 +26,8 @@ workerCtx.onmessage = async (evt) => {
   const flipX = evt.data.flipX;
   const palette = evt.data.palette;
   const palettes: [string, string, string, string][] = evt.data.palettes;
-  const key = JSON.stringify({ src, palettes });
+  const previewAsMono = evt.data.previewAsMono;
+  const key = JSON.stringify({ src, palettes, previewAsMono });
 
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;
@@ -77,7 +78,9 @@ workerCtx.onmessage = async (evt) => {
     if (palettes) {
       [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) => {
         tilesCanvases[i] = new OffscreenCanvas(img.width, img.height);
-        const colors = palettes[i] || DMG_PALETTE.colors;
+        const colors = previewAsMono
+          ? DMG_PALETTE.colors
+          : palettes[i] || DMG_PALETTE.colors;
         const canvas = tilesCanvases[i];
         const ctx = canvas.getContext("2d");
         if (!ctx) {

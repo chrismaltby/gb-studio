@@ -786,6 +786,10 @@
   "FIELD_STACK": "Stack",
   "FIELD_COMMON_TILESET": "Common Tileset",
   "FIELD_COMMON_TILESET_DESC": "Setting a common tileset for a scene will cause the selected tileset tiles to always be loaded in the same order. Careful use of this on two scenes will allow you to seamlessly switch between the scenes with no transition and no tile glitching.",
+  "FIELD_AUTO_COLOR": "Auto Color",
+  "FIELD_MANUAL": "Manual",
+  "FIELD_PREVIEW_AS_MONO": "Preview as Monochrome",
+  "FIELD_MONO_OVERRIDE_DESC": "This image is using automatic palettes with a monochrome override defined at \"{tilesFilename}\" which will determine the tile data used, while \"{filename}\" will determine the colors",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1281,6 +1285,7 @@
   "WARNING_TOO_MANY_UNIQUE_PROJECTILES": "Too many unique projectiles used in scene \"{name}\". Scene contained {num} unique projectiles when max per scene is {max}.",
   "WARNING_ENGINE_PLUGIN_OUT_OF_DATE": "Plugin \"{pluginName}\" was created for an older version of GB Studio and may not work correctly. Plugin uses engine \"{pluginEngineVersion}\" but GB Studio is using engine \"{expectedEngineVersion}\".",
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Plugin \"{pluginName}\" is based on an unknown engine version and may not work correctly. Plugin authors can fix this issue by making sure `engine/engine.json` exists in the plugin containing at least `{\"version\": \"{expectedEngineVersion}\"}`.",
+  "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Background contains too many unique four color palettes ({paletteLength} where limit is {maxPaletteLength}) meaning it may not display correctly. Consider reducing the amount of colors used in this image.",
 
   "// 12": "Errors -------------------------------------------------------",
 

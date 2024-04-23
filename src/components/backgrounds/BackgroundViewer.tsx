@@ -11,6 +11,7 @@ import ColorizedImage from "components/world/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import { assetURL } from "shared/lib/helpers/assets";
+import AutoColorizedImage from "components/world/AutoColorizedImage";
 
 interface MetaspriteEditorProps {
   backgroundId: string;
@@ -79,7 +80,9 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
   const defaultPaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultBackgroundPaletteIds
   );
-
+  const gbcEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);
 
   useEffect(() => {
@@ -112,13 +115,21 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                 transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
               }}
             >
-              <ColorizedImage
-                width={background.width * TILE_SIZE}
-                height={background.height * TILE_SIZE}
-                src={assetURL("backgrounds", background)}
-                tiles={background.tileColors}
-                palettes={palettes}
-              />
+              {gbcEnabled && background.autoColor ? (
+                <AutoColorizedImage
+                  width={background.width * TILE_SIZE}
+                  height={background.height * TILE_SIZE}
+                  src={assetURL("backgrounds", background)}
+                />
+              ) : (
+                <ColorizedImage
+                  width={background.width * TILE_SIZE}
+                  height={background.height * TILE_SIZE}
+                  src={assetURL("backgrounds", background)}
+                  tiles={background.tileColors}
+                  palettes={palettes}
+                />
+              )}
             </ImageScale>
           </ImageContainer>
         </ContentWrapper>

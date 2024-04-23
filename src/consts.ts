@@ -198,6 +198,7 @@ export const defaultProjectSettings: SettingsState = {
   debuggerBreakpoints: [],
   debuggerWatchedVariables: [],
   colorMode: "mixed",
+  previewAsMono: false,
 };
 
 export {
