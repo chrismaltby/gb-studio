@@ -118,6 +118,20 @@ enum ImageColorMode {
   AUTO_COLOR_WITH_DMG,
 }
 
+const buildAttr = (
+  tileColors: number[],
+  autoTileColors: number[],
+  tileMapSize: number
+) => {
+  return padArrayEnd(tileColors || [], tileMapSize, 0).map(
+    (manualAttr, index) => {
+      return autoTileColors[index] !== undefined
+        ? (manualAttr & 0xf8) + (autoTileColors[index] & 0x7)
+        : manualAttr;
+    }
+  );
+};
+
 const compileImage = async (
   img: BackgroundData,
   commonTileset: TilesetData | undefined,
@@ -142,19 +156,6 @@ const compileImage = async (
     autoColorMode === ImageColorMode.AUTO_COLOR_WITH_DMG
       ? dmgFilename
       : filename;
-
-  if (is360) {
-    const tileData = await readFileToTilesDataArray(tilesFileName);
-    const tilemap = Array.from(Array(360)).map((_, i) => i);
-    const tiles = tileArrayToTileData(tileData);
-    const attr = padArrayEnd(img.tileColors || [], tilemap.length, 0);
-    return {
-      ...img,
-      vramData: [[...tiles], []],
-      tilemap,
-      attr,
-    };
-  }
 
   const tileAllocationStrategy = cgbOnly
     ? imageTileAllocationColorOnly
@@ -201,6 +202,19 @@ const compileImage = async (
     );
   }
 
+  if (is360) {
+    const tilemap = Array.from(Array(360)).map((_, i) => i);
+    const tiles = tileArrayToTileData(tileData);
+    const attr = buildAttr(img.tileColors, autoTileColors, tilemap.length);
+    return {
+      ...img,
+      vramData: [[...tiles], []],
+      tilemap,
+      attr,
+      autoPalettes,
+    };
+  }
+
   const tileDataWithCommon = await mergeCommonTiles(
     tileData,
     commonTileset,
@@ -234,12 +248,8 @@ const compileImage = async (
   });
 
   // Determine tilemap attrs
-  const attr = padArrayEnd(img.tileColors || [], tilemap.length, 0).map(
-    (manualAttr, index) => {
-      const attr =
-        autoTileColors[index] !== undefined
-          ? (manualAttr & 0xf8) + (autoTileColors[index] & 0x7)
-          : manualAttr;
+  const attr = buildAttr(img.tileColors, autoTileColors, tilemap.length).map(
+    (attr, index) => {
       const tile = tilemap[index];
       const { inVRAM2, tileIndex } = tileAllocationStrategy(
         tile,
