@@ -13,6 +13,7 @@ import {
   SongIcon,
   FolderFilledIcon,
   BackgroundIcon,
+  PaletteIcon,
 } from "ui/icons/Icons";
 import { ContextMenu } from "ui/menu/ContextMenu";
 
@@ -43,7 +44,8 @@ type EntityListItemProps<T extends EntityListItemData> = {
     | "song"
     | "duty"
     | "wave"
-    | "noise";
+    | "noise"
+    | "palette";
   icon?: ReactNode;
   nestLevel?: number;
   collapsed?: boolean;
@@ -51,6 +53,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
   onToggleCollapse?: () => void;
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   renderContextMenu?: (item: T) => JSX.Element[] | undefined;
+  renderLabel?: (item: T) => React.ReactNode;
   rename?: boolean;
   onRename?: (name: string) => void;
 };
@@ -142,6 +145,7 @@ export const EntityListItem = <T extends EntityListItemData>({
   collapsed,
   onToggleCollapse,
   renderContextMenu,
+  renderLabel,
   rename,
   onRename,
 }: EntityListItemProps<T>) => {
@@ -252,6 +256,11 @@ export const EntityListItem = <T extends EntityListItemData>({
           <NoiseIcon />
         </EntityIcon>
       )}
+      {type === "palette" && (
+        <EntityIcon>
+          <PaletteIcon />
+        </EntityIcon>
+      )}
       {rename ? (
         <EntityInput
           autoFocus
@@ -262,7 +271,7 @@ export const EntityListItem = <T extends EntityListItemData>({
         />
       ) : (
         <EntityLabel>
-          {item.name}{" "}
+          {renderLabel ? renderLabel(item) : item.name}
           {item.warning && (
             <EntityWarningLabel> ({item.warning})</EntityWarningLabel>
           )}

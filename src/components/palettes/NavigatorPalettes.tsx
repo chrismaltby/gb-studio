@@ -7,11 +7,13 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
 import { Button } from "ui/buttons/Button";
-import { PaletteIcon, PlusIcon } from "ui/icons/Icons";
+import { PlusIcon } from "ui/icons/Icons";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { FlexGrow } from "ui/spacing/Spacing";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { EntityListItem } from "ui/lists/EntityListItem";
+import { MenuItem } from "ui/menu/Menu";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -49,31 +51,6 @@ const Pane = styled.div`
   overflow: hidden;
 `;
 
-const NavigatorEntityRow = styled.div`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  & > svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-  button {
-    padding: 0;
-    height: 17px;
-    svg {
-      width: 12px;
-      height: 12px;
-      min-height: 12px;
-      min-width: 12px;
-    }
-  }
-`;
-
 export const NavigatorPalettes = ({
   height,
   selectedId,
@@ -108,6 +85,52 @@ export const NavigatorPalettes = ({
     [dispatch]
   );
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenamePaletteComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editPalette({
+            paletteId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback((item: PaletteNavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
+
+  const renderLabel = useCallback((item: PaletteNavigatorItem) => {
+    return (
+      <FlexRow>
+        {item.name}
+        <FlexGrow />
+        <PaletteBlock colors={item.colors} size={16} />
+      </FlexRow>
+    );
+  }, []);
+
   return (
     <Pane style={{ height }}>
       <SplitPaneHeader
@@ -131,14 +154,17 @@ export const NavigatorPalettes = ({
         items={items}
         setSelectedId={setSelectedId}
         height={height - 30}
+        onKeyDown={listenForRenameStart}
       >
         {({ item }) => (
-          <NavigatorEntityRow>
-            <PaletteIcon />
-            {item.name}
-            <FlexGrow />
-            <PaletteBlock colors={item.colors} size={16} />
-          </NavigatorEntityRow>
+          <EntityListItem
+            item={item}
+            type={"palette"}
+            rename={renameId === item.id}
+            onRename={onRenamePaletteComplete}
+            renderContextMenu={renderContextMenu}
+            renderLabel={renderLabel}
+          />
         )}
       </FlatList>
     </Pane>
