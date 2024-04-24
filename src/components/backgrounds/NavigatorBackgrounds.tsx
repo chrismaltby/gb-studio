@@ -102,12 +102,36 @@ export const NavigatorBackgrounds = ({
 
   const [renameId, setRenameId] = useState("");
 
-  const onRenameComplete = useCallback(
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameBackgroundComplete = useCallback(
     (name: string) => {
       if (renameId) {
         dispatch(
           entitiesActions.renameBackground({
             backgroundId: renameId,
+            name: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameTilesetComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameTileset({
+            tilesetId: renameId,
             name: stripInvalidPathCharacters(name),
           })
         );
@@ -137,18 +161,14 @@ export const NavigatorBackgrounds = ({
           items={backgroundItems}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setRenameId(selectedId);
-            }
-          }}
+          onKeyDown={listenForRenameStart}
         >
           {({ item }) => (
             <EntityListItem
               type="background"
               item={item}
               rename={renameId === item.id}
-              onRename={onRenameComplete}
+              onRename={onRenameBackgroundComplete}
               renderContextMenu={renderContextMenu}
             />
           )}
@@ -165,11 +185,14 @@ export const NavigatorBackgrounds = ({
           items={tilesetItems}
           setSelectedId={setSelectedId}
           height={splitSizes[1] - 30}
+          onKeyDown={listenForRenameStart}
         >
           {({ item }) => (
             <EntityListItem
               type="background"
               item={item}
+              rename={renameId === item.id}
+              onRename={onRenameTilesetComplete}
               renderContextMenu={renderContextMenu}
             />
           )}

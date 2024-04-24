@@ -2,8 +2,12 @@ import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesState";
 import API from "renderer/lib/api";
+import { Asset, AssetType } from "shared/lib/helpers/assets";
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -28,6 +32,31 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       }
     }
 
+    const renameAsset = async (
+      assetType: AssetType,
+      asset: Asset,
+      newName: string,
+      fileExtension: string
+    ) => {
+      const newFilename = `${newName}.${fileExtension}`;
+      const renameSuccess = await API.project.renameAsset(
+        assetType,
+        asset,
+        newFilename
+      );
+      if (!renameSuccess) {
+        return;
+      }
+      store.dispatch(
+        entitiesActions.renameAsset({
+          assetType: assetType,
+          filename: asset.filename,
+          newFilename,
+          plugin: asset.plugin,
+        })
+      );
+    };
+
     if (entitiesActions.renameBackground.match(action)) {
       const state = store.getState();
       const background = backgroundSelectors.selectById(
@@ -35,14 +64,16 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         action.payload.backgroundId
       );
       if (background) {
-        const renameSuccess = await API.project.renameAsset(
-          "backgrounds",
-          background,
-          `${action.payload.name}.png`
-        );
-        if (!renameSuccess) {
-          return;
-        }
+        renameAsset("backgrounds", background, action.payload.name, "png");
+      }
+    } else if (entitiesActions.renameTileset.match(action)) {
+      const state = store.getState();
+      const tileset = tilesetSelectors.selectById(
+        state,
+        action.payload.tilesetId
+      );
+      if (tileset) {
+        renameAsset("tilesets", tileset, action.payload.name, "png");
       }
     }
     next(action);

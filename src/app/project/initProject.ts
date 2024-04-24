@@ -171,14 +171,6 @@ API.events.watch.background.changed.subscribe((_, _filename, data) => {
   );
 });
 
-API.events.watch.background.renamed.subscribe(
-  (_, filename, newFilename, plugin) => {
-    store.dispatch(
-      entitiesActions.renameBackgroundAsset({ filename, newFilename, plugin })
-    );
-  }
-);
-
 API.events.watch.background.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeBackground({ filename, plugin }));
 });
