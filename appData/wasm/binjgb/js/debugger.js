@@ -143,6 +143,8 @@ class Debug {
             if (
               currentCtxData.closestGBVMSymbol &&
               currentCtxData.address === currentCtxData.closestAddr &&
+              currentCtxData.closestSymbol !==
+                currentCtxData.prevClosestSymbol &&
               this.breakpoints.includes(
                 currentCtxData.closestGBVMSymbol.scriptEventId
               )
