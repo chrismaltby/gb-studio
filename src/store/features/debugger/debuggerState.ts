@@ -38,6 +38,7 @@ const debuggerSlice = createSlice({
   reducers: {
     disconnect: (state) => {
       state.initialized = false;
+      state.isPaused = false;
     },
     setSymbols: (
       state,
@@ -63,6 +64,10 @@ const debuggerSlice = createSlice({
         isPaused: boolean;
       }>
     ) => {
+      if (!state.isPaused && action.payload.isPaused) {
+        // Debugger became paused, close build log
+        state.isLogOpen = false;
+      }
       state.isPaused = action.payload.isPaused;
       state.vramPreview = action.payload.vramPreview;
       if (!isEqual(state.variablesData, action.payload.variablesData)) {
