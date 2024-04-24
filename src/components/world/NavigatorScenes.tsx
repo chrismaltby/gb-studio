@@ -20,7 +20,7 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 
 interface NavigatorScenesProps {
@@ -214,13 +214,65 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: SceneNavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: SceneNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        ...(item.type === "scene"
+          ? [
+              <MenuDivider key="div-delete" />,
+              <MenuItem
+                key="delete"
+                onClick={() =>
+                  dispatch(entitiesActions.removeScene({ sceneId: item.id }))
+                }
+              >
+                {l10n("MENU_DELETE_SCENE")}
+              </MenuItem>,
+            ]
+          : []),
+        ...(item.type === "actor"
+          ? [
+              <MenuDivider key="div-delete" />,
+              <MenuItem
+                key="delete"
+                onClick={() =>
+                  dispatch(
+                    entitiesActions.removeActor({
+                      actorId: item.id,
+                      sceneId: item.sceneId,
+                    })
+                  )
+                }
+              >
+                {l10n("MENU_DELETE_ACTOR")}
+              </MenuItem>,
+            ]
+          : []),
+        ...(item.type === "trigger"
+          ? [
+              <MenuDivider key="div-delete" />,
+              <MenuItem
+                key="delete"
+                onClick={() =>
+                  dispatch(
+                    entitiesActions.removeTrigger({
+                      triggerId: item.id,
+                      sceneId: item.sceneId,
+                    })
+                  )
+                }
+              >
+                {l10n("MENU_DELETE_TRIGGER")}
+              </MenuItem>,
+            ]
+          : []),
+      ];
+    },
+    [dispatch]
+  );
 
   return (
     <FlatList
