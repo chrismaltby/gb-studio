@@ -1,4 +1,4 @@
-import stripInvalidFilenameCharacters from "../../src/lib/helpers/stripInvalidFilenameCharacters";
+import stripInvalidFilenameCharacters from "../../src/shared/lib/helpers/stripInvalidFilenameCharacters";
 
 test("should allow valid filenames", () => {
   const filename = "ValidFilename";

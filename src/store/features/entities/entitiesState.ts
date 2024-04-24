@@ -92,6 +92,7 @@ import {
   isSlope,
   defaultLocalisedSceneName,
   isVariableCustomEvent,
+  renameAssetEntity,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
@@ -300,6 +301,18 @@ const loadBackground: CaseReducer<
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
+};
+
+const renameBackgroundAsset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    newFilename: string;
+    plugin?: string;
+  }>
+> = (state, action) => {
+  renameAssetEntity(state.backgrounds, backgroundsAdapter, action.payload);
+  updateMonoOverrideIds(state);
 };
 
 const removeBackground: CaseReducer<
@@ -1339,6 +1352,24 @@ const updateMonoOverrideIds = (state: EntitiesState) => {
     const monoKey = getMonoKey(b);
     b.monoOverrideId = monoOverrideLookup[monoKey]?.id;
   });
+};
+
+const renameBackground: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ backgroundId: string; name: string }>
+> = (state, action) => {
+  const background = localBackgroundSelectors.selectById(
+    state,
+    action.payload.backgroundId
+  );
+  if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        name: action.payload.name,
+      },
+    });
+  }
 };
 
 /**************************************************************************
@@ -3076,6 +3107,7 @@ const entitiesSlice = createSlice({
 
     setBackgroundSymbol,
     editBackgroundAutoColor,
+    renameBackground,
 
     /**************************************************************************
      * Sprites
@@ -3327,6 +3359,7 @@ const entitiesSlice = createSlice({
      * Load assets
      */
     loadBackground,
+    renameBackgroundAsset,
     removeBackground,
     loadSprite,
     removeSprite,

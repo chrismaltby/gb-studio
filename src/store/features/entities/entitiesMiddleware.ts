@@ -2,11 +2,11 @@ import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { backgroundSelectors } from "store/features/entities/entitiesState";
+import API from "renderer/lib/api";
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
-    next(action);
-
+  (store) => (next) => async (action) => {
     if (
       entitiesActions.editScriptEvent.match(action) ||
       entitiesActions.editScriptEventArg.match(action) ||
@@ -27,6 +27,25 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         );
       }
     }
+
+    if (entitiesActions.renameBackground.match(action)) {
+      const state = store.getState();
+      const background = backgroundSelectors.selectById(
+        state,
+        action.payload.backgroundId
+      );
+      if (background) {
+        const renameSuccess = await API.project.renameAsset(
+          "backgrounds",
+          background,
+          `${action.payload.name}.png`
+        );
+        if (!renameSuccess) {
+          return;
+        }
+      }
+    }
+    next(action);
   };
 
 export default entitiesMiddleware;

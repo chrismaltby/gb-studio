@@ -18,6 +18,7 @@ import {
   remove,
   stat,
   statSync,
+  move,
 } from "fs-extra";
 import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
@@ -70,7 +71,7 @@ import {
   PrecompiledSpriteSheetData,
   compileSprite,
 } from "lib/compiler/compileSprites";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { Asset, AssetType, assetFilename } from "shared/lib/helpers/assets";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
@@ -104,6 +105,7 @@ import {
 import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
 import { loadSceneTypes } from "lib/project/sceneTypes";
+import { fileExists } from "lib/helpers/fs/fileExists";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -853,6 +855,59 @@ ipcMain.handle("project:set-unmodified", () => {
   projectWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
 });
+
+ipcMain.handle(
+  "project:rename-asset",
+  async (
+    _event,
+    assetType: AssetType,
+    asset: Asset,
+    filename: string
+  ): Promise<boolean> => {
+    if (!filename || filename.length === 0) {
+      return false;
+    }
+    const projectRoot = Path.dirname(projectPath);
+    const originalFilename = assetFilename(projectRoot, assetType, asset);
+    const newFilename = assetFilename(projectRoot, assetType, {
+      ...asset,
+      filename,
+    });
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(originalFilename, projectRoot);
+    guardAssetWithinProject(newFilename, projectRoot);
+
+    if (await fileExists(newFilename)) {
+      return false;
+    }
+
+    await move(originalFilename, newFilename);
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:renamed",
+      avatars: "watch:avatar:renamed",
+      emotes: "watch:emote:renamed",
+      tilesets: "watch:tileset:renamed",
+      fonts: "watch:font:renamed",
+      music: "watch:music:renamed",
+      sounds: "watch:sound:renamed",
+      sprites: "watch:sprite:renamed",
+      ui: "watch:ui:renamed",
+    };
+
+    // Send watch event explicitly rather than waiting for Chokidar
+    // as Chokidar will sometimes only emit the unlink event when renaming from Node
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
+      filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
 
 ipcMain.handle("get-documents-path", async (_event) => {
   return app.getPath("documents");

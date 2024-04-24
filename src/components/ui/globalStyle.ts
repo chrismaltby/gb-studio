@@ -21,6 +21,11 @@ const GlobalStyle = createGlobalStyle`
     color: ${(props) => props.theme.colors.text};
   }
 
+  input {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+
   #App {
     width: 100%;
     height: 100%;

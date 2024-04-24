@@ -41,6 +41,7 @@ import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import { TilesetAssetData } from "lib/project/loadTilesetData";
+import { Asset, AssetType } from "shared/lib/helpers/assets";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -85,6 +86,14 @@ const createWatchSubscribeAPI = <T>(channel: string) => {
     changed: createSubscribeAPI<
       (event: IpcRendererEvent, filename: string, data: T) => void
     >(`${channel}:changed`),
+    renamed: createSubscribeAPI<
+      (
+        event: IpcRendererEvent,
+        oldFilename: string,
+        newFilename: string,
+        plugin: string | undefined
+      ) => void
+    >(`${channel}:renamed`),
     removed: createSubscribeAPI<
       (
         event: IpcRendererEvent,
@@ -233,6 +242,12 @@ const APISetup = {
       ipcRenderer.invoke("project:save", data),
     setModified: () => ipcRenderer.invoke("project:set-modified"),
     setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),
+    renameAsset: (
+      type: AssetType,
+      asset: Asset,
+      filename: string
+    ): Promise<boolean> =>
+      ipcRenderer.invoke("project:rename-asset", type, asset, filename),
   },
   script: {
     getScriptAutoLabel: (

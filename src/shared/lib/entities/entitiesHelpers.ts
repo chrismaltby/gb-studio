@@ -555,6 +555,34 @@ export const removeAssetEntity = <
   }
 };
 
+/**
+ * Search entities for matching asset and name
+ * @param entities entity state
+ * @param adapter entity adapter
+ * @param asset asset to remove
+ */
+export const renameAssetEntity = <
+  T extends Asset & { id: string; inode: string; filename: string }
+>(
+  entities: EntityState<T>,
+  adapter: EntityAdapter<T>,
+  asset: Asset & { newFilename: string }
+) => {
+  const existingEntities = entities.ids.map(
+    (id) => entities.entities[id]
+  ) as T[];
+  const existingAsset = existingEntities.find(matchAsset(asset));
+  if (existingAsset) {
+    inodeToAssetCache[existingAsset.inode] = cloneDeep(existingAsset);
+    adapter.updateOne(entities, {
+      id: existingAsset.id,
+      changes: {
+        filename: asset.newFilename,
+      } as Partial<T>,
+    });
+  }
+};
+
 export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   state: EntitiesState,
   entities: EntityState<T>,

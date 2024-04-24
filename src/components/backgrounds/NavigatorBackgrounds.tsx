@@ -9,10 +9,13 @@ import { EntityListItem } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
+import { MenuItem } from "ui/menu/Menu";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 
 interface NavigatorBackgroundsProps {
   height: number;
@@ -97,6 +100,31 @@ export const NavigatorBackgrounds = ({
     direction: "vertical",
   });
 
+  const [renameId, setRenameId] = useState("");
+
+  const onRenameComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameBackground({
+            backgroundId: renameId,
+            name: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback((item: ImageNavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
@@ -109,8 +137,21 @@ export const NavigatorBackgrounds = ({
           items={backgroundItems}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setRenameId(selectedId);
+            }
+          }}
         >
-          {({ item }) => <EntityListItem type="background" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type="background"
+              item={item}
+              rename={renameId === item.id}
+              onRename={onRenameComplete}
+              renderContextMenu={renderContextMenu}
+            />
+          )}
         </FlatList>
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
@@ -125,7 +166,13 @@ export const NavigatorBackgrounds = ({
           setSelectedId={setSelectedId}
           height={splitSizes[1] - 30}
         >
-          {({ item }) => <EntityListItem type="background" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type="background"
+              item={item}
+              renderContextMenu={renderContextMenu}
+            />
+          )}
         </FlatList>
       </Pane>
     </>
