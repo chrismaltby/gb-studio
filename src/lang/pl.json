@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1437240418",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1443240424",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -786,6 +786,11 @@
   "FIELD_STACK": "Stack (Stos)",
   "FIELD_COMMON_TILESET": "Wspólne Tilesety",
   "FIELD_COMMON_TILESET_DESC": "Ustawienie wspólnego zestawu tilesetów dla sceny spowoduje, że wybrane tafle tilesetu zawsze będą wczytywane w tej samej kolejności. Ostrożne użycie tego na dwóch scenach pozwoli na płynne przejścia między scenami (bez efektu przejścia) i bez błędów wczytywania tafli (tile gliching).",
+  "FIELD_AUTO_COLOR": "Kolor automatyczny",
+  "FIELD_MANUAL": "Manualny",
+  "FIELD_PREVIEW_AS_MONO": "Podgląd jako monochromatyczny",
+  "FIELD_MONO_OVERRIDE_DESC": "Ten obraz używa automatycznych palet z nadpisaniem monochromatycznym zdefiniowanym w \"{tilesFilename}\", które określają używane dane tafli, podczas gdy \"{filename}\" określi kolory",
+  "FIELD_BUILD_LOG": "Dziennik budowy (log)",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1281,6 +1286,7 @@
   "WARNING_TOO_MANY_UNIQUE_PROJECTILES": "Duża ilość pocisków na scenie: \"{name}\". Scena zawiera {num} pocisków, natomiast maksymalna ilość wynosi {max}.",
   "WARNING_ENGINE_PLUGIN_OUT_OF_DATE": "Wtyczka \"{pluginName}\" została stworzona dla starszej wersji GB Studio i może nie działać poprawnie. Wtyczka korzysta z silnika w wersji \"{pluginEngineVersion}\" natomiast GB Studio używa silnika w wersji \"{expectedEngineVersion}\".",
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Wtyczka \"{pluginName}\" bazuje na nieznanej wersji silnika i może nie działać poprawnie. Autorzy wtyczki mogą naprawić ten problem, sprawdzając, czy plik `engine/engine.json`  istnieje w folderze wtyczki i zawiera przynajmniej wpis `{\"version\": \"{expectedEngineVersion}\"}`.",
+  "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Tło zawiera zbyt wiele unikalnych 4-kolorowych palet ({paletteLength} gdzie limit wynosi {maxPaletteLength}) co oznacza, że tło może zostać nie wyświetlone poprawnie. Rozważ ograniczenie ilości użytych kolorów na tym obrazie.",
   
   "// 12": "Errors -------------------------------------------------------",
 
