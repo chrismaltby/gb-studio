@@ -1,20 +1,11 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import settingsActions from "store/features/settings/settingsActions";
-import styled, { keyframes } from "styled-components";
+import styled, { css } from "styled-components";
 import { PillButton } from "ui/buttons/PillButton";
-
-const fadeIn = keyframes`
-from {
-  opacity: 0;
-}
-to {
-  opacity: 1;
-}
-`;
 
 const Wrapper = styled.div`
   position: absolute;
@@ -23,18 +14,39 @@ const Wrapper = styled.div`
   bottom: 25px;
   left: 10px;
   z-index: 11;
-  border-radius: 16px;
+  padding-left: 5px;
+`;
+
+interface ContainerProps {
+  hide?: boolean;
+}
+
+const Container = styled.div<ContainerProps>`
+  color: ${(props) => props.theme.colors.text};
   background: ${(props) => props.theme.colors.document.background};
-  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
   font-size: ${(props) => props.theme.typography.fontSize};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
+  border-radius: 16px;
+  margin-right: 15px;
+  height: 19px;
+  line-height: 19px;
+  margin-right: 15px;
+
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+
+  ${(props) =>
+    props.hide
+      ? css`
+          opacity: 0;
+        `
+      : ""}
 `;
 
 const Text = styled.div`
   color: ${(props) => props.theme.colors.text};
   opacity: 0.5;
-  animation: ${fadeIn} 0.2s;
-  margin-left: 5px;
-  margin-right: 5px;
+  padding: 0 5px;
 `;
 
 const Monospace = styled.span`
@@ -71,36 +83,42 @@ const WorldStatusBar = () => {
     );
   }, [dispatch, previewAsMono]);
 
+  const [hoverLabel, setHoverLabel] = useState({
+    sceneName: "",
+    x: "00",
+    y: "00",
+  });
+
+  useEffect(() => {
+    if (hoverSceneName) {
+      setHoverLabel({
+        sceneName: hoverSceneName,
+        x: String(x ?? 0).padStart(2, "0"),
+        y: String(y ?? 0).padStart(2, "0"),
+      });
+    }
+  }, [hoverSceneName, x, y]);
+
   return (
     <Wrapper>
       {canPreviewAsMono && (
-        <PillButton
-          variant={previewAsMono ? "primary" : "normal"}
-          onClick={onTogglePreviewAsMono}
-        >
-          {l10n("FIELD_PREVIEW_AS_MONO")}
-        </PillButton>
+        <Container>
+          <PillButton
+            variant={previewAsMono ? "primary" : "normal"}
+            onClick={onTogglePreviewAsMono}
+          >
+            {l10n("FIELD_PREVIEW_AS_MONO")}
+          </PillButton>
+        </Container>
       )}
-      {hoverSceneName && (
+      <Container hide={!hoverSceneName}>
         <Text>
-          {hoverSceneName !== undefined && (
-            <>
-              {hoverSceneName}
-              {" : "}
-            </>
-          )}
-          {x !== undefined && (
-            <>
-              {l10n("FIELD_X")}=<Monospace>{x}</Monospace>{" "}
-            </>
-          )}
-          {y !== undefined && (
-            <>
-              {l10n("FIELD_Y")}=<Monospace>{y}</Monospace>{" "}
-            </>
-          )}
+          {hoverLabel.sceneName}
+          {" : "}
+          {l10n("FIELD_X")}=<Monospace>{hoverLabel.x}</Monospace>{" "}
+          {l10n("FIELD_Y")}=<Monospace>{hoverLabel.y}</Monospace>
         </Text>
-      )}
+      </Container>
     </Wrapper>
   );
 };
