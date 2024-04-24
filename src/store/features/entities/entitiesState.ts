@@ -1448,6 +1448,24 @@ const setSpriteSheetSymbol: CaseReducer<
   );
 };
 
+const renameSpriteSheet: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ spriteSheetId: string; name: string }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectors.selectById(
+    state,
+    action.payload.spriteSheetId
+  );
+  if (spriteSheet) {
+    spriteSheetsAdapter.updateOne(state.spriteSheets, {
+      id: spriteSheet.id,
+      changes: {
+        name: action.payload.name,
+      },
+    });
+  }
+};
+
 /**************************************************************************
  * Metasprites
  */
@@ -3157,6 +3175,7 @@ const entitiesSlice = createSlice({
 
     editSpriteSheet,
     setSpriteSheetSymbol,
+    renameSpriteSheet,
 
     /**************************************************************************
      * Metasprites

@@ -29,6 +29,8 @@ import {
 } from "shared/lib/sprites/helpers";
 import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MenuItem } from "ui/menu/Menu";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -168,7 +170,7 @@ export const NavigatorSprites = ({
         const stateOpen = !closedStates.includes(state.id);
         if (tree.length > 1) {
           list.push({
-            id: `${state.id}_group`,
+            id: state.id,
             animationId: "group",
             stateId: state.id,
             name: state.name || l10n("FIELD_DEFAULT"),
@@ -279,6 +281,57 @@ export const NavigatorSprites = ({
     [dispatch, selectedId]
   );
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameSpriteComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameSpriteSheet({
+            spriteSheetId: renameId,
+            name: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameStateComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editSpriteState({
+            spriteStateId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback((item: SpriteNavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
@@ -294,8 +347,17 @@ export const NavigatorSprites = ({
           items={items}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
+          onKeyDown={listenForRenameStart}
         >
-          {({ item }) => <EntityListItem type="sprite" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type="sprite"
+              item={item}
+              rename={renameId === item.id}
+              onRename={onRenameSpriteComplete}
+              renderContextMenu={renderContextMenu}
+            />
+          )}
         </FlatList>
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
@@ -323,14 +385,16 @@ export const NavigatorSprites = ({
           setSelectedId={setSelectAnimationId}
           height={splitSizes[1] - 30}
           onKeyDown={(e: KeyboardEvent) => {
-            if (e.key === "ArrowRight") {
+            if (e.key === "Enter") {
+              setRenameId(selectedStateId);
+            } else if (e.key === "ArrowRight") {
               openState(selectedStateId);
             } else if (e.key === "ArrowLeft") {
               closeState(selectedStateId);
             }
           }}
         >
-          {({ item }) =>
+          {({ item, index }) =>
             item.type === "state" ? (
               <EntityListItem
                 item={item}
@@ -338,6 +402,9 @@ export const NavigatorSprites = ({
                 collapsable={true}
                 collapsed={!item.isOpen}
                 onToggleCollapse={toggleStateOpen(item.stateId)}
+                rename={index > 0 && renameId === item.id}
+                onRename={index > 0 ? onRenameStateComplete : undefined}
+                renderContextMenu={index > 0 ? renderContextMenu : undefined}
               />
             ) : (
               <EntityListItem

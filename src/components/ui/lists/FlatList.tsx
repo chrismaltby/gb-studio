@@ -21,6 +21,7 @@ interface RowProps<T> {
     readonly renderItem: (props: {
       selected: boolean;
       item: T;
+      index: number;
     }) => React.ReactNode;
   };
 }
@@ -34,6 +35,7 @@ export interface FlatListProps<T> {
   readonly children?: (props: {
     selected: boolean;
     item: T;
+    index: number;
   }) => React.ReactNode;
   readonly theme?: ThemeInterface;
 }
@@ -58,7 +60,11 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
     >
       <ListItem tabIndex={-1} data-selected={data.selectedId === item.id}>
         {data.renderItem
-          ? data.renderItem({ item, selected: data.selectedId === item.id })
+          ? data.renderItem({
+              item,
+              selected: data.selectedId === item.id,
+              index,
+            })
           : item.name}
       </ListItem>
     </div>

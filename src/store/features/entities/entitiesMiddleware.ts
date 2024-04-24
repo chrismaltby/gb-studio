@@ -4,6 +4,7 @@ import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import {
   backgroundSelectors,
+  spriteSheetSelectors,
   tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import API from "renderer/lib/api";
@@ -74,6 +75,15 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       );
       if (tileset) {
         renameAsset("tilesets", tileset, action.payload.name, "png");
+      }
+    } else if (entitiesActions.renameSpriteSheet.match(action)) {
+      const state = store.getState();
+      const spriteSheet = spriteSheetSelectors.selectById(
+        state,
+        action.payload.spriteSheetId
+      );
+      if (spriteSheet) {
+        renameAsset("sprites", spriteSheet, action.payload.name, "png");
       }
     }
     next(action);
