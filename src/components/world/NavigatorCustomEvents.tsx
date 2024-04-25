@@ -1,12 +1,13 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
-import styled from "styled-components";
-import { CodeIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { EntityListItem } from "ui/lists/EntityListItem";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface NavigatorCustomEventsProps {
   height: number;
@@ -36,18 +37,6 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
-const NavigatorEntityRow = styled.div`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-`;
-
 export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   height,
 }) => {
@@ -68,17 +57,71 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
     dispatch(editorActions.selectCustomEvent({ customEventId: id }));
   };
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editCustomEvent({
+            customEventId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback(
+    (item: NavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              entitiesActions.removeCustomEvent({ customEventId: item.id })
+            )
+          }
+        >
+          {l10n("MENU_DELETE_CUSTOM_EVENT")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
+
   return (
     <FlatList
       selectedId={selectedId}
       items={items}
       setSelectedId={setSelectedId}
       height={height}
+      onKeyDown={listenForRenameStart}
       children={({ item }) => (
-        <NavigatorEntityRow>
-          <CodeIcon />
-          {item.name}
-        </NavigatorEntityRow>
+        <EntityListItem
+          item={item}
+          type="script"
+          rename={renameId === item.id}
+          onRename={onRenameComplete}
+          renderContextMenu={renderContextMenu}
+        />
       )}
     />
   );

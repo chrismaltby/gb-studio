@@ -14,6 +14,7 @@ import {
   FolderFilledIcon,
   BackgroundIcon,
   PaletteIcon,
+  CodeIcon,
 } from "ui/icons/Icons";
 import { ContextMenu } from "ui/menu/ContextMenu";
 
@@ -45,7 +46,8 @@ type EntityListItemProps<T extends EntityListItemData> = {
     | "duty"
     | "wave"
     | "noise"
-    | "palette";
+    | "palette"
+    | "script";
   icon?: ReactNode;
   nestLevel?: number;
   collapsed?: boolean;
@@ -261,6 +263,11 @@ export const EntityListItem = <T extends EntityListItemData>({
       {type === "palette" && (
         <EntityIcon>
           <PaletteIcon />
+        </EntityIcon>
+      )}
+      {type === "script" && (
+        <EntityIcon>
+          <CodeIcon />
         </EntityIcon>
       )}
       {rename ? (
