@@ -90,7 +90,12 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const music = musicSelectors.selectById(state, action.payload.musicId);
       if (music) {
-        renameAsset("music", music, action.payload.name, "uge");
+        renameAsset(
+          "music",
+          music,
+          action.payload.name,
+          music.type === "uge" ? "uge" : "mod"
+        );
       }
     }
     next(action);

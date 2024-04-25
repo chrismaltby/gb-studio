@@ -9,6 +9,9 @@ import styled from "styled-components";
 import { NoSongsMessage } from "./NoSongsMessage";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { MenuItem } from "ui/menu/Menu";
 
 interface NavigatorSongsProps {
   height: number;
@@ -35,7 +38,7 @@ const EmptyState = styled.div`
 const songToNavigatorItem = (song: Music, songIndex: number): NavigatorItem => {
   return {
     id: song.id,
-    name: song.filename ? song.filename : `Song ${songIndex + 1}`,
+    name: song.name ? song.name : `Song ${songIndex + 1}`,
   };
 };
 
@@ -77,6 +80,40 @@ export const NavigatorModSongs = ({
     [dispatch]
   );
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameSongComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameMusic({
+            musicId: renameId,
+            name: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback((item: NavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
+
   return (
     <>
       <Pane style={{ height: height }}>
@@ -89,8 +126,17 @@ export const NavigatorModSongs = ({
             items={items}
             setSelectedId={setSelectedId}
             height={height - 30}
+            onKeyDown={listenForRenameStart}
           >
-            {({ item }) => <EntityListItem type="song" item={item} />}
+            {({ item }) => (
+              <EntityListItem
+                type="song"
+                item={item}
+                rename={renameId === item.id}
+                onRename={onRenameSongComplete}
+                renderContextMenu={renderContextMenu}
+              />
+            )}
           </FlatList>
         ) : (
           <EmptyState>
