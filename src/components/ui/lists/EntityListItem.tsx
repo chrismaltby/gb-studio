@@ -110,6 +110,8 @@ const EntityLabel = styled.div`
 `;
 
 const EntityInput = styled.input`
+  background: ${(props) => props.theme.colors.input.background};
+  color: ${(props) => props.theme.colors.input.text};
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
