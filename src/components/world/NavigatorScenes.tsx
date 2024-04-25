@@ -20,11 +20,9 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuDivider, MenuGroup, MenuItem, MenuSection } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
-import { Button } from "ui/buttons/Button";
-import { ArrowIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { LabelButton } from "ui/buttons/LabelButton";
 import settingsActions from "store/features/settings/settingsActions";
@@ -228,24 +226,6 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       setRenameId("");
     },
     [dispatch, renameId]
-  );
-
-  const onChangeSceneProp = useCallback(
-    <K extends keyof SceneNormalized>(
-      sceneId: string,
-      key: K,
-      value: SceneNormalized[K]
-    ) => {
-      dispatch(
-        entitiesActions.editScene({
-          sceneId,
-          changes: {
-            [key]: value,
-          },
-        })
-      );
-    },
-    [dispatch]
   );
 
   const renderContextMenu = useCallback(
