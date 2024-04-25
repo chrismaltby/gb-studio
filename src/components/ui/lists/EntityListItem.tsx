@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   ActorIcon,
@@ -197,6 +197,9 @@ export const EntityListItem = <T extends EntityListItemData>({
     },
     [name, item, onRename]
   );
+  useEffect(() => {
+    setName(item.name);
+  }, [item.name]);
   return (
     <EntityListItemWrapper nestLevel={nestLevel} onContextMenu={onContextMenu}>
       {collapsable && (
