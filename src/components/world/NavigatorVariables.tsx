@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -7,6 +7,9 @@ import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MenuItem } from "ui/menu/Menu";
+import l10n from "shared/lib/lang/l10n";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 interface NavigatorVariablesProps {
   height: number;
@@ -58,13 +61,56 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
     dispatch(editorActions.selectVariable({ variableId: id }));
   };
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameVariable({
+            variableId: renameId,
+            name,
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const renderContextMenu = useCallback((item: NavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
+
   return (
     <FlatList
       selectedId={selectedId}
       items={items}
       setSelectedId={setSelectedId}
       height={height}
-      children={({ item }) => <EntityListItem type="variable" item={item} />}
+      onKeyDown={listenForRenameStart}
+      children={({ item }) => (
+        <EntityListItem
+          type="variable"
+          item={item}
+          rename={renameId === item.id}
+          onRename={onRenameComplete}
+          renderContextMenu={renderContextMenu}
+        />
+      )}
     />
   );
 };
