@@ -5,11 +5,13 @@ import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEven
 import {
   backgroundSelectors,
   musicSelectors,
+  soundSelectors,
   spriteSheetSelectors,
   tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import API from "renderer/lib/api";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -96,6 +98,20 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
           action.payload.name,
           music.type === "uge" ? "uge" : "mod"
         );
+      }
+    } else if (entitiesActions.renameSound.match(action)) {
+      const state = store.getState();
+      const sound = soundSelectors.selectById(state, action.payload.soundId);
+      if (sound) {
+        const ext =
+          sound.type === "fxhammer"
+            ? "sav"
+            : sound.type === "vgm"
+            ? "vgm"
+            : sound.type === "wav"
+            ? "wav"
+            : assertUnreachable(sound.type);
+        renameAsset("sounds", sound, action.payload.name, ext);
       }
     }
     next(action);

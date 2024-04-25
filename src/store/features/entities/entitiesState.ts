@@ -534,6 +534,21 @@ const setSoundSymbol: CaseReducer<
   );
 };
 
+const renameSound: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ soundId: string; name: string }>
+> = (state, action) => {
+  const sound = localSoundSelectors.selectById(state, action.payload.soundId);
+  if (sound) {
+    soundsAdapter.updateOne(state.sounds, {
+      id: sound.id,
+      changes: {
+        name: action.payload.name,
+      },
+    });
+  }
+};
+
 const removeSound: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3406,6 +3421,7 @@ const entitiesSlice = createSlice({
      */
 
     setSoundSymbol,
+    renameSound,
 
     /**************************************************************************
      * Emote
@@ -3563,7 +3579,7 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
 );
-const _localSoundSelectors = soundsAdapter.getSelectors(
+const localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
 );
 const localTilesetSelectors = tilesetsAdapter.getSelectors(
