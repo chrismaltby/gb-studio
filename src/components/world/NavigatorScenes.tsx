@@ -20,8 +20,14 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuGroup, MenuItem, MenuSection } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
+import styled from "styled-components";
+import { Button } from "ui/buttons/Button";
+import { ArrowIcon } from "ui/icons/Icons";
+import DirectionPicker from "components/forms/DirectionPicker";
+import { LabelButton } from "ui/buttons/LabelButton";
+import settingsActions from "store/features/settings/settingsActions";
 
 interface NavigatorScenesProps {
   height: number;
@@ -75,6 +81,10 @@ const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
+const StartSceneLabel = styled.div`
+  font-weight: bold;
+`;
+
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const [items, setItems] = useState<SceneNavigatorItem[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
@@ -87,6 +97,12 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const sceneId = useAppSelector((state) => state.editor.scene);
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
+  const startSceneId = useAppSelector(
+    (state) => state.project.present.settings.startSceneId
+  );
+  const startDirection = useAppSelector(
+    (state) => state.project.present.settings.startDirection
+  );
 
   const {
     values: openSceneIds,
@@ -214,9 +230,110 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     [dispatch, renameId]
   );
 
+  const onChangeSceneProp = useCallback(
+    <K extends keyof SceneNormalized>(
+      sceneId: string,
+      key: K,
+      value: SceneNormalized[K]
+    ) => {
+      dispatch(
+        entitiesActions.editScene({
+          sceneId,
+          changes: {
+            [key]: value,
+          },
+        })
+      );
+    },
+    [dispatch]
+  );
+
   const renderContextMenu = useCallback(
     (item: SceneNavigatorItem) => {
       return [
+        ...(item.type === "scene"
+          ? [
+              <MenuSection style={{ paddingRight: 10, marginBottom: 5 }}>
+                <div style={{ display: "flex" }}>
+                  <div style={{ marginRight: 5 }}>
+                    <LabelButton
+                      onClick={() =>
+                        dispatch(
+                          entitiesActions.editScene({
+                            sceneId: item.id,
+                            changes: {
+                              labelColor: "",
+                            },
+                          })
+                        )
+                      }
+                    />
+                  </div>
+                  {[
+                    "red",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "blue",
+                    "purple",
+                    "gray",
+                  ].map((color) => (
+                    <div
+                      key={color}
+                      style={{ marginRight: color === "gray" ? 0 : 5 }}
+                    >
+                      <LabelButton
+                        color={color}
+                        onClick={() =>
+                          dispatch(
+                            entitiesActions.editScene({
+                              sceneId: item.id,
+                              changes: {
+                                labelColor: color,
+                              },
+                            })
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </MenuSection>,
+              <MenuDivider key="div-direction" />,
+              <MenuItem
+                key="startingScene"
+                onClick={() =>
+                  dispatch(
+                    settingsActions.editSettings({
+                      startSceneId: item.id,
+                    })
+                  )
+                }
+              >
+                {l10n("FIELD_SET_AS_STARTING_SCENE")}
+              </MenuItem>,
+
+              <MenuSection>
+                <div style={{ width: 200 }}>
+                  <DirectionPicker
+                    id="startDirection"
+                    value={
+                      item.id === startSceneId ? startDirection : undefined
+                    }
+                    onChange={(direction) => {
+                      dispatch(
+                        settingsActions.editSettings({
+                          startSceneId: item.id,
+                          startDirection: direction,
+                        })
+                      );
+                    }}
+                  />
+                </div>
+              </MenuSection>,
+              <MenuDivider key="div-direction" />,
+            ]
+          : []),
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
         </MenuItem>,
@@ -271,7 +388,17 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           : []),
       ];
     },
-    [dispatch]
+    [dispatch, startDirection, startSceneId]
+  );
+
+  const renderSceneLabel = useCallback(
+    (item: SceneNavigatorItem) => {
+      if (item.id === startSceneId) {
+        return <StartSceneLabel>{item.name}</StartSceneLabel>;
+      }
+      return item.name;
+    },
+    [startSceneId]
   );
 
   return (
@@ -299,6 +426,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             rename={renameId === item.id}
             onRename={onRenameSceneComplete}
             renderContextMenu={renderContextMenu}
+            renderLabel={renderSceneLabel}
           />
         ) : (
           <EntityListItem

@@ -791,6 +791,7 @@
   "FIELD_PREVIEW_AS_MONO": "Preview as Monochrome",
   "FIELD_MONO_OVERRIDE_DESC": "This image is using automatic palettes with a monochrome override defined at \"{tilesFilename}\" which will determine the tile data used, while \"{filename}\" will determine the colors",
   "FIELD_BUILD_LOG": "Build Log",
+  "FIELD_SET_AS_STARTING_SCENE": "Set As Starting Scene",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
