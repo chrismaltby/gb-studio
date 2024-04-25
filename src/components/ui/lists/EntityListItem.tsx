@@ -55,7 +55,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
   renderContextMenu?: (item: T) => JSX.Element[] | undefined;
   renderLabel?: (item: T) => React.ReactNode;
   rename?: boolean;
-  onRename?: (name: string) => void;
+  onRename?: (name: string, item: T) => void;
 };
 
 interface NavigatorArrowProps {
@@ -174,8 +174,8 @@ export const EntityListItem = <T extends EntityListItemData>({
 
   const [name, setName] = useState(item.name);
   const onRenameBlur = useCallback(() => {
-    onRename?.(name);
-  }, [name, onRename]);
+    onRename?.(name, item);
+  }, [item, name, onRename]);
   const onRenameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setName(e.currentTarget.value);
@@ -185,13 +185,13 @@ export const EntityListItem = <T extends EntityListItemData>({
   const onRenameKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Escape") {
-        onRename?.(item.name);
+        onRename?.(item.name, item);
         setName(item.name);
       } else if (e.key === "Enter") {
-        onRename?.(name);
+        onRename?.(name, item);
       }
     },
-    [item.name, name, onRename]
+    [name, item, onRename]
   );
   return (
     <EntityListItemWrapper nestLevel={nestLevel} onContextMenu={onContextMenu}>

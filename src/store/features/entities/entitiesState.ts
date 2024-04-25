@@ -479,6 +479,21 @@ const setMusicSymbol: CaseReducer<
   );
 };
 
+const renameMusic: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ musicId: string; name: string }>
+> = (state, action) => {
+  const music = localMusicSelectors.selectById(state, action.payload.musicId);
+  if (music) {
+    musicAdapter.updateOne(state.music, {
+      id: music.id,
+      changes: {
+        name: action.payload.name,
+      },
+    });
+  }
+};
+
 const removeMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3384,6 +3399,7 @@ const entitiesSlice = createSlice({
 
     editMusicSettings,
     setMusicSymbol,
+    renameMusic,
 
     /**************************************************************************
      * Sounds

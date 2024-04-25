@@ -4,6 +4,7 @@ import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import {
   backgroundSelectors,
+  musicSelectors,
   spriteSheetSelectors,
   tilesetSelectors,
 } from "store/features/entities/entitiesState";
@@ -84,6 +85,12 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       );
       if (spriteSheet) {
         renameAsset("sprites", spriteSheet, action.payload.name, "png");
+      }
+    } else if (entitiesActions.renameMusic.match(action)) {
+      const state = store.getState();
+      const music = musicSelectors.selectById(state, action.payload.musicId);
+      if (music) {
+        renameAsset("music", music, action.payload.name, "uge");
       }
     }
     next(action);
