@@ -106,6 +106,7 @@ import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
 import { loadSceneTypes } from "lib/project/sceneTypes";
 import { fileExists } from "lib/helpers/fs/fileExists";
+import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -902,6 +903,51 @@ ipcMain.handle(
       renameEventLookup[assetType],
       asset.filename,
       filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
+
+ipcMain.handle(
+  "project:remove-asset",
+  async (_event, assetType: AssetType, asset: Asset): Promise<boolean> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = assetFilename(projectRoot, assetType, asset);
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+
+    if (!(await fileExists(filename))) {
+      return false;
+    }
+
+    if (!confirmDeleteAsset(assetType, asset)) {
+      return false;
+    }
+
+    try {
+      await remove(filename);
+    } catch (e) {
+      return false;
+    }
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:removed",
+      avatars: "watch:avatar:removed",
+      emotes: "watch:emote:removed",
+      tilesets: "watch:tileset:removed",
+      fonts: "watch:font:removed",
+      music: "watch:music:removed",
+      sounds: "watch:sound:removed",
+      sprites: "watch:sprite:removed",
+      ui: "watch:ui:removed",
+    };
+
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
       asset.plugin
     );
 

@@ -27,7 +27,7 @@ const loadMusicData =
     const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
     const fileStat = await statAsync(filename, { bigint: true });
     const inode = fileStat.ino.toString();
-    const name = file.replace(/(.mod|.uge)/i, "");
+    const name = file.replace(/(.mod|.uge)$/i, "");
     return {
       id: uuidv4(),
       plugin,

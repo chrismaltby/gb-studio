@@ -232,9 +232,12 @@ test("Should remove backgrounds that are deleted while project is open", () => {
     },
   };
 
-  const action = entitiesActions.removeBackground({
-    filename: "bg1.png",
-    plugin: undefined,
+  const action = entitiesActions.removedAsset({
+    assetType: "backgrounds",
+    asset: {
+      filename: "bg1.png",
+      plugin: undefined,
+    },
   });
 
   expect(state.backgrounds.ids.length).toBe(1);
@@ -306,9 +309,12 @@ test("Should remove sprite sheets that are deleted while project is open", () =>
     },
   };
 
-  const action = entitiesActions.removeSprite({
-    filename: "sprite1.png",
-    plugin: undefined,
+  const action = entitiesActions.removedAsset({
+    assetType: "sprites",
+    asset: {
+      filename: "sprite1.png",
+      plugin: undefined,
+    },
   });
 
   expect(state.spriteSheets.ids.length).toBe(1);
@@ -385,9 +391,12 @@ test("Should remove music tracks that are deleted while project is open", () => 
     },
   };
 
-  const action = entitiesActions.removeMusic({
-    filename: "track1.mod",
-    plugin: undefined,
+  const action = entitiesActions.removedAsset({
+    assetType: "music",
+    asset: {
+      filename: "track1.mod",
+      plugin: undefined,
+    },
   });
 
   expect(state.music.ids.length).toBe(1);

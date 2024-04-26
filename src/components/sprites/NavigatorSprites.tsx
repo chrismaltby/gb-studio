@@ -29,8 +29,9 @@ import {
 } from "shared/lib/sprites/helpers";
 import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import projectActions from "store/features/project/projectActions";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -296,9 +297,9 @@ export const NavigatorSprites = ({
     (name: string) => {
       if (renameId) {
         dispatch(
-          entitiesActions.renameSpriteSheet({
+          projectActions.renameSpriteAsset({
             spriteSheetId: renameId,
-            name: stripInvalidPathCharacters(name),
+            newFilename: stripInvalidPathCharacters(name),
           })
         );
       }
@@ -328,6 +329,19 @@ export const NavigatorSprites = ({
     return [
       <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
         {l10n("FIELD_RENAME")}
+      </MenuItem>,
+      <MenuDivider key="div-delete" />,
+      <MenuItem
+        key="delete"
+        onClick={() =>
+          dispatch(
+            projectActions.removeSpriteAsset({
+              spriteSheetId: item.id,
+            })
+          )
+        }
+      >
+        {l10n("MENU_DELETE_SPRITE")}
       </MenuItem>,
     ];
   }, []);

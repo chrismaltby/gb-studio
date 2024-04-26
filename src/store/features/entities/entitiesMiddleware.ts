@@ -2,16 +2,6 @@ import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import {
-  backgroundSelectors,
-  musicSelectors,
-  soundSelectors,
-  spriteSheetSelectors,
-  tilesetSelectors,
-} from "store/features/entities/entitiesState";
-import API from "renderer/lib/api";
-import { Asset, AssetType } from "shared/lib/helpers/assets";
-import { assertUnreachable } from "shared/lib/helpers/assert";
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -36,84 +26,6 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       }
     }
 
-    const renameAsset = async (
-      assetType: AssetType,
-      asset: Asset,
-      newName: string,
-      fileExtension: string
-    ) => {
-      const newFilename = `${newName}.${fileExtension}`;
-      const renameSuccess = await API.project.renameAsset(
-        assetType,
-        asset,
-        newFilename
-      );
-      if (!renameSuccess) {
-        return;
-      }
-      store.dispatch(
-        entitiesActions.renameAsset({
-          assetType: assetType,
-          filename: asset.filename,
-          newFilename,
-          plugin: asset.plugin,
-        })
-      );
-    };
-
-    if (entitiesActions.renameBackground.match(action)) {
-      const state = store.getState();
-      const background = backgroundSelectors.selectById(
-        state,
-        action.payload.backgroundId
-      );
-      if (background) {
-        renameAsset("backgrounds", background, action.payload.name, "png");
-      }
-    } else if (entitiesActions.renameTileset.match(action)) {
-      const state = store.getState();
-      const tileset = tilesetSelectors.selectById(
-        state,
-        action.payload.tilesetId
-      );
-      if (tileset) {
-        renameAsset("tilesets", tileset, action.payload.name, "png");
-      }
-    } else if (entitiesActions.renameSpriteSheet.match(action)) {
-      const state = store.getState();
-      const spriteSheet = spriteSheetSelectors.selectById(
-        state,
-        action.payload.spriteSheetId
-      );
-      if (spriteSheet) {
-        renameAsset("sprites", spriteSheet, action.payload.name, "png");
-      }
-    } else if (entitiesActions.renameMusic.match(action)) {
-      const state = store.getState();
-      const music = musicSelectors.selectById(state, action.payload.musicId);
-      if (music) {
-        renameAsset(
-          "music",
-          music,
-          action.payload.name,
-          music.type === "uge" ? "uge" : "mod"
-        );
-      }
-    } else if (entitiesActions.renameSound.match(action)) {
-      const state = store.getState();
-      const sound = soundSelectors.selectById(state, action.payload.soundId);
-      if (sound) {
-        const ext =
-          sound.type === "fxhammer"
-            ? "sav"
-            : sound.type === "vgm"
-            ? "vgm"
-            : sound.type === "wav"
-            ? "wav"
-            : assertUnreachable(sound.type);
-        renameAsset("sounds", sound, action.payload.name, ext);
-      }
-    }
     next(action);
   };
 

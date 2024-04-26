@@ -248,6 +248,8 @@ const APISetup = {
       filename: string
     ): Promise<boolean> =>
       ipcRenderer.invoke("project:rename-asset", type, asset, filename),
+    removeAsset: (type: AssetType, asset: Asset): Promise<boolean> =>
+      ipcRenderer.invoke("project:remove-asset", type, asset),
   },
   script: {
     getScriptAutoLabel: (

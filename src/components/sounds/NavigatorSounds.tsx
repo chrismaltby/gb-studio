@@ -9,8 +9,9 @@ import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import projectActions from "store/features/project/projectActions";
 
 interface NavigatorSoundsProps {
   height: number;
@@ -78,9 +79,9 @@ export const NavigatorSounds = ({
     (name: string) => {
       if (renameId) {
         dispatch(
-          entitiesActions.renameSound({
+          projectActions.renameSoundAsset({
             soundId: renameId,
-            name: stripInvalidPathCharacters(name),
+            newFilename: stripInvalidPathCharacters(name),
           })
         );
       }
@@ -93,6 +94,15 @@ export const NavigatorSounds = ({
     return [
       <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
         {l10n("FIELD_RENAME")}
+      </MenuItem>,
+      <MenuDivider key="div-delete" />,
+      <MenuItem
+        key="delete"
+        onClick={() =>
+          dispatch(projectActions.removeSoundAsset({ soundId: item.id }))
+        }
+      >
+        {l10n("MENU_DELETE_SONG")}
       </MenuItem>,
     ];
   }, []);

@@ -10,8 +10,8 @@ import { NoSongsMessage } from "./NoSongsMessage";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
-import entitiesActions from "store/features/entities/entitiesActions";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import projectActions from "store/features/project/projectActions";
 
 interface NavigatorSongsProps {
   height: number;
@@ -95,9 +95,9 @@ export const NavigatorModSongs = ({
     (name: string) => {
       if (renameId) {
         dispatch(
-          entitiesActions.renameMusic({
+          projectActions.renameMusicAsset({
             musicId: renameId,
-            name: stripInvalidPathCharacters(name),
+            newFilename: stripInvalidPathCharacters(name),
           })
         );
       }
@@ -110,6 +110,15 @@ export const NavigatorModSongs = ({
     return [
       <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
         {l10n("FIELD_RENAME")}
+      </MenuItem>,
+      <MenuDivider key="div-delete" />,
+      <MenuItem
+        key="delete"
+        onClick={() =>
+          dispatch(projectActions.removeMusicAsset({ musicId: item.id }))
+        }
+      >
+        {l10n("MENU_DELETE_SONG")}
       </MenuItem>,
     ];
   }, []);

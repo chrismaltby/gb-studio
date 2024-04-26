@@ -21,6 +21,7 @@ import {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
+import { Asset, AssetType } from "shared/lib/helpers/assets";
 
 let saving = false;
 
@@ -158,6 +159,85 @@ const reloadAssets = createAction("project/reloadAssets");
 
 const addFileToProject = createAction<string>("project/addFile");
 
+const removeAsset = createAsyncThunk<
+  {
+    assetType: AssetType;
+    asset: Asset;
+  },
+  {
+    assetType: AssetType;
+    asset: Asset;
+  }
+>("project/removeAsset", async ({ assetType, asset }) => {
+  if (!(await API.project.removeAsset(assetType, asset))) {
+    throw new Error("Didn't remove asset");
+  }
+  return {
+    assetType,
+    asset,
+  };
+});
+
+const renameAsset = createAsyncThunk<
+  {
+    assetType: AssetType;
+    asset: Asset;
+    newFilename: string;
+  },
+  {
+    assetType: AssetType;
+    asset: Asset;
+    newFilename: string;
+  }
+>("project/renameAsset", async ({ assetType, asset, newFilename }) => {
+  if (!(await API.project.renameAsset(assetType, asset, newFilename))) {
+    throw new Error("Didn't rename asset");
+  }
+  return {
+    assetType,
+    asset,
+    newFilename,
+  };
+});
+
+const renameBackgroundAsset = createAction<{
+  backgroundId: string;
+  newFilename: string;
+}>("project/renameBackgroundAsset");
+const removeBackgroundAsset = createAction<{ backgroundId: string }>(
+  "project/removeBackgroundAsset"
+);
+
+const renameTilesetAsset = createAction<{
+  tilesetId: string;
+  newFilename: string;
+}>("project/renameTilesetAsset");
+const removeTilesetAsset = createAction<{ tilesetId: string }>(
+  "project/removeTilesetAsset"
+);
+
+const renameSpriteAsset = createAction<{
+  spriteSheetId: string;
+  newFilename: string;
+}>("project/renameSpriteAsset");
+const removeSpriteAsset = createAction<{ spriteSheetId: string }>(
+  "project/removeSpriteAsset"
+);
+
+const renameMusicAsset = createAction<{ musicId: string; newFilename: string }>(
+  "project/renameMusicAsset"
+);
+const removeMusicAsset = createAction<{ musicId: string }>(
+  "project/removeMusicAsset"
+);
+
+const renameSoundAsset = createAction<{ soundId: string; newFilename: string }>(
+  "project/renameSoundAsset"
+);
+const removeSoundAsset = createAction<{ soundId: string }>(
+  "project/removeSoundAsset"
+);
+
 /**************************************************************************
  * Save
  */
@@ -210,6 +290,18 @@ const projectActions = {
   addFileToProject,
   reloadAssets,
   saveProject,
+  renameAsset,
+  renameBackgroundAsset,
+  renameTilesetAsset,
+  renameSpriteAsset,
+  renameMusicAsset,
+  renameSoundAsset,
+  removeAsset,
+  removeBackgroundAsset,
+  removeTilesetAsset,
+  removeSpriteAsset,
+  removeMusicAsset,
+  removeSoundAsset,
 };
 
 export default projectActions;

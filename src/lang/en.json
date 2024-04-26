@@ -1260,6 +1260,12 @@
   "MENU_WINDOW": "Window",
   "MENU_HELP": "Help",
   "MENU_SET_BREAKPOINT": "Set Breakpoint",
+  "MENU_DELETE_SONG": "Delete Song",
+  "MENU_DELETE_BACKGROUND": "Delete Background",
+  "MENU_DELETE_TILESET": "Delete Tileset",
+  "MENU_DELETE_SPRITE": "Delete Sprite",
+  "MENU_DELETE_SOUND_EFFECT": "Delete Sound Effect",
+  "MENU_DELETE_PALETTE": "Delete Palette",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1380,6 +1386,8 @@
   "DIALOG_CONTINUE_WITHOUT_SAVING": "Continue without saving",
   "DIALOG_SAVE_AND_CONTINUE": "Save and Continue",
   "DIALOG_MIGRATION_GUIDE": "Open Migration Guide",
+  "DIALOG_DELETE_ASSET": "Delete \"{filename}\"?",
+  "DIALOG_DELETE_ASSET_DESCRIPTION": "The file \n{filename}\nwill be removed from your file system. This action cannot be undone.",
 
   "// 16": "Settings ----------------------------------------------------",
 

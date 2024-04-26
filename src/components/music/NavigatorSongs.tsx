@@ -20,14 +20,14 @@ import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { NoSongsMessage } from "./NoSongsMessage";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
-import entitiesActions from "store/features/entities/entitiesActions";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetPath } from "shared/lib/helpers/assets";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import projectActions from "store/features/project/projectActions";
 
 const COLLAPSED_SIZE = 30;
 
@@ -353,9 +353,9 @@ export const NavigatorSongs = ({
     (name: string) => {
       if (renameId) {
         dispatch(
-          entitiesActions.renameMusic({
+          projectActions.renameMusicAsset({
             musicId: renameId,
-            name: stripInvalidPathCharacters(name),
+            newFilename: stripInvalidPathCharacters(name),
           })
         );
       }
@@ -394,13 +394,25 @@ export const NavigatorSongs = ({
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: NavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: NavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(projectActions.removeMusicAsset({ musicId: item.id }))
+          }
+        >
+          {l10n("MENU_DELETE_SONG")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
 
   const renderInstrumentContextMenu = useCallback(
     (item: InstrumentNavigatorItem) => {

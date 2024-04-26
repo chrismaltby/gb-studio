@@ -40,7 +40,7 @@ import {
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
-import { Asset } from "shared/lib/helpers/assets";
+import { Asset, assetNameFromFilename } from "shared/lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
 import isEqual from "lodash/isEqual";
 import { isNormalizedScriptEqual } from "shared/lib/scripts/scriptHelpers";
@@ -562,11 +562,17 @@ export const removeAssetEntity = <
  * @param asset asset to remove
  */
 export const renameAssetEntity = <
-  T extends Asset & { id: string; inode: string; filename: string }
+  T extends Asset & {
+    id: string;
+    inode: string;
+    filename: string;
+    name: string;
+  }
 >(
   entities: EntityState<T>,
   adapter: EntityAdapter<T>,
-  asset: Asset & { newFilename: string }
+  asset: Asset,
+  newFilename: string
 ) => {
   const existingEntities = entities.ids.map(
     (id) => entities.entities[id]
@@ -577,7 +583,8 @@ export const renameAssetEntity = <
     adapter.updateOne(entities, {
       id: existingAsset.id,
       changes: {
-        filename: asset.newFilename,
+        filename: newFilename,
+        name: assetNameFromFilename(newFilename),
       } as Partial<T>,
     });
   }

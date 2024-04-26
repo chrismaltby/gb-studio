@@ -40,3 +40,7 @@ export const assetURL = (assetType: AssetType, asset: Asset) => {
 export const assetURLStyleProp = (assetType: AssetType, asset: Asset) => {
   return `url("gbs://project/${assetPath(assetType, asset)}?_v=${asset._v}")`;
 };
+
+export const assetNameFromFilename = (filename: string) => {
+  return filename.replace(/\.[^.]*$/, "");
+};
