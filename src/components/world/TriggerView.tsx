@@ -1,9 +1,11 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ContextMenu } from "ui/menu/ContextMenu";
+import renderTriggerContextMenu from "./renderTriggerContextMenu";
 
 interface TriggerViewProps {
   id: string;
@@ -71,6 +73,37 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
     };
   }, [onMouseUp, isDragging]);
 
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+
+  const renderContextMenu = useCallback(() => {
+    return renderTriggerContextMenu({
+      dispatch,
+      triggerId: id,
+      sceneId,
+    });
+  }, [dispatch, id, sceneId]);
+
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      const menu = renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu]
+  );
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
   if (!trigger) {
     return <></>;
   }
@@ -79,13 +112,24 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
     <Wrapper
       selected={selected}
       onMouseDown={onMouseDown}
+      onContextMenu={onContextMenu}
       style={{
         left: trigger.x * TILE_SIZE,
         top: trigger.y * TILE_SIZE,
         width: Math.max(trigger.width, 1) * TILE_SIZE,
         height: Math.max(trigger.height, 1) * TILE_SIZE,
       }}
-    />
+    >
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
+    </Wrapper>
   );
 });
 

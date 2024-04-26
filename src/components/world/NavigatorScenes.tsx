@@ -20,10 +20,11 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import renderSceneContextMenu from "./renderSceneContextMenu";
+import renderActorContextMenu from "./renderActorContextMenu";
+import renderTriggerContextMenu from "./renderTriggerContextMenu";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 interface NavigatorScenesProps {
   height: number;
@@ -238,48 +239,23 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           hoverY: 0,
           onRename: () => setRenameId(item.id),
         });
+      } else if (item.type === "actor") {
+        return renderActorContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          actorId: item.id,
+          onRename: () => setRenameId(item.id),
+        });
+      } else if (item.type === "trigger") {
+        return renderTriggerContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          triggerId: item.id,
+          onRename: () => setRenameId(item.id),
+        });
+      } else {
+        assertUnreachable(item.type);
       }
-      return [
-        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-          {l10n("FIELD_RENAME")}
-        </MenuItem>,
-        ...(item.type === "actor"
-          ? [
-              <MenuDivider key="div-delete" />,
-              <MenuItem
-                key="delete"
-                onClick={() =>
-                  dispatch(
-                    entitiesActions.removeActor({
-                      actorId: item.id,
-                      sceneId: item.sceneId,
-                    })
-                  )
-                }
-              >
-                {l10n("MENU_DELETE_ACTOR")}
-              </MenuItem>,
-            ]
-          : []),
-        ...(item.type === "trigger"
-          ? [
-              <MenuDivider key="div-delete" />,
-              <MenuItem
-                key="delete"
-                onClick={() =>
-                  dispatch(
-                    entitiesActions.removeTrigger({
-                      triggerId: item.id,
-                      sceneId: item.sceneId,
-                    })
-                  )
-                }
-              >
-                {l10n("MENU_DELETE_TRIGGER")}
-              </MenuItem>,
-            ]
-          : []),
-      ];
     },
     [dispatch, startDirection, startSceneId]
   );

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import { actorSelectors } from "store/features/entities/entitiesState";
@@ -6,6 +6,8 @@ import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import renderActorContextMenu from "./renderActorContextMenu";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface ActorViewProps {
   id: string;
@@ -99,6 +101,37 @@ const ActorView = memo(
       };
     }, [onMouseUp, isDragging]);
 
+    const [contextMenu, setContextMenu] =
+      useState<{
+        x: number;
+        y: number;
+        menu: JSX.Element[];
+      }>();
+
+    const renderContextMenu = useCallback(() => {
+      return renderActorContextMenu({
+        dispatch,
+        actorId: id,
+        sceneId,
+      });
+    }, [dispatch, id, sceneId]);
+
+    const onContextMenu = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+        const menu = renderContextMenu();
+        if (!menu) {
+          return;
+        }
+        setContextMenu({ x: e.pageX, y: e.pageY, menu });
+      },
+      [renderContextMenu]
+    );
+
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
+
     if (!actor) {
       return <></>;
     }
@@ -109,6 +142,7 @@ const ActorView = memo(
         <Wrapper
           selected={selected}
           onMouseDown={onMouseDown}
+          onContextMenu={onContextMenu}
           style={{
             left: actor.x * TILE_SIZE,
             top: actor.y * TILE_SIZE,
@@ -125,6 +159,15 @@ const ActorView = memo(
                 offsetPosition
               />
             </CanvasWrapper>
+          )}
+          {contextMenu && (
+            <ContextMenu
+              x={contextMenu.x}
+              y={contextMenu.y}
+              onClose={onContextMenuClose}
+            >
+              {contextMenu.menu}
+            </ContextMenu>
           )}
         </Wrapper>
       </>
