@@ -13,7 +13,7 @@ import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -23,12 +23,14 @@ interface NavigatorPalettesProps {
 interface PaletteNavigatorItem {
   id: string;
   name: string;
+  isDefault: boolean;
   colors: string[];
 }
 
 const paletteToNavigatorItem = (palette: Palette): PaletteNavigatorItem => ({
   id: palette.id,
   name: palette.name,
+  isDefault: !!palette.defaultColors,
   colors: palette.colors,
 });
 
@@ -113,13 +115,33 @@ export const NavigatorPalettes = ({
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: PaletteNavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: PaletteNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        ...(!item.isDefault
+          ? [
+              <MenuDivider key="div-delete" />,
+              <MenuItem
+                key="delete"
+                onClick={() =>
+                  dispatch(
+                    entitiesActions.removePalette({
+                      paletteId: item.id,
+                    })
+                  )
+                }
+              >
+                {l10n("MENU_DELETE_PALETTE")}
+              </MenuItem>,
+            ]
+          : []),
+      ];
+    },
+    [dispatch]
+  );
 
   const renderLabel = useCallback((item: PaletteNavigatorItem) => {
     return (
