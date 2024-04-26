@@ -20,12 +20,10 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
-import DirectionPicker from "components/forms/DirectionPicker";
-import { LabelButton } from "ui/buttons/LabelButton";
-import settingsActions from "store/features/settings/settingsActions";
+import renderSceneContextMenu from "./renderSceneContextMenu";
 
 interface NavigatorScenesProps {
   height: number;
@@ -230,106 +228,21 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
 
   const renderContextMenu = useCallback(
     (item: SceneNavigatorItem) => {
+      if (item.type === "scene") {
+        return renderSceneContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          startSceneId,
+          startDirection,
+          hoverX: 0,
+          hoverY: 0,
+          onRename: () => setRenameId(item.id),
+        });
+      }
       return [
-        ...(item.type === "scene"
-          ? [
-              <MenuSection style={{ paddingRight: 10, marginBottom: 5 }}>
-                <div style={{ display: "flex" }}>
-                  <div style={{ marginRight: 5 }}>
-                    <LabelButton
-                      onClick={() =>
-                        dispatch(
-                          entitiesActions.editScene({
-                            sceneId: item.id,
-                            changes: {
-                              labelColor: "",
-                            },
-                          })
-                        )
-                      }
-                    />
-                  </div>
-                  {[
-                    "red",
-                    "orange",
-                    "yellow",
-                    "green",
-                    "blue",
-                    "purple",
-                    "gray",
-                  ].map((color) => (
-                    <div
-                      key={color}
-                      style={{ marginRight: color === "gray" ? 0 : 5 }}
-                    >
-                      <LabelButton
-                        color={color}
-                        onClick={() =>
-                          dispatch(
-                            entitiesActions.editScene({
-                              sceneId: item.id,
-                              changes: {
-                                labelColor: color,
-                              },
-                            })
-                          )
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              </MenuSection>,
-              <MenuDivider key="div-direction" />,
-              <MenuItem
-                key="startingScene"
-                onClick={() =>
-                  dispatch(
-                    settingsActions.editSettings({
-                      startSceneId: item.id,
-                    })
-                  )
-                }
-              >
-                {l10n("FIELD_SET_AS_STARTING_SCENE")}
-              </MenuItem>,
-
-              <MenuSection>
-                <div style={{ width: 200 }}>
-                  <DirectionPicker
-                    id="startDirection"
-                    value={
-                      item.id === startSceneId ? startDirection : undefined
-                    }
-                    onChange={(direction) => {
-                      dispatch(
-                        settingsActions.editSettings({
-                          startSceneId: item.id,
-                          startDirection: direction,
-                        })
-                      );
-                    }}
-                  />
-                </div>
-              </MenuSection>,
-              <MenuDivider key="div-direction" />,
-            ]
-          : []),
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
         </MenuItem>,
-        ...(item.type === "scene"
-          ? [
-              <MenuDivider key="div-delete" />,
-              <MenuItem
-                key="delete"
-                onClick={() =>
-                  dispatch(entitiesActions.removeScene({ sceneId: item.id }))
-                }
-              >
-                {l10n("MENU_DELETE_SCENE")}
-              </MenuItem>,
-            ]
-          : []),
         ...(item.type === "actor"
           ? [
               <MenuDivider key="div-delete" />,

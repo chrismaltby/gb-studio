@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -30,6 +37,8 @@ import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
+import { ContextMenu } from "ui/menu/ContextMenu";
+import renderSceneContextMenu from "./renderSceneContextMenu";
 
 const TILE_SIZE = 8;
 
@@ -170,6 +179,16 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     background && background.monoOverrideId
       ? backgroundSelectors.selectById(state, background.monoOverrideId ?? "")
       : undefined
+  );
+
+  const startSceneId = useAppSelector(
+    (state) => state.project.present.settings.startSceneId
+  );
+  const startDirection = useAppSelector(
+    (state) => state.project.present.settings.startDirection
+  );
+  const { x: hoverX, y: hoverY } = useAppSelector(
+    (state) => state.editor.hover
   );
 
   const selected = useAppSelector((state) => state.editor.scene === id);
@@ -487,6 +506,42 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     );
   }, [dispatch]);
 
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+
+  const renderContextMenu = useCallback(() => {
+    return renderSceneContextMenu({
+      dispatch,
+      sceneId: id,
+      startSceneId,
+      startDirection,
+      hoverX,
+      hoverY,
+    });
+  }, [dispatch, hoverX, hoverY, id, startDirection, startSceneId]);
+
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!renderContextMenu) {
+        return;
+      }
+      const menu = renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu]
+  );
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
   if (!scene || !visible) {
     return <></>;
   }
@@ -499,6 +554,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         left: scene.x,
         top: scene.y,
       }}
+      onContextMenu={onContextMenu}
     >
       <SceneMetadata
         onMouseDown={onStartDrag}
@@ -662,6 +718,15 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         >
           <SceneInfo />
         </SceneMetadata>
+      )}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
       )}
     </Wrapper>
   );
