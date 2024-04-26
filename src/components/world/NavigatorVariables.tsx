@@ -87,6 +87,10 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback((item: NavigatorItem) => {
     return [
       <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
@@ -108,6 +112,7 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
           item={item}
           rename={renameId === item.id}
           onRename={onRenameComplete}
+          onRenameCancel={onRenameCancel}
           renderContextMenu={renderContextMenu}
         />
       )}

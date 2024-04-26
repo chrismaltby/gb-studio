@@ -227,6 +227,10 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: SceneNavigatorItem) => {
       if (item.type === "scene") {
@@ -294,6 +298,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             onToggleCollapse={toggleSceneOpen(item.id)}
             rename={renameId === item.id}
             onRename={onRenameSceneComplete}
+            onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
             renderLabel={renderSceneLabel}
           />
@@ -308,6 +313,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
                 ? onRenameActorComplete
                 : onRenameTriggerComplete
             }
+            onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
           />
         )

@@ -106,6 +106,10 @@ export const NavigatorModSongs = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: NavigatorItem) => {
       return [
@@ -146,6 +150,7 @@ export const NavigatorModSongs = ({
                 item={item}
                 rename={renameId === item.id}
                 onRename={onRenameSongComplete}
+                onRenameCancel={onRenameCancel}
                 renderContextMenu={renderContextMenu}
               />
             )}

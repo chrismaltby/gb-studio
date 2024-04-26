@@ -325,6 +325,10 @@ export const NavigatorSprites = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: SpriteNavigatorItem) => {
       return [
@@ -372,6 +376,7 @@ export const NavigatorSprites = ({
               item={item}
               rename={renameId === item.id}
               onRename={onRenameSpriteComplete}
+              onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}
             />
           )}
@@ -420,7 +425,8 @@ export const NavigatorSprites = ({
                 collapsed={!item.isOpen}
                 onToggleCollapse={toggleStateOpen(item.stateId)}
                 rename={index > 0 && renameId === item.id}
-                onRename={index > 0 ? onRenameStateComplete : undefined}
+                onRename={onRenameStateComplete}
+                onRenameCancel={onRenameCancel}
                 renderContextMenu={index > 0 ? renderContextMenu : undefined}
               />
             ) : (

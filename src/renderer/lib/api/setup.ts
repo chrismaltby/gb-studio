@@ -296,7 +296,7 @@ const APISetup = {
       ipcRenderer.invoke("sfx:play-fxhammer", filename, effectIndex),
   },
   tracker: {
-    addNewUGEFile: (path: string): Promise<string> =>
+    addNewUGEFile: (path: string): Promise<MusicAssetData> =>
       ipcRenderer.invoke("tracker:new", path),
     loadUGEFile: (path: string): Promise<Song | null> =>
       ipcRenderer.invoke("tracker:load", path),

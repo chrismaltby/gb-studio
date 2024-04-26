@@ -17,6 +17,7 @@ import {
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
+import type { MusicAssetData } from "lib/project/loadMusicData";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -31,12 +32,16 @@ export const initialState: TrackerDocumentState = {
   modified: false,
 };
 
-export const addNewSongFile = createAsyncThunk<string | null, string>(
-  "tracker/addNewSong",
-  async (path, _thunkApi): Promise<string | null> => {
-    return await API.tracker.addNewUGEFile(path);
-  }
-);
+export const addNewSongFile = createAsyncThunk<
+  { data: MusicAssetData },
+  string
+>("tracker/addNewSong", async (path, _thunkApi): Promise<{
+  data: MusicAssetData;
+}> => {
+  return {
+    data: await API.tracker.addNewUGEFile(path),
+  };
+});
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
   "tracker/loadSong",

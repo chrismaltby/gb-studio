@@ -115,6 +115,10 @@ export const NavigatorPalettes = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: PaletteNavigatorItem) => {
       return [
@@ -184,6 +188,7 @@ export const NavigatorPalettes = ({
             type={"palette"}
             rename={renameId === item.id}
             onRename={onRenamePaletteComplete}
+            onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
             renderLabel={renderLabel}
           />

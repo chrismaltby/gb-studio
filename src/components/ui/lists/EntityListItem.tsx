@@ -56,9 +56,16 @@ type EntityListItemProps<T extends EntityListItemData> = {
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   renderContextMenu?: (item: T) => JSX.Element[] | undefined;
   renderLabel?: (item: T) => React.ReactNode;
-  rename?: boolean;
-  onRename?: (name: string, item: T) => void;
-};
+} & (
+  | {
+      rename: true;
+      onRename: (name: string, item: T) => void;
+      onRenameCancel: (item: T) => void;
+    }
+  | {
+      rename?: false;
+    }
+);
 
 interface NavigatorArrowProps {
   open: boolean;
@@ -150,8 +157,7 @@ export const EntityListItem = <T extends EntityListItemData>({
   onToggleCollapse,
   renderContextMenu,
   renderLabel,
-  rename,
-  onRename,
+  ...props
 }: EntityListItemProps<T>) => {
   const [contextMenu, setContextMenu] =
     useState<{
@@ -178,8 +184,10 @@ export const EntityListItem = <T extends EntityListItemData>({
 
   const [name, setName] = useState(item.name);
   const onRenameBlur = useCallback(() => {
-    onRename?.(name, item);
-  }, [item, name, onRename]);
+    if (props.rename) {
+      props.onRename(name, item);
+    }
+  }, [item, name, props]);
   const onRenameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setName(e.currentTarget.value);
@@ -188,14 +196,16 @@ export const EntityListItem = <T extends EntityListItemData>({
   );
   const onRenameKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Escape") {
-        onRename?.(item.name, item);
-        setName(item.name);
-      } else if (e.key === "Enter") {
-        onRename?.(name, item);
+      if (props.rename) {
+        if (e.key === "Escape") {
+          props.onRenameCancel(item);
+          setName(item.name);
+        } else if (e.key === "Enter") {
+          props.onRename(name, item);
+        }
       }
     },
-    [name, item, onRename]
+    [props, item, name]
   );
   useEffect(() => {
     setName(item.name);
@@ -273,7 +283,7 @@ export const EntityListItem = <T extends EntityListItemData>({
           <CodeIcon />
         </EntityIcon>
       )}
-      {rename ? (
+      {props.rename ? (
         <EntityInput
           autoFocus
           value={name}

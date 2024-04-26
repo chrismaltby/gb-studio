@@ -144,6 +144,10 @@ export const NavigatorBackgrounds = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: ImageNavigatorItem) => {
       return [
@@ -196,6 +200,7 @@ export const NavigatorBackgrounds = ({
               item={item}
               rename={renameId === item.id}
               onRename={onRenameBackgroundComplete}
+              onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}
             />
           )}
@@ -220,6 +225,7 @@ export const NavigatorBackgrounds = ({
               item={item}
               rename={renameId === item.id}
               onRename={onRenameTilesetComplete}
+              onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}
             />
           )}

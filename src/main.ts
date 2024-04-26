@@ -84,7 +84,7 @@ import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
-import { loadMusicData } from "lib/project/loadMusicData";
+import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
 import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
@@ -1459,43 +1459,59 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("tracker:new", async (_event, assetPath: string) => {
-  const projectRoot = Path.dirname(projectPath);
-  const filename = Path.join(projectRoot, assetPath);
+ipcMain.handle(
+  "tracker:new",
+  async (_event, assetPath: string): Promise<MusicAssetData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
 
-  // Check project has permission to access this asset
-  guardAssetWithinProject(filename, projectRoot);
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
 
-  const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
-  const copy2 = async (oPath: string, path: string) => {
-    try {
-      const exists = await pathExists(path);
-      if (!exists) {
-        await copy(oPath, path, {
-          overwrite: false,
-          errorOnExist: true,
-        });
-        return path;
-      } else {
-        const [filename] = path.split(".uge");
-        const matches = filename.match(/\d+$/);
-        let newFilename = `${filename} 1`;
-        if (matches) {
-          // if filename ends with number
-          const number = parseInt(matches[0]) + 1;
-          newFilename = filename.replace(/\d+$/, `${number}`);
+    const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
+    const copy2 = async (
+      oPath: string,
+      path: string
+    ): Promise<MusicAssetData> => {
+      try {
+        const exists = await pathExists(path);
+        if (!exists) {
+          await copy(oPath, path, {
+            overwrite: false,
+            errorOnExist: true,
+          });
+          const data = await loadMusicData(projectRoot)(path);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+          return data;
+        } else {
+          const [filename] = path.split(".uge");
+          const matches = filename.match(/\d+$/);
+          let newFilename = `${filename} 1`;
+          if (matches) {
+            // if filename ends with number
+            const number = parseInt(matches[0]) + 1;
+            newFilename = filename.replace(/\d+$/, `${number}`);
+          }
+          const newPath = `${newFilename}.uge`;
+          await copy2(oPath, newPath);
+
+          const data = await loadMusicData(projectRoot)(newPath);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+
+          return data;
         }
-        const newPath = `${newFilename}.uge`;
-        await copy2(oPath, newPath);
-        return newPath;
+      } catch (e) {
+        console.error(e);
+        throw e;
       }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  };
-  return await copy2(templatePath, filename);
-});
+    };
+    return await copy2(templatePath, filename);
+  }
+);
 
 ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);

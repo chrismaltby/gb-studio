@@ -28,6 +28,7 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import projectActions from "store/features/project/projectActions";
+import { ListItem } from "ui/lists/ListItem";
 
 const COLLAPSED_SIZE = 30;
 
@@ -129,6 +130,7 @@ export const NavigatorSongs = ({
   const dispatch = useAppDispatch();
 
   const [items, setItems] = useState<NavigatorItem[]>([]);
+  const [addSongMode, setAddSongMode] = useState(false);
   const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
   const songsLookup = useAppSelector((state) =>
     musicSelectors.selectEntities(state)
@@ -329,13 +331,9 @@ export const NavigatorSongs = ({
   const addSong = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
-
-      const path = assetPath("music", {
-        filename: "song_template.uge",
-      });
-      dispatch(addNewSongFile(path));
+      setAddSongMode(true);
     },
-    [dispatch]
+    []
   );
 
   const [renameId, setRenameId] = useState("");
@@ -394,6 +392,10 @@ export const NavigatorSongs = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: NavigatorItem) => {
       return [
@@ -450,6 +452,27 @@ export const NavigatorSongs = ({
         >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
+        {addSongMode && (
+          <ListItem>
+            <EntityListItem
+              type="song"
+              item={{ id: "", name: "song_template" }}
+              rename
+              onRename={(filename) => {
+                if (filename) {
+                  const path = assetPath("music", {
+                    filename: `${stripInvalidPathCharacters(filename)}.uge`,
+                  });
+                  dispatch(addNewSongFile(path));
+                }
+                setAddSongMode(false);
+              }}
+              onRenameCancel={() => {
+                setAddSongMode(false);
+              }}
+            />
+          </ListItem>
+        )}
         {items.length > 0 ? (
           <FlatList
             selectedId={selectedSongId}
@@ -464,6 +487,7 @@ export const NavigatorSongs = ({
                 item={item}
                 rename={renameId === item.id}
                 onRename={onRenameSongComplete}
+                onRenameCancel={onRenameCancel}
                 renderContextMenu={renderContextMenu}
               />
             )}
@@ -527,6 +551,7 @@ export const NavigatorSongs = ({
                     nestLevel={1}
                     rename={renameId === item.id}
                     onRename={onRenameInstrumentComplete}
+                    onRenameCancel={onRenameCancel}
                     renderContextMenu={renderInstrumentContextMenu}
                     renderLabel={renderInstrumentLabel}
                   />

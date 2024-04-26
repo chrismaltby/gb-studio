@@ -110,6 +110,7 @@ import keyBy from "lodash/keyBy";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/scriptValue/format";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -3373,7 +3374,8 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.removeAsset.fulfilled, removedAsset)
       .addCase(projectActions.renameAsset.fulfilled, renamedAsset)
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
-      .addCase(projectActions.reloadAssets, reloadAssets),
+      .addCase(projectActions.reloadAssets, reloadAssets)
+      .addCase(addNewSongFile.fulfilled, loadMusic),
 });
 
 export const { reducer } = entitiesSlice;
@@ -3478,7 +3480,7 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
 );
-const localSoundSelectors = soundsAdapter.getSelectors(
+const _localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
 );
 const _localTilesetSelectors = tilesetsAdapter.getSelectors(

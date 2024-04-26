@@ -85,6 +85,10 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
     [dispatch, renameId]
   );
 
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
   const renderContextMenu = useCallback(
     (item: NavigatorItem) => {
       return [
@@ -120,6 +124,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           type="script"
           rename={renameId === item.id}
           onRename={onRenameComplete}
+          onRenameCancel={onRenameCancel}
           renderContextMenu={renderContextMenu}
         />
       )}

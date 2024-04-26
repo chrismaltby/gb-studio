@@ -7,7 +7,6 @@ import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
-import entitiesActions from "store/features/entities/entitiesActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
@@ -90,22 +89,29 @@ export const NavigatorSounds = ({
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: SoundNavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-      <MenuDivider key="div-delete" />,
-      <MenuItem
-        key="delete"
-        onClick={() =>
-          dispatch(projectActions.removeSoundAsset({ soundId: item.id }))
-        }
-      >
-        {l10n("MENU_DELETE_SONG")}
-      </MenuItem>,
-    ];
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
   }, []);
+
+  const renderContextMenu = useCallback(
+    (item: SoundNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(projectActions.removeSoundAsset({ soundId: item.id }))
+          }
+        >
+          {l10n("MENU_DELETE_SONG")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
 
   const renderLabel = useCallback((item: SoundNavigatorItem) => {
     return `${item.name}.${item.ext}`;
@@ -128,6 +134,7 @@ export const NavigatorSounds = ({
             item={item}
             rename={renameId === item.id}
             onRename={onRenameComplete}
+            onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
             renderLabel={renderLabel}
           />
