@@ -106,22 +106,25 @@ export const NavigatorModSongs = ({
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: NavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-      <MenuDivider key="div-delete" />,
-      <MenuItem
-        key="delete"
-        onClick={() =>
-          dispatch(projectActions.removeMusicAsset({ musicId: item.id }))
-        }
-      >
-        {l10n("MENU_DELETE_SONG")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: NavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(projectActions.removeMusicAsset({ musicId: item.id }))
+          }
+        >
+          {l10n("MENU_DELETE_SONG")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
 
   return (
     <>

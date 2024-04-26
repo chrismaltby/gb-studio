@@ -325,26 +325,29 @@ export const NavigatorSprites = ({
     [dispatch, renameId]
   );
 
-  const renderContextMenu = useCallback((item: SpriteNavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-      <MenuDivider key="div-delete" />,
-      <MenuItem
-        key="delete"
-        onClick={() =>
-          dispatch(
-            projectActions.removeSpriteAsset({
-              spriteSheetId: item.id,
-            })
-          )
-        }
-      >
-        {l10n("MENU_DELETE_SPRITE")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: SpriteNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              projectActions.removeSpriteAsset({
+                spriteSheetId: item.id,
+              })
+            )
+          }
+        >
+          {l10n("MENU_DELETE_SPRITE")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
 
   return (
     <>
