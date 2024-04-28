@@ -1267,7 +1267,7 @@ class ScriptBuilder {
       },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
-        if (op !== ".ABS") {
+        if (op !== ".ABS" && op !== ".NOT") {
           stack.pop();
         }
         return rpn;
