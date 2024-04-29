@@ -2,6 +2,7 @@ import React from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { SelectionRect } from "./SongPianoRoll";
+import { Selection } from "ui/document/Selection";
 
 interface RollChannelSelectionAreaProps {
   cellSize: number;
@@ -24,12 +25,6 @@ const Wrapper = styled.div<WrapperProps>`
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
   `}
-`;
-
-const Selection = styled.div`
-  position: absolute;
-  background: rgba(128, 128, 128, 0.3);
-  border: 1px solid rgba(128, 128, 128, 0.8);
 `;
 
 export const RollChannelSelectionAreaFwd = React.forwardRef<
