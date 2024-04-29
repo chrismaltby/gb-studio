@@ -544,12 +544,21 @@ const SceneView = memo(
       return renderSceneContextMenu({
         dispatch,
         sceneId: id,
+        additionalSceneIds: sceneSelectionIds,
         startSceneId,
         startDirection,
         hoverX,
         hoverY,
       });
-    }, [dispatch, hoverX, hoverY, id, startDirection, startSceneId]);
+    }, [
+      dispatch,
+      hoverX,
+      hoverY,
+      id,
+      sceneSelectionIds,
+      startDirection,
+      startSceneId,
+    ]);
 
     const onContextMenu = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

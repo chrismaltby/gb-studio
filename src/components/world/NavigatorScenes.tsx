@@ -267,6 +267,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         return renderSceneContextMenu({
           dispatch,
           sceneId: item.sceneId,
+          additionalSceneIds: sceneSelectionIds,
           startSceneId,
           startDirection,
           hoverX: 0,
@@ -291,7 +292,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         assertUnreachable(item.type);
       }
     },
-    [dispatch, startDirection, startSceneId]
+    [dispatch, sceneSelectionIds, startDirection, startSceneId]
   );
 
   const renderSceneLabel = useCallback(

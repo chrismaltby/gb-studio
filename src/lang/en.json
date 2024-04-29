@@ -1226,6 +1226,7 @@
   "MENU_COPY_SCENE": "Copy Scene",
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
+  "MENU_DELETE_SCENES": "Delete Scenes",
   "MENU_DELETE_CUSTOM_EVENT": "Delete Script",
   "MENU_EDIT_CUSTOM_EVENT": "Edit Script",
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",

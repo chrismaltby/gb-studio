@@ -334,6 +334,9 @@ const editorSlice = createSlice({
       state.entityId = action.payload.actorId;
       state.worldFocus = true;
       state.tool = "select";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
     },
 
     selectTrigger: (
@@ -346,6 +349,9 @@ const editorSlice = createSlice({
       state.entityId = action.payload.triggerId;
       state.worldFocus = true;
       state.tool = "select";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
     },
 
     dragTriggerStart: (
@@ -357,6 +363,9 @@ const editorSlice = createSlice({
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
     },
 
     dragTriggerStop: (state, _action: PayloadAction<void>) => {
@@ -372,6 +381,9 @@ const editorSlice = createSlice({
       state.entityId = action.payload.actorId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
     },
 
     dragActorStop: (state, _action: PayloadAction<void>) => {
@@ -751,12 +763,18 @@ const editorSlice = createSlice({
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.actorId;
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
       })
       .addCase(entitiesActions.addTrigger, (state, action) => {
         state.type = "trigger";
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.triggerId;
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;

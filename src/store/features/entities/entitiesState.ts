@@ -900,6 +900,13 @@ const editScene: CaseReducer<
   });
 };
 
+const editScenes: CaseReducer<
+  EntitiesState,
+  PayloadAction<Array<{ id: string; changes: Partial<SceneNormalized> }>>
+> = (state, action) => {
+  scenesAdapter.updateMany(state.scenes, action.payload);
+};
+
 const setSceneSymbol: CaseReducer<
   EntitiesState,
   PayloadAction<{ sceneId: string; symbol: string }>
@@ -920,6 +927,15 @@ const removeScene: CaseReducer<
   }>
 > = (state, action) => {
   scenesAdapter.removeOne(state.scenes, action.payload.sceneId);
+};
+
+const removeScenes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneIds: string[];
+  }>
+> = (state, action) => {
+  scenesAdapter.removeMany(state.scenes, action.payload.sceneIds);
 };
 
 /**************************************************************************
@@ -3068,8 +3084,10 @@ const entitiesSlice = createSlice({
     },
 
     editScene,
+    editScenes,
     setSceneSymbol,
     removeScene,
+    removeScenes,
     moveScene,
     paintCollision,
     paintSlopeCollision,

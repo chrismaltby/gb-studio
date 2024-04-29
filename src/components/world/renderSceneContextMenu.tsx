@@ -11,6 +11,7 @@ import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
 interface SceneContextMenuProps {
   dispatch: Dispatch<AnyAction>;
   sceneId: string;
+  additionalSceneIds: string[];
   startSceneId: string;
   startDirection: ActorDirection;
   hoverX: number;
@@ -20,6 +21,7 @@ interface SceneContextMenuProps {
 
 const renderSceneContextMenu = ({
   sceneId,
+  additionalSceneIds,
   onRename,
   dispatch,
   startSceneId,
@@ -27,6 +29,7 @@ const renderSceneContextMenu = ({
   hoverX,
   hoverY,
 }: SceneContextMenuProps) => {
+  console.log("OTHERS", additionalSceneIds.length);
   return [
     <MenuSection style={{ paddingRight: 10, marginBottom: 5 }}>
       <div style={{ display: "flex" }}>
@@ -34,12 +37,21 @@ const renderSceneContextMenu = ({
           <LabelButton
             onClick={() =>
               dispatch(
-                entitiesActions.editScene({
-                  sceneId,
-                  changes: {
-                    labelColor: "",
-                  },
-                })
+                additionalSceneIds.length > 1
+                  ? entitiesActions.editScenes(
+                      additionalSceneIds.map((id) => ({
+                        id,
+                        changes: {
+                          labelColor: "",
+                        },
+                      }))
+                    )
+                  : entitiesActions.editScene({
+                      sceneId,
+                      changes: {
+                        labelColor: "",
+                      },
+                    })
               )
             }
           />
@@ -51,12 +63,21 @@ const renderSceneContextMenu = ({
                 color={color}
                 onClick={() =>
                   dispatch(
-                    entitiesActions.editScene({
-                      sceneId,
-                      changes: {
-                        labelColor: color,
-                      },
-                    })
+                    additionalSceneIds.length > 1
+                      ? entitiesActions.editScenes(
+                          additionalSceneIds.map((id) => ({
+                            id,
+                            changes: {
+                              labelColor: color,
+                            },
+                          }))
+                        )
+                      : entitiesActions.editScene({
+                          sceneId,
+                          changes: {
+                            labelColor: color,
+                          },
+                        })
                   )
                 }
               />
@@ -109,9 +130,19 @@ const renderSceneContextMenu = ({
     <MenuDivider key="div-delete" />,
     <MenuItem
       key="delete"
-      onClick={() => dispatch(entitiesActions.removeScene({ sceneId }))}
+      onClick={() =>
+        additionalSceneIds.length > 1
+          ? dispatch(
+              entitiesActions.removeScenes({ sceneIds: additionalSceneIds })
+            )
+          : dispatch(entitiesActions.removeScene({ sceneId }))
+      }
     >
-      {l10n("MENU_DELETE_SCENE")}
+      {l10n(
+        additionalSceneIds.length > 1
+          ? "MENU_DELETE_SCENES"
+          : "MENU_DELETE_SCENE"
+      )}
     </MenuItem>,
   ];
 };
