@@ -160,7 +160,7 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
       } else if (type === "isqrt") {
         return {
           type: "number",
-          value: Math.floor(1 / Math.sqrt(optimisedValue.value)),
+          value: Math.floor(Math.sqrt(optimisedValue.value)),
         };
       } else if (type === "bNOT") {
         return {
