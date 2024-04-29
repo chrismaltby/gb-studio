@@ -537,17 +537,22 @@ const WorldView = () => {
     }
   }, [selectionStart, selectionEnd]);
 
-  const onMoveMultiSelection = useCallback((e: MouseEvent) => {
-    if (scrollRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      const boundingRect = scrollRef.current.getBoundingClientRect();
-      const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
-      const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
-      const point: Point = { x, y };
-      setSelectionEnd(point);
-    }
-  }, []);
+  const onMoveMultiSelection = useCallback(
+    (e: MouseEvent) => {
+      if (scrollRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        const boundingRect = scrollRef.current.getBoundingClientRect();
+        const x =
+          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
+        const y =
+          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
+        const point: Point = { x, y };
+        setSelectionEnd(point);
+      }
+    },
+    [zoomRatio]
+  );
 
   const onEndMultiSelection = useCallback(
     (e: MouseEvent) => {
@@ -585,8 +590,10 @@ const WorldView = () => {
         e.stopPropagation();
 
         const boundingRect = scrollRef.current.getBoundingClientRect();
-        const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
-        const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
+        const x =
+          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
+        const y =
+          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
 
         const point: Point = { x, y };
         setSelectionStart(point);
@@ -595,7 +602,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndMultiSelection);
       }
     },
-    [onEndMultiSelection, onMoveMultiSelection]
+    [onEndMultiSelection, onMoveMultiSelection, zoomRatio]
   );
 
   //#region Window Blur

@@ -29,7 +29,6 @@ const renderSceneContextMenu = ({
   hoverX,
   hoverY,
 }: SceneContextMenuProps) => {
-  console.log("OTHERS", additionalSceneIds.length);
   return [
     <MenuSection style={{ paddingRight: 10, marginBottom: 5 }}>
       <div style={{ display: "flex" }}>
