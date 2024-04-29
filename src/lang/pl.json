@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1443240424",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1452240429",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -791,7 +791,8 @@
   "FIELD_PREVIEW_AS_MONO": "Podgląd jako monochromatyczny",
   "FIELD_MONO_OVERRIDE_DESC": "Ten obraz używa automatycznych palet z nadpisaniem monochromatycznym zdefiniowanym w \"{tilesFilename}\", które określają używane dane tafli, podczas gdy \"{filename}\" określi kolory",
   "FIELD_BUILD_LOG": "Dziennik budowy (log)",
-  
+  "FIELD_SET_AS_STARTING_SCENE": "Ustaw jako scenę startową",
+	
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1259,6 +1260,12 @@
   "MENU_WINDOW": "Okno",
   "MENU_HELP": "Pomoc",
   "MENU_SET_BREAKPOINT": "Ustaw punkt przerwania",
+  "MENU_DELETE_SONG": "Usuń melodię",
+  "MENU_DELETE_BACKGROUND": "Usuń tło",
+  "MENU_DELETE_TILESET": "Usuń Tileset",
+  "MENU_DELETE_SPRITE": "Usuń grafikę (sprite)",
+  "MENU_DELETE_SOUND_EFFECT": "Usuń dźwięk",
+  "MENU_DELETE_PALETTE": "Usuń paletę",
   
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1379,7 +1386,9 @@
   "DIALOG_CONTINUE_WITHOUT_SAVING": "Kontynuuj bez zapisywania",
   "DIALOG_SAVE_AND_CONTINUE": "Zapisz i kontynuuj",
   "DIALOG_MIGRATION_GUIDE": "Otwórz przewodnik migracji",
-
+  "DIALOG_DELETE_ASSET": "Usuń \"{filename}\"?",
+  "DIALOG_DELETE_ASSET_DESCRIPTION": "Plik \n{filename}\nzostanie usunięty z twojego systemu. Akcja ta jest nieodwracalna.",
+  
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
