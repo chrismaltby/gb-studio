@@ -15,3 +15,18 @@ export const getDOMElementCoords = (elem: Element) => {
 
   return { top: Math.round(top), left: Math.round(left) };
 };
+
+export const getEventNodeName = (e: unknown) => {
+  if (!e) {
+    return "";
+  }
+  return (
+    (
+      e as {
+        target?: {
+          nodeName?: string;
+        };
+      }
+    ).target?.nodeName ?? ""
+  );
+};

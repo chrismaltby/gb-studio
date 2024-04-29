@@ -92,6 +92,7 @@ import {
   isSlope,
   defaultLocalisedSceneName,
   isVariableCustomEvent,
+  renameAssetEntity,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
@@ -107,6 +108,9 @@ import {
 } from "shared/lib/scriptValue/types";
 import keyBy from "lodash/keyBy";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { Asset, AssetType } from "shared/lib/helpers/assets";
+import { assertUnreachable } from "shared/lib/scriptValue/format";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -302,15 +306,79 @@ const loadBackground: CaseReducer<
   ensureSymbolsUnique(state);
 };
 
-const removeBackground: CaseReducer<
+const removedAsset: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    filename: string;
-    plugin?: string;
+    assetType: AssetType;
+    asset: Asset;
   }>
 > = (state, action) => {
-  removeAssetEntity(state.backgrounds, backgroundsAdapter, action.payload);
-  updateMonoOverrideIds(state);
+  const { assetType, asset } = action.payload;
+  if (assetType === "backgrounds") {
+    removeAssetEntity(state.backgrounds, backgroundsAdapter, asset);
+    updateMonoOverrideIds(state);
+  } else if (assetType === "tilesets") {
+    removeAssetEntity(state.tilesets, tilesetsAdapter, asset);
+  } else if (assetType === "music") {
+    removeAssetEntity(state.music, musicAdapter, asset);
+  } else if (assetType === "sounds") {
+    removeAssetEntity(state.sounds, soundsAdapter, asset);
+  } else if (assetType === "fonts") {
+    removeAssetEntity(state.fonts, fontsAdapter, asset);
+  } else if (assetType === "avatars") {
+    removeAssetEntity(state.avatars, avatarsAdapter, asset);
+  } else if (assetType === "emotes") {
+    removeAssetEntity(state.emotes, emotesAdapter, asset);
+  } else if (assetType === "sprites") {
+    removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, asset);
+  } else if (assetType === "ui") {
+    // Ignore UI
+  } else {
+    assertUnreachable(assetType);
+  }
+};
+
+const renamedAsset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    assetType: AssetType;
+    asset: Asset;
+    newFilename: string;
+  }>
+> = (state, action) => {
+  const { assetType, asset, newFilename } = action.payload;
+  if (assetType === "backgrounds") {
+    renameAssetEntity(
+      state.backgrounds,
+      backgroundsAdapter,
+      asset,
+      newFilename
+    );
+    updateMonoOverrideIds(state);
+  } else if (assetType === "tilesets") {
+    renameAssetEntity(state.tilesets, tilesetsAdapter, asset, newFilename);
+  } else if (assetType === "music") {
+    renameAssetEntity(state.music, musicAdapter, asset, newFilename);
+  } else if (assetType === "sounds") {
+    renameAssetEntity(state.sounds, soundsAdapter, asset, newFilename);
+  } else if (assetType === "fonts") {
+    renameAssetEntity(state.fonts, fontsAdapter, asset, newFilename);
+  } else if (assetType === "avatars") {
+    renameAssetEntity(state.avatars, avatarsAdapter, asset, newFilename);
+  } else if (assetType === "emotes") {
+    renameAssetEntity(state.emotes, emotesAdapter, asset, newFilename);
+  } else if (assetType === "sprites") {
+    renameAssetEntity(
+      state.spriteSheets,
+      spriteSheetsAdapter,
+      asset,
+      newFilename
+    );
+  } else if (assetType === "ui") {
+    // Ignore UI
+  } else {
+    assertUnreachable(assetType);
+  }
 };
 
 const loadSprite: CaseReducer<
@@ -387,16 +455,6 @@ const loadDetectedSprite: CaseReducer<
   });
 };
 
-const removeSprite: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, action.payload);
-};
-
 const loadMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -442,16 +500,6 @@ const setMusicSymbol: CaseReducer<
   );
 };
 
-const removeMusic: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.music, musicAdapter, action.payload);
-};
-
 /**************************************************************************
  * Sounds
  */
@@ -480,16 +528,6 @@ const setSoundSymbol: CaseReducer<
     action.payload.soundId,
     action.payload.symbol
   );
-};
-
-const removeSound: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.sounds, soundsAdapter, action.payload);
 };
 
 /**************************************************************************
@@ -624,16 +662,6 @@ const loadTileset: CaseReducer<
     "symbol",
   ]);
   ensureSymbolsUnique(state);
-};
-
-const removeTileset: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.tilesets, tilesetsAdapter, action.payload);
 };
 
 /**************************************************************************
@@ -3327,13 +3355,9 @@ const entitiesSlice = createSlice({
      * Load assets
      */
     loadBackground,
-    removeBackground,
     loadSprite,
-    removeSprite,
     loadMusic,
-    removeMusic,
     loadSound,
-    removeSound,
     loadFont,
     removeFont,
     loadAvatar,
@@ -3341,13 +3365,17 @@ const entitiesSlice = createSlice({
     loadEmote,
     removeEmote,
     loadTileset,
-    removeTileset,
+    removedAsset,
+    renamedAsset,
   },
   extraReducers: (builder) =>
     builder
       .addCase(projectActions.loadProject.fulfilled, loadProject)
+      .addCase(projectActions.removeAsset.fulfilled, removedAsset)
+      .addCase(projectActions.renameAsset.fulfilled, renamedAsset)
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
-      .addCase(projectActions.reloadAssets, reloadAssets),
+      .addCase(projectActions.reloadAssets, reloadAssets)
+      .addCase(addNewSongFile.fulfilled, loadMusic),
 });
 
 export const { reducer } = entitiesSlice;
@@ -3454,6 +3482,9 @@ const localMusicSelectors = musicAdapter.getSelectors(
 );
 const _localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
+);
+const _localTilesetSelectors = tilesetsAdapter.getSelectors(
+  (state: EntitiesState) => state.tilesets
 );
 
 // Global

@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import os from "os";
-import stripInvalidFilenameCharacters from "lib/helpers/stripInvalidFilenameCharacters";
+import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { ERR_PROJECT_EXISTS, projectTemplatesRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 

@@ -23,6 +23,12 @@ import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetPath } from "shared/lib/helpers/assets";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { assertUnreachable } from "shared/lib/helpers/assert";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import projectActions from "store/features/project/projectActions";
+import { ListItem } from "ui/lists/ListItem";
 
 const COLLAPSED_SIZE = 30;
 
@@ -72,9 +78,7 @@ const songToNavigatorItem = (
   }
   return {
     id: song.id,
-    name: nameIfModified(
-      song.filename ? song.filename : `Song ${songIndex + 1}`
-    ),
+    name: nameIfModified(song.name ? song.name : `Song ${songIndex + 1}`),
   };
 };
 
@@ -91,7 +95,7 @@ const instrumentToNavigatorItem =
 
     return {
       id: `${type}_${instrument.index}`,
-      name: `${(instrument.index + 1).toString().padStart(2, "0")}: ${name}`,
+      name,
       type,
       instrumentId: `${instrument.index}`,
       isGroup: false,
@@ -126,6 +130,7 @@ export const NavigatorSongs = ({
   const dispatch = useAppDispatch();
 
   const [items, setItems] = useState<NavigatorItem[]>([]);
+  const [addSongMode, setAddSongMode] = useState(false);
   const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
   const songsLookup = useAppSelector((state) =>
     musicSelectors.selectEntities(state)
@@ -326,14 +331,107 @@ export const NavigatorSongs = ({
   const addSong = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
+      setAddSongMode(true);
+    },
+    []
+  );
 
-      const path = assetPath("music", {
-        filename: "song_template.uge",
-      });
-      dispatch(addNewSongFile(path));
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedSongId);
+      }
+    },
+    [selectedSongId]
+  );
+
+  const onRenameSongComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          projectActions.renameMusicAsset({
+            musicId: renameId,
+            newFilename: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameInstrumentComplete = useCallback(
+    (name: string, item: InstrumentNavigatorItem) => {
+      if (renameId) {
+        console.log({ renameId, item });
+
+        const action =
+          item.type === "duty"
+            ? trackerDocumentActions.editDutyInstrument
+            : item.type === "wave"
+            ? trackerDocumentActions.editWaveInstrument
+            : item.type === "noise"
+            ? trackerDocumentActions.editNoiseInstrument
+            : assertUnreachable(item.type);
+
+        const instrumentId = parseInt(item.instrumentId);
+
+        dispatch(
+          action({
+            instrumentId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback(
+    (item: NavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(projectActions.removeMusicAsset({ musicId: item.id }))
+          }
+        >
+          {l10n("MENU_DELETE_SONG")}
+        </MenuItem>,
+      ];
     },
     [dispatch]
   );
+
+  const renderInstrumentContextMenu = useCallback(
+    (item: InstrumentNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+      ];
+    },
+    []
+  );
+
+  const renderInstrumentLabel = useCallback((item: InstrumentNavigatorItem) => {
+    return `${(parseInt(item.instrumentId) + 1).toString().padStart(2, "0")}: ${
+      item.name
+    }`;
+  }, []);
 
   return (
     <>
@@ -354,14 +452,45 @@ export const NavigatorSongs = ({
         >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
+        {addSongMode && (
+          <ListItem>
+            <EntityListItem
+              type="song"
+              item={{ id: "", name: "song_template" }}
+              rename
+              onRename={(filename) => {
+                if (filename) {
+                  const path = assetPath("music", {
+                    filename: `${stripInvalidPathCharacters(filename)}.uge`,
+                  });
+                  dispatch(addNewSongFile(path));
+                }
+                setAddSongMode(false);
+              }}
+              onRenameCancel={() => {
+                setAddSongMode(false);
+              }}
+            />
+          </ListItem>
+        )}
         {items.length > 0 ? (
           <FlatList
             selectedId={selectedSongId}
             items={items}
             setSelectedId={setSelectedSongId}
             height={(showInstrumentList ? splitSizes[0] : height) - 30}
+            onKeyDown={listenForRenameStart}
           >
-            {({ item }) => <EntityListItem type="song" item={item} />}
+            {({ item }) => (
+              <EntityListItem
+                type="song"
+                item={item}
+                rename={renameId === item.id}
+                onRename={onRenameSongComplete}
+                onRenameCancel={onRenameCancel}
+                renderContextMenu={renderContextMenu}
+              />
+            )}
           </FlatList>
         ) : (
           <EmptyState>
@@ -395,7 +524,11 @@ export const NavigatorSongs = ({
               setSelectedId={setSelectedInstrument}
               height={splitSizes[1] - 30}
               onKeyDown={(e: KeyboardEvent) => {
-                if (e.key === "ArrowRight") {
+                if (e.key === "Enter") {
+                  setRenameId(
+                    `${selectedInstrument.type}_${selectedInstrument.id}`
+                  );
+                } else if (e.key === "ArrowRight") {
                   openInstrumentGroup(selectedInstrument.type);
                 } else if (e.key === "ArrowLeft") {
                   closeInstrumentGroup(selectedInstrument.type);
@@ -412,7 +545,16 @@ export const NavigatorSongs = ({
                     onToggleCollapse={toggleInstrumentOpen(item.type)}
                   />
                 ) : (
-                  <EntityListItem item={item} type={item.type} nestLevel={1} />
+                  <EntityListItem
+                    item={item}
+                    type={item.type}
+                    nestLevel={1}
+                    rename={renameId === item.id}
+                    onRename={onRenameInstrumentComplete}
+                    onRenameCancel={onRenameCancel}
+                    renderContextMenu={renderInstrumentContextMenu}
+                    renderLabel={renderInstrumentLabel}
+                  />
                 )
               }
             </FlatList>

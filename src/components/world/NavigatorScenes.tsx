@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
   actorSelectors,
   sceneSelectors,
@@ -6,6 +6,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorNormalized,
   SceneNormalized,
@@ -19,6 +20,11 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import styled from "styled-components";
+import renderSceneContextMenu from "./renderSceneContextMenu";
+import renderActorContextMenu from "./renderActorContextMenu";
+import renderTriggerContextMenu from "./renderTriggerContextMenu";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 interface NavigatorScenesProps {
   height: number;
@@ -72,6 +78,10 @@ const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
+const StartSceneLabel = styled.div`
+  font-weight: bold;
+`;
+
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const [items, setItems] = useState<SceneNavigatorItem[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
@@ -84,6 +94,12 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const sceneId = useAppSelector((state) => state.editor.scene);
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
+  const startSceneId = useAppSelector(
+    (state) => state.project.present.settings.startSceneId
+  );
+  const startDirection = useAppSelector(
+    (state) => state.project.present.settings.startDirection
+  );
 
   const {
     values: openSceneIds,
@@ -149,6 +165,115 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     dispatch(editorActions.setFocusSceneId(item.sceneId));
   };
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameSceneComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editScene({
+            sceneId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameActorComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editActor({
+            actorId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameTriggerComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editTrigger({
+            triggerId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback(
+    (item: SceneNavigatorItem) => {
+      if (item.type === "scene") {
+        return renderSceneContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          startSceneId,
+          startDirection,
+          hoverX: 0,
+          hoverY: 0,
+          onRename: () => setRenameId(item.id),
+        });
+      } else if (item.type === "actor") {
+        return renderActorContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          actorId: item.id,
+          onRename: () => setRenameId(item.id),
+        });
+      } else if (item.type === "trigger") {
+        return renderTriggerContextMenu({
+          dispatch,
+          sceneId: item.sceneId,
+          triggerId: item.id,
+          onRename: () => setRenameId(item.id),
+        });
+      } else {
+        assertUnreachable(item.type);
+      }
+    },
+    [dispatch, startDirection, startSceneId]
+  );
+
+  const renderSceneLabel = useCallback(
+    (item: SceneNavigatorItem) => {
+      if (item.id === startSceneId) {
+        return <StartSceneLabel>{item.name}</StartSceneLabel>;
+      }
+      return item.name;
+    },
+    [startSceneId]
+  );
+
   return (
     <FlatList
       selectedId={selectedId}
@@ -156,6 +281,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       setSelectedId={setSelectedId}
       height={height}
       onKeyDown={(e: KeyboardEvent) => {
+        listenForRenameStart(e);
         if (e.key === "ArrowRight") {
           openScene(sceneId);
         } else if (e.key === "ArrowLeft") {
@@ -170,9 +296,26 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             collapsable={true}
             collapsed={!isOpen(item.id)}
             onToggleCollapse={toggleSceneOpen(item.id)}
+            rename={renameId === item.id}
+            onRename={onRenameSceneComplete}
+            onRenameCancel={onRenameCancel}
+            renderContextMenu={renderContextMenu}
+            renderLabel={renderSceneLabel}
           />
         ) : (
-          <EntityListItem item={item} type={item.type} nestLevel={1} />
+          <EntityListItem
+            item={item}
+            type={item.type}
+            nestLevel={1}
+            rename={renameId === item.id}
+            onRename={
+              item.type === "actor"
+                ? onRenameActorComplete
+                : onRenameTriggerComplete
+            }
+            onRenameCancel={onRenameCancel}
+            renderContextMenu={renderContextMenu}
+          />
         )
       }
     />

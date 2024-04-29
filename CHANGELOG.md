@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to override tile data for auto colored backgrounds by providing a matching *.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
 - Add ability to edit waveforms in music editor using keyboard with ability to copy/paste [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to restore scene's default palettes in "Set Background Palettes" (especially useful when using auto palettes)
+- Add ability to set filename when creating a new song in music editor
+- Add context menus when right clicking on list items or on scenes/actors/triggers in world view allowing renaming/deleting
 
 ### Changed
 

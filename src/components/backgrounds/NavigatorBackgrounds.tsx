@@ -13,6 +13,9 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import projectActions from "store/features/project/projectActions";
 
 interface NavigatorBackgroundsProps {
   height: number;
@@ -22,13 +25,16 @@ interface NavigatorBackgroundsProps {
 interface ImageNavigatorItem {
   id: string;
   name: string;
+  type: "background" | "tileset";
 }
 
 const imageToNavigatorItem = (
-  background: Background | Tileset
+  background: Background | Tileset,
+  type: "background" | "tileset"
 ): ImageNavigatorItem => ({
   id: background.id,
   name: background.name || background.filename,
+  type,
 });
 
 const collator = new Intl.Collator(undefined, {
@@ -66,7 +72,7 @@ export const NavigatorBackgrounds = ({
   useEffect(() => {
     setBackgroundItems(
       allBackgrounds
-        .map((background) => imageToNavigatorItem(background))
+        .map((background) => imageToNavigatorItem(background, "background"))
         .sort(sortByName)
     );
   }, [allBackgrounds]);
@@ -74,7 +80,7 @@ export const NavigatorBackgrounds = ({
   useEffect(() => {
     setTilesetItems(
       allTilesets
-        .map((tileset) => imageToNavigatorItem(tileset))
+        .map((tileset) => imageToNavigatorItem(tileset, "tileset"))
         .sort(sortByName)
     );
   }, [allTilesets]);
@@ -97,6 +103,83 @@ export const NavigatorBackgrounds = ({
     direction: "vertical",
   });
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameBackgroundComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          projectActions.renameBackgroundAsset({
+            backgroundId: renameId,
+            newFilename: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameTilesetComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          projectActions.renameTilesetAsset({
+            tilesetId: renameId,
+            newFilename: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback(
+    (item: ImageNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              item.type === "background"
+                ? projectActions.removeBackgroundAsset({
+                    backgroundId: item.id,
+                  })
+                : projectActions.removeTilesetAsset({
+                    tilesetId: item.id,
+                  })
+            )
+          }
+        >
+          {l10n(
+            item.type === "background"
+              ? "MENU_DELETE_BACKGROUND"
+              : "MENU_DELETE_TILESET"
+          )}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
@@ -109,8 +192,18 @@ export const NavigatorBackgrounds = ({
           items={backgroundItems}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
+          onKeyDown={listenForRenameStart}
         >
-          {({ item }) => <EntityListItem type="background" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type="background"
+              item={item}
+              rename={renameId === item.id}
+              onRename={onRenameBackgroundComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+            />
+          )}
         </FlatList>
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
@@ -124,8 +217,18 @@ export const NavigatorBackgrounds = ({
           items={tilesetItems}
           setSelectedId={setSelectedId}
           height={splitSizes[1] - 30}
+          onKeyDown={listenForRenameStart}
         >
-          {({ item }) => <EntityListItem type="background" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type="background"
+              item={item}
+              rename={renameId === item.id}
+              onRename={onRenameTilesetComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+            />
+          )}
         </FlatList>
       </Pane>
     </>

@@ -4,6 +4,7 @@ import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
+import { getEventNodeName } from "renderer/lib/helpers/dom";
 
 export interface FlatListItem {
   id: string;
@@ -20,6 +21,7 @@ interface RowProps<T> {
     readonly renderItem: (props: {
       selected: boolean;
       item: T;
+      index: number;
     }) => React.ReactNode;
   };
 }
@@ -33,6 +35,7 @@ export interface FlatListProps<T> {
   readonly children?: (props: {
     selected: boolean;
     item: T;
+    index: number;
   }) => React.ReactNode;
   readonly theme?: ThemeInterface;
 }
@@ -50,13 +53,18 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
   }
   return (
     <div
+      key={item.id}
       style={style}
       onClick={() => data.setSelectedId?.(item.id, item)}
       data-id={item.id}
     >
       <ListItem tabIndex={-1} data-selected={data.selectedId === item.id}>
         {data.renderItem
-          ? data.renderItem({ item, selected: data.selectedId === item.id })
+          ? data.renderItem({
+              item,
+              selected: data.selectedId === item.id,
+              index,
+            })
           : item.name}
       </ListItem>
     </div>
@@ -78,7 +86,7 @@ export const FlatList = <T extends FlatListItem>({
   const selectedIndex = items.findIndex((item) => item.id === selectedId);
 
   const handleKeys = (e: KeyboardEvent) => {
-    if (!hasFocus) {
+    if (!hasFocus || getEventNodeName(e) === "INPUT") {
       return;
     }
     if (e.metaKey || e.ctrlKey) {

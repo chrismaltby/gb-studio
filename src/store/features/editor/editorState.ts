@@ -23,6 +23,7 @@ import spriteActions from "store/features/sprite/spriteActions";
 import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { RootState } from "store/configureStore";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 export type Tool =
   | "triggers"
@@ -799,6 +800,10 @@ const editorSlice = createSlice({
       // When painting slope stop slope preview
       .addCase(entitiesActions.paintSlopeCollision, (state) => {
         state.slopePreview = undefined;
+      })
+      // When adding a new song file jump to it in navigator
+      .addCase(addNewSongFile.fulfilled, (state, action) => {
+        state.selectedSongId = action.payload.data.id;
       })
       // When UI changes increment UI version number
       .addMatcher(

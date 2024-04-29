@@ -18,6 +18,7 @@ import {
   remove,
   stat,
   statSync,
+  move,
 } from "fs-extra";
 import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
@@ -70,7 +71,7 @@ import {
   PrecompiledSpriteSheetData,
   compileSprite,
 } from "lib/compiler/compileSprites";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { Asset, AssetType, assetFilename } from "shared/lib/helpers/assets";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
@@ -83,7 +84,7 @@ import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
-import { loadMusicData } from "lib/project/loadMusicData";
+import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
 import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
@@ -104,6 +105,8 @@ import {
 import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
 import { loadSceneTypes } from "lib/project/sceneTypes";
+import { fileExists } from "lib/helpers/fs/fileExists";
+import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -854,6 +857,104 @@ ipcMain.handle("project:set-unmodified", () => {
   documentEdited = false; // For Windows
 });
 
+ipcMain.handle(
+  "project:rename-asset",
+  async (
+    _event,
+    assetType: AssetType,
+    asset: Asset,
+    filename: string
+  ): Promise<boolean> => {
+    if (!filename || filename.length === 0) {
+      return false;
+    }
+    const projectRoot = Path.dirname(projectPath);
+    const originalFilename = assetFilename(projectRoot, assetType, asset);
+    const newFilename = assetFilename(projectRoot, assetType, {
+      ...asset,
+      filename,
+    });
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(originalFilename, projectRoot);
+    guardAssetWithinProject(newFilename, projectRoot);
+
+    if (await fileExists(newFilename)) {
+      return false;
+    }
+
+    await move(originalFilename, newFilename);
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:renamed",
+      avatars: "watch:avatar:renamed",
+      emotes: "watch:emote:renamed",
+      tilesets: "watch:tileset:renamed",
+      fonts: "watch:font:renamed",
+      music: "watch:music:renamed",
+      sounds: "watch:sound:renamed",
+      sprites: "watch:sprite:renamed",
+      ui: "watch:ui:renamed",
+    };
+
+    // Send watch event explicitly rather than waiting for Chokidar
+    // as Chokidar will sometimes only emit the unlink event when renaming from Node
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
+      filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
+
+ipcMain.handle(
+  "project:remove-asset",
+  async (_event, assetType: AssetType, asset: Asset): Promise<boolean> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = assetFilename(projectRoot, assetType, asset);
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+
+    if (!(await fileExists(filename))) {
+      return false;
+    }
+
+    if (!confirmDeleteAsset(assetType, asset)) {
+      return false;
+    }
+
+    try {
+      await remove(filename);
+    } catch (e) {
+      return false;
+    }
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:removed",
+      avatars: "watch:avatar:removed",
+      emotes: "watch:emote:removed",
+      tilesets: "watch:tileset:removed",
+      fonts: "watch:font:removed",
+      music: "watch:music:removed",
+      sounds: "watch:sound:removed",
+      sprites: "watch:sprite:removed",
+      ui: "watch:ui:removed",
+    };
+
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
+
 ipcMain.handle("get-documents-path", async (_event) => {
   return app.getPath("documents");
 });
@@ -1358,43 +1459,59 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("tracker:new", async (_event, assetPath: string) => {
-  const projectRoot = Path.dirname(projectPath);
-  const filename = Path.join(projectRoot, assetPath);
+ipcMain.handle(
+  "tracker:new",
+  async (_event, assetPath: string): Promise<MusicAssetData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
 
-  // Check project has permission to access this asset
-  guardAssetWithinProject(filename, projectRoot);
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
 
-  const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
-  const copy2 = async (oPath: string, path: string) => {
-    try {
-      const exists = await pathExists(path);
-      if (!exists) {
-        await copy(oPath, path, {
-          overwrite: false,
-          errorOnExist: true,
-        });
-        return path;
-      } else {
-        const [filename] = path.split(".uge");
-        const matches = filename.match(/\d+$/);
-        let newFilename = `${filename} 1`;
-        if (matches) {
-          // if filename ends with number
-          const number = parseInt(matches[0]) + 1;
-          newFilename = filename.replace(/\d+$/, `${number}`);
+    const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
+    const copy2 = async (
+      oPath: string,
+      path: string
+    ): Promise<MusicAssetData> => {
+      try {
+        const exists = await pathExists(path);
+        if (!exists) {
+          await copy(oPath, path, {
+            overwrite: false,
+            errorOnExist: true,
+          });
+          const data = await loadMusicData(projectRoot)(path);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+          return data;
+        } else {
+          const [filename] = path.split(".uge");
+          const matches = filename.match(/\d+$/);
+          let newFilename = `${filename} 1`;
+          if (matches) {
+            // if filename ends with number
+            const number = parseInt(matches[0]) + 1;
+            newFilename = filename.replace(/\d+$/, `${number}`);
+          }
+          const newPath = `${newFilename}.uge`;
+          await copy2(oPath, newPath);
+
+          const data = await loadMusicData(projectRoot)(newPath);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+
+          return data;
         }
-        const newPath = `${newFilename}.uge`;
-        await copy2(oPath, newPath);
-        return newPath;
+      } catch (e) {
+        console.error(e);
+        throw e;
       }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  };
-  return await copy2(templatePath, filename);
-});
+    };
+    return await copy2(templatePath, filename);
+  }
+);
 
 ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
   const projectRoot = Path.dirname(projectPath);

@@ -4,9 +4,7 @@ import entitiesActions from "./entitiesActions";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
-    next(action);
-
+  (store) => (next) => async (action) => {
     if (
       entitiesActions.editScriptEvent.match(action) ||
       entitiesActions.editScriptEventArg.match(action) ||
@@ -27,6 +25,8 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         );
       }
     }
+
+    next(action);
   };
 
 export default entitiesMiddleware;

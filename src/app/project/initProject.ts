@@ -160,7 +160,12 @@ API.events.watch.sprite.changed.subscribe((_, _filename, data) => {
 });
 
 API.events.watch.sprite.removed.subscribe((_, filename, plugin) => {
-  store.dispatch(entitiesActions.removeSprite({ filename, plugin }));
+  store.dispatch(
+    entitiesActions.removedAsset({
+      assetType: "sprites",
+      asset: { filename, plugin },
+    })
+  );
 });
 
 // Watch Backgrounds
@@ -172,7 +177,12 @@ API.events.watch.background.changed.subscribe((_, _filename, data) => {
 });
 
 API.events.watch.background.removed.subscribe((_, filename, plugin) => {
-  store.dispatch(entitiesActions.removeBackground({ filename, plugin }));
+  store.dispatch(
+    entitiesActions.removedAsset({
+      assetType: "backgrounds",
+      asset: { filename, plugin },
+    })
+  );
 });
 
 // Watch Music
@@ -182,7 +192,12 @@ API.events.watch.music.changed.subscribe((_, _filename, data) => {
 });
 
 API.events.watch.music.removed.subscribe((_, filename, plugin) => {
-  store.dispatch(entitiesActions.removeMusic({ filename, plugin }));
+  store.dispatch(
+    entitiesActions.removedAsset({
+      assetType: "music",
+      asset: { filename, plugin },
+    })
+  );
 });
 
 // Watch Sounds
@@ -192,7 +207,12 @@ API.events.watch.sound.changed.subscribe((_, _filename, data) => {
 });
 
 API.events.watch.sound.removed.subscribe((_, filename, plugin) => {
-  store.dispatch(entitiesActions.removeSound({ filename, plugin }));
+  store.dispatch(
+    entitiesActions.removedAsset({
+      assetType: "sounds",
+      asset: { filename, plugin },
+    })
+  );
 });
 
 // Watch Fonts
@@ -232,7 +252,12 @@ API.events.watch.tileset.changed.subscribe((_, _filename, data) => {
 });
 
 API.events.watch.tileset.removed.subscribe((_, filename, plugin) => {
-  store.dispatch(entitiesActions.removeTileset({ filename, plugin }));
+  store.dispatch(
+    entitiesActions.removedAsset({
+      assetType: "tilesets",
+      asset: { filename, plugin },
+    })
+  );
 });
 
 // Watch UI
