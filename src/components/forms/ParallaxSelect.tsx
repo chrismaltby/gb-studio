@@ -154,7 +154,7 @@ const updateParallaxHeight = (
       heightOverflow -= v.height - newHeight;
       return {
         ...v,
-        height: newHeight,
+        height: i === value.length - 1 ? 0 : newHeight,
       };
     });
   }
