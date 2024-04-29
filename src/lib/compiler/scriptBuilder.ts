@@ -277,6 +277,13 @@ type RPNHandler = {
   stop: () => void;
 };
 
+const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
+  ".ABS",
+  ".NOT",
+  ".B_NOT",
+  ".ISQRT",
+];
+
 // - Helpers --------------
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -1267,7 +1274,7 @@ class ScriptBuilder {
       },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
-        if (op !== ".ABS") {
+        if (!rpnUnaryOperators.includes(op)) {
           stack.pop();
         }
         return rpn;

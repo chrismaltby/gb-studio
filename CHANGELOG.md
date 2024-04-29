@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where pasting a "Call Script" event could sometimes incorrectly say script has been modified if project hadn't been saved and reloaded first
 - Fix issue where creating a new pattern in music editor would sometimes cause the other patterns in the song to play at a lower octave
 - Fix issue where variables in Dialogue and Math inputs could appear above script tabs
+- Fix calculation of last parallax layer height in editor input [@pau-tomas](https://github.com/pau-tomas)
+- Fix compiler warning when using some unary operators in While loop [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.2.1] - 2024-02-27
 

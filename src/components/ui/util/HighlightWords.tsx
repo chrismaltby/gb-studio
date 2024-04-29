@@ -13,18 +13,27 @@ const Wrapper = styled.span`
   }
 `;
 
+const escapeRegExpString = (str: string) =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const HighlightWords = ({ text, words }: HighlightWordsProps) => {
   if (!words.length) {
     return <>{text}</>;
   }
 
-  const regex = new RegExp(`(${words.join("|")})`, "gi");
+  const escapeWords = words.map(escapeRegExpString);
+
+  const regex = new RegExp(`(${escapeWords.join("|")})`, "gi");
   const parts = text.split(regex);
 
   return (
     <Wrapper>
       {parts.map((part, index) => {
-        if (words.some((word) => new RegExp(`\\b${word}\\b`, "i").test(part))) {
+        if (
+          escapeWords.some((word) =>
+            new RegExp(`\\b${word}\\b`, "i").test(part)
+          )
+        ) {
           return <span key={index}>{part}</span>;
         }
         return part;
