@@ -60,6 +60,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { getSettings } from "store/features/settings/settingsState";
 import renderScriptEventContextMenu from "components/script/renderScriptEventContextMenu";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -256,7 +257,7 @@ const ScriptEditorEvent = React.memo(
       setAddOpen(false);
     }, []);
 
-    const contextMenu = useMemo(
+    const contextMenuItems = useMemo(
       () =>
         scriptEvent
           ? renderScriptEventContextMenu({
@@ -300,6 +301,25 @@ const ScriptEditorEvent = React.memo(
         toggleRename,
       ]
     );
+
+    const [contextMenu, setContextMenu] =
+      useState<{
+        x: number;
+        y: number;
+        menu: JSX.Element[];
+      }>();
+
+    const onContextMenu = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+        setContextMenu({ x: e.pageX, y: e.pageY, menu: contextMenuItems });
+      },
+      [contextMenuItems]
+    );
+
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
 
     const renderEvents = useCallback(
       (key: string, label: string) => {
@@ -405,6 +425,7 @@ const ScriptEditorEvent = React.memo(
                 <>
                   <ScriptEventHeaderTitle
                     onClick={!rename ? toggleOpen : undefined}
+                    onContextMenu={onContextMenu}
                   >
                     {!commented ? (
                       <ScriptEventHeaderCaret open={isOpen && !commented}>
@@ -455,7 +476,7 @@ const ScriptEditorEvent = React.memo(
                     menuDirection="right"
                     onMouseDown={onFetchClipboard}
                   >
-                    {contextMenu}
+                    {contextMenuItems}
                   </DropdownButton>
                 </>
               )}
@@ -484,6 +505,15 @@ const ScriptEditorEvent = React.memo(
             </ScriptEventFormWrapper>
           )}
         </div>
+        {contextMenu && (
+          <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onClose={onContextMenuClose}
+          >
+            {contextMenu.menu}
+          </ContextMenu>
+        )}
       </ScriptEventWrapper>
     );
   }
