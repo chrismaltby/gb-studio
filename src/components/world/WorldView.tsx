@@ -73,7 +73,7 @@ type Point = {
   y: number;
 };
 
-type Selection = {
+type SelectionRect = {
   x: number;
   y: number;
   width: number;
@@ -109,7 +109,7 @@ const WorldView = () => {
   const [addToSelection, setAddToSelection] = useState(false);
   const [selectionStart, setSelectionStart] = useState<Point>();
   const [selectionEnd, setSelectionEnd] = useState<Point>();
-  const selection = useRef<Selection>();
+  const selection = useRef<SelectionRect>();
 
   const loaded = useAppSelector((state) => state.document.loaded);
   const scenes = useAppSelector(
