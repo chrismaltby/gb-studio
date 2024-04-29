@@ -766,15 +766,51 @@ const addScene: CaseReducer<
 
 const moveScene: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; x: number; y: number }>
+  PayloadAction<{
+    sceneId: string;
+    x: number;
+    y: number;
+    additionalSceneIds: string[];
+  }>
 > = (state, action) => {
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: {
-      x: Math.max(MIN_SCENE_X, action.payload.x),
-      y: Math.max(MIN_SCENE_Y, action.payload.y),
-    },
-  });
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const additionalScenes = action.payload.additionalSceneIds.map((id) =>
+    localSceneSelectors.selectById(state, id)
+  );
+  if (scene) {
+    const minSelectionX = Math.min(
+      ...additionalScenes.map((s) => (s ? s.x - scene.x : 0))
+    );
+    const minSelectionY = Math.min(
+      ...additionalScenes.map((s) => (s ? s.y - scene.y : 0))
+    );
+
+    // Based on full selection determine minX and minY for current scene
+    const newX = Math.max(MIN_SCENE_X - minSelectionX, action.payload.x);
+    const newY = Math.max(MIN_SCENE_Y - minSelectionY, action.payload.y);
+    const diffX = newX - scene.x;
+    const diffY = newY - scene.y;
+
+    // Move scene
+    scene.x = newX;
+    scene.y = newY;
+
+    // Move additionally selected scenes by same amount
+    for (const additionalSceneId of action.payload.additionalSceneIds) {
+      if (additionalSceneId !== action.payload.sceneId) {
+        const additionalScene = localSceneSelectors.selectById(
+          state,
+          additionalSceneId
+        );
+        if (additionalScene) {
+          const newX = Math.max(MIN_SCENE_X, additionalScene.x + diffX);
+          const newY = Math.max(MIN_SCENE_Y, additionalScene.y + diffY);
+          additionalScene.x = newX;
+          additionalScene.y = newY;
+        }
+      }
+    }
+  }
 };
 
 const editScene: CaseReducer<

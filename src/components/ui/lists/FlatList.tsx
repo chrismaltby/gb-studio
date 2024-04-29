@@ -17,6 +17,7 @@ interface RowProps<T> {
   readonly data: {
     readonly items: T[];
     readonly selectedId: string;
+    readonly highlightIds?: string[];
     readonly setSelectedId?: (value: string, item: T) => void;
     readonly renderItem: (props: {
       selected: boolean;
@@ -30,6 +31,7 @@ export interface FlatListProps<T> {
   readonly height: number;
   readonly items: T[];
   readonly selectedId?: string;
+  readonly highlightIds?: string[];
   readonly setSelectedId?: (id: string, item: T) => void;
   readonly onKeyDown?: (e: KeyboardEvent) => void;
   readonly children?: (props: {
@@ -58,7 +60,11 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
       onClick={() => data.setSelectedId?.(item.id, item)}
       data-id={item.id}
     >
-      <ListItem tabIndex={-1} data-selected={data.selectedId === item.id}>
+      <ListItem
+        tabIndex={-1}
+        data-selected={data.selectedId === item.id}
+        data-highlighted={data.highlightIds?.includes(item.id)}
+      >
         {data.renderItem
           ? data.renderItem({
               item,
@@ -74,6 +80,7 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
 export const FlatList = <T extends FlatListItem>({
   items,
   selectedId,
+  highlightIds,
   setSelectedId,
   height,
   onKeyDown,
@@ -207,6 +214,7 @@ export const FlatList = <T extends FlatListItem>({
           items,
           selectedIndex,
           selectedId,
+          highlightIds,
           setSelectedId,
           focus: hasFocus,
           renderItem: children,

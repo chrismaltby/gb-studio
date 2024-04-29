@@ -441,6 +441,7 @@ test("Should be able to move a scene", () => {
     sceneId: "scene1",
     x: 310,
     y: 520,
+    additionalSceneIds: [],
   });
 
   const newState = reducer(state, action);

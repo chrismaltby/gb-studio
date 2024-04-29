@@ -14,6 +14,7 @@ import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
+  TILE_SIZE,
 } from "consts";
 import {
   sceneSelectors,
@@ -27,6 +28,7 @@ import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { useStore } from "react-redux";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -47,6 +49,23 @@ const WorldContent = styled.div`
   left: 0;
 `;
 
+const SelectionWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const SelectionRect = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(128, 128, 128, 0.2);
+  outline: 2px solid ${(props) => props.theme.colors.highlight};
+  z-index: 1000;
+`;
+
 const NewSceneCursor = styled.div`
   position: absolute;
   cursor: pointer;
@@ -56,6 +75,20 @@ const NewSceneCursor = styled.div`
   border-radius: 4px;
   z-index: 2000;
 `;
+
+type Point = {
+  x: number;
+  y: number;
+};
+
+type Selection = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+const SCENE_VERTICAL_PADDING = 36;
 
 const WorldView = () => {
   //#region Component State
@@ -81,6 +114,10 @@ const WorldView = () => {
     scrollY: 0,
   });
   const isMouseOver = useRef(false);
+  const [addToSelection, setAddToSelection] = useState(false);
+  const [selectionStart, setSelectionStart] = useState<Point>();
+  const [selectionEnd, setSelectionEnd] = useState<Point>();
+  const selection = useRef<Selection>();
 
   const loaded = useAppSelector((state) => state.document.loaded);
   const scenes = useAppSelector(
@@ -182,10 +219,15 @@ const WorldView = () => {
 
   const onKeyDown = useCallback(
     (e) => {
+      if (e.shiftKey) {
+        setSelectionStart(undefined);
+        setSelectionEnd(undefined);
+        setAddToSelection(true);
+      }
       if (e.target.nodeName !== "BODY") {
         return;
       }
-      if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      if (e.ctrlKey || e.metaKey) {
         return;
       }
       if (e.code === "Space") {
@@ -203,6 +245,9 @@ const WorldView = () => {
     (e) => {
       if (dragMode && (e.code === "Space" || e.key === "Alt")) {
         setDragMode(false);
+      }
+      if (!e.shiftKey) {
+        setAddToSelection(false);
       }
     },
     [dragMode]
@@ -305,7 +350,6 @@ const WorldView = () => {
     (_e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       dragState.current.dragDistanceX = 0;
       dragState.current.dragDistanceY = 0;
-
       window.addEventListener("mousemove", onWorldDragMove);
       window.addEventListener("mouseup", onEndWorldDrag);
     },
@@ -478,6 +522,82 @@ const WorldView = () => {
 
   //#endregion
 
+  //#region Multi Selection
+
+  useEffect(() => {
+    if (!selectionStart || !selectionEnd) {
+      selection.current = undefined;
+    } else {
+      selection.current = {
+        x: Math.min(selectionStart.x, selectionEnd.x),
+        y: Math.min(selectionStart.y, selectionEnd.y),
+        width: Math.abs(selectionEnd.x - selectionStart.x),
+        height: Math.abs(selectionEnd.y - selectionStart.y),
+      };
+    }
+  }, [selectionStart, selectionEnd]);
+
+  const onMoveMultiSelection = useCallback((e: MouseEvent) => {
+    if (scrollRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      const boundingRect = scrollRef.current.getBoundingClientRect();
+      const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
+      const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
+      const point: Point = { x, y };
+      setSelectionEnd(point);
+    }
+  }, []);
+
+  const onEndMultiSelection = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (selection.current) {
+        const rect = selection.current;
+        const scenes = Object.values(scenesLookup) as SceneNormalized[];
+        const selectedSceneIds = scenes
+          .filter((scene) => {
+            return (
+              scene.x + scene.width * TILE_SIZE >= rect.x &&
+              scene.x <= rect.x + rect.width &&
+              scene.y + scene.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
+                rect.y &&
+              scene.y <= rect.y + rect.height
+            );
+          })
+          .map((s) => s.id);
+        dispatch(editorActions.addSceneSelectionIds(selectedSceneIds));
+      }
+      setSelectionStart(undefined);
+      setSelectionEnd(undefined);
+      window.removeEventListener("mousemove", onMoveMultiSelection);
+      window.removeEventListener("mouseup", onEndMultiSelection);
+    },
+    [dispatch, onMoveMultiSelection, scenesLookup]
+  );
+
+  const onStartMultiSelection = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (scrollRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const boundingRect = scrollRef.current.getBoundingClientRect();
+        const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
+        const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
+
+        const point: Point = { x, y };
+        setSelectionStart(point);
+        setSelectionEnd(point);
+        window.addEventListener("mousemove", onMoveMultiSelection);
+        window.addEventListener("mouseup", onEndMultiSelection);
+      }
+    },
+    [onEndMultiSelection, onMoveMultiSelection]
+  );
+
   //#region Window Blur
 
   const onWindowBlur = useCallback(() => {
@@ -508,13 +628,17 @@ const WorldView = () => {
       window.removeEventListener("blur", onWindowBlur);
       window.removeEventListener("mousemove", onWorldDragMove);
       window.removeEventListener("mouseup", onEndWorldDrag);
+      window.removeEventListener("mousemove", onMoveMultiSelection);
+      window.removeEventListener("mouseup", onEndMultiSelection);
     };
   }, [
     onCopy,
+    onEndMultiSelection,
     onEndWorldDrag,
     onKeyDown,
     onKeyUp,
     onMouseWheel,
+    onMoveMultiSelection,
     onPaste,
     onWindowBlur,
     onWindowResize,
@@ -548,12 +672,20 @@ const WorldView = () => {
 
         {loaded && scenes.length === 0 && <WorldHelp />}
 
+        {addToSelection && (
+          <SelectionWrapper
+            style={{ width: scrollWidth, height: scrollHeight }}
+            onMouseDown={onStartMultiSelection}
+          ></SelectionWrapper>
+        )}
+
         {scenes.map((sceneId, index) => (
           <SceneView
             key={sceneId}
             id={sceneId}
             index={index}
             editable={!dragMode}
+            addToSelection={addToSelection}
           />
         ))}
 
@@ -572,6 +704,17 @@ const WorldView = () => {
             style={{
               left: hoverState.x,
               top: hoverState.y,
+            }}
+          />
+        )}
+
+        {selectionStart && selectionEnd && (
+          <SelectionRect
+            style={{
+              left: Math.min(selectionStart.x, selectionEnd.x),
+              top: Math.min(selectionStart.y, selectionEnd.y),
+              width: Math.abs(selectionEnd.x - selectionStart.x),
+              height: Math.abs(selectionEnd.y - selectionStart.y),
             }}
           />
         )}

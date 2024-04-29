@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
   actorSelectors,
   sceneSelectors,
@@ -100,6 +100,9 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const startDirection = useAppSelector(
     (state) => state.project.present.settings.startDirection
   );
+  const sceneSelectionIds = useAppSelector(
+    (state) => state.editor.sceneSelectionIds
+  );
 
   const {
     values: openSceneIds,
@@ -115,6 +118,29 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       : entityId;
 
   const dispatch = useAppDispatch();
+
+  const addToSelection = useRef(false);
+
+  const onKeyDown = useCallback((e) => {
+    if (e.shiftKey) {
+      addToSelection.current = true;
+    }
+  }, []);
+
+  const onKeyUp = useCallback((e) => {
+    if (!e.shiftKey) {
+      addToSelection.current = false;
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, [onKeyDown, onKeyUp]);
 
   useEffect(() => {
     const sceneItems = scenes
@@ -160,7 +186,11 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
       );
     } else {
-      dispatch(editorActions.selectScene({ sceneId: id }));
+      if (addToSelection.current) {
+        dispatch(editorActions.toggleSceneSelectedId(id));
+      } else {
+        dispatch(editorActions.selectScene({ sceneId: id }));
+      }
     }
     dispatch(editorActions.setFocusSceneId(item.sceneId));
   };
@@ -277,6 +307,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   return (
     <FlatList
       selectedId={selectedId}
+      highlightIds={sceneSelectionIds}
       items={items}
       setSelectedId={setSelectedId}
       height={height}

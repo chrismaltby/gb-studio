@@ -88,6 +88,7 @@ export interface EditorState {
   scene: string;
   entityId: string;
   eventId: string;
+  sceneSelectionIds: string[];
   index: number;
   zoom: number;
   zoomSprite: number;
@@ -153,6 +154,7 @@ export const initialState: EditorState = {
   scene: "",
   entityId: "",
   eventId: "",
+  sceneSelectionIds: [],
   index: 0,
   zoom: 100,
   zoomSprite: 400,
@@ -272,6 +274,7 @@ const editorSlice = createSlice({
       state.scene = "";
       state.type = "world";
       state.worldFocus = true;
+      state.sceneSelectionIds = [];
     },
 
     selectSidebar: (state, _action: PayloadAction<void>) => {
@@ -301,6 +304,9 @@ const editorSlice = createSlice({
       state.previewAsSceneId = action.payload.sceneId;
       state.worldFocus = true;
       state.entityId = "";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
     },
 
     selectCustomEvent: (
@@ -692,6 +698,44 @@ const editorSlice = createSlice({
       state.scene = action.payload.sceneId;
       state.slopePreview = action.payload.slopePreview;
     },
+
+    addSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = [
+        ...state.sceneSelectionIds,
+        ...action.payload,
+      ].filter((id, index, self) => {
+        return self.indexOf(id) === index;
+      });
+    },
+
+    removeSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
+        return action.payload.indexOf(id) === -1;
+      });
+    },
+
+    toggleSceneSelectedId: (state, action: PayloadAction<string>) => {
+      // If toggling focused scene id then remove scene selection
+      if (state.scene === action.payload) {
+        state.scene = "";
+        state.type = "world";
+        state.worldFocus = true;
+        state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
+          return action.payload.indexOf(id) === -1;
+        });
+      } else {
+        const index = state.sceneSelectionIds.indexOf(action.payload);
+        if (index === -1) {
+          state.sceneSelectionIds.push(action.payload);
+        } else {
+          state.sceneSelectionIds.splice(index, 1);
+        }
+      }
+    },
+
+    clearSelectionIds: (state) => {
+      state.sceneSelectionIds = [];
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -700,6 +744,7 @@ const editorSlice = createSlice({
         state.scene = action.payload.sceneId;
         state.entityId = "";
         state.worldFocus = true;
+        state.sceneSelectionIds = [action.payload.sceneId];
       })
       .addCase(entitiesActions.addActor, (state, action) => {
         state.type = "actor";
@@ -764,6 +809,9 @@ const editorSlice = createSlice({
         state.type = "scene";
         state.entityId = "";
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
       })
       // Force React Select dropdowns to reload with new name
       .addCase(entitiesActions.renameVariable, (state, _action) => {
@@ -824,6 +872,9 @@ const editorSlice = createSlice({
           state.scene = action.payload.sceneId;
           state.entityId = "";
           state.worldFocus = true;
+          if (!state.sceneSelectionIds.includes(state.scene)) {
+            state.sceneSelectionIds = [action.payload.sceneId];
+          }
         }
       ),
 });
