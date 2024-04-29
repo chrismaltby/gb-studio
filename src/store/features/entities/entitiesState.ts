@@ -2876,13 +2876,24 @@ const toggleScriptEventComment: CaseReducer<
   EntitiesState,
   PayloadAction<{
     scriptEventId: string;
+    additionalScriptEventIds: string[];
   }>
 > = (state, action) => {
   const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
   if (!scriptEvent || !scriptEvent.args) {
     return;
   }
-  scriptEvent.args.__comment = !scriptEvent.args.__comment;
+  const newValue = !scriptEvent.args.__comment;
+  scriptEvent.args.__comment = newValue;
+
+  // Toggle others in selection to match
+  for (const scriptEventId of action.payload.additionalScriptEventIds) {
+    const scriptEvent = state.scriptEvents.entities[scriptEventId];
+    if (!scriptEvent || !scriptEvent.args) {
+      continue;
+    }
+    scriptEvent.args.__comment = newValue;
+  }
 };
 
 const toggleScriptEventDisableElse: CaseReducer<
@@ -3001,6 +3012,40 @@ const removeScriptEvent: CaseReducer<
   scriptEventsAdapter.removeOne(
     state.scriptEvents,
     action.payload.scriptEventId
+  );
+};
+
+const removeScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
+  }
+
+  for (const scriptEventId of action.payload.scriptEventIds) {
+    const eventIndex = script.indexOf(scriptEventId);
+    if (eventIndex === -1) {
+      continue;
+    }
+    script.splice(eventIndex, 1);
+  }
+
+  scriptEventsAdapter.removeMany(
+    state.scriptEvents,
+    action.payload.scriptEventIds
   );
 };
 
@@ -3366,6 +3411,7 @@ const entitiesSlice = createSlice({
     editScriptEventDestination,
     editScriptEventLabel,
     removeScriptEvent,
+    removeScriptEvents,
 
     /**************************************************************************
      * Music

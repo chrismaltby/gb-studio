@@ -89,6 +89,8 @@ export interface EditorState {
   entityId: string;
   eventId: string;
   sceneSelectionIds: string[];
+  scriptEventSelectionIds: string[];
+  scriptEventSelectionParentId: string;
   index: number;
   zoom: number;
   zoomSprite: number;
@@ -155,6 +157,8 @@ export const initialState: EditorState = {
   entityId: "",
   eventId: "",
   sceneSelectionIds: [],
+  scriptEventSelectionIds: [],
+  scriptEventSelectionParentId: "",
   index: 0,
   zoom: 100,
   zoomSprite: 400,
@@ -307,6 +311,7 @@ const editorSlice = createSlice({
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
+      state.scriptEventSelectionIds = [];
     },
 
     selectCustomEvent: (
@@ -316,6 +321,7 @@ const editorSlice = createSlice({
       state.type = "customEvent";
       state.scene = "";
       state.entityId = action.payload.customEventId;
+      state.scriptEventSelectionIds = [];
     },
 
     selectVariable: (state, action: PayloadAction<{ variableId: string }>) => {
@@ -337,6 +343,7 @@ const editorSlice = createSlice({
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
+      state.scriptEventSelectionIds = [];
     },
 
     selectTrigger: (
@@ -352,6 +359,7 @@ const editorSlice = createSlice({
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
+      state.scriptEventSelectionIds = [];
     },
 
     dragTriggerStart: (
@@ -366,6 +374,7 @@ const editorSlice = createSlice({
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
+      state.scriptEventSelectionIds = [];
     },
 
     dragTriggerStop: (state, _action: PayloadAction<void>) => {
@@ -384,6 +393,7 @@ const editorSlice = createSlice({
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
+      state.scriptEventSelectionIds = [];
     },
 
     dragActorStop: (state, _action: PayloadAction<void>) => {
@@ -745,8 +755,34 @@ const editorSlice = createSlice({
       }
     },
 
-    clearSelectionIds: (state) => {
+    clearSceneSelectionIds: (state) => {
       state.sceneSelectionIds = [];
+    },
+
+    toggleScriptEventSelectedId: (
+      state,
+      action: PayloadAction<{ scriptEventId: string; parentId: string }>
+    ) => {
+      if (state.scriptEventSelectionParentId !== action.payload.parentId) {
+        // Selected from new parent, change selection to just this script event
+        state.scriptEventSelectionIds = [action.payload.scriptEventId];
+      } else {
+        // Same parent id so toggle if event is selected or not
+        const index = state.scriptEventSelectionIds.indexOf(
+          action.payload.scriptEventId
+        );
+        if (index === -1) {
+          state.scriptEventSelectionIds.push(action.payload.scriptEventId);
+        } else {
+          state.scriptEventSelectionIds.splice(index, 1);
+        }
+      }
+      state.scriptEventSelectionParentId = action.payload.parentId;
+    },
+
+    clearScriptEventSelectionIds: (state) => {
+      state.scriptEventSelectionIds = [];
+      state.scriptEventSelectionParentId = "";
     },
   },
   extraReducers: (builder) =>
@@ -757,6 +793,7 @@ const editorSlice = createSlice({
         state.entityId = "";
         state.worldFocus = true;
         state.sceneSelectionIds = [action.payload.sceneId];
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addActor, (state, action) => {
         state.type = "actor";
@@ -766,6 +803,7 @@ const editorSlice = createSlice({
         if (!state.sceneSelectionIds.includes(state.scene)) {
           state.sceneSelectionIds = [action.payload.sceneId];
         }
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addTrigger, (state, action) => {
         state.type = "trigger";
@@ -775,6 +813,7 @@ const editorSlice = createSlice({
         if (!state.sceneSelectionIds.includes(state.scene)) {
           state.sceneSelectionIds = [action.payload.sceneId];
         }
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;
@@ -839,6 +878,7 @@ const editorSlice = createSlice({
       .addCase(navigationActions.setSection, (state, _action) => {
         state.worldFocus = false;
         state.eventId = "";
+        state.scriptEventSelectionIds = [];
       })
       // Remove world focus when loading project and set scroll settings from project
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
