@@ -1243,6 +1243,7 @@
   "MENU_EJECT_PROJECT_DATA": "Export Project Data",
   "MENU_SPRITE_DELETE": "Delete Frame",
   "MENU_SPRITE_TILE_DELETE": "Delete Tile",
+  "MENU_SPRITE_TILES_DELETE": "Delete Tiles",
   "MENU_SPRITE_COPY": "Copy Frame",
   "MENU_SPRITE_TILE_COPY": "Copy Tile",
   "MENU_SPRITE_STATE_COPY": "Copy Animation State",
