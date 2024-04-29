@@ -23,6 +23,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { Selection } from "ui/document/Selection";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -129,12 +130,6 @@ const StampTilesWrapper = styled.div`
   canvas {
     display: block;
   }
-`;
-
-const Selection = styled.div`
-  position: absolute;
-  background: rgba(128, 128, 128, 0.02);
-  border: 1px solid rgba(128, 128, 128, 0.3);
 `;
 
 interface Position {

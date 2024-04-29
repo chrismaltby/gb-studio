@@ -29,6 +29,7 @@ import { useStore } from "react-redux";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
+import { Selection } from "ui/document/Selection";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -57,15 +58,6 @@ const SelectionWrapper = styled.div`
   height: 100%;
 `;
 
-const SelectionRect = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(128, 128, 128, 0.2);
-  outline: 2px solid ${(props) => props.theme.colors.highlight};
-  z-index: 1000;
-`;
-
 const NewSceneCursor = styled.div`
   position: absolute;
   cursor: pointer;
@@ -81,14 +73,14 @@ type Point = {
   y: number;
 };
 
-type Selection = {
+type SelectionRect = {
   x: number;
   y: number;
   width: number;
   height: number;
 };
 
-const SCENE_VERTICAL_PADDING = 36;
+const SCENE_VERTICAL_PADDING = 20;
 
 const WorldView = () => {
   //#region Component State
@@ -117,7 +109,7 @@ const WorldView = () => {
   const [addToSelection, setAddToSelection] = useState(false);
   const [selectionStart, setSelectionStart] = useState<Point>();
   const [selectionEnd, setSelectionEnd] = useState<Point>();
-  const selection = useRef<Selection>();
+  const selection = useRef<SelectionRect>();
 
   const loaded = useAppSelector((state) => state.document.loaded);
   const scenes = useAppSelector(
@@ -537,45 +529,51 @@ const WorldView = () => {
     }
   }, [selectionStart, selectionEnd]);
 
-  const onMoveMultiSelection = useCallback((e: MouseEvent) => {
-    if (scrollRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      const boundingRect = scrollRef.current.getBoundingClientRect();
-      const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
-      const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
-      const point: Point = { x, y };
-      setSelectionEnd(point);
-    }
-  }, []);
+  const onMoveMultiSelection = useCallback(
+    (e: MouseEvent) => {
+      if (scrollRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        const boundingRect = scrollRef.current.getBoundingClientRect();
+        const x =
+          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
+        const y =
+          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
+        const point: Point = { x, y };
+
+        if (selection.current) {
+          const rect = selection.current;
+          const scenes = Object.values(scenesLookup) as SceneNormalized[];
+          const selectedSceneIds = scenes
+            .filter((scene) => {
+              return (
+                scene.x + scene.width * TILE_SIZE >= rect.x &&
+                scene.x <= rect.x + rect.width &&
+                scene.y + scene.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
+                  rect.y &&
+                scene.y <= rect.y + rect.height
+              );
+            })
+            .map((s) => s.id);
+          dispatch(editorActions.addSceneSelectionIds(selectedSceneIds));
+        }
+
+        setSelectionEnd(point);
+      }
+    },
+    [dispatch, scenesLookup, zoomRatio]
+  );
 
   const onEndMultiSelection = useCallback(
     (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-
-      if (selection.current) {
-        const rect = selection.current;
-        const scenes = Object.values(scenesLookup) as SceneNormalized[];
-        const selectedSceneIds = scenes
-          .filter((scene) => {
-            return (
-              scene.x + scene.width * TILE_SIZE >= rect.x &&
-              scene.x <= rect.x + rect.width &&
-              scene.y + scene.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
-                rect.y &&
-              scene.y <= rect.y + rect.height
-            );
-          })
-          .map((s) => s.id);
-        dispatch(editorActions.addSceneSelectionIds(selectedSceneIds));
-      }
       setSelectionStart(undefined);
       setSelectionEnd(undefined);
       window.removeEventListener("mousemove", onMoveMultiSelection);
       window.removeEventListener("mouseup", onEndMultiSelection);
     },
-    [dispatch, onMoveMultiSelection, scenesLookup]
+    [onMoveMultiSelection]
   );
 
   const onStartMultiSelection = useCallback(
@@ -585,8 +583,10 @@ const WorldView = () => {
         e.stopPropagation();
 
         const boundingRect = scrollRef.current.getBoundingClientRect();
-        const x = e.pageX + scrollRef.current.scrollLeft - boundingRect.x;
-        const y = e.pageY + scrollRef.current.scrollTop - boundingRect.y;
+        const x =
+          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
+        const y =
+          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
 
         const point: Point = { x, y };
         setSelectionStart(point);
@@ -595,7 +595,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndMultiSelection);
       }
     },
-    [onEndMultiSelection, onMoveMultiSelection]
+    [onEndMultiSelection, onMoveMultiSelection, zoomRatio]
   );
 
   //#region Window Blur
@@ -709,7 +709,7 @@ const WorldView = () => {
         )}
 
         {selectionStart && selectionEnd && (
-          <SelectionRect
+          <Selection
             style={{
               left: Math.min(selectionStart.x, selectionEnd.x),
               top: Math.min(selectionStart.y, selectionEnd.y),
