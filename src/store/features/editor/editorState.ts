@@ -959,6 +959,11 @@ const editorSlice = createSlice({
       .addCase(addNewSongFile.fulfilled, (state, action) => {
         state.selectedSongId = action.payload.data.id;
       })
+      // When grouping script events remove selection
+      .addCase(entitiesActions.groupScriptEvents, (state) => {
+        state.scriptEventSelectionIds = [];
+        state.scriptEventSelectionParentId = "";
+      })
       // When UI changes increment UI version number
       .addMatcher(
         (action): action is AnyAction =>
