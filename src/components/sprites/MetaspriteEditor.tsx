@@ -24,6 +24,8 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
+import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -735,6 +737,38 @@ const MetaspriteEditor = ({
     [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled]
   );
 
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+
+  const renderContextMenu = useCallback(() => {
+    return renderMetaspriteTileContextMenu({
+      dispatch,
+      spriteSheetId,
+      metaspriteId,
+      selectedTileIds,
+    });
+  }, [dispatch, metaspriteId, selectedTileIds, spriteSheetId]);
+
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      const menu = renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu]
+  );
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
   if (!metasprite) {
     return null;
   }
@@ -788,6 +822,7 @@ const MetaspriteEditor = ({
                 }}
                 selected={selectedTileIds.includes(metaspriteTile.id)}
                 onMouseDown={onDragStart(metaspriteTile.id)}
+                onContextMenu={onContextMenu}
               >
                 <SpriteSliceCanvas
                   spriteSheetId={spriteSheetId}
@@ -844,6 +879,15 @@ const MetaspriteEditor = ({
           )}
         </GridWrapper>
       </ContentWrapper>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
     </ScrollWrapper>
   );
 };
