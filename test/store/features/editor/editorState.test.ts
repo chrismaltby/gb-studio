@@ -6,6 +6,7 @@ import reducer, {
 import actions from "../../../../src/store/features/editor/editorActions";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 import { RootState } from "../../../../src/store/configureStore";
+import { create } from "../../../redux-utils";
 
 test("Should allow setting tool", () => {
   const state: EditorState = {
@@ -400,4 +401,142 @@ test("Should fetch correct zoom level for sections", () => {
   expect(getZoomForSection(state, "sprites")).toBe(400);
   expect(getZoomForSection(state, "backgrounds")).toBe(500);
   expect(getZoomForSection(state, "settings")).toBe(100);
+});
+
+test("Should allow setting selected script events", () => {
+  const state: EditorState = {
+    ...initialState,
+    scriptEventSelectionIds: [],
+    scriptEventSelectionParentId: "",
+  };
+  const action = actions.setScriptEventSelectedId({
+    scriptEventIds: ["b", "c", "d"],
+    parentId: "a",
+  });
+  const newState = reducer(state, action);
+  expect(newState.scriptEventSelectionIds).toEqual(["b", "c", "d"]);
+  expect(newState.scriptEventSelectionParentId).toBe("a");
+});
+
+test("Should clearing selected script events", () => {
+  const state: EditorState = {
+    ...initialState,
+    scriptEventSelectionIds: ["b", "c", "d"],
+    scriptEventSelectionParentId: "a",
+  };
+  const action = actions.clearScriptEventSelectionIds();
+  const newState = reducer(state, action);
+  expect(newState.scriptEventSelectionIds).toEqual([]);
+  expect(newState.scriptEventSelectionParentId).toBe("");
+});
+
+test("should remove script event from selection when toggling and value already included", () => {
+  const { store, invoke } = create({
+    editor: {
+      scriptEventSelectionIds: ["b", "c", "d"],
+      scriptEventSelectionParentId: "s1",
+    },
+    project: {
+      present: {
+        entities: {
+          scenes: {
+            ids: ["s1"],
+            entities: {
+              s1: {
+                script: ["a", "b", "c", "d", "e"],
+              },
+            },
+          },
+        },
+      },
+    },
+  } as unknown as RootState);
+  invoke(
+    actions.toggleScriptEventSelectedId({
+      scriptEventId: "c",
+      parentType: "scene",
+      parentKey: "script",
+      parentId: "s1",
+    })
+  );
+  expect(store.dispatch).toHaveBeenCalledWith({
+    payload: { parentId: "s1", scriptEventIds: ["b", "d"] },
+    type: "editor/setScriptEventSelectedId",
+  });
+  expect(store.getState).toHaveBeenCalled();
+});
+
+test("should add script event to selection when toggling new value, keeping sibling order", () => {
+  const { store, invoke } = create({
+    editor: {
+      scriptEventSelectionIds: ["a", "c", "e"],
+      scriptEventSelectionParentId: "s1",
+    },
+    project: {
+      present: {
+        entities: {
+          scenes: {
+            ids: ["s1"],
+            entities: {
+              s1: {
+                script: ["a", "b", "c", "d", "e"],
+              },
+            },
+          },
+        },
+      },
+    },
+  } as unknown as RootState);
+  invoke(
+    actions.toggleScriptEventSelectedId({
+      scriptEventId: "d",
+      parentType: "scene",
+      parentKey: "script",
+      parentId: "s1",
+    })
+  );
+  expect(store.dispatch).toHaveBeenCalledWith({
+    payload: { parentId: "s1", scriptEventIds: ["a", "c", "d", "e"] },
+    type: "editor/setScriptEventSelectedId",
+  });
+  expect(store.getState).toHaveBeenCalled();
+});
+
+test("should reset selection if selecting from a new parentId", () => {
+  const { store, invoke } = create({
+    editor: {
+      scriptEventSelectionIds: ["a", "c", "e"],
+      scriptEventSelectionParentId: "s1",
+    },
+    project: {
+      present: {
+        entities: {
+          scenes: {
+            ids: ["s1", "s2"],
+            entities: {
+              s1: {
+                script: ["a", "b", "c", "d", "e"],
+              },
+              s2: {
+                script: ["A", "B", "C", "D", "E"],
+              },
+            },
+          },
+        },
+      },
+    },
+  } as unknown as RootState);
+  invoke(
+    actions.toggleScriptEventSelectedId({
+      scriptEventId: "D",
+      parentType: "scene",
+      parentKey: "script",
+      parentId: "s2",
+    })
+  );
+  expect(store.dispatch).toHaveBeenCalledWith({
+    payload: { parentId: "s2", scriptEventIds: ["D"] },
+    type: "editor/setScriptEventSelectedId",
+  });
+  expect(store.getState).toHaveBeenCalled();
 });
