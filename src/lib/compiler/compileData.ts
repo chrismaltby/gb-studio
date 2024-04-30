@@ -101,10 +101,8 @@ import {
   Palette,
   Scene,
   ScriptEvent,
-  SoundData,
   SpriteSheetData,
   TilesetData,
-  Variable,
 } from "shared/lib/entities/entitiesTypes";
 import type { Dictionary } from "@reduxjs/toolkit";
 import type {
@@ -936,7 +934,7 @@ export const precompileMusic = (
 };
 
 export const precompileFonts = async (
-  fonts: FontData[],
+  usedFonts: FontData[],
   scenes: Scene[],
   customEventsLookup: Dictionary<CustomEvent>,
   defaultFontId: string,
@@ -947,10 +945,7 @@ export const precompileFonts = async (
     warnings: (msg: string) => void;
   }
 ) => {
-  const defaultFont =
-    fonts.find((font) => font.id === defaultFontId) || fonts[0];
-
-  if (!defaultFont) {
+  if (usedFonts.length === 0) {
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
       projectRoot,
       warnings,
@@ -961,59 +956,6 @@ export const precompileFonts = async (
     });
     throw new Error(l10n("ERROR_MISSING_FONTS"));
   }
-
-  const usedFontIds = [defaultFont.id];
-
-  const addFont = (id: string) => {
-    // If never seen this font before add it to the list
-    if (usedFontIds.indexOf(id) === -1) {
-      usedFontIds.push(id);
-    }
-  };
-
-  const addFontsFromString = (s: string) => {
-    (s.match(/(!F:[0-9a-f-]+!)/g) || [])
-      .map((id) => id.substring(3).replace(/!$/, ""))
-      .forEach(addFont);
-  };
-
-  walkScenesScripts(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (cmd.args && cmd.args.fontId !== undefined) {
-        addFont(ensureString(cmd.args.fontId, fonts[0].id));
-      }
-      if (cmd.args && cmd.args.text !== undefined) {
-        // Add fonts referenced in text
-        addFontsFromString(String(cmd.args.text));
-      }
-      if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
-        // Add fonts referenced in menu items
-        const itemsLen = ensureNumber(cmd.args.items, 0);
-        for (let i = 1; i <= itemsLen; i++) {
-          addFontsFromString(String(cmd.args[`option${i}`]));
-        }
-      }
-      if (eventHasArg(cmd, "references")) {
-        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-          .filter((ref) => ref.type === "font")
-          .map((ref) => ref.id);
-        usedFontIds.push(...referencedIds);
-      }
-    }
-  );
-
-  const usedFonts: FontData[] = [defaultFont].concat(
-    fonts.filter((font) => {
-      return font.id !== defaultFont.id && usedFontIds.indexOf(font.id) > -1;
-    })
-  );
 
   const fontData = await compileFonts(usedFonts, projectRoot);
 
@@ -1236,6 +1178,7 @@ export const precompileScenes = (
 const precompile = async (
   projectData: ProjectData,
   projectRoot: string,
+  scriptEventHandlers: ScriptEventHandlers,
   tmpPath: string,
   {
     progress,
@@ -1246,22 +1189,17 @@ const precompile = async (
   }
 ) => {
   const customEventsLookup = keyBy(projectData.customEvents, "id");
-  const variablesLookup = keyBy(projectData.variables, "id");
-  const soundsLookup = keyBy(projectData.sounds, "id");
   const colorMode = projectData.settings.colorMode;
   const cgbOnly = colorMode === "color";
 
   const usedAssets = determineUsedAssets({
-    scenes: projectData.scenes,
+    projectData,
     customEventsLookup,
-    variablesLookup,
-    soundsLookup,
+    scriptEventHandlers,
   });
 
   progress(EVENT_MSG_PRE_VARIABLES);
-  const usedVariables = Object.values(
-    usedAssets.usedVariablesLookup
-  ) as Variable[];
+  const usedVariables = usedAssets.referencedVariables;
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
@@ -1346,7 +1284,7 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_FONTS);
   const { usedFonts } = await precompileFonts(
-    projectData.fonts,
+    usedAssets.referencedFonts,
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultFontId,
@@ -1380,7 +1318,7 @@ const precompile = async (
     backgroundLookup
   );
 
-  const usedSounds = Object.values(usedAssets.usedSoundsLookup) as SoundData[];
+  const usedSounds = usedAssets.referencedSounds;
 
   progress(EVENT_MSG_PRE_COMPLETE);
 
@@ -1449,10 +1387,16 @@ const compile = async (
     );
   }
 
-  const precompiled = await precompile(projectData, projectRoot, tmpPath, {
-    progress,
-    warnings,
-  });
+  const precompiled = await precompile(
+    projectData,
+    projectRoot,
+    scriptEventHandlers,
+    tmpPath,
+    {
+      progress,
+      warnings,
+    }
+  );
 
   const colorEnabled = projectData.settings.colorMode !== "mono";
   const isCGBOnly = projectData.settings.colorMode === "color";

@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where variables in Dialogue and Math inputs could appear above script tabs
 - Fix calculation of last parallax layer height in editor input [@pau-tomas](https://github.com/pau-tomas)
 - Fix compiler warning when using some unary operators in While loop [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where fonts referenced from plugins were not always being included in compiled game
 
 ## [3.2.1] - 2024-02-27
 
