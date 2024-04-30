@@ -187,6 +187,7 @@ const ScriptEditorEvent = React.memo(
               parentId,
             },
             from: item,
+            additionalScriptEventIds: scriptEventSelectionIds,
           })
         );
 

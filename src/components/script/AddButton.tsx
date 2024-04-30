@@ -18,7 +18,7 @@ import AddScriptEventMenu from "./AddScriptEventMenu";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -77,6 +77,10 @@ const AddButton = ({
   const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
+  const scriptEventSelectionIds = useAppSelector(
+    (state) => state.editor.scriptEventSelectionIds
+  );
+
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
     accept: ItemTypes.SCRIPT_EVENT,
     collect(monitor) {
@@ -104,6 +108,7 @@ const AddButton = ({
             parentId,
           },
           from: item,
+          additionalScriptEventIds: scriptEventSelectionIds,
         })
       );
 

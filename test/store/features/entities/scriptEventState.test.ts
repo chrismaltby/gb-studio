@@ -528,6 +528,7 @@ test("should be able to move an event to a new location in a script", () => {
       parentKey: "script",
       parentId: "scene1",
     },
+    additionalScriptEventIds: [],
   });
 
   const newState = reducer(state, action);
@@ -582,12 +583,68 @@ test("should be able to move an event to the end of a script", () => {
       parentKey: "script",
       parentId: "scene1",
     },
+    additionalScriptEventIds: [],
   });
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe("script1");
   expect(newState.scenes.entities["scene1"]?.script?.[1]).toBe("script3");
   expect(newState.scenes.entities["scene1"]?.script?.[2]).toBe("script2");
+});
+
+test("should be able to move multiple events in selection to a new location in a script", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          actors: [],
+          triggers: [],
+          script: [
+            "script1",
+            "script2",
+            "script3",
+            "script4",
+            "script5",
+            "script6",
+          ],
+        },
+      },
+      ids: ["scene1"],
+    },
+    scriptEvents: {
+      ids: ["script1", "script2", "script3", "script4", "script5", "script6"],
+      entities: {},
+    },
+  };
+
+  const action = actions.moveScriptEvent({
+    from: {
+      scriptEventId: "script3",
+      parentType: "scene",
+      parentKey: "script",
+      parentId: "scene1",
+    },
+    to: {
+      scriptEventId: "script2",
+      parentType: "scene",
+      parentKey: "script",
+      parentId: "scene1",
+    },
+    additionalScriptEventIds: ["script3", "script4", "script6"],
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.script).toEqual([
+    "script1",
+    "script3",
+    "script4",
+    "script6",
+    "script2",
+    "script5",
+  ]);
 });
 
 test("should be able to reset a script", () => {

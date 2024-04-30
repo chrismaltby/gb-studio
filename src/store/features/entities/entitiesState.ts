@@ -2805,6 +2805,7 @@ const moveScriptEvent: CaseReducer<
   PayloadAction<{
     from: ScriptEventsRef;
     to: ScriptEventsRef;
+    additionalScriptEventIds: string[];
   }>
 > = (state, action) => {
   const from = selectScriptIdsByRef(state, action.payload.from);
@@ -2831,6 +2832,27 @@ const moveScriptEvent: CaseReducer<
     0,
     action.payload.from.scriptEventId
   );
+
+  const { additionalScriptEventIds } = action.payload;
+
+  if (additionalScriptEventIds.length > 0) {
+    const upperHalfRemainingScriptEventIds = to
+      .slice(0, toIndex)
+      .filter((c) => !additionalScriptEventIds.includes(c));
+    const lowerHalfRemainingScriptEventIds = to
+      .slice(toIndex)
+      .filter((c) => !additionalScriptEventIds.includes(c));
+    const newFrom = from.filter((c) => !additionalScriptEventIds.includes(c));
+    const newTo = [
+      ...upperHalfRemainingScriptEventIds,
+      ...additionalScriptEventIds,
+      ...lowerHalfRemainingScriptEventIds,
+    ];
+    from.length = 0;
+    from.push(...newFrom);
+    to.length = 0;
+    to.push(...newTo);
+  }
 };
 
 const editScriptEvent: CaseReducer<
