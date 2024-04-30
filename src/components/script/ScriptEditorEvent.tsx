@@ -121,6 +121,8 @@ const ScriptEditorEvent = React.memo(
             editorActions.toggleScriptEventSelectedId({
               scriptEventId: id,
               parentId,
+              parentKey,
+              parentType,
             })
           );
           return true;
@@ -133,7 +135,7 @@ const ScriptEditorEvent = React.memo(
         }
         return false;
       },
-      [dispatch, id, parentId, scriptEventSelectionIds]
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
     );
 
     const onFetchClipboard = useCallback(

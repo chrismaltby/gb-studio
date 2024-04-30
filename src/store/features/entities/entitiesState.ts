@@ -2672,7 +2672,7 @@ const refreshCustomEventArgs: CaseReducer<
  * Script Events
  */
 
-const selectScriptIds = (
+export const selectScriptIds = (
   state: EntitiesState,
   parentType: ScriptEventParentType,
   parentId: string,

@@ -3,6 +3,7 @@ import {
   PayloadAction,
   AnyAction,
   createSelector,
+  ThunkDispatch,
 } from "@reduxjs/toolkit";
 import {
   BRUSH_8PX,
@@ -14,7 +15,10 @@ import {
   BRUSH_SLOPE,
 } from "consts";
 import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
-import { Variable } from "shared/lib/entities/entitiesTypes";
+import {
+  ScriptEventParentType,
+  Variable,
+} from "shared/lib/entities/entitiesTypes";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
 import settingsActions from "store/features/settings/settingsActions";
@@ -24,6 +28,7 @@ import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { RootState } from "store/configureStore";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
+import { selectScriptIds } from "store/features/entities/entitiesState";
 
 export type Tool =
   | "triggers"
@@ -218,6 +223,62 @@ export const initialState: EditorState = {
   precisionTileMode: false,
   slopePreview: undefined,
 };
+
+const toggleScriptEventSelectedId =
+  (action: {
+    scriptEventId: string;
+    parentType: ScriptEventParentType;
+    parentId: string;
+    parentKey: string;
+  }) =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const siblingIds = selectScriptIds(
+      state.project.present.entities,
+      action.parentType,
+      action.parentId,
+      action.parentKey
+    );
+    const selectionIds = state.editor.scriptEventSelectionIds.slice();
+    const selectionParentId = state.editor.scriptEventSelectionParentId;
+
+    if (siblingIds) {
+      if (selectionParentId !== action.parentId) {
+        // Selected from new parent, change selection to just this script event
+        dispatch(
+          actions.setScriptEventSelectedId({
+            scriptEventIds: [action.scriptEventId],
+            parentId: action.parentId,
+          })
+        );
+      } else {
+        // Same parent id so toggle if event is selected or not
+        const index = selectionIds.indexOf(action.scriptEventId);
+        if (index === -1) {
+          // Add to selection
+          selectionIds.push(action.scriptEventId);
+        } else {
+          // Remove from selection
+          selectionIds.splice(index, 1);
+        }
+        // Sort to keep order of siblings
+        const sortedIds = selectionIds.slice().sort((a, b) => {
+          const indexA = siblingIds.findIndex((item) => item === a);
+          const indexB = siblingIds.findIndex((item) => item === b);
+          return indexA - indexB;
+        });
+        dispatch(
+          actions.setScriptEventSelectedId({
+            scriptEventIds: sortedIds,
+            parentId: action.parentId,
+          })
+        );
+      }
+    }
+  };
 
 const editorSlice = createSlice({
   name: "editor",
@@ -759,24 +820,11 @@ const editorSlice = createSlice({
       state.sceneSelectionIds = [];
     },
 
-    toggleScriptEventSelectedId: (
+    setScriptEventSelectedId: (
       state,
-      action: PayloadAction<{ scriptEventId: string; parentId: string }>
+      action: PayloadAction<{ scriptEventIds: string[]; parentId: string }>
     ) => {
-      if (state.scriptEventSelectionParentId !== action.payload.parentId) {
-        // Selected from new parent, change selection to just this script event
-        state.scriptEventSelectionIds = [action.payload.scriptEventId];
-      } else {
-        // Same parent id so toggle if event is selected or not
-        const index = state.scriptEventSelectionIds.indexOf(
-          action.payload.scriptEventId
-        );
-        if (index === -1) {
-          state.scriptEventSelectionIds.push(action.payload.scriptEventId);
-        } else {
-          state.scriptEventSelectionIds.splice(index, 1);
-        }
-      }
+      state.scriptEventSelectionIds = action.payload.scriptEventIds;
       state.scriptEventSelectionParentId = action.payload.parentId;
     },
 
@@ -937,7 +985,12 @@ const editorSlice = createSlice({
       ),
 });
 
-export const { actions, reducer } = editorSlice;
+export const { reducer } = editorSlice;
+
+export const actions = {
+  ...editorSlice.actions,
+  toggleScriptEventSelectedId,
+};
 
 /**************************************************************************
  * Selectors
