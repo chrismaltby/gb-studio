@@ -1,5 +1,6 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useState } from "react";
 import styled from "styled-components";
+import { RenameInput } from "ui/form/RenameInput";
 import {
   ActorIcon,
   AnimationIcon,
@@ -118,21 +119,6 @@ const EntityLabel = styled.div`
   flex-grow: 1;
 `;
 
-const EntityInput = styled.input`
-  background: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-grow: 1;
-  border: 0;
-  font-size: 11px;
-  margin-left: -5px;
-  padding-left: 5px;
-  margin-right: 2px;
-  border-radius: 4px;
-`;
-
 const EntityWarningLabel = styled.span`
   color: red;
 `;
@@ -182,34 +168,20 @@ export const EntityListItem = <T extends EntityListItemData>({
     setContextMenu(undefined);
   }, []);
 
-  const [name, setName] = useState(item.name);
-  const onRenameBlur = useCallback(() => {
-    if (props.rename) {
-      props.onRename(name, item);
-    }
-  }, [item, name, props]);
-  const onRenameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setName(e.currentTarget.value);
-    },
-    []
-  );
-  const onRenameKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onRenameComplete = useCallback(
+    (newValue: string) => {
       if (props.rename) {
-        if (e.key === "Escape") {
-          props.onRenameCancel(item);
-          setName(item.name);
-        } else if (e.key === "Enter") {
-          props.onRename(name, item);
-        }
+        props.onRename(newValue, item);
       }
     },
-    [props, item, name]
+    [item, props]
   );
-  useEffect(() => {
-    setName(item.name);
-  }, [item.name]);
+  const onRenameCancel = useCallback(() => {
+    if (props.rename) {
+      props.onRenameCancel(item);
+    }
+  }, [item, props]);
+
   return (
     <EntityListItemWrapper nestLevel={nestLevel} onContextMenu={onContextMenu}>
       {collapsable && (
@@ -284,12 +256,11 @@ export const EntityListItem = <T extends EntityListItemData>({
         </EntityIcon>
       )}
       {props.rename ? (
-        <EntityInput
+        <RenameInput
           autoFocus
-          value={name}
-          onChange={onRenameChange}
-          onKeyDown={onRenameKeyDown}
-          onBlur={onRenameBlur}
+          value={item.name}
+          onRenameComplete={onRenameComplete}
+          onRenameCancel={onRenameCancel}
         />
       ) : (
         <EntityLabel>

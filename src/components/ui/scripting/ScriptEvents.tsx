@@ -8,20 +8,21 @@ export const ScriptEventPlaceholder = styled.div`
 export const ScriptEventRenameInput = styled.input`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
+  font-size: 11px;
   flex-grow: 1;
   border: 0;
   border-radius: 4px;
   padding: 5px;
   margin-left: -5px;
   font-weight: bold;
-  margin-right: -22px;
+  margin-right: -18px;
 `;
 
 export const ScriptEventRenameInputCompleteButton = styled.button`
   z-index: 10000;
   position: relative;
   top: 0px;
-  left: 0px;
+  left: -4px;
   width: 21px;
   height: 21px;
   border: 0;
