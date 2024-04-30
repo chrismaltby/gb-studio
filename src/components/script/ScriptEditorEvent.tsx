@@ -394,6 +394,35 @@ const ScriptEditorEvent = React.memo(
       }
     }, [isExecuting]);
 
+    const onKeyDown = useCallback(
+      (e: KeyboardEvent) => {
+        // Group selection with ctrl/cmd + g
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key === "g" &&
+          scriptEventSelectionIds[0] === id
+        ) {
+          dispatch(
+            entitiesActions.groupScriptEvents({
+              scriptEventIds: scriptEventSelectionIds,
+              parentId,
+              parentKey,
+              parentType,
+            })
+          );
+          return;
+        }
+      },
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
+    );
+
+    useEffect(() => {
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    });
+
     if (!scriptEvent) {
       return null;
     }
