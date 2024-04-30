@@ -964,6 +964,11 @@ const editorSlice = createSlice({
         state.scriptEventSelectionIds = [];
         state.scriptEventSelectionParentId = "";
       })
+      // When adding new script events remove selection
+      .addCase(entitiesActions.addScriptEvents, (state) => {
+        state.scriptEventSelectionIds = [];
+        state.scriptEventSelectionParentId = "";
+      })
       // When UI changes increment UI version number
       .addMatcher(
         (action): action is AnyAction =>

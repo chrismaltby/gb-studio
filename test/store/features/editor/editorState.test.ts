@@ -540,3 +540,42 @@ test("should reset selection if selecting from a new parentId", () => {
   });
   expect(store.getState).toHaveBeenCalled();
 });
+
+test("Should clearing selected script events when creating a script event group", () => {
+  const state: EditorState = {
+    ...initialState,
+    scriptEventSelectionIds: ["b", "c", "d"],
+    scriptEventSelectionParentId: "a",
+  };
+  const action = entitiesActions.groupScriptEvents({
+    scriptEventIds: ["b", "c", "d"],
+    parentId: "a",
+    parentType: "scriptEvent",
+    parentKey: "true",
+  });
+  const newState = reducer(state, action);
+  expect(newState.scriptEventSelectionIds).toEqual([]);
+  expect(newState.scriptEventSelectionParentId).toBe("");
+});
+
+test("Should clearing selected script events when creating a script event group", () => {
+  const state: EditorState = {
+    ...initialState,
+    scriptEventSelectionIds: ["b", "c", "d"],
+    scriptEventSelectionParentId: "a",
+  };
+  const action = entitiesActions.addScriptEvents({
+    entityId: "a",
+    type: "scriptEvent",
+    key: "true",
+    data: [
+      {
+        command: "EVENT_TEST",
+        args: {},
+      },
+    ],
+  });
+  const newState = reducer(state, action);
+  expect(newState.scriptEventSelectionIds).toEqual([]);
+  expect(newState.scriptEventSelectionParentId).toBe("");
+});
