@@ -409,7 +409,7 @@ test("Should allow setting selected script events", () => {
     scriptEventSelectionIds: [],
     scriptEventSelectionParentId: "",
   };
-  const action = actions.setScriptEventSelectedId({
+  const action = actions.setScriptEventSelectedIds({
     scriptEventIds: ["b", "c", "d"],
     parentId: "a",
   });

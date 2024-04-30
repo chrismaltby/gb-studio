@@ -244,14 +244,15 @@ const toggleScriptEventSelectedId =
     );
     const selectionIds = state.editor.scriptEventSelectionIds.slice();
     const selectionParentId = state.editor.scriptEventSelectionParentId;
+    const parentId = `${action.parentType}_${action.parentId}_${action.parentKey}`;
 
     if (siblingIds) {
-      if (selectionParentId !== action.parentId) {
+      if (selectionParentId !== parentId) {
         // Selected from new parent, change selection to just this script event
         dispatch(
-          actions.setScriptEventSelectedId({
+          actions.setScriptEventSelectedIds({
             scriptEventIds: [action.scriptEventId],
-            parentId: action.parentId,
+            parentId,
           })
         );
       } else {
@@ -271,9 +272,9 @@ const toggleScriptEventSelectedId =
           return indexA - indexB;
         });
         dispatch(
-          actions.setScriptEventSelectedId({
+          actions.setScriptEventSelectedIds({
             scriptEventIds: sortedIds,
-            parentId: action.parentId,
+            parentId,
           })
         );
       }
@@ -820,7 +821,7 @@ const editorSlice = createSlice({
       state.sceneSelectionIds = [];
     },
 
-    setScriptEventSelectedId: (
+    setScriptEventSelectedIds: (
       state,
       action: PayloadAction<{ scriptEventIds: string[]; parentId: string }>
     ) => {
