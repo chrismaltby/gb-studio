@@ -114,9 +114,35 @@ const ScriptEditorEvent = React.memo(
         ) > -1
     );
 
-    const onFetchClipboard = useCallback(() => {
-      dispatch(clipboardActions.fetchClipboard());
-    }, [dispatch]);
+    const onSelect = useCallback(
+      (shiftPressed: boolean) => {
+        if (shiftPressed) {
+          dispatch(
+            editorActions.toggleScriptEventSelectedId({
+              scriptEventId: id,
+              parentId,
+            })
+          );
+          return true;
+        } else if (
+          scriptEventSelectionIds.length > 0 &&
+          !scriptEventSelectionIds.includes(id)
+        ) {
+          dispatch(editorActions.clearScriptEventSelectionIds());
+          return true;
+        }
+        return false;
+      },
+      [dispatch, id, parentId, scriptEventSelectionIds]
+    );
+
+    const onFetchClipboard = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        onSelect(e.shiftKey);
+        dispatch(clipboardActions.fetchClipboard());
+      },
+      [dispatch, onSelect]
+    );
 
     const toggleRename = useCallback(() => {
       setRename(!rename);
@@ -185,20 +211,12 @@ const ScriptEditorEvent = React.memo(
 
     const toggleOpen = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.shiftKey) {
-          dispatch(
-            editorActions.toggleScriptEventSelectedId({
-              scriptEventId: id,
-              parentId,
-            })
-          );
-        } else {
-          dispatch(
-            entitiesActions.toggleScriptEventOpen({ scriptEventId: id })
-          );
+        if (onSelect(e.shiftKey)) {
+          return;
         }
+        dispatch(entitiesActions.toggleScriptEventOpen({ scriptEventId: id }));
       },
-      [dispatch, id, parentId]
+      [dispatch, id, onSelect]
     );
 
     const onRename = useCallback(
