@@ -87,6 +87,7 @@ const SceneContent = styled.div`
 
 interface WrapperProps {
   selected?: boolean;
+  multiSelected?: boolean;
   filtered?: boolean;
 }
 
@@ -105,13 +106,39 @@ const Wrapper = styled.div<WrapperProps>`
   }
 
   ${(props) =>
+    props.multiSelected
+      ? css`
+          z-index: 10;
+          background-color: ${(props) => props.theme.colors.sidebar.background};
+
+          ${SceneContent} {
+            box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight};
+          }
+
+          ${SceneName} {
+            background-color: ${(props) =>
+              props.theme.colors.sidebar.background};
+          }
+
+          ${LabelSpan} {
+            opacity: 1;
+          }
+
+          .Scene__Info,
+          .Scene:hover .Scene__Info {
+            opacity: 1;
+          }
+        `
+      : ""}
+
+  ${(props) =>
     props.selected
       ? css`
           z-index: 10;
           background-color: ${(props) => props.theme.colors.sidebar.background};
 
           ${SceneContent} {
-            box-shadow: 0 0 0px 3px ${(props) => props.theme.colors.highlight};
+            box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
           }
 
           ${SceneName} {
@@ -588,7 +615,8 @@ const SceneView = memo(
 
     return (
       <Wrapper
-        selected={selected || multiSelected}
+        selected={selected}
+        multiSelected={multiSelected}
         filtered={sceneFiltered}
         style={{
           left: scene.x,
