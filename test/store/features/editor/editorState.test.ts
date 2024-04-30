@@ -434,7 +434,7 @@ test("should remove script event from selection when toggling and value already 
   const { store, invoke } = create({
     editor: {
       scriptEventSelectionIds: ["b", "c", "d"],
-      scriptEventSelectionParentId: "s1",
+      scriptEventSelectionParentId: "scene_s1_script",
     },
     project: {
       present: {
@@ -460,8 +460,8 @@ test("should remove script event from selection when toggling and value already 
     })
   );
   expect(store.dispatch).toHaveBeenCalledWith({
-    payload: { parentId: "s1", scriptEventIds: ["b", "d"] },
-    type: "editor/setScriptEventSelectedId",
+    payload: { parentId: "scene_s1_script", scriptEventIds: ["b", "d"] },
+    type: "editor/setScriptEventSelectedIds",
   });
   expect(store.getState).toHaveBeenCalled();
 });
@@ -470,7 +470,7 @@ test("should add script event to selection when toggling new value, keeping sibl
   const { store, invoke } = create({
     editor: {
       scriptEventSelectionIds: ["a", "c", "e"],
-      scriptEventSelectionParentId: "s1",
+      scriptEventSelectionParentId: "scene_s1_script",
     },
     project: {
       present: {
@@ -496,8 +496,11 @@ test("should add script event to selection when toggling new value, keeping sibl
     })
   );
   expect(store.dispatch).toHaveBeenCalledWith({
-    payload: { parentId: "s1", scriptEventIds: ["a", "c", "d", "e"] },
-    type: "editor/setScriptEventSelectedId",
+    payload: {
+      parentId: "scene_s1_script",
+      scriptEventIds: ["a", "c", "d", "e"],
+    },
+    type: "editor/setScriptEventSelectedIds",
   });
   expect(store.getState).toHaveBeenCalled();
 });
@@ -506,7 +509,7 @@ test("should reset selection if selecting from a new parentId", () => {
   const { store, invoke } = create({
     editor: {
       scriptEventSelectionIds: ["a", "c", "e"],
-      scriptEventSelectionParentId: "s1",
+      scriptEventSelectionParentId: "scene_s1_script",
     },
     project: {
       present: {
@@ -535,8 +538,8 @@ test("should reset selection if selecting from a new parentId", () => {
     })
   );
   expect(store.dispatch).toHaveBeenCalledWith({
-    payload: { parentId: "s2", scriptEventIds: ["D"] },
-    type: "editor/setScriptEventSelectedId",
+    payload: { parentId: "scene_s2_script", scriptEventIds: ["D"] },
+    type: "editor/setScriptEventSelectedIds",
   });
   expect(store.getState).toHaveBeenCalled();
 });
@@ -545,7 +548,7 @@ test("Should clearing selected script events when creating a script event group"
   const state: EditorState = {
     ...initialState,
     scriptEventSelectionIds: ["b", "c", "d"],
-    scriptEventSelectionParentId: "a",
+    scriptEventSelectionParentId: "scriptEvent_a_true",
   };
   const action = entitiesActions.groupScriptEvents({
     scriptEventIds: ["b", "c", "d"],
@@ -562,7 +565,7 @@ test("Should clearing selected script events when creating a script event group"
   const state: EditorState = {
     ...initialState,
     scriptEventSelectionIds: ["b", "c", "d"],
-    scriptEventSelectionParentId: "a",
+    scriptEventSelectionParentId: "scriptEvent_a_true",
   };
   const action = entitiesActions.addScriptEvents({
     entityId: "a",
