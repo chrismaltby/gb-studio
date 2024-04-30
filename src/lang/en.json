@@ -1216,6 +1216,7 @@
   "MENU_DELETE_EVENT": "Delete Event",
   "MENU_DELETE_EVENTS": "Delete Events",
   "MENU_GROUP_EVENTS": "Group Events",
+  "MENU_UNGROUP_EVENTS": "Ungroup Events",
   "MENU_COPY_SCRIPT": "Copy Script",
   "MENU_REPLACE_SCRIPT": "Replace Script",
   "MENU_PASTE_SCRIPT_BEFORE": "Paste Script Before",

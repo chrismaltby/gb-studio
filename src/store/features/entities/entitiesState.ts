@@ -3055,6 +3055,43 @@ const resetScript: CaseReducer<
   }
 };
 
+const ungroupScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    parentId: string;
+    parentType: ScriptEventParentType;
+    parentKey: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.parentType,
+    action.payload.parentId,
+    action.payload.parentKey
+  );
+
+  if (!script) {
+    return;
+  }
+
+  const groupEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!groupEvent || !groupEvent.children || !groupEvent.children.true) {
+    return;
+  }
+
+  const eventIndex = script.indexOf(action.payload.scriptEventId);
+  if (eventIndex === -1) {
+    return;
+  }
+
+  script.splice(eventIndex, 1, ...groupEvent.children.true);
+  scriptEventsAdapter.removeOne(
+    state.scriptEvents,
+    action.payload.scriptEventId
+  );
+};
+
 const removeScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3476,6 +3513,7 @@ const entitiesSlice = createSlice({
     editScriptEvent,
     setScriptEventSymbol,
     groupScriptEvents,
+    ungroupScriptEvent,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,

@@ -1,4 +1,4 @@
-import { EVENT_CALL_CUSTOM_EVENT } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_GROUP } from "consts";
 import React, { Dispatch } from "react";
 import { AnyAction } from "redux";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
@@ -91,6 +91,26 @@ const renderScriptEventContextMenu = ({
             {l10n("MENU_EDIT_CUSTOM_EVENT")}
           </MenuItem>,
           <MenuDivider key="1" />,
+        ]
+      : []),
+    ...(command === EVENT_GROUP
+      ? [
+          <MenuItem
+            key="ungroup"
+            onClick={() => {
+              dispatch(
+                entitiesActions.ungroupScriptEvent({
+                  scriptEventId,
+                  parentId,
+                  parentKey,
+                  parentType,
+                })
+              );
+            }}
+          >
+            {l10n("MENU_UNGROUP_EVENTS")}
+          </MenuItem>,
+          <MenuDivider key="div-ungroup" />,
         ]
       : []),
     ...(onViewSymbols
