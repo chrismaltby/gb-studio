@@ -56,6 +56,27 @@ const renderScriptEventContextMenu = ({
 }: ScriptEventContextMenuProps) => {
   const multiSelection = additionalScriptEventIds.length > 1;
   return [
+    ...(multiSelection
+      ? [
+          <MenuItem
+            key="group"
+            onClick={() => {
+              dispatch(
+                entitiesActions.groupScriptEvents({
+                  scriptEventIds: additionalScriptEventIds,
+                  parentId,
+                  parentKey,
+                  parentType,
+                })
+              );
+            }}
+          >
+            {l10n("MENU_GROUP_EVENTS")}
+          </MenuItem>,
+          <MenuDivider key="div-group" />,
+        ]
+      : []),
+
     ...(command === EVENT_CALL_CUSTOM_EVENT
       ? [
           <MenuItem

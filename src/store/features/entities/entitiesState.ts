@@ -2964,6 +2964,56 @@ const editScriptEventLabel: CaseReducer<
   scriptEvent.args.__label = action.payload.value;
 };
 
+const groupScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    parentId: string;
+    parentType: ScriptEventParentType;
+    parentKey: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.parentType,
+    action.payload.parentId,
+    action.payload.parentKey
+  );
+
+  if (!script) {
+    return;
+  }
+
+  // Use first id in list to determine insert position
+  const insertId = action.payload.scriptEventIds[0];
+  const insertIndex = insertId
+    ? Math.max(0, script.indexOf(insertId || ""))
+    : script.length;
+
+  // Remove from previous parent
+  for (const scriptEventId of action.payload.scriptEventIds) {
+    const eventIndex = script.indexOf(scriptEventId);
+    if (eventIndex === -1) {
+      continue;
+    }
+    script.splice(eventIndex, 1);
+  }
+
+  // Build parent group
+  const groupEvent: ScriptEventNormalized = {
+    id: uuid(),
+    command: "EVENT_GROUP",
+    args: {},
+    children: {
+      true: action.payload.scriptEventIds,
+    },
+  };
+
+  // Add group to previous parent
+  scriptEventsAdapter.addOne(state.scriptEvents, groupEvent);
+  script.splice(insertIndex, 0, groupEvent.id);
+};
+
 const resetScript: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3403,6 +3453,7 @@ const entitiesSlice = createSlice({
     moveScriptEvent,
     editScriptEvent,
     setScriptEventSymbol,
+    groupScriptEvents,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,
