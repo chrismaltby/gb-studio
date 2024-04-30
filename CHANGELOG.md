@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for `<<` and `>>` operators in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
 - Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
-- Add event "Replace Tile At Position" and "Replace Tile From Sequence" to update background tiles, calling "Replace Tile From Sequence" repeatedly will cycle through animation  frames
+- Add event "Replace Tile At Position" and "Replace Tile From Sequence" to update background tiles, calling "Replace Tile From Sequence" repeatedly will cycle through animation frames
 - Add new asset folder "Tilesets" for use in "Replace Tile" events
 - Add ability for plugins to define additional scene types by including defined types (e.g. `"sceneTypes": [{"key": "RACING", "label": "Racing 2D"}]`) in `engine.json` [@pau-tomas](https://github.com/pau-tomas)
 - Add ability for `Actor Move Relative`, `Actor Set Position Relative` and `If Actor At Position` to use variables as coordinate inputs
@@ -33,11 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to use variables, advanced values and expressions for coordinates in Change Scene event
 - Add ability to "Preview as Monochrome" when using mixed color mode by toggling button at bottom left of World view
 - Add ability to provide color PNGs for backgrounds and extract palettes automatically by either clicking "Auto Color" button in brush toolbar or using dropdown on Scene sidebar next to "Background Palettes" label
-- Add ability to override tile data for auto colored backgrounds by providing a matching *.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
+- Add ability to override tile data for auto colored backgrounds by providing a matching \*.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
 - Add ability to edit waveforms in music editor using keyboard with ability to copy/paste [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to restore scene's default palettes in "Set Background Palettes" (especially useful when using auto palettes)
 - Add ability to set filename when creating a new song in music editor
-- Add context menus when right clicking on list items or on scenes/actors/triggers in world view allowing renaming/deleting
+- Add context menus when right clicking on list items, or on scenes/actors/triggers in world view, or tiles on sprite editor view allowing renaming/deleting
+- Add ability to multi select scenes by shift click + dragging on world view or shift clicking in scenes list. When multiple scenes are selected they can be moved at the same time
+- Add ability to multi select script events by shift clicking the event's header. When multiple events are selected they can be moved, copied, grouped or deleted at the same time
 
 ### Changed
 
@@ -251,7 +253,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where replacing trigger OnLeave script would replace OnEnter [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue replacing math expression variables in custom events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where some events when used in init scripts would cause the script to wait until the scene had faded in before continuing
-- Fix music editor: Instrument name isn't editable  [@pau-tomas](https://github.com/pau-tomas)
+- Fix music editor: Instrument name isn't editable [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Ticks per row field updates aren't reflected when playing the song [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Wave form changes are not updating for instrument preview [@pau-tomas](https://github.com/pau-tomas)
 - Improved engine GBA detection [@untoxa](https://github.com/untoxa)
@@ -390,7 +392,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced Fade To Black event with Engine props Fade to black
 - Custom Events are now listed in navigator sidebar only
 - Updated to GBDK2020 v4.0.1 for massive performance increase, new ejected engine mandatory
-- Engine bank push pop functions replaced with __banked for performance increase
+- Engine bank push pop functions replaced with \_\_banked for performance increase
 
 ### Fixed
 
@@ -492,7 +494,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add scene search functionality to World editor toolbar, if only a single scene matches view will scroll to center on that scene
 - Add button to jump from Dialogue Review section to corresponding scene in Game World
 - Add color labels for identifying and grouping scenes
-- Add support for larger background images, up to 2040px in either dimension, maximum width * height of image must be under 1,048,320
+- Add support for larger background images, up to 2040px in either dimension, maximum width \* height of image must be under 1,048,320
 - Increase number of allowed actors and triggers per scene to 30. Up to 10 actors will be visible on screen at the same time.
 - Add ability to pin actors to screen to use as simple HUD elements
 - Add event to switch any actor's sprite sheet dynamically
