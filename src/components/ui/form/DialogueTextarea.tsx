@@ -19,6 +19,7 @@ import { VariableSelect } from "components/forms/VariableSelect";
 import { TextSpeedSelect } from "components/forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "shared/lib/lang/l10n";
+import { portalRoot } from "ui/layout/Portal";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -86,49 +87,6 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
     }
-  }
-
-  .MentionsInput__suggestions {
-    background-color: transparent !important;
-    z-index: 100 !important;
-  }
-
-  .MentionsInput__suggestions__list {
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    width: max-content;
-    min-width: 100px;
-    user-select: none;
-    box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
-      0 4px 11px hsla(0, 0%, 0%, 0.1);
-    background: ${(props) => props.theme.colors.menu.background};
-    color: ${(props) => props.theme.colors.text};
-    font-size: ${(props) => props.theme.typography.fontSize};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    padding: 4px 0;
-  }
-
-  .MentionsInput__suggestions__item {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    font-size: ${(props) => props.theme.typography.menuFontSize};
-    &:focus {
-      background: ${(props) => props.theme.colors.menu.hoverBackground};
-      outline: none;
-      box-shadow: none;
-    }
-  }
-
-  .MentionsInput__suggestions__item:hover {
-    background-color: ${(props) => props.theme.colors.menu.hoverBackground};
-  }
-
-  .MentionsInput__suggestions__item--focused {
-    background-color: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
   .Mentions__TokenVar {
@@ -408,6 +366,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           onChange(e.target.value)
         }
         inputRef={inputRef}
+        suggestionsPortalHost={portalRoot}
       >
         <CustomMention
           className="Mentions__TokenVar"
