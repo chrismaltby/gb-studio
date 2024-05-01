@@ -21,6 +21,7 @@ import styled from "styled-components";
 import {
   SceneNavigatorItem,
   buildSceneNavigatorItems,
+  sceneParentFolders,
 } from "shared/lib/entities/buildSceneNavigatorItems";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import renderActorContextMenu from "./renderActorContextMenu";
@@ -58,14 +59,6 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
 
   const [folderId, setFolderId] = useState("");
 
-  // const {
-  //   values: openSceneIds,
-  //   isSet: isOpen,
-  //   toggle: toggleSceneOpen,
-  //   set: openScene,
-  //   unset: closeScene,
-  // } = useToggleableList<string>([]);
-
   const dispatch = useAppDispatch();
 
   const addToSelection = useRef(false);
@@ -92,12 +85,23 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   }, [onKeyDown, onKeyUp]);
 
   const {
-    values: openFolders,
+    values: manuallyOpenedFolders,
     isSet: isFolderOpen,
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
   } = useToggleableList<string>([]);
+
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, sceneId)
+  );
+
+  const openFolders = useMemo(() => {
+    return [
+      ...manuallyOpenedFolders,
+      ...(scene ? sceneParentFolders(scene) : []),
+    ];
+  }, [manuallyOpenedFolders, scene]);
 
   const nestedSceneItems = useMemo(
     () =>
@@ -287,7 +291,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
               item.type !== "folder" ? renderContextMenu : undefined
             }
             collapsable={item.type === "folder" || item.type === "scene"}
-            collapsed={!isFolderOpen(item.id)}
+            collapsed={!openFolders.includes(item.id)}
             onToggleCollapse={() => toggleFolderOpen(item.id)}
             nestLevel={item.nestLevel}
             renderLabel={renderLabel}

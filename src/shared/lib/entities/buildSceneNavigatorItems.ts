@@ -46,6 +46,17 @@ const sortByName = (a: Entity, b: Entity) => {
   return collator.compare(a.name, b.name);
 };
 
+export const sceneParentFolders = (scene: SceneNormalized): string[] => {
+  const parts = scene.name.split(/[/\\]/).slice(0, -1);
+  const folders: string[] = [];
+  while (parts.length > 0) {
+    folders.push(parts.join("/"));
+    folders.push(parts.join("\\"));
+    parts.pop();
+  }
+  return folders;
+};
+
 export const buildSceneNavigatorItems = (
   scenes: SceneNormalized[],
   actorsLookup: Dictionary<ActorNormalized>,
