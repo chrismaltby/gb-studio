@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Music } from "shared/lib/entities/entitiesTypes";
@@ -12,6 +12,11 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import projectActions from "store/features/project/projectActions";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorSongsProps {
   height: number;
@@ -73,6 +78,19 @@ export const NavigatorModSongs = ({
     );
   }, [allSongs]);
 
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
+  const nestedSongItems = useMemo(
+    () => buildAssetNavigatorItems(allSongs.filter(modFilter), openFolders),
+    [allSongs, openFolders]
+  );
+
   const setSelectedId = useCallback(
     (id: string) => {
       dispatch(navigationActions.setNavigationId(id));
@@ -130,6 +148,10 @@ export const NavigatorModSongs = ({
     [dispatch]
   );
 
+  const renderLabel = useCallback((item: FileSystemNavigatorItem<Music>) => {
+    return item.filename;
+  }, []);
+
   return (
     <>
       <Pane style={{ height: height }}>
@@ -139,19 +161,35 @@ export const NavigatorModSongs = ({
         {items.length > 0 ? (
           <FlatList
             selectedId={selectedId}
-            items={items}
+            items={nestedSongItems}
             setSelectedId={setSelectedId}
             height={height - 30}
-            onKeyDown={listenForRenameStart}
+            onKeyDown={(e: KeyboardEvent, item) => {
+              listenForRenameStart(e);
+              if (item?.type === "folder") {
+                if (e.key === "ArrowRight") {
+                  openFolder(selectedId);
+                } else if (e.key === "ArrowLeft") {
+                  closeFolder(selectedId);
+                }
+              }
+            }}
           >
             {({ item }) => (
               <EntityListItem
-                type="song"
+                type={item.type === "folder" ? "folder" : "song"}
                 item={item}
-                rename={renameId === item.id}
+                rename={item.type === "file" && renameId === item.id}
                 onRename={onRenameSongComplete}
                 onRenameCancel={onRenameCancel}
-                renderContextMenu={renderContextMenu}
+                renderContextMenu={
+                  item.type === "file" ? renderContextMenu : undefined
+                }
+                collapsable={item.type === "folder"}
+                collapsed={!isFolderOpen(item.name)}
+                onToggleCollapse={() => toggleFolderOpen(item.name)}
+                nestLevel={item.nestLevel}
+                renderLabel={renderLabel}
               />
             )}
           </FlatList>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import styled, { ThemeContext } from "styled-components";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -35,9 +35,21 @@ const MusicPageMod = () => {
     musicSelectors.selectAll(state).filter(modFilter)
   );
 
-  const track =
-    useAppSelector((state) => musicSelectors.selectById(state, selectedId)) ||
-    allTracks[0];
+  const track = useAppSelector((state) =>
+    musicSelectors.selectById(state, selectedId)
+  );
+
+  const lastTrackId = useRef("");
+  useEffect(() => {
+    if (track) {
+      lastTrackId.current = track.id;
+    }
+  }, [track]);
+
+  const viewTrackId = useMemo(
+    () => track?.id || lastTrackId.current || allTracks[0]?.id,
+    [allTracks, track]
+  );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -115,7 +127,7 @@ const MusicPageMod = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          <ModViewer trackId={track?.id || ""} />
+          <ModViewer trackId={viewTrackId} />
         </div>
       </div>
     </Wrapper>
