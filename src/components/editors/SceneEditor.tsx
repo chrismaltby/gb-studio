@@ -20,7 +20,7 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/FormLayout";
-import { EditableText } from "ui/form/EditableText";
+import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
   ActorDirection,
   SceneNormalized,
@@ -72,6 +72,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
+import { FlexGrow } from "ui/spacing/Spacing";
 
 interface SceneEditorProps {
   id: string;
@@ -504,12 +505,17 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
         <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
-              <EditableText
-                name="name"
-                placeholder={sceneName(scene, sceneIndex)}
-                value={scene.name || ""}
-                onChange={onChangeName}
-              />
+              <FlexGrow>
+                <EditableText
+                  name="name"
+                  placeholder={sceneName(scene, sceneIndex)}
+                  value={scene.name || ""}
+                  onChange={onChangeName}
+                />
+                <EditableTextOverlay>
+                  {sceneName(scene, sceneIndex).replace(/.*[/\\]/, "")}
+                </EditableTextOverlay>
+              </FlexGrow>
               {scene.labelColor && <LabelColor color={scene.labelColor} />}
               <DropdownButton
                 size="small"
