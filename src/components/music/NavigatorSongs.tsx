@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -29,6 +29,11 @@ import { assertUnreachable } from "shared/lib/helpers/assert";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import projectActions from "store/features/project/projectActions";
 import { ListItem } from "ui/lists/ListItem";
+import useToggleableList from "ui/hooks/use-toggleable-list";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
 
 const COLLAPSED_SIZE = 30;
 
@@ -67,21 +72,6 @@ const EmptyState = styled.div`
   padding: 36px 12px;
 `;
 
-const songToNavigatorItem = (
-  song: Music,
-  songIndex: number,
-  selectedSongId: string,
-  modified: boolean
-): NavigatorItem => {
-  function nameIfModified(name: string) {
-    return song.id === selectedSongId && modified ? `${name} (*)` : name;
-  }
-  return {
-    id: song.id,
-    name: nameIfModified(song.name ? song.name : `Song ${songIndex + 1}`),
-  };
-};
-
 const instrumentToNavigatorItem =
   (type: InstrumentType) =>
   (
@@ -108,9 +98,6 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: "base",
 });
 
-const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
-  return collator.compare(a.name, b.name);
-};
 const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
@@ -129,7 +116,6 @@ export const NavigatorSongs = ({
 }: NavigatorSongsProps) => {
   const dispatch = useAppDispatch();
 
-  const [items, setItems] = useState<NavigatorItem[]>([]);
   const [addSongMode, setAddSongMode] = useState(false);
   const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
   const songsLookup = useAppSelector((state) =>
@@ -140,6 +126,19 @@ export const NavigatorSongs = ({
     ? songsLookup[navigationId]?.id || allSongs.filter(ugeFilter)[0]?.id
     : navigationId;
 
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
+  const nestedSongItems = useMemo(
+    () => buildAssetNavigatorItems(allSongs.filter(ugeFilter), openFolders),
+    [allSongs, openFolders]
+  );
+
   const setSelectedSongId = useCallback(
     (id: string) => {
       dispatch(editorActions.setSelectedSongId(id));
@@ -148,17 +147,6 @@ export const NavigatorSongs = ({
   );
 
   const selectedSong = songsLookup[selectedSongId];
-
-  useEffect(() => {
-    setItems(
-      allSongs
-        .filter(ugeFilter)
-        .map((song, songIndex) =>
-          songToNavigatorItem(song, songIndex, selectedSongId, modified)
-        )
-        .sort(sortByName)
-    );
-  }, [selectedSongId, allSongs, modified]);
 
   const [openInstrumentGroupIds, setOpenInstrumentGroupIds] = useState<
     InstrumentType[]
@@ -365,8 +353,6 @@ export const NavigatorSongs = ({
   const onRenameInstrumentComplete = useCallback(
     (name: string, item: InstrumentNavigatorItem) => {
       if (renameId) {
-        console.log({ renameId, item });
-
         const action =
           item.type === "duty"
             ? trackerDocumentActions.editDutyInstrument
@@ -427,6 +413,15 @@ export const NavigatorSongs = ({
     []
   );
 
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<Music>) => {
+      return `${item.filename}${
+        modified && item.id === selectedSongId ? "*" : ""
+      }`;
+    },
+    [modified, selectedSongId]
+  );
+
   const renderInstrumentLabel = useCallback((item: InstrumentNavigatorItem) => {
     return `${(parseInt(item.instrumentId) + 1).toString().padStart(2, "0")}: ${
       item.name
@@ -473,22 +468,38 @@ export const NavigatorSongs = ({
             />
           </ListItem>
         )}
-        {items.length > 0 ? (
+        {nestedSongItems.length > 0 ? (
           <FlatList
-            selectedId={selectedSongId}
-            items={items}
+            selectedId={navigationId}
+            items={nestedSongItems}
             setSelectedId={setSelectedSongId}
             height={(showInstrumentList ? splitSizes[0] : height) - 30}
-            onKeyDown={listenForRenameStart}
+            onKeyDown={(e: KeyboardEvent, item) => {
+              listenForRenameStart(e);
+              if (item?.type === "folder") {
+                if (e.key === "ArrowRight") {
+                  openFolder(navigationId);
+                } else if (e.key === "ArrowLeft") {
+                  closeFolder(navigationId);
+                }
+              }
+            }}
           >
             {({ item }) => (
               <EntityListItem
-                type="song"
+                type={item.type === "folder" ? "folder" : "song"}
                 item={item}
-                rename={renameId === item.id}
+                rename={item.type === "file" && renameId === item.id}
                 onRename={onRenameSongComplete}
                 onRenameCancel={onRenameCancel}
-                renderContextMenu={renderContextMenu}
+                renderContextMenu={
+                  item.type === "file" ? renderContextMenu : undefined
+                }
+                collapsable={item.type === "folder"}
+                collapsed={!isFolderOpen(item.name)}
+                onToggleCollapse={() => toggleFolderOpen(item.name)}
+                nestLevel={item.nestLevel}
+                renderLabel={renderLabel}
               />
             )}
           </FlatList>

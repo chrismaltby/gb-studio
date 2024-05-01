@@ -96,7 +96,6 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
   }, [dispatch, selectedInstrument]);
   const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
   const song = useAppSelector((state) => state.trackerDocument.present.song);
-  console.log("SONG", song);
 
   const selectSidebar = () => {};
 
@@ -185,7 +184,6 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
   const [instrumentEditorTab, setInstrumentEditorTab] =
     useState<InstrumentEditorTab>("main");
   const onInstrumentEditorChange = useCallback((mode: InstrumentEditorTab) => {
-    console.log(mode);
     setInstrumentEditorTab(mode);
   }, []);
 
