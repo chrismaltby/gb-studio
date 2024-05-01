@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Palette } from "shared/lib/entities/entitiesTypes";
@@ -14,25 +14,16 @@ import PaletteBlock from "components/forms/PaletteBlock";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import useToggleableList from "ui/hooks/use-toggleable-list";
+import {
+  EntityNavigatorItem,
+  buildEntityNavigatorItems,
+} from "shared/lib/entities/buildEntityNavigatorItems";
 
 interface NavigatorPalettesProps {
   height: number;
   selectedId: string;
 }
-
-interface PaletteNavigatorItem {
-  id: string;
-  name: string;
-  isDefault: boolean;
-  colors: string[];
-}
-
-const paletteToNavigatorItem = (palette: Palette): PaletteNavigatorItem => ({
-  id: palette.id,
-  name: palette.name,
-  isDefault: !!palette.defaultColors,
-  colors: palette.colors,
-});
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -57,20 +48,26 @@ export const NavigatorPalettes = ({
   height,
   selectedId,
 }: NavigatorPalettesProps) => {
-  const [items, setItems] = useState<PaletteNavigatorItem[]>([]);
   const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state)
   );
 
-  const dispatch = useAppDispatch();
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
 
-  useEffect(() => {
-    setItems(
-      allPalettes
-        .map((palette) => paletteToNavigatorItem(palette))
-        .sort(sortByName)
-    );
-  }, [allPalettes]);
+  const nestedPaletteItems = useMemo(
+    () => buildEntityNavigatorItems(allPalettes, openFolders, sortByName),
+    [allPalettes, openFolders]
+  );
+
+  console.log({ nestedPaletteItems });
+
+  const dispatch = useAppDispatch();
 
   const setSelectedId = useCallback(
     (id: string) => {
@@ -120,12 +117,12 @@ export const NavigatorPalettes = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: PaletteNavigatorItem) => {
+    (item: EntityNavigatorItem<Palette>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
         </MenuItem>,
-        ...(!item.isDefault
+        ...(!item.entity?.defaultColors
           ? [
               <MenuDivider key="div-delete" />,
               <MenuItem
@@ -147,12 +144,15 @@ export const NavigatorPalettes = ({
     [dispatch]
   );
 
-  const renderLabel = useCallback((item: PaletteNavigatorItem) => {
+  const renderLabel = useCallback((item: EntityNavigatorItem<Palette>) => {
+    if (item.type === "folder") {
+      return item.filename;
+    }
     return (
       <FlexRow>
-        {item.name}
+        {item.filename}
         <FlexGrow />
-        <PaletteBlock colors={item.colors} size={16} />
+        <PaletteBlock colors={item.entity?.colors ?? []} size={16} />
       </FlexRow>
     );
   }, []);
@@ -177,19 +177,32 @@ export const NavigatorPalettes = ({
 
       <FlatList
         selectedId={selectedId}
-        items={items}
+        items={nestedPaletteItems}
         setSelectedId={setSelectedId}
         height={height - 30}
-        onKeyDown={listenForRenameStart}
+        onKeyDown={(e: KeyboardEvent, item) => {
+          listenForRenameStart(e);
+          if (item?.type === "folder") {
+            if (e.key === "ArrowRight") {
+              openFolder(selectedId);
+            } else if (e.key === "ArrowLeft") {
+              closeFolder(selectedId);
+            }
+          }
+        }}
       >
         {({ item }) => (
           <EntityListItem
             item={item}
-            type={"palette"}
-            rename={renameId === item.id}
+            type={item.type === "folder" ? "folder" : "palette"}
+            rename={item.type === "entity" && renameId === item.id}
             onRename={onRenamePaletteComplete}
             onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
+            collapsable={item.type === "folder"}
+            collapsed={!isFolderOpen(item.name)}
+            onToggleCollapse={() => toggleFolderOpen(item.name)}
+            nestLevel={item.nestLevel}
             renderLabel={renderLabel}
           />
         )}

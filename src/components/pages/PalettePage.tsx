@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
@@ -84,9 +90,25 @@ const PalettePage = () => {
     paletteSelectors.selectAll(state)
   );
 
-  const palette =
-    useAppSelector((state) => paletteSelectors.selectById(state, selectedId)) ||
-    allPalettes[0];
+  const palette = useAppSelector((state) =>
+    paletteSelectors.selectById(state, selectedId)
+  );
+
+  const lastPaletteId = useRef("");
+  useEffect(() => {
+    if (palette) {
+      lastPaletteId.current = palette.id;
+    }
+  }, [palette]);
+
+  const viewPaletteId = useMemo(
+    () => palette?.id || lastPaletteId.current || allPalettes[0]?.id,
+    [allPalettes, palette]
+  );
+
+  const viewPalette = useAppSelector((state) =>
+    paletteSelectors.selectById(state, viewPaletteId)
+  );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -128,13 +150,13 @@ const PalettePage = () => {
   }, []);
 
   const onFinishEdit = () => {
-    if (!palette) {
+    if (!viewPalette) {
       return;
     }
-    if (!palette?.name) {
+    if (!viewPalette?.name) {
       dispatch(
         entitiesActions.editPalette({
-          paletteId: palette.id,
+          paletteId: viewPalette.id,
           changes: {
             name: "Palette",
           },
@@ -151,12 +173,12 @@ const PalettePage = () => {
   };
 
   const onEditName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!palette) {
+    if (!viewPalette) {
       return;
     }
     dispatch(
       entitiesActions.editPalette({
-        paletteId: palette.id,
+        paletteId: viewPalette.id,
         changes: {
           name: e.currentTarget.value,
         },
@@ -174,7 +196,7 @@ const PalettePage = () => {
         <SidebarContent>
           <NavigatorPalettes
             height={windowHeight - 38}
-            selectedId={palette?.id || ""}
+            selectedId={selectedId}
           />
         </SidebarContent>
       </Sidebar>
@@ -182,22 +204,22 @@ const PalettePage = () => {
       <Document>
         <Container>
           <Header>
-            {palette && (
+            {viewPalette && (
               <>
                 {edit ? (
                   <Input
                     displaySize="large"
                     maxLength={25}
-                    value={palette.name}
+                    value={viewPalette.name}
                     onChange={onEditName}
                     onKeyDown={checkForFinishEdit}
                     onBlur={onFinishEdit}
                     autoFocus
                   />
                 ) : (
-                  <h1>{palette.name}</h1>
+                  <h1>{viewPalette.name}</h1>
                 )}
-                {!palette.defaultColors && !edit && (
+                {!viewPalette.defaultColors && !edit && (
                   <Button
                     key="edit"
                     onClick={onStartEdit}
@@ -210,7 +232,7 @@ const PalettePage = () => {
               </>
             )}
           </Header>
-          {palette && <CustomPalettePicker paletteId={palette.id} />}
+          {viewPalette && <CustomPalettePicker paletteId={viewPaletteId} />}
         </Container>
       </Document>
     </Wrapper>

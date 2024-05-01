@@ -396,7 +396,7 @@ export const NavigatorSprites = ({
             <EntityListItem
               type={item.type === "folder" ? "folder" : "sprite"}
               item={item}
-              rename={renameId === item.id}
+              rename={item.type === "file" && renameId === item.id}
               onRename={onRenameSpriteComplete}
               onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}

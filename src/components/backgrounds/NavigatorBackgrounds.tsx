@@ -245,9 +245,9 @@ export const NavigatorBackgrounds = ({
         >
           {({ item }) => (
             <EntityListItem
-              type="background"
+              type={item.type === "folder" ? "folder" : "background"}
               item={item}
-              rename={renameId === item.id}
+              rename={item.type === "file" && renameId === item.id}
               onRename={onRenameTilesetComplete}
               onRenameCancel={onRenameCancel}
               renderContextMenu={renderTilesetContextMenu}
