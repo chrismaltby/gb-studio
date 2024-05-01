@@ -238,7 +238,7 @@ const SceneView = memo(
 
     const searchTerm = useAppSelector((state) => state.editor.searchTerm);
     const name = useMemo(
-      () => (scene ? sceneName(scene, index) : ""),
+      () => (scene ? sceneName(scene, index) : "").replace(/.*[/\\]/, ""),
       [index, scene]
     );
 
