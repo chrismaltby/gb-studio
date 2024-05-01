@@ -128,11 +128,13 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
+      setFolderId("");
     } else if (item.type === "trigger") {
       dispatch(
         editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
+      setFolderId("");
     } else if (item.type === "scene") {
       if (addToSelection.current) {
         dispatch(editorActions.toggleSceneSelectedId(id));
@@ -140,6 +142,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         dispatch(editorActions.selectScene({ sceneId: id }));
       }
       dispatch(editorActions.setFocusSceneId(item.id));
+      setFolderId("");
     } else {
       setFolderId(id);
     }
