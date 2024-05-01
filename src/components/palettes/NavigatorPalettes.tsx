@@ -65,8 +65,6 @@ export const NavigatorPalettes = ({
     [allPalettes, openFolders]
   );
 
-  console.log({ nestedPaletteItems });
-
   const dispatch = useAppDispatch();
 
   const setSelectedId = useCallback(
@@ -195,7 +193,11 @@ export const NavigatorPalettes = ({
           <EntityListItem
             item={item}
             type={item.type === "folder" ? "folder" : "palette"}
-            rename={item.type === "entity" && renameId === item.id}
+            rename={
+              item.type === "entity" &&
+              renameId === item.id &&
+              !renameId.startsWith("default")
+            }
             onRename={onRenamePaletteComplete}
             onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
