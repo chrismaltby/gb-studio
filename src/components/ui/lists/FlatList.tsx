@@ -195,6 +195,10 @@ export const FlatList = <T extends FlatListItem>({
     }
   }, [selectedIndex, items, list]);
 
+  if (height <= 0) {
+    return <Wrapper ref={ref} style={{ height }}></Wrapper>;
+  }
+
   return (
     <Wrapper
       ref={ref}
@@ -207,7 +211,7 @@ export const FlatList = <T extends FlatListItem>({
       <List
         ref={list}
         width="100%"
-        height={height}
+        height={Math.max(0, height)}
         itemCount={items.length}
         itemSize={25}
         itemData={{

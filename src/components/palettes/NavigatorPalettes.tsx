@@ -200,7 +200,11 @@ export const NavigatorPalettes = ({
             }
             onRename={onRenamePaletteComplete}
             onRenameCancel={onRenameCancel}
-            renderContextMenu={renderContextMenu}
+            renderContextMenu={
+              item.type === "entity" && !item.id.startsWith("default")
+                ? renderContextMenu
+                : undefined
+            }
             collapsable={item.type === "folder"}
             collapsed={!isFolderOpen(item.name)}
             onToggleCollapse={() => toggleFolderOpen(item.name)}
