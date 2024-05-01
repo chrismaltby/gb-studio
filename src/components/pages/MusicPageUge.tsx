@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -14,7 +15,7 @@ import {
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { NavigatorSongs } from "components/music/NavigatorSongs";
+import { NavigatorSongs, ugeFilter } from "components/music/NavigatorSongs";
 import { SongTracker } from "components/music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { SongEditor } from "components/music/SongEditor";
@@ -29,6 +30,7 @@ import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
 import { assetPath } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
@@ -81,23 +83,37 @@ const MusicPageUge = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
-  const songsLookup = useAppSelector((state) =>
-    musicSelectors.selectEntities(state)
+  const allSongs = useAppSelector((state) =>
+    musicSelectors.selectAll(state).filter(ugeFilter).sort(sortByFilename)
   );
+
   const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
 
-  const [selectedSong, setSelectedSong] = useState<Music | undefined>();
+  const song = useAppSelector((state) =>
+    musicSelectors.selectById(state, selectedSongId)
+  );
+
+  const lastSongId = useRef("");
   useEffect(() => {
-    setSelectedSong(
-      songsLookup[selectedSongId] ||
-        allSongs.filter((s) => s.type && s.type === "uge")[0]
-    );
-  }, [selectedSongId, allSongs, songsLookup]);
+    if (song) {
+      lastSongId.current = song.id;
+    }
+  }, [song]);
+
+  const viewSongId = useMemo(
+    () => song?.id || lastSongId.current || allSongs[0]?.id,
+    [allSongs, song]
+  );
+
+  const viewSong = useAppSelector((state) =>
+    musicSelectors.selectById(state, viewSongId)
+  );
 
   const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
 
-  const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const songDocument = useAppSelector(
+    (state) => state.trackerDocument.present.song
+  );
   const modified = useAppSelector(
     (state) => state.trackerDocument.present.modified
   );
@@ -109,11 +125,11 @@ const MusicPageUge = () => {
   const [selectedSongPath, setSelectedSongPath] = useState("");
   const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
-    if (selectedSong) {
-      setSelectedSongPath(assetPath("music", selectedSong));
-      setSelectedSongType(selectedSong.type || "");
+    if (viewSong) {
+      setSelectedSongPath(assetPath("music", viewSong));
+      setSelectedSongType(viewSong.type || "");
     }
-  }, [selectedSong]);
+  }, [viewSong]);
 
   useEffect(() => {
     if (selectedSongPath !== "" && selectedSongType === "uge") {
@@ -237,14 +253,14 @@ const MusicPageUge = () => {
   const view = useAppSelector((state) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
-    if (!song) {
+    if (!songDocument) {
       return;
     } else if (view === "tracker") {
       return (
         <div style={{ position: "relative" }}>
           <SongTracker
             sequenceId={sequenceId}
-            song={song}
+            song={songDocument}
             height={windowHeight - 100}
             channelStatus={channelStatus}
           />
@@ -254,12 +270,12 @@ const MusicPageUge = () => {
       return (
         <SongPianoRoll
           sequenceId={sequenceId}
-          song={song}
+          song={songDocument}
           height={windowHeight - 100}
         />
       );
     }
-  }, [channelStatus, sequenceId, song, view, windowHeight]);
+  }, [channelStatus, sequenceId, songDocument, view, windowHeight]);
 
   return (
     <Wrapper>
@@ -283,9 +299,9 @@ const MusicPageUge = () => {
           <NavigatorSongs
             height={windowHeight - 38}
             defaultFirst
-            dutyInstruments={song?.duty_instruments}
-            waveInstruments={song?.wave_instruments}
-            noiseInstruments={song?.noise_instruments}
+            dutyInstruments={songDocument?.duty_instruments}
+            waveInstruments={songDocument?.wave_instruments}
+            noiseInstruments={songDocument?.noise_instruments}
             modified={modified}
           />
         </div>
@@ -298,7 +314,7 @@ const MusicPageUge = () => {
             <ErrorDescription>{error}</ErrorDescription>
           </ContentMessage>
         </ContentWrapper>
-      ) : song !== undefined ? (
+      ) : songDocument !== undefined ? (
         <>
           <div
             style={{
@@ -314,12 +330,15 @@ const MusicPageUge = () => {
             }}
           >
             <div style={{ position: "relative", height: "60px" }}>
-              <SongEditorToolsPanel selectedSong={selectedSong} />
+              <SongEditorToolsPanel selectedSong={viewSong} />
               <SongEditorRightToolsPanel channelStatus={channelStatus} />
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
-            <UgePlayer data={song} onChannelStatusUpdate={setChannelStatus} />
+            <UgePlayer
+              data={songDocument}
+              onChannelStatusUpdate={setChannelStatus}
+            />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div

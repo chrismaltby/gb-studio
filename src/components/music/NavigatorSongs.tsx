@@ -102,7 +102,7 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
 
-const ugeFilter = (s: Music) => {
+export const ugeFilter = (s: Music) => {
   return s.type && s.type === "uge";
 };
 
@@ -329,10 +329,10 @@ export const NavigatorSongs = ({
   const listenForRenameStart = useCallback(
     (e) => {
       if (e.key === "Enter") {
-        setRenameId(selectedSongId);
+        setRenameId(navigationId);
       }
     },
-    [selectedSongId]
+    [navigationId]
   );
 
   const onRenameSongComplete = useCallback(

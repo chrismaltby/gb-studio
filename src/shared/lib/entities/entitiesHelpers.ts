@@ -253,10 +253,13 @@ export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
 };
 
+const collator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base",
+});
+
 export const sortByFilename = (a: Asset, b: Asset) => {
-  if (a.filename > b.filename) return 1;
-  if (a.filename < b.filename) return -1;
-  return 0;
+  return collator.compare(a.filename, b.filename);
 };
 
 export const swap = <T>(x: number, y: number, [...xs]: T[]): T[] =>
