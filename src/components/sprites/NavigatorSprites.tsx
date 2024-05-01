@@ -361,7 +361,7 @@ export const NavigatorSprites = ({
 
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<SpriteSheet>) => {
-      return item.filename.replace(/\.[^.]*$/, "");
+      return item.filename;
     },
     []
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Sound } from "shared/lib/entities/entitiesTypes";
@@ -11,32 +11,16 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import projectActions from "store/features/project/projectActions";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorSoundsProps {
   height: number;
   selectedId: string;
 }
-
-interface SoundNavigatorItem {
-  id: string;
-  name: string;
-  ext: string;
-}
-
-const soundToNavigatorItem = (sound: Sound): SoundNavigatorItem => ({
-  id: sound.id,
-  name: (sound.name || sound.filename).replace(/\.[^.]*$/, ""),
-  ext: sound.filename.replace(/.*\./, ""),
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: { name: string }, b: { name: string }) => {
-  return collator.compare(a.name, b.name);
-};
 
 const Pane = styled.div`
   overflow: hidden;
@@ -46,15 +30,21 @@ export const NavigatorSounds = ({
   height,
   selectedId,
 }: NavigatorSoundsProps) => {
-  const [items, setItems] = useState<SoundNavigatorItem[]>([]);
   const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    setItems(
-      allSounds.map((sound) => soundToNavigatorItem(sound)).sort(sortByName)
-    );
-  }, [allSounds]);
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
+  const nestedSoundItems = useMemo(
+    () => buildAssetNavigatorItems(allSounds, openFolders),
+    [allSounds, openFolders]
+  );
 
   const setSelectedId = useCallback(
     (id: string) => {
@@ -94,7 +84,7 @@ export const NavigatorSounds = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: SoundNavigatorItem) => {
+    (item: FileSystemNavigatorItem<Sound>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
@@ -113,8 +103,8 @@ export const NavigatorSounds = ({
     [dispatch]
   );
 
-  const renderLabel = useCallback((item: SoundNavigatorItem) => {
-    return `${item.name}.${item.ext}`;
+  const renderLabel = useCallback((item: FileSystemNavigatorItem<Sound>) => {
+    return item.filename;
   }, []);
 
   return (
@@ -123,20 +113,33 @@ export const NavigatorSounds = ({
 
       <FlatList
         selectedId={selectedId}
-        items={items}
+        items={nestedSoundItems}
         setSelectedId={setSelectedId}
         height={height - 30}
-        onKeyDown={listenForRenameStart}
+        onKeyDown={(e: KeyboardEvent, item) => {
+          listenForRenameStart(e);
+          if (item?.type === "folder") {
+            if (e.key === "ArrowRight") {
+              openFolder(selectedId);
+            } else if (e.key === "ArrowLeft") {
+              closeFolder(selectedId);
+            }
+          }
+        }}
       >
         {({ item }) => (
           <EntityListItem
-            type="sound"
+            type={item.type === "folder" ? "folder" : "sound"}
             item={item}
-            rename={renameId === item.id}
+            rename={item.type === "file" && renameId === item.id}
             onRename={onRenameComplete}
             onRenameCancel={onRenameCancel}
             renderContextMenu={renderContextMenu}
             renderLabel={renderLabel}
+            collapsable={item.type === "folder"}
+            collapsed={!isFolderOpen(item.name)}
+            onToggleCollapse={() => toggleFolderOpen(item.name)}
+            nestLevel={item.nestLevel}
           />
         )}
       </FlatList>

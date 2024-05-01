@@ -15,6 +15,7 @@ import {
   BackgroundIcon,
   PaletteIcon,
   CodeIcon,
+  SoundIcon,
 } from "ui/icons/Icons";
 import { ContextMenu } from "ui/menu/ContextMenu";
 
@@ -247,6 +248,11 @@ export const EntityListItem = <T extends EntityListItemData>({
       {type === "script" && (
         <EntityIcon>
           <CodeIcon />
+        </EntityIcon>
+      )}
+      {type === "sound" && (
+        <EntityIcon>
+          <SoundIcon />
         </EntityIcon>
       )}
       {props.rename ? (

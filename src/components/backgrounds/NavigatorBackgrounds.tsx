@@ -176,7 +176,7 @@ export const NavigatorBackgrounds = ({
 
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<Background | Tileset>) => {
-      return item.filename.replace(/\.[^.]*$/, "");
+      return item.filename;
     },
     []
   );
