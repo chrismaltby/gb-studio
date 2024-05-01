@@ -16,6 +16,7 @@ export type SceneNavigatorItem = {
   name: string;
   filename: string;
   nestLevel?: number;
+  labelColor?: string;
 } & (
   | {
       type: "folder";
@@ -87,6 +88,7 @@ export const buildSceneNavigatorItems = (
             name: currentPath,
             filename: part,
             nestLevel,
+            labelColor: scene.labelColor,
             scene,
           });
           if (!openFolders.includes(scene.id)) {
