@@ -359,6 +359,31 @@ export const NavigatorSprites = ({
     [dispatch]
   );
 
+  const renderStateContextMenu = useCallback(
+    (item: SpriteNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              entitiesActions.removeSpriteState({
+                spriteSheetId: viewId,
+                spriteStateId: item.id,
+              })
+            )
+          }
+        >
+          {l10n("MENU_SPRITE_STATE_DELETE")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch, viewId]
+  );
+
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<SpriteSheet>) => {
       return item.filename;
@@ -454,7 +479,9 @@ export const NavigatorSprites = ({
                 rename={index > 0 && renameId === item.id}
                 onRename={onRenameStateComplete}
                 onRenameCancel={onRenameCancel}
-                renderContextMenu={index > 0 ? renderContextMenu : undefined}
+                renderContextMenu={
+                  index > 0 ? renderStateContextMenu : undefined
+                }
               />
             ) : (
               <EntityListItem
