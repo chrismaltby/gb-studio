@@ -327,7 +327,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             type={item.type}
             collapsable={true}
             collapsed={!isOpen(item.id)}
-            onToggleCollapse={toggleSceneOpen(item.id)}
+            onToggleCollapse={() => toggleSceneOpen(item.id)}
             rename={renameId === item.id}
             onRename={onRenameSceneComplete}
             onRenameCancel={onRenameCancel}

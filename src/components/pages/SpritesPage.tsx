@@ -32,7 +32,6 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "components/sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
-import useSorted from "ui/hooks/use-sorted";
 import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
@@ -82,7 +81,7 @@ const SpritesPage = () => {
   const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state)
   );
-  const navigationId = useAppSelector(
+  const selectedId = useAppSelector(
     (state) => state.editor.selectedSpriteSheetId
   );
   const navigationStateId = useAppSelector(
@@ -99,18 +98,32 @@ const SpritesPage = () => {
   );
   const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
 
-  const sortedSprites = useSorted(allSprites);
-  const selectedSprite = spritesLookup[navigationId] || sortedSprites[0];
+  const sprite = useAppSelector((state) =>
+    spriteSheetSelectors.selectById(state, selectedId)
+  );
+
+  const lastSpriteId = useRef("");
+  useEffect(() => {
+    if (sprite) {
+      lastSpriteId.current = sprite.id;
+    }
+  }, [sprite]);
+
+  const viewSpriteId = useMemo(
+    () => sprite?.id || lastSpriteId.current || allSprites[0]?.id,
+    [allSprites, sprite]
+  );
+
+  const selectedSprite = spritesLookup[viewSpriteId];
 
   const selectedState =
     spriteStatesLookup[navigationStateId] ||
-    spriteStatesLookup[selectedSprite.states[0]];
+    spriteStatesLookup[selectedSprite?.states[0] ?? ""];
 
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
     (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
 
-  const selectedId = selectedSprite?.id || "";
   const selectedStateId = selectedState?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
@@ -176,8 +189,8 @@ const SpritesPage = () => {
   const prevWidth = prevWindowWidthRef.current;
 
   useEffect(() => {
-    dispatch(spriteActions.compileSprite({ spriteSheetId: selectedId }));
-  }, [dispatch, selectedId]);
+    dispatch(spriteActions.compileSprite({ spriteSheetId: viewSpriteId }));
+  }, [dispatch, viewSpriteId]);
 
   useEffect(() => {
     if (windowWidth !== prevWidth) {
@@ -308,6 +321,7 @@ const SpritesPage = () => {
           <NavigatorSprites
             height={windowHeight - 38}
             selectedId={selectedId}
+            viewId={viewSpriteId}
             selectedAnimationId={selectedAnimationId}
             selectedStateId={selectedStateId}
             defaultFirst
@@ -336,7 +350,7 @@ const SpritesPage = () => {
           {frames.map((frameId) => (
             <MetaspriteEditor
               key={frameId}
-              spriteSheetId={selectedId}
+              spriteSheetId={viewSpriteId}
               metaspriteId={frameId}
               animationId={selectedAnimation?.id || ""}
               spriteStateId={selectedStateId}
@@ -345,7 +359,7 @@ const SpritesPage = () => {
           ))}
 
           <MetaspriteEditorPreviewSettings
-            spriteSheetId={selectedId}
+            spriteSheetId={viewSpriteId}
             metaspriteId={selectedMetaspriteId}
           />
         </div>
@@ -390,7 +404,7 @@ const SpritesPage = () => {
             {l10n("FIELD_TILES")}
           </SplitPaneHeader>
           <SpriteTilePalette
-            id={selectedId}
+            id={viewSpriteId}
             precisionMode={precisionTileMode || tmpPrecisionMode}
           />
         </div>
@@ -410,7 +424,7 @@ const SpritesPage = () => {
         </SplitPaneHeader>
         {animationsOpen && (
           <SpriteAnimationTimeline
-            spriteSheetId={selectedId}
+            spriteSheetId={viewSpriteId}
             animationId={selectedAnimation?.id || ""}
             metaspriteId={selectedMetaspriteId}
           />
@@ -427,7 +441,7 @@ const SpritesPage = () => {
         }}
       >
         <SpriteEditor
-          id={selectedId}
+          id={viewSpriteId}
           metaspriteId={selectedMetaspriteId}
           spriteStateId={selectedStateId}
           animationId={selectedAnimation?.id || ""}

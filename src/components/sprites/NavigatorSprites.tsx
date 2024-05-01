@@ -1,4 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -32,10 +38,15 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import projectActions from "store/features/project/projectActions";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
 
 interface NavigatorSpritesProps {
   height: number;
   selectedId: string;
+  viewId: string;
   selectedAnimationId: string;
   selectedStateId: string;
   defaultFirst?: boolean;
@@ -60,14 +71,6 @@ interface AnimationNavigatorItem {
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 300;
-
-const spriteToNavigatorItem = (
-  sprite: SpriteSheet,
-  spriteIndex: number
-): SpriteNavigatorItem => ({
-  id: sprite.id,
-  name: sprite.name ? sprite.name : `Sprite ${spriteIndex + 1}`,
-});
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -102,6 +105,7 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
 export const NavigatorSprites = ({
   height,
   selectedId,
+  viewId,
   selectedStateId,
 }: NavigatorSpritesProps) => {
   const [splitSizes, setSplitSizes] = useState([300, 200]);
@@ -117,7 +121,6 @@ export const NavigatorSprites = ({
   const [spriteAnimations, setSpriteAnimations] = useState<
     AnimationNavigatorItem[]
   >([]);
-  const [items, setItems] = useState<SpriteNavigatorItem[]>([]);
   const allSprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
@@ -133,7 +136,7 @@ export const NavigatorSprites = ({
   const selectedAnimationId =
     useAppSelector((state) => state.editor.selectedAnimationId) || "group";
 
-  const selectedSprite = spritesLookup[selectedId];
+  const selectedSprite = spritesLookup[viewId];
   const selectedState = spriteStatesLookup[selectedStateId];
 
   const {
@@ -143,17 +146,20 @@ export const NavigatorSprites = ({
     set: closeState,
   } = useToggleableList<string>([]);
 
-  const dispatch = useAppDispatch();
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
 
-  useEffect(() => {
-    setItems(
-      allSprites
-        .map((sprite, spriteIndex) =>
-          spriteToNavigatorItem(sprite, spriteIndex)
-        )
-        .sort(sortByName)
-    );
-  }, [allSprites]);
+  const nestedSpriteItems = useMemo(
+    () => buildAssetNavigatorItems(allSprites, openFolders),
+    [allSprites, openFolders]
+  );
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (selectedSprite?.states) {
@@ -275,11 +281,11 @@ export const NavigatorSprites = ({
       e.stopPropagation();
       dispatch(
         entitiesActions.addSpriteState({
-          spriteSheetId: selectedId,
+          spriteSheetId: viewId,
         })
       );
     },
-    [dispatch, selectedId]
+    [dispatch, viewId]
   );
 
   const [renameId, setRenameId] = useState("");
@@ -353,6 +359,13 @@ export const NavigatorSprites = ({
     [dispatch]
   );
 
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<SpriteSheet>) => {
+      return item.filename.replace(/\.[^.]*$/, "");
+    },
+    []
+  );
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
@@ -365,19 +378,33 @@ export const NavigatorSprites = ({
 
         <FlatList
           selectedId={selectedId}
-          items={items}
+          items={nestedSpriteItems}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
-          onKeyDown={listenForRenameStart}
+          onKeyDown={(e: KeyboardEvent, item) => {
+            listenForRenameStart(e);
+            if (item?.type === "folder") {
+              if (e.key === "ArrowRight") {
+                openFolder(selectedId);
+              } else if (e.key === "ArrowLeft") {
+                closeFolder(selectedId);
+              }
+            }
+          }}
         >
           {({ item }) => (
             <EntityListItem
-              type="sprite"
+              type={item.type === "folder" ? "folder" : "sprite"}
               item={item}
               rename={renameId === item.id}
               onRename={onRenameSpriteComplete}
               onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}
+              collapsable={item.type === "folder"}
+              collapsed={!isFolderOpen(item.name)}
+              onToggleCollapse={() => toggleFolderOpen(item.name)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
             />
           )}
         </FlatList>
@@ -423,7 +450,7 @@ export const NavigatorSprites = ({
                 type={item.type}
                 collapsable={true}
                 collapsed={!item.isOpen}
-                onToggleCollapse={toggleStateOpen(item.stateId)}
+                onToggleCollapse={() => toggleStateOpen(item.stateId)}
                 rename={index > 0 && renameId === item.id}
                 onRename={onRenameStateComplete}
                 onRenameCancel={onRenameCancel}
