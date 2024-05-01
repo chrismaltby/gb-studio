@@ -631,7 +631,7 @@ const SceneView = memo(
             paddingRight: labelOffsetRight,
           }}
         >
-          <SceneName>
+          <SceneName title={scene.notes}>
             <LabelSpan color={scene.labelColor}>{name}</LabelSpan>
           </SceneName>
         </SceneMetadata>
