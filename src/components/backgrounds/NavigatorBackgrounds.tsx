@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   backgroundSelectors,
   tilesetSelectors,
@@ -16,35 +16,16 @@ import useSplitPane from "ui/hooks/use-split-pane";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import projectActions from "store/features/project/projectActions";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorBackgroundsProps {
   height: number;
   selectedId: string;
 }
-
-interface ImageNavigatorItem {
-  id: string;
-  name: string;
-  type: "background" | "tileset";
-}
-
-const imageToNavigatorItem = (
-  background: Background | Tileset,
-  type: "background" | "tileset"
-): ImageNavigatorItem => ({
-  id: background.id,
-  name: background.name || background.filename,
-  type,
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: { name: string }, b: { name: string }) => {
-  return collator.compare(a.name, b.name);
-};
 
 const Pane = styled.div`
   overflow: hidden;
@@ -56,34 +37,31 @@ export const NavigatorBackgrounds = ({
   height,
   selectedId,
 }: NavigatorBackgroundsProps) => {
-  const [backgroundItems, setBackgroundItems] = useState<ImageNavigatorItem[]>(
-    []
-  );
-  const [tilesetItems, setTilesetItems] = useState<ImageNavigatorItem[]>([]);
-
   const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
   const allTilesets = useAppSelector((state) =>
     tilesetSelectors.selectAll(state)
   );
+
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    setBackgroundItems(
-      allBackgrounds
-        .map((background) => imageToNavigatorItem(background, "background"))
-        .sort(sortByName)
-    );
-  }, [allBackgrounds]);
-
-  useEffect(() => {
-    setTilesetItems(
-      allTilesets
-        .map((tileset) => imageToNavigatorItem(tileset, "tileset"))
-        .sort(sortByName)
-    );
-  }, [allTilesets]);
+  const nestedBackgroundItems = useMemo(
+    () => buildAssetNavigatorItems(allBackgrounds, openFolders),
+    [allBackgrounds, openFolders]
+  );
+  const nestedTilesetItems = useMemo(
+    () => buildAssetNavigatorItems(allTilesets, openFolders),
+    [allTilesets, openFolders]
+  );
 
   const setSelectedId = useCallback(
     (id: string) => {
@@ -148,8 +126,8 @@ export const NavigatorBackgrounds = ({
     setRenameId("");
   }, []);
 
-  const renderContextMenu = useCallback(
-    (item: ImageNavigatorItem) => {
+  const renderTilesetContextMenu = useCallback(
+    (item: FileSystemNavigatorItem<Tileset>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
@@ -159,25 +137,48 @@ export const NavigatorBackgrounds = ({
           key="delete"
           onClick={() =>
             dispatch(
-              item.type === "background"
-                ? projectActions.removeBackgroundAsset({
-                    backgroundId: item.id,
-                  })
-                : projectActions.removeTilesetAsset({
-                    tilesetId: item.id,
-                  })
+              projectActions.removeTilesetAsset({
+                tilesetId: item.id,
+              })
             )
           }
         >
-          {l10n(
-            item.type === "background"
-              ? "MENU_DELETE_BACKGROUND"
-              : "MENU_DELETE_TILESET"
-          )}
+          {l10n("MENU_DELETE_TILESET")}
         </MenuItem>,
       ];
     },
     [dispatch]
+  );
+
+  const renderContextMenu = useCallback(
+    (item: FileSystemNavigatorItem<Background>) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              projectActions.removeBackgroundAsset({
+                backgroundId: item.id,
+              })
+            )
+          }
+        >
+          {l10n("MENU_DELETE_BACKGROUND")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
+
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<Background | Tileset>) => {
+      return item.filename.replace(/\.[^.]*$/, "");
+    },
+    []
   );
 
   return (
@@ -189,19 +190,33 @@ export const NavigatorBackgrounds = ({
 
         <FlatList
           selectedId={selectedId}
-          items={backgroundItems}
+          items={nestedBackgroundItems}
           setSelectedId={setSelectedId}
           height={splitSizes[0] - 30}
-          onKeyDown={listenForRenameStart}
+          onKeyDown={(e: KeyboardEvent, item) => {
+            listenForRenameStart(e);
+            if (item?.type === "folder") {
+              if (e.key === "ArrowRight") {
+                openFolder(selectedId);
+              } else if (e.key === "ArrowLeft") {
+                closeFolder(selectedId);
+              }
+            }
+          }}
         >
           {({ item }) => (
             <EntityListItem
-              type="background"
+              type={item.type === "folder" ? "folder" : "background"}
               item={item}
-              rename={renameId === item.id}
+              rename={item.type === "file" && renameId === item.id}
               onRename={onRenameBackgroundComplete}
               onRenameCancel={onRenameCancel}
               renderContextMenu={renderContextMenu}
+              collapsable={item.type === "folder"}
+              collapsed={!isFolderOpen(item.name)}
+              onToggleCollapse={() => toggleFolderOpen(item.name)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
             />
           )}
         </FlatList>
@@ -214,10 +229,19 @@ export const NavigatorBackgrounds = ({
         </SplitPaneHeader>
         <FlatList
           selectedId={selectedId}
-          items={tilesetItems}
+          items={nestedTilesetItems}
           setSelectedId={setSelectedId}
           height={splitSizes[1] - 30}
-          onKeyDown={listenForRenameStart}
+          onKeyDown={(e: KeyboardEvent, item) => {
+            listenForRenameStart(e);
+            if (item?.type === "folder") {
+              if (e.key === "ArrowRight") {
+                openFolder(selectedId);
+              } else if (e.key === "ArrowLeft") {
+                closeFolder(selectedId);
+              }
+            }
+          }}
         >
           {({ item }) => (
             <EntityListItem
@@ -226,7 +250,12 @@ export const NavigatorBackgrounds = ({
               rename={renameId === item.id}
               onRename={onRenameTilesetComplete}
               onRenameCancel={onRenameCancel}
-              renderContextMenu={renderContextMenu}
+              renderContextMenu={renderTilesetContextMenu}
+              collapsable={item.type === "folder"}
+              collapsed={!isFolderOpen(item.name)}
+              onToggleCollapse={() => toggleFolderOpen(item.name)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
             />
           )}
         </FlatList>

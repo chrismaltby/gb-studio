@@ -12,7 +12,6 @@ import {
   DutyIcon,
   WaveIcon,
   SongIcon,
-  FolderFilledIcon,
   BackgroundIcon,
   PaletteIcon,
   CodeIcon,
@@ -190,11 +189,6 @@ export const EntityListItem = <T extends EntityListItemData>({
         </NavigatorArrow>
       )}
       {type === "custom" && icon && <EntityIcon>{icon}</EntityIcon>}
-      {type === "folder" && (
-        <EntityIcon>
-          <FolderFilledIcon />
-        </EntityIcon>
-      )}
       {type === "actor" && (
         <EntityIcon>
           <ActorIcon />

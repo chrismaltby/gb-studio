@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
@@ -36,12 +36,23 @@ const ImagesPage = () => {
     backgroundSelectors.selectAll(state)
   );
 
-  const background =
-    useAppSelector(
-      (state) =>
-        backgroundSelectors.selectById(state, selectedId) ||
-        tilesetSelectors.selectById(state, selectedId)
-    ) || allBackgrounds[0];
+  const background = useAppSelector(
+    (state) =>
+      backgroundSelectors.selectById(state, selectedId) ||
+      tilesetSelectors.selectById(state, selectedId)
+  );
+
+  const lastBackgroundId = useRef("");
+  useEffect(() => {
+    if (background) {
+      lastBackgroundId.current = background.id;
+    }
+  }, [background]);
+
+  const viewBackgroundId = useMemo(
+    () => background?.id || lastBackgroundId.current || allBackgrounds[0]?.id,
+    [allBackgrounds, background]
+  );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -99,7 +110,7 @@ const ImagesPage = () => {
         >
           <NavigatorBackgrounds
             height={windowHeight - 38}
-            selectedId={background?.id || ""}
+            selectedId={selectedId || background?.id || ""}
           />
         </div>
       </div>
@@ -119,7 +130,7 @@ const ImagesPage = () => {
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
           <BackgroundPreviewSettings backgroundId={background?.id || ""} />
-          <BackgroundViewer backgroundId={background?.id || ""} />
+          <BackgroundViewer backgroundId={viewBackgroundId || ""} />
         </div>
       </div>
     </Wrapper>

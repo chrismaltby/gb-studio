@@ -33,7 +33,7 @@ export interface FlatListProps<T> {
   readonly selectedId?: string;
   readonly highlightIds?: string[];
   readonly setSelectedId?: (id: string, item: T) => void;
-  readonly onKeyDown?: (e: KeyboardEvent) => void;
+  readonly onKeyDown?: (e: KeyboardEvent, item?: T) => void;
   readonly children?: (props: {
     selected: boolean;
     item: T;
@@ -116,7 +116,7 @@ export const FlatList = <T extends FlatListItem>({
     } else {
       handleSearch(e.key);
     }
-    onKeyDown?.(e);
+    onKeyDown?.(e, items[selectedIndex]);
   };
 
   const throttledNext = useRef(
