@@ -25,6 +25,7 @@ const validKeys = [
   "B",
   "C",
   "D",
+  "E",
   "F",
 ];
 
