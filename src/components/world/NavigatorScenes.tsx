@@ -1,4 +1,11 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   actorSelectors,
   sceneSelectors,
@@ -7,20 +14,14 @@ import {
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import {
-  ActorNormalized,
-  SceneNormalized,
-  TriggerNormalized,
-} from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import useToggleableList from "ui/hooks/use-toggleable-list";
-import {
-  actorName,
-  sceneName,
-  triggerName,
-} from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
+import {
+  SceneNavigatorItem,
+  buildSceneNavigatorItems,
+} from "shared/lib/entities/buildSceneNavigatorItems";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import renderActorContextMenu from "./renderActorContextMenu";
 import renderTriggerContextMenu from "./renderTriggerContextMenu";
@@ -30,60 +31,11 @@ interface NavigatorScenesProps {
   height: number;
 }
 
-interface SceneNavigatorItem {
-  id: string;
-  sceneId: string;
-  name: string;
-  type: "scene" | "actor" | "trigger";
-  labelColor?: string;
-}
-
-const sceneToNavigatorItem = (
-  scene: SceneNormalized,
-  sceneIndex: number
-): SceneNavigatorItem => ({
-  id: scene.id,
-  sceneId: scene.id,
-  name: sceneName(scene, sceneIndex),
-  type: "scene",
-  labelColor: scene.labelColor,
-});
-
-const actorToNavigatorItem = (
-  actor: ActorNormalized,
-  scene: SceneNormalized
-): SceneNavigatorItem => ({
-  id: actor.id,
-  sceneId: scene.id,
-  name: actorName(actor, scene.actors.indexOf(actor.id)),
-  type: "actor",
-});
-
-const triggerToNavigatorItem = (
-  trigger: TriggerNormalized,
-  scene: SceneNormalized
-): SceneNavigatorItem => ({
-  id: trigger.id,
-  sceneId: scene.id,
-  name: triggerName(trigger, scene.triggers.indexOf(trigger.id)),
-  type: "trigger",
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
-  return collator.compare(a.name, b.name);
-};
-
 const StartSceneLabel = styled.div`
   font-weight: bold;
 `;
 
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
-  const [items, setItems] = useState<SceneNavigatorItem[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
@@ -104,18 +56,15 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     (state) => state.editor.sceneSelectionIds
   );
 
-  const {
-    values: openSceneIds,
-    isSet: isOpen,
-    toggle: toggleSceneOpen,
-    set: openScene,
-    unset: closeScene,
-  } = useToggleableList<string>([]);
+  const [folderId, setFolderId] = useState("");
 
-  const selectedId =
-    editorType === "scene" || !openSceneIds.includes(sceneId)
-      ? sceneId
-      : entityId;
+  // const {
+  //   values: openSceneIds,
+  //   isSet: isOpen,
+  //   toggle: toggleSceneOpen,
+  //   set: openScene,
+  //   unset: closeScene,
+  // } = useToggleableList<string>([]);
 
   const dispatch = useAppDispatch();
 
@@ -142,57 +91,58 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     };
   }, [onKeyDown, onKeyUp]);
 
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
+  const nestedSceneItems = useMemo(
+    () =>
+      buildSceneNavigatorItems(
+        scenes,
+        actorsLookup,
+        triggersLookup,
+        openFolders
+      ),
+    [scenes, actorsLookup, triggersLookup, openFolders]
+  );
+
   useEffect(() => {
-    const sceneItems = scenes
-      .map((scene, sceneIndex) => ({
-        scene,
-        item: sceneToNavigatorItem(scene, sceneIndex),
-      }))
-      .sort((a, b) => {
-        return sortByName(a.item, b.item);
-      });
-    setItems(
-      sceneItems.flatMap((scene) =>
-        isOpen(scene.scene.id)
-          ? [
-              scene.item,
-              ...(
-                scene.scene.actors
-                  .map((actorId) => actorsLookup[actorId])
-                  .filter((i) => i) as ActorNormalized[]
-              )
-                .map((actor) => actorToNavigatorItem(actor, scene.scene))
-                .sort(sortByName),
-              ...(
-                scene.scene.triggers
-                  .map((triggerId) => triggersLookup[triggerId])
-                  .filter((i) => i) as TriggerNormalized[]
-              )
-                .map((trigger) => triggerToNavigatorItem(trigger, scene.scene))
-                .sort(sortByName),
-            ]
-          : scene.item
-      )
-    );
-  }, [scenes, actorsLookup, triggersLookup, openSceneIds, isOpen]);
+    if (sceneId || entityId) {
+      setFolderId("");
+    }
+  }, [entityId, sceneId]);
+
+  const selectedId =
+    folderId ||
+    (editorType === "scene" || !openFolders.includes(sceneId)
+      ? sceneId
+      : entityId);
 
   const setSelectedId = (id: string, item: SceneNavigatorItem) => {
     if (item.type === "actor") {
       dispatch(
         editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
       );
+      dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "trigger") {
       dispatch(
         editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
       );
-    } else {
+      dispatch(editorActions.setFocusSceneId(item.sceneId));
+    } else if (item.type === "scene") {
       if (addToSelection.current) {
         dispatch(editorActions.toggleSceneSelectedId(id));
       } else {
         dispatch(editorActions.selectScene({ sceneId: id }));
       }
+      dispatch(editorActions.setFocusSceneId(item.id));
+    } else {
+      setFolderId(id);
     }
-    dispatch(editorActions.setFocusSceneId(item.sceneId));
   };
 
   const [renameId, setRenameId] = useState("");
@@ -266,7 +216,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       if (item.type === "scene") {
         return renderSceneContextMenu({
           dispatch,
-          sceneId: item.sceneId,
+          sceneId: item.id,
           additionalSceneIds: sceneSelectionIds,
           startSceneId,
           startDirection,
@@ -288,19 +238,21 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           triggerId: item.id,
           onRename: () => setRenameId(item.id),
         });
+      } else if (item.type === "folder") {
+        // No context menu for folders
       } else {
-        assertUnreachable(item.type);
+        assertUnreachable(item);
       }
     },
     [dispatch, sceneSelectionIds, startDirection, startSceneId]
   );
 
-  const renderSceneLabel = useCallback(
+  const renderLabel = useCallback(
     (item: SceneNavigatorItem) => {
       if (item.id === startSceneId) {
-        return <StartSceneLabel>{item.name}</StartSceneLabel>;
+        return <StartSceneLabel>{item.filename}</StartSceneLabel>;
       }
-      return item.name;
+      return item.filename;
     },
     [startSceneId]
   );
@@ -308,37 +260,40 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   return (
     <FlatList
       selectedId={selectedId}
-      highlightIds={sceneSelectionIds}
-      items={items}
+      highlightIds={folderId ? [] : sceneSelectionIds}
+      items={nestedSceneItems}
       setSelectedId={setSelectedId}
       height={height}
       onKeyDown={(e: KeyboardEvent) => {
         listenForRenameStart(e);
         if (e.key === "ArrowRight") {
-          openScene(sceneId);
+          openFolder(selectedId);
         } else if (e.key === "ArrowLeft") {
-          closeScene(sceneId);
+          closeFolder(selectedId);
         }
       }}
       children={({ item }) =>
-        item.type === "scene" ? (
+        item.type === "scene" || item.type === "folder" ? (
           <EntityListItem
             item={item}
-            type={item.type}
-            collapsable={true}
-            collapsed={!isOpen(item.id)}
-            onToggleCollapse={() => toggleSceneOpen(item.id)}
-            rename={renameId === item.id}
+            type={item.type === "folder" ? "folder" : "scene"}
+            rename={item.type !== "folder" && renameId === item.id}
             onRename={onRenameSceneComplete}
             onRenameCancel={onRenameCancel}
-            renderContextMenu={renderContextMenu}
-            renderLabel={renderSceneLabel}
+            renderContextMenu={
+              item.type !== "folder" ? renderContextMenu : undefined
+            }
+            collapsable={item.type === "folder" || item.type === "scene"}
+            collapsed={!isFolderOpen(item.id)}
+            onToggleCollapse={() => toggleFolderOpen(item.id)}
+            nestLevel={item.nestLevel}
+            renderLabel={renderLabel}
           />
         ) : (
           <EntityListItem
             item={item}
             type={item.type}
-            nestLevel={1}
+            nestLevel={item.nestLevel}
             rename={renameId === item.id}
             onRename={
               item.type === "actor"
