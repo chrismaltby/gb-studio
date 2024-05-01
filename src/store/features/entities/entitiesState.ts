@@ -226,9 +226,18 @@ const removeSelectedEntity =
     getState: () => RootState
   ) => {
     const state = getState();
-    const { scene, entityId, type: editorType } = state.editor;
+    const {
+      scene,
+      entityId,
+      type: editorType,
+      sceneSelectionIds,
+    } = state.editor;
     if (editorType === "scene") {
-      dispatch(actions.removeScene({ sceneId: scene }));
+      if (sceneSelectionIds.length > 0) {
+        dispatch(actions.removeScenes({ sceneIds: sceneSelectionIds }));
+      } else {
+        dispatch(actions.removeScene({ sceneId: scene }));
+      }
     } else if (editorType === "trigger") {
       dispatch(actions.removeTrigger({ sceneId: scene, triggerId: entityId }));
     } else if (editorType === "actor") {

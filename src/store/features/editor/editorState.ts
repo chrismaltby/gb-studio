@@ -790,6 +790,12 @@ const editorSlice = createSlice({
       ].filter((id, index, self) => {
         return self.indexOf(id) === index;
       });
+      // If not currently in scene mode switch to selecting the first selected scene
+      if (state.type !== "scene" && state.sceneSelectionIds.length > 0) {
+        state.scene = state.sceneSelectionIds[0];
+        state.type = "scene";
+        state.worldFocus = true;
+      }
     },
 
     removeSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
@@ -811,6 +817,12 @@ const editorSlice = createSlice({
         const index = state.sceneSelectionIds.indexOf(action.payload);
         if (index === -1) {
           state.sceneSelectionIds.push(action.payload);
+          // If not currently in scene mode switch to selecting this scene
+          if (state.type !== "scene") {
+            state.scene = action.payload;
+            state.type = "scene";
+            state.worldFocus = true;
+          }
         } else {
           state.sceneSelectionIds.splice(index, 1);
         }

@@ -598,6 +598,13 @@ const WorldView = () => {
     [onEndMultiSelection, onMoveMultiSelection, zoomRatio]
   );
 
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("mousemove", onMoveMultiSelection);
+      window.removeEventListener("mouseup", onEndMultiSelection);
+    };
+  }, [onEndMultiSelection, onMoveMultiSelection]);
+
   //#region Window Blur
 
   const onWindowBlur = useCallback(() => {
@@ -628,17 +635,13 @@ const WorldView = () => {
       window.removeEventListener("blur", onWindowBlur);
       window.removeEventListener("mousemove", onWorldDragMove);
       window.removeEventListener("mouseup", onEndWorldDrag);
-      window.removeEventListener("mousemove", onMoveMultiSelection);
-      window.removeEventListener("mouseup", onEndMultiSelection);
     };
   }, [
     onCopy,
-    onEndMultiSelection,
     onEndWorldDrag,
     onKeyDown,
     onKeyUp,
     onMouseWheel,
-    onMoveMultiSelection,
     onPaste,
     onWindowBlur,
     onWindowResize,
