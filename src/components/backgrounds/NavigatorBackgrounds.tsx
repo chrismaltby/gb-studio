@@ -176,9 +176,14 @@ export const NavigatorBackgrounds = ({
 
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<Background | Tileset>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
       return item.filename;
     },
-    []
+    [toggleFolderOpen]
   );
 
   return (

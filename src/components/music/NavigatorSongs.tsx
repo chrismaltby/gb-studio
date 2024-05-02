@@ -415,11 +415,16 @@ export const NavigatorSongs = ({
 
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<Music>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
       return `${item.filename}${
         modified && item.id === selectedSongId ? "*" : ""
       }`;
     },
-    [modified, selectedSongId]
+    [modified, selectedSongId, toggleFolderOpen]
   );
 
   const renderInstrumentLabel = useCallback((item: InstrumentNavigatorItem) => {

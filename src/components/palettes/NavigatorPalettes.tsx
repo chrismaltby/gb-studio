@@ -142,18 +142,23 @@ export const NavigatorPalettes = ({
     [dispatch]
   );
 
-  const renderLabel = useCallback((item: EntityNavigatorItem<Palette>) => {
-    if (item.type === "folder") {
-      return item.filename;
-    }
-    return (
-      <FlexRow>
-        {item.filename}
-        <FlexGrow />
-        <PaletteBlock colors={item.entity?.colors ?? []} size={16} />
-      </FlexRow>
-    );
-  }, []);
+  const renderLabel = useCallback(
+    (item: EntityNavigatorItem<Palette>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return (
+        <FlexRow>
+          {item.filename}
+          <FlexGrow />
+          <PaletteBlock colors={item.entity?.colors ?? []} size={16} />
+        </FlexRow>
+      );
+    },
+    [toggleFolderOpen]
+  );
 
   return (
     <Pane style={{ height }}>

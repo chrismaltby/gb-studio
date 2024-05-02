@@ -148,9 +148,17 @@ export const NavigatorModSongs = ({
     [dispatch]
   );
 
-  const renderLabel = useCallback((item: FileSystemNavigatorItem<Music>) => {
-    return item.filename;
-  }, []);
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<Music>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return item.filename;
+    },
+    [toggleFolderOpen]
+  );
 
   return (
     <>

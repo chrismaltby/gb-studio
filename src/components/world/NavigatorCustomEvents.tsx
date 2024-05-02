@@ -113,9 +113,14 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
 
   const renderLabel = useCallback(
     (item: EntityNavigatorItem<CustomEventNormalized>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
       return item.filename;
     },
-    []
+    [toggleFolderOpen]
   );
 
   return (

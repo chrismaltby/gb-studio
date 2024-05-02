@@ -103,9 +103,17 @@ export const NavigatorSounds = ({
     [dispatch]
   );
 
-  const renderLabel = useCallback((item: FileSystemNavigatorItem<Sound>) => {
-    return item.filename;
-  }, []);
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<Sound>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return item.filename;
+    },
+    [toggleFolderOpen]
+  );
 
   return (
     <Pane style={{ height }}>

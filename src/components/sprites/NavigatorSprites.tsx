@@ -386,9 +386,14 @@ export const NavigatorSprites = ({
 
   const renderLabel = useCallback(
     (item: FileSystemNavigatorItem<SpriteSheet>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
       return item.filename;
     },
-    []
+    [toggleFolderOpen]
   );
 
   return (

@@ -255,12 +255,17 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
 
   const renderLabel = useCallback(
     (item: SceneNavigatorItem) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
       if (item.id === startSceneId) {
         return <StartSceneLabel>{item.filename}</StartSceneLabel>;
       }
       return item.filename;
     },
-    [startSceneId]
+    [startSceneId, toggleFolderOpen]
   );
 
   return (
