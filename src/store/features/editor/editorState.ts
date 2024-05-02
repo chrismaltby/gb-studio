@@ -784,6 +784,16 @@ const editorSlice = createSlice({
       state.slopePreview = action.payload.slopePreview;
     },
 
+    setSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = action.payload;
+      // Also focus on first scene in array
+      if (state.sceneSelectionIds.length > 0) {
+        state.scene = state.sceneSelectionIds[0];
+        state.type = "scene";
+        state.worldFocus = true;
+      }
+    },
+
     addSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
       state.sceneSelectionIds = [
         ...state.sceneSelectionIds,

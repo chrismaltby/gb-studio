@@ -22,11 +22,13 @@ import {
   SceneNavigatorItem,
   buildSceneNavigatorItems,
   sceneParentFolders,
+  scenesInFolder,
 } from "shared/lib/entities/buildSceneNavigatorItems";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import renderActorContextMenu from "./renderActorContextMenu";
 import renderTriggerContextMenu from "./renderTriggerContextMenu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
+import renderSceneFolderContextMenu from "components/world/renderSceneFolderContextMenu";
 
 interface NavigatorScenesProps {
   height: number;
@@ -125,19 +127,23 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       ? sceneId
       : entityId);
 
+  const clearFolderSelection = useCallback(() => {
+    setFolderId("");
+  }, []);
+
   const setSelectedId = (id: string, item: SceneNavigatorItem) => {
     if (item.type === "actor") {
       dispatch(
         editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
-      setFolderId("");
+      clearFolderSelection();
     } else if (item.type === "trigger") {
       dispatch(
         editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
-      setFolderId("");
+      clearFolderSelection();
     } else if (item.type === "scene") {
       if (addToSelection.current) {
         dispatch(editorActions.toggleSceneSelectedId(id));
@@ -145,7 +151,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         dispatch(editorActions.selectScene({ sceneId: id }));
       }
       dispatch(editorActions.setFocusSceneId(item.id));
-      setFolderId("");
+      clearFolderSelection();
     } else {
       setFolderId(id);
     }
@@ -245,12 +251,15 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           onRename: () => setRenameId(item.id),
         });
       } else if (item.type === "folder") {
-        // No context menu for folders
+        return renderSceneFolderContextMenu({
+          dispatch,
+          scenes: scenesInFolder(item.id, scenes),
+        });
       } else {
         assertUnreachable(item);
       }
     },
-    [dispatch, sceneSelectionIds, startDirection, startSceneId]
+    [dispatch, sceneSelectionIds, scenes, startDirection, startSceneId]
   );
 
   const renderLabel = useCallback(
@@ -291,9 +300,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             rename={item.type !== "folder" && renameId === item.id}
             onRename={onRenameSceneComplete}
             onRenameCancel={onRenameCancel}
-            renderContextMenu={
-              item.type !== "folder" ? renderContextMenu : undefined
-            }
+            renderContextMenu={renderContextMenu}
             collapsable={item.type === "folder" || item.type === "scene"}
             collapsed={!openFolders.includes(item.id)}
             onToggleCollapse={() => toggleFolderOpen(item.id)}

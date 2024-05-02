@@ -57,6 +57,14 @@ export const sceneParentFolders = (scene: SceneNormalized): string[] => {
   return folders;
 };
 
+export const scenesInFolder = (
+  folder: string,
+  scenes: SceneNormalized[]
+): SceneNormalized[] => {
+  const regex = new RegExp("^" + folder.split(/[/\\]/).join("[/\\\\]"));
+  return scenes.filter((scene) => scene.name.match(regex));
+};
+
 export const buildSceneNavigatorItems = (
   scenes: SceneNormalized[],
   actorsLookup: Dictionary<ActorNormalized>,
