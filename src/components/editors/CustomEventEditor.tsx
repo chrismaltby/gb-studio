@@ -14,7 +14,7 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/FormLayout";
-import { EditableText } from "ui/form/EditableText";
+import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
@@ -31,6 +31,7 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import { FlexGrow } from "ui/spacing/Spacing";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
@@ -231,12 +232,17 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
         <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
-              <EditableText
-                name="name"
-                placeholder={customEventName(customEvent, index)}
-                value={customEvent.name || ""}
-                onChange={onChangeName}
-              />
+              <FlexGrow style={{ minWidth: 0 }}>
+                <EditableText
+                  name="name"
+                  placeholder={customEventName(customEvent, index)}
+                  value={customEvent.name || ""}
+                  onChange={onChangeName}
+                />
+                <EditableTextOverlay>
+                  {customEventName(customEvent, index).replace(/.*[/\\]/, "")}
+                </EditableTextOverlay>
+              </FlexGrow>
               <DropdownButton
                 size="small"
                 variant="transparent"

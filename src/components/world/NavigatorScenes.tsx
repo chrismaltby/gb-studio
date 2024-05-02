@@ -86,7 +86,6 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
 
   const {
     values: manuallyOpenedFolders,
-    isSet: isFolderOpen,
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,

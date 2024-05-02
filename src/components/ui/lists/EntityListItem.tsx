@@ -16,6 +16,8 @@ import {
   PaletteIcon,
   CodeIcon,
   SoundIcon,
+  FolderFilledIcon,
+  SceneIcon,
 } from "ui/icons/Icons";
 import { ContextMenu } from "ui/menu/ContextMenu";
 
@@ -190,6 +192,16 @@ export const EntityListItem = <T extends EntityListItemData>({
         </NavigatorArrow>
       )}
       {type === "custom" && icon && <EntityIcon>{icon}</EntityIcon>}
+      {type === "folder" && (
+        <EntityIcon>
+          <FolderFilledIcon />
+        </EntityIcon>
+      )}
+      {type === "scene" && (
+        <EntityIcon>
+          <SceneIcon />
+        </EntityIcon>
+      )}
       {type === "actor" && (
         <EntityIcon>
           <ActorIcon />

@@ -21,6 +21,19 @@ const sortByName = (a: Entity, b: Entity) => {
   return collator.compare(a.name, b.name);
 };
 
+export const entityParentFolders = <T extends { name: string }>(
+  entity: T
+): string[] => {
+  const parts = entity.name.split(/[/\\]/).slice(0, -1);
+  const folders: string[] = [];
+  while (parts.length > 0) {
+    folders.push(parts.join("/"));
+    folders.push(parts.join("\\"));
+    parts.pop();
+  }
+  return folders;
+};
+
 export const buildEntityNavigatorItems = <T extends Entity>(
   entities: T[],
   openFolders: string[],
