@@ -131,6 +131,7 @@ export interface EditorState {
   navigatorSidebarWidth: number;
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
+  navigatorSplitSizesManuallyEdited: boolean;
   profile: boolean;
   focusSceneId: string;
   selectedSpriteSheetId: string;
@@ -201,6 +202,7 @@ export const initialState: EditorState = {
   filesSidebarWidth: 300,
   clipboardVariables: [],
   navigatorSplitSizes: [300, 100, 100],
+  navigatorSplitSizesManuallyEdited: false,
   focusSceneId: "",
   selectedSpriteSheetId: "",
   selectedSpriteStateId: "",
@@ -636,8 +638,12 @@ const editorSlice = createSlice({
       state.clipboardVariables = action.payload;
     },
 
-    setNavigatorSplitSizes: (state, action: PayloadAction<number[]>) => {
-      state.navigatorSplitSizes = action.payload;
+    setNavigatorSplitSizes: (
+      state,
+      action: PayloadAction<{ sizes: number[]; manuallyEdited: boolean }>
+    ) => {
+      state.navigatorSplitSizes = action.payload.sizes;
+      state.navigatorSplitSizesManuallyEdited = action.payload.manuallyEdited;
     },
 
     setFocusSceneId: (state, action: PayloadAction<string>) => {

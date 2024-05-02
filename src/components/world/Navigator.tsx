@@ -33,8 +33,10 @@ export const Navigator = () => {
   const windowSize = useWindowSize();
   const height = windowSize.height ? windowSize.height - 38 - 2 : 0;
 
-  const updateSplitSizes = (newSizes: number[]) => {
-    dispatch(editorActions.setNavigatorSplitSizes(newSizes));
+  const updateSplitSizes = (newSizes: number[], manuallyEdited: boolean) => {
+    dispatch(
+      editorActions.setNavigatorSplitSizes({ sizes: newSizes, manuallyEdited })
+    );
   };
 
   const [onDragStart, togglePane] = useSplitPane({

@@ -14,7 +14,7 @@ const useSplitPane = ({
   direction,
 }: {
   sizes: number[];
-  setSizes: (newSizes: number[]) => void;
+  setSizes: (newSizes: number[], manuallyEdited: boolean) => void;
   minSizes: number[];
   maxTotal: number;
   collapsedSize?: number;
@@ -48,7 +48,7 @@ const useSplitPane = ({
         return Math.floor(v * (unCollapsedNewHeight / unCollapsedHeight));
       });
       if (!isEqual(sizes, resetHeights)) {
-        setSizes(resetHeights);
+        setSizes(resetHeights, false);
       }
     }
   }, [collapsedSize, height, maxTotal, setSizes, sizes]);
@@ -64,7 +64,8 @@ const useSplitPane = ({
             minSizes,
             maxTotal
           )
-        )
+        ),
+        true
       );
     },
     [maxTotal, minSizes, setSizes]
@@ -109,10 +110,11 @@ const useSplitPane = ({
             return collapsedSize;
           }
           return height - (newSizes.length - 1) * collapsedSize;
-        })
+        }),
+        true
       );
     } else {
-      setSizes(newSizes);
+      setSizes(newSizes, true);
     }
   };
 

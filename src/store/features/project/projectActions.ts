@@ -268,7 +268,9 @@ const saveProject = createAsyncThunk<void>(
           zoom: state.editor.zoom,
           worldScrollX: state.editor.worldScrollX,
           worldScrollY: state.editor.worldScrollY,
-          navigatorSplitSizes: state.editor.navigatorSplitSizes,
+          navigatorSplitSizes: state.editor.navigatorSplitSizesManuallyEdited
+            ? state.editor.navigatorSplitSizes
+            : normalizedProject.settings.navigatorSplitSizes,
         },
       };
 
