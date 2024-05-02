@@ -609,6 +609,7 @@ const WorldView = () => {
 
   const onWindowBlur = useCallback(() => {
     setDragMode(false);
+    setAddToSelection(false);
   }, []);
 
   //#endregion Window Blur
