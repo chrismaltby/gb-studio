@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import fs from "fs-extra";
+import Path from "path";
 
 interface CopyOptions {
   overwrite?: boolean;
@@ -61,6 +62,10 @@ const copyDir = async (
 };
 
 const copy = async (src: string, dest: string, options: CopyOptions = {}) => {
+  // Ensure parent folder exists first
+  const parentDir = Path.dirname(dest);
+  await fs.ensureDir(parentDir);
+
   const fileStat = await fs.lstat(src);
   if (fileStat.isDirectory()) {
     await copyDir(src, dest, options);
