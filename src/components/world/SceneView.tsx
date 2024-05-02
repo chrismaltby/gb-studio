@@ -60,12 +60,15 @@ interface SceneViewProps {
   addToSelection?: boolean;
 }
 
-const SceneName = styled.span`
+const SceneName = styled.div`
   white-space: nowrap;
   font-size: 11px;
   background-color: ${(props) => props.theme.colors.document.background};
   border-radius: 32px;
   transition: background 0.3s ease-in-out;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SceneMetadata = styled.div`
@@ -631,7 +634,13 @@ const SceneView = memo(
             paddingRight: labelOffsetRight,
           }}
         >
-          <SceneName title={scene.notes}>
+          <SceneName
+            title={scene.notes}
+            style={{
+              maxWidth:
+                scene.width * TILE_SIZE - (labelOffsetLeft + labelOffsetRight),
+            }}
+          >
             <LabelSpan color={scene.labelColor}>{name}</LabelSpan>
           </SceneName>
         </SceneMetadata>

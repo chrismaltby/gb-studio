@@ -505,7 +505,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
         <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
-              <FlexGrow>
+              <FlexGrow style={{ minWidth: 0 }}>
                 <EditableText
                   name="name"
                   placeholder={sceneName(scene, sceneIndex)}

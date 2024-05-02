@@ -31,16 +31,19 @@ export const EditableTextOverlay = styled.div`
   padding: 5px;
   font-size: 14px;
   height: 30px;
-  line-height: 30px;
+  line-height: 19px;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
   font-weight: bold;
   margin-top: -30px;
   pointer-events: none;
-  display: flex;
+  display: block;
   align-items: center;
   z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   :focus {
     background: ${(props) => props.theme.colors.input.background};
