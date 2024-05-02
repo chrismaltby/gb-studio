@@ -605,6 +605,7 @@ const editorSlice = createSlice({
     editSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
       state.focusSceneId = "";
+      state.sceneSelectionIds = [];
     },
 
     setScriptTab: (state, action: PayloadAction<string>) => {

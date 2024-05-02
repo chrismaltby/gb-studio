@@ -241,14 +241,16 @@ const SceneView = memo(
 
     const searchTerm = useAppSelector((state) => state.editor.searchTerm);
     const name = useMemo(
-      () => (scene ? sceneName(scene, index) : "").replace(/.*[/\\]/, ""),
+      () => (scene ? sceneName(scene, index) : ""),
       [index, scene]
     );
+    const lastNamePart = useMemo(() => name.replace(/.*[/\\]/, ""), [name]);
 
     const sceneFiltered =
       (searchTerm &&
         name.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1 &&
         id !== searchTerm) ||
+      (sceneSelectionIds.length > 1 && !multiSelected) ||
       false;
 
     const gbcEnabled = useAppSelector(
@@ -641,7 +643,7 @@ const SceneView = memo(
                 scene.width * TILE_SIZE - (labelOffsetLeft + labelOffsetRight),
             }}
           >
-            <LabelSpan color={scene.labelColor}>{name}</LabelSpan>
+            <LabelSpan color={scene.labelColor}>{lastNamePart}</LabelSpan>
           </SceneName>
         </SceneMetadata>
         <SceneContent
