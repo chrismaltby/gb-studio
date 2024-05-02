@@ -489,9 +489,17 @@ const SceneView = memo(
     );
 
     const onEndDrag = useCallback(() => {
+      dispatch(
+        entitiesActions.moveScene({
+          sceneId: id,
+          x: Math.round(dragState.current.sceneX / TILE_SIZE) * TILE_SIZE,
+          y: Math.round(dragState.current.sceneY / TILE_SIZE) * TILE_SIZE,
+          additionalSceneIds: currentSceneSelectionIds.current,
+        })
+      );
       window.removeEventListener("mousemove", onMoveDrag);
       window.removeEventListener("mouseup", onEndDrag);
-    }, [onMoveDrag]);
+    }, [dispatch, id, onMoveDrag]);
 
     const onStartDrag = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
