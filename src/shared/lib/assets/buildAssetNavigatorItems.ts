@@ -30,7 +30,7 @@ export const buildAssetNavigatorItems = <T extends Asset>(
 
   const isVisible = (filename: string, nestLevel?: number): boolean => {
     if (nestLevel === undefined || nestLevel === 0) return true;
-    const pathSegments = filename.split("/");
+    const pathSegments = filename.split(/[\\/]/);
     pathSegments.pop();
     let pathCheck = "";
     return pathSegments.every((segment, index) => {
@@ -44,7 +44,7 @@ export const buildAssetNavigatorItems = <T extends Asset>(
     .sort(sortByFilename)
     .forEach((asset) => {
       const path = asset.filename;
-      const parts = path.split("/");
+      const parts = path.split(/[\\/]/)
       let currentPath = "";
 
       parts.forEach((part, index) => {
