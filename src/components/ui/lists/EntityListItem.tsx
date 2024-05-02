@@ -135,6 +135,23 @@ const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
   margin-left: 5px;
 `;
 
+export const EntityListSearch = styled.input`
+  margin: 5px 5px;
+  flex-grow: 1;
+  width: calc(100% - 10px);
+  border-radius: 32px;
+  color: ${(props) => props.theme.colors.text};
+  background: ${(props) => props.theme.colors.sidebar.background};
+  border: 1px solid transparent;
+  font-size: 11px;
+  padding: 2px 5px;
+
+  &:not(:placeholder-shown) {
+    background: ${(props) => props.theme.colors.input.background};
+    border: 1px solid ${(props) => props.theme.colors.input.border};
+  }
+`;
+
 export const EntityListItem = <T extends EntityListItemData>({
   item,
   type,

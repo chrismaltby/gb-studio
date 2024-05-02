@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import useSplitPane from "ui/hooks/use-split-pane";
@@ -10,9 +10,11 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { NavigatorScenes } from "./NavigatorScenes";
 import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon } from "ui/icons/Icons";
+import { PlusIcon, SearchIcon } from "ui/icons/Icons";
 import { NavigatorVariables } from "./NavigatorVariables";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { EntityListSearch } from "ui/lists/EntityListItem";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -64,6 +66,39 @@ export const Navigator = () => {
     }
   };
 
+  const [scenesSearchTerm, setScenesSearchTerm] = useState("");
+  const [scenesSearchEnabled, setScenesSearchEnabled] = useState(false);
+  const showScenesSearch = scenesSearchEnabled && splitSizes[0] > 60;
+
+  const [scriptsSearchTerm, setScriptsSearchTerm] = useState("");
+  const [scriptsSearchEnabled, setScriptsSearchEnabled] = useState(false);
+  const showScriptsSearch = scriptsSearchEnabled && splitSizes[1] > 60;
+
+  const [variablesSearchTerm, setVariablesSearchTerm] = useState("");
+  const [variablesSearchEnabled, setVariablesSearchEnabled] = useState(false);
+  const showVariablesSearch = variablesSearchEnabled && splitSizes[2] > 60;
+
+  const toggleScenesSearchEnabled = useCallback(() => {
+    if (scenesSearchEnabled) {
+      setScenesSearchTerm("");
+    }
+    setScenesSearchEnabled(!scenesSearchEnabled);
+  }, [scenesSearchEnabled]);
+
+  const toggleScriptsSearchEnabled = useCallback(() => {
+    if (scriptsSearchEnabled) {
+      setScriptsSearchTerm("");
+    }
+    setScriptsSearchEnabled(!scriptsSearchEnabled);
+  }, [scriptsSearchEnabled]);
+
+  const toggleVariablesSearchEnabled = useCallback(() => {
+    if (variablesSearchEnabled) {
+      setVariablesSearchTerm("");
+    }
+    setVariablesSearchEnabled(!variablesSearchEnabled);
+  }, [variablesSearchEnabled]);
+
   return (
     <Wrapper>
       <Pane style={{ height: splitSizes[0] }}>
@@ -71,19 +106,42 @@ export const Navigator = () => {
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
           buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("TOOL_ADD_SCENE_LABEL")}
-              onClick={onAddScene}
-            >
-              <PlusIcon />
-            </Button>
+            <>
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("TOOL_ADD_SCENE_LABEL")}
+                onClick={onAddScene}
+              >
+                <PlusIcon />
+              </Button>
+              <FixedSpacer width={5} />
+              <Button
+                variant={scenesSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleScenesSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
           }
         >
           {l10n("SIDEBAR_SCENES")}
         </SplitPaneHeader>
-        <NavigatorScenes height={splitSizes[0] - 30} />
+        {showScenesSearch && (
+          <EntityListSearch
+            type="search"
+            value={scenesSearchTerm}
+            onChange={(e) => setScenesSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+        <NavigatorScenes
+          height={splitSizes[0] - (showScenesSearch ? 60 : 30)}
+          searchTerm={scenesSearchTerm}
+        />
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
       <Pane style={{ height: splitSizes[1] }}>
@@ -91,29 +149,74 @@ export const Navigator = () => {
           onToggle={() => togglePane(1)}
           collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
           buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
-              onClick={onAddCustomEvent}
-            >
-              <PlusIcon />
-            </Button>
+            <>
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
+                onClick={onAddCustomEvent}
+              >
+                <PlusIcon />
+              </Button>
+              <FixedSpacer width={5} />
+              <Button
+                variant={scriptsSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleScriptsSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
           }
         >
           {l10n("SIDEBAR_CUSTOM_EVENTS")}
         </SplitPaneHeader>
-        <NavigatorCustomEvents height={splitSizes[1] - 30} />
+        {showScriptsSearch && (
+          <EntityListSearch
+            type="search"
+            value={scriptsSearchTerm}
+            onChange={(e) => setScriptsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+        <NavigatorCustomEvents
+          height={splitSizes[1] - (showScriptsSearch ? 60 : 30)}
+          searchTerm={scriptsSearchTerm}
+        />
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
       <Pane style={{ height: splitSizes[2] }}>
         <SplitPaneHeader
           onToggle={() => togglePane(2)}
           collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
+          buttons={
+            <Button
+              variant={variablesSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleVariablesSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
         >
           {l10n("SIDEBAR_VARIABLES")}
         </SplitPaneHeader>
-        <NavigatorVariables height={splitSizes[2] - 30} />
+        {showVariablesSearch && (
+          <EntityListSearch
+            type="search"
+            value={variablesSearchTerm}
+            onChange={(e) => setVariablesSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+        <NavigatorVariables
+          height={splitSizes[2] - (showVariablesSearch ? 60 : 30)}
+          searchTerm={variablesSearchTerm}
+        />
       </Pane>
     </Wrapper>
   );

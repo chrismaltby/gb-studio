@@ -3,7 +3,7 @@ import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { Music } from "shared/lib/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
 import {
@@ -12,7 +12,7 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import { Button } from "ui/buttons/Button";
-import { ArrowLeftRightIcon, PlusIcon } from "ui/icons/Icons";
+import { ArrowLeftRightIcon, PlusIcon, SearchIcon } from "ui/icons/Icons";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
@@ -34,6 +34,7 @@ import {
   FileSystemNavigatorItem,
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const COLLAPSED_SIZE = 30;
 
@@ -134,9 +135,17 @@ export const NavigatorSongs = ({
     unset: closeFolder,
   } = useToggleableList<string>([]);
 
+  const [songsSearchTerm, setSongsSearchTerm] = useState("");
+  const [songsSearchEnabled, setSongsSearchEnabled] = useState(false);
+
   const nestedSongItems = useMemo(
-    () => buildAssetNavigatorItems(allSongs.filter(ugeFilter), openFolders),
-    [allSongs, openFolders]
+    () =>
+      buildAssetNavigatorItems(
+        allSongs.filter(ugeFilter),
+        openFolders,
+        songsSearchTerm
+      ),
+    [allSongs, openFolders, songsSearchTerm]
   );
 
   const setSelectedSongId = useCallback(
@@ -433,6 +442,15 @@ export const NavigatorSongs = ({
     }`;
   }, []);
 
+  const showSongsSearch = songsSearchEnabled && splitSizes[0] > 60;
+
+  const toggleSongsSearchEnabled = useCallback(() => {
+    if (songsSearchEnabled) {
+      setSongsSearchTerm("");
+    }
+    setSongsSearchEnabled(!songsSearchEnabled);
+  }, [songsSearchEnabled]);
+
   return (
     <>
       <Pane style={{ height: showInstrumentList ? splitSizes[0] : height }}>
@@ -440,18 +458,40 @@ export const NavigatorSongs = ({
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
           buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("TOOL_ADD_SONG_LABEL")}
-              onClick={addSong}
-            >
-              <PlusIcon />
-            </Button>
+            <>
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("TOOL_ADD_SONG_LABEL")}
+                onClick={addSong}
+              >
+                <PlusIcon />
+              </Button>
+              <FixedSpacer width={5} />
+              <Button
+                variant={songsSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleSongsSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
           }
         >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
+
+        {showSongsSearch && (
+          <EntityListSearch
+            type="search"
+            value={songsSearchTerm}
+            onChange={(e) => setSongsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+
         {addSongMode && (
           <ListItem>
             <EntityListItem
@@ -473,12 +513,15 @@ export const NavigatorSongs = ({
             />
           </ListItem>
         )}
-        {nestedSongItems.length > 0 ? (
+        {nestedSongItems.length > 0 || songsSearchTerm.length > 0 ? (
           <FlatList
             selectedId={navigationId}
             items={nestedSongItems}
             setSelectedId={setSelectedSongId}
-            height={(showInstrumentList ? splitSizes[0] : height) - 30}
+            height={
+              (showInstrumentList ? splitSizes[0] : height) -
+              (showSongsSearch ? 60 : 30)
+            }
             onKeyDown={(e: KeyboardEvent, item) => {
               listenForRenameStart(e);
               if (item?.type === "folder") {

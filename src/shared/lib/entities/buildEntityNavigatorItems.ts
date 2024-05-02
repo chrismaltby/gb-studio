@@ -37,6 +37,7 @@ export const entityParentFolders = <T extends { name: string }>(
 export const buildEntityNavigatorItems = <T extends Entity>(
   entities: T[],
   openFolders: string[],
+  searchTerm: string,
   customSort?: (a: T, b: T) => number
 ): EntityNavigatorItem<T>[] => {
   const result: EntityNavigatorItem<T>[] = [];
@@ -52,6 +53,24 @@ export const buildEntityNavigatorItems = <T extends Entity>(
       return openFolders.includes(pathCheck);
     });
   };
+
+  if (searchTerm.length > 0) {
+    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
+    entities
+      .filter((s) => s.name.toLocaleUpperCase().includes(searchTermUpperCase))
+      .sort(customSort ?? sortByName)
+      .forEach((entity) => {
+        result.push({
+          id: entity.id,
+          type: "entity",
+          name: entity.name,
+          filename: entity.name.replace(/.*[/\\]/, ""),
+          nestLevel: 0,
+          entity,
+        });
+      });
+    return result;
+  }
 
   entities
     .slice()

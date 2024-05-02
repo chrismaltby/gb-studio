@@ -69,12 +69,14 @@ export const buildSceneNavigatorItems = (
   scenes: SceneNormalized[],
   actorsLookup: Dictionary<ActorNormalized>,
   triggersLookup: Dictionary<TriggerNormalized>,
-  openFolders: string[]
+  openFolders: string[],
+  searchTerm: string
 ): SceneNavigatorItem[] => {
   const result: SceneNavigatorItem[] = [];
   const uniqueFolders = new Set<string>();
 
   const isVisible = (filename: string, nestLevel?: number): boolean => {
+    if (searchTerm.length > 0) return true;
     if (nestLevel === undefined || nestLevel === 0) return true;
     const pathSegments = filename.split(/[\\/]/);
     pathSegments.pop();
@@ -84,6 +86,64 @@ export const buildSceneNavigatorItems = (
       return openFolders.includes(pathCheck);
     });
   };
+
+  const addScene = (scene: SceneNormalized, nestLevel: number) => {
+    result.push({
+      id: scene.id,
+      type: "scene",
+      name: scene.name,
+      filename: scene.name.replace(/.*[/\\]/, ""),
+      nestLevel,
+      labelColor: scene.labelColor,
+      scene,
+    });
+    if (!openFolders.includes(scene.id)) {
+      return;
+    }
+    scene.actors.forEach((actorId) => {
+      const actor = actorsLookup[actorId];
+      if (actor) {
+        const name = actorName(actor, scene.actors.indexOf(actorId));
+        result.push({
+          id: actor.id,
+          type: "actor",
+          name,
+          filename: name,
+          nestLevel: nestLevel + 1,
+          actor,
+          sceneId: scene.id,
+        });
+      }
+    });
+
+    scene.triggers.forEach((triggerId) => {
+      const trigger = triggersLookup[triggerId];
+      if (trigger) {
+        const name = triggerName(trigger, scene.triggers.indexOf(triggerId));
+        result.push({
+          id: trigger.id,
+          type: "trigger",
+          name,
+          filename: name,
+          nestLevel: nestLevel + 1,
+          trigger,
+          sceneId: scene.id,
+        });
+      }
+    });
+  };
+
+  if (searchTerm.length > 0) {
+    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
+    scenes
+      .map((scene, index) => ({ ...scene, name: sceneName(scene, index) }))
+      .filter((s) => s.name.toLocaleUpperCase().includes(searchTermUpperCase))
+      .sort(sortByName)
+      .forEach((scene) => {
+        addScene(scene, 0);
+      });
+    return result;
+  }
 
   scenes
     .map((scene, index) => ({ ...scene, name: sceneName(scene, index) }))
@@ -101,52 +161,7 @@ export const buildSceneNavigatorItems = (
           if (!isVisible(currentPath, nestLevel)) {
             return;
           }
-          result.push({
-            id: scene.id,
-            type: "scene",
-            name: currentPath,
-            filename: part,
-            nestLevel,
-            labelColor: scene.labelColor,
-            scene,
-          });
-          if (!openFolders.includes(scene.id)) {
-            return;
-          }
-          scene.actors.forEach((actorId) => {
-            const actor = actorsLookup[actorId];
-            if (actor) {
-              const name = actorName(actor, scene.actors.indexOf(actorId));
-              result.push({
-                id: actor.id,
-                type: "actor",
-                name,
-                filename: name,
-                nestLevel: nestLevel + 1,
-                actor,
-                sceneId: scene.id,
-              });
-            }
-          });
-
-          scene.triggers.forEach((triggerId) => {
-            const trigger = triggersLookup[triggerId];
-            if (trigger) {
-              const name = triggerName(
-                trigger,
-                scene.triggers.indexOf(triggerId)
-              );
-              result.push({
-                id: trigger.id,
-                type: "trigger",
-                name,
-                filename: name,
-                nestLevel: nestLevel + 1,
-                trigger,
-                sceneId: scene.id,
-              });
-            }
-          });
+          addScene(scene, nestLevel);
         } else if (!uniqueFolders.has(currentPath)) {
           if (!isVisible(currentPath, index)) {
             return;

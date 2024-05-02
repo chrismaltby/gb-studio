@@ -18,10 +18,12 @@ import { customEventName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorCustomEventsProps {
   height: number;
+  searchTerm: string;
 }
 
 export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   height,
+  searchTerm,
 }) => {
   const allCustomEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
@@ -56,9 +58,10 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           ...customEvent,
           name: customEventName(customEvent, index),
         })),
-        openFolders
+        openFolders,
+        searchTerm
       ),
-    [allCustomEvents, openFolders]
+    [allCustomEvents, openFolders, searchTerm]
   );
 
   const setSelectedId = (id: string) => {
