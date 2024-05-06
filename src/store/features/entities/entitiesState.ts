@@ -2485,7 +2485,7 @@ const addCustomEvent: CaseReducer<
   const customEventsTotal = localCustomEventSelectors.selectTotal(state);
   const newCustomEvent: CustomEventNormalized = {
     id: action.payload.customEventId,
-    name: "",
+    name: `Script ${customEventsTotal + 1}`,
     description: "",
     variables: {},
     actors: {},
