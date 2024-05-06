@@ -2021,6 +2021,17 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     precompiled.stateReferences
   );
 
+  output["game_globals.h"] =
+    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
+    Object.values(variableAliasLookup)
+      .map((v) => v?.symbol)
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
+      })
+      .join("") +
+    `\n` +
+    `#endif\n`;
+
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
 
   output[`script_engine_init.s`] = compileScriptEngineInit({
