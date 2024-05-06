@@ -258,6 +258,7 @@ export type Variable = {
   id: string;
   name: string;
   symbol: string;
+  flags?: Record<string, string>;
 };
 
 export type CustomEventVariable = {

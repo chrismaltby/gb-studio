@@ -2431,6 +2431,16 @@ const renameVariable: CaseReducer<
   }
 };
 
+const renameVariableFlag: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; flags: Record<string, string> }>
+> = (state, action) => {
+  variablesAdapter.updateOne(state.variables, {
+    id: action.payload.variableId,
+    changes: { flags: action.payload.flags },
+  });
+};
+
 /**************************************************************************
  * Palettes
  */
@@ -3436,6 +3446,7 @@ const entitiesSlice = createSlice({
      */
 
     renameVariable,
+    renameVariableFlag,
 
     /**************************************************************************
      * Palettes
