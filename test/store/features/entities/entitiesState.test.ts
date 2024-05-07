@@ -1455,7 +1455,7 @@ test("Should be able to add custom event", () => {
   expect(newState.customEvents.ids.length).toBe(1);
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.name
-  ).toBe("");
+  ).toBe("CUSTOM_EVENT 1");
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.script
   ).toEqual([]);
