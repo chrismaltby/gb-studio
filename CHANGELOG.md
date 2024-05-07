@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to multi select scenes by shift click + dragging on world view or shift clicking in scenes list. When multiple scenes are selected they can be moved at the same time
 - Add ability to multi select script events by shift clicking the event's header. When multiple events are selected they can be moved, copied, grouped or deleted at the same time
 - Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\`  supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
+- Generate `game_globals.h` at compile time allowing access to global variables from C code [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
