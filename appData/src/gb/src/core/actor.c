@@ -31,13 +31,6 @@
 #define ACTOR_BOUNDS_TILE16        6u
 #define ACTOR_BOUNDS_TILE16_HALF   3u
 
-
-#ifdef CGB
-#define NO_OVERLAY_PRIORITY ((!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0))
-#else
-#define NO_OVERLAY_PRIORITY (TRUE)
-#endif
-
 BANKREF(ACTOR)
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
@@ -111,7 +104,11 @@ void actors_update(void) NONBANKED {
     }
 
     static bool window_hide_actors;
-    window_hide_actors = (NO_OVERLAY_PRIORITY && (!show_actors_on_overlay) && (WX_REG > DEVICE_WINDOW_PX_OFFSET_X));
+#ifdef CGB
+    window_hide_actors = (!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0) && (!show_actors_on_overlay) && (WX_REG > DEVICE_WINDOW_PX_OFFSET_X);
+#else
+    window_hide_actors = (!show_actors_on_overlay) && (WX_REG > DEVICE_WINDOW_PX_OFFSET_X);
+#endif
 
     actor = actors_active_tail;
     while (actor) {
