@@ -41,6 +41,7 @@ import {
   SpriteSheetData,
 } from "shared/lib/entities/entitiesTypes";
 import {
+  customEventName,
   isUnionValue,
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
@@ -53,7 +54,7 @@ import {
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "5";
+export const LATEST_PROJECT_MINOR_VERSION = "6";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2372,6 +2373,18 @@ const migrateFrom330r4To330r5Events = (data: ProjectData): ProjectData => {
   };
 };
 
+const migrateFrom330r5To330r6Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    customEvents: (data.customEvents || []).map((customEvent, index) => {
+      return {
+        ...customEvent,
+        name: customEvent.name ? customEvent.name : `Script ${index + 1}`,
+      };
+    }),
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2549,6 +2562,10 @@ const migrateProject = (
     if (release === "4") {
       data = migrateFrom330r4To330r5Events(data);
       release = "5";
+    }
+    if (release === "5") {
+      data = migrateFrom330r5To330r6Events(data);
+      release = "6";
     }
   }
 
