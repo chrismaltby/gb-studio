@@ -3668,11 +3668,11 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       cameraMoveArgsRef,
-      xOffset + Math.round(x * (units === "tiles" ? 8 : 1))
+      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * 16
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      yOffset + Math.round(y * (units === "tiles" ? 8 : 1))
+      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * 16
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
@@ -3692,30 +3692,30 @@ extern void __mute_mask_${symbol};
     if (units === "tiles") {
       this._rpn() //
         .refVariable(variableX)
-        .int16(8)
+        .int16(8 * 16)
         .operator(".MUL")
-        .int16(80)
+        .int16(80 * 16)
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(8)
+        .int16(8 * 16)
         .operator(".MUL")
-        .int16(72)
+        .int16(72 * 16)
         .operator(".ADD")
         .stop();
     } else {
       this._rpn() //
         .refVariable(variableX)
-        .int16(80)
+        .int16(80 * 16)
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(72)
+        .int16(72 * 16)
         .operator(".ADD")
         .stop();
     }
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(".ARG1", Math.round(speed * 16), ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -3727,8 +3727,8 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
-    const xOffset = 80;
-    const yOffset = 72;
+    const xOffset = 80 * 16;
+    const yOffset = 72 * 16;
 
     const stackPtr = this.stackPtr;
     this._addComment("Camera Move To");
@@ -3736,7 +3736,7 @@ extern void __mute_mask_${symbol};
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(
         addScriptValueConst(
-          multiplyScriptValueConst(valueX, units === "tiles" ? 8 : 1),
+          multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16),
           xOffset
         )
       ),
@@ -3745,7 +3745,7 @@ extern void __mute_mask_${symbol};
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
       optimiseScriptValue(
         addScriptValueConst(
-          multiplyScriptValueConst(valueY, units === "tiles" ? 8 : 1),
+          multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16),
           yOffset
         )
       ),
@@ -3775,7 +3775,11 @@ extern void __mute_mask_${symbol};
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(
+        cameraMoveArgsRef,
+        Math.round(speed * 16),
+        ".CAMERA_UNLOCK"
+      );
     }
 
     this._assertStackNeutral(stackPtr);
@@ -3789,20 +3793,16 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(16)
-      .operator(".DIV")
-      .int16(8)
+      .int16(8 * 16)
       .operator(".ADD")
       .ref(this._localRef(actorRef, 2))
-      .int16(16)
-      .operator(".DIV")
-      .int16(8)
+      .int16(8 * 16)
       .operator(".ADD")
       .stop();
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     }
-    this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
+    this._cameraMoveTo(".ARG1", Math.round(speed * 16), toASMCameraLock(axis));
     this._stackPop(2);
   };
 

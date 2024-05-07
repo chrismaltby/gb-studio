@@ -64,8 +64,8 @@ void scroll_update(void) BANKED {
     INT16 x, y;
     UBYTE render = FALSE;
 
-    x = camera_x - (SCREENWIDTH >> 1);
-    y = camera_y - (SCREENHEIGHT >> 1);
+    x = (camera_x >> 4) - (SCREENWIDTH >> 1);
+    y = (camera_y >> 4) - (SCREENHEIGHT >> 1);
 
     if (x & 0x8000u) {  // check for negative signed bit
         x = 0u;

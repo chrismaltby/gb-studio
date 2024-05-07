@@ -32,17 +32,41 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
     }
 
     // Move camera towards destination
-    if ((game_time & speed) == 0) {
-        if (camera_x > params->X) {
-            camera_x--;
-        } else if (camera_x < params->X) {
-            camera_x++;
+    UBYTE x_dest = FALSE;
+    if (camera_x > params->X) {
+        // Move left
+        camera_x -= speed;
+        if (camera_x <= params->X) {
+            camera_x = params->X;
+            x_dest = TRUE;
         }
-        if (camera_y > params->Y) {
-            camera_y--;
-        } else if (camera_y < params->Y) {
-            camera_y++;
-        }
+    } else if (camera_x < params->X) {
+        // Move right
+        camera_x += speed;
+        if (camera_x >= params->X) {
+            camera_x = params->X;
+            x_dest = TRUE;
+        }        
+    }
+
+    if (camera_y > params->Y) {
+        // Move up
+        camera_y -= speed;
+        if (camera_y <= params->Y) {
+            camera_y = params->Y;
+            if (x_dest) {
+                return;
+            }
+        }        
+    } else if (camera_y < params->Y) {
+        // Move down
+        camera_y += speed;
+        if (camera_y >= params->Y) {
+            camera_y = params->Y;
+            if (x_dest) {
+                return;
+            }
+        }      
     }
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx) + sizeof(speed) + sizeof(after_lock_camera));
