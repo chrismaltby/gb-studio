@@ -2379,7 +2379,7 @@ const migrateFrom330r5To330r6Events = (data: ProjectData): ProjectData => {
     customEvents: (data.customEvents || []).map((customEvent, index) => {
       return {
         ...customEvent,
-        name: customEvent.name ? customEvent.name : `Script ${index + 1}`,
+        name: customEventName(customEvent, index),
       };
     }),
   };

@@ -19,6 +19,7 @@ import {
   EntityNavigatorItem,
   buildEntityNavigatorItems,
 } from "shared/lib/entities/buildEntityNavigatorItems";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -61,7 +62,15 @@ export const NavigatorPalettes = ({
   } = useToggleableList<string>([]);
 
   const nestedPaletteItems = useMemo(
-    () => buildEntityNavigatorItems(allPalettes, openFolders, sortByName),
+    () =>
+      buildEntityNavigatorItems(
+        allPalettes.map((palette, index) => ({
+          ...palette,
+          name: paletteName(palette, index),
+        })),
+        openFolders,
+        sortByName
+      ),
     [allPalettes, openFolders]
   );
 

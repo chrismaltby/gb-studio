@@ -19,6 +19,7 @@ import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Input } from "ui/form/Input";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
@@ -90,6 +91,10 @@ const PalettePage = () => {
     paletteSelectors.selectAll(state)
   );
 
+  const allPaletteIds = useAppSelector((state) =>
+    paletteSelectors.selectIds(state)
+  );
+
   const palette = useAppSelector((state) =>
     paletteSelectors.selectById(state, selectedId)
   );
@@ -109,6 +114,8 @@ const PalettePage = () => {
   const viewPalette = useAppSelector((state) =>
     paletteSelectors.selectById(state, viewPaletteId)
   );
+
+  const viewPaletteIndex = allPaletteIds.indexOf(viewPaletteId);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -211,13 +218,14 @@ const PalettePage = () => {
                     displaySize="large"
                     maxLength={25}
                     value={viewPalette.name}
+                    placeholder={paletteName(viewPalette, viewPaletteIndex)}
                     onChange={onEditName}
                     onKeyDown={checkForFinishEdit}
                     onBlur={onFinishEdit}
                     autoFocus
                   />
                 ) : (
-                  <h1>{viewPalette.name}</h1>
+                  <h1>{paletteName(viewPalette, viewPaletteIndex)}</h1>
                 )}
                 {!viewPalette.defaultColors && !edit && (
                   <Button

@@ -4,7 +4,7 @@ import {
   SceneNormalized,
   TriggerNormalized,
 } from "./entitiesTypes";
-import { actorName, triggerName } from "./entitiesHelpers";
+import { actorName, sceneName, triggerName } from "./entitiesHelpers";
 
 type Entity = {
   id: string;
@@ -86,7 +86,7 @@ export const buildSceneNavigatorItems = (
   };
 
   scenes
-    .slice()
+    .map((scene, index) => ({ ...scene, name: sceneName(scene, index) }))
     .sort(sortByName)
     .forEach((scene) => {
       const path = scene.name;

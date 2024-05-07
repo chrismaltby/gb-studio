@@ -14,6 +14,7 @@ import {
   entityParentFolders,
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import { customEventName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorCustomEventsProps {
   height: number;
@@ -49,7 +50,14 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   }, [manuallyOpenedFolders, customEvent]);
 
   const nestedCustomEventItems = useMemo(
-    () => buildEntityNavigatorItems(allCustomEvents, openFolders),
+    () =>
+      buildEntityNavigatorItems(
+        allCustomEvents.map((customEvent, index) => ({
+          ...customEvent,
+          name: customEventName(customEvent, index),
+        })),
+        openFolders
+      ),
     [allCustomEvents, openFolders]
   );
 
