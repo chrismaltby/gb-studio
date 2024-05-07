@@ -26,8 +26,6 @@
 // B      -> Animates the metasprite
 //
 
-#include <stdint.h>
-
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 

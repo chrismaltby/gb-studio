@@ -10,7 +10,7 @@ BINS	= sgb_pong.gb
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v -Wl-u
+	LCCFLAGS += -debug -v
 endif
 
 

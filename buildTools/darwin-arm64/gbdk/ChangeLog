@@ -1,3 +1,39 @@
+gbdk-4.3.0
+    - Library
+      - Added get_system() which indicates system speed
+      - Changed EMU_printf() to remove dependency on stdio.h added similar EMU_fmtbuf()
+      - Fixed emu_debug.h macros missing a trailing space
+      - NES
+        - Added PAL support
+        - Fixed _map_tile_offset for set_bkg_based_tiles(), VRAM transfer buffer bug
+        - Fixed support for 4-player controllers using fourscore
+      - SMS/GG
+        - Added SHOW_SPRITES, HIDE_SPRITES (no hiding mid-frame), DIV_REG emulation, 6 button controller support in joypad()
+        - Added bcd.h implementation
+        - Added Game Gear registers and definitions
+          - GG_STATE, GG_EXT_7BIT, GG_EXT_CTL, GG_SIO_SEND, GG_SIO_RECV, GG_SIO_CTL, GG_SOUND_PAN
+        - Changed VDP to reduce chances of dangerous ISR nesting (also for MSX)
+        - Fixed tilemap wrapping over the low bound of the VDP name table
+        - Fixed waitpad(), scroll_sprite(), __WRITE_VDP_REG_UNSAFE() VDP macro
+        - Fixed return result of "set_tile x, y" family functions (also for MSX)
+      - Game Boy
+        - Added HBlank copy routines: hblank_copy_vram(), hblank_cpy_vram(), hblank_copy()
+        - Fixed 8-bit signed modulus
+    - Toolchain / Utilities
+      - Added romusage utility for viewing free/used ROM and RAM in compiled programs
+      - lcc: Changed -debug to add the following flags: -Wa-l -Wl-u -Wl-w
+      - png2asset
+        - Added -sprite_no_optimize, -entity_tileset, -rel_paths
+        - Various crashes and output fixes
+      - makebin: Fixed crash when using -yS (-Wm-yS with lcc)
+      - bankpack: Added -banktype= to allow forcing a bank type to CODE or LIT before packing starts
+    - Examples
+      - Added HBlank copy, Read SNES joypads on NES, Game Boy Printer, Joypad test, Display System
+      - Wav sample: play waveforms on the SMS/GG PSG
+      - Fixes for SMS/GG: Fonts, Large Map, gbdecompress
+      - Removed Analogue Pocket examples that were just duplicates of Game Boy ones
+    - Updated documentation and fixed search
+
 gbdk-4.2.0
     - Library fixes/improvements
       - Added set_bkg_attributes(), set_bkg_submap_attributes(), set_bkg_attribute_xy()
