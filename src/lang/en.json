@@ -895,6 +895,8 @@
   "EVENT_TEXT_DESC": "Show a dialogue box at the bottom of the game screen. When text is shown the dialogue box will slide up from the bottom of the screen and will slide down after it has been shown.",
   "EVENT_CAMERA_MOVE_TO": "Camera Move To",
   "EVENT_CAMERA_MOVE_TO_DESC": "Move the camera to a new position.",
+  "EVENT_CAMERA_SET_POSITION": "Set Camera Position",
+  "EVENT_CAMERA_SET_POSITION_DESC": "Set the position of the camera, causing it to instantly move to the new location.",
   "EVENT_CAMERA_LOCK": "Camera Lock To Player",
   "EVENT_CAMERA_LOCK_DESC": "Move the camera back to centering on the player, locking into position when the player moves. Optionally allows locking to follow player in only horizontal or vertical axis.",
   "EVENT_FADE_IN": "Fade Screen In",
