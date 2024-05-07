@@ -719,7 +719,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               }}
             >
               <PaletteSelect
-                value={scene?.paletteIds[modalColorIndex] || ""}
+                value={scene?.paletteIds?.[modalColorIndex] || ""}
                 optional
                 optionalDefaultPaletteId={
                   defaultBackgroundPaletteIds[modalColorIndex] || ""

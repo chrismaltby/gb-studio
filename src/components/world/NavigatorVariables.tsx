@@ -13,6 +13,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 
 interface NavigatorVariablesProps {
   height: number;
+  searchTerm: string;
 }
 
 interface NavigatorItem {
@@ -39,7 +40,10 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
-export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
+export const NavigatorVariables: FC<NavigatorVariablesProps> = ({
+  height,
+  searchTerm,
+}) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
@@ -50,12 +54,18 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
     setItems(
       allVariables
         .map((value) => variableToNavigatorItem(variablesLookup[value], value))
+        .filter(
+          (value) =>
+            searchTermUpperCase.length === 0 ||
+            value.name.toLocaleUpperCase().includes(searchTermUpperCase)
+        )
         .sort(sortByName)
     );
-  }, [variablesLookup]);
+  }, [searchTerm, variablesLookup]);
 
   const setSelectedId = (id: string) => {
     dispatch(editorActions.selectVariable({ variableId: id }));

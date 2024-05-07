@@ -111,14 +111,11 @@ void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y)
     *res = target_tile;
 }
 
-
 void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile, UBYTE length) OLDCALL BANKED {
     INT16 * A = VM_REF_TO_PTR(idx_start_tile);
     INT16 * B = VM_REF_TO_PTR(idx_target_tile);
 #ifdef CGB
-    if (_is_CGB) {
-        if (*B & 0x0800) VBK_REG = 1;
-    }
+    if (_is_CGB) VBK_REG =  (*B & 0x0800) ? 1 : 0;
 #endif
     SetBankedBkgData((UBYTE)(*B), length, tileset->tiles + (*A << 4), tileset_bank);
 #ifdef CGB
@@ -183,11 +180,6 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
 void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED {
     THIS;
     if (enable) SWITCH_RAM_BANK(RUMBLE_ENABLE, RUMBLE_ENABLE); else  SWITCH_RAM_BANK(0, RUMBLE_ENABLE);
-}
-
-void vm_load_tiles(SCRIPT_CTX * THIS, UBYTE id, UBYTE len, UBYTE bank, UBYTE * offset) OLDCALL BANKED {
-    THIS;
-    SetBankedBkgData(id, len, offset, bank);
 }
 
 void vm_load_tileset(SCRIPT_CTX * THIS, INT16 idx, UBYTE bank, const background_t * background) OLDCALL BANKED {

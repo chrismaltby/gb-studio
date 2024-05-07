@@ -39,6 +39,7 @@ export const valueOperatorTypes = [
 export type ValueOperatorType = typeof valueOperatorTypes[number];
 
 export const valueUnaryOperatorTypes = [
+  "rnd",
   "not",
   "isqrt",
   "abs",
@@ -97,18 +98,6 @@ export type RPNOperation = {
   valueB: ScriptValue;
 };
 
-export type RPNRandomOperation = {
-  type: "rnd";
-  valueA: {
-    type: "number";
-    value: number;
-  };
-  valueB: {
-    type: "number";
-    value: number;
-  };
-};
-
 export type ScriptValueAtom =
   | {
       type: "number";
@@ -142,11 +131,7 @@ export type ScriptValueAtom =
       type: "false";
     };
 
-export type ScriptValue =
-  | RPNOperation
-  | RPNUnaryOperation
-  | RPNRandomOperation
-  | ScriptValueAtom;
+export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
 
 export type ValueFunctionMenuItem = {
   value: ValueOperatorType;
@@ -215,13 +200,6 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   ) {
     return true;
   }
-  if (
-    scriptValue.type === "rnd" &&
-    (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
-    (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
-  ) {
-    return true;
-  }
 
   return false;
 };
@@ -285,17 +263,6 @@ export type PrecompiledValueFetch = {
     | {
         type: "expression";
         value: string;
-      }
-    | {
-        type: "rnd";
-        valueA?: {
-          type: "number";
-          value: number;
-        };
-        valueB?: {
-          type: "number";
-          value: number;
-        };
       };
 };
 

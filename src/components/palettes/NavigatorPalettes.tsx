@@ -7,18 +7,19 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon } from "ui/icons/Icons";
+import { PlusIcon, SearchIcon } from "ui/icons/Icons";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   EntityNavigatorItem,
   buildEntityNavigatorItems,
 } from "shared/lib/entities/buildEntityNavigatorItems";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -60,9 +61,21 @@ export const NavigatorPalettes = ({
     unset: closeFolder,
   } = useToggleableList<string>([]);
 
+  const [palettesSearchTerm, setPalettesSearchTerm] = useState("");
+  const [palettesSearchEnabled, setPalettesSearchEnabled] = useState(false);
+
   const nestedPaletteItems = useMemo(
-    () => buildEntityNavigatorItems(allPalettes, openFolders, sortByName),
-    [allPalettes, openFolders]
+    () =>
+      buildEntityNavigatorItems(
+        allPalettes.map((palette, index) => ({
+          ...palette,
+          name: paletteName(palette, index),
+        })),
+        openFolders,
+        palettesSearchTerm,
+        sortByName
+      ),
+    [allPalettes, openFolders, palettesSearchTerm]
   );
 
   const dispatch = useAppDispatch();
@@ -160,29 +173,59 @@ export const NavigatorPalettes = ({
     [toggleFolderOpen]
   );
 
+  const showPalettesSearch = palettesSearchEnabled && height > 60;
+
+  const togglePalettesSearchEnabled = useCallback(() => {
+    if (palettesSearchEnabled) {
+      setPalettesSearchTerm("");
+    }
+    setPalettesSearchEnabled(!palettesSearchEnabled);
+  }, [palettesSearchEnabled]);
+
   return (
     <Pane style={{ height }}>
       <SplitPaneHeader
         collapsed={false}
         buttons={
-          <Button
-            variant="transparent"
-            size="small"
-            title={l10n("FIELD_ADD_PALETTE")}
-            onClick={addNewPalette}
-          >
-            <PlusIcon />
-          </Button>
+          <>
+            <Button
+              variant="transparent"
+              size="small"
+              title={l10n("FIELD_ADD_PALETTE")}
+              onClick={addNewPalette}
+            >
+              <PlusIcon />
+            </Button>
+            <FixedSpacer width={5} />
+            <Button
+              variant={palettesSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={togglePalettesSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          </>
         }
       >
         {l10n("NAV_PALETTES")}
       </SplitPaneHeader>
 
+      {showPalettesSearch && (
+        <EntityListSearch
+          type="search"
+          value={palettesSearchTerm}
+          onChange={(e) => setPalettesSearchTerm(e.currentTarget.value)}
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          autoFocus
+        />
+      )}
+
       <FlatList
         selectedId={selectedId}
         items={nestedPaletteItems}
         setSelectedId={setSelectedId}
-        height={height - 30}
+        height={height - (showPalettesSearch ? 60 : 30)}
         onKeyDown={(e: KeyboardEvent, item) => {
           listenForRenameStart(e);
           if (item?.type === "folder") {

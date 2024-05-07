@@ -14,13 +14,16 @@ import {
   entityParentFolders,
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import { customEventName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorCustomEventsProps {
   height: number;
+  searchTerm: string;
 }
 
 export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   height,
+  searchTerm,
 }) => {
   const allCustomEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
@@ -49,8 +52,16 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   }, [manuallyOpenedFolders, customEvent]);
 
   const nestedCustomEventItems = useMemo(
-    () => buildEntityNavigatorItems(allCustomEvents, openFolders),
-    [allCustomEvents, openFolders]
+    () =>
+      buildEntityNavigatorItems(
+        allCustomEvents.map((customEvent, index) => ({
+          ...customEvent,
+          name: customEventName(customEvent, index),
+        })),
+        openFolders,
+        searchTerm
+      ),
+    [allCustomEvents, openFolders, searchTerm]
   );
 
   const setSelectedId = (id: string) => {

@@ -19,7 +19,7 @@ void main(void)
     while(TRUE) {
         waitpadup();
         for (uint8_t i = 0; i != 16; i++) 
-            printf("rand=%hx arand=%hx\n", (uint8_t)rand(), (uint8_t)arand());
+            printf("r=%x a=%x\n", (uint16_t)rand(), (uint16_t)arand());
         puts("press A...");
         waitpad(J_A);
     }

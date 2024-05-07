@@ -167,6 +167,14 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           type: "number",
           value: ~optimisedValue.value,
         };
+      } else if (type === "rnd") {
+        return {
+          type: "rnd",
+          value: {
+            type: "number",
+            value: optimisedValue.value,
+          },
+        };
       }
       assertUnreachable(type);
     }
@@ -254,11 +262,7 @@ export const precompileScriptValue = (
   rpnOperations: PrecompiledValueRPNOperation[] = [],
   fetchOperations: PrecompiledValueFetch[] = []
 ): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
-  if (
-    input.type === "property" ||
-    input.type === "expression" ||
-    input.type === "rnd"
-  ) {
+  if (input.type === "property" || input.type === "expression") {
     const localName = `local_${localsLabel}${fetchOperations.length}`;
     rpnOperations.push({
       type: "local",

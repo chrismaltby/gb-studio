@@ -32,13 +32,17 @@ import renderSceneFolderContextMenu from "components/world/renderSceneFolderCont
 
 interface NavigatorScenesProps {
   height: number;
+  searchTerm: string;
 }
 
 const StartSceneLabel = styled.div`
   font-weight: bold;
 `;
 
-export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
+export const NavigatorScenes: FC<NavigatorScenesProps> = ({
+  height,
+  searchTerm,
+}) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
@@ -110,9 +114,10 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         scenes,
         actorsLookup,
         triggersLookup,
-        openFolders
+        openFolders,
+        searchTerm
       ),
-    [scenes, actorsLookup, triggersLookup, openFolders]
+    [scenes, actorsLookup, triggersLookup, openFolders, searchTerm]
   );
 
   useEffect(() => {

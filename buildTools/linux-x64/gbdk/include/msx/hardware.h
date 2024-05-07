@@ -10,26 +10,6 @@
 #define __BYTES extern UBYTE
 #define __BYTE_REG extern volatile UBYTE
 
-static volatile SFR AT(0x3E) MEMORY_CTL;
-
-#define MEMCTL_JOYON   0b00000000
-#define MEMCTL_JOYOFF  0b00000100
-#define MEMCTL_BASEON  0b00000000
-#define MEMCTL_BASEOFF 0b00001000
-#define MEMCTL_RAMON   0b00000000
-#define MEMCTL_RAMOFF  0b00010000
-#define MEMCTL_CROMON  0b00000000
-#define MEMCTL_CROMOFF 0b00100000
-#define MEMCTL_ROMON   0b00000000
-#define MEMCTL_ROMOFF  0b01000000
-#define MEMCTL_EXTON   0b00000000
-#define MEMCTL_EXTOFF  0b10000000
-
-static volatile SFR AT(0x3F) JOY_CTL;
-
-#define JOY_P1_LATCH   0b00000010
-#define JOY_P2_LATCH   0b00001000
-
 static volatile SFR AT(0x7E) VCOUNTER;
 
 static volatile SFR AT(0x7F) PSG;
@@ -139,29 +119,6 @@ extern UBYTE shadow_VDP_R10;
 #define R10_INT_OFF    0xFF
 #define R10_INT_EVERY  0x00
 
-static volatile SFR AT(0xDC) JOY_PORT1;
-
-#define JOY_P1_UP      0b00000001
-#define JOY_P1_DOWN    0b00000010
-#define JOY_P1_LEFT    0b00000100
-#define JOY_P1_RIGHT   0b00001000
-#define JOY_P1_SW1     0b00010000
-#define JOY_P1_TRIGGER 0b00010000
-#define JOY_P1_SW2     0b00100000
-#define JOY_P2_UP      0b01000000
-#define JOY_P2_DOWN    0b10000000
-
-static volatile SFR AT(0xDD) JOY_PORT2;
-
-#define JOY_P2_LEFT    0b00000001
-#define JOY_P2_RIGHT   0b00000010
-#define JOY_P2_SW1     0b00000100
-#define JOY_P2_TRIGGER 0b00000100
-#define JOY_P2_SW2     0b00001000
-#define JOY_RESET      0b00010000
-#define JOY_P1_LIGHT   0b01000000
-#define JOY_P2_LIGHT   0b10000000
-
 static volatile SFR AT(0xF0) FMADDRESS;
 static volatile SFR AT(0xF1) FMDATA;
 static volatile SFR AT(0xF2) AUDIOCTRL;
@@ -170,8 +127,6 @@ static volatile SFR AT(0xfc) MAP_FRAME0;
 static volatile SFR AT(0xfd) MAP_FRAME1;
 static volatile SFR AT(0xfe) MAP_FRAME2;
 static volatile SFR AT(0xff) MAP_FRAME3;
-
-extern const UBYTE _BIOS;
 
 extern const UBYTE _SYSTEM;
 

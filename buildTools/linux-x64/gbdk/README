@@ -38,9 +38,13 @@ Setup:
 * Unzip to a folder of your choice (which you've probably already done)
     Suggested location: /opt/gbdk/
 
-* Recommended but not required: Add the gbdk 'bin' sub-directory to your shell path
-    Run from command line (only lasts for that session): export GBDKDIR=/opt/gbdk/
-    Or add that to your shell defaults (permanent)
+* Recommended but not required:
+    - Add the gbdk 'bin' sub-directory to your shell path. For example: export PATH=$PATH:/opt/gbdk/bin
+    - These can be set temporarily in the current shell or added to your shell defaults permanently.
+
+* Note: The GBDKDIR environment variable is not necessary to set in most cases. When lcc is
+  called it will attempt to determine the current working directory automatically on it's own.
+  When GBDKDIR is used it requires a trailing slash, for example: export GBDKDIR=/opt/gbdk/
 
 * Open a command line and compile the examples by running "make" in
   the "examples/gb" sub-directory:

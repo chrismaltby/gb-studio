@@ -18,6 +18,7 @@ import {
   Avatar,
   Emote,
   CustomEventNormalized,
+  CustomEvent,
   Variable,
   EngineFieldValue,
   UnionValue,
@@ -385,19 +386,27 @@ export const sceneName = (scene: SceneNormalized, sceneIndex: number) => {
   return scene.name || defaultLocalisedSceneName(sceneIndex);
 };
 
+export const customEventName = (
+  customEvent: CustomEventNormalized | CustomEvent,
+  customEventIndex: number
+) => {
+  return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
+};
+
+export const paletteName = (palette: Palette, paletteIndex: number) => {
+  return palette.name || defaultLocalisedPaletteName(paletteIndex);
+};
+
 export const defaultLocalisedActorName = (actorIndex: number) =>
   `${l10n("ACTOR")} ${actorIndex + 1}`;
 export const defaultLocalisedTriggerName = (triggerIndex: number) =>
   `${l10n("TRIGGER")} ${triggerIndex + 1}`;
 export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
-
-export const customEventName = (
-  customEvent: CustomEventNormalized,
-  customEventIndex: number
-) => {
-  return customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
-};
+export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
+  `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+export const defaultLocalisedPaletteName = (paletteIndex: number) =>
+  l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
 const extractEntitySymbols = (entities: EntityState<{ symbol?: string }>) => {
   return Object.values(entities.entities).map(

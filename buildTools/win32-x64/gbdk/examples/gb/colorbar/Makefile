@@ -8,7 +8,7 @@ LCC = $(GBDK_HOME)bin/lcc -Wa-l -Wl-m
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v -Wl-u
+	LCCFLAGS += -debug -v
 endif
 
 # CFLAGS	=

@@ -13,6 +13,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
@@ -92,9 +93,9 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
           label: DMG_PALETTE.name,
           palette: DMG_PALETTE as Palette,
         },
-        palettes.map((palette) => ({
+        palettes.map((palette, index) => ({
           value: palette.id,
-          label: palette.name,
+          label: paletteName(palette, index),
           palette,
         }))
       )

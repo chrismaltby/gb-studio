@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Music } from "shared/lib/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
@@ -17,6 +17,8 @@ import {
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import { Button } from "ui/buttons/Button";
+import { SearchIcon } from "ui/icons/Icons";
 
 interface NavigatorSongsProps {
   height: number;
@@ -86,9 +88,17 @@ export const NavigatorModSongs = ({
     unset: closeFolder,
   } = useToggleableList<string>([]);
 
+  const [songsSearchTerm, setSongsSearchTerm] = useState("");
+  const [songsSearchEnabled, setSongsSearchEnabled] = useState(false);
+
   const nestedSongItems = useMemo(
-    () => buildAssetNavigatorItems(allSongs.filter(modFilter), openFolders),
-    [allSongs, openFolders]
+    () =>
+      buildAssetNavigatorItems(
+        allSongs.filter(modFilter),
+        openFolders,
+        songsSearchTerm
+      ),
+    [allSongs, openFolders, songsSearchTerm]
   );
 
   const setSelectedId = useCallback(
@@ -160,18 +170,50 @@ export const NavigatorModSongs = ({
     [toggleFolderOpen]
   );
 
+  const showSongsSearch = songsSearchEnabled && height > 60;
+
+  const toggleSongsSearchEnabled = useCallback(() => {
+    if (songsSearchEnabled) {
+      setSongsSearchTerm("");
+    }
+    setSongsSearchEnabled(!songsSearchEnabled);
+  }, [songsSearchEnabled]);
+
   return (
     <>
       <Pane style={{ height: height }}>
-        <SplitPaneHeader collapsed={false}>
+        <SplitPaneHeader
+          collapsed={false}
+          buttons={
+            <Button
+              variant={songsSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleSongsSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
+        >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
+
+        {showSongsSearch && (
+          <EntityListSearch
+            type="search"
+            value={songsSearchTerm}
+            onChange={(e) => setSongsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+
         {items.length > 0 ? (
           <FlatList
             selectedId={selectedId}
             items={nestedSongItems}
             setSelectedId={setSelectedId}
-            height={height - 30}
+            height={height - (showSongsSearch ? 60 : 30)}
             onKeyDown={(e: KeyboardEvent, item) => {
               listenForRenameStart(e);
               if (item?.type === "folder") {

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Sound } from "shared/lib/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
@@ -16,6 +16,8 @@ import {
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import { Button } from "ui/buttons/Button";
+import { SearchIcon } from "ui/icons/Icons";
 
 interface NavigatorSoundsProps {
   height: number;
@@ -41,9 +43,12 @@ export const NavigatorSounds = ({
     unset: closeFolder,
   } = useToggleableList<string>([]);
 
+  const [soundsSearchTerm, setSoundsSearchTerm] = useState("");
+  const [soundsSearchEnabled, setSoundsSearchEnabled] = useState(false);
+
   const nestedSoundItems = useMemo(
-    () => buildAssetNavigatorItems(allSounds, openFolders),
-    [allSounds, openFolders]
+    () => buildAssetNavigatorItems(allSounds, openFolders, soundsSearchTerm),
+    [allSounds, openFolders, soundsSearchTerm]
   );
 
   const setSelectedId = useCallback(
@@ -115,15 +120,48 @@ export const NavigatorSounds = ({
     [toggleFolderOpen]
   );
 
+  const showSoundsSearch = soundsSearchEnabled && height > 60;
+
+  const toggleSoundsSearchEnabled = useCallback(() => {
+    if (soundsSearchEnabled) {
+      setSoundsSearchTerm("");
+    }
+    setSoundsSearchEnabled(!soundsSearchEnabled);
+  }, [soundsSearchEnabled]);
+
   return (
     <Pane style={{ height }}>
-      <SplitPaneHeader collapsed={false}>{l10n("MENU_SFX")}</SplitPaneHeader>
+      <SplitPaneHeader
+        collapsed={false}
+        buttons={
+          <Button
+            variant={soundsSearchEnabled ? "primary" : "transparent"}
+            size="small"
+            title={l10n("TOOLBAR_SEARCH")}
+            onClick={toggleSoundsSearchEnabled}
+          >
+            <SearchIcon />
+          </Button>
+        }
+      >
+        {l10n("MENU_SFX")}
+      </SplitPaneHeader>
+
+      {showSoundsSearch && (
+        <EntityListSearch
+          type="search"
+          value={soundsSearchTerm}
+          onChange={(e) => setSoundsSearchTerm(e.currentTarget.value)}
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          autoFocus
+        />
+      )}
 
       <FlatList
         selectedId={selectedId}
         items={nestedSoundItems}
         setSelectedId={setSelectedId}
-        height={height - 30}
+        height={height - (showSoundsSearch ? 60 : 30)}
         onKeyDown={(e: KeyboardEvent, item) => {
           listenForRenameStart(e);
           if (item?.type === "folder") {

@@ -10,6 +10,42 @@
 #define __BYTES extern UBYTE
 #define __BYTE_REG extern volatile UBYTE
 
+static volatile SFR AT(0x00) GG_STATE;  /**< Game Gear status register for Start/Pause, Japan vs Overseas mode (NJAP), NTSC/PAL mode */
+
+#define GGSTATE_STT    0b10000000
+#define GGSTATE_NJAP   0b01000000
+#define GGSTATE_NNTS   0b00100000
+
+static volatile SFR AT(0x01) GG_EXT_7BIT;  /**< Game Gear Serial port register used to read/write data when the EXT connector used as 7-bit input/output port */
+
+static volatile SFR AT(0x02) GG_EXT_CTL;  /**< Game Gear Serial port register for configuring external NMI */
+
+#define GGEXT_NINIT    0b10000000
+
+static volatile SFR AT(0x03) GG_SIO_SEND;  /**< Game Gear Serial Data Send register */
+static volatile SFR AT(0x04) GG_SIO_RECV;  /**< Game Gear Serial Data Receive register */
+static volatile SFR AT(0x05) GG_SIO_CTL;   /**< Game Gear Serial Port control register */
+
+#define SIOCTL_TXFL    0b00000001
+#define SIOCTL_RXRD    0b00000010
+#define SIOCTL_FRER    0b00000100
+#define SIOCTL_INT     0b00001000
+#define SIOCTL_TON     0b00010000
+#define SIOCTL_RON     0b00100000
+#define SIOCTL_BS0     0b01000000
+#define SIOCTL_BS1     0b10000000
+
+static volatile SFR AT(0x06) GG_SOUND_PAN; /**< Game Gear Sound panning (left / right) register */
+
+#define SOUNDPAN_TN1R  0b00000001
+#define SOUNDPAN_TN2R  0b00000010
+#define SOUNDPAN_TN3R  0b00000100
+#define SOUNDPAN_NOSR  0b00001000
+#define SOUNDPAN_TN1L  0b00010000
+#define SOUNDPAN_TN2L  0b00100000
+#define SOUNDPAN_TN3L  0b01000000
+#define SOUNDPAN_NOSL  0b10000000
+
 static volatile SFR AT(0x3E) MEMORY_CTL;
 
 #define MEMCTL_JOYON   0b00000000
@@ -27,14 +63,33 @@ static volatile SFR AT(0x3E) MEMORY_CTL;
 
 static volatile SFR AT(0x3F) JOY_CTL;
 
-#define JOY_P1_LATCH   0b00000010
-#define JOY_P2_LATCH   0b00001000
+#define JOY_P1_TR_DIR_IN  0b00000001
+#define JOY_P1_TR_DIR_OUT 0b00000000
+#define JOY_P1_TH_DIR_IN  0b00000010
+#define GUN_P1_LATCH      JOY_P1_TH_DIR_IN
+#define JOY_P1_TH_DIR_OUT 0b00000000
+#define JOY_P2_TR_DIR_IN  0b00000100
+#define JOY_P2_TR_DIR_OUT 0b00000000
+#define JOY_P2_TH_DIR_IN  0b00001000
+#define GUN_P2_LATCH      JOY_P2_TH_DIR_IN
+#define JOY_P2_TH_DIR_OUT 0b00000000
+#define JOY_P1_TR_OUT_HI  0b00010000
+#define JOY_P1_TR_OUT_LO  0b00000000
+#define JOY_P1_TH_OUT_HI  0b00100000
+#define JOY_P1_TH_OUT_LO  0b00000000
+#define JOY_P2_TR_OUT_HI  0b01000000
+#define JOY_P2_TR_OUT_LO  0b00000000
+#define JOY_P2_TH_OUT_HI  0b10000000
+#define JOY_P2_TH_OUT_LO  0b00000000
+
+#define JOY_TH_HI (JOY_P1_TR_DIR_IN | JOY_P1_TH_DIR_OUT | JOY_P2_TR_DIR_IN | JOY_P2_TH_DIR_OUT | JOY_P1_TR_OUT_HI | JOY_P1_TH_OUT_HI | JOY_P2_TR_OUT_HI | JOY_P2_TH_OUT_HI)
+#define JOY_TH_LO (JOY_P1_TR_DIR_IN | JOY_P1_TH_DIR_OUT | JOY_P2_TR_DIR_IN | JOY_P2_TH_DIR_OUT | JOY_P1_TR_OUT_HI | JOY_P1_TH_OUT_LO | JOY_P2_TR_OUT_HI | JOY_P2_TH_OUT_LO)
 
 static volatile SFR AT(0x7E) VCOUNTER;
 
 static volatile SFR AT(0x7F) PSG;
 
-#define PSG_LATCH      0x80
+#define PSG_LATCH      0b10000000
 
 #define PSG_CH0        0b00000000
 #define PSG_CH1        0b00100000
@@ -138,26 +193,38 @@ extern UBYTE shadow_VDP_R10;
 
 static volatile SFR AT(0xDC) JOY_PORT1;
 
-#define JOY_P1_UP      0b00000001
-#define JOY_P1_DOWN    0b00000010
-#define JOY_P1_LEFT    0b00000100
-#define JOY_P1_RIGHT   0b00001000
-#define JOY_P1_SW1     0b00010000
-#define JOY_P1_TRIGGER 0b00010000
-#define JOY_P1_SW2     0b00100000
-#define JOY_P2_UP      0b01000000
-#define JOY_P2_DOWN    0b10000000
+#define JOY_P1_UP       0b00000001
+#define JOY_P1_MD_Z     JOY_P1_UP
+#define JOY_P1_DOWN     0b00000010
+#define JOY_P1_MD_Y     JOY_P1_DOWN
+#define JOY_P1_LEFT     0b00000100
+#define JOY_P1_MD_X     JOY_P1_LEFT
+#define JOY_P1_RIGHT    0b00001000
+#define JOY_P1_MD_MODE  JOY_P1_RIGHT
+#define JOY_P1_SW1      0b00010000
+#define JOY_P1_TRIGGER  JOY_P1_SW1
+#define JOY_P1_MD_A     JOY_P1_SW1
+#define JOY_P1_SW2      0b00100000
+#define JOY_P1_MD_START JOY_P1_SW2
+#define JOY_P2_UP       0b01000000
+#define JOY_P2_MD_Z     JOY_P2_UP
+#define JOY_P2_DOWN     0b10000000
+#define JOY_P2_MD_Y     JOY_P2_DOWN
 
 static volatile SFR AT(0xDD) JOY_PORT2;
 
-#define JOY_P2_LEFT    0b00000001
-#define JOY_P2_RIGHT   0b00000010
-#define JOY_P2_SW1     0b00000100
-#define JOY_P2_TRIGGER 0b00000100
-#define JOY_P2_SW2     0b00001000
-#define JOY_RESET      0b00010000
-#define JOY_P1_LIGHT   0b01000000
-#define JOY_P2_LIGHT   0b10000000
+#define JOY_P2_LEFT     0b00000001
+#define JOY_P2_MD_X     JOY_P2_LEFT
+#define JOY_P2_RIGHT    0b00000010
+#define JOY_P2_MD_MODE  JOY_P2_RIGHT
+#define JOY_P2_SW1      0b00000100
+#define JOY_P2_TRIGGER  JOY_P2_SW1
+#define JOY_P2_MD_A     JOY_P2_SW1
+#define JOY_P2_SW2      0b00001000
+#define JOY_P2_MD_START JOY_P2_SW2
+#define JOY_RESET       0b00010000
+#define JOY_P1_LIGHT    0b01000000
+#define JOY_P2_LIGHT    0b10000000
 
 static volatile SFR AT(0xF0) FMADDRESS;
 static volatile SFR AT(0xF1) FMDATA;
@@ -177,17 +244,10 @@ static volatile UBYTE AT(0xfffd) MAP_FRAME0;
 static volatile UBYTE AT(0xfffe) MAP_FRAME1;
 static volatile UBYTE AT(0xffff) MAP_FRAME2;
 
-extern const UBYTE _BIOS;
-
-extern const UBYTE _SYSTEM;
-
-#define SYSTEM_PAL     0x00
-#define SYSTEM_NTSC    0x01
-
 extern volatile UBYTE VDP_ATTR_SHIFT;
 
-#define VBK_TILES       0
-#define VBK_ATTRIBUTES  1
+#define VBK_TILES      0
+#define VBK_ATTRIBUTES 1
 
 #define VDP_SAT_TERM   0xD0
 

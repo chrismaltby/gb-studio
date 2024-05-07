@@ -23,7 +23,8 @@ const sortByFilename = (a: Asset, b: Asset) => {
 
 export const buildAssetNavigatorItems = <T extends Asset>(
   assets: T[],
-  openFolders: string[]
+  openFolders: string[],
+  searchTerm: string
 ): FileSystemNavigatorItem<T>[] => {
   const result: FileSystemNavigatorItem<T>[] = [];
   const uniqueFolders = new Set<string>();
@@ -39,12 +40,31 @@ export const buildAssetNavigatorItems = <T extends Asset>(
     });
   };
 
+  if (searchTerm.length > 0) {
+    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
+    assets
+      .filter((asset) =>
+        asset.filename.toLocaleUpperCase().includes(searchTermUpperCase)
+      )
+      .forEach((asset) => {
+        result.push({
+          id: asset.id,
+          type: "file",
+          name: asset.filename.replace(/\.[^.]*$/, ""),
+          filename: asset.filename.replace(/.*[/\\]/, ""),
+          nestLevel: 0,
+          asset,
+        });
+      });
+    return result;
+  }
+
   assets
     .slice()
     .sort(sortByFilename)
     .forEach((asset) => {
       const path = asset.filename;
-      const parts = path.split(/[\\/]/)
+      const parts = path.split(/[\\/]/);
       let currentPath = "";
 
       parts.forEach((part, index) => {
