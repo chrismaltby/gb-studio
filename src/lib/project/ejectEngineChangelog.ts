@@ -8,6 +8,9 @@ type EngineChange = {
   modifiedFiles: string[];
 };
 
+const createDescription = (shortDesc: string, features: string[]): string =>
+  `${shortDesc}:\n` + features.map((feature) => `   * ${feature}`).join("\n");
+
 const changes: EngineChange[] = [
   {
     version: "3.0.0-e0",
@@ -634,6 +637,24 @@ const changes: EngineChange[] = [
       "engine.json",
       "src/gb/include/data/scene_types.h",
       "src/gb/include/gbs_types.h",
+    ],
+  },
+  {
+    version: "3.3.0-e1",
+    description: createDescription("Updates", [
+      "Add support for random numbers in RPN",
+      "Add macro VM_GLOBAL() to acess globals from GBVM scripts",
+      "Camera lock on scene change updated to be handled by GBVM script rather",
+    ]),
+    modifiedFiles: [
+      "include/camera.h",
+      "include/vm.h",
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "src/core/camera.c",
+      "src/core/vm.c",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
     ],
   },
 ];

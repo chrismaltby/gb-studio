@@ -214,6 +214,7 @@ type ScriptBuilderRPNOperation =
   | ".ISQRT"
   | ".SHL"
   | ".SHR"
+  | ".RND"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -510,6 +511,8 @@ const valueFunctionToScriptOperator = (
       return ".B_XOR";
     case "bNOT":
       return ".B_NOT";
+    case "rnd":
+      return ".RND";
   }
   assertUnreachable(operator);
 };
@@ -1028,12 +1031,15 @@ class ScriptBuilder {
     }
   };
 
-  _setConstMemInt8 = (cVariable: string, value: number) => {
+  _setConstMemInt8 = (cVariable: string, value: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
   };
 
-  _setConstMemInt16 = (cVariable: string, value: number) => {
+  _setConstMemInt16 = (
+    cVariable: string,
+    value: ScriptBuilderStackVariable
+  ) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
@@ -1308,19 +1314,6 @@ class ScriptBuilder {
       const localVar = this._declareLocal("local", 1, true);
       localsLookup[fetchOp.local] = localVar;
       switch (fetchOp.value.type) {
-        case "rnd": {
-          const min = Math.min(
-            fetchOp.value.valueA?.value ?? 0,
-            fetchOp.value.valueB?.value ?? 0
-          );
-          const max = Math.max(
-            fetchOp.value.valueA?.value ?? 0,
-            fetchOp.value.valueB?.value ?? 0
-          );
-          this._addComment(`-- Rand between ${min} and ${max} (inclusive)`);
-          this._rand(localVar, min, max - min + 1);
-          break;
-        }
         case "property": {
           const actorValue = fetchOp.value.target || "player";
           const propertyValue = fetchOp.value.property || "xpos";
@@ -4389,6 +4382,7 @@ extern void __mute_mask_${symbol};
       if (asmDir) {
         this._actorSetDirection(actorRef, asmDir);
       }
+      this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(scene.symbol);
       this._addNL();
@@ -4453,6 +4447,7 @@ extern void __mute_mask_${symbol};
         this._actorSetDirection(actorRef, asmDir);
       }
 
+      this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(scene.symbol);
       this._addNL();
