@@ -40,9 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add context menus when right clicking on list items, or on scenes/actors/triggers in world view, or tiles on sprite editor view allowing renaming/deleting
 - Add ability to multi select scenes by shift click + dragging on world view or shift clicking in scenes list. When multiple scenes are selected they can be moved at the same time
 - Add ability to multi select script events by shift clicking the event's header. When multiple events are selected they can be moved, copied, grouped or deleted at the same time
-- Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\`  supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
+- Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\` supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
 - Generate `game_globals.h` at compile time allowing access to global variables from C code [@pau-tomas](https://github.com/pau-tomas)
 - Add support for using random numbers in GBVM RPN instructions [@untoxa](https://github.com/untoxa)
+- Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
 
 ### Changed
 
@@ -55,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Event Menu highlights matching text when searching
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Dragging scenes now snaps to an 8px grid allowing easier alignment of scenes
+- Camera speed events updated to use pixels per frame values like actor movement, allowing more precise speed control and speeds faster than 1px per frame
 
 ### Fixed
 
@@ -69,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix compiler warning when using some unary operators in While loop [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where fonts referenced from plugins were not always being included in compiled game
 - Fix issue where navigator split sizes would update every time a project was opened, causing unnecessary changes when project stored in version control system
+- Fix issue where some slower camera speeds weren't actually slower
 
 ## [3.2.1] - 2024-02-27
 
