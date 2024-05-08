@@ -4,6 +4,9 @@
 
 #include "actor.h"
 
+#define CAMERA_FIXED_OFFSET_X 128
+#define CAMERA_FIXED_OFFSET_Y 128
+
 INT16 camera_x;
 INT16 camera_y;
 BYTE camera_offset_x;
@@ -21,7 +24,7 @@ void camera_init(void) BANKED {
 
 void camera_update(void) NONBANKED {
     if ((camera_settings & CAMERA_LOCK_X_FLAG)) {
-        UWORD a_x = PLAYER.pos.x + 128;
+        UWORD a_x = PLAYER.pos.x + CAMERA_FIXED_OFFSET_X;
         UWORD edge_x = (camera_deadzone_x + camera_offset_x) << 4;
         // Horizontal lock
         if (camera_x < a_x - edge_x) { 
@@ -32,7 +35,7 @@ void camera_update(void) NONBANKED {
     }
 
     if ((camera_settings & CAMERA_LOCK_Y_FLAG)) {
-        UWORD a_y = PLAYER.pos.y + 128;
+        UWORD a_y = PLAYER.pos.y + CAMERA_FIXED_OFFSET_Y;
         UWORD edge_y = (camera_deadzone_y + camera_offset_y) << 4;
         // Vertical lock
         if (camera_y < a_y - edge_y) { 

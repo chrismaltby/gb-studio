@@ -644,7 +644,7 @@ const changes: EngineChange[] = [
     description: createDescription("Updates", [
       "Add support for random numbers in RPN",
       "Add macro VM_GLOBAL() to acess globals from GBVM scripts",
-      "Camera lock on scene change updated to be handled by GBVM script rather",
+      "Camera lock on scene change updated to be handled by GBVM script",
     ]),
     modifiedFiles: [
       "include/camera.h",
@@ -655,6 +655,17 @@ const changes: EngineChange[] = [
       "src/core/vm.c",
       "src/core/vm_gameboy.c",
       "src/core/vm_instructions.c",
+    ],
+  },
+  {
+    version: "3.3.0-e2",
+    description: createDescription("Updates", [
+      "Camera updated to use fixed point coordinates",
+    ]),
+    modifiedFiles: [
+      "src/core/camera.c",
+      "src/core/scroll.c",
+      "src/core/vm_camera.c",
     ],
   },
 ];
