@@ -29,6 +29,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
 
   const options: MovementSpeedOption[] = useMemo(
     () => [
+      { value: 0.25, label: `${l10n("FIELD_SPEED")} ¼` },
       { value: 0.5, label: `${l10n("FIELD_SPEED")} ½` },
       { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
       { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
@@ -101,7 +102,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
             }
           >
             {option.label}{" "}
-            {option.value === 0.5 && context === "menu"
+            {option.value === 0.25 && context === "menu"
               ? `(${l10n("FIELD_SLOWER")})`
               : ""}
             {option.value === 4 && context === "menu"
