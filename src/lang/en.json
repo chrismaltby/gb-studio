@@ -1087,6 +1087,7 @@
   "EVENT_ACTOR_STOP_UPDATE_LABEL": "{actor} Stop \"On Update\" Script",
   "EVENT_ACTOR_START_UPDATE_LABEL": "{actor} Start \"On Update\" Script",
   "EVENT_CAMERA_MOVE_TO_LABEL": "Camera Move To {{x},{y}}",
+  "EVENT_CAMERA_SET_POSITION_LABEL": "Camera Set Position To {{x},{y}}",
   "EVENT_CAMERA_SHAKE_LABEL": "Camera Shake {direction} For {time} {units}",
   "EVENT_CALL_CUSTOM_EVENT_LABEL": "Call Script: {script}",
   "EVENT_IF_INPUT_LABEL": "If Joypad {input} Held",
