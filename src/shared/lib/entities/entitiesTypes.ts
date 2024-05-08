@@ -532,6 +532,7 @@ export interface ScriptEventFieldSchema {
   description?: string;
   hasPostUpdateFn?: boolean;
   singleLine?: boolean;
+  noneLabel?: string;
 }
 
 export type EntityKey = keyof EntitiesState;

@@ -2385,6 +2385,63 @@ const migrateFrom330r5To330r6Events = (data: ProjectData): ProjectData => {
   };
 };
 
+/* Version 3.3.0 r7 migrates events camera movement to use pixels per frame values
+ */
+export const migrateFrom330r6To330r7Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  const migrateSpeed = (oldSpeed: unknown) => {
+    if (typeof oldSpeed !== "number") {
+      return 0;
+    }
+    if (oldSpeed === 1) {
+      return 1;
+    }
+    if (oldSpeed === 2 || oldSpeed === 3 || oldSpeed === 5) {
+      // Bug in previous version was causing speed 2, 3 and 5 to all be the same
+      return 0.5;
+    }
+    if (oldSpeed === 4) {
+      return 0.25;
+    }
+    return 0;
+  };
+
+  if (event.args && event.command === "EVENT_CAMERA_MOVE_TO") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        speed: migrateSpeed(event.args.speed),
+      },
+    });
+  } else if (event.args && event.command === "EVENT_CAMERA_LOCK") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        speed: migrateSpeed(event.args.speed),
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom330r6To330r7Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, migrateFrom330r6To330r7Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, migrateFrom330r6To330r7Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2566,6 +2623,10 @@ const migrateProject = (
     if (release === "5") {
       data = migrateFrom330r5To330r6Events(data);
       release = "6";
+    }
+    if (release === "6") {
+      data = migrateFrom330r6To330r7Events(data);
+      release = "7";
     }
   }
 

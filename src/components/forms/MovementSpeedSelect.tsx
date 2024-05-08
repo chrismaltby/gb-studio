@@ -7,6 +7,7 @@ interface MovementSpeedSelectProps {
   name: string;
   value?: number;
   allowNone?: boolean;
+  noneLabel?: string;
   onChange?: (newValue: number) => void;
 }
 
@@ -19,6 +20,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   name,
   value = 1,
   allowNone,
+  noneLabel,
   onChange,
 }) => {
   const [currentValue, setCurrentValue] =
@@ -27,6 +29,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
 
   const options: MovementSpeedOption[] = useMemo(
     () => [
+      { value: 0.25, label: `${l10n("FIELD_SPEED")} ¼` },
       { value: 0.5, label: `${l10n("FIELD_SPEED")} ½` },
       { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
       { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
@@ -38,8 +41,11 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   );
 
   const optionsWithNone: MovementSpeedOption[] = useMemo(
-    () => [{ value: 0, label: `${l10n("FIELD_NONE")}` }, ...options],
-    [options]
+    () => [
+      { value: 0, label: noneLabel ?? `${l10n("FIELD_NONE")}` },
+      ...options,
+    ],
+    [noneLabel, options]
   );
 
   useEffect(() => {
@@ -96,7 +102,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
             }
           >
             {option.label}{" "}
-            {option.value === 0.5 && context === "menu"
+            {option.value === 0.25 && context === "menu"
               ? `(${l10n("FIELD_SLOWER")})`
               : ""}
             {option.value === 4 && context === "menu"

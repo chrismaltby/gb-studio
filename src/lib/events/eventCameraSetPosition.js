@@ -1,13 +1,12 @@
 const l10n = require("../helpers/l10n").default;
 
-const id = "EVENT_CAMERA_MOVE_TO";
+const id = "EVENT_CAMERA_SET_POSITION";
 const groups = ["EVENT_GROUP_CAMERA"];
 
 const autoLabel = (fetchArg, input) => {
   const unitPostfix =
     input.units === "pixels" ? l10n("FIELD_PIXELS_SHORT") : "";
-  return l10n("EVENT_CAMERA_MOVE_TO_LABEL", {
-    actor: fetchArg("actorId"),
+  return l10n("EVENT_CAMERA_SET_POSITION_LABEL", {
     x: `${fetchArg("x")}${unitPostfix}`,
     y: `${fetchArg("y")}${unitPostfix}`,
   });
@@ -51,20 +50,11 @@ const fields = [
       },
     ],
   },
-  {
-    key: "speed",
-    label: l10n("FIELD_SPEED"),
-    description: l10n("FIELD_SPEED_PLUS_INSTANT_DESC"),
-    type: "moveSpeed",
-    defaultValue: 0,
-    allowNone: true,
-    noneLabel: l10n("FIELD_INSTANT"),
-  },
 ];
 
 const compile = (input, helpers) => {
   const { cameraMoveToScriptValues } = helpers;
-  cameraMoveToScriptValues(input.x, input.y, Number(input.speed), input.units);
+  cameraMoveToScriptValues(input.x, input.y, 0, input.units);
 };
 
 module.exports = {
@@ -74,7 +64,7 @@ module.exports = {
   groups,
   fields,
   compile,
-  waitUntilAfterInitFade: true,
+  waitUntilAfterInitFade: false,
   helper: {
     type: "camera",
     x: "x",
