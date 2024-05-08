@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
 - Add shortcut to search scenes when in world mode by pressing `/`
 - Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
-- Add native Mac ARM support for M1/M2/M3+ devices
+- Add native support for Macs with Apple silicon without needing Rosetta
 - Add support for `<<` and `>>` operators in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
 - Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
@@ -27,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for almost every script event input that supports variables to use advanced values, click the button to the left of the value input to select value types, and combine them with math operators
 - Add ability to use variables within Menu and Choice events [@pau-tomas](https://github.com/pau-tomas)
 - Add stack preview mode to debugger
-- Native support for Macs with Apple silicon without needing Rosetta
 - Add ability to set common tilesets between scenes, the common tiles will always be loaded in a consistent order between scenes sharing the same common tileset
 - Add ability to set Fade Speed as "Instant" when switching scenes, combine this with use of common tilesets in both scenes to enable seamless scene switching
 - Add ability to use variables, advanced values and expressions for coordinates in Change Scene event
