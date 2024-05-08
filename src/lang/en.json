@@ -1151,6 +1151,10 @@
   "EVENT_GROUP_BOOLEAN": "Boolean",
   "EVENT_GROUP_COUNTER": "Counter",
   "EVENT_LOOP_WHILE_EXPRESSION": "Loop While Math Expression",
+  "EVENT_SCRIPT_LOCK": "Script Lock",
+  "EVENT_SCRIPT_LOCK_DESC": "Pause other scripts and scene updates until this script has finished or is unlocked.",
+  "EVENT_SCRIPT_UNLOCK": "Script Unlock",
+  "EVENT_SCRIPT_UNLOCK_DESC": "If locked, unlock this script so other scripts can run and the scene can update.",
 
   "// 10": "Menu -----------------------------------------------------",
 

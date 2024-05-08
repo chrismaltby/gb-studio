@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generate `game_globals.h` at compile time allowing access to global variables from C code [@pau-tomas](https://github.com/pau-tomas)
 - Add support for using random numbers in GBVM RPN instructions [@untoxa](https://github.com/untoxa)
 - Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
+- Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked 
 
 ### Changed
 
