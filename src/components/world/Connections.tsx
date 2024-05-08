@@ -488,6 +488,10 @@ const Connections = ({
   );
 
   useEffect(() => {
+    if (!showConnections) {
+      setConnections([]);
+      return;
+    }
     setConnections(
       scenes
         .map((scene) =>

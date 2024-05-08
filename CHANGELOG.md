@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where fonts referenced from plugins were not always being included in compiled game
 - Fix issue where navigator split sizes would update every time a project was opened, causing unnecessary changes when project stored in version control system
 - Fix issue where some slower camera speeds weren't actually slower
+- Fix issue where setting "Show Connections" to "None" would prevent Player start position from being visible/draggable
 
 ## [3.2.1] - 2024-02-27
 
