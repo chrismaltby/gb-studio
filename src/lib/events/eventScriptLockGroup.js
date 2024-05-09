@@ -1,17 +1,22 @@
 const l10n = require("../helpers/l10n").default;
 
-const id = "EVENT_SCRIPT_LOCK";
+const id = "EVENT_SCRIPT_LOCK_GROUP";
 const groups = ["EVENT_GROUP_MISC"];
 
 const fields = [
   {
-    label: l10n("EVENT_SCRIPT_LOCK_DESC"),
+    key: "true",
+    type: "events",
+    label: l10n("FIELD_LOCKED"),
+    description: l10n("EVENT_SCRIPT_LOCK_DESC"),
   },
 ];
 
 const compile = (input, helpers) => {
-  const { lock } = helpers;
+  const { lock, popLockState, compileEvents } = helpers;
   lock();
+  compileEvents(input.true);
+  popLockState();
 };
 
 module.exports = {

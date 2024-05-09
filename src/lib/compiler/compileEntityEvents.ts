@@ -133,6 +133,10 @@ const compileEntityEvents = (
 
   const scriptBuilder = new ScriptBuilder(output, helpers);
 
+  if (lock) {
+    scriptBuilder.lock();
+  }
+
   const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
   if (loop && input.length > 0) {
@@ -156,7 +160,7 @@ const compileEntityEvents = (
       }
     }
 
-    return scriptBuilder.toScriptString(scriptSymbolName, lock);
+    return scriptBuilder.toScriptString(scriptSymbolName, false);
   } catch (e) {
     throw new Error(
       `Compiling failed with error "${e}". ${JSON.stringify(location)}`

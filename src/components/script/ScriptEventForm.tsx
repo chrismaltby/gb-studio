@@ -18,7 +18,11 @@ interface ScriptEventFormProps {
   entityId: string;
   nestLevel: number;
   altBg: boolean;
-  renderEvents: (key: string, label: string) => React.ReactNode;
+  renderEvents: (
+    key: string,
+    label: string,
+    description: string
+  ) => React.ReactNode;
 }
 
 const getScriptEventFields = (

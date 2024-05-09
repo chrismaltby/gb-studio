@@ -15,7 +15,11 @@ interface ScriptEventFieldsProps {
   entityId: string;
   nestLevel: number;
   altBg: boolean;
-  renderEvents: (key: string, label: string) => React.ReactNode;
+  renderEvents: (
+    key: string,
+    label: string,
+    description: string
+  ) => React.ReactNode;
   fields: ScriptEventFieldSchema[];
   value: Record<string, unknown> | undefined;
 }
@@ -64,7 +68,8 @@ const ScriptEventFields = ({
         if (field.type === "events") {
           const events = renderEvents(
             field.key || "",
-            typeof field.label === "string" ? field.label : ""
+            typeof field.label === "string" ? field.label : "",
+            typeof field.description === "string" ? field.description : ""
           );
           if (field.allowedContexts) {
             if (!field.allowedContexts.includes(context.type)) {

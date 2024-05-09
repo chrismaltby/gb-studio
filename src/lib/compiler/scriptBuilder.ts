@@ -162,6 +162,7 @@ export interface ScriptBuilderOptions {
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
+  lockStateStack: boolean[];
   compiledCustomEventScriptCache: Dictionary<{
     scriptRef: string;
     argsLen: number;
@@ -640,6 +641,7 @@ class ScriptBuilder {
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
+      lockStateStack: options.lockStateStack ?? [],
       debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
@@ -6563,11 +6565,24 @@ extern void __mute_mask_${symbol};
   };
 
   lock = () => {
+    this.options.lockStateStack.push(true);
     this._vmLock();
   };
 
   unlock = () => {
+    this.options.lockStateStack.push(false);
     this._vmUnlock();
+  };
+
+  popLockState = () => {
+    this.options.lockStateStack.pop();
+    const prevLockState =
+      this.options.lockStateStack[this.options.lockStateStack.length - 1];
+    if (prevLockState) {
+      this.lock();
+    } else {
+      this.unlock();
+    }
   };
 
   scriptEnd = () => {

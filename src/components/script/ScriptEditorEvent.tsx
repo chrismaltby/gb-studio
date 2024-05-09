@@ -343,9 +343,13 @@ const ScriptEditorEvent = React.memo(
     }, []);
 
     const renderEvents = useCallback(
-      (key: string, label: string) => {
+      (key: string, label: string, description: string) => {
         return (
-          <ScriptEditorChildren key={key} title={label} nestLevel={nestLevel}>
+          <ScriptEditorChildren
+            key={key}
+            title={description || label}
+            nestLevel={nestLevel}
+          >
             {label && (
               <ScriptEditorChildrenLabel nestLevel={nestLevel}>
                 {label}
