@@ -278,6 +278,8 @@ export const dummyProjectData: ProjectData = {
     debuggerWatchedVariables: [],
     colorMode: "mono",
     previewAsMono: false,
+    openBuildLogOnWarnings: true,
+    profilingEnabled: false,
   },
 };
 

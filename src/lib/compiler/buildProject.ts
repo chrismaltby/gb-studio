@@ -16,7 +16,6 @@ type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
   projectRoot: string;
   tmpPath: string;
-  profile: boolean;
   engineFields: EngineFieldSchema[];
   scriptEventHandlers: ScriptEventHandlers;
   sceneTypes: SceneTypeSchema[];
@@ -32,7 +31,6 @@ const buildProject = async (
     buildType = "rom",
     projectRoot = "/tmp",
     tmpPath = "/tmp",
-    profile = false,
     engineFields = [],
     scriptEventHandlers,
     sceneTypes = [],
@@ -73,7 +71,7 @@ const buildProject = async (
     tmpPath,
     buildType,
     data,
-    profile,
+    profile: data.settings.profilingEnabled,
     progress,
     warnings,
   });

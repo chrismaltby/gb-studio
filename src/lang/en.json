@@ -595,7 +595,6 @@
   "FIELD_EFFECT_INDEX_DESC": "The effect number to play (for fxhammer only).",
   "FIELD_PRIORITY": "Priority",
   "FIELD_PRIORITY_SOUND_DESC": "The priority of the effect, high, medium or low. If two sound effects are playing at the same time then higher priority sound effects will take precedence.",
-  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP": "Number of ticks per row",
   "FIELD_IDLE_LABEL": "Wait until next frame",
   "FIELD_FOR": "For",
@@ -792,6 +791,8 @@
   "FIELD_MONO_OVERRIDE_DESC": "This image is using automatic palettes with a monochrome override defined at \"{tilesFilename}\" which will determine the tile data used, while \"{filename}\" will determine the colors",
   "FIELD_BUILD_LOG": "Build Log",
   "FIELD_SET_AS_STARTING_SCENE": "Set As Starting Scene",
+  "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Open Build Log On Warnings",
+  "FIELD_ENABLE_PROFILING": "Enable Profiling",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1424,6 +1425,7 @@
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Default Player Sprites",
   "SETTINGS_MUSIC": "Music",
   "SETTINGS_COLOR": "Color Options",
+  "SETTINGS_BUILD": "Build Options",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

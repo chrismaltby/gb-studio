@@ -200,6 +200,8 @@ export const defaultProjectSettings: SettingsState = {
   debuggerWatchedVariables: [],
   colorMode: "mixed",
   previewAsMono: false,
+  openBuildLogOnWarnings: true,
+  profilingEnabled: false,
 };
 
 export {

@@ -6,6 +6,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import { denormalizeProject } from "store/features/project/projectActions";
 import actions from "./buildGameActions";
 import API from "renderer/lib/api";
+import navigationActions from "store/features/navigation/navigationActions";
 
 const buildGameMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -36,16 +37,15 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         await API.project.build(project, {
           buildType,
           engineFields,
-          profile: state.editor.profile,
           exportBuild,
           debugEnabled,
           sceneTypes,
         });
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(navigationActions.setSection("world"));
         dispatch(debuggerActions.setIsLogOpen(true));
       }
-
       dispatch(consoleActions.completeConsole());
     } else if (actions.deleteBuildCache.match(action)) {
       const dispatch = store.dispatch.bind(store);
@@ -78,10 +78,19 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         );
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(navigationActions.setSection("world"));
         dispatch(debuggerActions.setIsLogOpen(true));
       }
 
       dispatch(consoleActions.completeConsole());
+    } else if (consoleActions.stdErr.match(action)) {
+      const state = store.getState();
+      const dispatch = store.dispatch.bind(store);
+      if (state.project.present.settings.openBuildLogOnWarnings) {
+        dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(navigationActions.setSection("world"));
+        dispatch(debuggerActions.setIsLogOpen(true));
+      }
     }
 
     return next(action);

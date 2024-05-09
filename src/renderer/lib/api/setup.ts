@@ -49,7 +49,6 @@ interface L10NLookup {
 
 export type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
-  profile: boolean;
   engineFields: EngineFieldSchema[];
   exportBuild: boolean;
   debugEnabled?: boolean;

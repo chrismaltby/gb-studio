@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for using random numbers in GBVM RPN instructions [@untoxa](https://github.com/untoxa)
 - Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
 - Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked 
+- Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
 
 ### Changed
 
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Dragging scenes now snaps to an 8px grid allowing easier alignment of scenes
 - Camera speed events updated to use pixels per frame values like actor movement, allowing more precise speed control and speeds faster than 1px per frame
+- Build information and warnings moved to "Build Log" section of Debugger
 
 ### Fixed
 
@@ -73,6 +75,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where navigator split sizes would update every time a project was opened, causing unnecessary changes when project stored in version control system
 - Fix issue where some slower camera speeds weren't actually slower
 - Fix issue where setting "Show Connections" to "None" would prevent Player start position from being visible/draggable
+
+### Removed
+
+- Removed "Build & Run" section, all previous functionality is now available in "Build Log" section of Debugger
 
 ## [3.2.1] - 2024-02-27
 

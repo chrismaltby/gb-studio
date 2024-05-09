@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
-import consoleActions from "store/features/console/consoleActions";
 
 export interface DebuggerState {
   initialized: boolean;
@@ -82,12 +81,6 @@ const debuggerSlice = createSlice({
       state.isLogOpen = action.payload;
     },
   },
-  extraReducers: (builder) =>
-    builder
-      // Open build log on any errors
-      .addCase(consoleActions.stdErr, (state, _action) => {
-        state.isLogOpen = true;
-      }),
 });
 
 export const { actions, reducer } = debuggerSlice;
