@@ -71,7 +71,7 @@ const buildProject = async (
     tmpPath,
     buildType,
     data,
-    profile: data.settings.profilingEnabled,
+    debug: data.settings.generateDebugFilesEnabled,
     progress,
     warnings,
   });

@@ -18,7 +18,7 @@ type MakeOptions = {
   tmpPath: string;
   data: ProjectData;
   buildType: "rom" | "web" | "pocket";
-  profile: boolean;
+  debug: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
@@ -29,7 +29,7 @@ const makeBuild = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
   data,
-  profile = false,
+  debug = false,
   buildType = "rom",
   progress = (_msg) => {},
   warnings = (_msg) => {},
@@ -64,8 +64,8 @@ const makeBuild = async ({
   }
   env.COLOR_MODE = settings.colorMode;
   env.MUSIC_DRIVER = settings.musicDriver;
-  if (profile) {
-    env.PROFILE = true;
+  if (debug) {
+    env.DEBUG = true;
   }
   if (settings.musicDriver === "huge") {
     env.MUSIC_DRIVER = "HUGE_TRACKER";
@@ -82,7 +82,7 @@ const makeBuild = async ({
     sgb: settings.sgbEnabled,
     musicDriver: settings.musicDriver,
     batteryless: settings.batterylessEnabled,
-    profile,
+    debug,
     platform: process.platform,
     targetPlatform,
   });
@@ -160,7 +160,7 @@ const makeBuild = async ({
     colorEnabled,
     settings.sgbEnabled,
     settings.musicDriver,
-    profile,
+    debug,
     targetPlatform
   );
 

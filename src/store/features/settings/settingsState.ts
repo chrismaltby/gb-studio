@@ -85,7 +85,7 @@ export type SettingsState = {
   colorMode: ColorModeSetting;
   previewAsMono: boolean;
   openBuildLogOnWarnings: boolean;
-  profilingEnabled: boolean;
+  generateDebugFilesEnabled: boolean;
 };
 
 export const initialState: SettingsState = defaultProjectSettings;

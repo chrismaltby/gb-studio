@@ -201,7 +201,7 @@ export const defaultProjectSettings: SettingsState = {
   colorMode: "mixed",
   previewAsMono: false,
   openBuildLogOnWarnings: true,
-  profilingEnabled: false,
+  generateDebugFilesEnabled: false,
 };
 
 export {

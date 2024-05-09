@@ -792,7 +792,7 @@
   "FIELD_BUILD_LOG": "Build Log",
   "FIELD_SET_AS_STARTING_SCENE": "Set As Starting Scene",
   "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Open Build Log On Warnings",
-  "FIELD_ENABLE_PROFILING": "Enable Profiling",
+  "FIELD_GENERATE_DEBUG_FILES": "Generate Debugging Files",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

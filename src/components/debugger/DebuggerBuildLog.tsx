@@ -64,8 +64,8 @@ const DebuggerBuildLog = () => {
   const openBuildLogOnWarnings = useAppSelector(
     (state) => getSettings(state).openBuildLogOnWarnings
   );
-  const profilingEnabled = useAppSelector(
-    (state) => getSettings(state).profilingEnabled
+  const generateDebugFilesEnabled = useAppSelector(
+    (state) => getSettings(state).generateDebugFilesEnabled
   );
 
   // Only show the latest 500 lines during build
@@ -122,9 +122,13 @@ const DebuggerBuildLog = () => {
     [onChangeSettingProp, openBuildLogOnWarnings]
   );
 
-  const onToggleProfilingEnabled = useCallback(
-    () => onChangeSettingProp("profilingEnabled", !profilingEnabled),
-    [onChangeSettingProp, profilingEnabled]
+  const onToggleGenerateDebugFilesEnabled = useCallback(
+    () =>
+      onChangeSettingProp(
+        "generateDebugFilesEnabled",
+        !generateDebugFilesEnabled
+      ),
+    [onChangeSettingProp, generateDebugFilesEnabled]
   );
 
   return (
@@ -168,11 +172,11 @@ const DebuggerBuildLog = () => {
             </MenuItemIcon>
             {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
           </MenuItem>
-          <MenuItem onClick={onToggleProfilingEnabled}>
+          <MenuItem onClick={onToggleGenerateDebugFilesEnabled}>
             <MenuItemIcon>
-              {profilingEnabled ? <CheckIcon /> : <BlankIcon />}
+              {generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
             </MenuItemIcon>
-            {l10n("FIELD_ENABLE_PROFILING")}
+            {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
           <MenuDivider />
           <MenuItem onClick={onDeleteCache}>

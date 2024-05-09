@@ -279,7 +279,7 @@ export const dummyProjectData: ProjectData = {
     colorMode: "mono",
     previewAsMono: false,
     openBuildLogOnWarnings: true,
-    profilingEnabled: false,
+    generateDebugFilesEnabled: false,
   },
 };
 

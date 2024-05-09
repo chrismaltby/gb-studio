@@ -84,7 +84,7 @@ const SettingsPage: FC = () => {
     defaultPlayerSprites,
     musicDriver,
     openBuildLogOnWarnings,
-    profilingEnabled,
+    generateDebugFilesEnabled,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -147,9 +147,9 @@ const SettingsPage: FC = () => {
     [onChangeSettingProp]
   );
 
-  const onChangeProfilingEnabled = useCallback(
+  const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("profilingEnabled", castEventToBool(e)),
+      onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
     [onChangeSettingProp]
   );
 
@@ -651,7 +651,7 @@ const SettingsPage: FC = () => {
           searchMatches={[
             l10n("SETTINGS_BUILD"),
             l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
-            l10n("FIELD_ENABLE_PROFILING"),
+            l10n("FIELD_GENERATE_DEBUG_FILES"),
           ]}
         >
           <CardAnchor id="settingsBuild" />
@@ -675,15 +675,17 @@ const SettingsPage: FC = () => {
 
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_ENABLE_PROFILING")]}
+            searchMatches={[l10n("FIELD_GENERATE_DEBUG_FILES")]}
           >
-            <SettingRowLabel>{l10n("FIELD_ENABLE_PROFILING")}</SettingRowLabel>
+            <SettingRowLabel>
+              {l10n("FIELD_GENERATE_DEBUG_FILES")}
+            </SettingRowLabel>
             <SettingRowInput>
               <Checkbox
-                id="profilingEnabled"
-                name="profilingEnabled"
-                checked={profilingEnabled}
-                onChange={onChangeProfilingEnabled}
+                id="generateDebugFilesEnabled"
+                name="generateDebugFilesEnabled"
+                checked={generateDebugFilesEnabled}
+                onChange={onChangeGenerateDebugFilesEnabled}
               />
             </SettingRowInput>
           </SearchableSettingRow>
@@ -693,7 +695,7 @@ const SettingsPage: FC = () => {
               <Button
                 onClick={() => {
                   onChangeSettingProp("openBuildLogOnWarnings", true);
-                  onChangeSettingProp("profilingEnabled", false);
+                  onChangeSettingProp("generateDebugFilesEnabled", false);
                 }}
               >
                 {l10n("FIELD_RESTORE_DEFAULT")}
