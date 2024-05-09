@@ -373,7 +373,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
   for (let n = 0; n < song.wave_instruments.length; n++) {
     const instr = song.wave_instruments[n];
 
-    const length = (instr.length !== null ? instr.length : 0) & 0xff;
+    const length = (instr.length !== null ? 256 - instr.length : 0) & 0xff;
     const volume = instr.volume << 5;
     const waveForm = instr.wave_index;
     const subpattern = subpatternAddr[`WaveSP${instr.index}`] ?? 0;
