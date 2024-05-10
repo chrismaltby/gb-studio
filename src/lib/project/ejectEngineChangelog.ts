@@ -668,6 +668,13 @@ const changes: EngineChange[] = [
       "src/core/vm_camera.c",
     ],
   },
+  {
+    version: "3.3.0-e3",
+    description: createDescription("Fixes", [
+      "Fix issue where new scene's palettes wouldn't load when switching between scenes without fade out",
+    ]),
+    modifiedFiles: ["src/core/fade_manager.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
