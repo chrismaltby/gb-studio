@@ -55,6 +55,9 @@ interface PatreonMembersAPIResponse {
   };
 }
 
+const caseInsensitiveSort = (a: string, b: string) =>
+  a.toLowerCase().localeCompare(b.toLowerCase());
+
 const fetchPatreonAPI = async (url: string) => {
   const headers = {
     Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -118,8 +121,12 @@ const fetchPatrons = async () => {
   await fetchPage(initialEndpoint);
 
   return {
-    goldTier: Array.from(goldTierUserIds).map(toUserName).sort(),
-    silverTier: Array.from(silverTierUserIds).map(toUserName).sort(),
+    goldTier: Array.from(goldTierUserIds)
+      .map(toUserName)
+      .sort(caseInsensitiveSort),
+    silverTier: Array.from(silverTierUserIds)
+      .map(toUserName)
+      .sort(caseInsensitiveSort),
   };
 };
 

@@ -163,7 +163,7 @@ const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 640,
-    height: 400,
+    height: 430,
     useContentSize: true,
     resizable: false,
     maximizable: false,
