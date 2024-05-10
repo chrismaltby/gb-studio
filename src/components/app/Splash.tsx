@@ -239,6 +239,17 @@ export const Splash = () => {
     API.project.clearRecentProjects();
   };
 
+  useEffect(() => {
+    if (
+      section !== undefined &&
+      document.activeElement instanceof HTMLElement
+    ) {
+      // Prevent documentation tab getting visible focus
+      // before interaction has occured
+      document.activeElement.blur();
+    }
+  }, [section]);
+
   return (
     <ThemeProvider>
       <GlobalStyle />
