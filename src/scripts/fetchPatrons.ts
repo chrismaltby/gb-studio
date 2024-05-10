@@ -115,7 +115,7 @@ const fetchPatrons = async () => {
 
   const toUserName = (id: string): string => {
     const user = usersLookup[id];
-    return user.attributes.vanity ?? user.attributes.full_name;
+    return user.attributes.full_name;
   };
 
   await fetchPage(initialEndpoint);
