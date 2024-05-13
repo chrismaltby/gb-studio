@@ -61,14 +61,6 @@ jobs:
           node-version: "21.6.2"
           cache: "yarn"
 
-      - name: Update credits
-        env:
-          PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
-          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
-        run: |
-          npm run fetch-contributors
-          npm run fetch-patrons
-
       - name: Setup codesign certificate
         if: (matrix.name == 'mac') || (matrix.name == 'mac-intel')
         env:
@@ -85,6 +77,14 @@ jobs:
       - name: Install Dependencies
         run: |
           yarn --ignore-engines
+
+      - name: Update credits
+        env:
+          PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
+          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
+        run: |
+          npm run fetch-contributors
+          npm run fetch-patrons
 
       # ==== Builds ====
 
