@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.3.0",
-    "_release": "7",
+    "_version": "4.0.0",
+    "_release": "1",
     "scenes": [],
     "backgrounds": [
         {

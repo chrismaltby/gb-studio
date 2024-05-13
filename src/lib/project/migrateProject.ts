@@ -53,8 +53,8 @@ import {
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
-export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "7";
+export const LATEST_PROJECT_VERSION = "4.0.0";
+export const LATEST_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2627,6 +2627,10 @@ const migrateProject = (
     if (release === "6") {
       data = migrateFrom330r6To330r7Events(data);
       release = "7";
+    }
+    if (release === "7") {
+      version = "4.0.0";
+      release = "1";
     }
   }
 
