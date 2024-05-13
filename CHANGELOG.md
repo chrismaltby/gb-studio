@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
 - Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked 
 - Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
+- Add `Show Navigator` button to World toolbar if navigator is closed
 
 ### Changed
 
@@ -76,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where some slower camera speeds weren't actually slower
 - Fix issue where setting "Show Connections" to "None" would prevent Player start position from being visible/draggable
 - Fix issue where note lengths for wave instruments in .uge files were not being stored according to file specification. This may cause some .uge files created with older builds of GB Studio to not sound correct. If you need to fix any .uge files, you can use this [migrator tool](https://chrismaltby.github.io/gbs-uge-migrator/)
-- Fix issue where navigator sidebar could sometimes not be wide enough to show Add and Search buttons in section hiders
+- Fix issue where navigator sidebar could sometimes not be wide enough to show Add and Search buttons in section headers
 
 ### Removed
 
