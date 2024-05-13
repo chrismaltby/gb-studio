@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1461240503",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1470240509",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -20,7 +20,7 @@
   "NAV_SFX": "Dźwięki",
   "NAV_PALETTES": "Palety",
   "NAV_DIALOGUE_REVIEW": "Podgląd dialogów",
-  "NAV_BUILD_AND_RUN": "Zbuduj i uruchom",
+  "NAV_BUILD_AND_RUN": "Kompilacja i uruchomienie",
   "NAV_SETTINGS": "Ustawienia",
   "NAV_IMAGES": "Obrazy",
 
@@ -352,7 +352,7 @@
   "FIELD_TRIGGERS_COUNT": "Wybrana scena wykorzystuje {triggerCount} z {maxTriggers} dostępnych (wyzwalaczy)",
   "FIELD_WARNING": "Uwaga",
   "FIELD_TMP_DIRECTORY": "Tymczasowy folder",
-  "FIELD_TMP_DIRECTORY_INFO": "Folder, w którym są przechowywane pliki tymczasowe podczas budowania gry.\nJeżeli nie możesz skompilować gry z powodu błędu braku uprawnień, to możesz zmienić ten folder na taki, do którego masz dostęp.",
+  "FIELD_TMP_DIRECTORY_INFO": "Folder, w którym są przechowywane pliki tymczasowe podczas kompilacji gry.\nJeżeli nie możesz skompilować gry z powodu błędu braku uprawnień, to możesz zmienić ten folder na taki, do którego masz dostęp.",
   "FIELD_DONT_MODIFY": "Nie modyfikuj",
   "FIELD_MIN_VEL": "Minimalna prędkość",
   "FIELD_WALK_VEL": "Prędkość chodzenia",
@@ -497,7 +497,7 @@
   "FIELD_SEND_TO_BACK": "Przenieś do tyłu",
   "FIELD_FLIP_HORIZONTAL": "Przerzuć w poziomie",
   "FIELD_FLIP_VERTICAL": "Przerzuć w pionie",
-  "FIELD_OBJ_PALETTE": "Paleta Obj",
+  "FIELD_MONOCHROME_PALETTE": "Paleta monochromatyczna",
   "FIELD_COLOR_PALETTE": "Paleta koloru",
   "FIELD_EDIT_IMAGE": "Edytuj obraz",
   "FIELD_UNIQUE": "Wyjątek",
@@ -789,9 +789,11 @@
   "FIELD_MANUAL": "Manualny",
   "FIELD_PREVIEW_AS_MONO": "Podgląd jako monochromatyczny",
   "FIELD_MONO_OVERRIDE_DESC": "Ten obraz używa automatycznych palet z nadpisaniem monochromatycznym zdefiniowanym w \"{tilesFilename}\", które określają używane dane tafli, podczas gdy \"{filename}\" określi kolory",
-  "FIELD_BUILD_LOG": "Dziennik budowy (log)",
+  "FIELD_BUILD_LOG": "Dziennik kompilacji (log)",
   "FIELD_SET_AS_STARTING_SCENE": "Ustaw jako scenę startową",
-	
+  "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Otwórz dziennik kompilacji przy ostrzeżeniach",
+  "FIELD_GENERATE_DEBUG_FILES": "Generuj pliki debugowania",
+	 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -894,6 +896,8 @@
   "EVENT_TEXT_DESC": "Polecenie wyświetli okno dialogowe na dole ekranu. Po wyświetleniu tekstu, okno dialogowe przesunie się z dołu ekranu i zsunie się po jego wyświetleniu.",
   "EVENT_CAMERA_MOVE_TO": "Kamera: przesuń ekran",
   "EVENT_CAMERA_MOVE_TO_DESC": "Polecenie przesunie kamerę do nowego położenia.",
+  "EVENT_CAMERA_SET_POSITION": "Ustaw pozycję kamery",
+  "EVENT_CAMERA_SET_POSITION_DESC": "Ustaw pozycję kamery, polecenie spowoduje natychmiastowe przejście do nowej lokalizacji.",
   "EVENT_CAMERA_LOCK": "Kamera: powrót do gracza",
   "EVENT_CAMERA_LOCK_DESC": "Polecenie przywraca kamerę do pierwotnych ustawień, gdzie gracz jest w centrum, kamera jest też zablokowana podczas ruchu gracza. Opcjonalnie umożliwia blokowanie podążania za graczem tylko w osi poziomej lub pionowej.",
   "EVENT_FADE_IN": "Ekran: wyczyszczenie",
@@ -1084,6 +1088,7 @@
   "EVENT_ACTOR_STOP_UPDATE_LABEL": "{actor} Zatrzymaj skrypt \"Równoległy\"",
   "EVENT_ACTOR_START_UPDATE_LABEL": "{actor} Uruchom skrypt \"Równoległy\"",
   "EVENT_CAMERA_MOVE_TO_LABEL": "Kamera przesuń {{x},{y}}",
+  "EVENT_CAMERA_SET_POSITION_LABEL": "Ustaw pozycję kamery na {{x},{y}}",
   "EVENT_CAMERA_SHAKE_LABEL": "Kamera wstrząs {direction} czas {time} {units}",
   "EVENT_CALL_CUSTOM_EVENT_LABEL": "Wywołaj skrypt: {script}",
   "EVENT_IF_INPUT_LABEL": "Warunek wciśnięty przycisk {input} Joypada",
@@ -1147,6 +1152,10 @@
   "EVENT_GROUP_BOOLEAN": "Typ logiczny (boolean)",
   "EVENT_GROUP_COUNTER": "Licznik",
   "EVENT_LOOP_WHILE_EXPRESSION": "Pętla podczas wyrażenia matematycznego",
+  "EVENT_SCRIPT_LOCK": "Zablokuj skrypt",
+  "EVENT_SCRIPT_LOCK_DESC": "Wstrzymaj inne skrypty i aktualizacje sceny do momentu zakończenia tego skryptu lub odblokowania.",
+  "EVENT_SCRIPT_UNLOCK": "Odblokuj skrypt",
+  "EVENT_SCRIPT_UNLOCK_DESC": "Jeśli jest zablokowany, odblokuj ten skrypt, aby inne skrypty mogły działać i scena mogła być aktualizowana.",
   
   "// 10": "Menu -----------------------------------------------------",
 
@@ -1416,6 +1425,7 @@
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Domyślna grafika gracza",
   "SETTINGS_MUSIC_DRIVER": "Sterownik muzyczny",
   "SETTINGS_COLOR": "Opcje koloru",
+  "SETTINGS_BUILD": "Opcje kompilacji",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 
