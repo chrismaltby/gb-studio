@@ -20,6 +20,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerPanes from "components/debugger/DebuggerPanes";
 import DebuggerControls from "components/debugger/DebuggerControls";
+import { NAVIGATOR_MIN_WIDTH } from "consts";
 
 const Wrapper = styled.div`
   display: flex;
@@ -52,7 +53,10 @@ const WorldPage = () => {
     initialSize: navigatorSidebarWidth,
     direction: "right",
     minSize: 50,
-    maxSize: Math.max(101, windowWidth - minCenterPaneWidth - 200),
+    maxSize: Math.max(
+      101,
+      windowWidth - minCenterPaneWidth - NAVIGATOR_MIN_WIDTH
+    ),
     onResize: (_v) => {
       recalculateRightColumn();
     },
@@ -60,8 +64,8 @@ const WorldPage = () => {
       if (v < 100) {
         hideNavigator();
       }
-      if (v < 200) {
-        setLeftPaneSize(200);
+      if (v < NAVIGATOR_MIN_WIDTH) {
+        setLeftPaneSize(NAVIGATOR_MIN_WIDTH);
       }
       recalculateRightColumn();
     },
@@ -75,9 +79,9 @@ const WorldPage = () => {
       recalculateLeftColumn();
     },
     onResizeComplete: (width) => {
-      if (width > windowWidth - 200) {
-        setLeftPaneSize(200);
-        setRightPaneSize(windowWidth - 200);
+      if (width > windowWidth - NAVIGATOR_MIN_WIDTH) {
+        setLeftPaneSize(NAVIGATOR_MIN_WIDTH);
+        setRightPaneSize(windowWidth - NAVIGATOR_MIN_WIDTH);
       } else {
         recalculateLeftColumn();
       }
@@ -223,7 +227,7 @@ const WorldPage = () => {
       >
         <div
           style={{
-            minWidth: 200,
+            minWidth: NAVIGATOR_MIN_WIDTH,
             position: "relative",
             width: "100%",
             height: "100%",
