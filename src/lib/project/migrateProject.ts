@@ -54,7 +54,7 @@ import {
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.3.0";
-export const LATEST_PROJECT_MINOR_VERSION = "6";
+export const LATEST_PROJECT_MINOR_VERSION = "7";
 
 const ensureProjectAssetSync = (
   relativePath: string,

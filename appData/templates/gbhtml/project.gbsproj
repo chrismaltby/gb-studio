@@ -2,7 +2,7 @@
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
     "_version": "3.3.0",
-    "_release": "5",
+    "_release": "7",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -6318,7 +6318,8 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "cave.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
@@ -6329,7 +6330,8 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "house.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "f8b1c7ad-7bb2-44b2-8189-175ae8698f11",
@@ -6340,7 +6342,8 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "logo.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "b49ea566-b022-478c-979d-ec3ee255fdc5",
@@ -6351,7 +6354,8 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "menu.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
@@ -6362,7 +6366,8 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "outside.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
@@ -6373,7 +6378,8 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "stars.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "f047ff0e-58ad-49fc-bd2b-ec84fc1f7ab3",
@@ -6384,7 +6390,8 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "titlescreen.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         },
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
@@ -6395,7 +6402,8 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "underground.png",
-            "tileColors": []
+            "tileColors": [],
+            "autoColor": false
         }
     ],
     "spriteSheets": [
@@ -9702,6 +9710,9 @@
         "debuggerBreakpoints": [],
         "debuggerWatchedVariables": [],
         "colorMode": "mono",
+        "previewAsMono": false,
+        "openBuildLogOnWarnings": true,
+        "generateDebugFilesEnabled": false,
         "defaultFadeStyle": "white",
         "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
         "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"

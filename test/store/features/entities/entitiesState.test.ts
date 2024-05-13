@@ -51,6 +51,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -94,6 +95,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -137,6 +139,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"

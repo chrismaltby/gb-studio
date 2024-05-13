@@ -131,11 +131,18 @@ const loadProject = createAsyncThunk<
     engineFields: EngineFieldSchema[];
     sceneTypes: SceneTypeSchema[];
     modifiedSpriteIds: string[];
+    isMigrated: boolean;
   },
   string
 >("project/loadProject", async (path) => {
-  const { data, scriptEventDefs, engineFields, sceneTypes, modifiedSpriteIds } =
-    await API.project.loadProject();
+  const {
+    data,
+    scriptEventDefs,
+    engineFields,
+    sceneTypes,
+    modifiedSpriteIds,
+    isMigrated,
+  } = await API.project.loadProject();
   return {
     data,
     path,
@@ -143,6 +150,7 @@ const loadProject = createAsyncThunk<
     engineFields,
     sceneTypes,
     modifiedSpriteIds,
+    isMigrated,
   };
 });
 

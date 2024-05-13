@@ -1183,6 +1183,7 @@ ipcMain.handle(
 ipcMain.handle("project:load", async (): Promise<{
   data: ProjectData;
   modifiedSpriteIds: string[];
+  isMigrated: boolean;
 }> => {
   return loadProjectData(projectPath);
 });

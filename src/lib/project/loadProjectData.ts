@@ -56,6 +56,7 @@ const loadProject = async (
   engineFields: EngineFieldSchema[];
   sceneTypes: SceneTypeSchema[];
   modifiedSpriteIds: string[];
+  isMigrated: boolean;
 }> => {
   const projectRoot = path.dirname(projectPath);
 
@@ -63,11 +64,18 @@ const loadProject = async (
   const engineFields = await loadEngineFields(projectRoot);
   const sceneTypes = await loadSceneTypes(projectRoot);
 
+  const originalJson = await fs.readJson(projectPath);
+
+  const { _version: originalVersion, _release: originalRelease } = originalJson;
+
   const json = migrateProject(
-    await fs.readJson(projectPath),
+    originalJson,
     projectRoot,
     scriptEventDefs
   ) as ProjectData;
+
+  const isMigrated =
+    json._version !== originalVersion || json._release !== originalRelease;
 
   const [
     backgrounds,
@@ -393,6 +401,7 @@ const loadProject = async (
       engineFieldValues: fixedEngineFieldValues,
     },
     modifiedSpriteIds,
+    isMigrated,
     scriptEventDefs: cloneDictionary(scriptEventDefs),
     engineFields,
     sceneTypes,

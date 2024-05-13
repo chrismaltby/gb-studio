@@ -236,6 +236,7 @@ const APISetup = {
       engineFields: EngineFieldSchema[];
       sceneTypes: SceneTypeSchema[];
       modifiedSpriteIds: string[];
+      isMigrated: boolean;
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>
       ipcRenderer.invoke("project:save", data),
