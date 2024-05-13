@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked
 - Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
 - Add `Show Navigator` button to World toolbar if navigator is closed
+- Add ability to rename flags in Variable Flags Add/Clear/Set events [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
