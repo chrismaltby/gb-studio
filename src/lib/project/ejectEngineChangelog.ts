@@ -675,6 +675,11 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/fade_manager.c"],
   },
+  {
+    version: "3.3.0-e4",
+    description: createDescription("Updates", ["Optimize atan2()"]),
+    modifiedFiles: ["src/core/math_atan2.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
