@@ -326,6 +326,7 @@ const ScriptEventFormField = memo(
             label &&
             field.type !== "checkbox" &&
             field.type !== "group" &&
+            field.type !== "flag" &&
             !field.hideLabel
               ? labelWithUnits
               : ""

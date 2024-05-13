@@ -4586,7 +4586,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = namedVariable?.name ?? globalVariableDefaultName(num);
+      name = namedVariable?.name || globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);

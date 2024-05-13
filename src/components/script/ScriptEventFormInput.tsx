@@ -63,6 +63,8 @@ import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import ValueSelect from "components/forms/ValueSelect";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import { FlagField } from "ui/form/FlagField";
+import { FlagSelect } from "components/forms/FlagSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -275,6 +277,31 @@ const ScriptEventFormInput = ({
         }
         onChange={onChangeCheckboxField}
       />
+    );
+  } else if (type === "flag") {
+    return (
+      <FlagField
+        name={id}
+        bit={field.key ?? "flag1"}
+        defaultLabel={String(field.checkboxLabel || field.label)}
+        title={field.description}
+        variableId={argValue(args.variable) as string}
+        checked={
+          typeof value === "boolean" ? value : Boolean(defaultValue || false)
+        }
+        entityId={entityId}
+        onChange={onChangeCheckboxField}
+      />
+    );
+  } else if (type === "selectFlags") {
+    return (
+      <FlagSelect
+        name={id}
+        variableId={argValue(args.variable) as string}
+        entityId={entityId}
+        value={String(value ?? defaultValue)}
+        onChange={onChangeField}
+      ></FlagSelect>
     );
   } else if (type === "select") {
     const options = (field.options || []).map(([value, label]) => ({
