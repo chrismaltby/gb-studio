@@ -137,7 +137,7 @@ export const FlagField: FC<FlagFieldFieldProps> = ({
     return variableSelectors.selectById(state, id);
   });
 
-  const canRename = namedVariable && !variableIsTemp && !variableIsParam;
+  const canRename = !variableIsTemp && !variableIsParam;
 
   const label =
     (namedVariable?.flags && namedVariable?.flags[bit]) ?? defaultLabel;
@@ -180,14 +180,14 @@ export const FlagField: FC<FlagFieldFieldProps> = ({
 
     if (variableIsLocal) {
       dispatch(
-        entitiesActions.renameVariableFlag({
+        entitiesActions.renameVariableFlags({
           variableId: `${entityId}__${variableId}`,
           flags: newFlags,
         })
       );
     } else {
       dispatch(
-        entitiesActions.renameVariableFlag({
+        entitiesActions.renameVariableFlags({
           variableId: variableId || "0",
           flags: newFlags,
         })

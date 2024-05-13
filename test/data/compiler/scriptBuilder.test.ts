@@ -1,5 +1,7 @@
 import { PrecompiledScene } from "../../../src/lib/compiler/generateGBVMData";
-import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
+import ScriptBuilder, {
+  ScriptBuilderOptions,
+} from "../../../src/lib/compiler/scriptBuilder";
 import { ScriptEvent } from "../../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
@@ -753,4 +755,40 @@ test("Should default actor's state to use looping animation if loop value not pr
     "        VM_ACTOR_SET_FLAGS      .LOCAL_ACTOR, 0, .ACTOR_FLAG_ANIM_NOLOOP",
     "",
   ]);
+});
+
+test("Should get variable alias for named variable", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    variablesLookup: {
+      "10": {
+        id: "10",
+        name: "foobar",
+        symbol: "var_foobar",
+      },
+    },
+  } as unknown as ScriptBuilderOptions);
+  expect(sb.getVariableAlias("10")).toEqual("VAR_FOOBAR");
+});
+
+test("Should get default alias for unnamed variable", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    variablesLookup: {},
+  } as unknown as ScriptBuilderOptions);
+  expect(sb.getVariableAlias("11")).toEqual("VAR_VARIABLE_11");
+});
+
+test("Should get default alias for variable with empty name", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    variablesLookup: {
+      "13": {
+        id: "13",
+        name: "",
+        symbol: "",
+      },
+    },
+  } as unknown as ScriptBuilderOptions);
+  expect(sb.getVariableAlias("13")).toEqual("VAR_VARIABLE_13");
 });
