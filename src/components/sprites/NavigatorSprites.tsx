@@ -14,7 +14,7 @@ import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { SpriteSheet, SpriteState } from "shared/lib/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { Button } from "ui/buttons/Button";
@@ -23,6 +23,7 @@ import {
   ArrowJumpIcon,
   ArrowMoveIcon,
   PlusIcon,
+  SearchIcon,
 } from "ui/icons/Icons";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
@@ -154,9 +155,12 @@ export const NavigatorSprites = ({
     unset: closeFolder,
   } = useToggleableList<string>([]);
 
+  const [spritesSearchTerm, setSpritesSearchTerm] = useState("");
+  const [spritesSearchEnabled, setSpritesSearchEnabled] = useState(false);
+
   const nestedSpriteItems = useMemo(
-    () => buildAssetNavigatorItems(allSprites, openFolders),
-    [allSprites, openFolders]
+    () => buildAssetNavigatorItems(allSprites, openFolders, spritesSearchTerm),
+    [allSprites, openFolders, spritesSearchTerm]
   );
 
   const dispatch = useAppDispatch();
@@ -396,21 +400,50 @@ export const NavigatorSprites = ({
     [toggleFolderOpen]
   );
 
+  const showSpritesSearch = spritesSearchEnabled && splitSizes[0] > 60;
+
+  const toggleSpritesSearchEnabled = useCallback(() => {
+    if (spritesSearchEnabled) {
+      setSpritesSearchTerm("");
+    }
+    setSpritesSearchEnabled(!spritesSearchEnabled);
+  }, [spritesSearchEnabled]);
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
         <SplitPaneHeader
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
+          buttons={
+            <Button
+              variant={spritesSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleSpritesSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
         >
           {l10n("FIELD_SPRITES")}
         </SplitPaneHeader>
+
+        {showSpritesSearch && (
+          <EntityListSearch
+            type="search"
+            value={spritesSearchTerm}
+            onChange={(e) => setSpritesSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
 
         <FlatList
           selectedId={selectedId}
           items={nestedSpriteItems}
           setSelectedId={setSelectedId}
-          height={splitSizes[0] - 30}
+          height={splitSizes[0] - (showSpritesSearch ? 60 : 30)}
           onKeyDown={(e: KeyboardEvent, item) => {
             listenForRenameStart(e);
             if (item?.type === "folder") {

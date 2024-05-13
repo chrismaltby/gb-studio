@@ -15,7 +15,7 @@ import {
 import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
 import API from "renderer/lib/api";
-import { EVENT_CALL_CUSTOM_EVENT } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, NAVIGATOR_MIN_WIDTH } from "consts";
 import l10n from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 
@@ -38,7 +38,10 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
     } else if (editorActions.resizeFilesSidebar.match(action)) {
       API.settings.set("filesSidebarWidth", action.payload);
     } else if (editorActions.resizeNavigatorSidebar.match(action)) {
-      API.settings.set("navigatorSidebarWidth", action.payload);
+      API.settings.set(
+        "navigatorSidebarWidth",
+        Math.max(NAVIGATOR_MIN_WIDTH, action.payload)
+      );
     } else if (
       editorActions.setTool.match(action) &&
       action.payload.tool === "colors"

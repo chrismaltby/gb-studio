@@ -11,6 +11,9 @@ import {
   SplashCreditsCloseButton,
   SplashCreditsContent,
   SplashCreditsContributor,
+  SplashCreditsGrid,
+  SplashCreditsPatron,
+  SplashCreditsSubHeading,
   SplashCreditsTitle,
   SplashEasterEggButton,
   SplashForm,
@@ -34,6 +37,7 @@ import { TextField } from "ui/form/TextField";
 import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
+import patrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
 import blankPreview from "assets/templatePreview/blank.png";
@@ -82,6 +86,25 @@ const toSplashTab = (tab: string): SplashTabSection => {
   }
   return "new";
 };
+
+const botContributors = ["dependabot[bot]"];
+
+const filteredContributors = contributors.filter((user) => {
+  return !botContributors.includes(user.login);
+});
+
+const goldContributors = filteredContributors.filter(
+  (user) => user.contributions >= 10
+);
+const silverContributors = filteredContributors
+  .filter((user) => user.contributions < 10)
+  .sort((a, b) => {
+    const loginA = a.login.toLowerCase();
+    const loginB = b.login.toLowerCase();
+    if (loginA < loginB) return -1;
+    if (loginA > loginB) return 1;
+    return 0;
+  });
 
 export const Splash = () => {
   const [loading, setLoading] = useState(true);
@@ -216,6 +239,17 @@ export const Splash = () => {
     API.project.clearRecentProjects();
   };
 
+  useEffect(() => {
+    if (
+      section !== undefined &&
+      document.activeElement instanceof HTMLElement
+    ) {
+      // Prevent documentation tab getting visible focus
+      // before interaction has occured
+      document.activeElement.blur();
+    }
+  }, [section]);
+
   return (
     <ThemeProvider>
       <GlobalStyle />
@@ -245,6 +279,9 @@ export const Splash = () => {
           </SplashTab>
           <SplashTab onClick={() => API.app.openExternal(DOCS_URL)}>
             {l10n("SPLASH_DOCUMENTATION")}
+          </SplashTab>
+          <SplashTab onClick={() => setOpenCredits(true)}>
+            {l10n("SPLASH_CREDITS")}
           </SplashTab>
           <FlexGrow />
           <SplashOpenButton onClick={onOpen}>
@@ -342,13 +379,36 @@ export const Splash = () => {
             <SplashCreditsBackground />
             <SplashCreditsContent>
               <SplashCreditsTitle>GB Studio</SplashCreditsTitle>
-              {contributors.map((contributor) => (
+              <SplashCreditsSubHeading>
+                {l10n("SPLASH_CONTRIBUTORS")}
+              </SplashCreditsSubHeading>
+              {goldContributors.map((contributor) => (
                 <SplashCreditsContributor
                   key={contributor.id}
                   contributor={contributor}
                   onClick={() => API.app.openExternal(contributor.html_url)}
                 />
               ))}
+              <SplashCreditsGrid>
+                {silverContributors.map((contributor) => (
+                  <SplashCreditsContributor
+                    key={contributor.id}
+                    contributor={contributor}
+                    onClick={() => API.app.openExternal(contributor.html_url)}
+                  />
+                ))}
+              </SplashCreditsGrid>
+              <SplashCreditsSubHeading>Patrons</SplashCreditsSubHeading>
+              <SplashCreditsGrid>
+                {patrons.goldTier.map((patron) => (
+                  <SplashCreditsPatron key={patron} name={patron} gold />
+                ))}
+              </SplashCreditsGrid>
+              <SplashCreditsGrid>
+                {patrons.silverTier.map((patron) => (
+                  <SplashCreditsPatron key={patron} name={patron} />
+                ))}
+              </SplashCreditsGrid>
             </SplashCreditsContent>
             <SplashCreditsCloseButton>
               <AutoFocusInside>

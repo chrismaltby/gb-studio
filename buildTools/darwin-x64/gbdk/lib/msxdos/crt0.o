@@ -1,5 +1,5 @@
 XL3
-H E areas 31 global symbols
+H E areas 32 global symbols
 M Runtime
 S l__DATA Ref000000
 S _main Ref000000
@@ -10,7 +10,7 @@ S s__INITIALIZED Ref000000
 S _puts Ref000000
 S l__INITIALIZER Ref000000
 S s__INITIALIZER Ref000000
-A _CODE size 350 flags 0 addr 0
+A _CODE size 351 flags 0 addr 0
 S __mapper_page_mask Def0000F8
 S .wait_vbl_done Def0001DC
 S _sys_time Def000343
@@ -26,7 +26,7 @@ S .shadow_VDP_end Def000343
 S _shadow_VDP_R5 Def000340
 S _shadow_VDP_R6 Def000341
 S _shadow_VDP_R7 Def000342
-S __old_int_vector Def00034B
+S __old_int_vector Def00034C
 S .mapper_page_alloc Def0000E3
 S __memman_present Def0000DE
 S _exit Def00008B
@@ -38,6 +38,7 @@ S ___overlay_name Def0000BA
 S _shadow_OAM Def000200
 S .memcpy_simple Def0000B2
 S .memset_simple Def0000A9
+S __SYSTEM Def00034B
 S .initialize_ram_mapper Def00017C
 S ___overlay_count Def0000B8
 S __mapper_bank_alloc Def000164
@@ -320,11 +321,11 @@ T 04 03 00 11 B9 00 0E 10 CD 05 00 B7 C9
 R 00 00 00 00 00 04 00 00
 T 0E 03 00
 R 00 00 00 00
-T 0E 03 00 21 4B 03 11 38 00 18 06
+T 0E 03 00 21 4C 03 11 38 00 18 06
 R 00 00 00 00 00 04 00 00
 T 16 03 00
 R 00 00 00 00
-T 16 03 00 21 38 00 11 4B 03
+T 16 03 00 21 38 00 11 4C 03
 R 00 00 00 00 00 07 00 00
 T 1C 03 00
 R 00 00 00 00
@@ -404,7 +405,11 @@ T 48 03 00
 R 00 00 00 00
 T 4B 03 00
 R 00 00 00 00
-T 4B 03 00
+T 4B 03 00 00
+R 00 00 00 00
+T 4C 03 00
+R 00 00 00 00
+T 4C 03 00
 R 00 00 00 00
 T 00 00 00
 R 00 00 05 00

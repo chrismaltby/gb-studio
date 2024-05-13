@@ -51,6 +51,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -94,6 +95,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -137,6 +139,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -1455,7 +1458,7 @@ test("Should be able to add custom event", () => {
   expect(newState.customEvents.ids.length).toBe(1);
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.name
-  ).toBe("");
+  ).toBe("CUSTOM_EVENT 1");
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.script
   ).toEqual([]);

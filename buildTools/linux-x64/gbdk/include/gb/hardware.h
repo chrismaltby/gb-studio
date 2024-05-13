@@ -88,77 +88,77 @@ __REG TAC_REG;          /**< Timer control */
 __REG IF_REG;           /**< Interrupt flags: @ref IEF_HILO, @ref IEF_SERIAL, @ref IEF_TIMER, @ref IEF_STAT, @ref IEF_VBLANK */
 #define rIF IF_REG
 
-__REG NR10_REG;         /**< Sound Channel 1 Sweep */
-#define rAUD1SWEEP NR10_REG
-#define AUD1SWEEP_UP        0b00000000
-#define AUD1SWEEP_DOWN      0b00001000
-#define AUD1SWEEP_TIME(x)   ((x) << 4)
-#define AUD1SWEEP_LENGTH(x) (x)
-__REG NR11_REG;         /**< Sound Channel 1 Sound length/Wave pattern duty */
-#define rAUD1LEN NR11_REG
-__REG NR12_REG;         /**< Sound Channel 1 Volume Envelope */
-#define rAUD1ENV NR12_REG
-__REG NR13_REG;         /**< Sound Channel 1 Frequency Low */
-#define rAUD1LOW NR13_REG
-__REG NR14_REG;         /**< Sound Channel 1 Frequency High */
-#define rAUD1HIGH NR14_REG
+__REG NR10_REG;             /**< Sound Channel 1, NR10: Sweep */
+#define rAUD1SWEEP NR10_REG /**< Sound Channel 1, NR10: Sweep */
+#define AUD1SWEEP_UP        0b00000000 /**< For Sound Channel 1, NR10: Sweep Addition, period increases */
+#define AUD1SWEEP_DOWN      0b00001000 /**< For Sound Channel 1, NR10: Sweep Subtraction, period decreases */
+#define AUD1SWEEP_TIME(x)   ((x) << 4) /**< For Sound Channel 1, NR10: Sweep Time/Pace, Range: 0-7 */
+#define AUD1SWEEP_LENGTH(x) (x)        /**< For Sound Channel 1, NR10: Sweep Length/Individual step, Range: 0-7 */
+__REG NR11_REG;            /**< Sound Channel 1, NR11: Sound length/Wave pattern duty */
+#define rAUD1LEN NR11_REG  /**< Sound Channel 1, NR11: Sound length/Wave pattern duty */
+__REG NR12_REG;            /**< Sound Channel 1, NR12: Volume Envelope */
+#define rAUD1ENV NR12_REG  /**< Sound Channel 1, NR12: Volume Envelope */
+__REG NR13_REG;            /**< Sound Channel 1, NR13: Frequency Low */
+#define rAUD1LOW NR13_REG  /**< Sound Channel 1, NR13: Frequency Low */
+__REG NR14_REG;            /**< Sound Channel 1, NR14: Frequency High */
+#define rAUD1HIGH NR14_REG /**< Sound Channel 1, NR14: Frequency High */
 
-__REG NR21_REG;         /**< Sound Channel 2 Tone */
-#define rAUD2LEN NR21_REG
-__REG NR22_REG;         /**< Sound Channel 2 Volume Envelope */
-#define rAUD2ENV NR22_REG
-__REG NR23_REG;         /**< Sound Channel 2 Frequency data Low */
-#define rAUD2LOW NR23_REG
-__REG NR24_REG;         /**< Sound Channel 2 Frequency data High */
-#define rAUD2HIGH NR24_REG
+__REG NR21_REG;            /**< Sound Channel 2, NR21_REG: Tone */
+#define rAUD2LEN NR21_REG  /**< Sound Channel 2, NR21_REG: Tone */
+__REG NR22_REG;            /**< Sound Channel 2, NR22_REG: Volume Envelope */
+#define rAUD2ENV NR22_REG  /**< Sound Channel 2, NR22_REG: Volume Envelope */
+__REG NR23_REG;            /**< Sound Channel 2, NR23_REG: Frequency data Low */
+#define rAUD2LOW NR23_REG  /**< Sound Channel 2, NR23_REG: Frequency data Low */
+__REG NR24_REG;            /**< Sound Channel 2, NR24_REG: Frequency data High */
+#define rAUD2HIGH NR24_REG /**< Sound Channel 2, NR24_REG: Frequency data High */
 
-__REG NR30_REG;         /**< Sound Channel 3 Sound on/off */
-#define rAUD3ENA NR30_REG
-__REG NR31_REG;         /**< Sound Channel 3 Sound Length */
-#define rAUD3LEN NR31_REG
-__REG NR32_REG;         /**< Sound Channel 3 Select output level */
-#define rAUD3LEVEL NR32_REG
-__REG NR33_REG;         /**< Sound Channel 3 Frequency data Low */
-#define rAUD3LOW NR33_REG
-__REG NR34_REG;         /**< Sound Channel 3 Frequency data High */
-#define rAUD3HIGH NR34_REG
+__REG NR30_REG;            /**< Sound Channel 3, NR30_REG: Sound on/off */
+#define rAUD3ENA NR30_REG  /**< Sound Channel 3, NR30_REG: Sound on/off */
+__REG NR31_REG;            /**< Sound Channel 3, NR31_REG: Sound Length */
+#define rAUD3LEN NR31_REG  /**< Sound Channel 3, NR31_REG: Sound Length */
+__REG NR32_REG;            /**< Sound Channel 3, NR32_REG: Select output level */
+#define rAUD3LEVEL NR32_REG/**< Sound Channel 3, NR32_REG: Select output level */
+__REG NR33_REG;            /**< Sound Channel 3, NR33_REG: Frequency data Low */
+#define rAUD3LOW NR33_REG  /**< Sound Channel 3, NR33_REG: Frequency data Low */
+__REG NR34_REG;            /**< Sound Channel 3, NR34_REG: Frequency data High */
+#define rAUD3HIGH NR34_REG /**< Sound Channel 3, NR34_REG: Frequency data High */
 
-__REG NR41_REG;         /**< Sound Channel 4 Sound Length */
-#define rAUD4LEN NR41_REG
-__REG NR42_REG;         /**< Sound Channel 4 Volume Envelope */
-#define rAUD4ENV NR42_REG
-__REG NR43_REG;         /**< Sound Channel 4 Polynomial Counter */
-#define rAUD4POLY NR43_REG
-#define AUD4POLY_WIDTH_15BIT 0x00
-#define AUD4POLY_WIDTH_7BIT  0x08
-__REG NR44_REG;         /**< Sound Channel 4 Counter / Consecutive and Inital  */
-#define rAUD4GO NR44_REG
+__REG NR41_REG;            /**< Sound Channel 4, NR41_REG: Sound Length */
+#define rAUD4LEN NR41_REG  /**< Sound Channel 4, NR41_REG: Sound Length */
+__REG NR42_REG;            /**< Sound Channel 4, NR42_REG: Volume Envelope */
+#define rAUD4ENV NR42_REG  /**< Sound Channel 4, NR42_REG: Volume Envelope */
+__REG NR43_REG;            /**< Sound Channel 4, NR43_REG: Polynomial Counter */
+#define rAUD4POLY NR43_REG  /**< Sound Channel 4, NR43_REG: Polynomial Counter */
+#define AUD4POLY_WIDTH_15BIT 0x00 /**< For Sound Channel 4, NR43_REG: Polynomial counter use 15 steps  */
+#define AUD4POLY_WIDTH_7BIT  0x08 /**< For Sound Channel 4, NR43_REG: Polynomial counter use 7 steps  */
+__REG NR44_REG;            /**< Sound Channel 4, NR44_REG: Counter / Consecutive and Initial  */
+#define rAUD4GO NR44_REG   /**< Sound Channel 4, NR44_REG: Counter / Consecutive and Initial  */
 
-__REG NR50_REG;         /**< Sound Channel control / ON-OFF / Volume */
-#define rAUDVOL NR50_REG
+__REG NR50_REG;            /**< Sound Master Volume, NR50: Volume and Cart external sound input (VIN) */
+#define rAUDVOL NR50_REG   /**< Sound Master Volume, NR50: Volume and Cart external sound input (VIN) */
 
-#define AUDVOL_VOL_LEFT(x)  ((x) << 4)
-#define AUDVOL_VOL_RIGHT(x) ((x))
-#define AUDVOL_VIN_LEFT         0b10000000
-#define AUDVOL_VIN_RIGHT        0b00001000
+#define AUDVOL_VOL_LEFT(x)  ((x) << 4)     /**< For Sound Master Volume, NR50: Left Volume, Range: 0-7 */
+#define AUDVOL_VOL_RIGHT(x) ((x))          /**< For Sound Master Volume, NR50: Right Volume, Range: 0-7 */
+#define AUDVOL_VIN_LEFT         0b10000000 /**< For Sound Master Volume, NR50: Cart external sound input (VIN) Left bit, 1 = ON, 0 = OFF */
+#define AUDVOL_VIN_RIGHT        0b00001000 /**< For Sound Master Volume, NR50: Cart external sound input (VIN) Right bit, 1 = ON, 0 = OFF */
 
-__REG NR51_REG;         /**< Sound Selection of Sound output terminal */
-#define rAUDTERM NR51_REG
+__REG NR51_REG;           /**< Sound Panning, NR51: Enable/disable left and right output for sound channels */
+#define rAUDTERM NR51_REG /**< Sound Panning, NR51: Enable/disable left and right output for sound channels */
 
-#define AUDTERM_4_LEFT  0b10000000
-#define AUDTERM_3_LEFT  0b01000000
-#define AUDTERM_2_LEFT  0b00100000
-#define AUDTERM_1_LEFT  0b00010000
-#define AUDTERM_4_RIGHT 0b00001000
-#define AUDTERM_3_RIGHT 0b00000100
-#define AUDTERM_2_RIGHT 0b00000010
-#define AUDTERM_1_RIGHT 0b00000001
+#define AUDTERM_4_LEFT  0b10000000 /**< For Sound Panning, NR51: Channel 4 Left bit, 1 = ON, 0 = OFF */
+#define AUDTERM_3_LEFT  0b01000000 /**< For Sound Panning, NR51: Channel 3 Left bit, 1 = ON, 0 = OFF */
+#define AUDTERM_2_LEFT  0b00100000 /**< For Sound Panning, NR51: Channel 2 Left bit, 1 = ON, 0 = OFF */
+#define AUDTERM_1_LEFT  0b00010000 /**< For Sound Panning, NR51: Channel 1 Left bit, 1 = ON, 0 = OFF */
+#define AUDTERM_4_RIGHT 0b00001000 /**< For Sound Panning, NR51: Channel 4 Right bit, 1 = ON, 0 = OFF */
+#define AUDTERM_3_RIGHT 0b00000100 /**< For Sound Panning, NR51: Channel 4 Right bit, 1 = ON, 0 = OFF */
+#define AUDTERM_2_RIGHT 0b00000010 /**< For Sound Panning, NR51: Channel 4 Right bit, 1 = ON, 0 = OFF */
+#define AUDTERM_1_RIGHT 0b00000001 /**< For Sound Panning, NR51: Channel 4 Right bit, 1 = ON, 0 = OFF */
 
-__REG NR52_REG;         /**< Sound Master on/off */
-#define rAUDENA NR52_REG
+__REG NR52_REG;          /**< Sound Master Control, NR52: ON / OFF */
+#define rAUDENA NR52_REG /**< Sound Master Control, NR52: ON / OFF */
 
-#define AUDENA_ON    0b10000000
-#define AUDENA_OFF   0b00000000
+#define AUDENA_ON    0b10000000 /**< For Sound Master Control, NR52: Sound ON */
+#define AUDENA_OFF   0b00000000 /**< For Sound Master Control, NR52: Sound OFF */
 
 __BYTE_REG AUD3WAVE[16];
 __BYTE_REG PCM_SAMPLE[16];

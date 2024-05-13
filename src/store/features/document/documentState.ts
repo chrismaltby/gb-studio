@@ -22,8 +22,8 @@ const documentSlice = createSlice({
       .addCase(projectActions.loadProject.pending, (state, _action) => {
         state.loaded = false;
       })
-      .addCase(projectActions.loadProject.fulfilled, (state, _action) => {
-        state.modified = false;
+      .addCase(projectActions.loadProject.fulfilled, (state, action) => {
+        state.modified = action.payload.isMigrated;
         state.loaded = true;
       })
       .addCase(projectActions.saveProject.pending, (state, _action) => {

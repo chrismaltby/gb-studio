@@ -14,7 +14,7 @@ LCC = $(GBDK_HOME)bin/lcc
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v -Wl-u
+	LCCFLAGS += -debug -v
 endif
 
 # You can set flags for LCC here

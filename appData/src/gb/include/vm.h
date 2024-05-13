@@ -43,6 +43,7 @@ typedef struct SCRIPT_CMD {
 typedef UBYTE (*SCRIPT_UPDATE_FN)(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL BANKED;
 
 #define VM_REF_TO_PTR(idx) (void *)(((idx) < 0) ? THIS->stack_ptr + (idx) : script_memory + (idx))
+#define VM_GLOBAL(idx) script_memory[(idx)]
 
 typedef struct SCRIPT_CTX {
     const UBYTE * PC;
@@ -136,7 +137,7 @@ void vm_idle(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_get_tlocal(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED;
 void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED;
 void vm_init_rng(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
-void vm_rand(SCRIPT_CTX * THIS, INT16 idx, UINT16 min, UINT16 limit, UINT16 mask) OLDCALL BANKED;
+void vm_rand(SCRIPT_CTX * THIS, INT16 idx, UINT16 min, UINT16 limit) OLDCALL BANKED;
 void vm_lock(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_unlock(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_raise(SCRIPT_CTX * THIS, UBYTE code, UBYTE size) OLDCALL BANKED;

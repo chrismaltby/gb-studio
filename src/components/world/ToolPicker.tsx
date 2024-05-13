@@ -5,6 +5,7 @@ import {
   EraserIcon,
   PlusIcon,
   PaintIcon,
+  ListIcon,
 } from "ui/icons/Icons";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
@@ -12,9 +13,11 @@ import { Tool } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import FloatingPanel from "ui/panels/FloatingPanel";
+import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import settingsActions from "store/features/settings/settingsActions";
+import { NAVIGATOR_MIN_WIDTH } from "consts";
 
 interface ToolPickerProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -33,6 +36,10 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   const isAddSelected = useMemo(() => {
     return ["actors", "triggers", "scene"].indexOf(selected) > -1;
   }, [selected]);
+
+  const showNavigator = useAppSelector(
+    (state) => state.project.present.settings.showNavigator
+  );
 
   const setTool = useCallback(
     (tool: Tool) => {
@@ -110,6 +117,15 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   const setToolCollisions = useCallback(() => setTool("collisions"), [setTool]);
   const setToolColors = useCallback(() => setTool("colors"), [setTool]);
 
+  const enableNavigator = useCallback(() => {
+    dispatch(editorActions.resizeNavigatorSidebar(NAVIGATOR_MIN_WIDTH));
+    dispatch(
+      settingsActions.editSettings({
+        showNavigator: true,
+      })
+    );
+  }, [dispatch]);
+
   return (
     <Wrapper vertical>
       <Button
@@ -173,6 +189,18 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
       >
         <PaintIcon />
       </Button>
+      {!showNavigator && (
+        <>
+          <FloatingPanelDivider />
+          <Button
+            variant="transparent"
+            onClick={enableNavigator}
+            title={l10n("MENU_SHOW_NAVIGATOR")}
+          >
+            <ListIcon />
+          </Button>
+        </>
+      )}
     </Wrapper>
   );
 };

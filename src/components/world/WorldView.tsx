@@ -121,11 +121,10 @@ const WorldView = () => {
 
   const showConnections = useAppSelector(
     (state) =>
-      state.project.present.settings.showConnections &&
-      (state.editor.showLayers ||
-        (state.editor.tool !== TOOL_COLORS &&
-          state.editor.tool !== TOOL_COLLISIONS &&
-          state.editor.tool !== TOOL_ERASER))
+      state.editor.showLayers ||
+      (state.editor.tool !== TOOL_COLORS &&
+        state.editor.tool !== TOOL_COLLISIONS &&
+        state.editor.tool !== TOOL_ERASER)
   );
 
   const clipboardVariables = useAppSelector(

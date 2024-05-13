@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
@@ -89,6 +83,8 @@ const SettingsPage: FC = () => {
     defaultFontId,
     defaultPlayerSprites,
     musicDriver,
+    openBuildLogOnWarnings,
+    generateDebugFilesEnabled,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -142,6 +138,18 @@ const SettingsPage: FC = () => {
   const onChangeCustomHead = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSettingProp("customHead", e.currentTarget.value),
+    [onChangeSettingProp]
+  );
+
+  const onChangeOpenBuildLogOnWarnings = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("openBuildLogOnWarnings", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeGenerateDebugFilesEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
     [onChangeSettingProp]
   );
 
@@ -256,6 +264,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsCartType")}>
               {l10n("SETTINGS_CART_TYPE")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsBuild")}>
+              {l10n("SETTINGS_BUILD")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsCustomHead")}>
               {l10n("SETTINGS_CUSTOM_HEADER")}
@@ -633,6 +644,64 @@ const SettingsPage: FC = () => {
           <CardAnchor id="settingsCartType" />
           <CardHeading>{l10n("SETTINGS_CART_TYPE")}</CardHeading>
           <CartSettingsEditor searchTerm={searchTerm} />
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[
+            l10n("SETTINGS_BUILD"),
+            l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
+            l10n("FIELD_GENERATE_DEBUG_FILES"),
+          ]}
+        >
+          <CardAnchor id="settingsBuild" />
+          <CardHeading>{l10n("SETTINGS_BUILD")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="openBuildLogOnWarnings"
+                name="openBuildLogOnWarnings"
+                checked={openBuildLogOnWarnings}
+                onChange={onChangeOpenBuildLogOnWarnings}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_GENERATE_DEBUG_FILES")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_GENERATE_DEBUG_FILES")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="generateDebugFilesEnabled"
+                name="generateDebugFilesEnabled"
+                checked={generateDebugFilesEnabled}
+                onChange={onChangeGenerateDebugFilesEnabled}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          {!searchTerm && (
+            <CardButtons>
+              <Button
+                onClick={() => {
+                  onChangeSettingProp("openBuildLogOnWarnings", true);
+                  onChangeSettingProp("generateDebugFilesEnabled", false);
+                }}
+              >
+                {l10n("FIELD_RESTORE_DEFAULT")}
+              </Button>
+            </CardButtons>
+          )}
         </SearchableCard>
 
         <SearchableCard

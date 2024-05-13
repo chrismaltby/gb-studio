@@ -595,7 +595,6 @@
   "FIELD_EFFECT_INDEX_DESC": "The effect number to play (for fxhammer only).",
   "FIELD_PRIORITY": "Priority",
   "FIELD_PRIORITY_SOUND_DESC": "The priority of the effect, high, medium or low. If two sound effects are playing at the same time then higher priority sound effects will take precedence.",
-  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP": "Number of ticks per row",
   "FIELD_IDLE_LABEL": "Wait until next frame",
   "FIELD_FOR": "For",
@@ -792,6 +791,8 @@
   "FIELD_MONO_OVERRIDE_DESC": "This image is using automatic palettes with a monochrome override defined at \"{tilesFilename}\" which will determine the tile data used, while \"{filename}\" will determine the colors",
   "FIELD_BUILD_LOG": "Build Log",
   "FIELD_SET_AS_STARTING_SCENE": "Set As Starting Scene",
+  "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Open Build Log On Warnings",
+  "FIELD_GENERATE_DEBUG_FILES": "Generate Debugging Files",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -895,6 +896,8 @@
   "EVENT_TEXT_DESC": "Show a dialogue box at the bottom of the game screen. When text is shown the dialogue box will slide up from the bottom of the screen and will slide down after it has been shown.",
   "EVENT_CAMERA_MOVE_TO": "Camera Move To",
   "EVENT_CAMERA_MOVE_TO_DESC": "Move the camera to a new position.",
+  "EVENT_CAMERA_SET_POSITION": "Set Camera Position",
+  "EVENT_CAMERA_SET_POSITION_DESC": "Set the position of the camera, causing it to instantly move to the new location.",
   "EVENT_CAMERA_LOCK": "Camera Lock To Player",
   "EVENT_CAMERA_LOCK_DESC": "Move the camera back to centering on the player, locking into position when the player moves. Optionally allows locking to follow player in only horizontal or vertical axis.",
   "EVENT_FADE_IN": "Fade Screen In",
@@ -1085,6 +1088,7 @@
   "EVENT_ACTOR_STOP_UPDATE_LABEL": "{actor} Stop \"On Update\" Script",
   "EVENT_ACTOR_START_UPDATE_LABEL": "{actor} Start \"On Update\" Script",
   "EVENT_CAMERA_MOVE_TO_LABEL": "Camera Move To {{x},{y}}",
+  "EVENT_CAMERA_SET_POSITION_LABEL": "Camera Set Position To {{x},{y}}",
   "EVENT_CAMERA_SHAKE_LABEL": "Camera Shake {direction} For {time} {units}",
   "EVENT_CALL_CUSTOM_EVENT_LABEL": "Call Script: {script}",
   "EVENT_IF_INPUT_LABEL": "If Joypad {input} Held",
@@ -1148,6 +1152,10 @@
   "EVENT_GROUP_BOOLEAN": "Boolean",
   "EVENT_GROUP_COUNTER": "Counter",
   "EVENT_LOOP_WHILE_EXPRESSION": "Loop While Math Expression",
+  "EVENT_SCRIPT_LOCK": "Script Lock",
+  "EVENT_SCRIPT_LOCK_DESC": "Pause other scripts and scene updates until this script has finished or is unlocked.",
+  "EVENT_SCRIPT_UNLOCK": "Script Unlock",
+  "EVENT_SCRIPT_UNLOCK_DESC": "If locked, unlock this script so other scripts can run and the scene can update.",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -1337,6 +1345,8 @@
   "SPLASH_CREATING": "Creating",
   "SPLASH_CLEAR_RECENT": "Clear Recent",
   "SPLASH_NO_RECENT_PROJECTS": "No projects have been opened recently.",
+  "SPLASH_CREDITS": "Credits",
+  "SPLASH_CONTRIBUTORS": "Contributors",
 
   "// 14": "Dialogue Review ------------------------------------------------",
 
@@ -1417,6 +1427,7 @@
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Default Player Sprites",
   "SETTINGS_MUSIC": "Music",
   "SETTINGS_COLOR": "Color Options",
+  "SETTINGS_BUILD": "Build Options",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

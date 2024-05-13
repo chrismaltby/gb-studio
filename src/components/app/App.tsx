@@ -4,7 +4,6 @@ import AppToolbar from "./AppToolbar";
 import BackgroundsPage from "components/pages/BackgroundsPage";
 import SpritesPage from "components/pages/SpritesPage";
 import DialoguePage from "components/pages/DialoguePage";
-import BuildPage from "components/pages/BuildPage";
 import WorldPage from "components/pages/WorldPage";
 import MusicPage from "components/pages/MusicPage";
 import PalettePage from "components/pages/PalettePage";
@@ -105,7 +104,6 @@ const App = () => {
           {section === "sounds" && <SoundsPage />}
           {section === "palettes" && <PalettePage />}
           {section === "dialogue" && <DialoguePage />}
-          {section === "build" && <BuildPage />}
           {section === "settings" && <SettingsPage />}
           {draggingOver && <DropZone />}
         </AppContent>

@@ -251,6 +251,13 @@ void fade_init(void) BANKED {
 
 void fade_in(void) BANKED {
     if (fade_timer == FADED_IN_FRAME) {
+#ifdef CGB
+        if (_is_CGB) {
+            ApplyPaletteChangeColor(FADED_IN_FRAME);
+            return;
+        }
+#endif
+        ApplyPaletteChangeDMG(FADED_IN_FRAME);
         return;
     }
     fade_frame = 0;
@@ -268,6 +275,13 @@ void fade_in(void) BANKED {
 
 void fade_out(void) BANKED {
     if (fade_timer == FADED_OUT_FRAME) {
+#ifdef CGB
+        if (_is_CGB) {
+            ApplyPaletteChangeColor(FADED_OUT_FRAME);
+            return;
+        }
+#endif
+        ApplyPaletteChangeDMG(FADED_OUT_FRAME);
         return;
     }
     fade_frame = 0;

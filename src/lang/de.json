@@ -594,7 +594,6 @@
   "FIELD_EFFECT_INDEX_DESC": "Die Nummer des abzuspielenden Effekts (nur für fxhammer).",
   "FIELD_PRIORITY": "Priorität",
   "FIELD_PRIORITY_SOUND_DESC": "Die Priorität des Effekts, hoch, mittel oder niedrig. Wenn zwei Klangeffekte gleichzeitig abgespielt werden, haben die Klangeffekte mit der höheren Priorität Vorrang.",
-  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Emulicious C-Debugging einschalten",
   "FIELD_TEMPO_TOOLTIP": "Anzahl der Ticks pro Zeile",
   "FIELD_IDLE_LABEL": "Warte bis zum nächsten Frame",
   "FIELD_FOR": "Für",

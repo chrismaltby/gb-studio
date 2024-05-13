@@ -6,6 +6,14 @@ import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { CheckIcon, BlankIcon } from "ui/icons/Icons";
+import {
+  SettingsState,
+  getSettings,
+} from "store/features/settings/settingsState";
+import settingsActions from "store/features/settings/settingsActions";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -36,7 +44,7 @@ const ButtonToolbar = styled.div`
   align-items: center;
   padding: 10px;
 
-  > * {
+  ${Button} {
     height: 24px;
     line-height: 24px;
   }
@@ -53,6 +61,12 @@ const DebuggerBuildLog = () => {
   const output = useAppSelector((state) => state.console.output);
   const warnings = useAppSelector((state) => state.console.warnings);
   const status = useAppSelector((state) => state.console.status);
+  const openBuildLogOnWarnings = useAppSelector(
+    (state) => getSettings(state).openBuildLogOnWarnings
+  );
+  const generateDebugFilesEnabled = useAppSelector(
+    (state) => getSettings(state).generateDebugFilesEnabled
+  );
 
   // Only show the latest 500 lines during build
   // show full output on complete
@@ -91,6 +105,32 @@ const DebuggerBuildLog = () => {
     }
   }, []);
 
+  const onChangeSettingProp = useCallback(
+    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
+      dispatch(
+        settingsActions.editSettings({
+          [key]: value,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const onToggleOpenBuildLogOnWarnings = useCallback(
+    () =>
+      onChangeSettingProp("openBuildLogOnWarnings", !openBuildLogOnWarnings),
+    [onChangeSettingProp, openBuildLogOnWarnings]
+  );
+
+  const onToggleGenerateDebugFilesEnabled = useCallback(
+    () =>
+      onChangeSettingProp(
+        "generateDebugFilesEnabled",
+        !generateDebugFilesEnabled
+      ),
+    [onChangeSettingProp, generateDebugFilesEnabled]
+  );
+
   return (
     <Wrapper>
       <Terminal ref={scrollRef}>
@@ -123,13 +163,29 @@ const DebuggerBuildLog = () => {
         {status === "running" ? (
           <Button onClick={onRun}>{l10n("BUILD_CANCEL")}</Button>
         ) : (
-          <>
-            <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
-            <Button onClick={onDeleteCache}>
-              {l10n("BUILD_EMPTY_BUILD_CACHE")}
-            </Button>
-          </>
+          <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
         )}
+        <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
+          <MenuItem onClick={onToggleOpenBuildLogOnWarnings}>
+            <MenuItemIcon>
+              {openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
+            </MenuItemIcon>
+            {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
+          </MenuItem>
+          <MenuItem onClick={onToggleGenerateDebugFilesEnabled}>
+            <MenuItemIcon>
+              {generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
+            </MenuItemIcon>
+            {l10n("FIELD_GENERATE_DEBUG_FILES")}
+          </MenuItem>
+          <MenuDivider />
+          <MenuItem onClick={onDeleteCache}>
+            <MenuItemIcon>
+              <BlankIcon />
+            </MenuItemIcon>
+            {l10n("BUILD_EMPTY_BUILD_CACHE")}
+          </MenuItem>
+        </DropdownButton>
         <FlexGrow />
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>

@@ -132,7 +132,6 @@ export interface EditorState {
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
   navigatorSplitSizesManuallyEdited: boolean;
-  profile: boolean;
   focusSceneId: string;
   selectedSpriteSheetId: string;
   selectedSpriteStateId: string;
@@ -196,7 +195,6 @@ export const initialState: EditorState = {
   lastScriptTabTrigger: "",
   lastScriptTabSecondary: "",
   lockScriptEditor: false,
-  profile: false,
   worldSidebarWidth: 300,
   navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
@@ -628,10 +626,6 @@ const editorSlice = createSlice({
 
     setLockScriptEditor: (state, action: PayloadAction<boolean>) => {
       state.lockScriptEditor = action.payload;
-    },
-
-    setProfiling: (state, action: PayloadAction<boolean>) => {
-      state.profile = action.payload;
     },
 
     setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {

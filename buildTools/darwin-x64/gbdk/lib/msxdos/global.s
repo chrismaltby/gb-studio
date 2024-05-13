@@ -182,26 +182,6 @@
         .COPY           = 0x82  ; File cannot be copied onto itself
         .OVDEST         = 0x81  ; Cannot overwrite previous destination file
 
-        .MEMORY_CTL     = 0x3E
-
-        .MEMCTL_JOYON   = 0b00000000
-        .MEMCTL_JOYOFF  = 0b00000100
-        .MEMCTL_BASEON  = 0b00000000
-        .MEMCTL_BASEOFF = 0b00001000
-        .MEMCTL_RAMON   = 0b00000000
-        .MEMCTL_RAMOFF  = 0b00010000
-        .MEMCTL_CROMON  = 0b00000000
-        .MEMCTL_CROMOFF = 0b00100000
-        .MEMCTL_ROMON   = 0b00000000
-        .MEMCTL_ROMOFF  = 0b01000000
-        .MEMCTL_EXTON   = 0b00000000
-        .MEMCTL_EXTOFF  = 0b10000000
-
-        .JOY_CTL        = 0x3F
-
-        .JOY_P1_LATCH   = 0b00000010
-        .JOY_P2_LATCH   = 0b00001000
-
         .VDP_VRAM       = 0x4000
         .VDP_TILEDATA0  = 0x4000
         .VDP_TILEDATA1  = 0x4800
@@ -298,29 +278,6 @@
         .KBD_SELECT_ROW = 0xAA
         .KBD_INPUT      = 0xA9
 
-        .JOY_PORT1      = 0xDC
-
-        .JOY_P1_UP      = 0b00000001
-        .JOY_P1_DOWN    = 0b00000010
-        .JOY_P1_LEFT    = 0b00000100
-        .JOY_P1_RIGHT   = 0b00001000
-        .JOY_P1_SW1     = 0b00010000
-        .JOY_P1_TRIGGER = 0b00010000
-        .JOY_P1_SW2     = 0b00100000
-        .JOY_P2_UP      = 0b01000000
-        .JOY_P2_DOWN    = 0b10000000
-
-        .JOY_PORT2      = 0xDD
-
-        .JOY_P2_LEFT    = 0b00000001
-        .JOY_P2_RIGHT   = 0b00000010
-        .JOY_P2_SW1     = 0b00000100
-        .JOY_P2_TRIGGER = 0b00000100
-        .JOY_P2_SW2     = 0b00001000
-        .JOY_RESET      = 0b00010000
-        .JOY_P1_LIGHT   = 0b01000000
-        .JOY_P2_LIGHT   = 0b10000000
-
         .FMADDRESS      = 0xF0
         .FMDATA         = 0xF1
         .AUDIOCTRL      = 0xF2
@@ -330,10 +287,8 @@
         .MAP_FRAME2     = 0xfffe
         .MAP_FRAME3     = 0xffff
 
-        .BIOS           = 0xC000
-
-        .SYSTEM_PAL     = 0x00
-        .SYSTEM_NTSC    = 0x01
+        .SYSTEM_NTSC    = 0x00
+        .SYSTEM_PAL     = 0x01
 
         .CPU_CLOCK      = 3579545
 

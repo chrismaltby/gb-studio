@@ -10,7 +10,7 @@ type BuildOptions = {
   colorEnabled: boolean;
   sgb: boolean;
   musicDriver: string;
-  profile: boolean;
+  debug: boolean;
   platform: string;
   batteryless: boolean;
   targetPlatform: "gb" | "pocket";
@@ -22,7 +22,7 @@ const buildMakeScript = async (
     colorEnabled,
     sgb,
     musicDriver,
-    profile,
+    debug,
     platform,
     batteryless,
     targetPlatform,
@@ -55,7 +55,7 @@ const buildMakeScript = async (
     CFLAGS += " -DBATTERYLESS";
   }
 
-  if (profile) {
+  if (debug) {
     CFLAGS += " -Wf--debug -Wl-y";
   }
 
@@ -109,7 +109,7 @@ export const getBuildCommands = async (
     colorEnabled,
     sgb,
     musicDriver,
-    profile,
+    debug,
     platform,
     batteryless,
     targetPlatform,
@@ -164,7 +164,7 @@ export const getBuildCommands = async (
         buildArgs.push("-DBATTERYLESS");
       }
 
-      if (profile) {
+      if (debug) {
         buildArgs.push("-Wf--fverbose-asm");
         buildArgs.push("-Wf--debug");
         buildArgs.push("-Wl-m");
@@ -259,7 +259,7 @@ export const buildLinkFlags = (
   color = false,
   sgb = false,
   musicDriver = "gbtplayer",
-  profile = false,
+  debug = false,
   targetPlatform = "gb"
 ) => {
   const validName = name
@@ -289,7 +289,7 @@ export const buildLinkFlags = (
     // Pocket
     targetPlatform === "pocket" ? ["-msm83:ap"] : [],
     // Debug emulicious
-    profile ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
+    debug ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
     // Music Driver
     musicDriver === "huge"
       ? // hugetracker

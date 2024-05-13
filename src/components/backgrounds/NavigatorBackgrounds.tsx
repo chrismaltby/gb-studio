@@ -5,7 +5,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Background, Tileset } from "shared/lib/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -21,6 +21,8 @@ import {
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import { Button } from "ui/buttons/Button";
+import { SearchIcon } from "ui/icons/Icons";
 
 interface NavigatorBackgroundsProps {
   height: number;
@@ -54,13 +56,26 @@ export const NavigatorBackgrounds = ({
 
   const dispatch = useAppDispatch();
 
+  const [backgroundsSearchTerm, setBackgroundsSearchTerm] = useState("");
+  const [backgroundsSearchEnabled, setBackgroundsSearchEnabled] =
+    useState(false);
+
+  const [tilesetsSearchTerm, setTilesetsSearchTerm] = useState("");
+  const [tilesetsSearchEnabled, setTilesetsSearchEnabled] = useState(false);
+
   const nestedBackgroundItems = useMemo(
-    () => buildAssetNavigatorItems(allBackgrounds, openFolders),
-    [allBackgrounds, openFolders]
+    () =>
+      buildAssetNavigatorItems(
+        allBackgrounds,
+        openFolders,
+        backgroundsSearchTerm
+      ),
+    [allBackgrounds, backgroundsSearchTerm, openFolders]
   );
   const nestedTilesetItems = useMemo(
-    () => buildAssetNavigatorItems(allTilesets, openFolders),
-    [allTilesets, openFolders]
+    () =>
+      buildAssetNavigatorItems(allTilesets, openFolders, tilesetsSearchTerm),
+    [allTilesets, openFolders, tilesetsSearchTerm]
   );
 
   const setSelectedId = useCallback(
@@ -186,18 +201,58 @@ export const NavigatorBackgrounds = ({
     [toggleFolderOpen]
   );
 
+  const showBackgroundsSearch = backgroundsSearchEnabled && splitSizes[0] > 60;
+  const showTilesetsSearch = tilesetsSearchEnabled && splitSizes[1] > 60;
+
+  const toggleBackgroundsSearchEnabled = useCallback(() => {
+    if (backgroundsSearchEnabled) {
+      setBackgroundsSearchTerm("");
+    }
+    setBackgroundsSearchEnabled(!backgroundsSearchEnabled);
+  }, [backgroundsSearchEnabled]);
+
+  const toggleTilesetsSearchEnabled = useCallback(() => {
+    if (tilesetsSearchEnabled) {
+      setTilesetsSearchTerm("");
+    }
+    setTilesetsSearchEnabled(!tilesetsSearchEnabled);
+  }, [tilesetsSearchEnabled]);
+
   return (
     <>
       <Pane style={{ height: splitSizes[0] }}>
-        <SplitPaneHeader collapsed={false} onToggle={() => togglePane(0)}>
+        <SplitPaneHeader
+          collapsed={false}
+          onToggle={() => togglePane(0)}
+          buttons={
+            <Button
+              variant={backgroundsSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleBackgroundsSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
+        >
           {l10n("NAV_BACKGROUNDS")}
         </SplitPaneHeader>
+
+        {showBackgroundsSearch && (
+          <EntityListSearch
+            type="search"
+            value={backgroundsSearchTerm}
+            onChange={(e) => setBackgroundsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
 
         <FlatList
           selectedId={selectedId}
           items={nestedBackgroundItems}
           setSelectedId={setSelectedId}
-          height={splitSizes[0] - 30}
+          height={splitSizes[0] - (showBackgroundsSearch ? 60 : 30)}
           onKeyDown={(e: KeyboardEvent, item) => {
             listenForRenameStart(e);
             if (item?.type === "folder") {
@@ -229,14 +284,38 @@ export const NavigatorBackgrounds = ({
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
 
       <Pane style={{ height: splitSizes[1] }}>
-        <SplitPaneHeader collapsed={false} onToggle={() => togglePane(1)}>
+        <SplitPaneHeader
+          collapsed={false}
+          onToggle={() => togglePane(1)}
+          buttons={
+            <Button
+              variant={tilesetsSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleTilesetsSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
+        >
           {l10n("FIELD_TILESETS")}
         </SplitPaneHeader>
+
+        {showTilesetsSearch && (
+          <EntityListSearch
+            type="search"
+            value={tilesetsSearchTerm}
+            onChange={(e) => setTilesetsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+
         <FlatList
           selectedId={selectedId}
           items={nestedTilesetItems}
           setSelectedId={setSelectedId}
-          height={splitSizes[1] - 30}
+          height={splitSizes[1] - (showTilesetsSearch ? 60 : 30)}
           onKeyDown={(e: KeyboardEvent, item) => {
             listenForRenameStart(e);
             if (item?.type === "folder") {

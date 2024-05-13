@@ -10,6 +10,7 @@ import {
   migrateFrom330r2To330r3Event,
   migrateFrom330r3To330r4Event,
   migrateFrom330r4To330r5Event,
+  migrateFrom330r6To330r7Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -1228,6 +1229,256 @@ test("should strip invalid property values in EVENT_SET_VALUE", () => {
         type: "number",
         value: 0,
       },
+    },
+  });
+});
+
+test("should migrate camera speed to pixels per frame", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 2,
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_LOCK",
+    args: {
+      speed: 2,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0.5,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_LOCK",
+    args: {
+      speed: 0.5,
+    },
+  });
+});
+
+test("should migrate camera speed keeping speed when value was 1", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 1,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 1,
+    },
+  });
+});
+
+test("should migrate camera speed fixing when value was 3 or 5", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 3,
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 5,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 0.5,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 0.5,
+    },
+  });
+});
+
+test("should migrate camera speed 4", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 4,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0.25,
+    },
+  });
+});
+
+test("should migrate unknown or missing camera speed to instant movement", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: "4",
+    },
+  };
+  const oldEvent3 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 6,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent3)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
     },
   });
 });

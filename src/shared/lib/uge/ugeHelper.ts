@@ -699,7 +699,7 @@ export const exportToC = (song: Song, trackName: string): string => {
   };
 
   const formatWaveInstrument = function (instr: WaveInstrument) {
-    const length = (instr.length !== null ? instr.length : 0) & 0xff;
+    const length = (instr.length !== null ? 256 - instr.length : 0) & 0xff;
     const volume = instr.volume << 5;
     const waveform = instr.wave_index;
     let subpatternRef: 0 | string = 0;

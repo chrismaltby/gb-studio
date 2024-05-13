@@ -49,8 +49,7 @@ const sectionAccelerators = {
   sounds: "CommandOrControl+5",
   palettes: "CommandOrControl+6",
   dialogue: "CommandOrControl+7",
-  build: "CommandOrControl+8",
-  settings: "CommandOrControl+9",
+  settings: "CommandOrControl+8",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
@@ -85,7 +84,6 @@ const AppToolbar: FC = () => {
       sounds: l10n("NAV_SFX"),
       palettes: l10n("NAV_PALETTES"),
       dialogue: l10n("NAV_DIALOGUE_REVIEW"),
-      build: l10n("NAV_BUILD_AND_RUN"),
       settings: l10n("NAV_SETTINGS"),
     }),
     []
@@ -155,6 +153,7 @@ const AppToolbar: FC = () => {
 
   const openBuildLog = useCallback(() => {
     dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+    dispatch(navigationActions.setSection("world"));
     dispatch(debuggerActions.setIsLogOpen(true));
   }, [dispatch]);
 

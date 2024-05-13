@@ -25,6 +25,13 @@
 #undef MSX
 #endif
 
+#define SYSTEM_BITS_NTSC        0x00
+#define SYSTEM_BITS_PAL         0x40
+#define SYSTEM_BITS_DENDY       0x80
+extern const uint8_t _SYSTEM;
+
+#define SYSTEM_60HZ    0x00
+#define SYSTEM_50HZ    0x01
 
 #define RGB(r,g,b)        RGB_TO_NES(((r) | ((g) << 2) | ((b) << 4)))
 #define RGB8(r,g,b)       RGB_TO_NES((((r) >> 6) | (((g) >> 6) << 2) | (((b) >> 6) << 4)))
@@ -254,6 +261,16 @@ void mode(uint8_t m) NO_OVERLAY_LOCALS;
     @see M_DRAWING, M_TEXT_OUT, M_TEXT_INOUT, M_NO_SCROLL, M_NO_INTERP
 */
 uint8_t get_mode(void) NO_OVERLAY_LOCALS;
+
+/** Returns the system gbdk is running on.
+
+*/
+inline uint8_t get_system(void) {
+    if(_SYSTEM == SYSTEM_BITS_NTSC)
+        return SYSTEM_60HZ;
+    else
+        return SYSTEM_50HZ;
+}
 
 /** Global Time Counter in VBL periods (60Hz)
 

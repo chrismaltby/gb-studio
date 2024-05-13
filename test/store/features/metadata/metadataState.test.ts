@@ -23,6 +23,7 @@ test("Should change the path and root to new path and root and set loaded to tru
       engineFields: [],
       sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "new_test_root/project_copy.gbsproj"

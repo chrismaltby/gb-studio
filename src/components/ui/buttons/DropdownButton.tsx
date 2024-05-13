@@ -14,7 +14,7 @@ import React, {
   useState,
 } from "react";
 import styled, { css } from "styled-components";
-import { RelativePortal } from "ui/layout/RelativePortal";
+import { PinDirection, RelativePortal } from "ui/layout/RelativePortal";
 import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
 import { Button, ButtonProps } from "./Button";
@@ -26,6 +26,7 @@ export interface DropdownButtonProps {
   readonly children?: ReactNode;
   readonly showArrow?: boolean;
   readonly menuDirection?: "left" | "right";
+  readonly openUpwards?: boolean;
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly style?: CSSProperties;
@@ -79,7 +80,11 @@ export const DropdownButtonWrapper = styled.div`
   }
 `;
 
-export const ArrowWrapper = styled.div`
+interface ArrowWrapperProps {
+  openUpwards?: boolean;
+}
+
+export const ArrowWrapper = styled.div<ArrowWrapperProps>`
   margin-right: -5px;
   margin-top: -1px;
   min-width: 8px;
@@ -88,6 +93,13 @@ export const ArrowWrapper = styled.div`
   }
   &&&& > svg {
     height: 8px;
+
+    ${(props) =>
+      props.openUpwards
+        ? css`
+            transform: rotate(180deg);
+          `
+        : ""}
   }
 `;
 
@@ -120,6 +132,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     children,
     showArrow,
     menuDirection,
+    openUpwards,
     offsetX,
     offsetY,
     active,
@@ -552,8 +565,38 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       isInitialMount.current = false;
     }, []);
 
+    const menuPinDirection = `${openUpwards ? "bottom" : "top"}-${
+      menuDirection === "left" ? "left" : "right"
+    }` as PinDirection;
+
+    const menu = useMemo(() => {
+      return (
+        isOpen && (
+          <MenuWrapper menuDirection={menuDirection}>
+            <RelativePortal
+              pin={menuPinDirection}
+              offsetX={offsetX}
+              offsetY={offsetY}
+            >
+              <Menu role="menu" ref={menuRef}>
+                {childrenWithProps}
+              </Menu>
+            </RelativePortal>
+          </MenuWrapper>
+        )
+      );
+    }, [
+      childrenWithProps,
+      isOpen,
+      menuDirection,
+      menuPinDirection,
+      offsetX,
+      offsetY,
+    ]);
+
     return (
       <DropdownButtonWrapper>
+        {openUpwards && menu}
         <Button
           id={id}
           title={title}
@@ -580,24 +623,12 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         >
           {label}
           {showArrow && (
-            <ArrowWrapper>
+            <ArrowWrapper openUpwards={openUpwards}>
               <CaretDownIcon />
             </ArrowWrapper>
           )}
         </Button>
-        {isOpen && (
-          <MenuWrapper menuDirection={menuDirection}>
-            <RelativePortal
-              pin={menuDirection === "left" ? "top-left" : "top-right"}
-              offsetX={offsetX}
-              offsetY={offsetY}
-            >
-              <Menu role="menu" ref={menuRef}>
-                {childrenWithProps}
-              </Menu>
-            </RelativePortal>
-          </MenuWrapper>
-        )}
+        {!openUpwards && menu}
       </DropdownButtonWrapper>
     );
   }

@@ -9,7 +9,6 @@ export type NavigationSection =
   | "sounds"
   | "palettes"
   | "dialogue"
-  | "build"
   | "settings";
 
 export interface NavigationState {

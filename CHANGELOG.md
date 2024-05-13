@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
 - Add shortcut to search scenes when in world mode by pressing `/`
 - Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
-- Add native Mac ARM support for M1/M2/M3+ devices
+- Add native support for Macs with Apple silicon without needing Rosetta
 - Add support for `<<` and `>>` operators in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
 - Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
@@ -27,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for almost every script event input that supports variables to use advanced values, click the button to the left of the value input to select value types, and combine them with math operators
 - Add ability to use variables within Menu and Choice events [@pau-tomas](https://github.com/pau-tomas)
 - Add stack preview mode to debugger
-- Native support for Macs with Apple silicon without needing Rosetta
 - Add ability to set common tilesets between scenes, the common tiles will always be loaded in a consistent order between scenes sharing the same common tileset
 - Add ability to set Fade Speed as "Instant" when switching scenes, combine this with use of common tilesets in both scenes to enable seamless scene switching
 - Add ability to use variables, advanced values and expressions for coordinates in Change Scene event
@@ -40,7 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add context menus when right clicking on list items, or on scenes/actors/triggers in world view, or tiles on sprite editor view allowing renaming/deleting
 - Add ability to multi select scenes by shift click + dragging on world view or shift clicking in scenes list. When multiple scenes are selected they can be moved at the same time
 - Add ability to multi select script events by shift clicking the event's header. When multiple events are selected they can be moved, copied, grouped or deleted at the same time
-- Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\`  supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
+- Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\` supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
+- Generate `game_globals.h` at compile time allowing access to global variables from C code [@pau-tomas](https://github.com/pau-tomas)
+- Add support for using random numbers in GBVM RPN instructions [@untoxa](https://github.com/untoxa)
+- Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
+- Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked
+- Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
+- Add `Show Navigator` button to World toolbar if navigator is closed
 
 ### Changed
 
@@ -53,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Event Menu highlights matching text when searching
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Dragging scenes now snaps to an 8px grid allowing easier alignment of scenes
+- Camera speed events updated to use pixels per frame values like actor movement, allowing more precise speed control and speeds faster than 1px per frame
+- Build information and warnings moved to "Build Log" section of Debugger
 
 ### Fixed
 
@@ -67,6 +74,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix compiler warning when using some unary operators in While loop [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where fonts referenced from plugins were not always being included in compiled game
 - Fix issue where navigator split sizes would update every time a project was opened, causing unnecessary changes when project stored in version control system
+- Fix issue where some slower camera speeds weren't actually slower
+- Fix issue where setting "Show Connections" to "None" would prevent Player start position from being visible/draggable
+- Fix issue where note lengths for wave instruments in .uge files were not being stored according to file specification. This may cause some .uge files created with older builds of GB Studio to not sound correct. If you need to fix any .uge files, you can use this [migrator tool](https://chrismaltby.github.io/gbs-uge-migrator/)
+- Fix issue where navigator sidebar could sometimes not be wide enough to show Add and Search buttons in section headers
+- Fix issue where document wasn't being flagged as modified until first change after migrating a project
+
+### Removed
+
+- Removed "Build & Run" section, all previous functionality is now available in "Build Log" section of Debugger
 
 ## [3.2.1] - 2024-02-27
 

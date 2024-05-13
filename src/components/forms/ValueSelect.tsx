@@ -524,33 +524,6 @@ const ValueSelect = ({
     [focus, focusSecondChild, onChange, value]
   );
 
-  const setRandom = useCallback(() => {
-    const valueA =
-      "valueA" in value && value.valueA && value.valueA.type === "number"
-        ? value.valueA
-        : {
-            type: "number" as const,
-            value: 0,
-          };
-    const valueB =
-      "valueB" in value && value.valueB && value.valueB.type === "number"
-        ? value.valueB
-        : {
-            type: "number" as const,
-            value: 0,
-          };
-    onChange({
-      type: "rnd",
-      valueA: valueA,
-      valueB: valueB,
-    });
-    if (valueA.value) {
-      focusSecondChild();
-    } else {
-      focus();
-    }
-  }, [focus, focusSecondChild, onChange, value]);
-
   const onKeyDown = useCallback(
     (
       e: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement | HTMLElement>
@@ -602,7 +575,7 @@ const ValueSelect = ({
       } else if (e.key === "L") {
         setValueFunction("lte");
       } else if (e.key === "r") {
-        setRandom();
+        setValueFunction("rnd");
       } else if (e.key === "&") {
         setValueFunction("and");
       } else if (e.key === "|") {
@@ -620,7 +593,6 @@ const ValueSelect = ({
       setExpression,
       setNumber,
       setProperty,
-      setRandom,
       setValueFunction,
       setVariable,
     ]
@@ -654,7 +626,7 @@ const ValueSelect = ({
         </MenuItem>
       )),
       <MenuDivider key="div2" />,
-      <MenuItem key="rnd" onClick={setRandom}>
+      <MenuItem key="rnd" onClick={() => setValueFunction("rnd")}>
         <MenuItemIcon>
           {value.type === "rnd" ? <CheckIcon /> : <BlankIcon />}
         </MenuItemIcon>
@@ -662,7 +634,7 @@ const ValueSelect = ({
         <MenuAccelerator accelerator="r" />
       </MenuItem>,
     ],
-    [setRandom, setValueFunction, value.type]
+    [setValueFunction, value.type]
   );
 
   const booleanMenu = useMemo(
@@ -902,10 +874,7 @@ const ValueSelect = ({
       ) : null;
     }
 
-    const isOperation =
-      isUnaryOperation(value) ||
-      isValueOperation(value) ||
-      value.type === "rnd";
+    const isOperation = isUnaryOperation(value) || isValueOperation(value);
 
     return (
       <DropWrapper ref={dragRef}>
@@ -933,7 +902,7 @@ const ValueSelect = ({
               {l10n("FIELD_REMOVE")}
             </MenuItem>
           ) : null}
-          {isValueOperation(value) || value.type === "rnd" ? (
+          {isValueOperation(value) ? (
             <MenuItem
               onClick={() => {
                 onChange(value.valueA);
@@ -1141,45 +1110,6 @@ const ValueSelect = ({
             <Input value={l10n("FIELD_FALSE")} onKeyDown={onKeyDown} />
           </InputGroup>
         </ValueWrapper>
-      );
-    } else if (value.type === "rnd") {
-      return (
-        <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
-          <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
-          <BracketsWrapper>
-            <ValueSelect
-              name={`${name}_valueA`}
-              entityId={entityId}
-              value={value.valueA}
-              onChange={(newValue) => {
-                if (!newValue || newValue.type === "number") {
-                  onChange({
-                    ...value,
-                    valueA: newValue,
-                  });
-                }
-              }}
-              innerValue
-              fixedType
-            />
-            ,
-            <ValueSelect
-              name={`${name}_valueB`}
-              entityId={entityId}
-              value={value.valueB}
-              onChange={(newValue) => {
-                if (!newValue || newValue.type === "number") {
-                  onChange({
-                    ...value,
-                    valueB: newValue,
-                  });
-                }
-              }}
-              innerValue
-              fixedType
-            />
-          </BracketsWrapper>
-        </BracketsWrapper>
       );
     } else if (isUnaryOperation(value)) {
       return (

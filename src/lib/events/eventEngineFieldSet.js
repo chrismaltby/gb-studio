@@ -49,8 +49,9 @@ const compile = (input, helpers) => {
   const { engineFieldSetToScriptValue, engineFieldSetToDefault } = helpers;
   if (!input.value) {
     engineFieldSetToDefault(input.engineFieldKey);
+  } else {
+    engineFieldSetToScriptValue(input.engineFieldKey, input.value);
   }
-  engineFieldSetToScriptValue(input.engineFieldKey, input.value)
 };
 
 module.exports = {

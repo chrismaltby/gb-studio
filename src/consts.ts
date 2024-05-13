@@ -42,6 +42,8 @@ export const TILE_SIZE = 8;
 
 const MIDDLE_MOUSE = 2;
 
+export const NAVIGATOR_MIN_WIDTH = 200;
+
 export const TOOL_SELECT = "select";
 export const TOOL_ACTORS = "actors";
 export const TOOL_COLLISIONS = "collisions";
@@ -200,6 +202,8 @@ export const defaultProjectSettings: SettingsState = {
   debuggerWatchedVariables: [],
   colorMode: "mixed",
   previewAsMono: false,
+  openBuildLogOnWarnings: true,
+  generateDebugFilesEnabled: false,
 };
 
 export {

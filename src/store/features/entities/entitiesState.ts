@@ -93,6 +93,7 @@ import {
   defaultLocalisedSceneName,
   isVariableCustomEvent,
   renameAssetEntity,
+  defaultLocalisedCustomEventName,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
@@ -2495,7 +2496,7 @@ const addCustomEvent: CaseReducer<
   const customEventsTotal = localCustomEventSelectors.selectTotal(state);
   const newCustomEvent: CustomEventNormalized = {
     id: action.payload.customEventId,
-    name: "",
+    name: defaultLocalisedCustomEventName(customEventsTotal),
     description: "",
     variables: {},
     actors: {},

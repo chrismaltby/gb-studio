@@ -29,7 +29,8 @@
     "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start",
     "dead-code": "knip",
     "repl": "ts-node",
-    "fetch-contributors": "curl https://api.github.com/repos/chrismaltby/gb-studio/contributors > contributors.json"
+    "fetch-contributors": "ts-node src/scripts/fetchContributors.ts",
+    "fetch-patrons": "ts-node src/scripts/fetchPatrons.ts"
   },
   "keywords": [],
   "author": "GB Studio",

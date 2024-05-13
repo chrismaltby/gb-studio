@@ -308,15 +308,8 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
           },
         },
         {
-          label: l10n("MENU_BUILD_AND_RUN"),
-          accelerator: "CommandOrControl+8",
-          click: () => {
-            notifyListeners("section", "build");
-          },
-        },
-        {
           label: l10n("MENU_SETTINGS"),
-          accelerator: "CommandOrControl+9",
+          accelerator: "CommandOrControl+8",
           click: () => {
             notifyListeners("section", "settings");
           },

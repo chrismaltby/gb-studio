@@ -51,8 +51,27 @@
 
         .JOY_CTL        = 0x3F
 
-        .JOY_P1_LATCH   = 0b00000010
-        .JOY_P2_LATCH   = 0b00001000
+        .JOY_P1_TR_DIR_IN  = 0b00000001
+        .JOY_P1_TR_DIR_OUT = 0b00000000
+        .JOY_P1_TH_DIR_IN  = 0b00000010
+        .GUN_P1_LATCH      = 0b00000010
+        .JOY_P1_TH_DIR_OUT = 0b00000000
+        .JOY_P2_TR_DIR_IN  = 0b00000100
+        .JOY_P2_TR_DIR_OUT = 0b00000000
+        .JOY_P2_TH_DIR_IN  = 0b00001000
+        .GUN_P2_LATCH      = 0b00001000
+        .JOY_P2_TH_DIR_OUT = 0b00000000
+        .JOY_P1_TR_OUT_HI  = 0b00010000
+        .JOY_P1_TR_OUT_LO  = 0b00000000
+        .JOY_P1_TH_OUT_HI  = 0b00100000
+        .JOY_P1_TH_OUT_LO  = 0b00000000
+        .JOY_P2_TR_OUT_HI  = 0b01000000
+        .JOY_P2_TR_OUT_LO  = 0b00000000
+        .JOY_P2_TH_OUT_HI  = 0b10000000
+        .JOY_P2_TH_OUT_LO  = 0b00000000
+
+        .JOY_TH_HI      = 0b11110101
+        .JOY_TH_LO      = 0b01010101
 
         .VDP_VRAM       = 0x4000
         .VDP_CRAM       = 0xC000
@@ -142,37 +161,49 @@
 
         .JOYPAD_COUNT   = 1
 
-        .UP             = 0b00000001
-        .DOWN           = 0b00000010
-        .LEFT           = 0b00000100
-        .RIGHT          = 0b00001000
-        .A              = 0b00010000
-        .B              = 0b00100000
-        .SELECT         = 0b00100000    ; map to B
-        .START          = 0b10000000    ; Game Gear Start button
+        .UP              = 0b00000001
+        .DOWN            = 0b00000010
+        .LEFT            = 0b00000100
+        .RIGHT           = 0b00001000
+        .A               = 0b00010000
+        .B               = 0b00100000
+        .START           = 0b01000000
+        .SELECT          = 0b10000000
 
         .JOY_PORT1      = 0xDC
 
-        .JOY_P1_UP      = 0b00000001
-        .JOY_P1_DOWN    = 0b00000010
-        .JOY_P1_LEFT    = 0b00000100
-        .JOY_P1_RIGHT   = 0b00001000
-        .JOY_P1_SW1     = 0b00010000
-        .JOY_P1_TRIGGER = 0b00010000
-        .JOY_P1_SW2     = 0b00100000
-        .JOY_P2_UP      = 0b01000000
-        .JOY_P2_DOWN    = 0b10000000
+        .JOY_P1_UP       = 0b00000001
+        .JOY_P1_MD_Z     = 0b00000001
+        .JOY_P1_DOWN     = 0b00000010
+        .JOY_P1_MD_Y     = 0b00000010
+        .JOY_P1_LEFT     = 0b00000100
+        .JOY_P1_MD_X     = 0b00000100
+        .JOY_P1_RIGHT    = 0b00001000
+        .JOY_P1_MD_MODE  = 0b00001000
+        .JOY_P1_SW1      = 0b00010000
+        .JOY_P1_TRIGGER  = 0b00010000
+        .JOY_P1_MD_A     = 0b00010000
+        .JOY_P1_SW2      = 0b00100000
+        .JOY_P1_MD_START = 0b00100000
+        .JOY_P2_UP       = 0b01000000
+        .JOY_P2_MD_Z     = 0b01000000
+        .JOY_P2_DOWN     = 0b10000000
+        .JOY_P2_MD_Y     = 0b10000000
 
         .JOY_PORT2      = 0xDD
 
-        .JOY_P2_LEFT    = 0b00000001
-        .JOY_P2_RIGHT   = 0b00000010
-        .JOY_P2_SW1     = 0b00000100
-        .JOY_P2_TRIGGER = 0b00000100
-        .JOY_P2_SW2     = 0b00001000
-        .JOY_RESET      = 0b00010000
-        .JOY_P1_LIGHT   = 0b01000000
-        .JOY_P2_LIGHT   = 0b10000000
+        .JOY_P2_LEFT     = 0b00000001
+        .JOY_P2_MD_X     = 0b00000001
+        .JOY_P2_RIGHT    = 0b00000010
+        .JOY_P2_MD_MODE  = 0b00000010
+        .JOY_P2_SW1      = 0b00000100
+        .JOY_P2_TRIGGER  = 0b00000100
+        .JOY_P2_MD_A     = 0b00000100
+        .JOY_P2_SW2      = 0b00001000
+        .JOY_P2_MD_START = 0b00001000
+        .JOY_RESET       = 0b00010000
+        .JOY_P1_LIGHT    = 0b01000000
+        .JOY_P2_LIGHT    = 0b10000000
 
         .FMADDRESS      = 0xF0
         .FMDATA         = 0xF1
@@ -194,8 +225,8 @@
 
         .BIOS           = 0xC000
 
-        .SYSTEM_PAL     = 0x00
-        .SYSTEM_NTSC    = 0x01
+        .SYSTEM_NTSC    = 0x00
+        .SYSTEM_PAL     = 0x01
 
         .CPU_CLOCK      = 3579545
 

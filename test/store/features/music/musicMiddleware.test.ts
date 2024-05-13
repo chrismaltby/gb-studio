@@ -145,7 +145,7 @@ test("Should pause music when switching section", async () => {
   } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = navigationActions.setSection("build");
+  const action = navigationActions.setSection("settings");
 
   middleware(store)(next)(action);
 
