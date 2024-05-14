@@ -1,4 +1,7 @@
-import { migrateFrom400r1To400r2Event } from "../../src/lib/project/migrateProject";
+import {
+  migrateFrom400r1To400r2Event,
+  migrateFrom400r2To400r3Event,
+} from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 
 beforeAll(async () => {
@@ -145,6 +148,115 @@ test("should keep Engine Field Update script values", () => {
           type: "number",
           value: 55,
         },
+      },
+    },
+  });
+});
+
+test("should migrate x/y coordinate from replace tile event", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: 14,
+      y: 7,
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      tileIndex: {
+        type: "number",
+        value: 1,
+      },
+    },
+  };
+  expect(migrateFrom400r2To400r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: {
+        type: "number",
+        value: 14,
+      },
+      y: {
+        type: "number",
+        value: 7,
+      },
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      tileIndex: {
+        type: "number",
+        value: 1,
+      },
+    },
+  });
+});
+
+test("should migrate x/y coordinate from replace tile sequence event", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: 4,
+      y: 11,
+      tileIndex: {
+        type: "number",
+        value: 0,
+      },
+      variable: "L2",
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      frames: {
+        type: "number",
+        value: 4,
+      },
+    },
+  };
+  expect(migrateFrom400r2To400r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: {
+        type: "number",
+        value: 4,
+      },
+      y: {
+        type: "number",
+        value: 11,
+      },
+      tileIndex: {
+        type: "number",
+        value: 0,
+      },
+      variable: "L2",
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      frames: {
+        type: "number",
+        value: 4,
+      },
+    },
+  });
+});
+
+test("should migrate x/y coordinate values as 0 in replace tile event if invalid", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: "",
+      y: undefined,
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      tileIndex: {
+        type: "number",
+        value: 1,
+      },
+    },
+  };
+  expect(migrateFrom400r2To400r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: {
+        type: "number",
+        value: 0,
+      },
+      y: {
+        type: "number",
+        value: 0,
+      },
+      tilesetId: "d7042527-d20e-486d-93e6-66b9397df510",
+      tileIndex: {
+        type: "number",
+        value: 1,
       },
     },
   });

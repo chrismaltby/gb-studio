@@ -2,7 +2,7 @@
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
     "_version": "4.0.0",
-    "_release": "1",
+    "_release": "3",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -4728,8 +4728,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 22,
-                                    "y": 6,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 22
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 6
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 0
@@ -4746,8 +4752,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 22,
-                                    "y": 17,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 22
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 17
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 4
@@ -4764,8 +4776,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 4,
-                                    "y": 11,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 4
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 11
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 0

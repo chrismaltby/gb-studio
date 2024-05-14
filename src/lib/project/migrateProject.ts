@@ -50,11 +50,12 @@ import {
   ValueOperatorType,
   isScriptValue,
 } from "shared/lib/scriptValue/types";
+import { ensureNumber } from "shared/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "4.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "2";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -91,6 +92,22 @@ const generateMigrateMeta =
       },
     };
   };
+
+const applyEventsMigration = (
+  data: ProjectData,
+  fn: (event: ScriptEvent) => ScriptEvent
+): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, fn),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, fn),
+      };
+    }),
+  };
+};
 
 type ProjectDataV1 = Omit<ProjectData, "spriteSheets" | "scenes"> & {
   spriteSheets: (SpriteSheetData & { numFrames: number })[];
@@ -2473,17 +2490,35 @@ export const migrateFrom400r1To400r2Event = (
   return event;
 };
 
-const migrateFrom400r1To400r2Events = (data: ProjectData): ProjectData => {
-  return {
-    ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom400r1To400r2Event),
-    customEvents: (data.customEvents || []).map((customEvent) => {
-      return {
-        ...customEvent,
-        script: mapScript(customEvent.script, migrateFrom400r1To400r2Event),
-      };
-    }),
-  };
+/* Version 4.0.0 r3 updates EVENT_REPLACE_TILE_XY and EVENT_REPLACE_TILE_XY_SEQUENCE
+ * to use script values for X/Y coordinates
+ */
+export const migrateFrom400r2To400r3Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (
+    event.args &&
+    (event.command === "EVENT_REPLACE_TILE_XY" ||
+      event.command === "EVENT_REPLACE_TILE_XY_SEQUENCE")
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: ensureNumber(event.args.x, 0),
+        },
+        y: {
+          type: "number",
+          value: ensureNumber(event.args.y, 0),
+        },
+      },
+    });
+  }
+  return event;
 };
 
 const migrateProject = (
@@ -2680,8 +2715,12 @@ const migrateProject = (
 
   if (version === "4.0.0") {
     if (release === "1") {
-      data = migrateFrom400r1To400r2Events(data);
+      data = applyEventsMigration(data, migrateFrom400r1To400r2Event);
       release = "2";
+    }
+    if (release === "2") {
+      data = applyEventsMigration(data, migrateFrom400r2To400r3Event);
+      release = "3";
     }
   }
 
