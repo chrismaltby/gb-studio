@@ -54,7 +54,7 @@ import {
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "4.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "2";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2442,6 +2442,50 @@ const migrateFrom330r6To330r7Events = (data: ProjectData): ProjectData => {
   };
 };
 
+/* Version 4.0.0 r2 handles migrating EVENT_ENGINE_FIELD_SET events from 3.3.0 correctly
+ */
+export const migrateFrom400r1To400r2Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_ENGINE_FIELD_SET") {
+    const currentValue = event.args.value;
+    if (
+      isScriptValue(currentValue) ||
+      !isUnionValue(currentValue) ||
+      currentValue.type === "variable" ||
+      typeof currentValue.value !== "number"
+    ) {
+      return event;
+    }
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        value: {
+          type: "number",
+          value: currentValue.value,
+        },
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom400r1To400r2Events = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, migrateFrom400r1To400r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, migrateFrom400r1To400r2Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2631,6 +2675,13 @@ const migrateProject = (
     if (release === "7") {
       version = "4.0.0";
       release = "1";
+    }
+  }
+
+  if (version === "4.0.0") {
+    if (release === "1") {
+      data = migrateFrom400r1To400r2Events(data);
+      release = "2";
     }
   }
 
