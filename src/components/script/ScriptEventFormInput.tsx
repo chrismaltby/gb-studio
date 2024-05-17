@@ -299,7 +299,7 @@ const ScriptEventFormInput = ({
         name={id}
         variableId={argValue(args.variable) as string}
         entityId={entityId}
-        value={String(value ?? defaultValue)}
+        value={Number(value ?? defaultValue)}
         onChange={onChangeField}
       ></FlagSelect>
     );

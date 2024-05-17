@@ -6,10 +6,10 @@ import { Select, SelectCommonProps } from "ui/form/Select";
 
 interface FlagSelectProps extends SelectCommonProps {
   name: string;
-  value?: string;
+  value?: number;
   variableId: string;
   entityId: string;
-  onChange?: (newId: string) => void;
+  onChange?: (newFlag: number) => void;
 }
 
 export const FlagSelect: FC<FlagSelectProps> = ({
@@ -38,7 +38,7 @@ export const FlagSelect: FC<FlagSelectProps> = ({
       }
       return {
         label: namedLabel,
-        value: `${i}`,
+        value: i,
       };
     });
 
@@ -46,7 +46,7 @@ export const FlagSelect: FC<FlagSelectProps> = ({
     flagOptions.find((o) => (value ? o.value === value : o.value === value)) ||
     flagOptions[0];
 
-  const onFieldChange = (newOption: { value: string }) => {
+  const onFieldChange = (newOption: { value: number }) => {
     if (onChange) {
       onChange(newOption.value);
     }
