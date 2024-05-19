@@ -2,11 +2,11 @@
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
     "_version": "4.0.0",
-    "_release": "1",
+    "_release": "3",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
-            "name": "Sample Town",
+            "name": "town/Sample Town",
             "backgroundId": "053f83aa-a4e3-413b-98af-1bb0d0818ddc",
             "x": 800.25,
             "y": 30,
@@ -4728,8 +4728,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 22,
-                                    "y": 6,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 22
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 6
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 0
@@ -4746,8 +4752,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 22,
-                                    "y": 17,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 22
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 17
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 4
@@ -4764,8 +4776,14 @@
                             {
                                 "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
                                 "args": {
-                                    "x": 4,
-                                    "y": 11,
+                                    "x": {
+                                        "type": "number",
+                                        "value": 4
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "value": 11
+                                    },
                                     "tileIndex": {
                                         "type": "number",
                                         "value": 0
@@ -7938,7 +7956,7 @@
         },
         {
             "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
-            "name": "Cave",
+            "name": "caves/Cave",
             "backgroundId": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
             "x": 575,
             "y": 275,
@@ -8984,7 +9002,7 @@
         },
         {
             "id": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55",
-            "name": "Top House",
+            "name": "town/Top House",
             "backgroundId": "b340b9a2-2865-4e05-91c0-148846a693c8",
             "x": 576,
             "y": 75,
@@ -10071,7 +10089,7 @@
         },
         {
             "id": "382961a1-e615-4b92-92a7-f1a791b50b7a",
-            "name": "Logo",
+            "name": "ui/Logo",
             "backgroundId": "f8b1c7ad-7bb2-44b2-8189-175ae8698f11",
             "x": 141,
             "y": 75,
@@ -10500,7 +10518,7 @@
         },
         {
             "id": "4912bee2-387a-472f-ae4f-6679b6149517",
-            "name": "Title Screen",
+            "name": "ui/Title Screen",
             "backgroundId": "f047ff0e-58ad-49fc-bd2b-ec84fc1f7ab3",
             "x": 341,
             "y": 76,
@@ -10994,7 +11012,7 @@
         },
         {
             "id": "3509d273-bf7e-4946-89ce-a489df5a449d",
-            "name": "Underground",
+            "name": "caves/Underground",
             "backgroundId": "f3102db4-2273-411d-b33f-4d6f65959c60",
             "x": 144,
             "y": 924,
@@ -13558,7 +13576,7 @@
         },
         {
             "id": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
-            "name": "Menu Page 1",
+            "name": "ui/menu/Menu Page 1",
             "backgroundId": "93d8839f-c19c-4eb2-a386-b0bb77068521",
             "x": 140,
             "y": 269,
@@ -13933,7 +13951,7 @@
             "symbol": "scene_menu_page_1"
         },
         {
-            "name": "Space Battle",
+            "name": "space/Space Battle",
             "backgroundId": "28a8b376-b6c5-4e6d-8d7d-2a409d73cd1b",
             "width": 255,
             "height": 18,
@@ -27556,7 +27574,7 @@
             "symbol": "scene_player_s_house"
         },
         {
-            "name": "Menu Page 2",
+            "name": "ui/menu/Menu Page 2",
             "backgroundId": "816231e1-2147-462c-99c6-3f73e8535d25",
             "width": 20,
             "height": 18,
@@ -28223,7 +28241,7 @@
             "symbol": "scene_menu_page_2"
         },
         {
-            "name": "Path to Sample Town",
+            "name": "path/Path to Sample Town",
             "backgroundId": "b50cefc6-72dc-44c0-947d-f5d4d533a97a",
             "width": 161,
             "height": 18,
@@ -35573,7 +35591,7 @@
             "symbol": "scene_path_to_sample_town"
         },
         {
-            "name": "Deep Space",
+            "name": "space/Deep Space",
             "backgroundId": "40fda058-df90-4205-a239-fe77bce4fa79",
             "width": 32,
             "height": 32,
@@ -36876,7 +36894,7 @@
             "symbol": "scene_deep_space"
         },
         {
-            "name": "Launch Site",
+            "name": "town/Launch Site",
             "backgroundId": "00e9b250-b602-4e5d-998c-fe0c8f23c91d",
             "width": 20,
             "height": 18,
@@ -38232,7 +38250,7 @@
             "symbol": "scene_launch_site"
         },
         {
-            "name": "Deeper Underground",
+            "name": "caves/Deeper Underground",
             "backgroundId": "4135b165-6706-4d52-b77b-6314650b175e",
             "width": 32,
             "height": 18,
@@ -40390,7 +40408,7 @@
             "symbol": "scene_dream"
         },
         {
-            "name": "Parallax Example",
+            "name": "path/Parallax Example",
             "backgroundId": "b48f4eda-5654-4760-b8a9-4fd3f7e7ed5e",
             "width": 80,
             "height": 18,
@@ -42026,7 +42044,7 @@
             "symbol": "scene_parallax_example"
         },
         {
-            "name": "Music House",
+            "name": "town/Music House",
             "backgroundId": "b340b9a2-2865-4e05-91c0-148846a693c8",
             "width": 20,
             "height": 18,
@@ -70682,7 +70700,7 @@
             "id": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
             "variables": {},
             "actors": {},
-            "name": "Init Menu",
+            "name": "common/ui/Init Menu",
             "description": "Attach Quest Menu to Start Button",
             "script": [
                 {
@@ -70729,7 +70747,7 @@
             "id": "a02c8ee7-1478-4317-80d7-1c3fc9704e8d",
             "variables": {},
             "actors": {},
-            "name": "Init Weapons",
+            "name": "common/Init Weapons",
             "script": [
                 {
                     "id": "72f90b54-19db-4794-9cdd-e89647b95af0",
@@ -70787,7 +70805,7 @@
                     "name": "Turnip"
                 }
             },
-            "name": "Turnip Init",
+            "name": "enemies/turnip/Turnip Init",
             "script": [
                 {
                     "id": "e35c9478-d3ba-45f7-9e14-5eb38239eebb",
@@ -70842,7 +70860,7 @@
                     "name": "Turnip"
                 }
             },
-            "name": "Turnip Movement",
+            "name": "enemies/turnip/Turnip Movement",
             "script": [
                 {
                     "id": "15904eb6-30ec-4787-a7e9-013046f9d182",
@@ -70925,7 +70943,7 @@
                     "name": "Turnip"
                 }
             },
-            "name": "Turnip Collisions",
+            "name": "enemies/turnip/Turnip Collisions",
             "script": [
                 {
                     "id": "8181c726-3c2f-4bbc-a232-9473d6b92ed4",
@@ -71042,7 +71060,7 @@
                     "name": "Enemy"
                 }
             },
-            "name": "Enemy Ship Destroy",
+            "name": "enemies/ship/Enemy Ship Destroy",
             "script": [
                 {
                     "id": "2bf0ecde-c6c8-498f-9136-006f3a84b916",
@@ -71099,7 +71117,7 @@
             "id": "e9f494a1-aabf-421b-a7b2-40211e77d9de",
             "variables": {},
             "actors": {},
-            "name": "Enemy Ship Hit Player",
+            "name": "enemies/ship/Enemy Ship Hit Player",
             "script": [
                 {
                     "id": "c044c230-a1bc-45d0-9cfa-b0619ae6a896",
@@ -71136,7 +71154,7 @@
                     "name": "Enemy Ship"
                 }
             },
-            "name": "Enemy Ship Movement Vertical",
+            "name": "enemies/ship/Enemy Ship Movement Vertical",
             "script": [
                 {
                     "id": "ce32db2a-5910-4967-b1ba-58b4c21a0c8d",
@@ -71241,7 +71259,7 @@
                     "name": "Enemy Ship"
                 }
             },
-            "name": "Enemy Ship Movement Diagonal",
+            "name": "enemies/ship/Enemy Ship Movement Diagonal",
             "script": [
                 {
                     "id": "c27c60e9-330e-450c-8eb9-60ad6ec293a9",
@@ -71346,7 +71364,7 @@
                     "name": "Enemy Ship"
                 }
             },
-            "name": "Enemy Ship Movement Diagonal Top To Bottom",
+            "name": "enemies/ship/Enemy Ship Movement Diagonal Top To Bottom",
             "script": [
                 {
                     "id": "63933263-b381-416a-83c8-f9ec949736a6",
@@ -71543,7 +71561,7 @@
                     }
                 }
             ],
-            "name": "Enemy Ship Movement Diagonal Bottom To Top",
+            "name": "enemies/ship/Enemy Ship Movement Diagonal Bottom To Top",
             "description": "Move from bottom of screen to top of screen shooting in the middle",
             "symbol": "script_enemy_ship_movement__2"
         }

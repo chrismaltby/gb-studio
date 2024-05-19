@@ -21,21 +21,27 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
       },
       {
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
       },
     ],
   },
@@ -89,7 +95,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    replaceTileXYVariable,
+    replaceTileXYScriptValue,
     ifVariableCompare,
     ifVariableCompareScriptValue,
     variableInc,
@@ -145,11 +151,14 @@ const compile = (input, helpers) => {
     variableSetToScriptValue(input.variable, input.tileIndex);
   });
 
-  replaceTileXYVariable(
+  replaceTileXYScriptValue(
     input.x,
     input.y,
     input.tilesetId,
-    input.variable,
+    {
+      type: "variable",
+      value: input.variable,
+    },
     input.tileSize
   );
 

@@ -50,11 +50,12 @@ import {
   ValueOperatorType,
   isScriptValue,
 } from "shared/lib/scriptValue/types";
+import { ensureNumber } from "shared/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "4.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -91,6 +92,22 @@ const generateMigrateMeta =
       },
     };
   };
+
+const applyEventsMigration = (
+  data: ProjectData,
+  fn: (event: ScriptEvent) => ScriptEvent
+): ProjectData => {
+  return {
+    ...data,
+    scenes: mapScenesScript(data.scenes, fn),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapScript(customEvent.script, fn),
+      };
+    }),
+  };
+};
 
 type ProjectDataV1 = Omit<ProjectData, "spriteSheets" | "scenes"> & {
   spriteSheets: (SpriteSheetData & { numFrames: number })[];
@@ -2442,6 +2459,68 @@ const migrateFrom330r6To330r7Events = (data: ProjectData): ProjectData => {
   };
 };
 
+/* Version 4.0.0 r2 handles migrating EVENT_ENGINE_FIELD_SET events from 3.3.0 correctly
+ */
+export const migrateFrom400r1To400r2Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_ENGINE_FIELD_SET") {
+    const currentValue = event.args.value;
+    if (
+      isScriptValue(currentValue) ||
+      !isUnionValue(currentValue) ||
+      currentValue.type === "variable" ||
+      typeof currentValue.value !== "number"
+    ) {
+      return event;
+    }
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        value: {
+          type: "number",
+          value: currentValue.value,
+        },
+      },
+    });
+  }
+  return event;
+};
+
+/* Version 4.0.0 r3 updates EVENT_REPLACE_TILE_XY and EVENT_REPLACE_TILE_XY_SEQUENCE
+ * to use script values for X/Y coordinates
+ */
+export const migrateFrom400r2To400r3Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (
+    event.args &&
+    (event.command === "EVENT_REPLACE_TILE_XY" ||
+      event.command === "EVENT_REPLACE_TILE_XY_SEQUENCE")
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: ensureNumber(event.args.x, 0),
+        },
+        y: {
+          type: "number",
+          value: ensureNumber(event.args.y, 0),
+        },
+      },
+    });
+  }
+  return event;
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2631,6 +2710,17 @@ const migrateProject = (
     if (release === "7") {
       version = "4.0.0";
       release = "1";
+    }
+  }
+
+  if (version === "4.0.0") {
+    if (release === "1") {
+      data = applyEventsMigration(data, migrateFrom400r1To400r2Event);
+      release = "2";
+    }
+    if (release === "2") {
+      data = applyEventsMigration(data, migrateFrom400r2To400r3Event);
+      release = "3";
     }
   }
 

@@ -2142,7 +2142,11 @@ extern void __mute_mask_${symbol};
     );
   };
 
-  _getTileXY = (addr: ScriptBuilderStackVariable, x: number, y: number) => {
+  _getTileXY = (
+    addr: ScriptBuilderStackVariable,
+    x: ScriptBuilderStackVariable,
+    y: ScriptBuilderStackVariable
+  ) => {
     this._addCmd("VM_GET_TILE_XY", addr, x, y);
   };
 
@@ -5205,8 +5209,8 @@ extern void __mute_mask_${symbol};
   };
 
   replaceTileXYScriptValue = (
-    x: number,
-    y: number,
+    x: ScriptValue,
+    y: ScriptValue,
     tilesetId: string,
     tileIndexValue: ScriptValue,
     tileSize: "8px" | "16px"
@@ -5219,43 +5223,134 @@ extern void __mute_mask_${symbol};
     const tileIndex = this._declareLocal("tile_index", 1, true);
 
     this._addComment(`Replace Tile XY`);
-    const [rpnOps, fetchOps] = precompileScriptValue(
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(optimiseScriptValue(x));
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(optimiseScriptValue(y));
+    const [rpnOpsTile, fetchOpsTile] = precompileScriptValue(
       optimiseScriptValue(tileIndexValue)
     );
-    const localsLookup = this._performFetchOperations(fetchOps);
-    const rpn = this._rpn();
-    this._performValueRPN(rpn, rpnOps, localsLookup);
-    rpn.refSet(tileIndex);
-    rpn.stop();
-    if (tileSize === "16px") {
-      // Top left tile
-      this._replaceTileXY(x, y, tileset.symbol, tileIndex);
-      // Top right tile
-      this._rpn() //
-        .ref(tileIndex)
-        .int8(1)
-        .operator(".ADD")
-        .refSet(tileIndex)
-        .stop();
-      this._replaceTileXY(x + 1, y, tileset.symbol, tileIndex);
-      // Bottom right tile
-      this._rpn() //
-        .ref(tileIndex)
-        .int8(tileset.width)
-        .operator(".ADD")
-        .refSet(tileIndex)
-        .stop();
-      this._replaceTileXY(x + 1, y + 1, tileset.symbol, tileIndex);
-      // Bottom left tile
-      this._rpn() //
-        .ref(tileIndex)
-        .int8(1)
-        .operator(".SUB")
-        .refSet(tileIndex)
-        .stop();
-      this._replaceTileXY(x, y + 1, tileset.symbol, tileIndex);
+
+    if (
+      rpnOpsX.length === 1 &&
+      rpnOpsX[0].type === "number" &&
+      rpnOpsY.length === 1 &&
+      rpnOpsY[0].type === "number"
+    ) {
+      // Can optimise using constant values for X and Y coordinates
+      const localsLookup = this._performFetchOperations(fetchOpsTile);
+      const constX = rpnOpsX[0].value;
+      const constY = rpnOpsY[0].value;
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOpsTile, localsLookup);
+      rpn.refSet(tileIndex);
+      rpn.stop();
+      if (tileSize === "16px") {
+        // 16px tiles - Top left tile
+        this._replaceTileXY(constX, constY, tileset.symbol, tileIndex);
+        // 16px tiles - Top right tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX + 1, constY, tileset.symbol, tileIndex);
+        // 16px tiles - Bottom right tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(tileset.width)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX + 1, constY + 1, tileset.symbol, tileIndex);
+        // 16px tiles - Bottom left tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".SUB")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX, constY + 1, tileset.symbol, tileIndex);
+      } else {
+        // 8px tiles
+        this._replaceTileXY(constX, constY, tileset.symbol, tileIndex);
+      }
     } else {
-      this._replaceTileXY(x, y, tileset.symbol, tileIndex);
+      // Using RPN for X/Y values
+      const tileX = this._declareLocal("tile_x", 1, true);
+      const tileY = this._declareLocal("tile_y", 1, true);
+      const tileAddr = this._declareLocal("tile_addr", 1, true);
+
+      const localsLookup = this._performFetchOperations([
+        ...fetchOpsX,
+        ...fetchOpsY,
+        ...fetchOpsTile,
+      ]);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOpsX, localsLookup);
+      rpn.refSet(tileX);
+      this._performValueRPN(rpn, rpnOpsY, localsLookup);
+      rpn.refSet(tileY);
+      this._performValueRPN(rpn, rpnOpsTile, localsLookup);
+      rpn.refSet(tileIndex);
+      rpn.stop();
+
+      if (tileSize === "16px") {
+        // 16px tiles - Top left tile
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Top right tile
+        this._rpn() //
+          // Inc Tile X
+          .ref(tileX)
+          .int8(1)
+          .operator(".ADD")
+          .refSetVariable(tileX)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Bottom right tile
+        this._rpn() //
+          // Inc Tile Y
+          .ref(tileY)
+          .int8(1)
+          .operator(".ADD")
+          .refSetVariable(tileY)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(tileset.width)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Bottom left tile
+        this._rpn() //
+          // Inc Tile X
+          .ref(tileX)
+          .int8(1)
+          .operator(".SUB")
+          .refSetVariable(tileX)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".SUB")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+      } else {
+        // 8px tiles
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+      }
+
+      this.markLocalsUsed(tileIndex, tileAddr, tileX, tileY);
     }
   };
 
