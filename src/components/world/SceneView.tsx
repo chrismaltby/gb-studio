@@ -297,12 +297,13 @@ const SceneView = memo(
 
       const viewMargin = 400;
 
-      const viewBoundsX = worldScrollX / zoomRatio - viewMargin;
-      const viewBoundsY = worldScrollY / zoomRatio - viewMargin;
+      const viewBoundsX = (worldScrollX - viewMargin) / zoomRatio;
+      const viewBoundsY = (worldScrollY - viewMargin) / zoomRatio;
+
       const viewBoundsWidth =
-        (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio +
-        viewMargin * 2;
-      const viewBoundsHeight = worldViewHeight / zoomRatio + viewMargin * 2;
+        (worldViewWidth - sidebarWidth - navigatorWidth + viewMargin * 2) /
+        zoomRatio;
+      const viewBoundsHeight = (worldViewHeight + viewMargin * 2) / zoomRatio;
 
       return scene
         ? scene.x + scene.width * 8 > viewBoundsX &&

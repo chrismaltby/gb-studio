@@ -450,14 +450,18 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       walkNormalizedScript(
         action.payload.scriptEventIds,
         scriptEventsLookup,
-        undefined,
+        {
+          includeCommented: true,
+        },
         addEvent
       );
       for (const customEvent of customEvents) {
         walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
-          undefined,
+          {
+            includeCommented: true,
+          },
           addEvent
         );
       }
@@ -507,7 +511,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedTriggerScripts(
             trigger,
             scriptEventsLookup,
-            undefined,
+            { includeCommented: true },
             addEvent
           );
         }
@@ -516,7 +520,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
-          undefined,
+          { includeCommented: true },
           addEvent
         );
       }
@@ -566,7 +570,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedActorScripts(
             actor,
             scriptEventsLookup,
-            undefined,
+            { includeCommented: true },
             addEvent
           );
         }
@@ -575,7 +579,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
-          undefined,
+          { includeCommented: true },
           addEvent
         );
       }
@@ -633,7 +637,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedActorScripts(
                 actor,
                 scriptEventsLookup,
-                undefined,
+                { includeCommented: true },
                 addEvent
               );
             }
@@ -645,7 +649,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedTriggerScripts(
                 trigger,
                 scriptEventsLookup,
-                undefined,
+                { includeCommented: true },
                 addEvent
               );
             }
@@ -653,7 +657,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedSceneSpecificScripts(
             scene,
             scriptEventsLookup,
-            undefined,
+            { includeCommented: true },
             addEvent
           );
         }
@@ -662,7 +666,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
-          undefined,
+          { includeCommented: true },
           addEvent
         );
       }

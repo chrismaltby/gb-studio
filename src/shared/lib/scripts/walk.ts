@@ -184,6 +184,7 @@ type WalkOptions =
         lookup: Dictionary<CustomEvent>;
         maxDepth: number;
         args?: Record<string, unknown>;
+        visitedIds?: Set<string>;
       };
     };
 
@@ -233,6 +234,13 @@ export const walkScript = (
           String(scriptEvent.args?.customEventId || "")
         ];
       if (customEvent) {
+        if (!options.customEvents.visitedIds) {
+          options.customEvents.visitedIds = new Set<string>();
+        }
+        if (options.customEvents.visitedIds.has(customEvent.id)) {
+          continue;
+        }
+        options.customEvents.visitedIds.add(customEvent.id);
         walkScript(
           customEvent.script,
           {
@@ -358,10 +366,12 @@ type WalkNormalizedOptions =
   | undefined
   | {
       filter?: (ScriptEvent: ScriptEventNormalized) => boolean;
+      includeCommented?: boolean;
       customEvents?: {
         lookup: Dictionary<CustomEventNormalized>;
         maxDepth: number;
         args?: Record<string, unknown>;
+        visitedIds?: Set<string>;
       };
     };
 
@@ -405,6 +415,10 @@ export const walkNormalizedScript = (
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
     if (scriptEvent) {
+      if (scriptEvent?.args?.__comment && !options?.includeCommented) {
+        // Skip commented events
+        continue;
+      }
       // If filter is provided skip events that fail filter
       if (options?.filter && !options.filter(scriptEvent)) {
         continue;
@@ -433,6 +447,13 @@ export const walkNormalizedScript = (
             String(scriptEvent.args?.customEventId || "")
           ];
         if (customEvent) {
+          if (!options.customEvents.visitedIds) {
+            options.customEvents.visitedIds = new Set<string>();
+          }
+          if (options.customEvents.visitedIds.has(customEvent.id)) {
+            continue;
+          }
+          options.customEvents.visitedIds.add(customEvent.id);
           walkNormalizedScript(
             customEvent.script,
             lookup,
