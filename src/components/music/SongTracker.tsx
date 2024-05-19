@@ -158,15 +158,21 @@ export const SongTracker = ({
   const [activeField, setActiveField] = useState<number | undefined>();
   const channelId = useAppSelector((state) => state.tracker.selectedChannel);
 
-  if (activeField !== undefined) {
-    const newChannelId = Math.floor((activeField % ROW_SIZE) / CHANNEL_FIELDS);
-    dispatch(trackerActions.setSelectedChannel(newChannelId));
-    if (activeField % CHANNEL_FIELDS >= 2) {
-      dispatch(
-        trackerActions.setSelectedEffectCell(Math.floor(activeField / ROW_SIZE))
+  useEffect(() => {
+    if (activeField !== undefined) {
+      const newChannelId = Math.floor(
+        (activeField % ROW_SIZE) / CHANNEL_FIELDS
       );
+      dispatch(trackerActions.setSelectedChannel(newChannelId));
+      if (activeField % CHANNEL_FIELDS >= 2) {
+        dispatch(
+          trackerActions.setSelectedEffectCell(
+            Math.floor(activeField / ROW_SIZE)
+          )
+        );
+      }
     }
-  }
+  }, [activeField, dispatch]);
 
   const playingRowRef = useRef<HTMLSpanElement>(null);
   if (playingRowRef && playingRowRef.current) {
