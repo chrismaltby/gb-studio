@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add ability for variables to be used for X/Y coordinates in replace tile events
+
+### Fixed
+
+- Fix issue migrating "Engine Field Update" events
+- Fix issue where shift key no longer allowed line drawing for collisions and tile painting modes
+- Fix issue where using recursive scripts could cause UI to lock up while calculating scene sprite tile count and when building game.
+- Fix issue where custom scripts parameters were not always updating as parameters were updated
+
+## [4.0.0-beta1]
+
+### Added
+
 - Add ability to launch projectiles at a target actor [@patrickmollohan](https://github.com/patrickmollohan) [@pau-tomas](https://github.com/pau-tomas)
 - Add angle selector input showing degrees for GBVM angle values [@pau-tomas](https://github.com/pau-tomas)
 - Add support for atan2 function in math expressions [@pau-tomas](https://github.com/pau-tomas)
