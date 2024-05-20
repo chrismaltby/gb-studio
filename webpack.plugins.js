@@ -10,9 +10,7 @@ const gitRevisionPlugin = new GitRevisionPlugin({
   commithashCommand: "rev-list --max-count=1 --no-merges --abbrev-commit HEAD",
 });
 
-const docsUrl = pkg.version.includes("beta")
-  ? "https://develop.gbstudio.dev/docs/"
-  : "https://www.gbstudio.dev/docs/";
+const docsUrl = "https://www.gbstudio.dev/docs/";
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -28,12 +26,14 @@ if (process.env.ANALYZE_BUNDLE) {
 }
 
 if (!process.env.NO_TYPE_CHECKING) {
-  plugins.push(new ForkTsCheckerWebpackPlugin({
-    async: false,
-    typescript: {
-      memoryLimit: 4096,
-    },
-  }))
+  plugins.push(
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      typescript: {
+        memoryLimit: 4096,
+      },
+    })
+  );
 }
 
 module.exports = plugins;
