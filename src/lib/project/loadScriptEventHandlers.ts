@@ -9,6 +9,7 @@ import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
+import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
 
 const globAsync = promisify(glob);
 
@@ -51,7 +52,7 @@ export type ScriptEventPresetValue = {
   groups?: string[] | string;
   subGroups?: Record<string, string>;
   values: Record<string, unknown>;
-}
+};
 
 export interface ScriptEventDef {
   id: string;
@@ -114,6 +115,7 @@ const vm = new NodeVM({
       "../compiler/compileEntityEvents": compileEntityEvents,
       "../helpers/trimlines": trimLines,
       "shared/lib/helpers/trimlines": trimLines,
+      "shared/lib/scriptValue/helpers": scriptValueHelpers,
     },
   },
 });
