@@ -5,6 +5,7 @@ import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEven
 
 const entitiesMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
+    next(action); // Keep before refreshCustomEventArgs() otherwise values are "off by one" update
     if (
       entitiesActions.editScriptEvent.match(action) ||
       entitiesActions.editScriptEventArg.match(action) ||
@@ -25,8 +26,6 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         );
       }
     }
-
-    next(action);
   };
 
 export default entitiesMiddleware;
