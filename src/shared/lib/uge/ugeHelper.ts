@@ -62,7 +62,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   // TODO: Use `DataView` object instead of loads of Uint32Arrays
   let offset = 0;
   const version = readUint32();
-  console.log(`! uge version: ${version}`);
+
   if (version < 0 || version > 6) {
     throw new Error(`UGE version ${version} is not supported by GB Studio`);
   }
