@@ -11,12 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add ability for variables to be used for X/Y coordinates in replace tile events
 
+### Changed
+
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Allow event plugins to require("shared/lib/scriptValue/helpers") to access script value helpers
+
 ### Fixed
 
 - Fix issue migrating "Engine Field Update" events
 - Fix issue where shift key no longer allowed line drawing for collisions and tile painting modes
 - Fix issue where using recursive scripts could cause UI to lock up while calculating scene sprite tile count and when building game.
 - Fix issue where custom scripts parameters were not always updating as parameters were updated
+- Fix issue where "If Variable Has Flag" was always false [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where selecting effect column in music editor tracker would cause application to freeze [@pau-tomas](https://github.com/pau-tomas)
 
 ## [4.0.0-beta1]
 
