@@ -1,6 +1,7 @@
 import {
   migrateFrom400r1To400r2Event,
   migrateFrom400r2To400r3Event,
+  migrateFrom400r3To400r4Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 
@@ -258,6 +259,56 @@ test("should migrate x/y coordinate values as 0 in replace tile event if invalid
         type: "number",
         value: 1,
       },
+    },
+  });
+});
+
+test("should migrate flag values to number if string", () => {
+  const oldEvent = {
+    command: "EVENT_IF_FLAGS_COMPARE",
+    args: {
+      variable: "L0",
+      flag: "10",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom400r3To400r4Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_FLAGS_COMPARE",
+    args: {
+      variable: "L0",
+      flag: 10,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  });
+});
+
+test("should keep the flag value as a number if number", () => {
+  const oldEvent = {
+    command: "EVENT_IF_FLAGS_COMPARE",
+    args: {
+      variable: "L0",
+      flag: 10,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom400r3To400r4Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_FLAGS_COMPARE",
+    args: {
+      variable: "L0",
+      flag: 10,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
     },
   });
 });

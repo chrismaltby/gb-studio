@@ -55,7 +55,7 @@ import { ensureNumber } from "shared/types";
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "4.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "3";
+export const LATEST_PROJECT_MINOR_VERSION = "4";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2521,6 +2521,26 @@ export const migrateFrom400r2To400r3Event = (
   return event;
 };
 
+/* Version 4.0.0 r4 updates EVENT_IF_FLAGS_COMPARE to use a number 
+for flags instead of a string. 
+ */
+export const migrateFrom400r3To400r4Event = (
+  event: ScriptEvent
+): ScriptEvent => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_IF_FLAGS_COMPARE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        flag: Number(event.args.flag),
+      },
+    });
+  }
+  return event;
+};
+
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
@@ -2721,6 +2741,10 @@ const migrateProject = (
     if (release === "2") {
       data = applyEventsMigration(data, migrateFrom400r2To400r3Event);
       release = "3";
+    }
+    if (release === "3") {
+      data = applyEventsMigration(data, migrateFrom400r3To400r4Event);
+      release = "4";
     }
   }
 
