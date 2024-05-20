@@ -210,7 +210,7 @@ const WorldView = () => {
 
   const onKeyDown = useCallback(
     (e) => {
-      if (e.shiftKey) {
+      if (e.shiftKey && tool === "select") {
         setSelectionStart(undefined);
         setSelectionEnd(undefined);
         setAddToSelection(true);
@@ -229,7 +229,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus]
+    [dispatch, focus, tool]
   );
 
   const onKeyUp = useCallback(
