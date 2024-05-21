@@ -59,7 +59,7 @@ const fields = [].concat(
       return {
         key: `flag${i + 1}`,
         label: l10n("FIELD_FLAG_N", { n: i + 1 }),
-        description: l10n("FIELD_FLAG_ADD_N_DESC", { n: i + 1 }),
+        description: l10n("FIELD_FLAG_SET_N_DESC", { n: i + 1 }),
         hideFromDocs: i > 3,
         type: "flag",
         width: "50%",
