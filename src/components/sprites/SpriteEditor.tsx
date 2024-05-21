@@ -384,83 +384,81 @@ export const SpriteEditor = ({
 
   return (
     <Sidebar onClick={selectSidebar}>
+      <FormHeader>
+        {metaspriteTile && selectedTileIds.length === 1 && (
+          <SidebarHeader>{l10n("FIELD_SPRITE_TILE")}</SidebarHeader>
+        )}
+        {metaspriteTile && selectedTileIds.length > 1 && (
+          <SidebarHeader>{l10n("FIELD_SPRITE_TILES")}</SidebarHeader>
+        )}
+        {!metaspriteTile && (
+          <EditableText
+            name="name"
+            placeholder="Sprite"
+            value={sprite?.name || ""}
+            onChange={onChangeName}
+          />
+        )}
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+          onMouseDown={onFetchClipboard}
+        >
+          {!metaspriteTile && !showSymbols && (
+            <MenuItem onClick={() => setShowSymbols(true)}>
+              {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length > 0 && (
+            <MenuItem onClick={onCopyTiles}>
+              {l10n("MENU_SPRITE_TILE_COPY")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onCopyMetasprite}>
+              {l10n("MENU_SPRITE_COPY")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onCopySpriteState}>
+              {l10n("MENU_SPRITE_STATE_COPY")}
+            </MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeMetaspriteTiles && (
+            <MenuItem onClick={onPaste}>
+              {l10n("MENU_SPRITE_TILE_PASTE")}
+            </MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeMetasprites && (
+            <MenuItem onClick={onPaste}>{l10n("MENU_SPRITE_PASTE")}</MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeSpriteState && (
+            <MenuItem onClick={onPaste}>
+              {l10n("MENU_SPRITE_STATE_PASTE")}
+            </MenuItem>
+          )}
+          <MenuDivider />
+          {selectedTileIds.length > 0 && (
+            <MenuItem onClick={onRemoveSelectedTiles}>
+              {l10n("MENU_SPRITE_TILE_DELETE")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onRemoveMetasprite}>
+              {l10n("MENU_SPRITE_DELETE")}
+            </MenuItem>
+          )}
+          {!isDefaultState && selectedTileIds.length === 0 && (
+            <MenuItem onClick={onRemoveSpriteState}>
+              {l10n("MENU_SPRITE_STATE_DELETE")}
+            </MenuItem>
+          )}
+        </DropdownButton>
+      </FormHeader>
+
       <SidebarColumn>
         <FormContainer>
-          <FormHeader>
-            {metaspriteTile && selectedTileIds.length === 1 && (
-              <SidebarHeader>{l10n("FIELD_SPRITE_TILE")}</SidebarHeader>
-            )}
-            {metaspriteTile && selectedTileIds.length > 1 && (
-              <SidebarHeader>{l10n("FIELD_SPRITE_TILES")}</SidebarHeader>
-            )}
-            {!metaspriteTile && (
-              <EditableText
-                name="name"
-                placeholder="Sprite"
-                value={sprite?.name || ""}
-                onChange={onChangeName}
-              />
-            )}
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={onFetchClipboard}
-            >
-              {!metaspriteTile && !showSymbols && (
-                <MenuItem onClick={() => setShowSymbols(true)}>
-                  {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length > 0 && (
-                <MenuItem onClick={onCopyTiles}>
-                  {l10n("MENU_SPRITE_TILE_COPY")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onCopyMetasprite}>
-                  {l10n("MENU_SPRITE_COPY")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onCopySpriteState}>
-                  {l10n("MENU_SPRITE_STATE_COPY")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeMetaspriteTiles && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_TILE_PASTE")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeMetasprites && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_PASTE")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeSpriteState && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_STATE_PASTE")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              {selectedTileIds.length > 0 && (
-                <MenuItem onClick={onRemoveSelectedTiles}>
-                  {l10n("MENU_SPRITE_TILE_DELETE")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onRemoveMetasprite}>
-                  {l10n("MENU_SPRITE_DELETE")}
-                </MenuItem>
-              )}
-              {!isDefaultState && selectedTileIds.length === 0 && (
-                <MenuItem onClick={onRemoveSpriteState}>
-                  {l10n("MENU_SPRITE_STATE_DELETE")}
-                </MenuItem>
-              )}
-            </DropdownButton>
-          </FormHeader>
-
           {metaspriteTile && (
             <>
               {selectedTileIds.length === 1 && (

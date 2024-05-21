@@ -168,33 +168,34 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
 
   return (
     <Sidebar onClick={selectSidebar}>
+      <FormHeader>
+        <EditableText
+          name="name"
+          placeholder={globalVariableDefaultName(id)}
+          value={variable?.name || ""}
+          onChange={onRename}
+        />
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+        >
+          {!showSymbols && (
+            <MenuItem onClick={() => setShowSymbols(true)}>
+              {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+            </MenuItem>
+          )}
+          <MenuItem onClick={onCopyVar}>
+            {l10n("MENU_VARIABLE_COPY_EMBED")}
+          </MenuItem>
+          <MenuItem onClick={onCopyChar}>
+            {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
+          </MenuItem>
+        </DropdownButton>
+      </FormHeader>
+
       <SidebarColumn>
         <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={globalVariableDefaultName(id)}
-              value={variable?.name || ""}
-              onChange={onRename}
-            />
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-            >
-              {!showSymbols && (
-                <MenuItem onClick={() => setShowSymbols(true)}>
-                  {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                </MenuItem>
-              )}
-              <MenuItem onClick={onCopyVar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED")}
-              </MenuItem>
-              <MenuItem onClick={onCopyChar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
           {showSymbols && (
             <>
               <SymbolEditorWrapper>

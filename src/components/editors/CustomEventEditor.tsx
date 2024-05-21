@@ -7,12 +7,13 @@ import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownBu
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
   FormHeader,
   FormRow,
+  FormSectionTitle,
 } from "ui/form/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
@@ -25,13 +26,13 @@ import { Checkbox } from "ui/form/Checkbox";
 import { NoteField } from "ui/form/NoteField";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { Input } from "ui/form/Input";
-import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { FlexGrow } from "ui/spacing/Spacing";
+import CachedScroll from "ui/util/CachedScroll";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
@@ -40,10 +41,9 @@ const customEventName = (
 
 interface CustomEventEditorProps {
   id: string;
-  multiColumn: boolean;
 }
 
-const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
+const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
@@ -227,9 +227,9 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   const customEventActors = Object.values(customEvent.actors);
 
   return (
-    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
-      {!lockScriptEditor && (
-        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+    <Sidebar onClick={selectSidebar}>
+      <CachedScroll key={customEvent.id} cacheKey={customEvent.id}>
+        {!lockScriptEditor && (
           <FormContainer>
             <FormHeader>
               <FlexGrow style={{ minWidth: 0 }}>
@@ -258,131 +258,167 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
                 </MenuItem>
               </DropdownButton>
             </FormHeader>
-
-            {showSymbols && (
-              <>
-                <SymbolEditorWrapper>
-                  <CustomEventSymbolsEditor id={customEvent.id} />
-                </SymbolEditorWrapper>
-                <FormDivider />
-              </>
-            )}
-
-            <FormRow>
-              <NoteField
-                value={customEvent.description || ""}
-                onChange={onChangeDescription}
-              />
-            </FormRow>
           </FormContainer>
-          <div>
+        )}
+        {!lockScriptEditor && (
+          <SidebarColumns>
+            <SidebarColumn>
+              <FormContainer>
+                {showSymbols && (
+                  <>
+                    <SymbolEditorWrapper>
+                      <CustomEventSymbolsEditor id={customEvent.id} />
+                    </SymbolEditorWrapper>
+                    <FormDivider />
+                  </>
+                )}
+
+                <FormRow>
+                  <NoteField
+                    value={customEvent.description || ""}
+                    onChange={onChangeDescription}
+                  />
+                </FormRow>
+              </FormContainer>
+            </SidebarColumn>
+
             {(customEventVariables.length > 0 ||
               customEventActors.length > 0) && (
-              <FormHeader>
-                <SidebarHeader>{l10n("SIDEBAR_PARAMETERS")}</SidebarHeader>
-              </FormHeader>
-            )}
-            {customEventVariables.length > 0 && (
               <>
-                <FormRow>
-                  <Label htmlFor="variable[0]">
-                    <strong>{l10n("FIELD_VARIABLES")}:</strong>{" "}
-                    {`${customEventVariables.length}/10`}
-                  </Label>
-                </FormRow>
+                {/* {customEventVariables.length > 0 &&
+                customEventActors.length > 0 && (
+                  <div style={{ width: "100%" }} />
+                )} */}
 
-                {customEventVariables.map((variable, i) => {
-                  if (!variable) {
-                    return null;
-                  }
-                  return (
-                    <FormRow key={variable.id}>
-                      <InputGroup>
-                        <Input
-                          id={`variable[${i}]`}
-                          value={variable.name}
-                          placeholder="Variable Name"
-                          onChange={onEditVariableName(variable.id)}
-                        />
-                        <InputGroupAppend>
-                          <DropdownButton
-                            label={
-                              <span style={{ minWidth: 40, textAlign: "left" }}>
-                                {variable.passByReference
-                                  ? l10n("FIELD_PASS_BY_REFERENCE_SHORT")
-                                  : l10n("FIELD_PASS_BY_VALUE_SHORT")}
-                              </span>
-                            }
-                            title={
-                              variable.passByReference
-                                ? l10n("FIELD_PASS_BY_REFERENCE_DESCRIPTION")
-                                : l10n("FIELD_PASS_BY_VALUE_DESCRIPTION")
-                            }
-                          >
-                            <MenuItem
-                              onClick={() =>
-                                onEditVariablePassByReference(
-                                  variable.id,
-                                  false
-                                )
-                              }
-                            >
-                              <Checkbox
-                                id="byVal"
-                                name="byVal"
-                                checked={!variable.passByReference}
-                              />
-                              {l10n("FIELD_PASS_BY_VALUE")}
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() =>
-                                onEditVariablePassByReference(variable.id, true)
-                              }
-                            >
-                              <Checkbox
-                                id="byRef"
-                                name="byRef"
-                                checked={variable.passByReference}
-                              />
-                              {l10n("FIELD_PASS_BY_REFERENCE")}
-                            </MenuItem>
-                          </DropdownButton>
-                        </InputGroupAppend>
-                      </InputGroup>
+                {customEventVariables.length > 0 &&
+                  customEventActors.length > 0 && (
+                    <FormSectionTitle
+                      style={{ width: "100%", marginBottom: 0 }}
+                    >
+                      {l10n("SIDEBAR_PARAMETERS")}
+                    </FormSectionTitle>
+                  )}
+
+                {customEventVariables.length > 0 && (
+                  <SidebarColumn>
+                    {customEventActors.length === 0 && (
+                      <FormSectionTitle style={{ marginTop: -11 }}>
+                        {l10n("SIDEBAR_PARAMETERS")}
+                      </FormSectionTitle>
+                    )}
+
+                    <FormRow>
+                      <Label htmlFor="variable[0]">
+                        {l10n("FIELD_VARIABLES")}:{" "}
+                        {`${customEventVariables.length}/10`}
+                      </Label>
                     </FormRow>
-                  );
-                })}
+
+                    {customEventVariables.map((variable, i) => {
+                      if (!variable) {
+                        return null;
+                      }
+                      return (
+                        <FormRow key={variable.id}>
+                          <InputGroup>
+                            <Input
+                              id={`variable[${i}]`}
+                              value={variable.name}
+                              placeholder="Variable Name"
+                              onChange={onEditVariableName(variable.id)}
+                            />
+                            <InputGroupAppend>
+                              <DropdownButton
+                                label={
+                                  <span
+                                    style={{ minWidth: 40, textAlign: "left" }}
+                                  >
+                                    {variable.passByReference
+                                      ? l10n("FIELD_PASS_BY_REFERENCE_SHORT")
+                                      : l10n("FIELD_PASS_BY_VALUE_SHORT")}
+                                  </span>
+                                }
+                                title={
+                                  variable.passByReference
+                                    ? l10n(
+                                        "FIELD_PASS_BY_REFERENCE_DESCRIPTION"
+                                      )
+                                    : l10n("FIELD_PASS_BY_VALUE_DESCRIPTION")
+                                }
+                              >
+                                <MenuItem
+                                  onClick={() =>
+                                    onEditVariablePassByReference(
+                                      variable.id,
+                                      false
+                                    )
+                                  }
+                                >
+                                  <Checkbox
+                                    id="byVal"
+                                    name="byVal"
+                                    checked={!variable.passByReference}
+                                  />
+                                  {l10n("FIELD_PASS_BY_VALUE")}
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    onEditVariablePassByReference(
+                                      variable.id,
+                                      true
+                                    )
+                                  }
+                                >
+                                  <Checkbox
+                                    id="byRef"
+                                    name="byRef"
+                                    checked={variable.passByReference}
+                                  />
+                                  {l10n("FIELD_PASS_BY_REFERENCE")}
+                                </MenuItem>
+                              </DropdownButton>
+                            </InputGroupAppend>
+                          </InputGroup>
+                        </FormRow>
+                      );
+                    })}
+                  </SidebarColumn>
+                )}
+                {customEventActors.length > 0 && (
+                  <SidebarColumn>
+                    {customEventVariables.length === 0 && (
+                      <FormSectionTitle style={{ marginTop: -11 }}>
+                        {l10n("SIDEBAR_PARAMETERS")}
+                      </FormSectionTitle>
+                    )}
+
+                    <FormRow>
+                      <Label htmlFor="actor[0]">
+                        {l10n("FIELD_ACTORS")}:{" "}
+                        {`${customEventActors.length}/10`}
+                      </Label>
+                    </FormRow>
+                    {customEventActors.map((actor, i) => {
+                      if (!actor) {
+                        return null;
+                      }
+                      return (
+                        <FormRow key={actor.id}>
+                          <Input
+                            id={`actor[${i}]`}
+                            value={actor.name}
+                            placeholder="Actor Name"
+                            onChange={onEditActorName(actor.id)}
+                          />
+                        </FormRow>
+                      );
+                    })}
+                  </SidebarColumn>
+                )}
               </>
             )}
-            {customEventActors.length > 0 && (
-              <>
-                <FormRow>
-                  <Label htmlFor="actor[0]">
-                    <strong>{l10n("FIELD_ACTORS")}:</strong>{" "}
-                    {`${customEventActors.length}/10`}
-                  </Label>
-                </FormRow>
-                {customEventActors.map((actor, i) => {
-                  if (!actor) {
-                    return null;
-                  }
-                  return (
-                    <FormRow key={actor.id}>
-                      <Input
-                        id={`actor[${i}]`}
-                        value={actor.name}
-                        placeholder="Actor Name"
-                        onChange={onEditActorName(actor.id)}
-                      />
-                    </FormRow>
-                  );
-                })}
-              </>
-            )}
-          </div>
-        </SidebarColumn>
-      )}
-      <SidebarColumn>
+          </SidebarColumns>
+        )}
         <StickyTabs>
           <TabBar
             values={scriptTabs}
@@ -397,7 +433,7 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
         <ScriptEditorContext.Provider value={scriptCtx}>
           <ScriptEditor value={customEvent.script} />
         </ScriptEditorContext.Provider>
-      </SidebarColumn>
+      </CachedScroll>
     </Sidebar>
   );
 };

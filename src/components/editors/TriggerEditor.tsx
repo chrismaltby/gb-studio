@@ -12,7 +12,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";
+import { SidebarColumn, Sidebar, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
@@ -37,11 +37,11 @@ import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import CachedScroll from "ui/util/CachedScroll";
 
 interface TriggerEditorProps {
   id: string;
   sceneId: string;
-  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -69,11 +69,7 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   return "script";
 };
 
-export const TriggerEditor = ({
-  id,
-  sceneId,
-  multiColumn,
-}: TriggerEditorProps) => {
+export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
   );
@@ -267,10 +263,12 @@ export const TriggerEditor = ({
     return <WorldEditor />;
   }
 
+  const scrollKey = `${trigger.id}_${scriptKey}`;
+
   return (
-    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
-      {!lockScriptEditor && (
-        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+    <Sidebar onClick={selectSidebar}>
+      <CachedScroll key={scrollKey} cacheKey={scrollKey}>
+        {!lockScriptEditor && (
           <FormContainer>
             <FormHeader>
               <EditableText
@@ -310,66 +308,76 @@ export const TriggerEditor = ({
               </DropdownButton>
             </FormHeader>
           </FormContainer>
+        )}
 
-          {showSymbols && (
-            <>
-              <SymbolEditorWrapper>
-                <TriggerSymbolsEditor id={trigger.id} />
-              </SymbolEditorWrapper>
-              <FormDivider />
-            </>
-          )}
+        {!lockScriptEditor && (
+          <SidebarColumns>
+            {(showSymbols || showNotes) && (
+              <SidebarColumn>
+                {showSymbols && (
+                  <>
+                    <SymbolEditorWrapper>
+                      <TriggerSymbolsEditor id={trigger.id} />
+                    </SymbolEditorWrapper>
+                    <FormDivider />
+                  </>
+                )}
+                {showNotes && (
+                  <FormRow>
+                    <NoteField
+                      value={trigger.notes || ""}
+                      onChange={onChangeNotes}
+                    />
+                  </FormRow>
+                )}
+              </SidebarColumn>
+            )}
 
-          {showNotes && (
-            <FormRow>
-              <NoteField value={trigger.notes || ""} onChange={onChangeNotes} />
-            </FormRow>
-          )}
+            <SidebarColumn>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="x"
+                  value={trigger.x}
+                  placeholder="0"
+                  min={0}
+                  max={scene.width - trigger.width}
+                  onChange={onChangeX}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="y"
+                  value={trigger.y}
+                  placeholder="0"
+                  min={0}
+                  max={scene.height - trigger.height}
+                  onChange={onChangeY}
+                />
+              </FormRow>
 
-          <FormRow>
-            <CoordinateInput
-              name="x"
-              coordinate="x"
-              value={trigger.x}
-              placeholder="0"
-              min={0}
-              max={scene.width - trigger.width}
-              onChange={onChangeX}
-            />
-            <CoordinateInput
-              name="y"
-              coordinate="y"
-              value={trigger.y}
-              placeholder="0"
-              min={0}
-              max={scene.height - trigger.height}
-              onChange={onChangeY}
-            />
-          </FormRow>
-
-          <FormRow>
-            <CoordinateInput
-              name="width"
-              coordinate="w"
-              value={trigger.width}
-              placeholder="1"
-              min={1}
-              max={scene.width - trigger.x}
-              onChange={onChangeWidth}
-            />
-            <CoordinateInput
-              name="height"
-              coordinate="h"
-              value={trigger.height}
-              placeholder="1"
-              min={1}
-              max={scene.height - trigger.y}
-              onChange={onChangeHeight}
-            />
-          </FormRow>
-        </SidebarColumn>
-      )}
-      <SidebarColumn>
+              <FormRow>
+                <CoordinateInput
+                  name="width"
+                  coordinate="w"
+                  value={trigger.width}
+                  placeholder="1"
+                  min={1}
+                  max={scene.width - trigger.x}
+                  onChange={onChangeWidth}
+                />
+                <CoordinateInput
+                  name="height"
+                  coordinate="h"
+                  value={trigger.height}
+                  placeholder="1"
+                  min={1}
+                  max={scene.height - trigger.y}
+                  onChange={onChangeHeight}
+                />
+              </FormRow>
+            </SidebarColumn>
+          </SidebarColumns>
+        )}
         <StickyTabs>
           {scene.type === "POINTNCLICK" ? (
             <TabBar
@@ -398,7 +406,7 @@ export const TriggerEditor = ({
         <ScriptEditorContext.Provider value={scriptCtx}>
           <ScriptEditor value={trigger[scriptKey] || []} />
         </ScriptEditorContext.Provider>
-      </SidebarColumn>
+      </CachedScroll>
     </Sidebar>
   );
 };

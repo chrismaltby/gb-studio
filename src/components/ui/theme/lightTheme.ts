@@ -79,7 +79,7 @@ const lightTheme: ThemeInterface = {
       border: "#d4d4d4",
       well: {
         background: "#dddddd",
-        boxShadow: "-1px 0px 2px 0px rgba(0, 0, 0, 0.2) inset",
+        boxShadow: "-1px 0px 10px 0px rgba(0, 0, 0, 0.1) inset",
         hoverBackground: "#cfcfcf",
       },
     },

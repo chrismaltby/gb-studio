@@ -34,6 +34,7 @@ export const ToggleButtonGroupWrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
   height: 28px;
+  z-index: 0;
 
   & > * {
     box-sizing: border-box;

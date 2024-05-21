@@ -12,10 +12,9 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
-import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
-  FormDivider,
   FormField,
   FormHeader,
   FormRow,
@@ -73,10 +72,10 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
+import CachedScroll from "ui/util/CachedScroll";
 
 interface SceneEditorProps {
   id: string;
-  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -135,7 +134,7 @@ const getScriptKey = (
   return "script";
 };
 
-export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
+export const SceneEditor = ({ id }: SceneEditorProps) => {
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id)
@@ -499,10 +498,12 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     />
   );
 
+  const scrollKey = `${scene.id}_${scriptKey}`;
+
   return (
-    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
-      {!lockScriptEditor && (
-        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+    <Sidebar onClick={selectSidebar}>
+      <CachedScroll key={scrollKey} cacheKey={scrollKey}>
+        {!lockScriptEditor && (
           <FormContainer>
             <FormHeader>
               <FlexGrow style={{ minWidth: 0 }}>
@@ -597,126 +598,149 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 </MenuItem>
               </DropdownButton>
             </FormHeader>
-
-            {showSymbols && (
-              <>
-                <SymbolEditorWrapper>
-                  <SceneSymbolsEditor id={scene.id} />
-                  <BackgroundSymbolsEditor id={scene.backgroundId} />
-                </SymbolEditorWrapper>
-                <FormDivider />
-              </>
+          </FormContainer>
+        )}
+        {!lockScriptEditor && (
+          <SidebarColumns>
+            {(showSymbols || showNotes) && (
+              <SidebarColumn>
+                {showSymbols && (
+                  <SymbolEditorWrapper>
+                    <SceneSymbolsEditor id={scene.id} />
+                    <BackgroundSymbolsEditor id={scene.backgroundId} />
+                  </SymbolEditorWrapper>
+                )}
+                {showNotes && (
+                  <FormContainer>
+                    <FormRow>
+                      <NoteField
+                        value={scene.notes || ""}
+                        onChange={onChangeNotes}
+                      />
+                    </FormRow>
+                  </FormContainer>
+                )}
+              </SidebarColumn>
             )}
 
-            {showNotes && (
-              <FormRow>
-                <NoteField value={scene.notes || ""} onChange={onChangeNotes} />
-              </FormRow>
-            )}
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <FormField name="type" label={l10n("FIELD_TYPE")}>
+                    <SceneTypeSelect
+                      name="type"
+                      value={scene.type}
+                      onChange={onChangeType}
+                    />
+                  </FormField>
+                </FormRow>
 
-            <FormRow>
-              <FormField name="type" label={l10n("FIELD_TYPE")}>
-                <SceneTypeSelect
-                  name="type"
-                  value={scene.type}
-                  onChange={onChangeType}
-                />
-              </FormField>
-            </FormRow>
-
-            <FormRow>
-              <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
-                <div style={{ display: "flex" }}>
-                  <BackgroundSelectButton
+                <FormRow>
+                  <FormField
                     name="backgroundId"
-                    value={scene.backgroundId}
-                    tilesetId={scene.tilesetId}
-                    onChange={onChangeBackgroundId}
-                    is360={scene.type === "LOGO"}
-                    includeInfo
-                  />
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    {showCommonTilesetButton && (
-                      <Button
-                        style={{
-                          padding: "5px 0",
-                          minWidth: 28,
-                          marginLeft: 4,
-                          marginBottom: 4,
-                        }}
-                        variant={commonTilesetOpen ? "primary" : "transparent"}
-                        onClick={onToggleCommonTileset}
-                        title={l10n("FIELD_COMMON_TILESET")}
-                      >
-                        <JigsawIcon />
-                      </Button>
-                    )}
-                    {showParallaxButton && (
-                      <Button
-                        style={{
-                          padding: "5px 0",
-                          minWidth: 28,
-                          marginLeft: 4,
-                        }}
-                        variant={scene?.parallax ? "primary" : "transparent"}
-                        onClick={onToggleParallaxSettings}
-                        title={l10n("FIELD_PARALLAX")}
-                      >
-                        <ParallaxIcon />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </FormField>
-            </FormRow>
+                    label={l10n("FIELD_BACKGROUND")}
+                  >
+                    <div style={{ display: "flex" }}>
+                      <BackgroundSelectButton
+                        name="backgroundId"
+                        value={scene.backgroundId}
+                        tilesetId={scene.tilesetId}
+                        onChange={onChangeBackgroundId}
+                        is360={scene.type === "LOGO"}
+                        includeInfo
+                      />
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {showCommonTilesetButton && (
+                          <Button
+                            style={{
+                              padding: "5px 0",
+                              minWidth: 28,
+                              marginLeft: 4,
+                              marginBottom: 4,
+                            }}
+                            variant={
+                              commonTilesetOpen ? "primary" : "transparent"
+                            }
+                            onClick={onToggleCommonTileset}
+                            title={l10n("FIELD_COMMON_TILESET")}
+                          >
+                            <JigsawIcon />
+                          </Button>
+                        )}
+                        {showParallaxButton && (
+                          <Button
+                            style={{
+                              padding: "5px 0",
+                              minWidth: 28,
+                              marginLeft: 4,
+                            }}
+                            variant={
+                              scene?.parallax ? "primary" : "transparent"
+                            }
+                            onClick={onToggleParallaxSettings}
+                            title={l10n("FIELD_PARALLAX")}
+                          >
+                            <ParallaxIcon />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </FormField>
+                </FormRow>
 
-            {commonTilesetOpen && (
-              <FormRow>
-                <FormField
-                  name="tilesetId"
-                  label={l10n("FIELD_COMMON_TILESET")}
-                  title={l10n("FIELD_COMMON_TILESET_DESC")}
-                >
-                  <TilesetSelect
-                    name="tilesetId"
-                    value={scene.tilesetId}
-                    onChange={onChangeTilesetdId}
-                    optional
-                  />
-                </FormField>
-              </FormRow>
-            )}
+                {commonTilesetOpen && (
+                  <FormRow>
+                    <FormField
+                      name="tilesetId"
+                      label={l10n("FIELD_COMMON_TILESET")}
+                      title={l10n("FIELD_COMMON_TILESET_DESC")}
+                    >
+                      <TilesetSelect
+                        name="tilesetId"
+                        value={scene.tilesetId}
+                        onChange={onChangeTilesetdId}
+                        optional
+                      />
+                    </FormField>
+                  </FormRow>
+                )}
 
-            <FormRow>
-              <BackgroundWarnings id={scene.backgroundId} />
-              {logoSceneForBackground && (
-                <Alert variant="warning">
-                  <AlertItem>
-                    {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
-                      name: logoSceneForBackground.name,
-                    })}
-                  </AlertItem>
-                </Alert>
-              )}
-            </FormRow>
+                <FormRow>
+                  <BackgroundWarnings id={scene.backgroundId} />
+                  {logoSceneForBackground && (
+                    <Alert variant="warning">
+                      <AlertItem>
+                        {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
+                          name: logoSceneForBackground.name,
+                        })}
+                      </AlertItem>
+                    </Alert>
+                  )}
+                </FormRow>
+
+                {/* <FormDivider /> */}
+              </FormContainer>
+            </SidebarColumn>
 
             {showParallaxOptions && (
-              <FormRow>
-                <FormField name="parallax" label={l10n("FIELD_PARALLAX")}>
-                  <ParallaxSelect
-                    name="parallax"
-                    value={scene.parallax}
-                    sceneHeight={scene.height}
-                    onChange={onChangeParallax}
-                  />
-                </FormField>
-              </FormRow>
+              <SidebarColumn>
+                <FormContainer>
+                  <FormRow>
+                    <FormField name="parallax" label={l10n("FIELD_PARALLAX")}>
+                      <ParallaxSelect
+                        name="parallax"
+                        value={scene.parallax}
+                        sceneHeight={scene.height}
+                        onChange={onChangeParallax}
+                      />
+                    </FormField>
+                  </FormRow>
+                </FormContainer>
+              </SidebarColumn>
             )}
 
-            <FormDivider />
-
             {colorsEnabled && (
-              <>
+              <SidebarColumn>
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
@@ -812,11 +836,11 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                   </FormField>
                 </FormRow>
 
-                <FormDivider />
-              </>
+                {/* <FormDivider /> */}
+              </SidebarColumn>
             )}
             {scene.type !== "LOGO" && (
-              <>
+              <SidebarColumn>
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
@@ -834,56 +858,51 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     />
                   </FormField>
                 </FormRow>
-
-                {isStartingScene && (
-                  <>
-                    <FormDivider />
-                    <FormRow>
-                      <Label htmlFor="startX">
-                        {l10n("FIELD_START_POSITION")}
-                      </Label>
-                    </FormRow>
-                    <FormRow>
-                      <CoordinateInput
-                        name="startX"
-                        coordinate="x"
-                        value={startX}
-                        placeholder="0"
-                        min={0}
-                        max={scene.width - 2}
-                        onChange={onChangeStartX}
-                      />
-                      <CoordinateInput
-                        name="startY"
-                        coordinate="y"
-                        value={startY}
-                        placeholder="0"
-                        min={0}
-                        max={scene.height - 1}
-                        onChange={onChangeStartY}
-                      />
-                    </FormRow>
-
-                    <FormRow>
-                      <FormField
-                        name="actorDirection"
-                        label={l10n("FIELD_DIRECTION")}
-                      >
-                        <DirectionPicker
-                          id="actorDirection"
-                          value={startDirection}
-                          onChange={onChangeStartDirection}
-                        />
-                      </FormField>
-                    </FormRow>
-                  </>
-                )}
-              </>
+              </SidebarColumn>
             )}
-          </FormContainer>
-        </SidebarColumn>
-      )}
-      <SidebarColumn>
+            {isStartingScene && (
+              <SidebarColumn>
+                {/* <FormDivider /> */}
+                <FormRow>
+                  <Label htmlFor="startX">{l10n("FIELD_START_POSITION")}</Label>
+                </FormRow>
+                <FormRow>
+                  <CoordinateInput
+                    name="startX"
+                    coordinate="x"
+                    value={startX}
+                    placeholder="0"
+                    min={0}
+                    max={scene.width - 2}
+                    onChange={onChangeStartX}
+                  />
+                  <CoordinateInput
+                    name="startY"
+                    coordinate="y"
+                    value={startY}
+                    placeholder="0"
+                    min={0}
+                    max={scene.height - 1}
+                    onChange={onChangeStartY}
+                  />
+                </FormRow>
+
+                <FormRow>
+                  <FormField
+                    name="actorDirection"
+                    label={l10n("FIELD_DIRECTION")}
+                  >
+                    <DirectionPicker
+                      id="actorDirection"
+                      value={startDirection}
+                      onChange={onChangeStartDirection}
+                    />
+                  </FormField>
+                </FormRow>
+              </SidebarColumn>
+            )}
+          </SidebarColumns>
+        )}
         <StickyTabs>
           <TabBar
             value={scriptMode}
@@ -915,7 +934,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
             showAutoFadeIndicator={scriptKey === "script"}
           />
         </ScriptEditorContext.Provider>
-      </SidebarColumn>
+      </CachedScroll>
     </Sidebar>
   );
 };

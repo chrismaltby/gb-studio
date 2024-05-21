@@ -7,7 +7,6 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
   FormContainer,
-  FormDivider,
   FormField,
   FormHeader,
   FormRow,
@@ -21,7 +20,7 @@ import {
   ActorNormalized,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
 import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
@@ -51,11 +50,11 @@ import {
 } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
+import CachedScroll from "ui/util/CachedScroll";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
-  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -117,11 +116,7 @@ const getScriptKey = (
   return "script";
 };
 
-export const ActorEditor: FC<ActorEditorProps> = ({
-  id,
-  sceneId,
-  multiColumn,
-}) => {
+export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const clipboardFormat = useAppSelector(
@@ -270,11 +265,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     [onChangeActorProp]
   );
 
-  const onChangeAnimate = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeActorProp("animate", castEventToBool(e)),
-    [onChangeActorProp]
-  );
   const onChangePersistent = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorProp("persistent", castEventToBool(e)),
@@ -342,8 +332,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     return <WorldEditor />;
   }
 
-  const showDirectionInput = true;
-  const showAnimatedCheckbox = false;
   const showAnimSpeed = true;
 
   const showCollisionGroup = !actor.isPinned;
@@ -374,10 +362,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     />
   );
 
+  const scrollKey = `${actor.id}_${scriptKey}`;
+
   return (
-    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
-      {!lockScriptEditor && (
-        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+    <Sidebar onClick={selectSidebar}>
+      <CachedScroll key={scrollKey} cacheKey={scrollKey}>
+        {!lockScriptEditor && (
           <FormContainer>
             <FormHeader>
               <EditableText
@@ -414,142 +404,153 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 </MenuItem>
               </DropdownButton>
             </FormHeader>
+          </FormContainer>
+        )}
 
-            {showSymbols && (
-              <>
-                <SymbolEditorWrapper>
-                  <ActorSymbolsEditor id={actor.id} />
-                  <SpriteSymbolsEditor id={actor.spriteSheetId} />
-                </SymbolEditorWrapper>
-                <FormDivider />
-              </>
+        {!lockScriptEditor && (
+          <SidebarColumns>
+            {(showSymbols || showNotes) && (
+              <SidebarColumn>
+                {showSymbols && (
+                  <SymbolEditorWrapper>
+                    <ActorSymbolsEditor id={actor.id} />
+                    <SpriteSymbolsEditor id={actor.spriteSheetId} />
+                  </SymbolEditorWrapper>
+                )}
+                {showNotes && (
+                  <FormContainer>
+                    <FormRow>
+                      <NoteField
+                        value={actor.notes || ""}
+                        onChange={onChangeNotes}
+                      />
+                    </FormRow>
+                  </FormContainer>
+                )}
+              </SidebarColumn>
             )}
 
-            {showNotes && (
-              <FormRow>
-                <NoteField value={actor.notes || ""} onChange={onChangeNotes} />
-              </FormRow>
-            )}
-
-            <FormRow>
-              <CoordinateInput
-                name="x"
-                coordinate="x"
-                value={actor.x}
-                placeholder="0"
-                min={0}
-                max={scene.width - 2}
-                onChange={onChangeX}
-              />
-              <CoordinateInput
-                name="y"
-                coordinate="y"
-                value={actor.y}
-                placeholder="0"
-                min={0}
-                max={scene.height - 1}
-                onChange={onChangeY}
-              />
-              <DropdownButton
-                menuDirection="right"
-                label={<PinIcon />}
-                showArrow={false}
-                variant={actor.isPinned ? "primary" : "normal"}
-                style={{
-                  padding: "5px 0",
-                  minWidth: 28,
-                }}
-              >
-                <MenuItem onClick={onToggleField("isPinned")}>
-                  <Checkbox id="pin" name="pin" checked={actor.isPinned} /> Pin
-                  to Screen
-                </MenuItem>
-              </DropdownButton>
-            </FormRow>
-            <FormDivider />
-            <FormRow>
-              <FormField name="actorSprite" label={l10n("FIELD_SPRITE_SHEET")}>
-                <SpriteSheetSelectButton
-                  name="actorSprite"
-                  value={actor.spriteSheetId}
-                  direction={actor.direction}
-                  frame={0}
-                  onChange={onChangeSpriteSheetId}
-                  includeInfo
-                />
-              </FormField>
-            </FormRow>
-            <FormRow>
-              {showDirectionInput && (
-                <FormField
-                  name="actorDirection"
-                  label={l10n("FIELD_DIRECTION")}
-                >
-                  <DirectionPicker
-                    id="actorDirection"
-                    value={actor.direction}
-                    onChange={onChangeDirection}
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <CoordinateInput
+                    name="x"
+                    coordinate="x"
+                    value={actor.x}
+                    placeholder="0"
+                    min={0}
+                    max={scene.width - 2}
+                    onChange={onChangeX}
                   />
-                </FormField>
-              )}
-            </FormRow>
-            {showAnimatedCheckbox && (
-              <FormRow>
-                <CheckboxField
-                  name="animated"
-                  label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
-                  checked={actor.animate}
-                  onChange={onChangeAnimate}
-                />
-              </FormRow>
-            )}
-            <FormDivider />
-            <FormRow>
-              <FormField
-                name="actorMoveSpeed"
-                label={l10n("FIELD_MOVEMENT_SPEED")}
-              >
-                <MovementSpeedSelect
-                  name="actorMoveSpeed"
-                  value={actor.moveSpeed}
-                  onChange={onChangeMoveSpeed}
-                />
-              </FormField>
-              {showAnimSpeed && (
-                <FormField
-                  name="actorAnimSpeed"
-                  label={l10n("FIELD_ANIMATION_SPEED")}
-                >
-                  <AnimationSpeedSelect
-                    name="actorAnimSpeed"
-                    value={actor.animSpeed}
-                    onChange={onChangeAnimSpeed}
+                  <CoordinateInput
+                    name="y"
+                    coordinate="y"
+                    value={actor.y}
+                    placeholder="0"
+                    min={0}
+                    max={scene.height - 1}
+                    onChange={onChangeY}
                   />
-                </FormField>
-              )}
-            </FormRow>
-            {showCollisionGroup && (
-              <>
-                <FormDivider />
+                  <DropdownButton
+                    menuDirection="right"
+                    label={<PinIcon />}
+                    showArrow={false}
+                    variant={actor.isPinned ? "primary" : "normal"}
+                    style={{
+                      padding: "5px 0",
+                      minWidth: 28,
+                    }}
+                  >
+                    <MenuItem onClick={onToggleField("isPinned")}>
+                      <Checkbox id="pin" name="pin" checked={actor.isPinned} />{" "}
+                      Pin to Screen
+                    </MenuItem>
+                  </DropdownButton>
+                </FormRow>
                 <FormRow>
                   <FormField
-                    name="actorCollisionGroup"
-                    label={l10n("FIELD_COLLISION_GROUP")}
+                    name="actorDirection"
+                    label={l10n("FIELD_DIRECTION")}
                   >
-                    <CollisionMaskPicker
-                      id="actorCollisionGroup"
-                      value={actor.collisionGroup}
-                      onChange={onChangeCollisionGroup}
-                      includeNone
+                    <DirectionPicker
+                      id="actorDirection"
+                      value={actor.direction}
+                      onChange={onChangeDirection}
                     />
                   </FormField>
                 </FormRow>
-              </>
+              </FormContainer>
+            </SidebarColumn>
+
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <FormField
+                    name="actorSprite"
+                    label={l10n("FIELD_SPRITE_SHEET")}
+                  >
+                    <SpriteSheetSelectButton
+                      name="actorSprite"
+                      value={actor.spriteSheetId}
+                      direction={actor.direction}
+                      frame={0}
+                      onChange={onChangeSpriteSheetId}
+                      includeInfo
+                    />
+                  </FormField>
+                </FormRow>
+              </FormContainer>
+            </SidebarColumn>
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <FormField
+                    name="actorMoveSpeed"
+                    label={l10n("FIELD_MOVEMENT_SPEED")}
+                  >
+                    <MovementSpeedSelect
+                      name="actorMoveSpeed"
+                      value={actor.moveSpeed}
+                      onChange={onChangeMoveSpeed}
+                    />
+                  </FormField>
+                  {showAnimSpeed && (
+                    <FormField
+                      name="actorAnimSpeed"
+                      label={l10n("FIELD_ANIMATION_SPEED")}
+                    >
+                      <AnimationSpeedSelect
+                        name="actorAnimSpeed"
+                        value={actor.animSpeed}
+                        onChange={onChangeAnimSpeed}
+                      />
+                    </FormField>
+                  )}
+                </FormRow>
+              </FormContainer>
+            </SidebarColumn>
+            {showCollisionGroup && (
+              <SidebarColumn>
+                <FormContainer>
+                  <FormRow>
+                    <FormField
+                      name="actorCollisionGroup"
+                      label={l10n("FIELD_COLLISION_GROUP")}
+                    >
+                      <CollisionMaskPicker
+                        id="actorCollisionGroup"
+                        value={actor.collisionGroup}
+                        onChange={onChangeCollisionGroup}
+                        includeNone
+                      />
+                    </FormField>
+                  </FormRow>
+                </FormContainer>
+              </SidebarColumn>
             )}
-          </FormContainer>
-        </SidebarColumn>
-      )}
-      <SidebarColumn>
+          </SidebarColumns>
+        )}
+
         <StickyTabs>
           {actor.collisionGroup ? (
             <TabBar
@@ -603,7 +604,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
         <ScriptEditorContext.Provider value={scriptCtx}>
           <ScriptEditor value={actor[scriptKey]} />
         </ScriptEditorContext.Provider>
-      </SidebarColumn>
+      </CachedScroll>
     </Sidebar>
   );
 };
