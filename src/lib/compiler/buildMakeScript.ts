@@ -14,6 +14,7 @@ type BuildOptions = {
   platform: string;
   batteryless: boolean;
   targetPlatform: "gb" | "pocket";
+  cartType: "mbc3" | "mbc5";
 };
 
 const buildMakeScript = async (
@@ -26,6 +27,7 @@ const buildMakeScript = async (
     platform,
     batteryless,
     targetPlatform,
+    cartType,
   }: BuildOptions
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
@@ -54,6 +56,9 @@ const buildMakeScript = async (
   if (batteryless) {
     CFLAGS += " -DBATTERYLESS";
   }
+
+  const rumbleBit = cartType === "mbc3" ? "0x20u" : "0x08u";
+  CFLAGS += `-DRUMBLE_ENABLE=${rumbleBit}`;
 
   if (debug) {
     CFLAGS += " -Wf--debug -Wl-y";
@@ -113,6 +118,7 @@ export const getBuildCommands = async (
     platform,
     batteryless,
     targetPlatform,
+    cartType,
   }: BuildOptions
 ) => {
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -163,6 +169,9 @@ export const getBuildCommands = async (
       if (batteryless) {
         buildArgs.push("-DBATTERYLESS");
       }
+
+      const rumbleBit = cartType === "mbc3" ? "0x20u" : "0x08u";
+      buildArgs.push(`-DRUMBLE_ENABLE=${rumbleBit}`);
 
       if (debug) {
         buildArgs.push("-Wf--fverbose-asm");
@@ -266,7 +275,7 @@ export const buildLinkFlags = (
     .toUpperCase()
     .replace(/[^A-Z]*/g, "")
     .substring(0, 15);
-  const cart = cartType === "mbc3" ? "0x10" : "0x1B";
+  const cart = cartType === "mbc3" ? "0x10" : "0x1E";
   return ([] as Array<string>).concat(
     // General
     [

@@ -72,6 +72,11 @@ const makeBuild = async ({
   } else {
     env.MUSIC_DRIVER = "GBT_PLAYER";
   }
+  if (settings.cartType === "mbc3") {
+    env.RUMBLE_ENABLE = 0x20;
+  } else {
+    env.RUMBLE_ENABLE = 0x08;
+  }
 
   // Populate /obj with cached data
   await fetchCachedObjData(buildRoot, tmpPath, env);
@@ -85,6 +90,7 @@ const makeBuild = async ({
     debug,
     platform: process.platform,
     targetPlatform,
+    cartType: settings.cartType,
   });
 
   const options = {
