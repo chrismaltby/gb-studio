@@ -242,28 +242,30 @@ export const SongEditor = () => {
           </FormRow>
         </SidebarColumn>
       </SidebarColumns>
-      <SidebarColumn>
-        <FormContainer>
-          {selectedEffectCell !== null ? (
+
+      <FormContainer>
+        {selectedEffectCell !== null ? (
+          <div style={{ marginTop: -1 }}>
             <PatternCellEditor
               id={selectedEffectCell}
               patternId={patternId}
               pattern={song?.patterns[patternId][selectedEffectCell]}
             />
-          ) : instrumentData ? (
-            <>
-              <FormHeader>
-                <EditableText
-                  name="instrumentName"
-                  placeholder={instrumentName(
-                    instrumentData,
-                    selectedInstrument.type
-                  )}
-                  value={instrumentData.name || ""}
-                  onChange={onChangeInstrumentName(selectedInstrument.type)}
-                />
+          </div>
+        ) : instrumentData ? (
+          <>
+            <FormHeader>
+              <EditableText
+                name="instrumentName"
+                placeholder={instrumentName(
+                  instrumentData,
+                  selectedInstrument.type
+                )}
+                value={instrumentData.name || ""}
+                onChange={onChangeInstrumentName(selectedInstrument.type)}
+              />
 
-                {/* <DropdownButton
+              {/* <DropdownButton
                   size="small"
                   variant="transparent"
                   menuDirection="right"
@@ -275,39 +277,38 @@ export const SongEditor = () => {
                   {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
                 </MenuItem>
                 </DropdownButton> */}
-              </FormHeader>
+            </FormHeader>
 
-              <StickyTabs>
-                <TabBar
-                  value={instrumentEditorTab}
-                  values={instrumentEditorTabs}
-                  onChange={onInstrumentEditorChange}
+            <StickyTabs>
+              <TabBar
+                value={instrumentEditorTab}
+                values={instrumentEditorTabs}
+                onChange={onInstrumentEditorChange}
+              />
+            </StickyTabs>
+            <InstrumentEditorWrapper>
+              {instrumentEditorTab === "main" ? (
+                <>
+                  {renderInstrumentEditor(
+                    selectedInstrument.type,
+                    instrumentData,
+                    song.waves
+                  )}
+                </>
+              ) : (
+                <InstrumentSubpatternEditor
+                  enabled={instrumentData.subpattern_enabled}
+                  subpattern={instrumentData.subpattern}
+                  instrumentId={instrumentData.index}
+                  instrumentType={selectedInstrument.type}
                 />
-              </StickyTabs>
-              <InstrumentEditorWrapper>
-                {instrumentEditorTab === "main" ? (
-                  <>
-                    {renderInstrumentEditor(
-                      selectedInstrument.type,
-                      instrumentData,
-                      song.waves
-                    )}
-                  </>
-                ) : (
-                  <InstrumentSubpatternEditor
-                    enabled={instrumentData.subpattern_enabled}
-                    subpattern={instrumentData.subpattern}
-                    instrumentId={instrumentData.index}
-                    instrumentType={selectedInstrument.type}
-                  />
-                )}
-              </InstrumentEditorWrapper>
-            </>
-          ) : (
-            ""
-          )}
-        </FormContainer>
-      </SidebarColumn>
+              )}
+            </InstrumentEditorWrapper>
+          </>
+        ) : (
+          ""
+        )}
+      </FormContainer>
     </Sidebar>
   );
 };
