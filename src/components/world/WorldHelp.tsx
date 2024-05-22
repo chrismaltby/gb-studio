@@ -2,6 +2,10 @@ import React from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 
+const Wrapper = styled.div`
+  position: fixed;
+`;
+
 const WorldHelpArrow = styled.div`
   position: absolute;
   top: 65px;
@@ -19,7 +23,7 @@ const WorldHelpLabel = styled.div`
 `;
 
 const WorldHelp = () => (
-  <div>
+  <Wrapper>
     <WorldHelpArrow>
       <svg width="51px" height="40px" viewBox="0 0 51 35">
         <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -34,7 +38,7 @@ const WorldHelp = () => (
       </svg>
     </WorldHelpArrow>
     <WorldHelpLabel>{l10n("FIELD_START_BY_ADDING_SCENE")}</WorldHelpLabel>
-  </div>
+  </Wrapper>
 );
 
 export default WorldHelp;

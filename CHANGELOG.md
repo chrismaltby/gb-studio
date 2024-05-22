@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix "Add Flags" event tooltips localisation.
 - Fix issue where some sidebar inputs would appear above script tabs when scrolled
 - Fix rumble support when using MBC5 cartridge [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where empty project message would be positioned incorrectly if World view was scrolled or zoomed
 
 ## [4.0.0-beta2]
 

@@ -666,14 +666,14 @@ const WorldView = () => {
           : undefined
       }
     >
+      {loaded && scenes.length === 0 && <WorldHelp />}
+
       <WorldContent ref={scrollContentsRef}>
         <WorldGrid
           ref={worldRef}
           style={{ width: scrollWidth, height: scrollHeight }}
           onMouseDown={startWorldDrag}
         />
-
-        {loaded && scenes.length === 0 && <WorldHelp />}
 
         {addToSelection && (
           <SelectionWrapper
