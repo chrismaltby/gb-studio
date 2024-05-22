@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
+
 ### Changed
 
 - Update sidebar layout to prioritise giving scripts full sidebar width
