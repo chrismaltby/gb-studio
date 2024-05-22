@@ -1,10 +1,13 @@
 module.exports = {
-  preset: "ts-jest/presets/js-with-ts",
+  preset: "ts-jest",
   testEnvironment: "node",
   roots: ["<rootDir>/src", "<rootDir>/test"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["jest-extended", "./test/setup.ts"],
   collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}", "!src/**/*.d.ts"],
+  transform: {
+    "\\.[jt]sx?$": "ts-jest",
+  },
   moduleNameMapper: {
     // Mocks
     electron: "<rootDir>/test/__mocks__/electronMock.js",
