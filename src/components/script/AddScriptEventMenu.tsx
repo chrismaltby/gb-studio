@@ -222,7 +222,9 @@ const eventToOption =
     const localisedKey = l10n(event.id as L10NKey); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
-    const groupName = group ? l10n(group as L10NKey) : undefined;
+    const groupName = group
+      ? l10n(group as L10NKey)
+      : l10n(event.groups?.[0] as L10NKey);
     const subGroup =
       group && event.subGroups?.[group]
         ? l10n(event.subGroups?.[group] as L10NKey)

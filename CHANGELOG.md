@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
 - Update music editor to display compressed version of channel mute/visibility controls when not enough room to display fully
 - Keep preference for using Piano Roll or Tracker view when switching between songs in music editor rather than switching to Piano Roll view
+- Button events renamed to be more consistent
+- "Add Event" search updated to also include events that match group name when searching e.g. Searching 'Joypad' will include all Button events
 
 ### Fixed
 
