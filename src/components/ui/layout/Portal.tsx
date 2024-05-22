@@ -1,9 +1,10 @@
 import { FC } from "react";
 import ReactDOM from "react-dom";
 
+export const portalRoot: HTMLElement = document.getElementById(
+  "MenuPortal"
+) as HTMLElement;
+
 export const Portal: FC = (props) => {
-  const root: HTMLElement = document.getElementById(
-    "MenuPortal"
-  ) as HTMLElement;
-  return ReactDOM.createPortal(props.children, root);
+  return ReactDOM.createPortal(props.children, portalRoot);
 };

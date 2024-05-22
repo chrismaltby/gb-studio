@@ -6,25 +6,24 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import {
   customEventSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
-import { RootState } from "store/configureStore";
 import {
   groupVariables,
   NamedVariable,
   namedVariablesByContext,
-} from "lib/helpers/variables";
+} from "renderer/lib/variables";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
-import { UnitType } from "store/features/entities/entitiesTypes";
+import { UnitType } from "shared/lib/entities/entitiesTypes";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -38,8 +37,10 @@ interface VariableSelectProps extends SelectCommonProps {
   onChangeUnits?: (newUnits: UnitType) => void;
 }
 
-const Wrapper = styled.div`
+export const VariableSelectWrapper = styled.div`
   position: relative;
+  width: 100%;
+  min-width: 78px;
 `;
 
 const Select = styled(DefaultSelect)`
@@ -74,7 +75,7 @@ const VariableRenameButton = styled.button`
   background: ${(props) => props.theme.colors.input.background};
   border-color: ${(props) => props.theme.colors.input.background};
 
-  ${Wrapper}:hover & {
+  ${VariableSelectWrapper}:hover & {
     opacity: 1;
   }
 
@@ -151,23 +152,22 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
-  const editorType = useSelector((state: RootState) => state.editor.type);
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");
-  const canRename = allowRename && !valueIsTemp && editorType !== "customEvent";
+  const canRename =
+    allowRename && !valueIsTemp && context.entityType !== "customEvent";
 
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
-      entityId,
       variablesLookup,
       customEvent
     );
@@ -251,7 +251,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     if (e.altKey) {
       if (
         value &&
-        editorType !== "customEvent" &&
+        context.entityType !== "customEvent" &&
         Number.isInteger(Number(value))
       ) {
         dispatch(editorActions.selectVariable({ variableId: value }));
@@ -260,7 +260,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   };
 
   return (
-    <Wrapper onClick={onJumpToVariable}>
+    <VariableSelectWrapper onClick={onJumpToVariable}>
       {renameVisible ? (
         <VariableRenameInput
           key={renameId}
@@ -305,6 +305,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           onChange={onChangeUnits}
         />
       )}
-    </Wrapper>
+    </VariableSelectWrapper>
   );
 };

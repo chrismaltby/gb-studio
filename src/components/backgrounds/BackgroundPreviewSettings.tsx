@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   backgroundSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import electronActions from "store/features/electron/electronActions";
-import l10n from "lib/helpers/l10n";
-import { SceneSelect } from "../forms/SceneSelect";
+import { SceneSelect } from "components/forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { sceneName } from "lib/compiler/compileData2";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import l10n from "shared/lib/lang/l10n";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetPath } from "shared/lib/helpers/assets";
 
 interface BackgroundPreviewSettingsProps {
   backgroundId: string;
@@ -56,30 +56,25 @@ const ButtonCover = styled.div`
 const BackgroundPreviewSettings = ({
   backgroundId,
 }: BackgroundPreviewSettingsProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const value = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
-  );
-  const scene = useSelector((state: RootState) =>
+  const value = useAppSelector((state) => state.editor.previewAsSceneId);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, value)
   );
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectIds(state)
-  );
+  const scenes = useAppSelector((state) => sceneSelectors.selectIds(state));
   const sceneIndex = scenes.indexOf(value);
 
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
 
   useEffect(() => {
@@ -156,12 +151,12 @@ const BackgroundPreviewSettings = ({
     if (background) {
       dispatch(
         electronActions.openFile({
-          filename: `${projectRoot}/assets/backgrounds/${background.filename}`,
+          filename: assetPath("backgrounds", background),
           type: "image",
         })
       );
     }
-  }, [background, dispatch, projectRoot]);
+  }, [background, dispatch]);
 
   return (
     <Wrapper>

@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { emoteSelectors } from "store/features/entities/entitiesState";
-import { Emote } from "store/features/entities/entitiesTypes";
+import { Emote } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -10,7 +9,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import { EmoteCanvas } from "../world/EmoteCanvas";
+import { EmoteCanvas } from "components/world/EmoteCanvas";
 
 interface EmoteSelectProps extends SelectCommonProps {
   name: string;
@@ -33,9 +32,7 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
   optionalDefaultEmoteId,
   ...selectProps
 }) => {
-  const emotes = useSelector((state: RootState) =>
-    emoteSelectors.selectAll(state)
-  );
+  const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
   const [options, setOptions] = useState<EmoteOption[]>([]);
   const [currentEmote, setCurrentEmote] = useState<Emote>();
   const [currentValue, setCurrentValue] = useState<EmoteOption>();

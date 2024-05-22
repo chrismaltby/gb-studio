@@ -1,14 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import PaletteBlock from "../library/PaletteBlock";
+import PaletteBlock from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE } from "consts";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type PaletteSelectProps = {
   name: string;
@@ -79,7 +78,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
   const palette =
-    useSelector((state: RootState) =>
+    useAppSelector((state) =>
       paletteSelectors.selectById(
         state,
         value || optionalDefaultPaletteId || ""
@@ -87,7 +86,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     ) || DMG_PALETTE;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (buttonFocus) {

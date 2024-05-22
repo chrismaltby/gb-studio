@@ -1,32 +1,62 @@
-import l10n from "./l10n";
-import { divisibleBy8 } from "./8bit";
-import { assetFilename } from "./gbstudio";
-import { Background } from "store/features/entities/entitiesTypes";
-import { readFileToTilesDataArray, toTileLookup } from "../tiles/tileData";
+import l10n from "shared/lib/lang/l10n";
+import { divisibleBy8 } from "shared/lib/helpers/8bit";
+import type {
+  BackgroundData,
+  Tileset,
+} from "shared/lib/entities/entitiesTypes";
+import {
+  toTileLookup,
+  tilesAndLookupToTilemap,
+} from "shared/lib/tiles/tileData";
+import { assetFilename } from "shared/lib/helpers/assets";
+import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
-const MAX_TILESET_TILES = 16 * 12;
 
-interface BackgroundInfo {
+export interface BackgroundInfo {
   numTiles: number;
   warnings: string[];
+  lookup: number[];
 }
 
+const mergeCommonTiles = async (
+  tileData: Uint8Array[],
+  commonTileset: Tileset | undefined,
+  projectPath: string
+) => {
+  if (!commonTileset) {
+    return tileData;
+  }
+  const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+  const commonTileData = await readFileToTilesDataArray(commonFilename);
+  return [...commonTileData, ...tileData];
+};
+
 export const getBackgroundInfo = async (
-  background: Background,
+  background: BackgroundData,
+  commonTileset: Tileset | undefined,
   is360: boolean,
+  isCGBOnly: boolean,
   projectPath: string,
   precalculatedTilesetLength?: number
 ): Promise<BackgroundInfo> => {
   const warnings: string[] = [];
 
   let tilesetLength = precalculatedTilesetLength;
+  let tilesets: number[] = [];
   if (!tilesetLength) {
     const filename = assetFilename(projectPath, "backgrounds", background);
     const tileData = await readFileToTilesDataArray(filename);
-    const tilesetLookup = toTileLookup(tileData);
+    const tileDataWithCommon = await mergeCommonTiles(
+      tileData,
+      commonTileset,
+      projectPath
+    );
+    const tilesetLookup = toTileLookup(tileDataWithCommon);
+    tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
     tilesetLength = Object.keys(tilesetLookup).length;
   }
 
@@ -65,11 +95,20 @@ export const getBackgroundInfo = async (
   ) {
     warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
   }
-  if (tilesetLength > MAX_TILESET_TILES && !is360) {
+  if (tilesetLength > MAX_BACKGROUND_TILES && !is360 && !isCGBOnly) {
     warnings.push(
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
-        maxTilesetLength: MAX_TILESET_TILES,
+        maxTilesetLength: MAX_BACKGROUND_TILES,
+      })
+    );
+  }
+
+  if (tilesetLength > MAX_BACKGROUND_TILES_CGB && !is360 && isCGBOnly) {
+    warnings.push(
+      l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
+        tilesetLength,
+        maxTilesetLength: MAX_BACKGROUND_TILES_CGB,
       })
     );
   }
@@ -88,5 +127,6 @@ export const getBackgroundInfo = async (
   return {
     warnings,
     numTiles: tilesetLength,
+    lookup: tilesets,
   };
 };

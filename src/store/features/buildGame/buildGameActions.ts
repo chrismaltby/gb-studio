@@ -9,18 +9,22 @@ const buildGame = createAction(
     {
       buildType = "web",
       exportBuild = false,
+      debugEnabled = false,
     }: {
       buildType?: BuildType;
       exportBuild?: boolean;
+      debugEnabled?: boolean;
     } = {
       buildType: "web",
       exportBuild: false,
+      debugEnabled: false,
     }
   ) => {
     return {
       payload: {
         buildType,
         exportBuild,
+        debugEnabled,
       },
     };
   }
@@ -32,9 +36,11 @@ const exportProject = createAction<ProjectExportType>(
   "buildGame/exportProject"
 );
 
-export default {
+const buildGameActions = {
   buildGame,
   deleteBuildCache,
   ejectEngine,
   exportProject,
 };
+
+export default buildGameActions;

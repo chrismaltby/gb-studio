@@ -11,6 +11,7 @@ export interface TextFieldProps {
   readonly errorLabel?: string;
   readonly value?: string;
   readonly size?: "small" | "medium" | "large";
+  readonly maxLength?: number;
   readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   readonly additionalRight?: ReactNode;
 }
@@ -67,6 +68,7 @@ export const TextField: FC<TextFieldProps> = ({
         id={name}
         name={name}
         value={value}
+        placeholder={placeholder}
         displaySize={size}
         onChange={onChange}
       />

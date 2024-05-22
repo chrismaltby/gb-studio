@@ -1,14 +1,14 @@
 import {
-  SceneData,
+  SceneNormalized,
   Background,
   SpriteSheet,
   Music,
-  Actor,
-  Trigger,
+  ActorNormalized,
+  TriggerNormalized,
   Palette,
-  CustomEvent,
-  SceneDenormalized,
-} from "../src/store/features/entities/entitiesTypes";
+  CustomEventNormalized,
+  Scene,
+} from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
 import { initialState as initialEditorState } from "../src/store/features/editor/editorState";
@@ -20,12 +20,14 @@ import { initialState as initialMusicState } from "../src/store/features/music/m
 import { initialState as initialNavigationState } from "../src/store/features/navigation/navigationState";
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
-import { initialState as initialWarningsState } from "../src/store/features/warnings/warningsState";
+import { initialState as initialAssetsState } from "../src/store/features/assets/assetsState";
 import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
 import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
+import { initialState as initialScriptEventDefsState } from "../src/store/features/scriptEventDefs/scriptEventDefsState";
 import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
 import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
+import { initialState as initialDebuggerState } from "../src/store/features/debugger/debuggerState";
 import compileFonts, {
   PrecompiledFontData,
 } from "../src/lib/compiler/compileFonts";
@@ -33,13 +35,14 @@ import { projectTemplatesRoot } from "../src/consts";
 import {
   PrecompiledBackground,
   PrecompiledSprite,
-} from "../src/lib/compiler/compileData2";
+} from "../src/lib/compiler/generateGBVMData";
 
-export const dummyScene: SceneData = {
+export const dummySceneNormalized: SceneNormalized = {
   id: "",
   name: "Scene",
   symbol: "scene_0",
   backgroundId: "",
+  tilesetId: "",
   x: 0,
   y: 0,
   width: 20,
@@ -57,10 +60,9 @@ export const dummyScene: SceneData = {
   playerHit3Script: [],
 };
 
-export const dummySceneDenormalized: SceneDenormalized =
-  dummyScene as unknown as SceneDenormalized;
+export const dummyScene: Scene = dummySceneNormalized as unknown as Scene;
 
-export const dummyActor: Actor = {
+export const dummyActorNormalized: ActorNormalized = {
   id: "dummyActor1",
   name: "",
   symbol: "actor_0",
@@ -84,7 +86,7 @@ export const dummyActor: Actor = {
   hit3Script: [],
 };
 
-export const dummyTrigger: Trigger = {
+export const dummyTriggerNormalized: TriggerNormalized = {
   id: "",
   name: "",
   symbol: "trigger_0",
@@ -108,7 +110,6 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
   name: "",
   width: 1,
   height: 1,
-  data: new Uint8Array(),
   tileset: {
     symbol: "ts_1",
     data: new Uint8Array(),
@@ -174,11 +175,16 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
     symbol: "ts_1",
     data: new Uint8Array(),
   },
-  data: [],
   tiles: [],
   metasprites: [],
   animationOffsets: [],
   metaspritesOrder: [],
+  checksum: "",
+  numTiles: 1,
+  width: 32,
+  height: 32,
+  animSpeed: 15,
+  vramData: [[], []],
 };
 
 export const dummyMusic: Music = {
@@ -191,7 +197,7 @@ export const dummyMusic: Music = {
   settings: {},
 };
 
-export const dummyCustomEvent: CustomEvent = {
+export const dummyCustomEventNormalized: CustomEventNormalized = {
   id: "",
   name: "",
   symbol: "script_0",
@@ -218,6 +224,8 @@ export const dummyProjectData: ProjectData = {
   avatars: [],
   emotes: [],
   sounds: [],
+  tilesets: [],
+  engineFieldValues: [],
   settings: {
     startSceneId: "",
     startX: 0,
@@ -231,7 +239,6 @@ export const dummyProjectData: ProjectData = {
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
-    customColorsEnabled: false,
     sgbEnabled: false,
     defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
@@ -247,6 +254,32 @@ export const dummyProjectData: ProjectData = {
     cartType: "mbc5",
     batterylessEnabled: false,
     favoriteEvents: [],
+    showCollisionSlopeTiles: false,
+    showCollisionExtraTiles: false,
+    customColorsWhite: "E8F8E0",
+    customColorsLight: "B0F088",
+    customColorsDark: "509878",
+    customColorsBlack: "202850",
+    customControlsUp: ["ArrowUp", "w"],
+    customControlsDown: ["ArrowDown", "s"],
+    customControlsLeft: ["ArrowLeft", "a"],
+    customControlsRight: ["ArrowRight", "d"],
+    customControlsA: ["Alt", "z", "j"],
+    customControlsB: ["Control", "k", "x"],
+    customControlsStart: ["Enter"],
+    customControlsSelect: ["Shift"],
+    debuggerEnabled: false,
+    debuggerScriptType: "editor",
+    debuggerVariablesFilter: "all",
+    debuggerCollapsedPanes: [],
+    debuggerPauseOnScriptChanged: false,
+    debuggerPauseOnWatchedVariableChanged: false,
+    debuggerBreakpoints: [],
+    debuggerWatchedVariables: [],
+    colorMode: "mono",
+    previewAsMono: false,
+    openBuildLogOnWarnings: true,
+    generateDebugFilesEnabled: false,
   },
 };
 
@@ -260,9 +293,6 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
         width: 128,
         height: 112,
         filename: "gbs-mono.png",
-        inode: "10414574138355865",
-        mapping: {},
-        _v: 1625435968911,
         plugin: undefined,
       },
     ],
@@ -291,8 +321,8 @@ export const dummyRootState: RootState = {
   error: {
     ...initialErrorState,
   },
-  warnings: {
-    ...initialWarningsState,
+  assets: {
+    ...initialAssetsState,
   },
   engine: {
     ...initialEngineState,
@@ -303,8 +333,14 @@ export const dummyRootState: RootState = {
   sprite: {
     ...initialSpriteState,
   },
+  scriptEventDefs: {
+    ...initialScriptEventDefsState,
+  },
   tracker: {
     ...initialTrackerState,
+  },
+  debug: {
+    ...initialDebuggerState,
   },
   trackerDocument: {
     past: [],

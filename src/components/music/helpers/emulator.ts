@@ -2,7 +2,33 @@ import { Binjgb, BinjgbModule } from "./WasmModuleWrapper";
 
 type StepType = "single" | "frame" | "run";
 
-let emu: any;
+type Emu = number | undefined;
+
+type Emulator = {
+  HEAP8: Uint8Array;
+  _free: (value: number) => void;
+  _malloc: (value: number) => number;
+  _emulator_new_simple: (
+    romPtr: number,
+    romSize: number,
+    sampleRate: number,
+    audioBufferSize: number
+  ) => Emu;
+  _emulator_delete: (emu: Emu) => void;
+  _emulator_get_ticks_f64: (emu: Emu) => number;
+  _emulator_run_until_f64: (emu: Emu, ticks: number) => number;
+  _emulator_read_mem: (emu: Emu, addr: number) => number;
+  _emulator_write_mem: (emu: Emu, addr: number, value: number) => void;
+  _set_audio_channel_mute: (
+    emu: Emu,
+    channel: number,
+    muted: boolean
+  ) => boolean;
+  _get_audio_buffer_ptr: (emu: Emu) => number;
+  _get_audio_buffer_capacity: (emu: Emu) => number;
+};
+
+let emu: Emu;
 let romPtr: number;
 let romSize = 0;
 let audioCtx: AudioContext;
@@ -14,17 +40,17 @@ const audioBufferSize = 2048;
   https://gist.github.com/surma/b2705b6cca29357ebea1c9e6e15684cc
   https://github.com/webpack/webpack/issues/7352
 */
-const locateFile = (module: any) => (path: string) => {
+const locateFile = (module: unknown) => (path: string) => {
   if (path.endsWith(".wasm")) {
     return module;
   }
   return path;
 };
 
-let Module: any;
+let Module: Emulator;
 Binjgb({
   locateFile: locateFile(BinjgbModule),
-}).then((module: any) => {
+}).then((module: Emulator) => {
   Module = module;
 });
 
@@ -147,7 +173,7 @@ function processAudioBuffer() {
   audioTime += bufferSec;
 }
 
-export default {
+const emulator = {
   init,
   writeMem,
   readMem,
@@ -155,3 +181,5 @@ export default {
   updateRom,
   setChannel,
 };
+
+export default emulator;

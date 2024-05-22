@@ -1,6 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import l10n from "lib/helpers/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { DutyInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
@@ -8,8 +6,11 @@ import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
+import Alert, { AlertItem } from "ui/alerts/Alert";
+import API from "renderer/lib/api";
+import l10n from "shared/lib/lang/l10n";
+import { useAppDispatch } from "store/hooks";
 
 const dutyOptions = [
   {
@@ -73,7 +74,7 @@ interface InstrumentDutyEditorProps {
 export const InstrumentDutyEditor = ({
   instrument,
 }: InstrumentDutyEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 
@@ -113,7 +114,7 @@ export const InstrumentDutyEditor = ({
     };
 
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendToMusicWindow({
       action: "preview",
       note: 24, // C_5
       type: "duty",
@@ -184,6 +185,13 @@ export const InstrumentDutyEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
+      )}
     </>
   );
 };

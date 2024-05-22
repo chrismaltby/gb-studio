@@ -4,21 +4,16 @@ import {
   playBuffer,
   stopBuffer,
   decodeAudioData,
-} from "lib/soundfx/soundfx";
-import { assetsRoot } from "../../../consts";
+} from "renderer/lib/soundfx/soundfx";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import musicActions from "../music/musicActions";
-import navigationActions from "../navigation/navigationActions";
+import musicActions from "store/features/music/musicActions";
+import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
-import { soundSelectors } from "../entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { ipcRenderer } from "electron";
-import { compileWav } from "lib/compiler/sounds/compileWav";
-import { Sound } from "../entities/entitiesTypes";
-import { compileVGM } from "lib/compiler/sounds/compileVGM";
-import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
-import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
+import { soundSelectors } from "store/features/entities/entitiesState";
+import { Sound } from "shared/lib/entities/entitiesTypes";
+import { assetPath } from "shared/lib/helpers/assets";
+import API from "renderer/lib/api";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -34,7 +29,7 @@ window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
 function play(filename: string) {
-  const url = `file://${assetsRoot}/soundfx/${filename}`;
+  const url = `gbs://app-assets/soundfx/${filename}`;
   fetch(url)
     .then((response) => response.arrayBuffer())
     .then(decodeAudioData)
@@ -43,37 +38,16 @@ function play(filename: string) {
     });
 }
 
-async function playSound(
-  sound: Sound,
-  effectIndex: number,
-  { projectRoot }: CompileSoundOptions
-) {
-  const filename = assetFilename(projectRoot, "sounds", sound);
+async function playSound(sound: Sound, effectIndex: number) {
+  const filename = assetPath("sounds", sound);
 
-  let sfx = "";
   if (sound.type === "wav") {
-    sfx = await compileWav(filename, "asm");
+    API.soundfx.playWav(filename);
   } else if (sound.type === "vgm") {
-    ({ output: sfx } = await compileVGM(filename, "asm"));
+    API.soundfx.playVGM(filename);
   } else if (sound.type === "fxhammer") {
-    ({ output: sfx } = await compileFXHammerSingle(
-      filename,
-      effectIndex,
-      "asm"
-    ));
+    API.soundfx.playFXHammer(filename, effectIndex);
   }
-
-  console.log("SFX", sfx);
-
-  const listener = async (_event: any, d: any) => {
-    if (d.action === "initialized") {
-      ipcRenderer.send("music-data-send", {
-        action: "play-sound",
-      });
-    }
-  };
-  ipcRenderer.once("music-data", listener);
-  ipcRenderer.send("open-music", sfx);
 }
 
 function pause() {
@@ -104,8 +78,7 @@ const soundfxMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const sound = soundSelectors.selectById(state, action.payload.effect);
       if (sound) {
-        const projectRoot = state.document.root;
-        playSound(sound, action.payload.effectIndex, { projectRoot });
+        playSound(sound, action.payload.effectIndex);
       }
     } else if (actions.pauseSoundFx.match(action)) {
       pause();

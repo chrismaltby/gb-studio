@@ -18,27 +18,48 @@ import {
   DRAG_ACTOR,
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
-} from "../../../consts";
-import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
-import clamp from "lib/helpers/clamp";
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_RIGHT,
+  COLLISION_LEFT,
+} from "consts";
+import {
+  isActorField,
+  isVariableField,
+  isPropertyField,
+  ScriptEventDefs,
+  isScriptValueField,
+} from "shared/lib/scripts/scriptDefHelpers";
+import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
-import settingsActions from "../settings/settingsActions";
+import settingsActions from "store/features/settings/settingsActions";
 import uuid from "uuid";
-import { paint, paintLine, floodFill } from "lib/helpers/paint";
-import { Brush } from "../editor/editorState";
-import projectActions from "../project/projectActions";
+import {
+  paint,
+  paintLine,
+  floodFill,
+  paintMagic,
+} from "shared/lib/helpers/paint";
+import { Brush, SlopeIncline } from "store/features/editor/editorState";
+import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
-  Actor,
-  Trigger,
-  Scene,
+  ActorNormalized,
+  TriggerNormalized,
+  SceneNormalized,
   Background,
   SpriteSheet,
   Palette,
   Music,
   Variable,
-  CustomEvent,
-  ScriptEvent,
+  CustomEventNormalized,
+  ScriptEventNormalized,
   CustomEventVariable,
   CustomEventActor,
   ProjectEntitiesData,
@@ -55,38 +76,59 @@ import {
   ScriptEventsRef,
   ScriptEventParentType,
   Sound,
-} from "./entitiesTypes";
+  Tileset,
+} from "shared/lib/entities/entitiesTypes";
 import {
   normalizeEntities,
   sortByFilename,
   swap,
-  matchAsset,
   isUnionVariableValue,
   isUnionPropertyValue,
-  walkNormalisedScriptEvents,
   genEntitySymbol,
   ensureSymbolsUnique,
   removeAssetEntity,
   upsertAssetEntity,
   updateEntitySymbol,
-} from "./entitiesHelpers";
-import spriteActions from "../sprite/spriteActions";
-import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
-import { sortByKey } from "lib/helpers/sortByKey";
+  isSlope,
+  defaultLocalisedSceneName,
+  isVariableCustomEvent,
+  renameAssetEntity,
+  defaultLocalisedCustomEventName,
+} from "shared/lib/entities/entitiesHelpers";
+import spriteActions from "store/features/sprite/spriteActions";
+import { sortByKey } from "shared/lib/helpers/sortByKey";
+import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import {
+  extractScriptValueActorIds,
+  extractScriptValueVariables,
+} from "shared/lib/scriptValue/helpers";
+import {
+  isScriptValue,
+  isValueNumber,
+  ScriptValue,
+} from "shared/lib/scriptValue/types";
+import keyBy from "lodash/keyBy";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { Asset, AssetType } from "shared/lib/helpers/assets";
+import { assertUnreachable } from "shared/lib/scriptValue/format";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
-const scriptEventsAdapter = createEntityAdapter<ScriptEvent>();
-const actorsAdapter = createEntityAdapter<Actor>();
-const triggersAdapter = createEntityAdapter<Trigger>();
-const scenesAdapter = createEntityAdapter<Scene>();
+const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
+const actorsAdapter = createEntityAdapter<ActorNormalized>();
+const triggersAdapter = createEntityAdapter<TriggerNormalized>();
+const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
+  sortComparer: sortByFilename,
+});
+const tilesetsAdapter = createEntityAdapter<Tileset>({
   sortComparer: sortByFilename,
 });
 const metaspritesAdapter = createEntityAdapter<Metasprite>();
@@ -94,7 +136,7 @@ const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
 const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
 const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
-const customEventsAdapter = createEntityAdapter<CustomEvent>();
+const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
 const musicAdapter = createEntityAdapter<Music>({
   sortComparer: sortByFilename,
 });
@@ -131,6 +173,7 @@ export const initialState: EntitiesState = {
   fonts: fontsAdapter.getInitialState(),
   avatars: avatarsAdapter.getInitialState(),
   emotes: emotesAdapter.getInitialState(),
+  tilesets: tilesetsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
@@ -184,9 +227,18 @@ const removeSelectedEntity =
     getState: () => RootState
   ) => {
     const state = getState();
-    const { scene, entityId, type: editorType } = state.editor;
+    const {
+      scene,
+      entityId,
+      type: editorType,
+      sceneSelectionIds,
+    } = state.editor;
     if (editorType === "scene") {
-      dispatch(actions.removeScene({ sceneId: scene }));
+      if (sceneSelectionIds.length > 0) {
+        dispatch(actions.removeScenes({ sceneIds: sceneSelectionIds }));
+      } else {
+        dispatch(actions.removeScene({ sceneId: scene }));
+      }
     } else if (editorType === "trigger") {
       dispatch(actions.removeTrigger({ sceneId: scene, triggerId: entityId }));
     } else if (editorType === "actor") {
@@ -235,6 +287,7 @@ const loadProject: CaseReducer<
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
   avatarsAdapter.setAll(state.avatars, entities.avatars || {});
   emotesAdapter.setAll(state.emotes, entities.emotes || {});
+  tilesetsAdapter.setAll(state.tilesets, entities.tilesets || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
   engineFieldValuesAdapter.setAll(
@@ -242,6 +295,7 @@ const loadProject: CaseReducer<
     entities.engineFieldValues || {}
   );
   fixAllScenesWithModifiedBackgrounds(state);
+  updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
 };
 
@@ -258,17 +312,83 @@ const loadBackground: CaseReducer<
     ["id", "symbol"]
   );
   fixAllScenesWithModifiedBackgrounds(state);
+  updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
 };
 
-const removeBackground: CaseReducer<
+const removedAsset: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    filename: string;
-    plugin?: string;
+    assetType: AssetType;
+    asset: Asset;
   }>
 > = (state, action) => {
-  removeAssetEntity(state.backgrounds, backgroundsAdapter, action.payload);
+  const { assetType, asset } = action.payload;
+  if (assetType === "backgrounds") {
+    removeAssetEntity(state.backgrounds, backgroundsAdapter, asset);
+    updateMonoOverrideIds(state);
+  } else if (assetType === "tilesets") {
+    removeAssetEntity(state.tilesets, tilesetsAdapter, asset);
+  } else if (assetType === "music") {
+    removeAssetEntity(state.music, musicAdapter, asset);
+  } else if (assetType === "sounds") {
+    removeAssetEntity(state.sounds, soundsAdapter, asset);
+  } else if (assetType === "fonts") {
+    removeAssetEntity(state.fonts, fontsAdapter, asset);
+  } else if (assetType === "avatars") {
+    removeAssetEntity(state.avatars, avatarsAdapter, asset);
+  } else if (assetType === "emotes") {
+    removeAssetEntity(state.emotes, emotesAdapter, asset);
+  } else if (assetType === "sprites") {
+    removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, asset);
+  } else if (assetType === "ui") {
+    // Ignore UI
+  } else {
+    assertUnreachable(assetType);
+  }
+};
+
+const renamedAsset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    assetType: AssetType;
+    asset: Asset;
+    newFilename: string;
+  }>
+> = (state, action) => {
+  const { assetType, asset, newFilename } = action.payload;
+  if (assetType === "backgrounds") {
+    renameAssetEntity(
+      state.backgrounds,
+      backgroundsAdapter,
+      asset,
+      newFilename
+    );
+    updateMonoOverrideIds(state);
+  } else if (assetType === "tilesets") {
+    renameAssetEntity(state.tilesets, tilesetsAdapter, asset, newFilename);
+  } else if (assetType === "music") {
+    renameAssetEntity(state.music, musicAdapter, asset, newFilename);
+  } else if (assetType === "sounds") {
+    renameAssetEntity(state.sounds, soundsAdapter, asset, newFilename);
+  } else if (assetType === "fonts") {
+    renameAssetEntity(state.fonts, fontsAdapter, asset, newFilename);
+  } else if (assetType === "avatars") {
+    renameAssetEntity(state.avatars, avatarsAdapter, asset, newFilename);
+  } else if (assetType === "emotes") {
+    renameAssetEntity(state.emotes, emotesAdapter, asset, newFilename);
+  } else if (assetType === "sprites") {
+    renameAssetEntity(
+      state.spriteSheets,
+      spriteSheetsAdapter,
+      asset,
+      newFilename
+    );
+  } else if (assetType === "ui") {
+    // Ignore UI
+  } else {
+    assertUnreachable(assetType);
+  }
 };
 
 const loadSprite: CaseReducer<
@@ -345,16 +465,6 @@ const loadDetectedSprite: CaseReducer<
   });
 };
 
-const removeSprite: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, action.payload);
-};
-
 const loadMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -400,16 +510,6 @@ const setMusicSymbol: CaseReducer<
   );
 };
 
-const removeMusic: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.music, musicAdapter, action.payload);
-};
-
 /**************************************************************************
  * Sounds
  */
@@ -438,16 +538,6 @@ const setSoundSymbol: CaseReducer<
     action.payload.soundId,
     action.payload.symbol
   );
-};
-
-const removeSound: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.sounds, soundsAdapter, action.payload);
 };
 
 /**************************************************************************
@@ -500,10 +590,7 @@ const loadAvatar: CaseReducer<
     data: Avatar;
   }>
 > = (state, action) => {
-  upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
+  upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, ["id"]);
   ensureSymbolsUnique(state);
 };
 
@@ -556,6 +643,40 @@ const removeEmote: CaseReducer<
 > = (state, action) => {
   removeAssetEntity(state.emotes, emotesAdapter, action.payload);
 };
+
+/**************************************************************************
+ * Tileset
+ */
+
+const setTilesetSymbol: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ tilesetId: string; symbol: string }>
+> = (state, action) => {
+  updateEntitySymbol(
+    state,
+    state.tilesets,
+    tilesetsAdapter,
+    action.payload.tilesetId,
+    action.payload.symbol
+  );
+};
+
+const loadTileset: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Tileset;
+  }>
+> = (state, action) => {
+  upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [
+    "id",
+    "symbol",
+  ]);
+  ensureSymbolsUnique(state);
+};
+
+/**************************************************************************
+ * Fix Scenes
+ */
 
 const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   const scenes = localSceneSelectors.selectAll(state);
@@ -618,7 +739,7 @@ const addScene: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<Scene>;
+    defaults?: Partial<SceneNormalized>;
     variables?: Variable[];
   }>
 > = (state, action) => {
@@ -626,9 +747,10 @@ const addScene: CaseReducer<
   const backgroundId = String(localBackgroundSelectors.selectIds(state)[0]);
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
-  const newScene: Scene = {
-    name: `Scene ${scenesTotal + 1}`,
+  const newScene: SceneNormalized = {
+    name: defaultLocalisedSceneName(scenesTotal),
     backgroundId,
+    tilesetId: "",
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
     type: "TOPDOWN",
@@ -654,20 +776,56 @@ const addScene: CaseReducer<
 
 const moveScene: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; x: number; y: number }>
+  PayloadAction<{
+    sceneId: string;
+    x: number;
+    y: number;
+    additionalSceneIds: string[];
+  }>
 > = (state, action) => {
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: {
-      x: Math.max(MIN_SCENE_X, action.payload.x),
-      y: Math.max(MIN_SCENE_Y, action.payload.y),
-    },
-  });
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const additionalScenes = action.payload.additionalSceneIds.map((id) =>
+    localSceneSelectors.selectById(state, id)
+  );
+  if (scene) {
+    const minSelectionX = Math.min(
+      ...additionalScenes.map((s) => (s ? s.x - scene.x : 0))
+    );
+    const minSelectionY = Math.min(
+      ...additionalScenes.map((s) => (s ? s.y - scene.y : 0))
+    );
+
+    // Based on full selection determine minX and minY for current scene
+    const newX = Math.max(MIN_SCENE_X - minSelectionX, action.payload.x);
+    const newY = Math.max(MIN_SCENE_Y - minSelectionY, action.payload.y);
+    const diffX = newX - scene.x;
+    const diffY = newY - scene.y;
+
+    // Move scene
+    scene.x = newX;
+    scene.y = newY;
+
+    // Move additionally selected scenes by same amount
+    for (const additionalSceneId of action.payload.additionalSceneIds) {
+      if (additionalSceneId !== action.payload.sceneId) {
+        const additionalScene = localSceneSelectors.selectById(
+          state,
+          additionalSceneId
+        );
+        if (additionalScene) {
+          const newX = Math.max(MIN_SCENE_X, additionalScene.x + diffX);
+          const newY = Math.max(MIN_SCENE_Y, additionalScene.y + diffY);
+          additionalScene.x = newX;
+          additionalScene.y = newY;
+        }
+      }
+    }
+  }
 };
 
 const editScene: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; changes: Partial<Scene> }>
+  PayloadAction<{ sceneId: string; changes: Partial<SceneNormalized> }>
 > = (state, action) => {
   const scene = state.scenes.entities[action.payload.sceneId];
   const patch = { ...action.payload.changes };
@@ -752,6 +910,13 @@ const editScene: CaseReducer<
   });
 };
 
+const editScenes: CaseReducer<
+  EntitiesState,
+  PayloadAction<Array<{ id: string; changes: Partial<SceneNormalized> }>>
+> = (state, action) => {
+  scenesAdapter.updateMany(state.scenes, action.payload);
+};
+
 const setSceneSymbol: CaseReducer<
   EntitiesState,
   PayloadAction<{ sceneId: string; symbol: string }>
@@ -774,6 +939,15 @@ const removeScene: CaseReducer<
   scenesAdapter.removeOne(state.scenes, action.payload.sceneId);
 };
 
+const removeScenes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneIds: string[];
+  }>
+> = (state, action) => {
+  scenesAdapter.removeMany(state.scenes, action.payload.sceneIds);
+};
+
 /**************************************************************************
  * Actors
  */
@@ -785,7 +959,7 @@ const addActor: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<Actor>;
+    defaults?: Partial<ActorNormalized>;
     variables?: Variable[];
   }>
 > = (state, action) => {
@@ -813,7 +987,7 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const newActor: Actor = {
+  const newActor: ActorNormalized = {
     name: "",
     frame: 0,
     animate: false,
@@ -845,7 +1019,7 @@ const addActor: CaseReducer<
 
 const editActor: CaseReducer<
   EntitiesState,
-  PayloadAction<{ actorId: string; changes: Partial<Actor> }>
+  PayloadAction<{ actorId: string; changes: Partial<ActorNormalized> }>
 > = (state, action) => {
   const actor = localActorSelectors.selectById(state, action.payload.actorId);
   const patch = { ...action.payload.changes };
@@ -1006,7 +1180,7 @@ const addTrigger: CaseReducer<
     y: number;
     width: number;
     height: number;
-    defaults?: Partial<Trigger>;
+    defaults?: Partial<TriggerNormalized>;
     // variables?: Variable[];
   }>
 > = (state, action) => {
@@ -1017,7 +1191,7 @@ const addTrigger: CaseReducer<
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
-  const newTrigger: Trigger = {
+  const newTrigger: TriggerNormalized = {
     name: "",
     ...(action.payload.defaults || {}),
     id: action.payload.triggerId,
@@ -1037,7 +1211,7 @@ const addTrigger: CaseReducer<
 
 const editTrigger: CaseReducer<
   EntitiesState,
-  PayloadAction<{ triggerId: string; changes: Partial<Trigger> }>
+  PayloadAction<{ triggerId: string; changes: Partial<TriggerNormalized> }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
 
@@ -1225,6 +1399,36 @@ const setBackgroundSymbol: CaseReducer<
     action.payload.backgroundId,
     action.payload.symbol
   );
+};
+
+const editBackgroundAutoColor: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ backgroundId: string; autoColor: boolean }>
+> = (state, action) => {
+  const background = localBackgroundSelectors.selectById(
+    state,
+    action.payload.backgroundId
+  );
+  if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        autoColor: action.payload.autoColor,
+      },
+    });
+  }
+};
+
+const updateMonoOverrideIds = (state: EntitiesState) => {
+  const backgrounds = localBackgroundSelectors.selectAll(state);
+  const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
+  const getMonoKey = (b: Background) =>
+    `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
+  const monoOverrideLookup = keyBy(backgrounds, getKey);
+  backgrounds.forEach((b) => {
+    const monoKey = getMonoKey(b);
+    b.monoOverrideId = monoOverrideLookup[monoKey]?.id;
+  });
 };
 
 /**************************************************************************
@@ -1841,12 +2045,13 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
+      tileLookup?: number[];
       x: number;
       y: number;
       value: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
@@ -1883,9 +2088,15 @@ const paintCollision: CaseReducer<
     const tileIndex = background.width * y + x;
     let newValue = value;
     if (isTileProp) {
-      // If is prop keep previous collision value
-      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
-    } else if (value !== 0) {
+      if (value & 0x0f) {
+        // If is prop and one way, overwrite both
+        newValue = value;
+      } else {
+        // If is prop keep previous collision value
+        newValue =
+          (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+      }
+    } else if (value !== 0 && !isSlope(newValue)) {
       // If is collision keep prop unless erasing
       newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
     }
@@ -1898,7 +2109,17 @@ const paintCollision: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic" && action.payload.tileLookup) {
+    paintMagic(
+      background.width,
+      action.payload.tileLookup,
+      action.payload.x,
+      action.payload.y,
+      action.payload.value,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,
@@ -1938,18 +2159,160 @@ const paintCollision: CaseReducer<
   });
 };
 
+const paintSlopeCollision: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    offset: boolean;
+    slopeIncline: SlopeIncline;
+    slopeDirection: "left" | "right";
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const background = localBackgroundSelectors.selectById(
+    state,
+    scene.backgroundId
+  );
+  if (!background) {
+    return;
+  }
+
+  const { slopeIncline, slopeDirection, offset } = action.payload;
+
+  let startX = action.payload.startX;
+  let startY = action.payload.startY;
+  let endX = action.payload.endX;
+  let endY = action.payload.endY;
+  let skipFirstTile = false;
+
+  // If slope is offset (holding shift key) then modify the
+  // line start/end tiles to ensure the line is painted correctly
+  if (offset && slopeIncline === "steep") {
+    endX += endX < startX ? -0.5 : 0.5;
+    startY += endY > startY ? -1 : 1;
+    skipFirstTile = true;
+  } else if (offset && slopeIncline === "shallow") {
+    endY += endY < startY ? -0.5 : 0.5;
+    startX += endX > startX ? -1 : 1;
+    skipFirstTile = true;
+  }
+
+  const roundEndX = endX > startX ? Math.floor(endX) : Math.ceil(endX);
+  const roundEndY = endY > startY ? Math.floor(endY) : Math.ceil(endY);
+
+  const collisionsSize = Math.ceil(background.width * background.height);
+  const collisions = scene.collisions.slice(0, collisionsSize);
+
+  // Fill collisions array if too small for image
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
+
+  const setValue = (x: number, y: number, value: number) => {
+    // Don't draw last tile
+    if (x === roundEndX && y === roundEndY) {
+      return;
+    }
+
+    // Don't draw first tile when offsetting shallow & steep slopes
+    if (skipFirstTile && x === startX && y === startY) {
+      return;
+    }
+
+    const tileIndex = background.width * y + x;
+    let newValue = value;
+
+    if (
+      startY === endY &&
+      // Drag left to right for top collision
+      // Drag right to left for bottom collision
+      // Shift to toggle
+      ((startX > endX && !offset) || (startX <= endX && offset))
+    ) {
+      newValue = COLLISION_BOTTOM;
+    } else if (startY === endY) {
+      newValue = COLLISION_TOP;
+    } else if (
+      startX === endX &&
+      // Drag top to bottom for left collision
+      // Drag bottom to top for right collision
+      // Shift to toggle
+      ((startY > endY && !offset) || (startY <= endY && offset))
+    ) {
+      newValue = COLLISION_RIGHT;
+    } else if (startX === endX) {
+      newValue = COLLISION_LEFT;
+    } else if (slopeIncline === "medium") {
+      // Medium incline slope uses 45deg tiles using slope direction
+      if (slopeDirection === "left") {
+        newValue = COLLISION_SLOPE_45_LEFT;
+      } else {
+        newValue = COLLISION_SLOPE_45_RIGHT;
+      }
+    } else if (slopeIncline === "shallow") {
+      // Shallow incline slope uses the 22deg tiles using slope direction
+      // alternating between the two 22deg tiles depending on position on line
+      const oddTile = (startX % 2 !== x % 2) !== endY > startY;
+
+      if (slopeDirection === "left") {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_LEFT_TOP
+          : COLLISION_SLOPE_22_LEFT_BOT;
+      } else {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_RIGHT_TOP
+          : COLLISION_SLOPE_22_RIGHT_BOT;
+      }
+    }
+
+    collisions[tileIndex] = newValue;
+  };
+
+  const isInBounds = (x: number, y: number) => {
+    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+  };
+
+  paintLine(
+    startX,
+    startY,
+    roundEndX,
+    roundEndY,
+    1,
+    COLLISION_ALL,
+    setValue,
+    isInBounds
+  );
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: action.payload.sceneId,
+    changes: {
+      collisions,
+    },
+  });
+};
+
 const paintColor: CaseReducer<
   EntitiesState,
   PayloadAction<
     {
       backgroundId: string;
       sceneId: string;
+      tileLookup?: number[];
       x: number;
       y: number;
       paletteIndex: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const background = localBackgroundSelectors.selectById(
@@ -2000,7 +2363,17 @@ const paintColor: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic" && action.payload.tileLookup) {
+    paintMagic(
+      background.width,
+      action.payload.tileLookup,
+      action.payload.x,
+      action.payload.y,
+      action.payload.paletteIndex,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,
@@ -2048,13 +2421,43 @@ const renameVariable: CaseReducer<
   EntitiesState,
   PayloadAction<{ variableId: string; name: string }>
 > = (state, action) => {
-  if (action.payload.name) {
+  const existingVariable = state.variables.entities[action.payload.variableId];
+  const existingHasFlags =
+    existingVariable?.flags && Object.keys(existingVariable.flags).length > 0;
+  if (action.payload.name.length > 0 || existingHasFlags) {
     variablesAdapter.upsertOne(state.variables, {
       id: action.payload.variableId,
       name: action.payload.name,
-      symbol: genEntitySymbol(state, `var_${action.payload.name}`),
+      symbol:
+        action.payload.name.length > 0
+          ? genEntitySymbol(state, `var_${action.payload.name}`)
+          : "",
     });
   } else {
+    // Variable is being set with empty name and doesn't have flags
+    // set so can safely remove it
+    variablesAdapter.removeOne(state.variables, action.payload.variableId);
+  }
+};
+
+const renameVariableFlags: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; flags: Record<string, string> }>
+> = (state, action) => {
+  const existingVariable = state.variables.entities[action.payload.variableId];
+  const numFlags = Object.values(action.payload.flags).length;
+  const existingHasName =
+    existingVariable?.name && existingVariable?.name.length > 0;
+  if (numFlags > 0 || existingHasName) {
+    variablesAdapter.upsertOne(state.variables, {
+      id: action.payload.variableId,
+      name: existingVariable?.name ?? "",
+      symbol: existingVariable?.symbol ?? "",
+      flags: action.payload.flags,
+    });
+  } else {
+    // Variable is being set with empty flags and doesn't have name
+    // set so can safely remove it
     variablesAdapter.removeOne(state.variables, action.payload.variableId);
   }
 };
@@ -2105,12 +2508,15 @@ const removePalette: CaseReducer<
 
 const addCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string; defaults?: Partial<CustomEvent> }>
+  PayloadAction<{
+    customEventId: string;
+    defaults?: Partial<CustomEventNormalized>;
+  }>
 > = (state, action) => {
   const customEventsTotal = localCustomEventSelectors.selectTotal(state);
-  const newCustomEvent: CustomEvent = {
+  const newCustomEvent: CustomEventNormalized = {
     id: action.payload.customEventId,
-    name: "",
+    name: defaultLocalisedCustomEventName(customEventsTotal),
     description: "",
     variables: {},
     actors: {},
@@ -2125,7 +2531,7 @@ const editCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    changes: Partial<CustomEvent>;
+    changes: Partial<CustomEventNormalized>;
   }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
@@ -2160,22 +2566,22 @@ const removeCustomEvent: CaseReducer<
 
 const refreshCustomEventArgs: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{
+    customEventId: string;
+    scriptEventDefs: ScriptEventDefs;
+  }>
 > = (state, action) => {
   const customEvent = state.customEvents.entities[action.payload.customEventId];
   if (!customEvent) {
     return;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const eventLookup = require("lib/events").eventLookup;
-
+  const scriptEventDefs = action.payload.scriptEventDefs;
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
-  walkNormalisedScriptEvents(
+  walkNormalizedScript(
     customEvent.script,
     state.scriptEvents.entities,
     undefined,
@@ -2183,46 +2589,52 @@ const refreshCustomEventArgs: CaseReducer<
       const args = scriptEvent.args;
       if (!args) return;
       if (args.__comment) return;
-      if (
-        args.actorId &&
-        args.actorId !== "player" &&
-        args.actorId !== "$self$" &&
-        typeof args.actorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-        };
-      }
-      if (
-        args.otherActorId &&
-        args.otherActorId !== "player" &&
-        args.otherActorId !== "$self$" &&
-        typeof args.otherActorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-        };
-      }
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
-          const addVariable = (variable: string) => {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable[1])
-            );
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]?.name || `Variable ${letter}`,
-              passByReference: oldVariables[variable]?.passByReference ?? true,
-            };
+        const addActor = (actor: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(actor)
+          );
+          actors[actor] = {
+            id: actor,
+            name: oldActors[actor]?.name || `Actor ${letter}`,
           };
+        };
+        const addVariable = (variable: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(variable[1])
+          );
+          variables[variable] = {
+            id: variable,
+            name: oldVariables[variable]?.name || `Variable ${letter}`,
+            passByReference: oldVariables[variable]?.passByReference ?? true,
+          };
+        };
+        const addPropertyActor = (property: string) => {
+          const actor = property && property.replace(/:.*/, "");
+          if (actor !== "player" && actor !== "$self$") {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(actor)
+            );
+            actors[actor] = {
+              id: actor,
+              name: oldActors[actor]?.name || `Actor ${letter}`,
+            };
+          }
+        };
+
+        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
+          const actor = args[arg];
+          if (
+            actor &&
+            actor !== "player" &&
+            actor !== "$self$" &&
+            typeof actor === "string"
+          ) {
+            addActor(actor);
+          }
+        }
+
+        if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const variable = args[arg];
           if (
             isUnionVariableValue(variable) &&
@@ -2237,24 +2649,29 @@ const refreshCustomEventArgs: CaseReducer<
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args, eventLookup)) {
-          const addPropertyActor = (property: string) => {
-            const actor = property && property.replace(/:.*/, "");
-            if (actor !== "player" && actor !== "$self$") {
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(actor)
-              );
-              actors[actor] = {
-                id: actor,
-                name: oldActors[actor]?.name || `Actor ${letter}`,
-              };
-            }
-          };
+        if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const property = args[arg];
           if (isUnionPropertyValue(property) && property.value) {
             addPropertyActor(property.value);
           } else if (typeof property === "string") {
             addPropertyActor(property);
+          }
+        }
+        if (
+          isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)
+        ) {
+          const value = isScriptValue(args[arg])
+            ? (args[arg] as ScriptValue)
+            : undefined;
+          const actors = value ? extractScriptValueActorIds(value) : [];
+          const variables = value ? extractScriptValueVariables(value) : [];
+          for (const actor of actors) {
+            addPropertyActor(actor);
+          }
+          for (const variable of variables) {
+            if (isVariableCustomEvent(variable)) {
+              addVariable(variable);
+            }
           }
         }
       });
@@ -2295,7 +2712,7 @@ const refreshCustomEventArgs: CaseReducer<
  * Script Events
  */
 
-const selectScriptIds = (
+export const selectScriptIds = (
   state: EntitiesState,
   parentType: ScriptEventParentType,
   parentId: string,
@@ -2377,7 +2794,7 @@ const addScriptEvents: CaseReducer<
     key: string;
     insertId?: string;
     before?: boolean;
-    data: Omit<ScriptEvent, "id">[];
+    data: Omit<ScriptEventNormalized, "id">[];
   }>
 > = (state, action) => {
   const script = selectScriptIds(
@@ -2393,7 +2810,7 @@ const addScriptEvents: CaseReducer<
 
   const newScriptEvents = action.payload.data.map(
     (scriptEventData, scriptEventIndex) => {
-      const newScriptEvent: ScriptEvent = {
+      const newScriptEvent: ScriptEventNormalized = {
         ...scriptEventData,
         id: action.payload.scriptEventIds[scriptEventIndex],
         symbol: undefined,
@@ -2428,6 +2845,7 @@ const moveScriptEvent: CaseReducer<
   PayloadAction<{
     from: ScriptEventsRef;
     to: ScriptEventsRef;
+    additionalScriptEventIds: string[];
   }>
 > = (state, action) => {
   const from = selectScriptIdsByRef(state, action.payload.from);
@@ -2454,13 +2872,34 @@ const moveScriptEvent: CaseReducer<
     0,
     action.payload.from.scriptEventId
   );
+
+  const { additionalScriptEventIds } = action.payload;
+
+  if (additionalScriptEventIds.length > 0) {
+    const upperHalfRemainingScriptEventIds = to
+      .slice(0, toIndex)
+      .filter((c) => !additionalScriptEventIds.includes(c));
+    const lowerHalfRemainingScriptEventIds = to
+      .slice(toIndex)
+      .filter((c) => !additionalScriptEventIds.includes(c));
+    const newFrom = from.filter((c) => !additionalScriptEventIds.includes(c));
+    const newTo = [
+      ...upperHalfRemainingScriptEventIds,
+      ...additionalScriptEventIds,
+      ...lowerHalfRemainingScriptEventIds,
+    ];
+    from.length = 0;
+    from.push(...newFrom);
+    to.length = 0;
+    to.push(...newTo);
+  }
 };
 
 const editScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     scriptEventId: string;
-    changes: Partial<ScriptEvent>;
+    changes: Partial<ScriptEventNormalized>;
   }>
 > = (state, action) => {
   scriptEventsAdapter.updateOne(state.scriptEvents, {
@@ -2499,13 +2938,24 @@ const toggleScriptEventComment: CaseReducer<
   EntitiesState,
   PayloadAction<{
     scriptEventId: string;
+    additionalScriptEventIds: string[];
   }>
 > = (state, action) => {
   const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
   if (!scriptEvent || !scriptEvent.args) {
     return;
   }
-  scriptEvent.args.__comment = !scriptEvent.args.__comment;
+  const newValue = !scriptEvent.args.__comment;
+  scriptEvent.args.__comment = newValue;
+
+  // Toggle others in selection to match
+  for (const scriptEventId of action.payload.additionalScriptEventIds) {
+    const scriptEvent = state.scriptEvents.entities[scriptEventId];
+    if (!scriptEvent || !scriptEvent.args) {
+      continue;
+    }
+    scriptEvent.args.__comment = newValue;
+  }
 };
 
 const toggleScriptEventDisableElse: CaseReducer<
@@ -2549,11 +2999,16 @@ const editScriptEventDestination: CaseReducer<
   if (!scriptEvent || !scriptEvent.args) {
     return;
   }
+
   scriptEvent.args = {
     ...scriptEvent.args,
     sceneId: action.payload.destSceneId,
-    x: action.payload.x,
-    y: action.payload.y,
+    x: isValueNumber(scriptEvent.args.x)
+      ? { type: "number", value: action.payload.x }
+      : scriptEvent.args.x,
+    y: isValueNumber(scriptEvent.args.y)
+      ? { type: "number", value: action.payload.y }
+      : scriptEvent.args.y,
   };
 };
 
@@ -2569,6 +3024,56 @@ const editScriptEventLabel: CaseReducer<
     return;
   }
   scriptEvent.args.__label = action.payload.value;
+};
+
+const groupScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    parentId: string;
+    parentType: ScriptEventParentType;
+    parentKey: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.parentType,
+    action.payload.parentId,
+    action.payload.parentKey
+  );
+
+  if (!script) {
+    return;
+  }
+
+  // Use first id in list to determine insert position
+  const insertId = action.payload.scriptEventIds[0];
+  const insertIndex = insertId
+    ? Math.max(0, script.indexOf(insertId || ""))
+    : script.length;
+
+  // Remove from previous parent
+  for (const scriptEventId of action.payload.scriptEventIds) {
+    const eventIndex = script.indexOf(scriptEventId);
+    if (eventIndex === -1) {
+      continue;
+    }
+    script.splice(eventIndex, 1);
+  }
+
+  // Build parent group
+  const groupEvent: ScriptEventNormalized = {
+    id: uuid(),
+    command: "EVENT_GROUP",
+    args: {},
+    children: {
+      true: action.payload.scriptEventIds,
+    },
+  };
+
+  // Add group to previous parent
+  scriptEventsAdapter.addOne(state.scriptEvents, groupEvent);
+  script.splice(insertIndex, 0, groupEvent.id);
 };
 
 const resetScript: CaseReducer<
@@ -2588,6 +3093,43 @@ const resetScript: CaseReducer<
   if (script) {
     script.splice(0, script.length);
   }
+};
+
+const ungroupScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    parentId: string;
+    parentType: ScriptEventParentType;
+    parentKey: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.parentType,
+    action.payload.parentId,
+    action.payload.parentKey
+  );
+
+  if (!script) {
+    return;
+  }
+
+  const groupEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!groupEvent || !groupEvent.children || !groupEvent.children.true) {
+    return;
+  }
+
+  const eventIndex = script.indexOf(action.payload.scriptEventId);
+  if (eventIndex === -1) {
+    return;
+  }
+
+  script.splice(eventIndex, 1, ...groupEvent.children.true);
+  scriptEventsAdapter.removeOne(
+    state.scriptEvents,
+    action.payload.scriptEventId
+  );
 };
 
 const removeScriptEvent: CaseReducer<
@@ -2619,6 +3161,40 @@ const removeScriptEvent: CaseReducer<
   scriptEventsAdapter.removeOne(
     state.scriptEvents,
     action.payload.scriptEventId
+  );
+};
+
+const removeScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
+  }
+
+  for (const scriptEventId of action.payload.scriptEventIds) {
+    const eventIndex = script.indexOf(scriptEventId);
+    if (eventIndex === -1) {
+      continue;
+    }
+    script.splice(eventIndex, 1);
+  }
+
+  scriptEventsAdapter.removeMany(
+    state.scriptEvents,
+    action.payload.scriptEventIds
   );
 };
 
@@ -2689,7 +3265,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         x: number;
         y: number;
-        defaults?: Partial<Scene>;
+        defaults?: Partial<SceneNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -2702,10 +3278,13 @@ const entitiesSlice = createSlice({
     },
 
     editScene,
+    editScenes,
     setSceneSymbol,
     removeScene,
+    removeScenes,
     moveScene,
     paintCollision,
+    paintSlopeCollision,
     paintColor,
 
     /**************************************************************************
@@ -2718,7 +3297,7 @@ const entitiesSlice = createSlice({
         sceneId: string;
         x: number;
         y: number;
-        defaults?: Partial<Actor>;
+        defaults?: Partial<ActorNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -2748,7 +3327,7 @@ const entitiesSlice = createSlice({
         y: number;
         width: number;
         height: number;
-        defaults?: Partial<Trigger>;
+        defaults?: Partial<TriggerNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -2772,6 +3351,7 @@ const entitiesSlice = createSlice({
      */
 
     setBackgroundSymbol,
+    editBackgroundAutoColor,
 
     /**************************************************************************
      * Sprites
@@ -2887,6 +3467,7 @@ const entitiesSlice = createSlice({
      */
 
     renameVariable,
+    renameVariableFlags,
 
     /**************************************************************************
      * Palettes
@@ -2913,7 +3494,7 @@ const entitiesSlice = createSlice({
       reducer: addCustomEvent,
       prepare: (payload?: {
         customEventId?: string;
-        defaults?: Partial<CustomEvent>;
+        defaults?: Partial<CustomEventNormalized>;
       }) => {
         return {
           payload: {
@@ -2929,10 +3510,14 @@ const entitiesSlice = createSlice({
     removeCustomEvent,
     refreshCustomEventArgs: {
       reducer: refreshCustomEventArgs,
-      prepare: (payload: { customEventId: string }) => {
+      prepare: (payload: {
+        customEventId: string;
+        scriptEventDefs: ScriptEventDefs;
+      }) => {
         return {
           payload: {
             customEventId: payload.customEventId,
+            scriptEventDefs: payload.scriptEventDefs,
           },
           meta: {
             throttle: 1000,
@@ -2954,7 +3539,7 @@ const entitiesSlice = createSlice({
         key: string;
         insertId?: string;
         before?: boolean;
-        data: Omit<ScriptEvent, "id">[];
+        data: Omit<ScriptEventNormalized, "id">[];
       }) => {
         return {
           payload: {
@@ -2968,6 +3553,8 @@ const entitiesSlice = createSlice({
     moveScriptEvent,
     editScriptEvent,
     setScriptEventSymbol,
+    groupScriptEvents,
+    ungroupScriptEvent,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,
@@ -2976,6 +3563,7 @@ const entitiesSlice = createSlice({
     editScriptEventDestination,
     editScriptEventLabel,
     removeScriptEvent,
+    removeScriptEvents,
 
     /**************************************************************************
      * Music
@@ -2997,6 +3585,12 @@ const entitiesSlice = createSlice({
     setEmoteSymbol,
 
     /**************************************************************************
+     * Tileset
+     */
+
+    setTilesetSymbol,
+
+    /**************************************************************************
      * Font
      */
 
@@ -3008,26 +3602,32 @@ const entitiesSlice = createSlice({
 
     editEngineFieldValue,
     removeEngineFieldValue,
+
+    /*
+     * Load assets
+     */
+    loadBackground,
+    loadSprite,
+    loadMusic,
+    loadSound,
+    loadFont,
+    removeFont,
+    loadAvatar,
+    removeAvatar,
+    loadEmote,
+    removeEmote,
+    loadTileset,
+    removedAsset,
+    renamedAsset,
   },
   extraReducers: (builder) =>
     builder
       .addCase(projectActions.loadProject.fulfilled, loadProject)
-      .addCase(projectActions.loadBackground.fulfilled, loadBackground)
-      .addCase(projectActions.removeBackground.fulfilled, removeBackground)
-      .addCase(projectActions.loadSprite.fulfilled, loadSprite)
-      .addCase(projectActions.removeSprite.fulfilled, removeSprite)
+      .addCase(projectActions.removeAsset.fulfilled, removedAsset)
+      .addCase(projectActions.renameAsset.fulfilled, renamedAsset)
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
-      .addCase(projectActions.loadMusic.fulfilled, loadMusic)
-      .addCase(projectActions.removeMusic.fulfilled, removeMusic)
-      .addCase(projectActions.loadSound.fulfilled, loadSound)
-      .addCase(projectActions.removeSound.fulfilled, removeSound)
-      .addCase(projectActions.loadFont.fulfilled, loadFont)
-      .addCase(projectActions.removeFont.fulfilled, removeFont)
-      .addCase(projectActions.loadAvatar.fulfilled, loadAvatar)
-      .addCase(projectActions.removeAvatar.fulfilled, removeAvatar)
-      .addCase(projectActions.loadEmote.fulfilled, loadEmote)
-      .addCase(projectActions.removeEmote.fulfilled, removeEmote)
-      .addCase(projectActions.reloadAssets, reloadAssets),
+      .addCase(projectActions.reloadAssets, reloadAssets)
+      .addCase(addNewSongFile.fulfilled, loadMusic),
 });
 
 export const { reducer } = entitiesSlice;
@@ -3044,7 +3644,7 @@ export const actions = {
 
 export const generateScriptEventInsertActions = (
   scriptEventIds: string[],
-  scriptEventsLookup: Dictionary<ScriptEvent>,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
   entityId: string,
   type: ScriptEventParentType,
   key: string,
@@ -3063,7 +3663,7 @@ export const generateScriptEventInsertActions = (
     insertId?: string,
     before?: boolean
   ) => {
-    const insertEvents: ScriptEvent[] = [];
+    const insertEvents: ScriptEventNormalized[] = [];
     for (let i = 0; i < scriptEventIds.length; i++) {
       const scriptEvent = scriptEventsLookup[scriptEventIds[i]];
       if (!scriptEvent) {
@@ -3132,8 +3732,11 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
 );
-const localSoundSelectors = soundsAdapter.getSelectors(
+const _localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
+);
+const _localTilesetSelectors = tilesetsAdapter.getSelectors(
+  (state: EntitiesState) => state.tilesets
 );
 
 // Global
@@ -3187,6 +3790,9 @@ export const avatarSelectors = avatarsAdapter.getSelectors(
 );
 export const emoteSelectors = emotesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.emotes
+);
+export const tilesetSelectors = tilesetsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.tilesets
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables

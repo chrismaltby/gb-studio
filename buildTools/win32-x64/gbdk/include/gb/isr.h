@@ -65,6 +65,10 @@ typedef struct isr_nested_vector_t {
 
     This cannot be used with the VBLANK interrupt
 
+    The LCD STAT vector (@ref VECTOR_STAT) cannot be used
+    in the same program as `stdio.h` since they install
+    an ISR vector to the same location.
+
     @see ISR_VECTOR
 */
 #define ISR_NESTED_VECTOR(ADDR, FUNC) \

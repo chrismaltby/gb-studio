@@ -1,4 +1,5 @@
-import { hex2GBCrgb } from "lib/helpers/color";
+import { DMG_PALETTE } from "consts";
+import { hex2GBCrgb } from "shared/lib/helpers/color";
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
@@ -22,6 +23,13 @@ interface CacheRecord {
   img: ImageBitmap;
 }
 
+export interface ColorizedImageResult {
+  id: number;
+  width: number;
+  height: number;
+  canvasImage: ImageBitmap;
+}
+
 const cache: Record<string, CacheRecord> = {};
 const TILE_COLOR_PALETTE = 0x7;
 
@@ -29,10 +37,12 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const src = evt.data.src;
   const tiles = evt.data.tiles;
+  const previewAsMono = evt.data.previewAsMono;
   const palettes = evt.data.palettes;
   const palettesRGB = palettes.map((colors: string[]) =>
     colors.map(hex2GBCrgb)
   );
+  const dmgPalette = DMG_PALETTE.colors.map(hex2GBCrgb);
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
@@ -90,7 +100,9 @@ workerCtx.onmessage = async (evt) => {
       for (let pY = p1Y; pY < p2Y; pY++) {
         const index = (pX + pY * width) * 4;
         const colorIndex = indexColour(data[index + 1]);
-        const color = palette[colorIndex];
+        const color = previewAsMono
+          ? dmgPalette[colorIndex]
+          : palette[colorIndex];
         data[index] = color.r;
         data[index + 1] = color.g;
         data[index + 2] = color.b;
@@ -105,4 +117,10 @@ workerCtx.onmessage = async (evt) => {
   workerCtx.postMessage({ id, width, height, canvasImage }, [canvasImage]);
 };
 
-export {};
+// -----------------------------------------------------------------
+
+export default class W extends Worker {
+  constructor() {
+    super("");
+  }
+}

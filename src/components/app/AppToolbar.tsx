@@ -1,12 +1,19 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Helmet } from "react-helmet";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import l10n from "lib/helpers/l10n";
-import { zoomForSection } from "lib/helpers/gbstudio";
+import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import electronActions from "store/features/electron/electronActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
+import settingsActions from "store/features/settings/settingsActions";
 import buildGameActions, {
   BuildType,
 } from "store/features/buildGame/buildGameActions";
@@ -24,30 +31,15 @@ import {
   LoadingIcon,
   PlayIcon,
 } from "ui/icons/Icons";
-import { RootState } from "store/configureStore";
-import { NavigationSection } from "store/features/navigation/navigationState";
-import { ZoomSection } from "store/features/editor/editorState";
+import type { NavigationSection } from "store/features/navigation/navigationState";
+import {
+  getZoomForSection,
+  ZoomSection,
+} from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
-
-const sectionNames = {
-  world: l10n("NAV_GAME_WORLD"),
-  sprites: l10n("NAV_SPRITES"),
-  backgrounds: l10n("NAV_BACKGROUNDS"),
-  music: l10n("NAV_MUSIC"),
-  sounds: l10n("NAV_SFX"),
-  palettes: l10n("NAV_PALETTES"),
-  dialogue: l10n("NAV_DIALOGUE_REVIEW"),
-  build: l10n("NAV_BUILD_AND_RUN"),
-  settings: l10n("NAV_SETTINGS"),
-};
-
-type SectionKey = keyof typeof sectionNames;
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import API from "renderer/lib/api";
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -57,28 +49,21 @@ const sectionAccelerators = {
   sounds: "CommandOrControl+5",
   palettes: "CommandOrControl+6",
   dialogue: "CommandOrControl+7",
-  build: "CommandOrControl+8",
-  settings: "CommandOrControl+9",
+  settings: "CommandOrControl+8",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
 
 const AppToolbar: FC = () => {
-  const dispatch = useDispatch();
-  const loaded = useSelector((state: RootState) => state.document.loaded);
-  const modified = useSelector((state: RootState) => state.document.modified);
-  const name = useSelector(
-    (state: RootState) => state.project.present.metadata.name
-  );
-  const section = useSelector((state: RootState) => state.navigation.section);
-  const zoom = useSelector((state: RootState) =>
-    zoomForSection(section, state.editor)
-  );
-  const initalSearchTerm = useSelector(
-    (state: RootState) => state.editor.searchTerm
-  );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const buildStatus = useSelector((state: RootState) => state.console.status);
+  const dispatch = useAppDispatch();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const loaded = useAppSelector((state) => state.document.loaded);
+  const modified = useAppSelector((state) => state.document.modified);
+  const name = useAppSelector((state) => state.project.present.metadata.name);
+  const section = useAppSelector((state) => state.navigation.section);
+  const zoom = useAppSelector((state) => getZoomForSection(state, section));
+  const initalSearchTerm = useAppSelector((state) => state.editor.searchTerm);
+  const buildStatus = useAppSelector((state) => state.console.status);
   const running = buildStatus === "running";
   const cancelling = buildStatus === "cancelled";
 
@@ -88,8 +73,21 @@ const AppToolbar: FC = () => {
   const windowFocus = useWindowFocus();
   const windowSize = useWindowSize();
   const smallZoom = (windowSize.width || 0) < 900;
-  const showTitle =
-    process.platform === "darwin" && (windowSize.width || 0) > 800;
+  const showTitle = API.platform === "darwin" && (windowSize.width || 0) > 800;
+
+  const sectionNames = useMemo(
+    () => ({
+      world: l10n("NAV_GAME_WORLD"),
+      sprites: l10n("NAV_SPRITES"),
+      backgrounds: l10n("NAV_IMAGES"),
+      music: l10n("NAV_MUSIC"),
+      sounds: l10n("NAV_SFX"),
+      palettes: l10n("NAV_PALETTES"),
+      dialogue: l10n("NAV_DIALOGUE_REVIEW"),
+      settings: l10n("NAV_SETTINGS"),
+    }),
+    []
+  );
 
   const onRun = useCallback(() => {
     dispatch(buildGameActions.buildGame({ buildType: "web" }));
@@ -103,7 +101,7 @@ const AppToolbar: FC = () => {
   );
 
   const setSection = useCallback(
-    (section: SectionKey) => () => {
+    (section: NavigationSection) => () => {
       dispatch(navigationActions.setSection(section));
     },
     [dispatch]
@@ -150,8 +148,39 @@ const AppToolbar: FC = () => {
   }, [initalSearchTerm]);
 
   const openProjectFolder = useCallback(() => {
-    dispatch(electronActions.openFolder(projectRoot));
-  }, [dispatch, projectRoot]);
+    dispatch(electronActions.openFolder("/"));
+  }, [dispatch]);
+
+  const openBuildLog = useCallback(() => {
+    dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+    dispatch(navigationActions.setSection("world"));
+    dispatch(debuggerActions.setIsLogOpen(true));
+  }, [dispatch]);
+
+  // Handle focusing search when pressing "/"
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (
+      e.key === "Escape" &&
+      e.target === searchInputRef.current &&
+      searchInputRef.current
+    ) {
+      searchInputRef.current.blur();
+    }
+    if (e.target && (e.target as Node).nodeName !== "BODY") {
+      return;
+    }
+    if (e.key === "/" && searchInputRef.current) {
+      searchInputRef.current.focus();
+      e.preventDefault();
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onKeyDown]);
 
   if (!loaded) {
     return <Toolbar />;
@@ -207,6 +236,7 @@ const AppToolbar: FC = () => {
       <FlexGrow />
       {showSearch && (
         <SearchInput
+          ref={searchInputRef}
           placeholder={l10n("TOOLBAR_SEARCH")}
           value={searchTerm || ""}
           onChange={onChangeSearchTerm}
@@ -240,13 +270,13 @@ const AppToolbar: FC = () => {
       </DropdownButton>
       <FixedSpacer width={10} />
       {cancelling ? (
-        <Button title={l10n("BUILD_CANCELLING")} onClick={setSection("build")}>
+        <Button title={l10n("BUILD_CANCELLING")} onClick={openBuildLog}>
           <DotsIcon />
         </Button>
       ) : (
         <Button
           title={l10n("TOOLBAR_RUN")}
-          onClick={running ? setSection("build") : onRun}
+          onClick={running ? openBuildLog : onRun}
         >
           {running ? <LoadingIcon /> : <PlayIcon />}
         </Button>

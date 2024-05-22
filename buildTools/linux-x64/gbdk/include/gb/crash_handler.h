@@ -19,7 +19,7 @@
 
     See the intro for this file for more details.
 */
-void __HandleCrash();
+void __HandleCrash(void);
 static void * __CRASH_HANDLER_INIT = &__HandleCrash;
 
 #endif

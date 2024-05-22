@@ -1,15 +1,14 @@
 import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { textNumLines } from "lib/helpers/trimlines";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import { textNumLines } from "shared/lib/helpers/trimlines";
 import {
   avatarSelectors,
   fontSelectors,
 } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface DialoguePreviewProps {
   text: string;
@@ -20,20 +19,16 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
 }) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
-  const avatarAsset = useSelector((state: RootState) =>
+  const uiVersion = useAppSelector((state) => state.editor.uiVersion);
+  const avatarAsset = useAppSelector((state) =>
     avatarId ? avatarSelectors.selectById(state, avatarId) : undefined
   );
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const fontsLookup = useSelector((state: RootState) =>
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const fontsLookup = useAppSelector((state) =>
     fontSelectors.selectEntities(state)
   );
-  const defaultFontId = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultFontId || fonts[0]?.id
+  const defaultFontId = useAppSelector(
+    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id
   );
 
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();
@@ -41,6 +36,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   const [fontsData, setFontsData] = useState<Record<string, FontData>>({});
   const [drawn, setDrawn] = useState<boolean>(false);
   const ref = useRef<HTMLCanvasElement>(null);
+  const isMounted = useRef(true);
 
   const frameAsset = {
     id: "frame",
@@ -49,17 +45,8 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     _v: uiVersion,
   };
 
-  const frameFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    frameAsset
-  )}?_v=${uiVersion}`;
-
-  const avatarFilename = avatarAsset
-    ? `file:///${assetFilename(projectRoot, "avatars", avatarAsset)}?_v=${
-        avatarAsset._v || 0
-      }`
-    : "";
+  const frameAssetURL = assetURL("ui", frameAsset);
+  const avatarAssetURL = avatarAsset ? assetURL("avatars", avatarAsset) : "";
 
   useEffect(() => {
     async function fetchData() {
@@ -71,37 +58,44 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         )
       );
       const usedFonts = usedFontIds.map((id) => fontsLookup[id] || fonts[0]);
-      const usedFontData = await Promise.all(
-        usedFonts.map((font) => loadFont(projectRoot, font))
-      );
+      const usedFontData = await Promise.all(usedFonts.map(loadFont));
+      if (!isMounted.current) {
+        return;
+      }
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
-  }, [text, defaultFontId, fonts, fontsLookup, projectRoot]);
+  }, [text, defaultFontId, fonts, fontsLookup]);
 
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load Avatar image
   useEffect(() => {
-    if (avatarFilename) {
+    if (avatarAssetURL) {
       const img = new Image();
-      img.src = avatarFilename;
+      img.src = avatarAssetURL;
       img.onload = () => {
         // Make green background color transparent
         const tmpCanvas = document.createElement("canvas");
@@ -127,7 +121,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     } else {
       setAvatarImage(undefined);
     }
-  }, [avatarFilename]);
+  }, [avatarAssetURL]);
 
   useLayoutEffect(() => {
     if (ref.current && frameImage && (!avatarId || avatarImage)) {
@@ -162,6 +156,15 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     defaultFontId,
     fonts,
   ]);
+
+  // Keep track of component's mounted state to allow detecting if component still mounted when
+  // async data calls are complete to prevent React errors caused by setting state on unmounted component
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   return (
     <canvas

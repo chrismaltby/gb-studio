@@ -1,11 +1,10 @@
 import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface MenuPreviewProps {
   items: string[];
@@ -13,17 +12,13 @@ interface MenuPreviewProps {
 }
 
 export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const fontsLookup = useSelector((state: RootState) =>
+  const uiVersion = useAppSelector((state) => state.editor.uiVersion);
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const fontsLookup = useAppSelector((state) =>
     fontSelectors.selectEntities(state)
   );
-  const defaultFontId = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultFontId || fonts[0]?.id
+  const defaultFontId = useAppSelector(
+    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id
   );
 
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();
@@ -39,11 +34,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
     _v: uiVersion,
   };
 
-  const frameFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    frameAsset
-  )}?_v=${uiVersion}`;
+  const frameAssetURL = assetURL("ui", frameAsset);
 
   const cursorAsset = {
     id: "cursor",
@@ -52,11 +43,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
     _v: uiVersion,
   };
 
-  const cursorFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    cursorAsset
-  )}?_v=${uiVersion}`;
+  const cursorAssetURL = assetURL("ui", cursorAsset);
 
   useEffect(() => {
     async function fetchData() {
@@ -70,31 +57,29 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
         )
       );
       const usedFonts = usedFontIds.map((id) => fontsLookup[id] || fonts[0]);
-      const usedFontData = await Promise.all(
-        usedFonts.map((font) => loadFont(projectRoot, font))
-      );
+      const usedFontData = await Promise.all(usedFonts.map(loadFont));
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
-  }, [defaultFontId, fonts, fontsLookup, items, projectRoot]);
+  }, [defaultFontId, fonts, fontsLookup, items]);
 
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load cursor image
   useEffect(() => {
     const img = new Image();
-    img.src = cursorFilename;
+    img.src = cursorAssetURL;
     img.onload = () => {
       setCursorImage(img);
     };
-  }, [cursorFilename]);
+  }, [cursorAssetURL]);
 
   useLayoutEffect(() => {
     if (ref.current && frameImage && cursorImage) {

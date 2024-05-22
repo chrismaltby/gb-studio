@@ -2,13 +2,20 @@ import compile, {
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
-import {
-  EVENT_TEXT,
-  EVENT_IF_TRUE,
-  EVENT_SET_TRUE,
-} from "../../../src/lib/compiler/eventTypes";
+import { compileSceneProjectiles } from "../../../src/lib/compiler/generateGBVMData";
+import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
+import { projectileStateTest } from "./_files/data/projectiles";
+import { getTestScriptHandlers } from "../../getTestScriptHandlers";
+
+test("should take into account state value when building projectiles", () => {
+  const scene = projectileStateTest.scene;
+  const sprites = projectileStateTest.sprites;
+  const out = compileSceneProjectiles(scene, 0, sprites);
+  expect(out).toEqual(projectileStateTest.expectedOutput);
+});
 
 test("should compile simple project into files object", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const project = {
     startSceneId: "1",
     startX: 5,
@@ -371,6 +378,7 @@ test("should compile simple project into files object", async () => {
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
+    scriptEventHandlers,
     // eventEmitter: {
     //   emit: (a, b) => console.log(a, ":", b)
     // }
@@ -408,12 +416,16 @@ test("should precompile image data", async () => {
       triggers: [],
     },
   ];
+  const tilesets = [];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
+    tilesets,
     {},
+    false,
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(1);
   expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
@@ -472,7 +484,8 @@ test("should precompile scenes", async () => {
     {},
     defaultPlayerSprites,
     usedBackgrounds,
-    spriteData
+    spriteData,
+    { warnings: () => {} }
   );
 
   expect(sceneData).toHaveLength(scenes.length);
@@ -481,3 +494,77 @@ test("should precompile scenes", async () => {
 });
 
 test("should precompile script", async () => {});
+
+test.only("should include extra backgrounds when using common tilesets", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "test_img",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "test_img.png",
+    },
+    {
+      id: "3b",
+      name: "test_img2",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "test_img2.png",
+    },
+  ];
+  const scenes = [
+    {
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      id: "1",
+      name: "second_scene",
+      backgroundId: "2b",
+      tilesetId: "t2",
+      actors: [],
+      triggers: [],
+    },
+  ];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img1.png",
+    },
+    {
+      id: "t2",
+      name: "tile_img2",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img2.png",
+    },
+  ];
+  const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    false,
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+  expect(usedBackgrounds).toHaveLength(3);
+  expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
+  expect(backgroundLookup["3b"]).toBeUndefined();
+});

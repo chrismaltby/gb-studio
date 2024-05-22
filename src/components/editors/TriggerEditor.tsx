@@ -1,12 +1,10 @@
-import React, { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
-import castEventValue from "lib/helpers/castEventValue";
+import React, { useCallback, useMemo, useState } from "react";
+import ScriptEditor from "components/script/ScriptEditor";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,
   sceneSelectors,
@@ -14,7 +12,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";
+import { SidebarColumn, Sidebar, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
@@ -22,8 +20,10 @@ import {
   FormRow,
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
-import { RootState } from "store/configureStore";
-import { Trigger, ScriptEvent } from "store/features/entities/entitiesTypes";
+import {
+  TriggerNormalized,
+  ScriptEventNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
@@ -33,16 +33,20 @@ import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { triggerName } from "shared/lib/entities/entitiesHelpers";
+import l10n from "shared/lib/lang/l10n";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import CachedScroll from "ui/util/CachedScroll";
 
 interface TriggerEditorProps {
   id: string;
   sceneId: string;
-  multiColumn: boolean;
 }
 
 interface ScriptHandler {
-  value: ScriptEvent[];
-  onChange: (newValue: ScriptEvent[]) => void;
+  value: ScriptEventNormalized[];
+  onChange: (newValue: ScriptEventNormalized[]) => void;
 }
 
 interface ScriptHandlers {
@@ -52,16 +56,10 @@ interface ScriptHandlers {
 
 type TriggerScriptKey = "script" | "leaveScript";
 
-const scriptTabs = {
-  trigger: l10n("SIDEBAR_ON_ENTER"),
-  leave: l10n("SIDEBAR_ON_LEAVE"),
-} as const;
+type DefaultTab = "trigger" | "leave";
+type PointNClickTab = "trigger";
 
-const pointNClickScriptTabs = {
-  trigger: l10n("SIDEBAR_ON_INTERACT"),
-} as const;
-
-const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
+const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   if (tab === "trigger") {
     return "script";
   }
@@ -71,30 +69,38 @@ const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
   return "script";
 };
 
-const triggerName = (trigger: Trigger, triggerIndex: number) =>
-  trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
-
-const tabs = Object.keys(scriptTabs);
-
-export const TriggerEditor = ({
-  id,
-  sceneId,
-  multiColumn,
-}: TriggerEditorProps) => {
-  const trigger = useSelector((state: RootState) =>
+export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
+  const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
 
-  const lastScriptTab = useSelector(
-    (state: RootState) => state.editor.lastScriptTabTrigger
+  const lastScriptTab = useAppSelector(
+    (state) => state.editor.lastScriptTabTrigger
   );
+
+  const scriptTabs: Record<DefaultTab, string> = useMemo(
+    () => ({
+      trigger: l10n("SIDEBAR_ON_ENTER"),
+      leave: l10n("SIDEBAR_ON_LEAVE"),
+    }),
+    []
+  );
+
+  const pointNClickScriptTabs: Record<PointNClickTab, string> = useMemo(
+    () => ({
+      trigger: l10n("SIDEBAR_ON_INTERACT"),
+    }),
+    []
+  );
+
+  const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
 
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
 
@@ -110,31 +116,66 @@ export const TriggerEditor = ({
   const scriptKey = getScriptKey(scriptMode);
 
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor
   );
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const onChangeFieldInput =
-    (key: keyof Trigger) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
+  const onChangeTriggerProp = useCallback(
+    <K extends keyof TriggerNormalized>(
+      key: K,
+      value: TriggerNormalized[K]
     ) => {
-      const editValue = castEventValue(e);
       dispatch(
         entitiesActions.editTrigger({
           triggerId: id,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("name", e.currentTarget.value),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("notes", e.currentTarget.value),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("x", castEventToInt(e, 0)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("y", castEventToInt(e, 0)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeWidth = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("width", castEventToInt(e, 1)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeHeight = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("height", castEventToInt(e, 1)),
+    [onChangeTriggerProp]
+  );
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
@@ -170,51 +211,71 @@ export const TriggerEditor = ({
     setNotesOpen(true);
   };
 
-  const onToggleLockScriptEditor = () => {
+  const onToggleLockScriptEditor = useCallback(() => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
-  };
+  }, [dispatch, lockScriptEditor]);
+
+  const showNotes = trigger?.notes || notesOpen;
+
+  const lockButton = useMemo(
+    () => (
+      <Button
+        size="small"
+        variant={lockScriptEditor ? "primary" : "transparent"}
+        onClick={onToggleLockScriptEditor}
+        title={
+          lockScriptEditor
+            ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+            : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+        }
+      >
+        {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+      </Button>
+    ),
+    [lockScriptEditor, onToggleLockScriptEditor]
+  );
+
+  const scriptButton = useMemo(
+    () =>
+      trigger && (
+        <ScriptEditorDropdownButton
+          value={trigger[scriptKey]}
+          type="trigger"
+          entityId={trigger.id}
+          scriptKey={scriptKey}
+        />
+      ),
+    [scriptKey, trigger]
+  );
+
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "entity",
+      entityType: "trigger",
+      entityId: id,
+      sceneId,
+      scriptKey,
+    }),
+    [id, sceneId, scriptKey]
+  );
 
   if (!scene || !trigger) {
     return <WorldEditor />;
   }
 
-  const showNotes = trigger.notes || notesOpen;
-
-  const lockButton = (
-    <Button
-      size="small"
-      variant={lockScriptEditor ? "primary" : "transparent"}
-      onClick={onToggleLockScriptEditor}
-      title={
-        lockScriptEditor
-          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
-          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
-      }
-    >
-      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
-    </Button>
-  );
-
-  const scriptButton = (
-    <ScriptEditorDropdownButton
-      value={trigger[scriptKey]}
-      type="trigger"
-      entityId={trigger.id}
-      scriptKey={scriptKey}
-    />
-  );
+  const scrollKey = `${trigger.id}_${scriptKey}`;
 
   return (
-    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
-      {!lockScriptEditor && (
-        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+    <Sidebar onClick={selectSidebar}>
+      <CachedScroll key={scrollKey} cacheKey={scrollKey}>
+        {!lockScriptEditor && (
           <FormContainer>
             <FormHeader>
               <EditableText
                 name="name"
                 placeholder={triggerName(trigger, triggerIndex)}
                 value={trigger.name || ""}
-                onChange={onChangeFieldInput("name")}
+                onChange={onChangeName}
               />
               <DropdownButton
                 size="small"
@@ -247,70 +308,76 @@ export const TriggerEditor = ({
               </DropdownButton>
             </FormHeader>
           </FormContainer>
+        )}
 
-          {showSymbols && (
-            <>
-              <SymbolEditorWrapper>
-                <TriggerSymbolsEditor id={trigger.id} />
-              </SymbolEditorWrapper>
-              <FormDivider />
-            </>
-          )}
+        {!lockScriptEditor && (
+          <SidebarColumns>
+            {(showSymbols || showNotes) && (
+              <SidebarColumn>
+                {showSymbols && (
+                  <>
+                    <SymbolEditorWrapper>
+                      <TriggerSymbolsEditor id={trigger.id} />
+                    </SymbolEditorWrapper>
+                    <FormDivider />
+                  </>
+                )}
+                {showNotes && (
+                  <FormRow>
+                    <NoteField
+                      value={trigger.notes || ""}
+                      onChange={onChangeNotes}
+                    />
+                  </FormRow>
+                )}
+              </SidebarColumn>
+            )}
 
-          {showNotes && (
-            <FormRow>
-              <NoteField
-                autofocus
-                value={trigger.notes || ""}
-                onChange={onChangeFieldInput("notes")}
-              />
-            </FormRow>
-          )}
+            <SidebarColumn>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="x"
+                  value={trigger.x}
+                  placeholder="0"
+                  min={0}
+                  max={scene.width - trigger.width}
+                  onChange={onChangeX}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="y"
+                  value={trigger.y}
+                  placeholder="0"
+                  min={0}
+                  max={scene.height - trigger.height}
+                  onChange={onChangeY}
+                />
+              </FormRow>
 
-          <FormRow>
-            <CoordinateInput
-              name="x"
-              coordinate="x"
-              value={trigger.x}
-              placeholder="0"
-              min={0}
-              max={scene.width - trigger.width}
-              onChange={onChangeFieldInput("x")}
-            />
-            <CoordinateInput
-              name="y"
-              coordinate="y"
-              value={trigger.y}
-              placeholder="0"
-              min={0}
-              max={scene.height - trigger.height}
-              onChange={onChangeFieldInput("y")}
-            />
-          </FormRow>
-
-          <FormRow>
-            <CoordinateInput
-              name="width"
-              coordinate="w"
-              value={trigger.width}
-              placeholder="1"
-              min={1}
-              max={scene.width - trigger.x}
-              onChange={onChangeFieldInput("width")}
-            />
-            <CoordinateInput
-              name="height"
-              coordinate="h"
-              value={trigger.height}
-              placeholder="1"
-              min={1}
-              max={scene.height - trigger.y}
-              onChange={onChangeFieldInput("height")}
-            />
-          </FormRow>
-        </SidebarColumn>
-      )}
-      <SidebarColumn>
+              <FormRow>
+                <CoordinateInput
+                  name="width"
+                  coordinate="w"
+                  value={trigger.width}
+                  placeholder="1"
+                  min={1}
+                  max={scene.width - trigger.x}
+                  onChange={onChangeWidth}
+                />
+                <CoordinateInput
+                  name="height"
+                  coordinate="h"
+                  value={trigger.height}
+                  placeholder="1"
+                  min={1}
+                  max={scene.height - trigger.y}
+                  onChange={onChangeHeight}
+                />
+              </FormRow>
+            </SidebarColumn>
+          </SidebarColumns>
+        )}
         <StickyTabs>
           {scene.type === "POINTNCLICK" ? (
             <TabBar
@@ -336,15 +403,10 @@ export const TriggerEditor = ({
             />
           )}
         </StickyTabs>
-        <ScriptEditorContext.Provider value="entity">
-          <ScriptEditor
-            value={trigger[scriptKey] || []}
-            type="trigger"
-            entityId={trigger.id}
-            scriptKey={scriptKey}
-          />
+        <ScriptEditorContext.Provider value={scriptCtx}>
+          <ScriptEditor value={trigger[scriptKey] || []} />
         </ScriptEditorContext.Provider>
-      </SidebarColumn>
+      </CachedScroll>
     </Sidebar>
   );
 };

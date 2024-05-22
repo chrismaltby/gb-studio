@@ -25,18 +25,20 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import {
+  castEventToBool,
+  castEventToFloat,
+} from "renderer/lib/helpers/castEventValue";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import React, { useCallback, useContext } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   ActorDirection,
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
   UnitType,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -50,12 +52,19 @@ import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
-import {
-  defaultVariableForContext,
-  ScriptEditorContext,
-} from "./ScriptEditorContext";
+import { ScriptEditorContext } from "./ScriptEditorContext";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
+import { AngleInput } from "ui/form/AngleInput";
+import { ensureMaybeNumber, isStringArray } from "shared/types";
+import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
+import { setDefault } from "shared/lib/helpers/setDefault";
+import { TilesetSelect } from "components/forms/TilesetSelect";
+import ValueSelect from "components/forms/ValueSelect";
+import { isScriptValue } from "shared/lib/scriptValue/types";
+import { FlagField } from "ui/form/FlagField";
+import { FlagSelect } from "components/forms/FlagSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -82,10 +91,10 @@ const ConnectButton = styled.div`
 const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
-    if (unionArg.type === "variable" || unionArg.type === "property") {
-      return undefined;
+    if (unionArg.type === "number" || unionArg.type === "direction") {
+      return unionArg.value;
     }
-    return unionArg.value;
+    return undefined;
   }
   return arg;
 };
@@ -103,42 +112,48 @@ const ScriptEventFormInput = ({
   onChangeArg,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
-  const defaultBackgroundPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds || []
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultSpritePaletteIds || []
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds || []
   );
+  const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
   const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(
     (e: unknown) => {
-      const { updateFn } = field;
-      let newValue = castEventValue(e);
-      if (type === "direction" && newValue === value) {
-        // Toggle direction
-        newValue = "";
-      }
-      if (type === "select") {
-        newValue = newValue.value;
-      }
-      if (updateFn) {
-        newValue = updateFn(newValue, field, args);
-      }
-      onChange(newValue, index);
+      onChange(e, index);
     },
-    [args, field, index, onChange, type, value]
+    [index, onChange]
   );
 
-  const onChangeUnits = useCallback(
-    (e: UnitType) => {
-      if (field.unitsField) {
-        onChangeArg(field.unitsField, e);
-      }
+  const onChangeTextInputField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      onChange(e.currentTarget.value, index);
     },
-    [field.unitsField, onChangeArg]
+    [index, onChange]
+  );
+
+  const onChangeNumberInputField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(castEventToFloat(e, Number(defaultValue) ?? 0), index);
+    },
+    [defaultValue, index, onChange]
+  );
+
+  const onChangeCheckboxField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(castEventToBool(e), index);
+    },
+    [index, onChange]
+  );
+
+  const onChangeSelectField = useCallback(
+    (e: { value: unknown }) => {
+      onChange(e.value, index);
+    },
+    [index, onChange]
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -171,7 +186,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = defaultVariableForContext(context);
+          replaceValue = defaultVariableForContext(context.type);
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -193,6 +208,7 @@ const ScriptEventFormInput = ({
         id={id}
         value={String(value || "")}
         placeholder={field.placeholder}
+        singleLine={field.singleLine}
         onChange={onChangeField}
         entityId={entityId}
       />
@@ -215,7 +231,7 @@ const ScriptEventFormInput = ({
         value={String(value || "")}
         placeholder={String(field.placeholder || defaultValue)}
         maxLength={field.maxLength}
-        onChange={onChangeField}
+        onChange={onChangeTextInputField}
       />
     );
   } else if (type === "code") {
@@ -234,10 +250,7 @@ const ScriptEventFormInput = ({
         max={field.max}
         step={field.step}
         placeholder={String(field.placeholder || defaultValue)}
-        onChange={onChangeField}
-        units={(args[field.unitsField || ""] || field.unitsDefault) as UnitType}
-        unitsAllowed={field.unitsAllowed}
-        onChangeUnits={onChangeUnits}
+        onChange={onChangeNumberInputField}
       />
     );
   } else if (type === "slider") {
@@ -262,13 +275,38 @@ const ScriptEventFormInput = ({
         checked={
           typeof value === "boolean" ? value : Boolean(defaultValue || false)
         }
-        onChange={onChangeField}
+        onChange={onChangeCheckboxField}
       />
+    );
+  } else if (type === "flag") {
+    return (
+      <FlagField
+        name={id}
+        bit={field.key ?? "flag1"}
+        defaultLabel={String(field.checkboxLabel || field.label)}
+        title={field.description}
+        variableId={argValue(args.variable) as string}
+        checked={
+          typeof value === "boolean" ? value : Boolean(defaultValue || false)
+        }
+        entityId={entityId}
+        onChange={onChangeCheckboxField}
+      />
+    );
+  } else if (type === "selectFlags") {
+    return (
+      <FlagSelect
+        name={id}
+        variableId={argValue(args.variable) as string}
+        entityId={entityId}
+        value={Number(value ?? defaultValue)}
+        onChange={onChangeField}
+      ></FlagSelect>
     );
   } else if (type === "select") {
     const options = (field.options || []).map(([value, label]) => ({
       value,
-      label: l10n(label),
+      label: l10n(label as L10NKey),
     }));
     const currentValue =
       options.find((o) =>
@@ -280,7 +318,7 @@ const ScriptEventFormInput = ({
         name={id}
         value={currentValue}
         options={options}
-        onChange={onChangeField}
+        onChange={onChangeSelectField}
       />
     );
   } else if (type === "selectbutton") {
@@ -346,6 +384,27 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "value") {
+    const isValueScript = isScriptValue(value);
+    const isDefaultScript = isScriptValue(defaultValue);
+
+    return (
+      <ValueSelect
+        name={id}
+        entityId={entityId}
+        value={
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
   } else if (type === "palette") {
     if (field.paletteType === "ui") {
       return (
@@ -410,6 +469,7 @@ const ScriptEventFormInput = ({
             defaultBackgroundPaletteIds[field.paletteIndex || 0] || ""
           }
           canKeep={field.canKeep}
+          canRestore={field.canRestore}
           keepLabel={l10n("FIELD_DONT_MODIFY")}
           type="tile"
         />
@@ -421,7 +481,6 @@ const ScriptEventFormInput = ({
         <SpriteSheetSelect
           name={id}
           value={String(value || "")}
-          filter={field.filter}
           optional={field.optional}
           onChange={onChangeField}
         />
@@ -441,7 +500,7 @@ const ScriptEventFormInput = ({
   } else if (type === "variable") {
     let fallbackValue = defaultValue;
     if (fallbackValue === "LAST_VARIABLE") {
-      fallbackValue = defaultVariableForContext(context);
+      fallbackValue = defaultVariableForContext(context.type);
     }
     return (
       <OffscreenSkeletonInput>
@@ -451,33 +510,68 @@ const ScriptEventFormInput = ({
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
   } else if (type === "direction") {
     return (
       <OffscreenSkeletonInput>
-        <DirectionPicker id={id} value={value} onChange={onChangeField} />
-      </OffscreenSkeletonInput>
-    );
-  } else if (type === "collisionMask") {
-    return (
-      <OffscreenSkeletonInput>
-        <CollisionMaskPicker
+        <DirectionPicker
           id={id}
-          value={value}
+          value={value as ActorDirection | undefined}
           onChange={onChangeField}
-          includePlayer={field.includePlayer}
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "angle") {
+    return (
+      <OffscreenSkeletonInput>
+        <AngleInput
+          id={id}
+          value={String(value !== undefined && value !== null ? value : "")}
+          min={field.min}
+          max={field.max}
+          step={field.step}
+          placeholder={String(field.placeholder || defaultValue)}
+          onChange={onChangeNumberInputField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "collisionMask") {
+    if (isStringArray(value)) {
+      return (
+        <OffscreenSkeletonInput>
+          <CollisionMaskPicker
+            id={id}
+            value={value}
+            onChange={onChangeField}
+            includePlayer={field.includePlayer}
+            multiple
+          />
+        </OffscreenSkeletonInput>
+      );
+    } else {
+      return (
+        <OffscreenSkeletonInput>
+          <CollisionMaskPicker
+            id={id}
+            value={String(value)}
+            onChange={onChangeField}
+            includePlayer={field.includePlayer}
+          />
+        </OffscreenSkeletonInput>
+      );
+    }
   } else if (type === "input") {
-    return <InputPicker id={id} value={value} onChange={onChangeField} />;
+    if (isStringArray(value)) {
+      return (
+        <InputPicker id={id} value={value} onChange={onChangeField} multiple />
+      );
+    } else {
+      return (
+        <InputPicker id={id} value={String(value)} onChange={onChangeField} />
+      );
+    }
   } else if (type === "fadeSpeed") {
     return (
       <OffscreenSkeletonInput>
@@ -485,6 +579,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={Number(value ?? 2)}
           onChange={onChangeField}
+          allowNone={field.allowNone}
         />
       </OffscreenSkeletonInput>
     );
@@ -506,6 +601,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={Number(value ?? 1)}
           allowNone={field.allowNone}
+          noneLabel={field.noneLabel}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -553,7 +649,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           direction={argValue(args.direction) as ActorDirection}
-          frame={argValue(args.frame) as number | undefined}
+          frame={ensureMaybeNumber(argValue(args.frame), undefined)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -562,6 +658,20 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <EmoteSelect name={id} value={String(value)} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "tileset") {
+    return (
+      <OffscreenSkeletonInput>
+        <TilesetSelect
+          name={id}
+          value={String(value)}
+          onChange={onChangeField}
+          tileIndex={argValue(args.tileIndex) as number | undefined}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "avatar") {
@@ -655,14 +765,51 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
-          units={
-            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
-          }
-          unitsAllowed={field.unitsAllowed}
-          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "engineFieldValue") {
+    const engineField = engineFieldsLookup[args.engineFieldKey as string];
+    if (engineField) {
+      const fieldType = engineField.type || "number";
+      const engineDefaultValue = {
+        type: "number",
+        value: engineField.defaultValue,
+      };
+      const isValueScript = isScriptValue(value);
+      const isDefaultScript = isScriptValue(engineDefaultValue);
+
+      return (
+        <ValueSelect
+          name={id}
+          entityId={entityId}
+          value={
+            isValueScript
+              ? value
+              : isDefaultScript
+              ? engineDefaultValue
+              : undefined
+          }
+          onChange={onChangeField}
+          min={clampToCType(
+            setDefault(engineField.min, -Infinity),
+            engineField.cType
+          )}
+          max={clampToCType(
+            setDefault(engineField.max, Infinity),
+            engineField.cType
+          )}
+          step={field.step}
+          placeholder={String(engineField.defaultValue ?? 0)}
+          inputOverride={{
+            type: fieldType,
+            topLevelOnly: true,
+            options: engineField.options || [],
+            checkboxLabel: l10n(engineField.label as L10NKey),
+          }}
+        />
+      );
+    }
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
       field.defaultType) as string;

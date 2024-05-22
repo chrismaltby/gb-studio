@@ -75,13 +75,26 @@ const fields = [
         defaultValue: "horizontal",
         flexBasis: 30,
         flexGrow: 0,
+        alignBottom: true,
       },
     ],
+  },
+  {
+    key: "magnitude",
+    label: l10n("FIELD_MAGNITUDE"),
+    description: l10n("FIELD_MAGNITUDE_DESC"),
+    type: "value",
+    min: 1,
+    max: 255,
+    defaultValue: {
+      type: "number",
+      value: 5,
+    },
   },
 ];
 
 const compile = (input, helpers) => {
-  const { cameraShake } = helpers;
+  const { cameraShakeScriptValue } = helpers;
   let frames = 0;
   if (input.units === "frames") {
     frames = typeof input.frames === "number" ? input.frames : 30;
@@ -110,8 +123,9 @@ const compile = (input, helpers) => {
       shouldShakeX = true;
       shouldShakeY = false;
   }
+
   if (frames > 0) {
-    cameraShake(shouldShakeX, shouldShakeY, frames);
+    cameraShakeScriptValue(shouldShakeX, shouldShakeY, frames, input.magnitude);
   }
 };
 

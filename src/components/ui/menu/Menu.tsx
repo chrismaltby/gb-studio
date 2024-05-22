@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
+import API from "renderer/lib/api";
 import styled, { css } from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 export interface MenuProps {
   readonly children?: ReactNode;
@@ -24,12 +25,14 @@ export const Menu = styled.div<MenuProps>`
 `;
 
 export interface MenuItemProps {
+  readonly "data-index"?: number;
   readonly focus?: boolean;
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
+  readonly subMenu?: React.ReactElement[];
 }
 
 export const MenuItem = styled.div<MenuItemProps>`
@@ -80,6 +83,10 @@ export const MenuItemIcon = styled.div<MenuItemProps>`
     margin-left: -5px;
     margin-right: 5px;
   }
+  &:last-child:not(:first-child) {
+    margin-left: 5px;
+    margin-right: 0px;
+  }
 `;
 
 export const MenuGroup = styled.div`
@@ -95,6 +102,14 @@ export const MenuGroup = styled.div`
   }
 `;
 
+export const MenuSection = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: ${(props) => props.theme.typography.menuFontSize};
+  white-space: nowrap;
+`;
+
 export const MenuDivider = styled.div`
   border-bottom: 1px solid ${(props) => props.theme.colors.menu.divider};
 `;
@@ -104,7 +119,7 @@ export interface MenuAcceleratorProps {
 }
 
 export const acceleratorForPlatform = (accelerator: string) => {
-  if (process.platform === "darwin") {
+  if (API.platform === "darwin") {
     return accelerator
       .replace(/CommandOrControl\+/g, "⌘")
       .replace(/Shift\+/g, "⇧")
@@ -135,4 +150,16 @@ export const MenuOverlay = styled.div`
   right: 0px;
   bottom: 0px;
   z-index: 1000;
+`;
+
+export const MenuItemCaret = styled.div`
+  flex-grow: 1;
+  text-align: right;
+  margin-left: 5px;
+  svg {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    fill: ${(props) => props.theme.colors.text};
+  }
 `;

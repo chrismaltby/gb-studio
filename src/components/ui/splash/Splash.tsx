@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import styled, { css, keyframes } from "styled-components";
-import { Button } from "../buttons/Button";
-import projectIcon from "../icons/gbsproj.png";
+import { Button } from "ui/buttons/Button";
+import projectIcon from "ui/icons/gbsproj.png";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
@@ -365,7 +365,7 @@ export const SplashCreditsBackground = () => {
 
       const render = () => {
         const width = 640;
-        const height = 400;
+        const height = 430;
         if (ref.current && ctx) {
           // Create gradient
           const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
@@ -435,7 +435,7 @@ export const SplashCreditsBackground = () => {
     }
   }, [ref]);
 
-  return <canvas ref={ref} width={640} height={400}></canvas>;
+  return <canvas ref={ref} width={640} height={430}></canvas>;
 };
 
 const SplashCreditsAnimation = keyframes`
@@ -446,17 +446,6 @@ const SplashCreditsAnimation = keyframes`
   to {
     transform: translateY(-200%);
   }
-`;
-
-export const SplashCreditsContent = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  animation: ${SplashCreditsAnimation} 150s linear infinite;
 `;
 
 export const SplashCreditsCloseButton = styled.div`
@@ -489,6 +478,26 @@ export const SplashCreditsTitle = styled.div`
   margin-bottom: 80px;
 `;
 
+export const SplashCreditsSubHeading = styled.div`
+  display: block;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: 80px;
+  margin-bottom: 60px;
+`;
+
+export const SplashCreditsGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  & > * {
+    width: 30%;
+  }
+`;
+
 export const SplashCreditsContributorWrapper = styled.div`
   display: block;
   color: #fff;
@@ -496,9 +505,63 @@ export const SplashCreditsContributorWrapper = styled.div`
   text-decoration: none;
   margin-bottom: 30px;
 
-  :hover {
+  > span:hover {
     color: #ffff00;
     cursor: pointer;
+  }
+`;
+
+interface SplashCreditsPatronWrapperProps {
+  gold?: boolean;
+}
+
+const SplashCreditsGoldPatronAnimation = keyframes`
+  0%   {background-position: 0px 0px}
+  40%  {background-position: 0px 0px}
+  60%  {background-position: 200px 0px}
+  100% {background-position: 200px 0px}
+`;
+
+export const SplashCreditsPatronWrapper = styled.div<SplashCreditsPatronWrapperProps>`
+  display: block;
+  color: #fff;
+  font-size: 20px;
+  text-decoration: none;
+  margin-bottom: 30px;
+
+  ${(props) =>
+    props.gold
+      ? css`
+          font-weight: bold;
+          background: linear-gradient(
+            to right,
+            #ffc107 0px,
+            #fff 2px,
+            #fff 6px,
+            #ffeb3b 8px,
+            #ffd08b 200px
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0px 1px 1px #333);
+          animation: ${SplashCreditsGoldPatronAnimation} 2s linear infinite;
+        `
+      : ""}
+`;
+
+export const SplashCreditsContent = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  animation: ${SplashCreditsAnimation} 60s linear infinite;
+
+  &:has(${SplashCreditsContributorWrapper} > span:hover),
+  &:has(${SplashCreditsPatronWrapper} > span:hover) {
+    animation-play-state: paused;
   }
 `;
 
@@ -515,8 +578,22 @@ export const SplashCreditsContributor: FC<SplashCreditsContributorProps> = ({
   onClick,
 }) => (
   <SplashCreditsContributorWrapper onClick={onClick}>
-    {contributor.login}
+    <span>{contributor.login}</span>
   </SplashCreditsContributorWrapper>
+);
+
+export interface SplashCreditsPatronProps {
+  name: string;
+  gold?: boolean;
+}
+
+export const SplashCreditsPatron: FC<SplashCreditsPatronProps> = ({
+  name,
+  gold,
+}) => (
+  <SplashCreditsPatronWrapper gold={gold}>
+    <span>{name}</span>
+  </SplashCreditsPatronWrapper>
 );
 
 export const SplashScroll = styled.div`
@@ -557,7 +634,7 @@ export const SplashProjectClearButton = styled.div`
 export interface SplashProjectProps {
   project: {
     name: string;
-    path: string;
+    dir: string;
   };
   onClick: () => void;
 }
@@ -584,6 +661,11 @@ export const SplashProjectWrapper = styled.button`
 
   :active {
     background: ${(props) => props.theme.colors.input.activeBackground};
+  }
+
+  :focus {
+    background: transparent;
+    box-shadow: inset 0 0 0px 2px #c92c61;
   }
 
   :last-child {
@@ -617,12 +699,21 @@ export const SplashProjectPath = styled.span`
   text-overflow: ellipsis;
 `;
 
+export const SplashLoading = styled.form`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const SplashProject: FC<SplashProjectProps> = ({ project, onClick }) => (
   <SplashProjectWrapper onClick={onClick}>
     <img src={projectIcon} alt="" />
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
-      <SplashProjectPath>{project.path}</SplashProjectPath>
+      <SplashProjectPath>{project.dir}</SplashProjectPath>
     </SplashProjectDetails>
   </SplashProjectWrapper>
 );

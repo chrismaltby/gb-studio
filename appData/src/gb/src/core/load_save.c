@@ -35,7 +35,7 @@ const save_point_t save_points[] = {
     SAVEPOINT(CTXS),
     SAVEPOINT(first_ctx), SAVEPOINT(free_ctxs), SAVEPOINT(old_executing_ctx), SAVEPOINT(executing_ctx), SAVEPOINT(vm_lock_state),
     // intupt events
-    SAVEPOINT(input_events), SAVEPOINT(input_slots), 
+    SAVEPOINT(input_events), SAVEPOINT(input_slots),
     // timers
     SAVEPOINT(timer_events), SAVEPOINT(timer_values),
     // music
@@ -43,7 +43,7 @@ const save_point_t save_points[] = {
     SAVEPOINT(music_current_track),
     SAVEPOINT(music_events),
     // scene
-    SAVEPOINT(current_scene),
+    SAVEPOINT(current_scene), SAVEPOINT(scene_stack_ptr), SAVEPOINT(scene_stack),
     // actors
     SAVEPOINT(actors),
     SAVEPOINT(actors_active_head), SAVEPOINT(actors_inactive_head), SAVEPOINT(player_moving), SAVEPOINT(player_collision_actor),
@@ -54,18 +54,18 @@ const save_point_t save_points[] = {
 };
 
 #ifdef BATTERYLESS
-    extern void _start_save; 
+    extern void _start_save;
 #endif
 
 size_t save_blob_size;
 
-void data_init() BANKED {
+void data_init(void) BANKED {
     ENABLE_RAM_MBC5;
     SWITCH_RAM_BANK(0, RAM_BANKS_ONLY);
     // calculate save blob size
     save_blob_size = sizeof(save_signature);
     for(const save_point_t * point = save_points; (point->target); point++) {
-        save_blob_size += point->size;  
+        save_blob_size += point->size;
     }
 #ifdef BATTERYLESS
     // load from FLASH ROM
@@ -91,11 +91,11 @@ void data_save(UBYTE slot) BANKED {
     if (save_data == NULL) return;
     SWITCH_RAM_BANK(data_bank, RAM_BANKS_ONLY);
 
-    SIGN_BY_PTR(save_data) = save_signature; 
-    save_data += sizeof(save_signature);    
+    SIGN_BY_PTR(save_data) = save_signature;
+    save_data += sizeof(save_signature);
     for(const save_point_t * point = save_points; (point->target); point++) {
         memcpy(save_data, point->target, point->size);
-        save_data += point->size;  
+        save_data += point->size;
     }
 #ifdef BATTERYLESS
     // save to FLASH ROM
@@ -111,8 +111,8 @@ UBYTE data_load(UBYTE slot) BANKED {
     save_data += sizeof(save_signature);
 
     for(const save_point_t * point = save_points; (point->target); point++) {
-        memcpy(point->target, save_data, point->size);    
-        save_data += point->size;  
+        memcpy(point->target, save_data, point->size);
+        save_data += point->size;
     }
     // Restart music
     if (music_current_track_bank != MUSIC_STOP_BANK) {
@@ -127,7 +127,7 @@ void data_clear(UBYTE slot) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return;
     SWITCH_RAM_BANK(data_bank, RAM_BANKS_ONLY);
-    SIGN_BY_PTR(save_data) = 0;    
+    SIGN_BY_PTR(save_data) = 0;
 #ifdef BATTERYLESS
     // save to FLASH ROM
     save_sram(SRAM_BANKS_TO_SAVE);

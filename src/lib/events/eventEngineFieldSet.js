@@ -19,7 +19,7 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_SET_DESC"),
     key: "engineFieldKey",
-    postUpdate: (newArgs, prevArgs) => {
+    postUpdateFn: (newArgs, prevArgs) => {
       // Reset value if engine field changed
       if (newArgs.engineFieldKey !== prevArgs.engineFieldKey) {
         return {
@@ -29,16 +29,28 @@ const fields = [
       }
     },
   },
+  {
+    key: "value",
+    type: "engineFieldValue",
+    defaultValue: {
+      type: "number",
+      value: 0,
+    },
+    conditions: [
+      {
+        key: "engineFieldKey",
+        set: true,
+      },
+    ],
+  },
 ];
 
 const compile = (input, helpers) => {
-  const { engineFieldSetToValue, engineFieldSetToVariable } = helpers;
+  const { engineFieldSetToScriptValue, engineFieldSetToDefault } = helpers;
   if (!input.value) {
-    engineFieldSetToValue(input.engineFieldKey);
-  } else if (input.value.type === "variable") {
-    engineFieldSetToVariable(input.engineFieldKey, input.value.value);
+    engineFieldSetToDefault(input.engineFieldKey);
   } else {
-    engineFieldSetToValue(input.engineFieldKey, input.value.value);
+    engineFieldSetToScriptValue(input.engineFieldKey, input.value);
   }
 };
 

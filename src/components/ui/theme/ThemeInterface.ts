@@ -7,6 +7,7 @@ export interface ThemeInterface {
   };
   colors: {
     text: string;
+    background: string;
     secondaryText: string;
     highlight: string;
     highlightText: string;
@@ -58,6 +59,10 @@ export interface ThemeInterface {
       activeBackground: string;
       text: string;
       border: string;
+    };
+    brackets: {
+      color: string;
+      hoverBackground: string;
     };
     card: {
       background: string;

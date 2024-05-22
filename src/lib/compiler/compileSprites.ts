@@ -1,56 +1,29 @@
-import promiseLimit from "../helpers/promiseLimit2";
-import { assetFilename } from "../helpers/gbstudio";
-import {
-  optimiseTiles,
-  indexedImageTo2bppSpriteData,
-} from "../sprite/spriteData";
+import promiseLimit from "lib/helpers/promiseLimit";
+import { indexedImageTo2bppSpriteData } from "shared/lib/sprites/spriteData";
 import {
   animationMapBySpriteType,
   toEngineOrder,
-} from "../../components/sprites/helpers";
-import {
-  MetaspriteTile,
+} from "shared/lib/sprites/helpers";
+import type {
   ObjPalette,
-  SpriteAnimationType,
-} from "store/features/entities/entitiesTypes";
-import { IndexedImage } from "../tiles/indexedImage";
+  SpriteSheetData,
+} from "shared/lib/entities/entitiesTypes";
+import { IndexedImage } from "shared/lib/tiles/indexedImage";
+import { assetFilename } from "shared/lib/helpers/assets";
+import { optimiseTiles } from "lib/sprites/readSpriteData";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
 const S_FLIPY = 0x40;
 const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
+const S_VRAM2 = 0x8;
 
-interface SpriteSheetFrameData {
-  id: string;
-  tiles: MetaspriteTile[];
-}
-
-interface SpriteSheetAnimationData {
-  id: string;
-  frames: SpriteSheetFrameData[];
-}
-
-interface SpriteSheetStateData {
-  id: string;
-  name: string;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
-  animations: SpriteSheetAnimationData[];
-}
-
-export interface SpriteSheetData {
-  id: string;
-  name: string;
-  filename: string;
-  canvasWidth: number;
-  canvasHeight: number;
-  states: SpriteSheetStateData[];
-  boundsX: number;
-  boundsY: number;
-  boundsWidth: number;
-  boundsHeight: number;
-}
+export type SpriteTileAllocationStrategy = (
+  tileIndex: number,
+  numTiles: number,
+  sprite: SpriteSheetData
+) => { tileIndex: number; inVRAM2: boolean };
 
 interface AnimationOffset {
   start: number;
@@ -58,7 +31,7 @@ interface AnimationOffset {
 }
 
 export type PrecompiledSpriteSheetData = SpriteSheetData & {
-  data: number[];
+  vramData: [number[], number[]];
   tiles: IndexedImage[];
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
@@ -72,27 +45,83 @@ interface SpriteTileData {
   props: number;
 }
 
+/**
+ * Allocates a sprite tile for to default DMG location.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
+  tileIndex
+) => {
+  return {
+    tileIndex,
+    inVRAM2: false,
+  };
+};
+
+/**
+ * Allocates a sprite tile for color-only sprites and adjusts the tile index based on VRAM bank allocation.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
+  tileIndex,
+  numTiles
+) => {
+  const bank1NumTiles = Math.ceil(numTiles / 4) * 2;
+  const inVRAM2 = tileIndex >= bank1NumTiles;
+  return {
+    tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
+    inVRAM2: tileIndex >= bank1NumTiles,
+  };
+};
+
+/**
+ * Dummy sprite tile allocation strategy for testing purposes only allocates all sprite tiles to VRAM bank 2.
+ *
+ * @param {number} tileIndex - The index of the sprite tile to allocate.
+ * @param {number} numTiles - The total number of tiles available for allocation.
+ * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
+ */
+export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
+  return {
+    tileIndex,
+    inVRAM2: true,
+  };
+};
+
 const makeProps = (
   objPalette: ObjPalette,
   paletteIndex: number,
   flipX: boolean,
   flipY: boolean,
-  priority: boolean
+  priority: boolean,
+  inVRAM2: boolean
 ): number => {
   return (
     (objPalette === "OBP1" ? S_PALETTE : 0) +
     (flipX ? S_FLIPX : 0) +
     (flipY ? S_FLIPY : 0) +
     (priority ? S_PRIORITY : 0) +
-    (paletteIndex & S_GBC_PALETTE_MASK)
+    (paletteIndex & S_GBC_PALETTE_MASK) +
+    (inVRAM2 ? S_VRAM2 : 0)
   );
 };
 
 export const compileSprite = async (
   spriteSheet: SpriteSheetData,
+  cgbOnly: boolean,
   projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
+
+  const tileAllocationStrategy = cgbOnly
+    ? spriteTileAllocationColorOnly
+    : spriteTileAllocationDefault;
 
   const metasprites = spriteSheet.states
     .map((state) => state.animations)
@@ -127,9 +156,14 @@ export const compileSprite = async (
                   if (!optimisedTile) {
                     return null;
                   }
+                  const { tileIndex, inVRAM2 } = tileAllocationStrategy(
+                    optimisedTile.tile,
+                    tiles.length,
+                    spriteSheet
+                  );
                   if (flip) {
                     const data: SpriteTileData = {
-                      tile: optimisedTile.tile,
+                      tile: tileIndex,
                       x: 8 - tile.x - currentX,
                       y: -tile.y - currentY,
                       props: makeProps(
@@ -137,7 +171,8 @@ export const compileSprite = async (
                         tile.paletteIndex,
                         !optimisedTile.flipX,
                         optimisedTile.flipY,
-                        tile.priority
+                        tile.priority,
+                        inVRAM2
                       ),
                     };
                     currentX = 8 - tile.x;
@@ -145,7 +180,7 @@ export const compileSprite = async (
                     return data;
                   }
                   const data: SpriteTileData = {
-                    tile: optimisedTile.tile,
+                    tile: tileIndex,
                     x: tile.x - currentX,
                     y: -tile.y - currentY,
                     props: makeProps(
@@ -153,7 +188,8 @@ export const compileSprite = async (
                       tile.paletteIndex,
                       optimisedTile.flipX,
                       optimisedTile.flipY,
-                      tile.priority
+                      tile.priority,
+                      inVRAM2
                     ),
                   };
                   currentX = tile.x;
@@ -198,15 +234,17 @@ export const compileSprite = async (
     };
   });
 
-  const data = Array.from(
-    tiles
-      .map(indexedImageTo2bppSpriteData)
-      .reduce((a, b) => [...a, ...Array.from(b)], [] as number[])
-  );
+  const vramData: [number[], number[]] = [[], []];
+
+  // Split tiles into VRAM banks based on allocation strategy
+  tiles.map(indexedImageTo2bppSpriteData).forEach((tile, i) => {
+    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length, spriteSheet);
+    vramData[inVRAM2 ? 1 : 0].push(...tile);
+  });
 
   const precompiled: PrecompiledSpriteSheetData = {
     ...spriteSheet,
-    data,
+    vramData,
     tiles,
     metasprites: uniqFrames,
     animationOffsets,
@@ -218,6 +256,7 @@ export const compileSprite = async (
 
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
+  cgbOnly: boolean,
   projectRoot: string
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
@@ -227,7 +266,7 @@ const compileSprites = async (
   const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
-      (spriteSheet) => () => compileSprite(spriteSheet, projectRoot)
+      (spriteSheet) => () => compileSprite(spriteSheet, cgbOnly, projectRoot)
     )
   );
   const stateNames = spritesData

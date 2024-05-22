@@ -1,10 +1,9 @@
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface RollChannelProps {
   patternId: number;
@@ -78,16 +77,16 @@ export const RollChannelEffectRowFwd = ({
   renderPattern,
   cellSize,
 }: RollChannelProps) => {
-  const dispatch = useDispatch();
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const dispatch = useAppDispatch();
+  const tool = useAppSelector((state) => state.tracker.tool);
 
-  const selectedEffectCell = useSelector(
-    (state: RootState) => state.tracker.selectedEffectCell
+  const selectedEffectCell = useAppSelector(
+    (state) => state.tracker.selectedEffectCell
   );
 
   // Mouse
   const handleMouseDown = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!renderPattern) return;
       const col = Math.floor(e.offsetX / cellSize);
       const cell = renderPattern[col][channelId];

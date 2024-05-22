@@ -30,7 +30,7 @@
 
     @see set_bkg_palette(), set_sprite_palette(), RGB8(), RGBHTML()
  */
-#define RGB(r, g, b) ((((uint16_t)(b) & 0x1f) << 10) | (((uint16_t)(g) & 0x1f) << 5) | (((uint16_t)(r) & 0x1f) << 0))
+#define RGB(r, g, b) ((uint16_t)((((b) & 0x1f) << 10) | ((uint16_t)(((g) & 0x1f) << 5)) | ((r) & 0x1f)))
 
 /** Macro to create a CGB palette color entry out of 8-bit color components.
 
@@ -44,7 +44,7 @@
 
     @see set_bkg_palette(), set_sprite_palette(), RGB(), RGBHTML()
  */
-#define RGB8(r, g, b) ((uint16_t)((r) >> 3) | ((uint16_t)((g) >> 3) << 5) | ((uint16_t)((b) >> 3) << 10))
+#define RGB8(r, g, b) (((uint16_t)((((b) >> 3) & 0x1f) << 10)) | ((uint16_t)((((g) >> 3) & 0x1f) << 5)) | (((r) >> 3) & 0x1f))
 
 /** Macro to convert a 24 Bit RGB color to a CGB palette color entry.
 
@@ -56,7 +56,7 @@
 
     @see set_bkg_palette(), set_sprite_palette(), RGB(), RGB8()
  */
-#define RGBHTML(RGB24bit) (RGB8((((RGB24bit) >> 16) & 0xFF), (((RGB24bit) >> 8) & 0xFF), ((RGB24bit) & 0xFF)))
+#define RGBHTML(RGB24bit) (RGB8((((RGB24bit) >> 16) & 0xff), (((RGB24bit) >> 8) & 0xff), ((RGB24bit) & 0xff)))
 
 /** Common colors based on the EGA default palette.
  */
@@ -98,8 +98,10 @@ typedef uint16_t palette_color_t;   /**< 16 bit color entry */
     \li Each component (R, G, B) may have values from 0 - 31 (5 bits), 31 is brightest.
 
     @see RGB(), set_bkg_palette_entry()
+    @see BKGF_CGB_PAL0, BKGF_CGB_PAL1, BKGF_CGB_PAL2, BKGF_CGB_PAL3
+    @see BKGF_CGB_PAL4, BKGF_CGB_PAL5, BKGF_CGB_PAL6, BKGF_CGB_PAL7
  */
-void set_bkg_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t *rgb_data) OLDCALL;
+void set_bkg_palette(uint8_t first_palette, uint8_t nb_palettes, const palette_color_t *rgb_data) OLDCALL;
 
 /** Set CGB sprite palette(s).
 
@@ -115,8 +117,10 @@ void set_bkg_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t
     \li Each component (R, G, B) may have values from 0 - 31 (5 bits), 31 is brightest.
 
     @see RGB(), set_sprite_palette_entry()
+    @see OAMF_CGB_PAL0, OAMF_CGB_PAL1, OAMF_CGB_PAL2, OAMF_CGB_PAL3
+    @see OAMF_CGB_PAL4, OAMF_CGB_PAL5, OAMF_CGB_PAL6, OAMF_CGB_PAL7
  */
-void set_sprite_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t *rgb_data) OLDCALL;
+void set_sprite_palette(uint8_t first_palette, uint8_t nb_palettes, const palette_color_t *rgb_data) OLDCALL;
 
 /** Sets a single color in the specified CGB background palette.
 
@@ -125,6 +129,8 @@ void set_sprite_palette(uint8_t first_palette, uint8_t nb_palettes, palette_colo
     @param rgb_data New color data in BGR 15bpp format.
 
     @see set_bkg_palette(), RGB()
+    @see BKGF_CGB_PAL0, BKGF_CGB_PAL1, BKGF_CGB_PAL2, BKGF_CGB_PAL3
+    @see BKGF_CGB_PAL4, BKGF_CGB_PAL5, BKGF_CGB_PAL6, BKGF_CGB_PAL7
  */
 
 void set_bkg_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) OLDCALL;
@@ -136,6 +142,8 @@ void set_bkg_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) OL
     @param rgb_data New color data in BGR 15bpp format.
 
     @see set_sprite_palette(), RGB()
+    @see OAMF_CGB_PAL0, OAMF_CGB_PAL1, OAMF_CGB_PAL2, OAMF_CGB_PAL3
+    @see OAMF_CGB_PAL4, OAMF_CGB_PAL5, OAMF_CGB_PAL6, OAMF_CGB_PAL7
  */
 void set_sprite_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) OLDCALL;
 
@@ -149,7 +157,7 @@ void set_sprite_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data)
 
     @see cpu_fast()
  */
-void cpu_slow();
+void cpu_slow(void);
 
 /** Set CPU speed to fast (CGB Double Speed) operation.
 
@@ -163,9 +171,9 @@ void cpu_slow();
 
     @see cpu_slow(), _cpu
 */
-void cpu_fast();
+void cpu_fast(void);
 
-/** Set palette, compatible with the DMG/GBP.
+/** Sets CGB palette 0 to be compatible with the DMG/GBP.
 
     The default/first CGB palettes for sprites and backgrounds are
     set to a similar default appearance as on the DMG/Pocket/SGB models.
@@ -173,10 +181,10 @@ void cpu_fast();
 
     \li You can check to see if @ref _cpu == @ref CGB_TYPE before using this function.
  */
-void set_default_palette();
+void set_default_palette(void);
 
-/** This function is obsolete
+/** Obsolete. This function has been replaced by set_default_palette(), which has identical behavior.
  */
-void cgb_compatibility();
+void cgb_compatibility(void);
 
 #endif /* _CGB_H */

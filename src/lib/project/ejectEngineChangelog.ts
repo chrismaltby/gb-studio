@@ -1,12 +1,15 @@
 import flatten from "lodash/flatten";
 import uniq from "lodash/uniq";
-import l10n from "../helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 type EngineChange = {
   version: string;
   description: string;
   modifiedFiles: string[];
 };
+
+const createDescription = (shortDesc: string, features: string[]): string =>
+  `${shortDesc}:\n` + features.map((feature) => `   * ${feature}`).join("\n");
 
 const changes: EngineChange[] = [
   {
@@ -573,6 +576,109 @@ const changes: EngineChange[] = [
         "   * Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption",
       ].join("\n"),
     modifiedFiles: ["include/projectiles.h", "src/core/data_manager.c"],
+  },
+  {
+    version: "3.2.0-e1",
+    description:
+      "Updates\n" +
+      [
+        "   * Update to use latest GBDK-2020",
+        "   * Update to latest hUGEDriver",
+      ].join("\n"),
+    modifiedFiles: ["All of them (sorry)"],
+  },
+  {
+    version: "3.2.0-e2",
+    description:
+      "Updates\n" +
+      [
+        "   * Dyanamically allocate emote tiles",
+        "   * Fix GBT_player crash with new GBDK-2020",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/gbt_player.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm.c",
+    ],
+  },
+  {
+    version: "3.2.0-e3",
+    description:
+      "Updates\n" +
+      [
+        "   * Add support for slopes to platform scenes",
+        "   * Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck",
+        "   * Fix bounds check for right screen edge when player isn't 16px wide",
+        "   * Fix VM_REPLACE_TILE_XY to allow tiles larger than 255 for logo scene type",
+      ].join("\n"),
+    modifiedFiles: [
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/shmup.c",
+      "src/core/vm_gameboy.c",
+    ],
+  },
+  {
+    version: "3.2.0-e4",
+    description:
+      "Updates\n" +
+      [
+        "   * Fix issue where transferring data over linkcable would cause game to hang",
+      ].join("\n"),
+    modifiedFiles: ["include/sio.h", "src/core/sio.c"],
+  },
+  {
+    version: "3.3.0-e0",
+    description:
+      "Updates\n" + ["   * Added scene types to engine.json"].join("\n"),
+    modifiedFiles: [
+      "engine.json",
+      "src/gb/include/data/scene_types.h",
+      "src/gb/include/gbs_types.h",
+    ],
+  },
+  {
+    version: "3.3.0-e1",
+    description: createDescription("Updates", [
+      "Add support for random numbers in RPN",
+      "Add macro VM_GLOBAL() to acess globals from GBVM scripts",
+      "Camera lock on scene change updated to be handled by GBVM script",
+    ]),
+    modifiedFiles: [
+      "include/camera.h",
+      "include/vm.h",
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "src/core/camera.c",
+      "src/core/vm.c",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
+  {
+    version: "3.3.0-e2",
+    description: createDescription("Updates", [
+      "Camera updated to use fixed point coordinates",
+    ]),
+    modifiedFiles: [
+      "src/core/camera.c",
+      "src/core/scroll.c",
+      "src/core/vm_camera.c",
+    ],
+  },
+  {
+    version: "3.3.0-e3",
+    description: createDescription("Fixes", [
+      "Fix issue where new scene's palettes wouldn't load when switching between scenes without fade out",
+    ]),
+    modifiedFiles: ["src/core/fade_manager.c"],
+  },
+  {
+    version: "4.0.0-e0",
+    description: createDescription("Updates", ["Optimize atan2()"]),
+    modifiedFiles: ["src/core/math_atan2.c"],
   },
 ];
 

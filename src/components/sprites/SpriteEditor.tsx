@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -12,13 +11,15 @@ import {
   FormSectionTitle,
 } from "ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
+  ObjPalette,
+  SpriteAnimationType,
   SpriteSheet,
   SpriteState,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
 import {
@@ -31,8 +32,10 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import spriteActions from "store/features/sprite/spriteActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { RootState } from "store/configureStore";
-import castEventValue from "lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToInt,
+} from "renderer/lib/helpers/castEventValue";
 import { Button } from "ui/buttons/Button";
 import {
   FlipHorizontalIcon,
@@ -48,12 +51,13 @@ import {
   ClipboardTypeSpriteState,
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
-import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
-import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
-import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
+import { AnimationTypeSelect } from "components/forms/AnimationTypeSelect";
+import { ObjPaletteSelect } from "components/forms/ObjPaletteSelect";
+import { PaletteIndexSelect } from "components/forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SpriteEditorProps {
   id: string;
@@ -68,139 +72,182 @@ export const SpriteEditor = ({
   animationId,
   spriteStateId,
 }: SpriteEditorProps) => {
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
-  const sprite = useSelector((state: RootState) =>
+  const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id)
   );
-  const spriteState = useSelector((state: RootState) =>
+  const spriteState = useAppSelector((state) =>
     spriteStateSelectors.selectById(state, spriteStateId)
   );
-  const animation = useSelector((state: RootState) =>
+  const animation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  const selectedTileIds = useAppSelector(
+    (state) => state.editor.selectedMetaspriteTileIds
   );
-  const metaspriteTile = useSelector((state: RootState) =>
+  const metaspriteTile = useAppSelector((state) =>
     metaspriteTileSelectors.selectById(state, selectedTileIds[0])
   );
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
-  const replaceSpriteTileMode = useSelector(
-    (state: RootState) => state.editor.replaceSpriteTileMode
+  const replaceSpriteTileMode = useAppSelector(
+    (state) => state.editor.replaceSpriteTileMode
   );
 
   const selectedTileId = selectedTileIds[0];
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const selectSidebar = () => {};
 
-  const onChangeFieldInput =
-    <T extends keyof SpriteSheet>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeSpriteSheetProp = useCallback(
+    <K extends keyof SpriteSheet>(key: K, value: SpriteSheet[K]) => {
       dispatch(
         entitiesActions.editSpriteSheet({
           spriteSheetId: id,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id]
+  );
 
-  const onChangeStateField =
-    <T extends keyof SpriteState>(key: T) =>
-    (editValue: SpriteState[T]) => {
+  const onChangeSpriteStateProp = useCallback(
+    <T extends keyof SpriteState>(key: T, value: SpriteState[T]) => {
       dispatch(
         entitiesActions.editSpriteState({
           spriteStateId,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, spriteStateId]
+  );
 
-  const onChangeStateFieldInput =
-    <T extends keyof SpriteState>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        entitiesActions.editSpriteState({
-          spriteStateId,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
-  const onChangeTilesFields =
-    <T extends keyof MetaspriteTile>(key: T) =>
-    (editValue: MetaspriteTile[T]) => {
+  const onChangeMultipleTilesProp = useCallback(
+    <T extends keyof MetaspriteTile>(key: T, value: MetaspriteTile[T]) => {
       dispatch(
         entitiesActions.editMetaspriteTiles({
           spriteSheetId: id,
           metaspriteTileIds: selectedTileIds,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id, selectedTileIds]
+  );
 
-  const onChangeTilesFieldInput =
-    <T extends keyof MetaspriteTile>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        entitiesActions.editMetaspriteTiles({
-          spriteSheetId: id,
-          metaspriteTileIds: selectedTileIds,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
-  const onChangeTileFieldInput =
-    <T extends keyof MetaspriteTile>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeTileProp = useCallback(
+    <T extends keyof MetaspriteTile>(key: T, value: MetaspriteTile[T]) => {
       dispatch(
         entitiesActions.editMetaspriteTile({
           spriteSheetId: id,
           metaspriteTileId: selectedTileId,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id, selectedTileId]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("name", e.currentTarget.value),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeCanvasWidth = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("canvasWidth", castEventToInt(e, 16)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeCanvasHeight = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("canvasHeight", castEventToInt(e, 16)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeBoundsX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("boundsX", castEventToInt(e, 0)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeBoundsY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("boundsY", castEventToInt(e, 0)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeBoundsWidth = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("boundsWidth", castEventToInt(e, 16)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeBoundsHeight = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("boundsHeight", castEventToInt(e, 16)),
+    [onChangeSpriteSheetProp]
+  );
+
+  const onChangeStateName = useCallback(
+    (e: string) => onChangeSpriteStateProp("name", e),
+    [onChangeSpriteStateProp]
+  );
+
+  const onChangeStateAnimationType = useCallback(
+    (e: SpriteAnimationType) => onChangeSpriteStateProp("animationType", e),
+    [onChangeSpriteStateProp]
+  );
+
+  const onChangeStateFlipLeft = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteStateProp("flipLeft", castEventToBool(e)),
+    [onChangeSpriteStateProp]
+  );
+
+  const onChangeTileX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTileProp("x", castEventToInt(e, 0)),
+    [onChangeTileProp]
+  );
+
+  const onChangeTileY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTileProp("y", castEventToInt(e, 0)),
+    [onChangeTileProp]
+  );
+
+  const onChangeTilesObjPalette = useCallback(
+    (e: ObjPalette) => onChangeMultipleTilesProp("objPalette", e),
+    [onChangeMultipleTilesProp]
+  );
+
+  const onChangeTilesPaletteIndex = useCallback(
+    (e: number) => onChangeMultipleTilesProp("paletteIndex", e),
+    [onChangeMultipleTilesProp]
+  );
+
+  const onChangeTilesPriority = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeMultipleTilesProp("priority", castEventToBool(e)),
+    [onChangeMultipleTilesProp]
+  );
 
   const onToggleFlipX = useCallback(() => {
     dispatch(
@@ -337,83 +384,81 @@ export const SpriteEditor = ({
 
   return (
     <Sidebar onClick={selectSidebar}>
+      <FormHeader>
+        {metaspriteTile && selectedTileIds.length === 1 && (
+          <SidebarHeader>{l10n("FIELD_SPRITE_TILE")}</SidebarHeader>
+        )}
+        {metaspriteTile && selectedTileIds.length > 1 && (
+          <SidebarHeader>{l10n("FIELD_SPRITE_TILES")}</SidebarHeader>
+        )}
+        {!metaspriteTile && (
+          <EditableText
+            name="name"
+            placeholder="Sprite"
+            value={sprite?.name || ""}
+            onChange={onChangeName}
+          />
+        )}
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+          onMouseDown={onFetchClipboard}
+        >
+          {!metaspriteTile && !showSymbols && (
+            <MenuItem onClick={() => setShowSymbols(true)}>
+              {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length > 0 && (
+            <MenuItem onClick={onCopyTiles}>
+              {l10n("MENU_SPRITE_TILE_COPY")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onCopyMetasprite}>
+              {l10n("MENU_SPRITE_COPY")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onCopySpriteState}>
+              {l10n("MENU_SPRITE_STATE_COPY")}
+            </MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeMetaspriteTiles && (
+            <MenuItem onClick={onPaste}>
+              {l10n("MENU_SPRITE_TILE_PASTE")}
+            </MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeMetasprites && (
+            <MenuItem onClick={onPaste}>{l10n("MENU_SPRITE_PASTE")}</MenuItem>
+          )}
+          {clipboardFormat === ClipboardTypeSpriteState && (
+            <MenuItem onClick={onPaste}>
+              {l10n("MENU_SPRITE_STATE_PASTE")}
+            </MenuItem>
+          )}
+          <MenuDivider />
+          {selectedTileIds.length > 0 && (
+            <MenuItem onClick={onRemoveSelectedTiles}>
+              {l10n("MENU_SPRITE_TILE_DELETE")}
+            </MenuItem>
+          )}
+          {selectedTileIds.length === 0 && (
+            <MenuItem onClick={onRemoveMetasprite}>
+              {l10n("MENU_SPRITE_DELETE")}
+            </MenuItem>
+          )}
+          {!isDefaultState && selectedTileIds.length === 0 && (
+            <MenuItem onClick={onRemoveSpriteState}>
+              {l10n("MENU_SPRITE_STATE_DELETE")}
+            </MenuItem>
+          )}
+        </DropdownButton>
+      </FormHeader>
+
       <SidebarColumn>
         <FormContainer>
-          <FormHeader>
-            {metaspriteTile && selectedTileIds.length === 1 && (
-              <SidebarHeader>{l10n("FIELD_SPRITE_TILE")}</SidebarHeader>
-            )}
-            {metaspriteTile && selectedTileIds.length > 1 && (
-              <SidebarHeader>{l10n("FIELD_SPRITE_TILES")}</SidebarHeader>
-            )}
-            {!metaspriteTile && (
-              <EditableText
-                name="name"
-                placeholder="Sprite"
-                value={sprite?.name || ""}
-                onChange={onChangeFieldInput("name")}
-              />
-            )}
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={onFetchClipboard}
-            >
-              {!metaspriteTile && !showSymbols && (
-                <MenuItem onClick={() => setShowSymbols(true)}>
-                  {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length > 0 && (
-                <MenuItem onClick={onCopyTiles}>
-                  {l10n("MENU_SPRITE_TILE_COPY")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onCopyMetasprite}>
-                  {l10n("MENU_SPRITE_COPY")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onCopySpriteState}>
-                  {l10n("MENU_SPRITE_STATE_COPY")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeMetaspriteTiles && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_TILE_PASTE")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeMetasprites && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_PASTE")}
-                </MenuItem>
-              )}
-              {clipboardFormat === ClipboardTypeSpriteState && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_SPRITE_STATE_PASTE")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              {selectedTileIds.length > 0 && (
-                <MenuItem onClick={onRemoveSelectedTiles}>
-                  {l10n("MENU_SPRITE_TILE_DELETE")}
-                </MenuItem>
-              )}
-              {selectedTileIds.length === 0 && (
-                <MenuItem onClick={onRemoveMetasprite}>
-                  {l10n("MENU_SPRITE_DELETE")}
-                </MenuItem>
-              )}
-              {!isDefaultState && selectedTileIds.length === 0 && (
-                <MenuItem onClick={onRemoveSpriteState}>
-                  {l10n("MENU_SPRITE_STATE_DELETE")}
-                </MenuItem>
-              )}
-            </DropdownButton>
-          </FormHeader>
-
           {metaspriteTile && (
             <>
               {selectedTileIds.length === 1 && (
@@ -425,7 +470,7 @@ export const SpriteEditor = ({
                     placeholder="0"
                     min={-96}
                     max={96}
-                    onChange={onChangeTileFieldInput("x")}
+                    onChange={onChangeTileX}
                   />
                   <CoordinateInput
                     name="y"
@@ -434,7 +479,7 @@ export const SpriteEditor = ({
                     placeholder="0"
                     min={-96}
                     max={96}
-                    onChange={onChangeTileFieldInput("y")}
+                    onChange={onChangeTileY}
                   />
                 </FormRow>
               )}
@@ -484,11 +529,14 @@ export const SpriteEditor = ({
               <FormDivider />
 
               <FormRow>
-                <FormField name="objPalette" label={l10n("FIELD_OBJ_PALETTE")}>
+                <FormField
+                  name="objPalette"
+                  label={l10n("FIELD_MONOCHROME_PALETTE")}
+                >
                   <ObjPaletteSelect
                     name="objPalette"
                     value={metaspriteTile.objPalette}
-                    onChange={onChangeTilesFields("objPalette")}
+                    onChange={onChangeTilesObjPalette}
                   />
                 </FormField>
               </FormRow>
@@ -502,7 +550,7 @@ export const SpriteEditor = ({
                     <PaletteIndexSelect
                       name="paletteIndex"
                       value={metaspriteTile.paletteIndex}
-                      onChange={onChangeTilesFields("paletteIndex")}
+                      onChange={onChangeTilesPaletteIndex}
                     />
                   </FormField>
                 </FormRow>
@@ -513,7 +561,7 @@ export const SpriteEditor = ({
                   name="priority"
                   label={l10n("FIELD_DISPLAY_BEHIND_BACKGROUND")}
                   checked={metaspriteTile.priority}
-                  onChange={onChangeTilesFieldInput("priority")}
+                  onChange={onChangeTilesPriority}
                 />
               </FormRow>
 
@@ -565,7 +613,7 @@ export const SpriteEditor = ({
                   min={16}
                   max={160}
                   step={16}
-                  onChange={onChangeFieldInput("canvasWidth")}
+                  onChange={onChangeCanvasWidth}
                 />
                 <CoordinateInput
                   name="canvasHeight"
@@ -575,7 +623,7 @@ export const SpriteEditor = ({
                   min={16}
                   max={144}
                   step={8}
-                  onChange={onChangeFieldInput("canvasHeight")}
+                  onChange={onChangeCanvasHeight}
                 />
               </FormRow>
 
@@ -596,7 +644,7 @@ export const SpriteEditor = ({
                     placeholder="0"
                     min={-96}
                     max={96}
-                    onChange={onChangeFieldInput("boundsX")}
+                    onChange={onChangeBoundsX}
                   />
                   <CoordinateInput
                     name="boundsY"
@@ -605,7 +653,7 @@ export const SpriteEditor = ({
                     placeholder="0"
                     min={-96}
                     max={96}
-                    onChange={onChangeFieldInput("boundsY")}
+                    onChange={onChangeBoundsY}
                   />
                 </FormRow>
                 <FormRow>
@@ -616,7 +664,7 @@ export const SpriteEditor = ({
                     placeholder="16"
                     min={0}
                     max={128}
-                    onChange={onChangeFieldInput("boundsWidth")}
+                    onChange={onChangeBoundsWidth}
                   />
                   <CoordinateInput
                     name="boundsHeight"
@@ -625,7 +673,7 @@ export const SpriteEditor = ({
                     placeholder="16"
                     min={0}
                     max={128}
-                    onChange={onChangeFieldInput("boundsHeight")}
+                    onChange={onChangeBoundsHeight}
                   />
                 </FormRow>
               </div>
@@ -638,7 +686,7 @@ export const SpriteEditor = ({
                     <AnimationStateSelect
                       name="stateName"
                       value={spriteState.name}
-                      onChange={onChangeStateField("name")}
+                      onChange={onChangeStateName}
                       canRename
                     />
                   </FormField>
@@ -653,7 +701,7 @@ export const SpriteEditor = ({
                   <AnimationTypeSelect
                     name="animationType"
                     value={spriteState.animationType}
-                    onChange={onChangeStateField("animationType")}
+                    onChange={onChangeStateAnimationType}
                   />
                 </FormField>
               </FormRow>
@@ -663,10 +711,10 @@ export const SpriteEditor = ({
                 spriteState.animationType !== "cursor" && (
                   <FormRow>
                     <CheckboxField
-                      name="customColorsEnabled"
+                      name="flipRightForLeft"
                       label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
                       checked={!!spriteState.flipLeft}
-                      onChange={onChangeStateFieldInput("flipLeft")}
+                      onChange={onChangeStateFlipLeft}
                     />
                   </FormRow>
                 )}

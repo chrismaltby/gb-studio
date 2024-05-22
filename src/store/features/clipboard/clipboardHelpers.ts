@@ -1,4 +1,4 @@
-import { remote } from "electron";
+import API from "renderer/lib/api";
 import {
   ClipboardActors,
   ClipboardFormat,
@@ -7,6 +7,7 @@ import {
   ClipboardPaletteIds,
   ClipboardScenes,
   ClipboardScriptEvents,
+  ClipboardScriptValue,
   ClipboardSpriteState,
   ClipboardTriggers,
   ClipboardType,
@@ -17,12 +18,14 @@ import {
   ClipboardTypes,
   ClipboardTypeScenes,
   ClipboardTypeScriptEvents,
+  ClipboardTypeScriptValue,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
   NarrowClipboardType,
 } from "./clipboardTypes";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
-export const clipboard = remote.clipboard;
+const decoder = new TextDecoder("utf-8");
 
 const isClipboardMetaspriteTiles = (
   input: unknown
@@ -118,19 +121,29 @@ const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
   );
 };
 
-export const copy = (payload: ClipboardType) => {
-  const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
-  clipboard.writeBuffer(payload.format, buffer);
+const isClipboardScriptValue = (
+  input: unknown
+): input is ClipboardScriptValue => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { value?: unknown } = input;
+  return "value" in wide && isScriptValue(wide.value);
 };
 
-export const paste = <T extends ClipboardFormat>(
-  format: T
-): NarrowClipboardType<ClipboardType, T> | undefined => {
-  const buffer = clipboard.readBuffer(format);
+export const copy = (payload: ClipboardType) => {
+  const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
+  API.clipboard.writeBuffer(payload.format, buffer);
+};
 
-  let data;
+export const paste = async <T extends ClipboardFormat>(
+  format: T
+): Promise<NarrowClipboardType<ClipboardType, T> | undefined> => {
+  const buffer = await API.clipboard.readBuffer(format);
+
+  let data: unknown;
   try {
-    data = JSON.parse(buffer?.toString?.());
+    data = JSON.parse(decoder.decode(buffer));
   } catch (e) {
     return undefined;
   }
@@ -194,13 +207,20 @@ export const paste = <T extends ClipboardFormat>(
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }
+  } else if (format === ClipboardTypeScriptValue) {
+    if (isClipboardScriptValue(data)) {
+      return {
+        format: ClipboardTypeScriptValue,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
   }
   return undefined;
 };
 
-export const pasteAny = (): ClipboardType | undefined => {
+export const pasteAny = async (): Promise<ClipboardType | undefined> => {
   for (const type of ClipboardTypes) {
-    const data = paste(type);
+    const data = await paste(type);
     if (data) {
       return data;
     }

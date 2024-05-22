@@ -1,7 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled, { ThemeContext } from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   PlayIcon,
   PauseIcon,
@@ -18,14 +16,15 @@ import {
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
-import { Music } from "store/features/entities/entitiesTypes";
+import { Music } from "shared/lib/entities/entitiesTypes";
 import { saveSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
-import { ipcRenderer } from "electron";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
+import API from "renderer/lib/api";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -68,25 +67,26 @@ const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
 };
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const play = useSelector((state: RootState) => state.tracker.playing);
-  const playerReady = useSelector(
-    (state: RootState) => state.tracker.playerReady
+  const play = useAppSelector((state) => state.tracker.playing);
+  const playerReady = useAppSelector((state) => state.tracker.playerReady);
+  const subpatternEditorFocus = useAppSelector(
+    (state) => state.tracker.subpatternEditorFocus
   );
 
-  const modified = useSelector(
-    (state: RootState) => state.trackerDocument.present.modified
+  const modified = useAppSelector(
+    (state) => state.trackerDocument.present.modified
   );
 
-  const view = useSelector((state: RootState) => state.tracker.view);
+  const view = useAppSelector((state) => state.tracker.view);
 
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const tool = useAppSelector((state) => state.tracker.tool);
   const [previousTool, setPreviousTool] = useState<PianoRollToolType>();
   const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
-  const defaultStartPlaybackPosition = useSelector(
-    (state: RootState) => state.tracker.defaultStartPlaybackPosition
+  const defaultStartPlaybackPosition = useAppSelector(
+    (state) => state.tracker.defaultStartPlaybackPosition
   );
 
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
@@ -95,7 +95,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
-        ipcRenderer.send("music-data-send", {
+        API.music.sendToMusicWindow({
           action: "position",
           position: defaultStartPlaybackPosition,
         });
@@ -114,7 +114,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
-    ipcRenderer.send("music-data-send", {
+    API.music.sendToMusicWindow({
       action: "stop",
       position: defaultStartPlaybackPosition,
     });
@@ -142,8 +142,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     }
   }, [dispatch, modified, selectedSong]);
 
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+  const defaultInstruments = useAppSelector(
+    (state) => state.tracker.defaultInstruments
   );
 
   const setDefaultInstruments = useCallback(
@@ -160,9 +160,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     [dispatch]
   );
 
-  const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
-  );
+  const octaveOffset = useAppSelector((state) => state.tracker.octaveOffset);
 
   const setOctaveOffset = useCallback(
     (offset: number) => {
@@ -196,29 +194,32 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (view !== "roll") {
         return;
       }
-      if (e.code === "Digit1") {
-        setDefaultInstruments(0);
-      } else if (e.code === "Digit2") {
-        setDefaultInstruments(1);
-      } else if (e.code === "Digit3") {
-        setDefaultInstruments(2);
-      } else if (e.code === "Digit4") {
-        setDefaultInstruments(3);
-      } else if (e.code === "Digit5") {
-        setDefaultInstruments(4);
-      } else if (e.code === "Digit6") {
-        setDefaultInstruments(5);
-      } else if (e.code === "Digit7") {
-        setDefaultInstruments(6);
-      } else if (e.code === "Digit8") {
-        setDefaultInstruments(7);
-      } else if (e.code === "Digit9") {
-        setDefaultInstruments(8);
+      if (!subpatternEditorFocus) {
+        if (e.code === "Digit1") {
+          setDefaultInstruments(0);
+        } else if (e.code === "Digit2") {
+          setDefaultInstruments(1);
+        } else if (e.code === "Digit3") {
+          setDefaultInstruments(2);
+        } else if (e.code === "Digit4") {
+          setDefaultInstruments(3);
+        } else if (e.code === "Digit5") {
+          setDefaultInstruments(4);
+        } else if (e.code === "Digit6") {
+          setDefaultInstruments(5);
+        } else if (e.code === "Digit7") {
+          setDefaultInstruments(6);
+        } else if (e.code === "Digit8") {
+          setDefaultInstruments(7);
+        } else if (e.code === "Digit9") {
+          setDefaultInstruments(8);
+        }
       }
     },
     [
       tmpSelectionMode,
       view,
+      subpatternEditorFocus,
       setTool,
       toggleView,
       togglePlay,
@@ -248,11 +249,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     };
   });
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
   const [instrumentType, setInstrumentType] =
     useState<InstrumentType | undefined>();

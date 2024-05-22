@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 
 export interface ToolbarProps {
   readonly children?: ReactNode;
@@ -36,6 +36,10 @@ export const Toolbar = styled.div<ToolbarProps>`
 
   & > *:not(:last-child) {
     margin-right: 5px;
+  }
+
+  input {
+    -webkit-app-region: no-drag;
   }
 
   ${Button} {

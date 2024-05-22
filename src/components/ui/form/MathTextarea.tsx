@@ -2,16 +2,17 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import CustomMention from "./CustomMention";
-import { NamedVariable } from "lib/helpers/variables";
+import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
-import tokenize from "lib/rpn/tokenizer";
-import shuntingYard from "lib/rpn/shuntingYard";
-import { RelativePortal } from "../layout/RelativePortal";
+import tokenize from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import { VariableSelect } from "../../forms/VariableSelect";
-import l10n from "lib/helpers/l10n";
+import { VariableSelect } from "components/forms/VariableSelect";
+import l10n from "shared/lib/lang/l10n";
+import { portalRoot } from "ui/layout/Portal";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 
@@ -28,6 +29,10 @@ const functionSymbols = [
     id: "max(",
     display: "max(",
   },
+  {
+    id: "atan2(",
+    display: "atan2(",
+  },
 ];
 
 const functionSearch = (search: string) => {
@@ -35,6 +40,14 @@ const functionSearch = (search: string) => {
 };
 
 const operatorSymbols = [
+  {
+    id: "<<",
+    display: "<<",
+  },
+  {
+    id: ">>",
+    display: ">>",
+  },
   {
     id: "==",
     display: "==",
@@ -123,10 +136,12 @@ const operatorRegex = new RegExp(
     ")"
 );
 
-const MathTextareaWrapper = styled.div`
+export const MathTextareaWrapper = styled.div`
   position: relative;
+  z-index: 0;
   display: inline-block;
   width: 100%;
+  min-width: 91px;
   font-size: ${(props) => props.theme.typography.fontSize};
   font-family: monospace;
 
@@ -180,49 +195,6 @@ const MathTextareaWrapper = styled.div`
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
     }
-  }
-
-  .MentionsInput__suggestions {
-    background-color: transparent !important;
-    z-index: 10000 !important;
-  }
-
-  .MentionsInput__suggestions__list {
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    width: max-content;
-    min-width: 100px;
-    user-select: none;
-    box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
-      0 4px 11px hsla(0, 0%, 0%, 0.1);
-    background: ${(props) => props.theme.colors.menu.background};
-    color: ${(props) => props.theme.colors.text};
-    font-size: ${(props) => props.theme.typography.fontSize};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    padding: 4px 0;
-  }
-
-  .MentionsInput__suggestions__item {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    font-size: ${(props) => props.theme.typography.menuFontSize};
-    &:focus {
-      background: ${(props) => props.theme.colors.menu.hoverBackground};
-      outline: none;
-      box-shadow: none;
-    }
-  }
-
-  .MentionsInput__suggestions__item:hover {
-    background-color: ${(props) => props.theme.colors.menu.hoverBackground};
-  }
-
-  .MentionsInput__suggestions__item--focused {
-    background-color: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
   .Mentions__TokenVar {
@@ -372,6 +344,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         placeholder={placeholder}
         allowSuggestionsAboveCursor={true}
         onChange={(e) => onChange(e.target.value)}
+        suggestionsPortalHost={portalRoot}
       >
         <CustomMention
           className="Mentions__TokenVar"
@@ -404,7 +377,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         />
         <Mention
           className="Mentions__TokenFun"
-          trigger={/((m|mi|ma|ab)*)$/}
+          trigger={/((m|mi|ma|ab|at)*)$/}
           data={functionSearch}
           markup="__id__)"
           regex={/(min|max|abs)/}

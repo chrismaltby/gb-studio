@@ -5,8 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
 import {
   backgroundSelectors,
   customEventSelectors,
@@ -16,11 +14,12 @@ import {
   sceneSelectors,
   soundSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import { Button } from "ui/buttons/Button";
 import { CheckIcon, MinusIcon, PencilIcon } from "ui/icons/Icons";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
@@ -28,7 +27,7 @@ import {
   tilemapAttrSymbol,
   tilemapSymbol,
   tilesetSymbol,
-} from "lib/helpers/symbols";
+} from "shared/lib/helpers/symbols";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { MenuOverlay } from "ui/menu/Menu";
@@ -36,6 +35,8 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import AddReferenceMenu from "./AddReferenceMenu";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { RootState } from "store/configureStore";
 
 export type ReferenceType =
   | "background"
@@ -44,6 +45,7 @@ export type ReferenceType =
   | "music"
   | "sound"
   | "emote"
+  | "tileset"
   | "script"
   | "scene"
   | "variable";
@@ -124,7 +126,7 @@ export const ReferencesSelect = ({
   value,
   onChange,
 }: ReferencesSelectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
@@ -167,6 +169,7 @@ export const ReferencesSelect = ({
   const fontRefs = value.filter((ref) => ref.type === "font");
   const sceneRefs = value.filter((ref) => ref.type === "scene");
   const emoteRefs = value.filter((ref) => ref.type === "emote");
+  const tilesetRefs = value.filter((ref) => ref.type === "tileset");
 
   return (
     <div>
@@ -261,7 +264,7 @@ export const ReferencesSelect = ({
             />
           ))}
           {soundRefs.length > 0 && (
-            <ReferenceSection>{l10n("FIELD_SOUNDS")}</ReferenceSection>
+            <ReferenceSection>{l10n("MENU_SFX")}</ReferenceSection>
           )}
           {soundRefs.map((ref) => (
             <AssetReference
@@ -344,6 +347,26 @@ export const ReferencesSelect = ({
               copyTransform={addBankRef}
               onRemove={onRemove}
               extraSymbols={(symbol) => [tilesetSymbol(symbol)]}
+            />
+          ))}
+          {tilesetRefs.length > 0 && (
+            <ReferenceSection>{l10n("FIELD_TILESETS")}</ReferenceSection>
+          )}
+          {tilesetRefs.map((ref) => (
+            <AssetReference
+              key={ref.id}
+              id={ref.id}
+              selector={(state) => tilesetSelectors.selectById(state, ref.id)}
+              onRename={(symbol) => {
+                dispatch(
+                  entitiesActions.setTilesetSymbol({
+                    tilesetId: ref.id,
+                    symbol,
+                  })
+                );
+              }}
+              copyTransform={addBankRef}
+              onRemove={onRemove}
             />
           ))}
           {variableRefs.length > 0 && (
@@ -509,9 +532,9 @@ export const AssetReference = <
   transform?: (symbol: string) => string;
   copyTransform?: (symbol: string) => string;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const asset = useSelector(selector);
+  const asset = useAppSelector(selector);
 
   const [renameVisible, setRenameVisible] = useState(false);
   const [customSymbol, setCustomSymbol] = useState("");
@@ -627,9 +650,9 @@ export const AssetReference = <
 };
 
 export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const variable = useSelector((state: RootState) =>
+  const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)
   );
   const symbol = variable?.symbol?.toUpperCase() ?? `VAR_${id}`;

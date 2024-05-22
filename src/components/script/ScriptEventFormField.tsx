@@ -1,8 +1,9 @@
 import React, { memo, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import {
+  ScriptEventFieldSchema,
+  UnitType,
+} from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
@@ -14,6 +15,10 @@ import {
 } from "ui/scripting/ScriptEvents";
 import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
+import styled from "styled-components";
+import API from "renderer/lib/api";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -26,6 +31,55 @@ interface ScriptEventFormFieldProps {
 const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
 
+// @TODO This MultiInputButton functionality only seems to be used by eventTextDialogue
+// and likely should become part of DialogueTextarea
+const MultiInputButton = styled.button`
+  background: ${(props) => props.theme.colors.button.background};
+  color: ${(props) => props.theme.colors.button.text};
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin-left: 4px;
+  opacity: 0.4;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+
+  svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  :hover {
+    opacity: 1;
+  }
+
+  &&&:active {
+    opacity: 0.8;
+  }
+`;
+
+const ButtonRow = styled.div`
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: flex;
+`;
+
+const InputRow = styled.div`
+  display: block;
+  position: relative;
+  margin-bottom: 3px;
+
+  :last-child {
+    margin-bottom: 0;
+  }
+
+  :hover ${MultiInputButton} {
+    opacity: 1;
+  }
+`;
+
 const ScriptEventFormField = memo(
   ({
     scriptEventId,
@@ -34,8 +88,8 @@ const ScriptEventFormField = memo(
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
-    const dispatch = useDispatch();
-    const scriptEvent = useSelector((state: RootState) =>
+    const dispatch = useAppDispatch();
+    const scriptEvent = useAppSelector((state) =>
       scriptEventSelectors.selectById(state, scriptEventId)
     );
 
@@ -53,11 +107,26 @@ const ScriptEventFormField = memo(
             value,
           })
         );
-        if (scriptEvent && field.postUpdate) {
-          field.postUpdate(
-            { ...scriptEvent.args, [key]: value },
-            scriptEvent.args || {}
-          );
+        if (scriptEvent && field.key && field.hasPostUpdateFn) {
+          API.script
+            .scriptEventPostUpdateFn(
+              scriptEvent.command,
+              field.key,
+              { ...scriptEvent.args, [key]: value },
+              scriptEvent.args || {}
+            )
+            .then((updatedArgs) => {
+              if (updatedArgs) {
+                dispatch(
+                  entitiesActions.editScriptEvent({
+                    scriptEventId,
+                    changes: {
+                      args: updatedArgs,
+                    },
+                  })
+                );
+              }
+            });
         }
       },
       [dispatch, field, scriptEvent, scriptEventId]
@@ -122,6 +191,24 @@ const ScriptEventFormField = memo(
       );
     }
 
+    const { unitsField, unitsAllowed } = field;
+    const labelWithUnits = unitsField ? (
+      <>
+        {label}
+        <UnitSelectLabelButton
+          value={
+            (args?.[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          allowedValues={unitsAllowed}
+          onChange={(value) => {
+            setArgValue(unitsField, value);
+          }}
+        />
+      </>
+    ) : (
+      label
+    );
+
     if (field.type === "break") {
       return <FlexBreak />;
     }
@@ -160,7 +247,7 @@ const ScriptEventFormField = memo(
         value.map((_, valueIndex) => {
           const fieldId = genKey(scriptEventId, field.key || "", valueIndex);
           return (
-            <span key={fieldId} className="ScriptEventForm__InputRow">
+            <InputRow key={fieldId}>
               <ScriptEventFormInput
                 id={fieldId}
                 entityId={entityId}
@@ -173,23 +260,17 @@ const ScriptEventFormField = memo(
                 onChange={onChange}
                 onChangeArg={setArgValue}
               />
-              <div className="ScriptEventForm__BtnRow">
+              <ButtonRow>
                 {valueIndex !== 0 && (
-                  <button
-                    className="ScriptEventForm__Btn"
-                    onClick={() => onRemoveValue(valueIndex)}
-                  >
+                  <MultiInputButton onClick={() => onRemoveValue(valueIndex)}>
                     <MinusIcon title="-" />
-                  </button>
+                  </MultiInputButton>
                 )}
-                <button
-                  className="ScriptEventForm__Btn"
-                  onClick={() => onAddValue(valueIndex)}
-                >
+                <MultiInputButton onClick={() => onAddValue(valueIndex)}>
                   <PlusIcon title="+" />
-                </button>
-              </div>
-            </span>
+                </MultiInputButton>
+              </ButtonRow>
+            </InputRow>
           );
         })
       ) : (
@@ -210,7 +291,11 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+          style={{
+            flexBasis: field.flexBasis,
+            flexGrow: field.flexGrow,
+            minWidth: field.minWidth,
+          }}
         >
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
@@ -228,7 +313,12 @@ const ScriptEventFormField = memo(
       <ScriptEventField
         halfWidth={field.width === "50%"}
         inline={field.inline}
-        style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+        alignBottom={field.alignBottom || field.type === "checkbox"}
+        style={{
+          flexBasis: field.flexBasis,
+          flexGrow: field.flexGrow,
+          minWidth: field.minWidth,
+        }}
       >
         <FormField
           name={genKey(scriptEventId, field.key || "")}
@@ -236,12 +326,12 @@ const ScriptEventFormField = memo(
             label &&
             field.type !== "checkbox" &&
             field.type !== "group" &&
+            field.type !== "flag" &&
             !field.hideLabel
-              ? label
+              ? labelWithUnits
               : ""
           }
           title={field.description}
-          alignCheckbox={field.alignCheckbox}
         >
           {inputField}
         </FormField>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { Select, Option, OptGroup } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
-import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 
 interface EngineFieldSelectProps {
@@ -22,16 +21,16 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   onChange,
 }) => {
   const groupedFields = useGroupedEngineFields();
-  const engineFields = useSelector((state: RootState) => state.engine.fields);
+  const engineFields = useAppSelector((state) => state.engine.fields);
   const [options, setOptions] = useState<OptGroup[]>([]);
 
   useEffect(() => {
     setOptions(
       groupedFields.map((g) => ({
-        label: l10n(g.name),
+        label: l10n(g.name as L10NKey),
         options: g.fields.filter(notDefine).map((f) => ({
           value: f.key,
-          label: l10n(f.label),
+          label: l10n(f.label as L10NKey),
         })),
       }))
     );
@@ -41,7 +40,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
 
   const currentValue = currentField && {
     value: currentField.key,
-    label: l10n(currentField.label),
+    label: l10n(currentField.label as L10NKey),
   };
 
   return (

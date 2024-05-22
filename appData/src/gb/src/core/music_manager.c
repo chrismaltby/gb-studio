@@ -8,16 +8,17 @@
 #include "music_manager.h"
 #include "sfx_player.h"
 
-// queue length must be power of 2 
-#define MAX_ROUTINE_QUEUE_LEN 4 
-// music events queue 
+// queue length must be power of 2
+#define MAX_ROUTINE_QUEUE_LEN 4
+// music events queue
 uint8_t routine_queue[MAX_ROUTINE_QUEUE_LEN];
 uint8_t routine_queue_head, routine_queue_tail;
 // music events struct
 script_event_t music_events[4];
 
 volatile uint8_t music_current_track_bank;
-uint8_t music_mute_flag, music_mute_mask;
+uint8_t music_mute_mask;
+uint8_t music_effective_mute;
 const TRACK_T * music_next_track;
 const TRACK_T * music_current_track;
 uint8_t music_play_isr_counter;
@@ -26,27 +27,25 @@ uint8_t music_global_mute_mask;
 uint8_t music_sfx_priority;
 
 #ifdef HUGE_TRACKER
-void hUGETrackerRoutine(unsigned char param, unsigned char ch, unsigned char tick) NONBANKED OLDCALL {
-    ch;
+void hUGETrackerRoutine(unsigned char tick, unsigned int param) NONBANKED {
     if (tick) return; // return if not zero tick
     routine_queue_head++, routine_queue_head &= (MAX_ROUTINE_QUEUE_LEN - 1);
-    if (routine_queue_head == routine_queue_tail) routine_queue_tail++, routine_queue_tail &= (MAX_ROUTINE_QUEUE_LEN - 1);  
-    routine_queue[routine_queue_head] = param;    
+    if (routine_queue_head == routine_queue_tail) routine_queue_tail++, routine_queue_tail &= (MAX_ROUTINE_QUEUE_LEN - 1);
+    routine_queue[routine_queue_head] = (uint8_t)param;
 }
 #endif
 
-void music_init_driver() BANKED {
+void music_init_driver(void) BANKED {
     music_init();
-    music_mute_flag = FALSE, music_mute_mask = MUTE_MASK_NONE;
     music_play_isr_counter = 0;
     music_play_isr_pause = FALSE;
-    music_global_mute_mask = MUTE_MASK_NONE;
+    driver_set_mute_mask(music_effective_mute = music_global_mute_mask = music_mute_mask = MUTE_MASK_NONE);
     music_sfx_priority = MUSIC_SFX_PRIORITY_MINIMAL;
 }
 
 void music_init_events(uint8_t preserve) BANKED {
     if (preserve) {
-        for (uint8_t i = 0; i < 4; i++) 
+        for (uint8_t i = 0; i < 4; i++)
             music_events[i].handle = 0;
     } else {
         memset(music_events, 0, sizeof(music_events));
@@ -56,7 +55,7 @@ void music_init_events(uint8_t preserve) BANKED {
     }
 }
 
-void music_events_update() NONBANKED {
+void music_events_update(void) NONBANKED {
     while (routine_queue_head != routine_queue_tail) {
         uint8_t data;
         CRITICAL {
@@ -70,7 +69,7 @@ void music_events_update() NONBANKED {
     }
 }
 
-uint8_t music_events_poll() BANKED {
+uint8_t music_events_poll(void) BANKED {
     if (routine_queue_head != routine_queue_tail) {
         uint8_t data;
         CRITICAL {
@@ -82,23 +81,26 @@ uint8_t music_events_poll() BANKED {
     return 0;
 }
 
-void music_play_isr() NONBANKED {
+void music_play_isr(void) NONBANKED {
     if (sfx_play_bank != SFX_STOP_BANK) {
-        if (!music_mute_flag) driver_set_mute_mask(music_global_mute_mask | music_mute_mask), music_mute_flag = TRUE; 
+        if (music_effective_mute != (music_global_mute_mask | music_mute_mask)) {
+            music_effective_mute = driver_set_mute_mask(music_global_mute_mask | music_mute_mask);
+        }
         if (!sfx_play_isr()) {
-            driver_set_mute_mask(music_global_mute_mask), driver_reset_wave(), music_mute_flag = FALSE;
+            music_effective_mute = driver_set_mute_mask(music_global_mute_mask);
+            driver_reset_wave();
             #ifdef FORCE_CUT_SFX
             music_sound_cut_mask(music_mute_mask);
             #endif
-            music_mute_mask = music_global_mute_mask;
-            music_sfx_priority = MUSIC_SFX_PRIORITY_MINIMAL; 
+            music_mute_mask = MUTE_MASK_NONE;
+            music_sfx_priority = MUSIC_SFX_PRIORITY_MINIMAL;
             sfx_play_bank = SFX_STOP_BANK;
         }
     }
     if (music_play_isr_pause) return;
     if (music_current_track_bank == MUSIC_STOP_BANK) return;
     if (++music_play_isr_counter & 3) return;
-    uint8_t save_bank = _current_bank;
+    uint8_t save_bank = CURRENT_BANK;
     SWITCH_ROM(music_current_track_bank);
     if (music_next_track) {
         music_sound_cut();

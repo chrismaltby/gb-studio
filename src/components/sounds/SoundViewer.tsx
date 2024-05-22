@@ -1,7 +1,6 @@
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Sound } from "store/features/entities/entitiesTypes";
+import { Sound } from "shared/lib/entities/entitiesTypes";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -9,6 +8,7 @@ import { FormContainer } from "ui/form/FormLayout";
 import { Input } from "ui/form/Input";
 import { Label } from "ui/form/Label";
 import { PlayIcon } from "ui/icons/Icons";
+import { useAppDispatch } from "store/hooks";
 
 interface SoundViewerProps {
   file: Sound;
@@ -25,13 +25,13 @@ const Wrapper = styled.div`
 
 const SettingsWrapper = styled.div`
   margin-top: 20px;
-  background-color: var(--sidebar-border-color);
+  background-color: ${(props) => props.theme.colors.sidebar.background};
   border-radius: 8px;
   padding: 10px;
 `;
 
 export const SoundViewer = ({ file }: SoundViewerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [effectIndex, setEffectIndex] = useState(0);
 

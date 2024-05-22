@@ -1,14 +1,14 @@
 import React, { useContext } from "react";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroupWrapper,
 } from "ui/scripting/ScriptEvents";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 
 interface ScriptEventFieldsProps {
   id: string;
@@ -34,7 +34,7 @@ const ScriptEventFields = ({
 }: ScriptEventFieldsProps) => {
   const context = useContext(ScriptEditorContext);
 
-  const soundsLookup = useSelector((state: RootState) =>
+  const soundsLookup = useAppSelector((state) =>
     soundSelectors.selectEntities(state)
   );
   return (
@@ -44,6 +44,9 @@ const ScriptEventFields = ({
           return null;
         }
         // Determine if field conditions are met and hide if not
+        if (value && !isFieldVisible(field, value)) {
+          return null;
+        }
         if (field.conditions) {
           const showField = field.conditions.reduce((memo, condition) => {
             const keyValue = value?.[condition.key];
@@ -51,16 +54,7 @@ const ScriptEventFields = ({
               const sound = soundsLookup[keyValue as string];
               return memo && sound?.type === condition.soundType;
             }
-            return (
-              memo &&
-              (!condition.eq || keyValue === condition.eq) &&
-              (!condition.ne || keyValue !== condition.ne) &&
-              (!condition.gt || Number(keyValue) > Number(condition.gt)) &&
-              (!condition.gte || Number(keyValue) >= Number(condition.gte)) &&
-              (!condition.lt || Number(keyValue) > Number(condition.lt)) &&
-              (!condition.lte || Number(keyValue) >= Number(condition.lte)) &&
-              (!condition.in || condition.in.indexOf(keyValue) >= 0)
-            );
+            return memo;
           }, true);
           if (!showField) {
             return null;
@@ -73,10 +67,17 @@ const ScriptEventFields = ({
             typeof field.label === "string" ? field.label : ""
           );
           if (field.allowedContexts) {
-            if (!field.allowedContexts.includes(context)) {
-              const newContext = field.allowedContexts[0];
+            if (!field.allowedContexts.includes(context.type)) {
+              const newContextType = field.allowedContexts[0];
+              const ctx = {
+                ...context,
+                type: newContextType,
+              };
               return (
-                <ScriptEditorContext.Provider value={newContext}>
+                <ScriptEditorContext.Provider
+                  value={ctx}
+                  key={genKey(id, field.key || "", fieldIndex)}
+                >
                   {events}
                 </ScriptEditorContext.Provider>
               );
@@ -88,8 +89,15 @@ const ScriptEventFields = ({
         if (field.type === "group" && field.fields) {
           return (
             <ScriptEventFieldGroupWrapper
+              key={genKey(id, field.key || "", fieldIndex)}
               halfWidth={field.width === "50%"}
-              style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+              wrapItems={field.wrapItems}
+              alignBottom={field.alignBottom}
+              style={{
+                flexBasis: field.flexBasis,
+                flexGrow: field.flexGrow,
+                minWidth: field.minWidth,
+              }}
             >
               <ScriptEventFields
                 id={id}

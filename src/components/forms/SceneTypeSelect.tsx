@@ -1,11 +1,7 @@
 import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
 import { Select } from "ui/form/Select";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 interface SceneTypeSelectProps {
   name: string;
@@ -18,21 +14,22 @@ interface SceneTypeOption {
   label: string;
 }
 
-export const options: SceneTypeOption[] = [
-  { value: "TOPDOWN", label: l10n("GAMETYPE_TOP_DOWN") },
-  { value: "PLATFORM", label: l10n("GAMETYPE_PLATFORMER") },
-  { value: "ADVENTURE", label: l10n("GAMETYPE_ADVENTURE") },
-  { value: "SHMUP", label: l10n("GAMETYPE_SHMUP") },
-  { value: "POINTNCLICK", label: l10n("GAMETYPE_POINT_N_CLICK") },
-  { value: "LOGO", label: l10n("GAMETYPE_LOGO") },
-];
-
 export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
   name,
   value,
   onChange,
 }) => {
+  const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
+
+  const options = sceneTypes.map((t) => {
+    return {
+      value: t.key,
+      label: l10n(t.label as L10NKey),
+    } as SceneTypeOption;
+  });
+
   const currentValue = options.find((o) => o.value === value);
+
   return (
     <Select
       name={name}

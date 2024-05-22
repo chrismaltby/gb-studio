@@ -1,24 +1,24 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   DragSourceMonitor,
   DropTargetMonitor,
   useDrag,
   useDrop,
 } from "react-dnd";
-import { useDispatch, useSelector } from "react-redux";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import {
   ScriptEventParentType,
   ScriptEventsRef,
-} from "store/features/entities/entitiesTypes";
-import {
-  EVENT_CALL_CUSTOM_EVENT,
-  EVENT_COMMENT,
-  EVENT_END,
-} from "lib/compiler/eventTypes";
+} from "shared/lib/entities/entitiesTypes";
 import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,
@@ -32,24 +32,35 @@ import {
   ScriptEventRenameInputCompleteButton,
   ScriptEditorChildrenWrapper,
   ScriptEditorChildrenLabel,
+  ScriptEventHeaderBreakpointIndicator,
 } from "ui/scripting/ScriptEvents";
-import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
+import {
+  ArrowIcon,
+  BreakpointIcon,
+  CheckIcon,
+  CommentIcon,
+} from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm";
-import l10n from "lib/helpers/l10n";
-import events from "lib/events";
+import l10n from "shared/lib/lang/l10n";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
-import ItemTypes from "lib/dnd/itemTypes";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuOverlay } from "ui/menu/Menu";
+import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import AddScriptEventMenu from "./AddScriptEventMenu";
 import ScriptEventTitle from "./ScriptEventTitle";
 import useOnScreen from "ui/hooks/use-on-screen";
 import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { EVENT_COMMENT, EVENT_END } from "consts";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { getSettings } from "store/features/settings/settingsState";
+import renderScriptEventContextMenu from "components/script/renderScriptEventContextMenu";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -71,7 +82,8 @@ const ScriptEditorEvent = React.memo(
     entityId,
     nestLevel = 0,
   }: ScriptEditorEventProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const context = useContext(ScriptEditorContext);
     const dragRef = useRef<HTMLDivElement>(null);
     const dropRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
@@ -82,16 +94,57 @@ const ScriptEditorEvent = React.memo(
     const [insertBefore, setInsertBefore] = useState(false);
     const [showSymbols, setShowSymbols] = useState(false);
 
-    const clipboardFormat = useSelector(
-      (state: RootState) => state.clipboard.data?.format
+    const clipboardFormat = useAppSelector(
+      (state) => state.clipboard.data?.format
     );
-    const scriptEvent = useSelector((state: RootState) =>
+    const scriptEvent = useAppSelector((state) =>
       scriptEventSelectors.selectById(state, id)
     );
+    const scriptEventDefs = useAppSelector((state) =>
+      selectScriptEventDefs(state)
+    );
+    const scriptEventSelectionIds = useAppSelector(
+      (state) => state.editor.scriptEventSelectionIds
+    );
 
-    const onFetchClipboard = useCallback(() => {
-      dispatch(clipboardActions.fetchClipboard());
-    }, [dispatch]);
+    const breakpointEnabled = useAppSelector(
+      (state) =>
+        getSettings(state).debuggerBreakpoints.findIndex(
+          (b) => b.scriptEventId === id
+        ) > -1
+    );
+
+    const onSelect = useCallback(
+      (shiftPressed: boolean) => {
+        if (shiftPressed) {
+          dispatch(
+            editorActions.toggleScriptEventSelectedId({
+              scriptEventId: id,
+              parentId,
+              parentKey,
+              parentType,
+            })
+          );
+          return true;
+        } else if (
+          scriptEventSelectionIds.length > 0 &&
+          !scriptEventSelectionIds.includes(id)
+        ) {
+          dispatch(editorActions.clearScriptEventSelectionIds());
+          return true;
+        }
+        return false;
+      },
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
+    );
+
+    const onFetchClipboard = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        onSelect(e.shiftKey);
+        dispatch(clipboardActions.fetchClipboard());
+      },
+      [dispatch, onSelect]
+    );
 
     const toggleRename = useCallback(() => {
       setRename(!rename);
@@ -134,6 +187,7 @@ const ScriptEditorEvent = React.memo(
               parentId,
             },
             from: item,
+            additionalScriptEventIds: scriptEventSelectionIds,
           })
         );
 
@@ -158,67 +212,14 @@ const ScriptEditorEvent = React.memo(
       }),
     });
 
-    const toggleOpen = useCallback(() => {
-      dispatch(entitiesActions.toggleScriptEventOpen({ scriptEventId: id }));
-    }, [dispatch, id]);
-
-    const toggleComment = useCallback(() => {
-      dispatch(entitiesActions.toggleScriptEventComment({ scriptEventId: id }));
-    }, [dispatch, id]);
-
-    const toggleElse = useCallback(() => {
-      dispatch(
-        entitiesActions.toggleScriptEventDisableElse({ scriptEventId: id })
-      );
-    }, [dispatch, id]);
-
-    const editCustomEvent = useCallback(() => {
-      const customEventId = scriptEvent?.args?.customEventId;
-      if (customEventId && typeof customEventId === "string") {
-        dispatch(editorActions.selectCustomEvent({ customEventId }));
-      }
-    }, [dispatch, scriptEvent?.args?.customEventId]);
-
-    const onRemove = useCallback(() => {
-      dispatch(
-        entitiesActions.removeScriptEvent({
-          scriptEventId: id,
-          entityId: parentId,
-          type: parentType,
-          key: parentKey,
-        })
-      );
-    }, [dispatch, id, parentId, parentKey, parentType]);
-
-    const onPasteValues = useCallback(() => {
-      dispatch(
-        clipboardActions.pasteScriptEventValues({
-          scriptEventId: id,
-        })
-      );
-    }, [dispatch, id]);
-
-    const onCopyScript = useCallback(() => {
-      dispatch(
-        clipboardActions.copyScriptEvents({
-          scriptEventIds: [id],
-        })
-      );
-    }, [dispatch, id]);
-
-    const onPasteScript = useCallback(
-      (before: boolean) => {
-        dispatch(
-          clipboardActions.pasteScriptEvents({
-            entityId: parentId,
-            type: parentType,
-            key: parentKey,
-            insertId: id,
-            before,
-          })
-        );
+    const toggleOpen = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        if (onSelect(e.shiftKey)) {
+          return;
+        }
+        dispatch(entitiesActions.toggleScriptEventOpen({ scriptEventId: id }));
       },
-      [dispatch, id, parentId, parentKey, parentType]
+      [dispatch, id, onSelect]
     );
 
     const onRename = useCallback(
@@ -264,6 +265,82 @@ const ScriptEditorEvent = React.memo(
       (scriptEvent?.args?.__label
         ? scriptEvent.args.__label
         : isComment && scriptEvent?.args?.text) || undefined;
+    const isOpen = scriptEvent?.args && !scriptEvent.args.__collapse;
+    const isConditional = scriptEventDefs[command]?.isConditional ?? false;
+    const editableSymbol = scriptEventDefs[command]?.editableSymbol ?? false;
+
+    const onOpenAddMenu = useCallback((before: boolean) => {
+      setInsertBefore(before);
+      setAddOpen(true);
+    }, []);
+
+    const onCloseAddMenu = useCallback(() => {
+      setAddOpen(false);
+    }, []);
+
+    const contextMenuItems = useMemo(
+      () =>
+        scriptEvent
+          ? renderScriptEventContextMenu({
+              scriptEventId: scriptEvent.id,
+              additionalScriptEventIds: scriptEventSelectionIds,
+              command,
+              args: scriptEvent.args,
+              dispatch,
+              parentId,
+              parentKey,
+              parentType,
+              context,
+              breakpointEnabled,
+              commented: !!commented,
+              hasElse,
+              disabledElse: !!disabledElse,
+              clipboardFormat,
+              onRename: toggleRename,
+              onViewSymbols: editableSymbol
+                ? () => setShowSymbols(true)
+                : undefined,
+              onInsert: onOpenAddMenu,
+            })
+          : [],
+      [
+        breakpointEnabled,
+        clipboardFormat,
+        command,
+        commented,
+        context,
+        disabledElse,
+        dispatch,
+        editableSymbol,
+        hasElse,
+        onOpenAddMenu,
+        parentId,
+        parentKey,
+        parentType,
+        scriptEvent,
+        scriptEventSelectionIds,
+        toggleRename,
+      ]
+    );
+
+    const [contextMenu, setContextMenu] =
+      useState<{
+        x: number;
+        y: number;
+        menu: JSX.Element[];
+      }>();
+
+    const onContextMenu = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+        setContextMenu({ x: e.pageX, y: e.pageY, menu: contextMenuItems });
+      },
+      [contextMenuItems]
+    );
+
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
 
     const renderEvents = useCallback(
       (key: string, label: string) => {
@@ -309,14 +386,42 @@ const ScriptEditorEvent = React.memo(
       dispatch(editorActions.selectScriptEvent({ eventId: "" }));
     }, [dispatch]);
 
-    const onOpenAddMenu = useCallback((before: boolean) => {
-      setInsertBefore(before);
-      setAddOpen(true);
-    }, []);
+    const isExecuting = scriptEvent?.id === context.executingId;
 
-    const onCloseAddMenu = useCallback(() => {
-      setAddOpen(false);
-    }, []);
+    useEffect(() => {
+      if (isExecuting && headerRef.current) {
+        headerRef.current.scrollIntoView();
+      }
+    }, [isExecuting]);
+
+    const onKeyDown = useCallback(
+      (e: KeyboardEvent) => {
+        // Group selection with ctrl/cmd + g
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key === "g" &&
+          scriptEventSelectionIds[0] === id
+        ) {
+          dispatch(
+            entitiesActions.groupScriptEvents({
+              scriptEventIds: scriptEventSelectionIds,
+              parentId,
+              parentKey,
+              parentType,
+            })
+          );
+          return;
+        }
+      },
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
+    );
+
+    useEffect(() => {
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    });
 
     if (!scriptEvent) {
       return null;
@@ -325,10 +430,6 @@ const ScriptEditorEvent = React.memo(
     if (scriptEvent.command === EVENT_END) {
       return null;
     }
-
-    const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
-    const isConditional = events[command]?.isConditional ?? false;
-    const editableSymbol = events[command]?.editableSymbol ?? false;
 
     return (
       <ScriptEventWrapper
@@ -367,11 +468,14 @@ const ScriptEditorEvent = React.memo(
               comment={Boolean(commented || isComment)}
               nestLevel={nestLevel}
               altBg={index % 2 === 0}
+              isSelected={scriptEventSelectionIds.includes(scriptEvent.id)}
+              isExecuting={isExecuting}
             >
               {isVisible && (
                 <>
                   <ScriptEventHeaderTitle
                     onClick={!rename ? toggleOpen : undefined}
+                    onContextMenu={onContextMenu}
                   >
                     {!commented ? (
                       <ScriptEventHeaderCaret open={isOpen && !commented}>
@@ -408,6 +512,13 @@ const ScriptEditorEvent = React.memo(
                       />
                     )}
                   </ScriptEventHeaderTitle>
+                  {breakpointEnabled && (
+                    <ScriptEventHeaderBreakpointIndicator
+                      title={l10n("FIELD_BREAKPOINT")}
+                    >
+                      <BreakpointIcon />
+                    </ScriptEventHeaderBreakpointIndicator>
+                  )}
 
                   <DropdownButton
                     size="small"
@@ -415,65 +526,7 @@ const ScriptEditorEvent = React.memo(
                     menuDirection="right"
                     onMouseDown={onFetchClipboard}
                   >
-                    {command === EVENT_CALL_CUSTOM_EVENT && [
-                      <MenuItem key="0" onClick={editCustomEvent}>
-                        {l10n("MENU_EDIT_CUSTOM_EVENT")}
-                      </MenuItem>,
-                      <MenuDivider key="1" />,
-                    ]}
-                    <MenuItem onClick={toggleRename}>
-                      {l10n("MENU_RENAME_EVENT")}
-                    </MenuItem>
-                    {editableSymbol && (
-                      <MenuItem onClick={() => setShowSymbols(true)}>
-                        {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                      </MenuItem>
-                    )}
-                    <MenuItem onClick={toggleComment}>
-                      {commented
-                        ? l10n("MENU_ENABLE_EVENT")
-                        : l10n("MENU_DISABLE_EVENT")}
-                    </MenuItem>
-                    {hasElse && (
-                      <MenuItem onClick={toggleElse}>
-                        {disabledElse
-                          ? l10n("MENU_ENABLE_ELSE")
-                          : l10n("MENU_DISABLE_ELSE")}
-                      </MenuItem>
-                    )}
-                    <MenuDivider />
-                    <MenuItem onClick={() => onOpenAddMenu(true)}>
-                      {l10n("MENU_INSERT_EVENT_BEFORE")}
-                    </MenuItem>
-                    <MenuItem onClick={() => onOpenAddMenu(false)}>
-                      {l10n("MENU_INSERT_EVENT_AFTER")}
-                    </MenuItem>
-                    <MenuDivider />
-                    <MenuItem onClick={onCopyScript}>
-                      {l10n("MENU_COPY_EVENT")}
-                    </MenuItem>
-                    {clipboardFormat === ClipboardTypeScriptEvents && (
-                      <MenuDivider />
-                    )}
-                    {clipboardFormat === ClipboardTypeScriptEvents && (
-                      <MenuItem onClick={onPasteValues}>
-                        {l10n("MENU_PASTE_VALUES")}
-                      </MenuItem>
-                    )}
-                    {clipboardFormat === ClipboardTypeScriptEvents && (
-                      <MenuItem onClick={() => onPasteScript(true)}>
-                        {l10n("MENU_PASTE_EVENT_BEFORE")}
-                      </MenuItem>
-                    )}
-                    {clipboardFormat === ClipboardTypeScriptEvents && (
-                      <MenuItem onClick={() => onPasteScript(false)}>
-                        {l10n("MENU_PASTE_EVENT_AFTER")}
-                      </MenuItem>
-                    )}
-                    <MenuDivider />
-                    <MenuItem onClick={onRemove}>
-                      {l10n("MENU_DELETE_EVENT")}
-                    </MenuItem>
+                    {contextMenuItems}
                   </DropdownButton>
                 </>
               )}
@@ -502,6 +555,15 @@ const ScriptEditorEvent = React.memo(
             </ScriptEventFormWrapper>
           )}
         </div>
+        {contextMenu && (
+          <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onClose={onContextMenuClose}
+          >
+            {contextMenu.menu}
+          </ContextMenu>
+        )}
       </ScriptEventWrapper>
     );
   }

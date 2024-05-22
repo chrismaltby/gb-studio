@@ -1,16 +1,16 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 import settingsActions from "store/features/settings/settingsActions";
 import { SettingsState } from "store/features/settings/settingsState";
+import { useAppDispatch } from "store/hooks";
 import { Button } from "ui/buttons/Button";
 
 interface NoSongsMessageProps {
   type: "uge" | "mod";
 }
 export const NoSongsMessage = ({ type }: NoSongsMessageProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [showMessage, setShowMessage] = useState(false);
 
   const editSettings = useCallback(

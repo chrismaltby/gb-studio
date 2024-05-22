@@ -1,6 +1,4 @@
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -12,10 +10,12 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Scene } from "store/features/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
@@ -34,7 +34,7 @@ const Thumbnail = styled.div`
 `;
 
 interface SceneOption extends Option {
-  scene: Scene;
+  scene: SceneNormalized;
 }
 
 const collator = new Intl.Collator(undefined, {
@@ -46,9 +46,12 @@ const sortByLabel = (a: SceneOption, b: SceneOption) => {
   return collator.compare(a.label, b.label);
 };
 
-const sceneToSceneOption = (scene: Scene, sceneIndex: number): SceneOption => ({
+const sceneToSceneOption = (
+  scene: SceneNormalized,
+  sceneIndex: number
+): SceneOption => ({
   value: scene.id,
-  label: scene.name ? scene.name : `Scene ${sceneIndex + 1}`,
+  label: sceneName(scene, sceneIndex),
   scene,
 });
 
@@ -59,23 +62,20 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   optionalLabel,
   ...selectProps
 }) => {
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const backgroundsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const backgroundsLookup = useAppSelector((state) =>
     backgroundSelectors.selectEntities(state)
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, value || "")
   );
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
   const [options, setOptions] = useState<SceneOption[]>([]);
-  const [currentScene, setCurrentScene] = useState<Scene>();
+  const [currentScene, setCurrentScene] = useState<SceneNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setOptions(scenes.map(sceneToSceneOption).sort(sortByLabel));
@@ -129,20 +129,15 @@ export const SceneSelect: FC<SceneSelectProps> = ({
         options={options}
         onChange={onSelectChange}
         formatOptionLabel={(option: SceneOption) => {
+          const background = backgroundsLookup[option.scene?.backgroundId];
           return (
             <OptionLabelWithPreview
               preview={
                 <Thumbnail
                   style={{
                     backgroundImage:
-                      backgroundsLookup[option.scene?.backgroundId] &&
-                      `url("file://${assetFilename(
-                        projectRoot,
-                        "backgrounds",
-                        backgroundsLookup[option.scene?.backgroundId]
-                      )}?_v=${
-                        backgroundsLookup[option.scene?.backgroundId]?._v
-                      }")`,
+                      background &&
+                      assetURLStyleProp("backgrounds", background),
                   }}
                 />
               }
@@ -159,11 +154,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                   style={{
                     backgroundImage:
                       background &&
-                      `url("file://${assetFilename(
-                        projectRoot,
-                        "backgrounds",
-                        background
-                      )}?_v=${background._v}")`,
+                      assetURLStyleProp("backgrounds", background),
                   }}
                 />
               }

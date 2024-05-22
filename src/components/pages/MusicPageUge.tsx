@@ -2,11 +2,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -14,22 +14,22 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import { NavigatorSongs } from "../music/NavigatorSongs";
-import { SongTracker } from "../music/SongTracker";
+import { NavigatorSongs, ugeFilter } from "components/music/NavigatorSongs";
+import { SongTracker } from "components/music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { SongEditor } from "../music/SongEditor";
-import SongEditorToolsPanel from "../music/SongEditorToolsPanel";
-import SongEditorRightToolsPanel from "../music/SongEditorRightToolsPanel";
+import { SongEditor } from "components/music/SongEditor";
+import SongEditorToolsPanel from "components/music/SongEditorToolsPanel";
+import SongEditorRightToolsPanel from "components/music/SongEditorRightToolsPanel";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
-import { SongPianoRoll } from "../music/SongPianoRoll";
-import { Music } from "store/features/entities/entitiesTypes";
-import l10n from "lib/helpers/l10n";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { SongPianoRoll } from "components/music/SongPianoRoll";
+import l10n from "shared/lib/lang/l10n";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
+import { assetPath } from "shared/lib/helpers/assets";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
@@ -67,14 +67,17 @@ const ErrorDescription = styled.div`
   padding-top: 5px;
 `;
 
+const MIN_WIDTH_FOR_RIGHT_PANEL = 630;
+const MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL = 710;
+
 const MusicPageUge = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
-  const worldSidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const worldSidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -82,53 +85,53 @@ const MusicPageUge = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSongs = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const songsLookup = useSelector((state: RootState) =>
-    musicSelectors.selectEntities(state)
-  );
-  const selectedSongId = useSelector(
-    (state: RootState) => state.editor.selectedSongId
+  const allSongs = useAppSelector((state) =>
+    musicSelectors.selectAll(state).filter(ugeFilter).sort(sortByFilename)
   );
 
-  const [selectedSong, setSelectedSong] = useState<Music | undefined>();
+  const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
+
+  const song = useAppSelector((state) =>
+    musicSelectors.selectById(state, selectedSongId)
+  );
+
+  const lastSongId = useRef("");
   useEffect(() => {
-    setSelectedSong(
-      songsLookup[selectedSongId] ||
-        allSongs.filter((s) => s.type && s.type === "uge")[0]
-    );
-  }, [selectedSongId, allSongs, songsLookup]);
+    if (song) {
+      lastSongId.current = song.id;
+    }
+  }, [song]);
 
-  const sequenceId = useSelector(
-    (state: RootState) => state.editor.selectedSequence
+  const viewSongId = useMemo(
+    () => song?.id || lastSongId.current || allSongs[0]?.id,
+    [allSongs, song]
   );
 
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const viewSong = useAppSelector((state) =>
+    musicSelectors.selectById(state, viewSongId)
+  );
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
+  const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
+
+  const songDocument = useAppSelector(
+    (state) => state.trackerDocument.present.song
   );
-  const modified = useSelector(
-    (state: RootState) => state.trackerDocument.present.modified
+  const modified = useAppSelector(
+    (state) => state.trackerDocument.present.modified
   );
-  const status = useSelector(
-    (state: RootState) => state.trackerDocument.present.status
+  const status = useAppSelector(
+    (state) => state.trackerDocument.present.status
   );
-  const error = useSelector(
-    (state: RootState) => state.trackerDocument.present.error
-  );
+  const error = useAppSelector((state) => state.trackerDocument.present.error);
 
   const [selectedSongPath, setSelectedSongPath] = useState("");
   const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
-    if (selectedSong) {
-      setSelectedSongPath(
-        `${assetFilename(projectRoot, "music", selectedSong)}`
-      );
-      setSelectedSongType(selectedSong.type || "");
+    if (viewSong) {
+      setSelectedSongPath(assetPath("music", viewSong));
+      setSelectedSongType(viewSong.type || "");
     }
-  }, [projectRoot, selectedSong]);
+  }, [viewSong]);
 
   useEffect(() => {
     if (selectedSongPath !== "" && selectedSongType === "uge") {
@@ -249,17 +252,17 @@ const MusicPageUge = () => {
     false,
   ]);
 
-  const view = useSelector((state: RootState) => state.tracker.view);
+  const view = useAppSelector((state) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
-    if (!song) {
+    if (!songDocument) {
       return;
     } else if (view === "tracker") {
       return (
         <div style={{ position: "relative" }}>
           <SongTracker
             sequenceId={sequenceId}
-            song={song}
+            song={songDocument}
             height={windowHeight - 100}
             channelStatus={channelStatus}
           />
@@ -269,12 +272,14 @@ const MusicPageUge = () => {
       return (
         <SongPianoRoll
           sequenceId={sequenceId}
-          song={song}
+          song={songDocument}
           height={windowHeight - 100}
         />
       );
     }
-  }, [channelStatus, sequenceId, song, view, windowHeight]);
+  }, [channelStatus, sequenceId, songDocument, view, windowHeight]);
+
+  const documentWidth = windowWidth - leftPaneWidth - rightPaneWidth;
 
   return (
     <Wrapper>
@@ -298,9 +303,9 @@ const MusicPageUge = () => {
           <NavigatorSongs
             height={windowHeight - 38}
             defaultFirst
-            dutyInstruments={song?.duty_instruments}
-            waveInstruments={song?.wave_instruments}
-            noiseInstruments={song?.noise_instruments}
+            dutyInstruments={songDocument?.duty_instruments}
+            waveInstruments={songDocument?.wave_instruments}
+            noiseInstruments={songDocument?.noise_instruments}
             modified={modified}
           />
         </div>
@@ -313,7 +318,7 @@ const MusicPageUge = () => {
             <ErrorDescription>{error}</ErrorDescription>
           </ContentMessage>
         </ContentWrapper>
-      ) : song !== undefined ? (
+      ) : songDocument !== undefined ? (
         <>
           <div
             style={{
@@ -329,12 +334,24 @@ const MusicPageUge = () => {
             }}
           >
             <div style={{ position: "relative", height: "60px" }}>
-              <SongEditorToolsPanel selectedSong={selectedSong} />
-              <SongEditorRightToolsPanel channelStatus={channelStatus} />
+              <SongEditorToolsPanel selectedSong={viewSong} />
+              {documentWidth > MIN_WIDTH_FOR_RIGHT_PANEL && (
+                <SongEditorRightToolsPanel
+                  channelStatus={channelStatus}
+                  size={
+                    documentWidth > MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL
+                      ? "medium"
+                      : "small"
+                  }
+                />
+              )}
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
-            <UgePlayer data={song} onChannelStatusUpdate={setChannelStatus} />
+            <UgePlayer
+              data={songDocument}
+              onChannelStatusUpdate={setChannelStatus}
+            />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div

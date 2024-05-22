@@ -1,18 +1,18 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import actions from "./spriteActions";
-import projectActions from "../project/projectActions";
+import projectActions from "store/features/project/projectActions";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteAnimationSelectors,
   spriteStateSelectors,
   spriteSheetSelectors,
-} from "../entities/entitiesState";
-import entitiesActions from "../entities/entitiesActions";
-import { detectClassic } from "lib/sprite/detect";
-import { compileSprite } from "lib/compiler/compileSprites";
-import { denormalizeSprite } from "../entities/entitiesHelpers";
+} from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { detectClassic } from "renderer/lib/sprites/detect";
+import { denormalizeSprite } from "shared/lib/entities/entitiesHelpers";
+import API from "renderer/lib/api";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -67,7 +67,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
     // Compile sprite to determine how many tiles it will use
     if (actions.compileSprite.match(action)) {
       const state = store.getState();
-      const projectRoot = state.document.root;
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
@@ -91,7 +90,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         spriteStates,
       });
 
-      const res = await compileSprite(spriteData, projectRoot);
+      const res = await API.sprite.compileSprite(spriteData);
       const numTiles = res.tiles.length / 2;
 
       if (numTiles !== spriteSheet.numTiles) {
@@ -113,7 +112,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       }
     }
 
-    if (projectActions.loadSprite.fulfilled.match(action)) {
+    if (entitiesActions.loadSprite.match(action)) {
       const state = store.getState();
       const spriteSheet = spriteSheetSelectors.selectById(
         state,

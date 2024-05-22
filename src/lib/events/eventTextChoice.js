@@ -1,9 +1,4 @@
-const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
-
-const trimChoiceItem = (string) => {
-  return trimlines(string, 17, 1);
-};
 
 const id = "EVENT_CHOICE";
 const groups = ["EVENT_GROUP_DIALOGUE"];
@@ -34,8 +29,8 @@ const fields = [
     key: "trueText",
     label: l10n("FIELD_SET_TRUE_IF"),
     description: l10n("FIELD_SET_TRUE_IF_DESC"),
-    type: "text",
-    updateFn: trimChoiceItem,
+    type: "textarea",
+    singleLine: true,
     defaultValue: "",
     placeholder: l10n("FIELD_CHOICE_A"),
   },
@@ -43,8 +38,8 @@ const fields = [
     key: "falseText",
     label: l10n("FIELD_SET_FALSE_IF"),
     description: l10n("FIELD_SET_FALSE_IF_DESC"),
-    type: "text",
-    updateFn: trimChoiceItem,
+    type: "textarea",
+    singleLine: true,
     defaultValue: "",
     placeholder: l10n("FIELD_CHOICE_B"),
   },

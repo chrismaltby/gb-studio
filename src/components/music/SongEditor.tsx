@@ -1,34 +1,39 @@
-import React, { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import {
-  FormContainer,
-  FormDivider,
-  FormHeader,
-  FormRow,
-} from "ui/form/FormLayout";
-import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
+import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { Label } from "ui/form/Label";
-import { RootState } from "store/configureStore";
 import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
-import { Song } from "lib/helpers/uge/song/Song";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import { Song } from "shared/lib/uge/song/Song";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
+import l10n from "shared/lib/lang/l10n";
 import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { MenuItem } from "components/library/Menu";
+import { MenuItem } from "ui/menu/Menu";
 import { PatternCellEditor } from "./PatternCellEditor";
 import trackerActions from "store/features/tracker/trackerActions";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
+import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
+import styled from "styled-components";
+import { NumberInput } from "ui/form/NumberInput";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
+
+type InstrumentEditorTab = "main" | "subpattern";
+type InstrumentEditorTabs = { [key in InstrumentEditorTab]: string };
+
+const InstrumentEditorWrapper = styled.div`
+  padding-top: 10px;
+`;
 
 const renderInstrumentEditor = (
   type: string,
@@ -73,48 +78,52 @@ const instrumentName = (instrument: Instrument, type: string) => {
 };
 
 export const SongEditor = () => {
-  const dispatch = useDispatch();
-  const selectedInstrument = useSelector(
-    (state: RootState) => state.editor.selectedInstrument
+  const dispatch = useAppDispatch();
+  const selectedInstrument = useAppSelector(
+    (state) => state.editor.selectedInstrument
   );
   useEffect(() => {
     dispatch(trackerActions.setSelectedEffectCell(null));
   }, [dispatch, selectedInstrument]);
-  const sequenceId = useSelector(
-    (state: RootState) => state.editor.selectedSequence
-  );
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
-  console.log("SONG", song);
+  const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
 
   const selectSidebar = () => {};
 
-  const onChangeFieldInput =
-    <T extends keyof Song>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeSongProp = useCallback(
+    <K extends keyof Song>(key: K, value: Song[K]) => {
       dispatch(
         trackerDocumentActions.editSong({
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("name", e.currentTarget.value),
+    [onChangeSongProp]
+  );
+
+  const onChangeArtist = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("artist", e.currentTarget.value),
+    [onChangeSongProp]
+  );
+
+  const onChangeTicksPerRow = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("ticks_per_row", castEventToInt(e, 0)),
+    [onChangeSongProp]
+  );
 
   const onChangeInstrumentName =
-    (type: string) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+    (type: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const editValue = e.currentTarget.value;
 
       let action;
       if (type === "duty") action = trackerDocumentActions.editDutyInstrument;
@@ -157,11 +166,26 @@ export const SongEditor = () => {
     );
   }, [dispatch, sequenceId]);
 
-  const selectedEffectCell = useSelector(
-    (state: RootState) => state.tracker.selectedEffectCell
+  const selectedEffectCell = useAppSelector(
+    (state) => state.tracker.selectedEffectCell
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
+
+  const [instrumentEditorTab, setInstrumentEditorTab] =
+    useState<InstrumentEditorTab>("main");
+  const onInstrumentEditorChange = useCallback((mode: InstrumentEditorTab) => {
+    setInstrumentEditorTab(mode);
+  }, []);
+
+  const instrumentEditorTabs = useMemo(
+    () =>
+      ({
+        main: l10n("SIDEBAR_INSTRUMENT"),
+        subpattern: l10n("SIDEBAR_SUBPATTERN"),
+      } as InstrumentEditorTabs),
+    []
+  );
 
   if (!song) {
     return null;
@@ -169,27 +193,26 @@ export const SongEditor = () => {
 
   return (
     <Sidebar onClick={selectSidebar}>
-      <SidebarColumn>
-        <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder="Song"
-              value={song?.name || ""}
-              onChange={onChangeFieldInput("name")}
-            />
+      <FormHeader>
+        <EditableText
+          name="name"
+          placeholder="Song"
+          value={song?.name || ""}
+          onChange={onChangeName}
+        />
 
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-            >
-              <MenuItem onClick={onRemovePattern}>
-                {l10n("MENU_PATTERN_DELETE")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
-
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+        >
+          <MenuItem onClick={onRemovePattern}>
+            {l10n("MENU_PATTERN_DELETE")}
+          </MenuItem>
+        </DropdownButton>
+      </FormHeader>
+      <SidebarColumns>
+        <SidebarColumn>
           <FormRow>
             <Label htmlFor="artist">{l10n("FIELD_ARTIST")}</Label>
           </FormRow>
@@ -197,67 +220,95 @@ export const SongEditor = () => {
             <Input
               name="artist"
               value={song?.artist}
-              onChange={onChangeFieldInput("artist")}
+              onChange={onChangeArtist}
             />
           </FormRow>
+        </SidebarColumn>
+        <SidebarColumn>
           <FormRow>
             <Label htmlFor="ticks_per_row">{l10n("FIELD_TEMPO")}</Label>
           </FormRow>
           <FormRow>
-            <Input
+            <NumberInput
               name="ticks_per_row"
               type="number"
               value={song?.ticks_per_row}
               min={0}
               max={20}
-              onChange={onChangeFieldInput("ticks_per_row")}
+              placeholder="0"
+              onChange={onChangeTicksPerRow}
               title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
-          {selectedEffectCell !== null ? (
+        </SidebarColumn>
+      </SidebarColumns>
+
+      <FormContainer>
+        {selectedEffectCell !== null ? (
+          <div style={{ marginTop: -1 }}>
             <PatternCellEditor
               id={selectedEffectCell}
               patternId={patternId}
               pattern={song?.patterns[patternId][selectedEffectCell]}
             />
-          ) : instrumentData ? (
-            <>
-              <FormDivider />
-              <FormHeader>
-                <EditableText
-                  name="instrumentName"
-                  placeholder={instrumentName(
-                    instrumentData,
-                    selectedInstrument.type
-                  )}
-                  value={instrumentData.name || ""}
-                  onChange={onChangeInstrumentName(selectedInstrument.type)}
-                />
+          </div>
+        ) : instrumentData ? (
+          <>
+            <FormHeader>
+              <EditableText
+                name="instrumentName"
+                placeholder={instrumentName(
+                  instrumentData,
+                  selectedInstrument.type
+                )}
+                value={instrumentData.name || ""}
+                onChange={onChangeInstrumentName(selectedInstrument.type)}
+              />
 
-                <DropdownButton
+              {/* <DropdownButton
                   size="small"
                   variant="transparent"
                   menuDirection="right"
                 >
-                  {/* <MenuItem onClick={onCopyVar}>
+                  <MenuItem onClick={onCopyVar}>
                   {l10n("MENU_VARIABLE_COPY_EMBED")}
                 </MenuItem>
                 <MenuItem onClick={onCopyChar}>
                   {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-                </MenuItem> */}
-                </DropdownButton>
-              </FormHeader>
-              {renderInstrumentEditor(
-                selectedInstrument.type,
-                instrumentData,
-                song.waves
+                </MenuItem>
+                </DropdownButton> */}
+            </FormHeader>
+
+            <StickyTabs>
+              <TabBar
+                value={instrumentEditorTab}
+                values={instrumentEditorTabs}
+                onChange={onInstrumentEditorChange}
+              />
+            </StickyTabs>
+            <InstrumentEditorWrapper>
+              {instrumentEditorTab === "main" ? (
+                <>
+                  {renderInstrumentEditor(
+                    selectedInstrument.type,
+                    instrumentData,
+                    song.waves
+                  )}
+                </>
+              ) : (
+                <InstrumentSubpatternEditor
+                  enabled={instrumentData.subpattern_enabled}
+                  subpattern={instrumentData.subpattern}
+                  instrumentId={instrumentData.index}
+                  instrumentType={selectedInstrument.type}
+                />
               )}
-            </>
-          ) : (
-            ""
-          )}
-        </FormContainer>
-      </SidebarColumn>
+            </InstrumentEditorWrapper>
+          </>
+        ) : (
+          ""
+        )}
+      </FormContainer>
     </Sidebar>
   );
 };

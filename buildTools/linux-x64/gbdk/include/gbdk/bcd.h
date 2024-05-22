@@ -3,8 +3,8 @@
 
 #if defined(__TARGET_gb) || defined(__TARGET_ap) || defined(__TARGET_duck)
   #include <gb/bcd.h>
-#elif defined(__TARGET_sms) || defined(__TARGET_gg)
-  #error Not implemented yet
+#elif defined(__TARGET_sms) || defined(__TARGET_gg) || defined(__TARGET_msxdos)
+  #include <sms/bcd.h>
 #else
   #error Unrecognized port
 #endif

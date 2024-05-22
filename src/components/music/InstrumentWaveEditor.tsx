@@ -1,14 +1,15 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
+import Alert, { AlertItem } from "ui/alerts/Alert";
+import API from "renderer/lib/api";
+import { useAppDispatch } from "store/hooks";
 
 const volumeOptions = [
   {
@@ -39,7 +40,7 @@ export const InstrumentWaveEditor = ({
   instrument,
   waveForms,
 }: InstrumentWaveEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 
@@ -75,7 +76,7 @@ export const InstrumentWaveEditor = ({
     };
 
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendToMusicWindow({
       action: "preview",
       note: 24, // C_5
       type: "wave",
@@ -119,6 +120,13 @@ export const InstrumentWaveEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
+      )}
     </>
   );
 };

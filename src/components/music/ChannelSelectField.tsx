@@ -1,6 +1,4 @@
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import {
@@ -10,11 +8,13 @@ import {
   EyeOpenIcon,
 } from "ui/icons/Icons";
 import styled from "styled-components";
-import { ipcRenderer } from "electron";
+import API from "renderer/lib/api";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ChannelSelectFieldProps {
   name: string;
   label: string;
+  title: string;
   index: number;
   muted: boolean;
 }
@@ -27,7 +27,6 @@ const Wrapper = styled.div`
 const ChannelButton = styled(Button)`
   flex-grow: 0;
   height: 22px;
-  width: 56px;
   margin: 0 2px;
 `;
 
@@ -44,16 +43,17 @@ const ActionGroup = styled.div`
 export const ChannelSelectField = ({
   name,
   label,
+  title,
   index,
   muted,
 }: ChannelSelectFieldProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
-  const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.visibleChannels
+  const visibleChannels = useAppSelector(
+    (state) => state.tracker.visibleChannels
   );
 
   const setSelectedChannel = useCallback(
@@ -77,7 +77,7 @@ export const ChannelSelectField = ({
   );
 
   const setMute = useCallback(() => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendToMusicWindow({
       action: "set-mute",
       channel: index,
       muted: !muted,
@@ -88,6 +88,7 @@ export const ChannelSelectField = ({
     <Wrapper>
       <ChannelButton
         name={name}
+        title={title}
         variant={selectedChannel === index ? "primary" : "transparent"}
         size="medium"
         active={selectedChannel === index}

@@ -1,22 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
-import { calculateAutoFadeEventIdNormalised } from "lib/helpers/eventHelpers";
+import { calculateAutoFadeEventIdNormalized } from "shared/lib/scripts/eventHelpers";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ScriptEditorProps {
   value: string[];
-  type: ScriptEventParentType;
-  entityId: string;
-  scriptKey: string;
   showAutoFadeIndicator?: boolean;
 }
 
@@ -25,42 +22,46 @@ const ScriptEditorWrapper = styled.div`
 `;
 
 const ScriptEditor = React.memo(
-  ({
-    value,
-    type,
-    entityId,
-    scriptKey,
-    showAutoFadeIndicator,
-  }: ScriptEditorProps) => {
+  ({ value, showAutoFadeIndicator }: ScriptEditorProps) => {
+    const context = useContext(ScriptEditorContext);
     const [renderTo, setRenderTo] = useState(0);
     const timerRef = useRef<number>(0);
-    const scriptEventsLookup = useSelector((state: RootState) =>
+    const scriptEventsLookup = useAppSelector((state) =>
       scriptEventSelectors.selectEntities(state)
     );
-    const customEventsLookup = useSelector((state: RootState) =>
+    const customEventsLookup = useAppSelector((state) =>
       customEventSelectors.selectEntities(state)
     );
-
+    const scriptEventDefs = useAppSelector((state) =>
+      selectScriptEventDefs(state)
+    );
     const autoFadeEventId = useMemo(() => {
       return showAutoFadeIndicator
-        ? calculateAutoFadeEventIdNormalised(
+        ? calculateAutoFadeEventIdNormalized(
             value,
             scriptEventsLookup,
-            customEventsLookup
+            customEventsLookup,
+            scriptEventDefs
           )
         : "";
-    }, [customEventsLookup, scriptEventsLookup, showAutoFadeIndicator, value]);
+    }, [
+      customEventsLookup,
+      scriptEventDefs,
+      scriptEventsLookup,
+      showAutoFadeIndicator,
+      value,
+    ]);
 
     // Reset renderTo on script tab change
     useEffect(() => {
-      setRenderTo(0);
-    }, [scriptKey]);
+      setRenderTo(10);
+    }, [context.entityId, context.scriptKey]);
 
     // Load long scripts asynchronously
     useEffect(() => {
       if (value.length >= renderTo) {
         timerRef.current = setTimeout(() => {
-          setRenderTo(renderTo + 1);
+          setRenderTo(renderTo + 10);
         }, 1);
         return () => {
           if (timerRef.current) {
@@ -68,14 +69,14 @@ const ScriptEditor = React.memo(
           }
         };
       }
-    }, [renderTo, value.length]);
+    }, [renderTo, value.length, context.entityId, context.scriptKey]);
 
     return (
       <ScriptEditorWrapper>
         {value.map(
           (id, index) =>
             index < renderTo && (
-              <>
+              <React.Fragment key={`event_row_${id}_${index}`}>
                 {showAutoFadeIndicator && id === autoFadeEventId && (
                   <ScriptEventAutoFade />
                 )}
@@ -83,21 +84,21 @@ const ScriptEditor = React.memo(
                   key={`${id}_${index}`}
                   id={id}
                   index={index}
-                  parentType={type}
-                  parentId={entityId}
-                  parentKey={scriptKey}
-                  entityId={entityId}
+                  parentType={context.entityType}
+                  parentId={context.entityId}
+                  parentKey={context.scriptKey}
+                  entityId={context.entityId}
                 />
-              </>
+              </React.Fragment>
             )
         )}
         {showAutoFadeIndicator && autoFadeEventId === "" && (
           <ScriptEventAutoFade />
         )}
         <AddButton
-          parentType={type}
-          parentId={entityId}
-          parentKey={scriptKey}
+          parentType={context.entityType}
+          parentId={context.entityId}
+          parentKey={context.scriptKey}
         />
       </ScriptEditorWrapper>
     );

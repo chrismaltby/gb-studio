@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -15,31 +14,29 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import settingsActions from "store/features/settings/settingsActions";
-import { SpriteEditor } from "../sprites/SpriteEditor";
-import { NavigatorSprites } from "../sprites/NavigatorSprites";
+import { SpriteEditor } from "components/sprites/SpriteEditor";
+import { NavigatorSprites } from "components/sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import MetaspriteEditor from "../sprites/MetaspriteEditor";
-import SpriteTilePalette from "../sprites/SpriteTilePalette";
-import SpriteAnimationTimeline from "../sprites/SpriteAnimationTimeline";
+import MetaspriteEditor from "components/sprites/MetaspriteEditor";
+import SpriteTilePalette from "components/sprites/SpriteTilePalette";
+import SpriteAnimationTimeline from "components/sprites/SpriteAnimationTimeline";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import l10n from "lib/helpers/l10n";
-import { getAnimationNameById } from "../sprites/helpers";
-import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
+import l10n from "shared/lib/lang/l10n";
+import MetaspriteEditorToolsPanel from "components/sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "ui/buttons/ZoomButton";
-import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
+import MetaspriteEditorPreviewSettings from "components/sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
-import useSorted from "ui/hooks/use-sorted";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { getAnimationNameById } from "renderer/lib/sprites/spriteL10NHelpers";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -57,64 +54,76 @@ const PrecisionIcon = styled(TargetIcon)`
 `;
 
 const SpritesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
-  const worldSidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const worldSidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
-  const tilesZoom = useSelector(
-    (state: RootState) => state.editor.zoomSpriteTiles
-  );
+  const tilesZoom = useAppSelector((state) => state.editor.zoomSpriteTiles);
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSprites = useSelector((state: RootState) =>
+  const allSprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const spritesLookup = useSelector((state: RootState) =>
+  const spritesLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const spriteStatesLookup = useSelector((state: RootState) =>
+  const spriteStatesLookup = useAppSelector((state) =>
     spriteStateSelectors.selectEntities(state)
   );
-  const spriteAnimationsLookup = useSelector((state: RootState) =>
+  const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state)
   );
-  const navigationId = useSelector(
-    (state: RootState) => state.editor.selectedSpriteSheetId
+  const selectedId = useAppSelector(
+    (state) => state.editor.selectedSpriteSheetId
   );
-  const navigationStateId = useSelector(
-    (state: RootState) => state.editor.selectedSpriteStateId
+  const navigationStateId = useAppSelector(
+    (state) => state.editor.selectedSpriteStateId
   );
-  const animationId = useSelector(
-    (state: RootState) => state.editor.selectedAnimationId
+  const animationId = useAppSelector(
+    (state) => state.editor.selectedAnimationId
   );
-  const metaspriteId = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteId
+  const metaspriteId = useAppSelector(
+    (state) => state.editor.selectedMetaspriteId
   );
-  const precisionTileMode = useSelector(
-    (state: RootState) => state.editor.precisionTileMode
+  const precisionTileMode = useAppSelector(
+    (state) => state.editor.precisionTileMode
   );
   const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
 
-  const sortedSprites = useSorted(allSprites);
-  const selectedSprite = spritesLookup[navigationId] || sortedSprites[0];
+  const sprite = useAppSelector((state) =>
+    spriteSheetSelectors.selectById(state, selectedId)
+  );
+
+  const lastSpriteId = useRef("");
+  useEffect(() => {
+    if (sprite) {
+      lastSpriteId.current = sprite.id;
+    }
+  }, [sprite]);
+
+  const viewSpriteId = useMemo(
+    () => sprite?.id || lastSpriteId.current || allSprites[0]?.id,
+    [allSprites, sprite]
+  );
+
+  const selectedSprite = spritesLookup[viewSpriteId];
 
   const selectedState =
     spriteStatesLookup[navigationStateId] ||
-    spriteStatesLookup[selectedSprite.states[0]];
+    spriteStatesLookup[selectedSprite?.states[0] ?? ""];
 
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
     (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
 
-  const selectedId = selectedSprite?.id || "";
   const selectedStateId = selectedState?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
@@ -180,8 +189,8 @@ const SpritesPage = () => {
   const prevWidth = prevWindowWidthRef.current;
 
   useEffect(() => {
-    dispatch(spriteActions.compileSprite({ spriteSheetId: selectedId }));
-  }, [dispatch, selectedId]);
+    dispatch(spriteActions.compileSprite({ spriteSheetId: viewSpriteId }));
+  }, [dispatch, viewSpriteId]);
 
   useEffect(() => {
     if (windowWidth !== prevWidth) {
@@ -312,6 +321,7 @@ const SpritesPage = () => {
           <NavigatorSprites
             height={windowHeight - 38}
             selectedId={selectedId}
+            viewId={viewSpriteId}
             selectedAnimationId={selectedAnimationId}
             selectedStateId={selectedStateId}
             defaultFirst
@@ -340,7 +350,7 @@ const SpritesPage = () => {
           {frames.map((frameId) => (
             <MetaspriteEditor
               key={frameId}
-              spriteSheetId={selectedId}
+              spriteSheetId={viewSpriteId}
               metaspriteId={frameId}
               animationId={selectedAnimation?.id || ""}
               spriteStateId={selectedStateId}
@@ -349,7 +359,7 @@ const SpritesPage = () => {
           ))}
 
           <MetaspriteEditorPreviewSettings
-            spriteSheetId={selectedId}
+            spriteSheetId={viewSpriteId}
             metaspriteId={selectedMetaspriteId}
           />
         </div>
@@ -394,7 +404,7 @@ const SpritesPage = () => {
             {l10n("FIELD_TILES")}
           </SplitPaneHeader>
           <SpriteTilePalette
-            id={selectedId}
+            id={viewSpriteId}
             precisionMode={precisionTileMode || tmpPrecisionMode}
           />
         </div>
@@ -414,7 +424,7 @@ const SpritesPage = () => {
         </SplitPaneHeader>
         {animationsOpen && (
           <SpriteAnimationTimeline
-            spriteSheetId={selectedId}
+            spriteSheetId={viewSpriteId}
             animationId={selectedAnimation?.id || ""}
             metaspriteId={selectedMetaspriteId}
           />
@@ -431,7 +441,7 @@ const SpritesPage = () => {
         }}
       >
         <SpriteEditor
-          id={selectedId}
+          id={viewSpriteId}
           metaspriteId={selectedMetaspriteId}
           spriteStateId={selectedStateId}
           animationId={selectedAnimation?.id || ""}

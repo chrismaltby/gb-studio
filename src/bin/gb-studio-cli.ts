@@ -4,22 +4,21 @@ import os from "os";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import { program } from "commander";
-import { emulatorRoot, engineRoot } from "../consts";
-import { EngineFieldSchema } from "store/features/engine/engineState";
-import { initPlugins } from "lib/plugins/plugins";
+import { emulatorRoot } from "../consts";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
+import initElectronL10N from "lib/lang/initElectronL10N";
+import { loadEngineFields } from "lib/project/engineFields";
+import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
+import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
+import { loadSceneTypes } from "lib/project/sceneTypes";
 
 const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
-interface EngineData {
-  fields?: EngineFieldSchema[];
-}
-
-type Command = "export" | "make:rom" | "make:web";
+type Command = "export" | "make:rom" | "make:pocket" | "make:web";
 
 const main = async (
   command: Command,
@@ -30,11 +29,14 @@ const main = async (
   const projectRoot = Path.resolve(Path.dirname(projectFile));
   const project = await readJSON(projectFile);
 
-  // Load plugins
-  initPlugins(projectRoot);
+  initElectronL10N();
+
+  // Load script event handlers + plugins
+  const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
 
   // Load engine fields
-  const engineFields = await getEngineFields(projectRoot);
+  const engineFields = await loadEngineFields(projectRoot);
+  const sceneTypes = await loadSceneTypes(projectRoot);
 
   // Use OS default tmp
   const tmpPath = os.tmpdir();
@@ -56,6 +58,8 @@ const main = async (
   const compiledData = await compileData(project, {
     projectRoot,
     engineFields,
+    scriptEventHandlers,
+    sceneTypes,
     tmpPath,
     progress,
     warnings,
@@ -63,11 +67,19 @@ const main = async (
 
   // Export compiled data to a folder
   await ejectBuild({
+    projectType: "gb",
     projectRoot,
     projectData: project,
     engineFields,
     outputRoot: tmpBuildDir,
+    tmpPath,
     compiledData,
+    progress,
+    warnings,
+  });
+
+  await validateEjectedBuild({
+    buildRoot: tmpBuildDir,
     progress,
     warnings,
   });
@@ -93,11 +105,25 @@ const main = async (
       buildRoot: tmpBuildDir,
       tmpPath,
       data: project,
-      profile: false,
+      debug: false,
+      buildType: "rom",
       progress,
       warnings,
     });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
+    await copy(romTmpPath, destination);
+  } else if (command === "make:pocket") {
+    // Export ROM to destination
+    await makeBuild({
+      buildRoot: tmpBuildDir,
+      tmpPath,
+      data: project,
+      debug: false,
+      buildType: "pocket",
+      progress,
+      warnings,
+    });
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.pocket");
     await copy(romTmpPath, destination);
   } else if (command === "make:web") {
     // Export web build to destination
@@ -105,7 +131,8 @@ const main = async (
       buildRoot: tmpBuildDir,
       tmpPath,
       data: project,
-      profile: false,
+      debug: false,
+      buildType: "web",
       progress,
       warnings,
     });
@@ -115,9 +142,10 @@ const main = async (
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.name);
     const author = sanitize(project.author);
-    const colorsHead = project.settings.customColorsEnabled
-      ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
-      : "";
+    const colorsHead =
+      project.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
+        : "";
     const customHead = project.settings.customHead || "";
     const customControls = JSON.stringify({
       up: project.settings.customControlsUp,
@@ -139,32 +167,6 @@ const main = async (
   }
 };
 
-const getEngineFields = async (projectRoot: string) => {
-  const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
-  const localEngineJsonPath = Path.join(
-    projectRoot,
-    "assets",
-    "engine",
-    "engine.json"
-  );
-  let defaultEngine: EngineData = {};
-  let localEngine: EngineData = {};
-  try {
-    localEngine = await readJSON(localEngineJsonPath);
-  } catch (e) {
-    defaultEngine = await readJSON(defaultEngineJsonPath);
-  }
-  let fields: EngineFieldSchema[] = [];
-
-  if (localEngine && localEngine.fields) {
-    fields = localEngine.fields;
-  } else if (defaultEngine && defaultEngine.fields) {
-    fields = defaultEngine.fields;
-  }
-
-  return fields;
-};
-
 program.version(VERSION);
 
 program
@@ -179,6 +181,13 @@ program
   .description("Build a ROM from project file")
   .action((source, destination) => {
     main("make:rom", source, destination);
+  });
+
+program
+  .command("make:pocket <projectFile> <destination.pocket>")
+  .description("Build a Pocket from project file")
+  .action((source, destination) => {
+    main("make:pocket", source, destination);
   });
 
 program

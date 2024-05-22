@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SET_MUSIC_ROUTINE";
 const groups = ["EVENT_GROUP_MUSIC"];
+const subGroups = {
+  EVENT_GROUP_MUSIC: "EVENT_GROUP_SCRIPT",
+};
 
 const fields = [
   {
@@ -46,6 +49,7 @@ module.exports = {
   description: l10n("EVENT_SET_MUSIC_ROUTINE_DESC"),
   references: ["/docs/assets/music/music-huge#effects"],
   groups,
+  subGroups,
   fields,
   compile,
   editableSymbol: true,

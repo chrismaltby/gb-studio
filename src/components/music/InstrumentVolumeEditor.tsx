@@ -1,14 +1,21 @@
-import React, { useEffect, useRef } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { useContext, useEffect, useRef } from "react";
+import l10n from "shared/lib/lang/l10n";
+import { ThemeContext } from "styled-components";
 import { FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
+
+type EditableInstrument = {
+  initial_volume: number;
+  volume_sweep_change: number;
+};
 
 interface InstrumentVolumeEditorProps {
   initialVolume: number;
   volumeSweepChange: number;
   length: number | null;
-  // onChange: <T extends keyof (DutyInstrument | NoiseInstrument)>(key: T) => (editValue: (DutyInstrument[T] | NoiseInstrument[T])) => void;
-  onChange: (key: any) => (editValue: any) => void;
+  onChange: <T extends keyof EditableInstrument>(
+    key: T
+  ) => (editValue: EditableInstrument[T]) => void;
 }
 
 export const InstrumentVolumeEditor = ({
@@ -18,6 +25,8 @@ export const InstrumentVolumeEditor = ({
   onChange,
 }: InstrumentVolumeEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const themeContext = useContext(ThemeContext);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -31,9 +40,7 @@ export const InstrumentVolumeEditor = ({
     const normalisedVolume = initialVolume / 15;
     const secLength = length === null ? 1 : length / 256;
 
-    const defaultColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--highlight-color");
+    const defaultColor = themeContext.colors.highlight;
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;

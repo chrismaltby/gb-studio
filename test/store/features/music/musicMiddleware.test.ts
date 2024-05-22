@@ -2,16 +2,16 @@
  * @jest-environment jsdom
  */
 
-import { mocked } from "ts-jest/utils";
+import { mocked } from "jest-mock";
 import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground, dummyMusic } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
-import ScripTracker from "../../../../src/lib/vendor/scriptracker/scriptracker";
+import ScripTracker from "../../../../src/renderer/lib/vendor/scriptracker/scriptracker";
 
-jest.mock("../../../../src/lib/vendor/scriptracker/scriptracker");
-const mockedScripTracker = mocked(ScripTracker, true);
+jest.mock("../../../../src/renderer/lib/vendor/scriptracker/scriptracker");
+const mockedScripTracker = mocked(ScripTracker);
 
 beforeEach(() => {
   jest.resetModules();
@@ -72,7 +72,7 @@ test("Should trigger call to play music", async () => {
   middleware(store)(next)(action);
 
   expect(loadSpy).toBeCalledWith(
-    "file:///root/path/assets/music/track1.mod",
+    "gbs://project/assets/music/track1.mod",
     false
   );
 });
@@ -145,7 +145,7 @@ test("Should pause music when switching section", async () => {
   } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = navigationActions.setSection("build");
+  const action = navigationActions.setSection("settings");
 
   middleware(store)(next)(action);
 

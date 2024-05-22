@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from "react";
-import { SpriteAnimationType } from "store/features/entities/entitiesTypes";
+import React, { FC, useEffect, useMemo, useState } from "react";
+import { SpriteAnimationType } from "shared/lib/entities/entitiesTypes";
 import { OptGroup, Option, Select } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface AnimationTypeSelectProps {
   name: string;
@@ -17,45 +17,48 @@ interface AnimationTypeOptGroup extends OptGroup {
   options: AnimationTypeOption[];
 }
 
-const options: AnimationTypeOptGroup[] = [
-  {
-    label: l10n("FIELD_FIXED_DIRECTION"),
-    options: [
-      { label: l10n("FIELD_FIXED_DIRECTION"), value: "fixed" },
-      {
-        label: l10n("FIELD_FIXED_DIRECTION_MOVEMENT"),
-        value: "fixed_movement",
-      },
-    ],
-  },
-  {
-    label: l10n("FIELD_MULTI_DIRECTION"),
-    options: [
-      { label: l10n("FIELD_MULTI_DIRECTION"), value: "multi" },
-      {
-        label: l10n("FIELD_MULTI_DIRECTION_MOVEMENT"),
-        value: "multi_movement",
-      },
-    ],
-  },
-  {
-    label: l10n("GAMETYPE_PLATFORMER"),
-    options: [
-      { label: l10n("FIELD_PLATFORMER_PLAYER"), value: "platform_player" },
-    ],
-  },
-  {
-    label: l10n("GAMETYPE_POINT_N_CLICK"),
-    options: [{ label: l10n("FIELD_CURSOR"), value: "cursor" }],
-  },
-];
-
 export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
   name,
   value,
   onChange,
 }) => {
   const [currentValue, setCurrentValue] = useState<AnimationTypeOption>();
+
+  const options: AnimationTypeOptGroup[] = useMemo(
+    () => [
+      {
+        label: l10n("FIELD_FIXED_DIRECTION"),
+        options: [
+          { label: l10n("FIELD_FIXED_DIRECTION"), value: "fixed" },
+          {
+            label: l10n("FIELD_FIXED_DIRECTION_MOVEMENT"),
+            value: "fixed_movement",
+          },
+        ],
+      },
+      {
+        label: l10n("FIELD_MULTI_DIRECTION"),
+        options: [
+          { label: l10n("FIELD_MULTI_DIRECTION"), value: "multi" },
+          {
+            label: l10n("FIELD_MULTI_DIRECTION_MOVEMENT"),
+            value: "multi_movement",
+          },
+        ],
+      },
+      {
+        label: l10n("GAMETYPE_PLATFORMER"),
+        options: [
+          { label: l10n("FIELD_PLATFORMER_PLAYER"), value: "platform_player" },
+        ],
+      },
+      {
+        label: l10n("GAMETYPE_POINT_N_CLICK"),
+        options: [{ label: l10n("FIELD_CURSOR"), value: "cursor" }],
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (value) {
@@ -73,7 +76,7 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
         }
       }
     }
-  }, [value]);
+  }, [options, value]);
 
   return (
     <Select

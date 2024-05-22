@@ -1,7 +1,7 @@
 #ifndef _SIO_H_INCLUDE
 #define _SIO_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "compat.h"
 
@@ -12,8 +12,8 @@
 #define LINK_MODE_SLAVE 2
 
 extern volatile UBYTE SIO_status;
-void SIO_send_byte(UBYTE data) PRESERVES_REGS(b, c, d, e, h, l);
-void SIO_receive() PRESERVES_REGS(b, c, d, e, h, l);
+void SIO_send_byte(UBYTE data) OLDCALL PRESERVES_REGS(b, c, d, e, h, l);
+void SIO_receive(void) PRESERVES_REGS(b, c, d, e, h, l);
 
 extern UBYTE link_operation_mode;
 
@@ -28,7 +28,7 @@ extern UBYTE link_packet_snd_len;
 extern const UBYTE * link_packet_snd_ptr;
 extern UBYTE link_packet_sent;
 
-void SIO_init() BANKED;
+void SIO_init(void) BANKED;
 
 inline void SIO_set_mode(UBYTE mode) {
     link_operation_mode = mode;

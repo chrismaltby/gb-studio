@@ -8,20 +8,21 @@ export const ScriptEventPlaceholder = styled.div`
 export const ScriptEventRenameInput = styled.input`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
+  font-size: 11px;
   flex-grow: 1;
   border: 0;
   border-radius: 4px;
   padding: 5px;
   margin-left: -5px;
   font-weight: bold;
-  margin-right: -22px;
+  margin-right: -18px;
 `;
 
 export const ScriptEventRenameInputCompleteButton = styled.button`
   z-index: 10000;
   position: relative;
   top: 0px;
-  left: 0px;
+  left: -4px;
   width: 21px;
   height: 21px;
   border: 0;
@@ -60,6 +61,15 @@ export const ScriptEventHeaderTitle = styled.div`
   max-width: 100%;
 `;
 
+export const ScriptEventHeaderBreakpointIndicator = styled.div`
+  display: flex;
+  svg {
+    fill: ${(props) => props.theme.colors.highlight};
+    max-width: 15px;
+    max-height: 15px;
+  }
+`;
+
 interface ScriptEventHeaderCaretProps {
   open?: boolean;
 }
@@ -78,11 +88,14 @@ interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
   comment?: boolean;
+  isSelected?: boolean;
+  isExecuting?: boolean;
   child?: boolean;
   altBg?: boolean;
 }
 
 export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
+  scroll-margin-top: 32px;
   position: relative;
   display: flex;
   align-items: center;
@@ -166,6 +179,34 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
         `
       : ""}
 
+  ${(props) =>
+    props.isSelected
+      ? css`
+          &&& {
+            background: ${(props) => props.theme.colors.highlight};
+            color: ${(props) => props.theme.colors.highlightText};
+
+            svg {
+              fill: ${(props) => props.theme.colors.highlightText};
+            }
+          }
+        `
+      : ""}
+
+  ${(props) =>
+    props.isExecuting
+      ? css`
+          &&& {
+            background: ${(props) => props.theme.colors.highlight};
+            color: ${(props) => props.theme.colors.highlightText};
+
+            svg {
+              fill: ${(props) => props.theme.colors.highlightText};
+            }
+          }
+        `
+      : ""}
+    
   ${(props) =>
     props.child
       ? css`
@@ -254,7 +295,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
 export const ScriptEventFields = styled.div`
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   padding: 5px;
 
   & > * {
@@ -269,6 +310,7 @@ export const ScriptEventFields = styled.div`
 interface ScriptEventFieldProps {
   halfWidth?: boolean;
   inline?: boolean;
+  alignBottom?: boolean;
 }
 
 export const ScriptEventField = styled.div<ScriptEventFieldProps>`
@@ -279,14 +321,21 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
         `
       : ""}
 
-      ${(props) =>
-        props.inline
-          ? css`
-              flex-basis: 0;
-              flex-grow: 0;
-              margin-left: -2px;
-            `
-          : ""}
+  ${(props) =>
+    props.inline
+      ? css`
+          flex-basis: 0;
+          flex-grow: 0;
+          margin-left: -2px;
+        `
+      : ""}
+
+  ${(props) =>
+    props.alignBottom
+      ? css`
+          align-self: flex-end;
+        `
+      : ""}
   }
 
 `;
@@ -302,7 +351,7 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   border-left: 1px dotted
     ${(props) => props.theme.colors.scripting.header.backgroundAlt};
   padding-left: 10px;
-  padding-left: calc(max(10px, min(4%, 50px)));
+  padding-left: calc(max(10px, min(4%, 20px)));
   box-sizing: border-box;
   border-radius: 10px;
   position: relative;
@@ -395,6 +444,8 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
 
 interface ScriptEventFieldGroupProps {
   halfWidth?: boolean;
+  wrapItems?: boolean;
+  alignBottom?: boolean;
 }
 
 export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProps>`
@@ -404,9 +455,20 @@ export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProp
           flex-basis: 100px;
         `
       : ""}
+  ${(props) =>
+    props.alignBottom
+      ? css`
+          align-self: flex-end;
+        `
+      : ""}      
   & > div {
     margin: -10px;
-    flex-wrap: nowrap;
+    ${(props) =>
+      !props.wrapItems
+        ? css`
+            flex-wrap: nowrap;
+          `
+        : ""}
   }
 `;
 

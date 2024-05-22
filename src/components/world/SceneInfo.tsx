@@ -1,4 +1,6 @@
 import {
+  EVENT_ACTOR_SET_SPRITE,
+  EVENT_PLAYER_SET_SPRITE,
   MAX_ACTORS,
   MAX_ACTORS_SMALL,
   MAX_NESTED_SCRIPT_DEPTH,
@@ -6,10 +8,9 @@ import {
   MAX_TRIGGERS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-} from "../../consts";
+} from "consts";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
   customEventSelectors,
@@ -20,16 +21,13 @@ import {
 } from "store/features/entities/entitiesState";
 import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
-import l10n from "lib/helpers/l10n";
-import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpers";
-import { SpriteSheet } from "store/features/entities/entitiesTypes";
-import clamp from "lib/helpers/clamp";
+import l10n from "shared/lib/lang/l10n";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
+import { SpriteSheet } from "shared/lib/entities/entitiesTypes";
+import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
-import maxSpriteTilesForBackgroundTilesLength from "lib/helpers/maxSpriteTilesForBackgroundTilesLength";
-import {
-  EVENT_ACTOR_SET_SPRITE,
-  EVENT_PLAYER_SET_SPRITE,
-} from "lib/compiler/eventTypes";
+import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprites";
+import { walkNormalizedSceneScripts } from "shared/lib/scripts/walk";
 
 interface SceneInfoWrapperProps {
   loaded: boolean;
@@ -40,11 +38,17 @@ interface SceneInfoButtonProps {
   error?: boolean;
 }
 
+const MAX_LOGO_SPRITE_TILES = 12;
+
 const SceneInfoWrapper = styled.div<SceneInfoWrapperProps>`
   display: flex;
   justify-content: center;
   opacity: 0;
   transition: opacity linear 0.2s;
+  line-height: 12px;
+  padding: 5px 0 2px;
+  font-size: 10px;
+
   ${(props) =>
     props.loaded
       ? css`
@@ -90,31 +94,33 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
 `;
 
 const SceneInfo = () => {
-  const selectedSceneId = useSelector((state: RootState) => state.editor.scene);
-  const scene = useSelector((state: RootState) =>
+  const selectedSceneId = useAppSelector((state) => state.editor.scene);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, selectedSceneId)
   );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const spriteSheetsLookup = useSelector((state: RootState) =>
+  const spriteSheetsLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
-  const customEventsLookup = useSelector((state: RootState) =>
+  const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const backgroundNumTiles = useSelector(
-    (state: RootState) =>
-      state.warnings.backgrounds[scene?.backgroundId || ""]?.numTiles
+  const backgroundNumTiles = useAppSelector(
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
+  );
+  const isCGBOnly = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "color"
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
@@ -141,7 +147,7 @@ const SceneInfo = () => {
       const actorsExclusiveLookup: Record<string, SpriteSheet> = {};
 
       // Events
-      walkNormalisedSceneEvents(
+      walkNormalizedSceneScripts(
         scene,
         scriptEventsLookup,
         actorsLookup,
@@ -243,26 +249,34 @@ const SceneInfo = () => {
       });
 
       // Player sprite
-      let playerSpriteId = scene.playerSpriteSheetId || "";
-      if (!scene.playerSpriteSheetId) {
-        playerSpriteId = defaultPlayerSprites[scene.type || "TOPDOWN"];
+      if (scene.type !== "LOGO") {
+        let playerSpriteId = scene.playerSpriteSheetId || "";
+        if (!scene.playerSpriteSheetId) {
+          playerSpriteId = defaultPlayerSprites[scene.type || "TOPDOWN"];
+        }
+        const defaultPlayerSprite = spriteSheetsLookup[playerSpriteId || ""];
+        // Check if any player exclusive sprite have more tiles than default
+        if (
+          defaultPlayerSprite &&
+          actorsExclusiveLookup["player"] &&
+          actorsExclusiveLookup["player"].numTiles >
+            defaultPlayerSprite.numTiles
+        ) {
+          playerSpriteId = actorsExclusiveLookup["player"].id;
+        }
+        addSprite(playerSpriteId, true);
       }
-      const defaultPlayerSprite = spriteSheetsLookup[playerSpriteId || ""];
-      // Check if any player exclusive sprite have more tiles than default
-      if (
-        defaultPlayerSprite &&
-        actorsExclusiveLookup["player"] &&
-        actorsExclusiveLookup["player"].numTiles > defaultPlayerSprite.numTiles
-      ) {
-        playerSpriteId = actorsExclusiveLookup["player"].id;
-      }
-      addSprite(playerSpriteId, true);
 
       const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
-        return (
-          memo +
-          (spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0)
-        );
+        let numTiles =
+          spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0;
+        if (isCGBOnly) {
+          // CGB Only splits tiles equally between VRAM banks 1 + 2
+          // need to take into account that odd number of tiles will fill
+          // VRAM bank1 quicker
+          numTiles = Math.ceil(numTiles * 0.5) * 2;
+        }
+        return memo + numTiles;
       }, 0);
 
       setTileCount(tileCount);
@@ -320,10 +334,10 @@ const SceneInfo = () => {
             ) {
               const near = cachedCheckScreenAt(x, y);
               if (near > MAX_ONSCREEN) {
-                const actorName = actor.name || `Actor ${i + 1}`;
+                const name = actorName(actor, i);
                 console.log("TOO CLOSE");
                 newActorWarnings.push(
-                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
+                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName: name })
                 );
                 newActorWarnings.push(
                   l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
@@ -342,13 +356,14 @@ const SceneInfo = () => {
     setActorWarnings(newActorWarnings);
     setLoaded(true);
   }, [
-    actorsLookup,
-    defaultPlayerSprites,
     scene,
-    scriptEventsLookup,
     spriteSheetsLookup,
+    scriptEventsLookup,
+    actorsLookup,
     triggersLookup,
     customEventsLookup,
+    defaultPlayerSprites,
+    isCGBOnly,
   ]);
 
   const debouncedRecalculateCounts = useDebounce(recalculateCounts, 200);
@@ -366,14 +381,13 @@ const SceneInfo = () => {
   ]);
 
   if (!scene) {
-    return;
+    return <></>;
   }
 
   let maxActors = MAX_ACTORS;
   let maxTriggers = MAX_TRIGGERS;
 
   if (scene.type === "LOGO") {
-    maxActors = 0;
     maxTriggers = 0;
   } else if (scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT) {
     maxActors = MAX_ACTORS_SMALL;
@@ -384,7 +398,9 @@ const SceneInfo = () => {
   const actorError = actorCount > maxActors;
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =
-    maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles);
+    scene.type !== "LOGO"
+      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles, isCGBOnly)
+      : MAX_LOGO_SPRITE_TILES;
 
   return (
     <SceneInfoWrapper loaded={loaded}>
@@ -398,18 +414,11 @@ const SceneInfo = () => {
                 maxActors: String(maxActors),
               })}
             </div>
-            {actorWarnings.length > 0 && (
-              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
-            )}
+            {actorWarnings.length > 0 && <div>{l10n("FIELD_WARNING")}</div>}
             {actorWarnings.length > 0 &&
               actorWarnings.map((warning) => (
-                <div key={warning} className="Scene__Info--Error">
-                  {warning}
-                </div>
+                <div key={warning}>{warning}</div>
               ))}
-            {scene.type === "LOGO" && (
-              <div>{l10n("WARNING_LOGO_ENTITIES")}</div>
-            )}
           </>
         }
       >
@@ -418,36 +427,30 @@ const SceneInfo = () => {
         </SceneInfoButton>
       </TooltipWrapper>
 
-      {scene.type !== "LOGO" && (
-        <TooltipWrapper
-          tooltip={
-            <>
-              <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
-              <div>
-                {l10n("FIELD_SPRITE_TILES_COUNT", {
-                  tileCount: String(tileCount),
-                  maxTiles: String(maxSpriteTiles),
-                })}
-              </div>
-              {tileCount > maxSpriteTiles && (
-                <div className="Scene__TooltipTitle">
-                  {l10n("FIELD_WARNING")}
-                </div>
-              )}
-              {tileCount > maxSpriteTiles && (
-                <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
-              )}
-            </>
-          }
+      <TooltipWrapper
+        tooltip={
+          <>
+            <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
+            <div>
+              {l10n("FIELD_SPRITE_TILES_COUNT", {
+                tileCount: String(tileCount),
+                maxTiles: String(maxSpriteTiles),
+              })}
+            </div>
+            {tileCount > maxSpriteTiles && <div>{l10n("FIELD_WARNING")}</div>}
+            {tileCount > maxSpriteTiles && (
+              <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
+            )}
+          </>
+        }
+      >
+        <SceneInfoButton
+          warning={tileCount === maxSpriteTiles}
+          error={tileCount > maxSpriteTiles}
         >
-          <SceneInfoButton
-            warning={tileCount === maxSpriteTiles}
-            error={tileCount > maxSpriteTiles}
-          >
-            S: {tileCount}/{maxSpriteTiles}
-          </SceneInfoButton>
-        </TooltipWrapper>
-      )}
+          S: {tileCount}/{maxSpriteTiles}
+        </SceneInfoButton>
+      </TooltipWrapper>
 
       <TooltipWrapper
         tooltip={
@@ -459,9 +462,7 @@ const SceneInfo = () => {
                 maxTriggers: String(maxTriggers),
               })}
             </div>
-            {triggerCount > maxTriggers && (
-              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
-            )}
+            {triggerCount > maxTriggers && <div>{l10n("FIELD_WARNING")}</div>}
             {triggerCount > maxTriggers && (
               <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>
             )}

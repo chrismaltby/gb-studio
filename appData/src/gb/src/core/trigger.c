@@ -9,7 +9,7 @@ UBYTE last_trigger_tx;
 UBYTE last_trigger_ty;
 UBYTE last_trigger;
 
-void trigger_reset() BANKED {
+void trigger_reset(void) BANKED {
     last_trigger_tx = 0;
     last_trigger_ty = 0;
     last_trigger = NO_TRIGGER_COLLISON;

@@ -1,14 +1,13 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
-import l10n from "lib/helpers/l10n";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import { DMG_PALETTE } from "consts";
+import l10n from "shared/lib/lang/l10n";
 import {
   paletteSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { Palette } from "store/features/entities/entitiesTypes";
-import PaletteBlock from "../library/PaletteBlock";
+import { Palette } from "shared/lib/entities/entitiesTypes";
+import PaletteBlock from "components/forms/PaletteBlock";
 import {
   OptionLabelWithPreview,
   Select,
@@ -35,17 +34,17 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   const [options, setOptions] = useState<PaletteIndexOption[]>([]);
   const [currentValue, setCurrentValue] = useState<PaletteIndexOption>();
 
-  const previewAsSceneId = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, previewAsSceneId)
   );
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) => state.project.present.settings.defaultSpritePaletteIds
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds
   );
 
   useEffect(() => {

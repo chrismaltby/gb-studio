@@ -1,4 +1,6 @@
-import l10n, { replaceParams, loadLanguage } from "../../src/lib/helpers/l10n";
+import l10n, { L10NKey, replaceParams } from "../../src/shared/lib/lang/l10n";
+import { loadLanguage } from "../../src/lib/lang/initElectronL10N";
+
 import glob from "glob";
 import { readFile } from "fs-extra";
 
@@ -24,7 +26,7 @@ test("should not allow spaces around param definition in l10n string", () => {
 
 test("Should be able to build debug translation lookup", () => {
   process.env.DEBUG_L10N = "true";
-  expect(l10n("HELLO_WORLD")).toEqual("HELLO_WORLD");
+  expect(l10n("HELLO_WORLD" as L10NKey)).toEqual("HELLO_WORLD");
   process.env.DEBUG_L10N = undefined;
 });
 

@@ -1,0 +1,89 @@
+import l10n from "shared/lib/lang/l10n";
+import React, { useMemo } from "react";
+import { UnitType, unitTypes } from "shared/lib/entities/entitiesTypes";
+import styled from "styled-components";
+import { Button } from "ui/buttons/Button";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { CheckIcon, BlankIcon } from "ui/icons/Icons";
+import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+
+interface UnitSelectLabelButtonProps {
+  value?: UnitType;
+  allowedValues?: UnitType[];
+  onChange?: (newValue: UnitType) => void;
+}
+
+const Units = styled.div`
+  display: inline-flex;
+  pointer-events: all;
+  margin: -6px 3px;
+
+  ${Button} {
+    opacity: 0.5;
+    padding: 1px;
+    min-width: 0;
+    height: 18px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+`;
+
+export const UnitSelectLabelButton = ({
+  value,
+  allowedValues,
+  onChange,
+}: UnitSelectLabelButtonProps) => {
+  const unitTypeNames: Record<UnitType, string> = useMemo(
+    () => ({
+      tiles: l10n("FIELD_TILES"),
+      pixels: l10n("FIELD_PIXELS"),
+      time: l10n("FIELD_SECONDS"),
+      frames: l10n("FIELD_FRAMES"),
+      "8px": "8px",
+      "16px": "16px",
+    }),
+    []
+  );
+
+  const unitTypeButtonNames: Record<UnitType, string> = useMemo(
+    () => ({
+      tiles: l10n("FIELD_TILES").toLocaleLowerCase(),
+      pixels: l10n("FIELD_PIXELS_SHORT").toLocaleLowerCase(),
+      time: l10n("FIELD_SECONDS").toLocaleLowerCase(),
+      frames: l10n("FIELD_FRAMES").toLocaleLowerCase(),
+      "8px": "8px",
+      "16px": "16px",
+    }),
+    []
+  );
+
+  const allValues = allowedValues ? allowedValues : unitTypes;
+  const currentValue = value && unitTypeButtonNames[value];
+  return (
+    <Units>
+      {allowedValues ? (
+        <DropdownButton
+          label={currentValue}
+          showArrow={false}
+          size="small"
+          variant="transparent"
+        >
+          {allValues.map((item) => (
+            <MenuItem key={item} onClick={() => onChange?.(item)}>
+              <MenuItemIcon>
+                {value === item ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {unitTypeNames[item]}
+            </MenuItem>
+          ))}
+        </DropdownButton>
+      ) : (
+        <Button size="small" variant="transparent">
+          {currentValue}
+        </Button>
+      )}
+    </Units>
+  );
+};

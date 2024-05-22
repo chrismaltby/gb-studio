@@ -1,9 +1,9 @@
 #ifndef STATE_SHMUP_H
 #define STATE_SHMUP_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
-void shmup_init();
-void shmup_update();
+void shmup_init(void) BANKED;
+void shmup_update(void) BANKED;
 
 #endif

@@ -1,15 +1,8 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
-import {
-  paletteSelectors,
-  spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
-import {
-  ActorDirection,
-  SpriteSheet,
-} from "store/features/entities/entitiesTypes";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { ActorDirection, SpriteSheet } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -18,14 +11,13 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
   direction?: ActorDirection;
   frame?: number;
-  paletteId?: string;
   onChange?: (newId: string) => void;
   filter?: (spriteSheet: SpriteSheet) => boolean;
   optional?: boolean;
@@ -52,18 +44,14 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   value,
   direction,
   frame,
-  paletteId,
   onChange,
   filter,
   optional,
   optionalLabel,
   ...selectProps
 }) => {
-  const spriteSheets = useSelector((state: RootState) =>
+  const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
-  );
-  const palette = useSelector((state: RootState) =>
-    paletteSelectors.selectById(state, paletteId || "")
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] = useState<SpriteSheet>();
@@ -133,7 +121,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={option.value}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             }
           >
@@ -149,7 +136,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || ""}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             }
           >

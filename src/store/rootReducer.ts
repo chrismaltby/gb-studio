@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import undoable from "redux-undo";
 import console from "./features/console/consoleState";
 import music from "./features/music/musicState";
-import warnings from "./features/warnings/warningsState";
+import assets from "./features/assets/assetsState";
 import entities from "./features/entities/entitiesState";
 import document from "./features/document/documentState";
 import editor from "./features/editor/editorState";
@@ -13,9 +13,11 @@ import error from "./features/error/errorState";
 import navigation from "./features/navigation/navigationState";
 import clipboard from "./features/clipboard/clipboardState";
 import sprite from "./features/sprite/spriteState";
+import scriptEventDefs from "./features/scriptEventDefs/scriptEventDefsState";
 import tracker from "./features/tracker/trackerState";
 import trackerDocument from "./features/trackerDocument/trackerDocumentState";
-import { TRACKER_REDO, TRACKER_UNDO } from "../consts";
+import debug from "./features/debugger/debuggerState";
+import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -29,6 +31,8 @@ const rootReducer = combineReducers({
   engine,
   clipboard,
   sprite,
+  scriptEventDefs,
+  debug,
   tracker,
   trackerDocument: undoable(trackerDocument, {
     limit: 20,
@@ -60,7 +64,7 @@ const rootReducer = combineReducers({
     initTypes: ["@@redux/INIT", "@@INIT"],
   }),
   error,
-  warnings,
+  assets,
 });
 
 export default rootReducer;

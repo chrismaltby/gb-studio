@@ -25,11 +25,11 @@ interface TabProps {
 }
 
 const Wrapper = styled.div<WrapperProps>`
-  height: 37px;
+  height: 36px;
   margin: 0px;
   font-size: 12px;
   font-weight: bold;
-  border-bottom: 1px solid var(--sidebar-border-color);
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
   text-align: left;
   padding: 0;
   padding-right: 10px;
@@ -54,7 +54,7 @@ const Wrapper = styled.div<WrapperProps>`
           margin-top: 5px;
           height: 25px;
           flex-basis: 100%;
-          padding-left: calc(2px + max(10px, min(4%, 50px)));
+          padding-left: calc(2px + max(10px, min(4%, 20px)));
         `
       : ""}
 `;
@@ -63,16 +63,16 @@ const Tabs = styled.div<TabsProps>`
   display: flex;
   height: 100%;
   overflow: hidden;
-  height: 37px;
-  padding-top: 1px;
+  height: 36px;
   padding-right: 10px;
   width: 100%;
   box-sizing: border-box;
+  align-self: flex-start;
 
   ${(props) =>
     props.overflowActiveTab
       ? css`
-          height: 38px;
+          height: 37px;
         `
       : ""}
 
@@ -123,18 +123,23 @@ const Tab = styled.button<TabProps>`
   ${(props) =>
     props.selected && props.variant !== "secondary"
       ? css`
-          background: var(--input-bg-color);
+          background: ${(props) => props.theme.colors.input.background};
           opacity: 1;
-          outline: 1px solid var(--input-border-color) !important;
+          border-right: 1px solid ${(props) => props.theme.colors.input.border};
+          border-top: 1px solid ${(props) => props.theme.colors.input.border};
+          margin-top: -1px;
           overflow: visible;
           -webkit-mask-image: none;
+          &:not(:first-child) {
+            border-left: 1px solid ${(props) => props.theme.colors.input.border};
+          }
         `
       : ""}
 
   ${(props) =>
     props.selected && props.variant === "secondary"
       ? css`
-          background: var(--input-bg-color);
+          background: ${(props) => props.theme.colors.input.background};
           opacity: 1;
           overflow: visible;
           -webkit-mask-image: none;
@@ -145,6 +150,7 @@ ${(props) =>
     props.variant === "secondary"
       ? css`
           padding-right: 5px;
+          height: 36px;
         `
       : ""}
 
@@ -153,7 +159,16 @@ ${(props) =>
     props.variant === "scriptEvent"
       ? css`
           padding: 0 10px;
-          margin-left: 1px;
+          margin-top: 0px;
+        `
+      : ""}
+
+      ${(props) =>
+    props.selected && props.variant === "scriptEvent"
+      ? css`
+          border-left: 1px solid ${(props) => props.theme.colors.input.border};
+          border-right: 1px solid ${(props) => props.theme.colors.input.border};
+          border-top: 1px solid ${(props) => props.theme.colors.input.border};
         `
       : ""}
 
@@ -205,9 +220,11 @@ export const StickyTabs = styled.div`
   top: 0;
   z-index: 1;
   background: ${(props) => props.theme.colors.sidebar.background};
+  box-shadow: ${(props) => props.theme.colors.sidebar.well.boxShadow};
 `;
 
 export const TabSettings = styled.div`
   background-color: ${(props) => props.theme.colors.input.background};
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
   padding: 10px;
 `;

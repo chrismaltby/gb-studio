@@ -7,24 +7,173 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update sidebar layout to prioritise giving scripts full sidebar width
+- Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
+- Update music editor to display compressed version of channel mute/visibility controls when not enough room to display fully
+- Keep preference for using Piano Roll or Tracker view when switching between songs in music editor rather than switching to Piano Roll view
+- Button events renamed to be more consistent
+- "Add Event" search updated to also include events that match group name when searching e.g. Searching 'Joypad' will include all Button events
+- Darkened conditional event header colours in dark theme
+
+### Fixed
+
+- Fix "Add Flags" event tooltips localisation.
+- Fix issue where some sidebar inputs would appear above script tabs when scrolled
+- Fix rumble support when using MBC5 cartridge [@pau-tomas](https://github.com/pau-tomas)
+
+## [4.0.0-beta2]
+
+### Added
+
+- Add ability for variables to be used for X/Y coordinates in replace tile events
+
+### Changed
+
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Allow event plugins to require("shared/lib/scriptValue/helpers") to access script value helpers
+
+### Fixed
+
+- Fix issue migrating "Engine Field Update" events
+- Fix issue where shift key no longer allowed line drawing for collisions and tile painting modes
+- Fix issue where using recursive scripts could cause UI to lock up while calculating scene sprite tile count and when building game.
+- Fix issue where custom scripts parameters were not always updating as parameters were updated
+- Fix issue where "If Variable Has Flag" was always false [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where selecting effect column in music editor tracker would cause application to freeze [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue preventing documentation being accessed from splash window
+
+## [4.0.0-beta1]
+
+### Added
+
+- Add ability to launch projectiles at a target actor [@patrickmollohan](https://github.com/patrickmollohan) [@pau-tomas](https://github.com/pau-tomas)
+- Add angle selector input showing degrees for GBVM angle values [@pau-tomas](https://github.com/pau-tomas)
+- Add support for atan2 function in math expressions [@pau-tomas](https://github.com/pau-tomas)
+- Add magnitude field to camera shake event [@patrickmollohan](https://github.com/patrickmollohan)
+- Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
+- Add shortcut to search scenes when in world mode by pressing `/`
+- Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
+- Add native support for Macs with Apple silicon without needing Rosetta
+- Add support for `<<` and `>>` operators in math expressions [@pau-tomas](https://github.com/pau-tomas)
+- Add script debugger pane to World view, when game is run while this is open allows inspecting currently running scripts, setting breakpoints and updating live variable values
+- Add 'Color Only' mode. Roughly doubles the amount of tiles available for backgrounds and sprites though game will no longer run on original GB (DMG) hardware
+- Add event "Replace Tile At Position" and "Replace Tile From Sequence" to update background tiles, calling "Replace Tile From Sequence" repeatedly will cycle through animation frames
+- Add new asset folder "Tilesets" for use in "Replace Tile" events
+- Add ability for plugins to define additional scene types by including defined types (e.g. `"sceneTypes": [{"key": "RACING", "label": "Racing 2D"}]`) in `engine.json` [@pau-tomas](https://github.com/pau-tomas)
+- Add ability for `Actor Move Relative`, `Actor Set Position Relative` and `If Actor At Position` to use variables as coordinate inputs
+- Add ability for almost every script event input that supports variables to use advanced values, click the button to the left of the value input to select value types, and combine them with math operators
+- Add ability to use variables within Menu and Choice events [@pau-tomas](https://github.com/pau-tomas)
+- Add stack preview mode to debugger
+- Add ability to set common tilesets between scenes, the common tiles will always be loaded in a consistent order between scenes sharing the same common tileset
+- Add ability to set Fade Speed as "Instant" when switching scenes, combine this with use of common tilesets in both scenes to enable seamless scene switching
+- Add ability to use variables, advanced values and expressions for coordinates in Change Scene event
+- Add ability to "Preview as Monochrome" when using mixed color mode by toggling button at bottom left of World view
+- Add ability to provide color PNGs for backgrounds and extract palettes automatically by either clicking "Auto Color" button in brush toolbar or using dropdown on Scene sidebar next to "Background Palettes" label
+- Add ability to override tile data for auto colored backgrounds by providing a matching \*.mono.png in your assets/backgrounds folder containing a monochrome version of the background. When provided this file will be used for tiles data and the regular image will be used to extract the color palettes (useful for mixed color mode games when auto palettes isn't creating tile data as you'd like automatically)
+- Add ability to edit waveforms in music editor using keyboard with ability to copy/paste [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to restore scene's default palettes in "Set Background Palettes" (especially useful when using auto palettes)
+- Add ability to set filename when creating a new song in music editor
+- Add context menus when right clicking on list items, or on scenes/actors/triggers in world view, or tiles on sprite editor view allowing renaming/deleting
+- Add ability to multi select scenes by shift click + dragging on world view or shift clicking in scenes list. When multiple scenes are selected they can be moved at the same time
+- Add ability to multi select script events by shift clicking the event's header. When multiple events are selected they can be moved, copied, grouped or deleted at the same time
+- Add ability for scenes, scripts, palettes and image/music assets to be organised into folders by naming them with path separators (`/` or `\` supported) e.g naming a scene `ui/menu/Inventory` will place it in a folder `ui/menu`
+- Generate `game_globals.h` at compile time allowing access to global variables from C code [@pau-tomas](https://github.com/pau-tomas)
+- Add support for using random numbers in GBVM RPN instructions [@untoxa](https://github.com/untoxa)
+- Add `Set Camera Position` event which can be used before scene fade in to instantly move camera to a new location
+- Add `Script Lock` and `Script Unlock` events allowing pausing other scripts and scene updates until the script is completed or unlocked
+- Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
+- Add `Show Navigator` button to World toolbar if navigator is closed
+- Add ability to rename flags in Variable Flags Add/Clear/Set events [@pau-tomas](https://github.com/pau-tomas)
+
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Updated code generation to reduce access to stack [@pau-tomas](https://github.com/pau-tomas)
+- Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
+- Improved organisation of "Add Event" menu by grouping related event types
+- Updated German localisation. [@gonzoMD](https://github.com/gonzoMD)
+- Add Event Menu highlights matching text when searching
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
+- Dragging scenes now snaps to an 8px grid allowing easier alignment of scenes
+- Camera speed events updated to use pixels per frame values like actor movement, allowing more precise speed control and speeds faster than 1px per frame
+- Build information and warnings moved to "Build Log" section of Debugger
+
+### Fixed
+
+- Fix localisation for default names of scenes, actors and triggers, new entities no longer hard coded to use English names
+- Fix issue where clicking on a scene would sometimes not cause it to become selected
+- Fix issue where dragging World using middle mouse button and releasing button with cursor outside of window would cause scrolling to still be enabled
+- Fix issue where double clicking scene search input would cause window to become maximised on macOS
+- Fix issue where pasting a "Call Script" event could sometimes incorrectly say script has been modified if project hadn't been saved and reloaded first
+- Fix issue where creating a new pattern in music editor would sometimes cause the other patterns in the song to play at a lower octave
+- Fix issue where variables in Dialogue and Math inputs could appear above script tabs
+- Fix calculation of last parallax layer height in editor input [@pau-tomas](https://github.com/pau-tomas)
+- Fix compiler warning when using some unary operators in While loop [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where fonts referenced from plugins were not always being included in compiled game
+- Fix issue where navigator split sizes would update every time a project was opened, causing unnecessary changes when project stored in version control system
+- Fix issue where some slower camera speeds weren't actually slower
+- Fix issue where setting "Show Connections" to "None" would prevent Player start position from being visible/draggable
+- Fix issue where note lengths for wave instruments in .uge files were not being stored according to file specification. This may cause some .uge files created with older builds of GB Studio to not sound correct. If you need to fix any .uge files, you can use this [migrator tool](https://chrismaltby.github.io/gbs-uge-migrator/)
+- Fix issue where navigator sidebar could sometimes not be wide enough to show Add and Search buttons in section headers
+- Fix issue where document wasn't being flagged as modified until first change after migrating a project
+
+### Removed
+
+- Removed "Build & Run" section, all previous functionality is now available in "Build Log" section of Debugger
+
+## [3.2.1] - 2024-02-27
+
+### Fixed
+
+- Fix sound effects previews in editor not matching how they sound in game [@pau-tomas](https://github.com/pau-tomas)
+- Fix crash when typing "!S" into dialogue events
+- Fix bug where engine plugins that include an engine.json with no fields causes all default engine settings to be hidden [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where transferring data over linkcable would cause game to hang
+
+## [3.2.0] - 2024-01-29
+
 ### Added
 
 - Add ability to choose timer context in timer events allowing up to four timers to be used per scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "If Current Scene Is" to allow conditionally running scripts based on the current scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
+- Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
+- Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
+- Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
+- Add descriptive README files to asset folders in new projects [@pau-tomas](https://github.com/pau-tomas)
+- Add slope brush when drawing collisions
+- Add magic brush when painting tiles and drawing collisions, updates all tiles matching the one clicked [@RichardULZ](https://github.com/RichardULZ)
+- Add support for slopes to platform scenes [@Canight](https://github.com/Canite) [@gearfo](https://gearfo.itch.io/) [@Gumpy Function](https://www.gumpyfunction.com/)
+- Add ability to make Analogue Pocket builds using CLI tool [@SalvatoreTosti](https://github.com/SalvatoreTosti)
+- Add warning when using engine plugins built on older versions of GB Studio
 
 ### Changed
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Rename "Obj Palette" in sprite editor to "Monochrome Palette" to make its purpose clearer, now includes palette preview [@pau-tomas](https://github.com/pau-tomas)
+- Allow actor fields that aren't named "actorId" or "otherActorId" to be in custom scripts [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where editing a variable's name in sidebar would sometimes cause a different variable to become selected
 
 ### Fixed
 
 - Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where editing a custom script could cause variables to switch back to pass by reference
 - Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption [@untoxa](https://github.com/untoxa)
+- Fix issue where script event title would show wrong local variable name for scenes [@pau-tomas](https://github.com/pau-tomas)
+- Fix muting bug with FXH parser [@coffeevalenbat](https://github.com/coffeevalenbat)
+- Fix issue where Animation State value for projectiles was being ignored
+- Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck
+- Fix bounds check for right screen edge when player isn't 16px wide
+- Fix VM_REPLACE_TILE_XY to allow tiles larger than 255 for logo scene type
 
-### Removed
+### Performance
+
+- Performance improvements in ScriptEditorEventHelper, no longer rerenders all scenes when updating [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.1.0] - 2022-09-11
 
@@ -164,7 +313,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where replacing trigger OnLeave script would replace OnEnter [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue replacing math expression variables in custom events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where some events when used in init scripts would cause the script to wait until the scene had faded in before continuing
-- Fix music editor: Instrument name isn't editable  [@pau-tomas](https://github.com/pau-tomas)
+- Fix music editor: Instrument name isn't editable [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Ticks per row field updates aren't reflected when playing the song [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Wave form changes are not updating for instrument preview [@pau-tomas](https://github.com/pau-tomas)
 - Improved engine GBA detection [@untoxa](https://github.com/untoxa)
@@ -303,7 +452,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced Fade To Black event with Engine props Fade to black
 - Custom Events are now listed in navigator sidebar only
 - Updated to GBDK2020 v4.0.1 for massive performance increase, new ejected engine mandatory
-- Engine bank push pop functions replaced with __banked for performance increase
+- Engine bank push pop functions replaced with \_\_banked for performance increase
 
 ### Fixed
 
@@ -405,7 +554,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add scene search functionality to World editor toolbar, if only a single scene matches view will scroll to center on that scene
 - Add button to jump from Dialogue Review section to corresponding scene in Game World
 - Add color labels for identifying and grouping scenes
-- Add support for larger background images, up to 2040px in either dimension, maximum width * height of image must be under 1,048,320
+- Add support for larger background images, up to 2040px in either dimension, maximum width \* height of image must be under 1,048,320
 - Increase number of allowed actors and triggers per scene to 30. Up to 10 actors will be visible on screen at the same time.
 - Add ability to pin actors to screen to use as simple HUD elements
 - Add event to switch any actor's sprite sheet dynamically

@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_CURRENT_SCENE_IS";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_SCENE"];
+const subGroups = {
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_SCENE",
+  EVENT_GROUP_SCENE: "EVENT_GROUP_CONTROL_FLOW",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_CURRENT_SCENE_IS_LABEL", {
@@ -61,6 +65,7 @@ module.exports = {
   id,
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

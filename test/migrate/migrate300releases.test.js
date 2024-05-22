@@ -5,7 +5,19 @@ import {
   migrateFrom300r3To310r1,
   migrateFrom310r1To310r2Event,
   migrateFrom310r3To311r1Event,
+  migrateFrom320r1To320r2Event,
+  migrateFrom320r2To330r1Settings,
+  migrateFrom330r2To330r3Event,
+  migrateFrom330r3To330r4Event,
+  migrateFrom330r4To330r5Event,
+  migrateFrom330r6To330r7Event,
 } from "../../src/lib/project/migrateProject";
+import initElectronL10N from "../../src/lib/lang/initElectronL10N";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
+
+beforeAll(async () => {
+  await initElectronL10N();
+});
 
 test("should not fail on empty project", () => {
   const oldProject = {
@@ -229,7 +241,7 @@ test("should add generated symbols to actors and triggers based on name", () => 
   });
 });
 
-test("should migrate custom script events to prefix values with V", () => {
+test("should migrate custom script events to prefix values with V", async () => {
   const oldEvent = {
     command: "EVENT_INC_VALUE",
     args: {
@@ -237,7 +249,10 @@ test("should migrate custom script events to prefix values with V", () => {
     },
     id: "event-1",
   };
-  expect(migrateFrom300r3To310r1ScriptEvent(oldEvent)).toEqual({
+  const scriptEventHandlers = await getTestScriptHandlers();
+  expect(
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
+  ).toEqual({
     command: "EVENT_INC_VALUE",
     args: {
       variable: "V0",
@@ -246,7 +261,7 @@ test("should migrate custom script events to prefix values with V", () => {
   });
 });
 
-test("should migrate custom script events to prefix values with V when using union types", () => {
+test("should migrate custom script events to prefix values with V when using union types", async () => {
   const oldEvent = {
     command: "EVENT_ACTOR_SET_DIRECTION",
     args: {
@@ -258,7 +273,10 @@ test("should migrate custom script events to prefix values with V when using uni
     },
     id: "event-1",
   };
-  expect(migrateFrom300r3To310r1ScriptEvent(oldEvent)).toEqual({
+  const scriptEventHandlers = await getTestScriptHandlers();
+  expect(
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
+  ).toEqual({
     command: "EVENT_ACTOR_SET_DIRECTION",
     args: {
       actorId: "player",
@@ -367,7 +385,8 @@ test("should keep existing engine field store events variable value if set", () 
   });
 });
 
-test("should migrate custom event definitions", () => {
+test("should migrate custom event definitions", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const oldProject = {
     scenes: [],
     customEvents: [
@@ -409,7 +428,7 @@ test("should migrate custom event definitions", () => {
       },
     ],
   };
-  expect(migrateFrom300r3To310r1(oldProject)).toEqual({
+  expect(migrateFrom300r3To310r1(oldProject, scriptEventHandlers)).toEqual({
     scenes: [],
     customEvents: [
       {
@@ -541,5 +560,925 @@ test("should add timer contexts to timer scripts", () => {
       timer: 1,
     },
     id: "event-3",
+  });
+});
+
+test("should add magnitude to camera shake events", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      frames: 10,
+      shakeDirection: "diagonal",
+      units: "frames",
+    },
+    id: "event-1",
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 1,
+    },
+    id: "event-2",
+  };
+  const customEvents = [];
+  expect(migrateFrom320r1To320r2Event(oldEvent1, customEvents)).toEqual({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      frames: 10,
+      shakeDirection: "diagonal",
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
+      units: "frames",
+    },
+    id: "event-1",
+  });
+  expect(migrateFrom320r1To320r2Event(oldEvent2, customEvents)).toEqual({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
+    },
+    id: "event-2",
+  });
+});
+
+test("should migrate customColorsEnabled=false to colorMode=mono", () => {
+  const oldProject = {
+    settings: {
+      customColorsEnabled: false,
+    },
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mono",
+    },
+  });
+});
+
+test("should migrate customColorsEnabled=true to colorMode=mixed", () => {
+  const oldProject = {
+    settings: {
+      customColorsEnabled: true,
+    },
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mixed",
+    },
+  });
+});
+
+test("should migrate missing customColorsEnabled to colorMode=mono", () => {
+  const oldProject = {
+    settings: {},
+  };
+  expect(migrateFrom320r2To330r1Settings(oldProject)).toMatchObject({
+    settings: {
+      colorMode: "mono",
+    },
+  });
+});
+
+test("should migrate EVENT_IF_TRUE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_TRUE",
+    args: {
+      variable: "L2",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: { type: "variable", value: "L2" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_FALSE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_FALSE",
+    args: {
+      variable: "L2",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "eq",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "false" },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE",
+    args: {
+      variable: "L2",
+      operator: "==",
+      comparator: 8,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "eq",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "number", value: 8 },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE_COMPARE to EVENT_IF, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE_COMPARE",
+    args: {
+      vectorX: "L2",
+      operator: ">=",
+      vectorY: "L3",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "gte",
+        valueA: { type: "variable", value: "L2" },
+        valueB: { type: "variable", value: "L3" },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_SET_TRUE to EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_TRUE",
+    args: {
+      variable: "L1",
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "L1",
+      value: { type: "true" },
+    },
+  });
+});
+
+test("should migrate EVENT_SET_FALSE to EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_FALSE",
+    args: {
+      variable: "L3",
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "L3",
+      value: { type: "false" },
+    },
+  });
+});
+
+test("should migrate EVENT_LOOP_WHILE to convert expression to a script value", () => {
+  const oldEvent = {
+    command: "EVENT_LOOP_WHILE",
+    args: {
+      expression: "5 < 10",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_LOOP_WHILE",
+    args: {
+      condition: { type: "expression", value: "5 < 10" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_ACTOR_MOVE_RELATIVE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_RELATIVE",
+    args: {
+      x: 5,
+      y: -4,
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_RELATIVE",
+    args: {
+      x: { type: "number", value: 5 },
+      y: { type: "number", value: -4 },
+    },
+  });
+});
+
+test("should migrate EVENT_ACTOR_SET_POSITION_RELATIVE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_POSITION_RELATIVE",
+    args: {
+      x: 5,
+      y: -4,
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_POSITION_RELATIVE",
+    args: {
+      x: { type: "number", value: 5 },
+      y: { type: "number", value: -4 },
+    },
+  });
+});
+
+test("should migrate EVENT_IF_ACTOR_AT_POSITION to use script values for coordinates, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_ACTOR_AT_POSITION",
+    args: {
+      actor: "player",
+      x: 7,
+      y: 8,
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_ACTOR_AT_POSITION",
+    args: {
+      actor: "player",
+      x: { type: "number", value: 7 },
+      y: { type: "number", value: 8 },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_ACTOR_DIRECTION to use script value for direction, keeping conditional branches as is", () => {
+  const oldEvent = {
+    command: "EVENT_IF_ACTOR_DIRECTION",
+    args: {
+      actor: "player",
+      direction: "right",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF_ACTOR_DIRECTION",
+    args: {
+      actor: "player",
+      direction: { type: "direction", value: "right" },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_IF_VALUE to EVENT_IF, storing string number values as valid script value numbers", () => {
+  const oldEvent = {
+    command: "EVENT_IF_VALUE",
+    args: {
+      variable: "12",
+      operator: "==",
+      comparator: "0",
+    },
+    children: {
+      true: [{ command: "MOCK_TRUE" }],
+      false: [{ command: "MOCK_FALSE" }],
+    },
+  };
+  expect(migrateFrom330r2To330r3Event(oldEvent)).toMatchObject({
+    command: "EVENT_IF",
+    args: {
+      condition: {
+        type: "eq",
+        valueA: {
+          type: "variable",
+          value: "12",
+        },
+        valueB: {
+          type: "number",
+          value: 0,
+        },
+      },
+    },
+    children: oldEvent.children,
+  });
+});
+
+test("should migrate EVENT_SWITCH_SCENE to use script values for coordinates", () => {
+  const oldEvent = {
+    command: "EVENT_SWITCH_SCENE",
+    args: {
+      sceneId: "scene1",
+      x: 7,
+      y: 9,
+      direction: "down",
+    },
+  };
+  expect(migrateFrom330r3To330r4Event(oldEvent)).toMatchObject({
+    command: "EVENT_SWITCH_SCENE",
+    args: {
+      sceneId: "scene1",
+      x: { type: "number", value: 7 },
+      y: { type: "number", value: 9 },
+      direction: "down",
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should keep valid values and zero out invalid when migrate property values in EVENT_ACTOR_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "number",
+        value: 5,
+      },
+      y: 9,
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "number",
+        value: 5,
+      },
+      y: {
+        type: "number",
+        value: 0,
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_POSITION", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_POSITION",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_POSITION",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_CAMERA_MOVE_TO", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        value: "player:xpos",
+      },
+      y: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      y: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_DIRECTION", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_DIRECTION",
+    args: {
+      actorId: "player",
+      direction: {
+        type: "property",
+        value: "player:direction",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_DIRECTION",
+    args: {
+      actorId: "player",
+      direction: {
+        type: "property",
+        target: "player",
+        property: "direction",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_ACTOR_SET_FRAME", () => {
+  const oldEvent = {
+    command: "EVENT_ACTOR_SET_FRAME",
+    args: {
+      actorId: "player",
+      frame: {
+        type: "property",
+        value: "player:frame",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_ACTOR_SET_FRAME",
+    args: {
+      actorId: "player",
+      frame: {
+        type: "property",
+        target: "player",
+        property: "frame",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_CAMERA_SHAKE", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      magnitude: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      magnitude: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_REPLACE_TILE_XY", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_REPLACE_TILE_XY_SEQUENCE", () => {
+  const oldEvent = {
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        value: "player:xpos",
+      },
+      frames: {
+        type: "property",
+        value: "player:ypos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_REPLACE_TILE_XY_SEQUENCE",
+    args: {
+      x: 4,
+      y: 5,
+      tileIndex: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      frames: {
+        type: "property",
+        target: "player",
+        property: "ypos",
+      },
+    },
+  });
+});
+
+test("should correctly migrate property values in EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        value: "player:xpos",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+    },
+  });
+});
+
+test("should strip invalid property values in EVENT_SET_VALUE", () => {
+  const oldEvent = {
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "property",
+        value: "player:foo",
+      },
+    },
+  };
+  expect(migrateFrom330r4To330r5Event(oldEvent)).toMatchObject({
+    command: "EVENT_SET_VALUE",
+    args: {
+      variable: "5",
+      value: {
+        type: "number",
+        value: 0,
+      },
+    },
+  });
+});
+
+test("should migrate camera speed to pixels per frame", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 2,
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_LOCK",
+    args: {
+      speed: 2,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0.5,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_LOCK",
+    args: {
+      speed: 0.5,
+    },
+  });
+});
+
+test("should migrate camera speed keeping speed when value was 1", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 1,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 1,
+    },
+  });
+});
+
+test("should migrate camera speed fixing when value was 3 or 5", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 3,
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 5,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 0.5,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 12,
+      },
+      y: {
+        type: "number",
+        value: 13,
+      },
+      speed: 0.5,
+    },
+  });
+});
+
+test("should migrate camera speed 4", () => {
+  const oldEvent = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 4,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0.25,
+    },
+  });
+});
+
+test("should migrate unknown or missing camera speed to instant movement", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+    },
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: "4",
+    },
+  };
+  const oldEvent3 = {
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 6,
+    },
+  };
+  expect(migrateFrom330r6To330r7Event(oldEvent1)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent2)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
+    },
+  });
+  expect(migrateFrom330r6To330r7Event(oldEvent3)).toMatchObject({
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      x: {
+        type: "number",
+        value: 36,
+      },
+      y: {
+        type: "number",
+        value: 12,
+      },
+      speed: 0,
+    },
   });
 });

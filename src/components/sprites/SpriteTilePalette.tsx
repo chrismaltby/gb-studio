@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "store/configureStore";
 import { SpriteTileSelection } from "store/features/editor/editorState";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { roundDown8 } from "lib/helpers/8bit";
+import { roundDown8 } from "shared/lib/helpers/8bit";
 import styled from "styled-components";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetPath, assetURL } from "shared/lib/helpers/assets";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -48,11 +47,10 @@ interface Coordinates {
 }
 
 const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
-  const dispatch = useDispatch();
-  const zoom =
-    useSelector((state: RootState) => state.editor.zoomSpriteTiles) / 100;
-  const selectedTiles = useSelector(
-    (state: RootState) => state.editor.spriteTileSelection
+  const dispatch = useAppDispatch();
+  const zoom = useAppSelector((state) => state.editor.zoomSpriteTiles) / 100;
+  const selectedTiles = useAppSelector(
+    (state) => state.editor.spriteTileSelection
   );
 
   const setSelectedTiles = useCallback(
@@ -65,16 +63,15 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id)
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  const selectedTileIds = useAppSelector(
+    (state) => state.editor.selectedMetaspriteTileIds
   );
-  const replaceSpriteTileMode = useSelector(
-    (state: RootState) => state.editor.replaceSpriteTileMode
+  const replaceSpriteTileMode = useAppSelector(
+    (state) => state.editor.replaceSpriteTileMode
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
   const width = spriteSheet?.width || 0;
   const height = spriteSheet?.height || 0;
 
@@ -223,22 +220,18 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
     if (spriteSheet) {
       dispatch(
         electronActions.openFile({
-          filename: `${projectRoot}/assets/sprites/${spriteSheet.filename}`,
+          filename: assetPath("sprites", spriteSheet),
           type: "image",
         })
       );
     }
-  }, [spriteSheet, dispatch, projectRoot]);
+  }, [spriteSheet, dispatch]);
 
   if (!spriteSheet) {
     return null;
   }
 
-  const filename = `file://${assetFilename(
-    projectRoot,
-    "sprites",
-    spriteSheet
-  )}?_v=${spriteSheet._v}`;
+  const spriteURL = assetURL("sprites", spriteSheet);
 
   return (
     <div
@@ -290,7 +283,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
                 minWidth: width * zoom,
               }}
               alt={spriteSheet.name}
-              src={filename}
+              src={spriteURL}
             />
             <div
               style={{

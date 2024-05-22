@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
 
 interface RollChannelProps {
   channelId: number;
@@ -59,7 +59,7 @@ export const RollChannelFwd = ({
 
         if (cell && cell.note !== null) {
           return (
-            <>
+            <React.Fragment key={`note_${columnIdx}_${channelId}`}>
               <Note
                 data-type="note"
                 data-note={cell.note}
@@ -132,7 +132,7 @@ export const RollChannelFwd = ({
               ) : (
                 ""
               )}
-            </>
+            </React.Fragment>
           );
         }
         return "";

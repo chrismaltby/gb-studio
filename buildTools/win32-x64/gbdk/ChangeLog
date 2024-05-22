@@ -1,3 +1,130 @@
+gbdk-4.3.0
+    - Library
+      - Added get_system() which indicates system speed
+      - Changed EMU_printf() to remove dependency on stdio.h added similar EMU_fmtbuf()
+      - Fixed emu_debug.h macros missing a trailing space
+      - NES
+        - Added PAL support
+        - Fixed _map_tile_offset for set_bkg_based_tiles(), VRAM transfer buffer bug
+        - Fixed support for 4-player controllers using fourscore
+      - SMS/GG
+        - Added SHOW_SPRITES, HIDE_SPRITES (no hiding mid-frame), DIV_REG emulation, 6 button controller support in joypad()
+        - Added bcd.h implementation
+        - Added Game Gear registers and definitions
+          - GG_STATE, GG_EXT_7BIT, GG_EXT_CTL, GG_SIO_SEND, GG_SIO_RECV, GG_SIO_CTL, GG_SOUND_PAN
+        - Changed VDP to reduce chances of dangerous ISR nesting (also for MSX)
+        - Fixed tilemap wrapping over the low bound of the VDP name table
+        - Fixed waitpad(), scroll_sprite(), __WRITE_VDP_REG_UNSAFE() VDP macro
+        - Fixed return result of "set_tile x, y" family functions (also for MSX)
+      - Game Boy
+        - Added HBlank copy routines: hblank_copy_vram(), hblank_cpy_vram(), hblank_copy()
+        - Fixed 8-bit signed modulus
+    - Toolchain / Utilities
+      - Added romusage utility for viewing free/used ROM and RAM in compiled programs
+      - lcc: Changed -debug to add the following flags: -Wa-l -Wl-u -Wl-w
+      - png2asset
+        - Added -sprite_no_optimize, -entity_tileset, -rel_paths
+        - Various crashes and output fixes
+      - makebin: Fixed crash when using -yS (-Wm-yS with lcc)
+      - bankpack: Added -banktype= to allow forcing a bank type to CODE or LIT before packing starts
+    - Examples
+      - Added HBlank copy, Read SNES joypads on NES, Game Boy Printer, Joypad test, Display System
+      - Wav sample: play waveforms on the SMS/GG PSG
+      - Fixes for SMS/GG: Fonts, Large Map, gbdecompress
+      - Removed Analogue Pocket examples that were just duplicates of Game Boy ones
+    - Updated documentation and fixed search
+
+gbdk-4.2.0
+    - Library fixes/improvements
+      - Added set_bkg_attributes(), set_bkg_submap_attributes(), set_bkg_attribute_xy()
+      - Some functions renamed (old names will work for now)
+        - vsync(): replaces wait_vbl_done()
+        - set_default_palette(): replaces cgb_compatibility()
+        - move_metasprite_flipy(): replaces move_metasprite_hflip()
+        - move_metasprite_flipx(): replaces move_metasprite_vflip()
+        - move_metasprite_flipxy(): replaces move_metasprite_hvflip()
+        - move_metasprite_ex(): (replaces move_metasprite()
+      - metasprites: added metasprite functions which can set base sprite property parameter
+    - NES
+      - Added support for much of the GBDK API
+      - Banking support (library and sdcc toolchain)
+      - Added set_bkg_attributes_nes16x16(), set_bkg_submap_attributes_nes16x16(), set_bkg_attribute_xy_nes16x16()
+    - SMS/GG
+      - Swapped A and B buttons to match game boy buttons
+      - X coordinate metasprite clipping on the screen edges
+    - Game Boy
+      - Faster vmemcpy(), set_data(), get_data()
+      - Fixed hide_sprites_range(39u, 40u) overflow shadow OAM
+      - Removed legacy MBC register definitions `.MBC1_ROM_PAGE` and `.MBC_ROM_PAGE`
+      - Workaround for possible HALT bug in Crash Handler
+    - Refactored interrupts to use less space
+    - lcc "lcc"
+      - Fixed `--sdccbindir`
+    - png2asset
+      - Added `-repair_index_pal`: Tries to repair tile palettes
+      - Added `-no_palettes`: Do not export palette data
+      - Fixed support for indexed color pngs with less than 8 bits color depth
+      - Fixed incorrect palettes when different colors have same luma value
+      - Fixed -keep_duplicate_tiles not working with -source_tileset
+    - Added png2hicolorgb + example project
+    - Added sdld6808 (for NES)
+    - Examples
+      - Wav Playback: Improved support on AGB/AGS hardware
+      - Large Map: Added color for supported platforms
+      - Added GB-Type example
+    - Updated documentation and improved search
+
+gbdk-4.1.1
+    - Library fixes/improvements
+      - Fixed RGB() and RGB8() macros
+
+gbdk-4.1.0
+    - Experimental Support for MSXDOS and NES. These are not yet fully functional
+    - SDCC
+      - The `gbz80` port was renamed to to `sm83`. Some projects may require updates
+      - The default calling convention changed in SDCC 4.2
+         - See 4.1.0 Release in "Migrating to new GBDK Versions" in the docs
+    - Library fixes/improvements
+      - SGB: Use longer wait between the SGB packet transfers
+      - SMS/GG: less screen artifacts on startup, cgb_compatibility()
+      - Fixed: get_sprite_data(), get_bkg_data(), get_win_data() when @LCDCF_BG8000 bit of LCDC_REG is set
+    - Toolchain
+      - png2asset: Many new tileset and processing features
+        -tiles_only, -maps_only, -metasprites_only, -source_tileset, -keep_duplicate_tiles, -bin, -transposed, -spr16x16msx, -use_nes_attributes, -use_nes_colors
+      - gbcompress
+        - Bug fixes and added --bank=<num>
+      - lcc
+        - Add -yoA if no ROM size specified with -autobank
+        - Fixed broken `-E` Preprocess only flag
+      - Added makecom for post-processing msxdos binaries
+      - bankpack
+        - Added -reserve=<bank>:<size> to reserve space during packing
+      - ihxcheck
+        - Check and warn for bank overflows under specific conditions
+    - Examples
+      - Added example for APA image mode with more than 256 tiles
+      - Added SGB Sound Effects example
+      - Changed to new WAV sound example
+    - Updated documentation
+    - Licensing
+      - Status of licensing clarified with consent from GBDK original authors, added licensing folder
+
+gbdk-4.0.6
+    - Support for MegaDuck
+    - Library fixes/improvements
+        - fix RNG for SMS/GG
+        - check for overflow in metasprites handling routines
+        - set_*_based_tiles() / set_*_based_submap() set tilemaps using tile offset
+        - add_low_priority_TIM() set timer ISR handler that allows nested interrupts
+        - rename gb/BGB_emu.h into gb/EMU_debug.h
+        - Intellisense-friendly headers (hide SDCC dialect features)
+        - other minor fixes
+    - Toolchain
+        - png2mtspr
+            - support for 4bpp graphics and SGB borders
+            - new -tile_origin parameter
+    - Updated documentation
+
 gbdk-4.0.5
     - Support for Sega Master Sysyem/Sega Game Gear
         - z80 library which provide compatibility layer as well as platform-specific functions
@@ -8,7 +135,7 @@ gbdk-4.0.5
         - DEVICE_* constants
         - BANK* macros
         - some headers were moved from gb/* into gbdk/*
-            - bcd.h, console.h, far_ptr.h, font.h, gbdecompress.h, metasprites.h 
+            - bcd.h, console.h, far_ptr.h, font.h, gbdecompress.h, metasprites.h
         - new headers:
             - gbdk/platform.h: includes specific platform headers depending on the target
             - gbdk/incbin.h: INCBIN* macros for including of raw binary data
@@ -23,7 +150,7 @@ gbdk-4.0.5
         - bankpack
             - support for linker files
             - support for SMS/GG specifics
-        - png2mtspr was renamed to png2asset 
+        - png2mtspr was renamed to png2asset
             - tilemaps/tiledata export without metasprite descriptors
             - CGB support
         - support for RLE compression in gbcompress
@@ -31,8 +158,8 @@ gbdk-4.0.5
         - cross-platform examples
         - INCBIN example
         - on-the-fly RLE data decompression example
-    - Updated documentation    
-    
+    - Updated documentation
+
 gbdk-4.0.4
     - Updated documentation
     - Library was improved
@@ -70,7 +197,7 @@ gbdk-4.0.2
 
 gbdk-4.0.1
     - Updated documentation
-    - IHX is checked for correctness before the makebin stage. That allows to warn about overwriting the same ROM addresses (SDCC toolchain does not check this anymore). 
+    - IHX is checked for correctness before the makebin stage. That allows to warn about overwriting the same ROM addresses (SDCC toolchain does not check this anymore).
     - Library was improved
         - set_*_tiles() now wrap maps around horizontal and vertical boundaries correctly
         - new fill_*_rect() functions to clear rectangle areas
@@ -81,7 +208,7 @@ gbdk-4.0.1
         - _current_bank variable is updated when use bank switching macros
     - Reorganized examples: each example is in separate folder now, that simplifies understanding.
     - Lcc improvements
-    
+
 gbdk-4.0
     - GBDK now requires SDCC 4.0.3 or higher, that has fully working toolchain. Old link-gbz80 linker is not used anymore, sdldgb and makebin are used to link objects and produce binary roms; maccer tool is no longer needed either
         - SDCC 4.0.3 has much better code generator which produces smaller and faster code. Code is twice faster
@@ -106,27 +233,27 @@ gbdk-4.0
 gbdk-3.2
     - support for BCD numbers
     - support for far pointers, that allow to call functions in other banks by pointer
-    - some useful parts of native SDCC library are merged into GBDK (stdint, limits, stdbool, setjmp, stdatomic and so on) 
+    - some useful parts of native SDCC library are merged into GBDK (stdint, limits, stdbool, setjmp, stdatomic and so on)
 
 gbdk-3.1
-    - Banked functions are working! 
+    - Banked functions are working!
         - Check this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=700) for more info
         - Check the examples/gb/banked code for basic usage
     - USE_SFR_FOR_REG is the default now [check here why](https://gbdev.gg8.se/forums/viewtopic.php?id=697)
     - Fixed examples that were not compiling in the previous version and some improvements in a few of them. Removed all warnings caused by changing to the new SDCC
     - Fixed bug in lcc that was causing some files in the temp folder not being deleted
     - Removed as-gbz80 (the lib is now compiled with sdasgb thanks to this [workaround](https://github.com/Zal0/gbdk-2020/commit/d2caafa4a66eb08998a14b258cb66af041a0e5c8))
-    - Profile support with bgb emulator 
+    - Profile support with bgb emulator
         - Basic support including <gb/bgb_emu.h> and using the macros BGB_PROFILE_BEGIN and BGB_PROFILE_END. More info in this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=703)
-        - For full profiling [check this repo](https://github.com/untoxa/bgb_profiling_toolkit/blob/master/readme.md) and this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=710) 
+        - For full profiling [check this repo](https://github.com/untoxa/bgb_profiling_toolkit/blob/master/readme.md) and this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=710)
 
 gbdk-3.00
     Updated SDCC to v4.0
     The new linker is not working so the old version is still there
-    There is an issue with sdagb compiling drawing.s (the JP in 
+    There is an issue with sdagb compiling drawing.s (the JP in
     line 32 after ".org .MODE_TABLE+4*.G_MODE" it's writing more
     than 4 bytes invading some addresses required by input.s:41)
-    Because of this, all .s files in libc have been assembled 
+    Because of this, all .s files in libc have been assembled
     with the old as-gbz80 and that's why it is still included
 
 gbdk-2.96
@@ -142,7 +269,7 @@ gbdk-2.95-3
     * Added a new lexer to sdcc.  Compiling files with large
       initalised arrays takes 31% of the time (well, at least
       samptest.c does :)
-    
+
 gbdk-2.95-2
     * Added model switching support
        --model-medium uses near (16 bit) pointers for data, and
@@ -156,7 +283,7 @@ gbdk-2.95-2
       of extra junk linked in.
     * Turned on the optimisations in flex.  Large constant arrays
       like tile data should compile a bit faster.
-    
+
 gbdk-2.95
     * Fixed 'a >> c' for c = [9..15]
     * Fixed 'a << c' for c = [9..15]
@@ -172,15 +299,15 @@ gbdk-2.95
     and rgbasm.  See examples/gb/far/*
     * bc is now only pushed if the function uses it.  i.e. something
     like:
-        int silly(int i) 
+        int silly(int i)
         {
         return i;
-        }   
+        }
     will not have the push bc; pop bc around it.
     * Better rgbasm support.  Basically:
            o Use "sdcc -mgbz80 --asm=rgbds file.c" for each file.c
            o Use "sdcc -mgbz80 --asm=rgbds crt0.o gbz80.lib gb.lib file1.o file2.o..."
-    
+
     to link everything together.  The .lib files are generated using
     astorgb.pl and sdcc to turn the gbdk libraries into something
     rgbds compatible.
@@ -189,7 +316,7 @@ gbdk-2.95
     * Ran a spell checker across the README and ChangeLog
 
 gbdk-2.94
-    * Fixed 
+    * Fixed
         #define BLAH  7  // Unterminated ' error
       in sdcpp
     * Fixed
@@ -230,7 +357,7 @@ gbdk-2.93
     computed and is now missing.  A temporary fix is to declare
     something appropriate as 'volatile' to stop the value being
     cached.  See dscan.c/bombs() for an example.
-  
+
 gbdk-2.92-2:
     * win32 only.  Takes care of some of the install bugs, including:
        - Now auto detects where it is installed.
@@ -254,3 +381,107 @@ gbdk-2.92:
     work.
     * Fixed minor bug with 104$: labels in as.
     * Up to 167d/s...
+
+...
+
+gbdk-2.15:
+MLH
+    Fixed memset() for when the length is zero
+    Optimised memset() - now 75% faster (see examples/tests/test-memset.c)
+    Did the same thing to memcpy()
+    Re-wrote the malloc() routines
+    Added support for native (ie assembly) malloc() replacements
+    Few changes to .mul16, .asl16 etc (Sam Nova)
+
+...
+
+gbdk-2.0b11:
+    Changes in GBDK 2.0b11 (DOS binary only) - 24 Nov 97
+    • Fixed another bug in code generation, that could happen when performing logical operations on 1-byte variables.
+
+gbdk-2.0b10:
+    Changes in GBDK 2.0b10 (DOS binary only) - 6 Nov 97
+    • Fixed a nasty bug in code generation, that could happen when performing arithmetic operations on 1-byte variables.
+    • Changed the name of same files of the gb-dtmf example so that it compiles on DOS.
+
+gbdk-2.0b9:
+    Changes in GBDK 2.0b9 (DOS binary only)
+    • Several bug fixes in the compiler and in the libraries.
+
+gbdk-2.0b8:
+    Changes in GBDK 2.0b8 (DOS binary only)
+    • Limited all file names to 8 characters to solve problems on DOS.
+    • Added communication routines that enable to send data through the link port of the GameBoy. Unfortunately, these routines do not always work; so use them with care until the next GBDK release.
+    • Added the comm.c example which illustrates how to use communication routines.
+    • It is possible to specify the name of the program (to be written in the image header) at link time using the -Wl-yn="XXX" flag (where X is the name of the program, which can contain up to 16 characters in quotes, including spaces; on Unix, depending on your shell, you must add backslashes before quotes and spaces like in -Wl-yn=\"My\ Game\").
+    • Several bug fixes in the compiler.
+
+gbdk-2.0b7:
+    Changes in GBDK 2.0b7 (DOS binary only)
+    • GBDK now uses a pre-release of lcc 4.1 (DOS binary only), that fixes a couple of problems in code generation.
+    • A couple of important points have been documented in the GBDK Programming Guidelines and Known Problems sections.
+    • Several improvements and optimizations to the code generator.
+
+gbdk-2.0b6:
+    Changes in GBDK 2.0b6
+    • Added a peephole optimizer (with few rules at the moment).
+    • Changed the name of the hardware registers to match the "official" names.
+    • Added support for copying complete functions to RAM or HIRAM (memcpy() and hiramcpy() functions). The compiler now automatically generates two symbol for the start and the end of each function, named start_X and end_X (where X is the name of the function). This enables to calculate the length of a function when copying it to RAM.
+    • Added the ram_fn.c example which illustrates how to copy functions to RAM and HIRAM.
+    • Added support for installing IRQ handlers.
+    • Added the irq.c example which illustrates how to install IRQ handlers.
+    • Added RAM banks support (switch_ram_bank() function). The switch_bank() function
+    has been renamed to switch_rom_bank(). The banks.c example has been updated. The flags for generating multiple bank images have been modified.
+    • It is possible to set the sprite ram location at link time using the -Wl-g.OAM=# flag (where # is the address of the sprite ram). The sprite ram address must begin at an address multiple of 0x100, and is 0xA0 bytes long.
+
+gbdk-2.0b5:
+    Changes in GBDK 2.0b5
+    • New documentation (not finished yet).
+    • Fixed a bug that could generate wrong code in switch statements.
+    • Fixed a bug in int comparison.
+    • Added a DTMF program written by Osamu Ohashi.
+    • Added a game (Deep Scan) written by a friend of Osamu.
+    • Modified the delay() function so that it takes a long parameter. It can be used to wait between 1 and 65536 milliseconds (0 = 65536). The pause() function has been removed.
+
+gbdk-2.0b4:
+    Changes in GBDK 2.0b4
+    • Fixed a bug that could generate wrong code when using hexadecimal constants.
+    • A new example (galaxy.c) has been added. It is the C version of the space.s
+    example. sprite.c has been removed.
+    • Most of the libraries have been split into small modules for reducing final code size.
+
+gbdk-2.0b3:
+    Changes in GBDK 2.0b3
+    • GBDK can generate multiple-banks images, i.e. images greater than 32kB (see the banks example).
+    • It is possible to set the stack pointer at link time using the -Wl-g.STACK=# flag (where # is the address of the stack pointer).
+    • Several functions (e.g. show_bkg()) have been changed into macros (e.g. SHOW_BKG).
+    • The delay() function waits exactly 1 millisecond, and the pause() waits 256 milliseconds.
+    • Linking with the standard libraries is no more required. The lib/gb.lib (lib\gb.lib on DOS) text file contains a list of modules in which to look for undefined symbols. The linker will parse this file, and link your code with the required modules only. The stdio library has been split in several object files, and only necessary modules will be added to your code, thus reducing its size.
+    • The GBDK distribution can be located anywhere in your system if you use the -Wo-lccdir=GBDK-DIR flag when invoking lcc.
+    • Bug fixes.
+
+gbdk-2.0b2:
+    Changes in GBDK 2.0b2
+    • Lots of bug fixes.
+    • GBDK has to be in the \GBDK-2.0 directory on DOS machines.
+
+gbdk-2.0b1:
+    Changes in GBDK 2.0b1
+    • The code generator has been completely rewritten with the new version of lcc. It produces much smaller and more efficient code. The size of the code is generally between 20 and 50% smaller. A number of small optimizations are still to be done.
+    • The size of basic types has been changed:
+        ◦ An int is 8 bits.
+        ◦ A long is 16 bits.
+        This change was required for the code generator to produce better code,
+        because the Z80 is actually an 8-bit processor.
+        • The linker generates the complement checksum correctly now.
+        • The libraries and example programs have been modified for the new code generator.
+
+gbdk-1.1:
+    Changes in GBDK 1.1
+    • Removed Xloadimage from the GBDK distribution. It is now available as a
+    separate archive.
+    • A compiled DOS version is now available (cross-compiled on my Sun
+    Workstation!).
+    • The libraries and the example programs have been improved.
+    • The make script has been improved. Compiling on UNIX should be easier.
+    • Many bugfixes.

@@ -1,4 +1,8 @@
-import { migrateFrom120To200Collisions, migrateFrom120To200Event, migrateFrom120To200Actors } from "../../src/lib/project/migrateProject";
+import {
+  migrateFrom120To200Collisions,
+  migrateFrom120To200Event,
+  migrateFrom120To200Actors,
+} from "../../src/lib/project/migrateProject";
 
 test("should migrate collisions from 1.2.0 to 2.0.0", () => {
   const oldProject = {
@@ -65,23 +69,9 @@ test("should migrate collisions from 1.2.0 to 2.0.0 expanding tile per bit data 
       {
         collisions: [
           // First byte
-          0xf,
-          0xf,
-          0xf,
-          0xf,
-          0x0,
-          0xf,
-          0x0,
-          0xf,
+          0xf, 0xf, 0xf, 0xf, 0x0, 0xf, 0x0, 0xf,
           // Second byte
-          0x0,
-          0x0,
-          0x0,
-          0x0,
-          0xf,
-          0xf,
-          0xf,
-          0xf,
+          0x0, 0x0, 0x0, 0x0, 0xf, 0xf, 0xf, 0xf,
         ],
         backgroundId: "1",
       },
@@ -138,8 +128,8 @@ test("should migrate input scripts with persist=true to match old default", () =
     command: "EVENT_SET_INPUT_SCRIPT",
     args: {
       input: "b",
-      true: []
-    }
+      true: [],
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -147,10 +137,10 @@ test("should migrate input scripts with persist=true to match old default", () =
     args: {
       input: "b",
       persist: true,
-      true: []
-    }    
-  })
-})
+      true: [],
+    },
+  });
+});
 
 test("should migrate text animation speed events with allowFastForward=true", () => {
   const oldEvent = {
@@ -160,7 +150,7 @@ test("should migrate text animation speed events with allowFastForward=true", ()
       speedIn: 1,
       speedOut: 1,
       textSpeed: 1,
-    }
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -169,9 +159,9 @@ test("should migrate text animation speed events with allowFastForward=true", ()
       speedIn: 1,
       speedOut: 1,
       textSpeed: 1,
-      allowFastForward: true
-    }   
-  })
+      allowFastForward: true,
+    },
+  });
 });
 
 test("should migrate move to using variables events to move to using union type", () => {
@@ -182,7 +172,7 @@ test("should migrate move to using variables events to move to using union type"
       actorId: "player",
       vectorX: "1",
       vectorY: "2",
-    }
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -191,15 +181,15 @@ test("should migrate move to using variables events to move to using union type"
       actorId: "player",
       x: {
         type: "variable",
-        value: "1"
+        value: "1",
       },
       y: {
         type: "variable",
-        value: "2"
+        value: "2",
       },
       useCollisions: false,
       verticalFirst: false,
-    }   
+    },
   });
 });
 
@@ -211,8 +201,8 @@ test("should keep comment state when migrating move to event", () => {
       actorId: "player",
       vectorX: "1",
       vectorY: "2",
-      __comment: true
-    }
+      __comment: true,
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -221,19 +211,18 @@ test("should keep comment state when migrating move to event", () => {
       actorId: "player",
       x: {
         type: "variable",
-        value: "1"
+        value: "1",
       },
       y: {
         type: "variable",
-        value: "2"
+        value: "2",
       },
       useCollisions: false,
       verticalFirst: false,
-      __comment: true      
-    }   
+      __comment: true,
+    },
   });
 });
-
 
 test("should keep rename state when migrating move to event", () => {
   const oldEvent = {
@@ -243,8 +232,8 @@ test("should keep rename state when migrating move to event", () => {
       actorId: "player",
       vectorX: "1",
       vectorY: "2",
-      __label: "Label"
-    }
+      __label: "Label",
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -253,34 +242,36 @@ test("should keep rename state when migrating move to event", () => {
       actorId: "player",
       x: {
         type: "variable",
-        value: "1"
+        value: "1",
       },
       y: {
         type: "variable",
-        value: "2"
+        value: "2",
       },
       useCollisions: false,
       verticalFirst: false,
-      __label: "Label"
-    }   
+      __label: "Label",
+    },
   });
 });
-
 
 test("should migrate actors with movementType=static and animate=false to have animSpeed none", () => {
   const oldProject = {
     scenes: [
       {
-        actors: [{
-          movementType: "static",
-          animate: false,
-          animSpeed: "3"
-        }, {
-          movementType: "static",
-          animSpeed: "2"
-        }]
+        actors: [
+          {
+            movementType: "static",
+            animate: false,
+            animSpeed: "3",
+          },
+          {
+            movementType: "static",
+            animSpeed: "2",
+          },
+        ],
       },
-    ]
+    ],
   };
 
   const newProject = migrateFrom120To200Actors(oldProject);
@@ -288,18 +279,21 @@ test("should migrate actors with movementType=static and animate=false to have a
   expect(newProject).toEqual({
     scenes: [
       {
-        actors: [{
-          spriteType: "static",
-          movementType: "static",
-          animate: false,
-          animSpeed: "",
-          updateScript: undefined
-        }, {
-          spriteType: "static",
-          movementType: "static",
-          animSpeed: "",
-          updateScript: undefined
-        }]
+        actors: [
+          {
+            spriteType: "static",
+            movementType: "static",
+            animate: false,
+            animSpeed: null,
+            updateScript: [],
+          },
+          {
+            spriteType: "static",
+            movementType: "static",
+            animSpeed: null,
+            updateScript: [],
+          },
+        ],
       },
     ],
   });
@@ -309,17 +303,20 @@ test("should migrate actors with movementType=static and animate=true should kee
   const oldProject = {
     scenes: [
       {
-        actors: [{
-          movementType: "static",
-          animate: true,
-          animSpeed: "3"
-        }, {
-          movementType: "static",
-          animate: true,
-          animSpeed: "2"
-        }]
+        actors: [
+          {
+            movementType: "static",
+            animate: true,
+            animSpeed: "3",
+          },
+          {
+            movementType: "static",
+            animate: true,
+            animSpeed: "2",
+          },
+        ],
       },
-    ]
+    ],
   };
 
   const newProject = migrateFrom120To200Actors(oldProject);
@@ -327,19 +324,22 @@ test("should migrate actors with movementType=static and animate=true should kee
   expect(newProject).toEqual({
     scenes: [
       {
-        actors: [{
-          spriteType: "static",
-          movementType: "static",
-          animate: true,
-          animSpeed: "3",
-          updateScript: undefined
-        }, {
-          spriteType: "static",
-          movementType: "static",
-          animate: true,
-          animSpeed: "2",
-          updateScript: undefined
-        }]
+        actors: [
+          {
+            spriteType: "static",
+            movementType: "static",
+            animate: true,
+            animSpeed: "3",
+            updateScript: [],
+          },
+          {
+            spriteType: "static",
+            movementType: "static",
+            animate: true,
+            animSpeed: "2",
+            updateScript: [],
+          },
+        ],
       },
     ],
   });
@@ -350,8 +350,8 @@ test("should migrate player set sprite with persist=true to match old default", 
     id: "abc",
     command: "EVENT_PLAYER_SET_SPRITE",
     args: {
-      spriteSheetId: "def"
-    }
+      spriteSheetId: "def",
+    },
   };
   expect(migrateFrom120To200Event(oldEvent)).toEqual({
     id: "abc",
@@ -359,6 +359,6 @@ test("should migrate player set sprite with persist=true to match old default", 
     args: {
       spriteSheetId: "def",
       persist: true,
-    }    
-  })
-})
+    },
+  });
+});

@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import { DMG_PALETTE } from "consts";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
-} from "../sprites/preview/SpriteSliceCanvas.worker";
+} from "components/sprites/preview/SpriteSliceCanvas.worker";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface AvatarCanvasProps {
   avatarId: string;
@@ -19,10 +18,9 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
   const height = 16;
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const avatar = useSelector((state: RootState) =>
+  const avatar = useAppSelector((state) =>
     avatarSelectors.selectById(state, avatarId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -59,15 +57,11 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "avatars",
-      avatar
-    )}?_v=${avatar._v}`;
+    const avatarURL = assetURL("avatars", avatar);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: avatarURL,
       offsetX: 0,
       offsetY: 0,
       width: 16,
@@ -77,7 +71,7 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
       objPalette: "OBP0",
       palette: DMG_PALETTE.colors,
     });
-  }, [canvasRef, avatar, projectRoot, workerId]);
+  }, [canvasRef, avatar, workerId]);
 
   return (
     <canvas

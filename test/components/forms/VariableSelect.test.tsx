@@ -8,6 +8,11 @@ import { render, screen, fireEvent } from "../../react-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "../../../src/store/configureStore";
 import { ScriptEditorContext } from "../../../src/components/script/ScriptEditorContext";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
+
+beforeEach(async () => {
+  await initElectronL10N();
+});
 
 test("Should use default variable name with not renamed", () => {
   const state = {
@@ -77,7 +82,15 @@ test("Should use default custom event variable name with not renamed", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <ScriptEditorContext.Provider value="script">
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
       <VariableSelect
         name="test"
         entityId="customEvent1"
@@ -169,7 +182,15 @@ test("Should use renamed variable for custom event", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <ScriptEditorContext.Provider value="script">
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
       <VariableSelect
         name="test"
         entityId="customEvent1"

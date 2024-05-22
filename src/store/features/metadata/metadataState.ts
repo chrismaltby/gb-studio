@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import projectActions from "../project/projectActions";
+import projectActions from "store/features/project/projectActions";
 
 export interface MetadataState {
   name: string;

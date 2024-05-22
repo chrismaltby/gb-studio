@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useMemo } from "react";
+import l10n from "shared/lib/lang/l10n";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
 interface AnimationSpeedSelectProps {
@@ -13,30 +13,35 @@ interface AnimationSpeedOption {
   label: string;
 }
 
-export const animLabelLookup: Record<number, string> = {
-  255: `${l10n("FIELD_NONE")}`,
-  127: `${l10n("FIELD_SPEED")} 1`,
-  63: `${l10n("FIELD_SPEED")} 2`,
-  31: `${l10n("FIELD_SPEED")} 3`,
-  15: `${l10n("FIELD_SPEED")} 4`,
-  7: `${l10n("FIELD_SPEED")} 5`,
-  3: `${l10n("FIELD_SPEED")} 6`,
-  1: `${l10n("FIELD_SPEED")} 7`,
-  0: `${l10n("FIELD_SPEED")} 8`,
+export const getAnimLabel = (speed: number): string => {
+  const animLabelLookup: Record<number, string> = {
+    255: `${l10n("FIELD_NONE")}`,
+    127: `${l10n("FIELD_SPEED")} 1`,
+    63: `${l10n("FIELD_SPEED")} 2`,
+    31: `${l10n("FIELD_SPEED")} 3`,
+    15: `${l10n("FIELD_SPEED")} 4`,
+    7: `${l10n("FIELD_SPEED")} 5`,
+    3: `${l10n("FIELD_SPEED")} 6`,
+    1: `${l10n("FIELD_SPEED")} 7`,
+    0: `${l10n("FIELD_SPEED")} 8`,
+  };
+  return animLabelLookup[speed];
 };
-
-const options: AnimationSpeedOption[] = [255, 127, 63, 31, 15, 7, 3, 1, 0].map(
-  (value) => ({
-    value,
-    label: animLabelLookup[value],
-  })
-);
 
 export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
   name,
   value,
   onChange,
 }) => {
+  const options: AnimationSpeedOption[] = useMemo(
+    () =>
+      [255, 127, 63, 31, 15, 7, 3, 1, 0].map((value) => ({
+        value,
+        label: getAnimLabel(value),
+      })),
+    []
+  );
+
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select

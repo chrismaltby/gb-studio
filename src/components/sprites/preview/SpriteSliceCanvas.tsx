@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import { DMG_PALETTE } from "consts";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import { ObjPalette, Palette } from "store/features/entities/entitiesTypes";
+import { ObjPalette, Palette } from "shared/lib/entities/entitiesTypes";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;
@@ -36,10 +35,9 @@ export const SpriteSliceCanvas = ({
 }: SpriteSliceCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -76,15 +74,11 @@ export const SpriteSliceCanvas = ({
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "sprites",
-      spriteSheet
-    )}?_v=${spriteSheet._v}`;
+    const spriteURL = assetURL("sprites", spriteSheet);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: spriteURL,
       offsetX,
       offsetY,
       width,
@@ -105,7 +99,6 @@ export const SpriteSliceCanvas = ({
     flipY,
     objPalette,
     palette,
-    projectRoot,
     workerId,
   ]);
 

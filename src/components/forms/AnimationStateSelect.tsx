@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
 import { spriteStateSelectors } from "store/features/entities/entitiesState";
 import {
   Option,
@@ -10,7 +9,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { Input } from "ui/form/Input";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 
@@ -123,7 +122,7 @@ const AnimationStateSelect = ({
   const [currentValue, setCurrentValue] = useState<Option>();
 
   const [options, setOptions] = useState<Option[]>([]);
-  const spriteStates = useSelector((state: RootState) =>
+  const spriteStates = useAppSelector((state) =>
     spriteStateSelectors.selectAll(state)
   );
 

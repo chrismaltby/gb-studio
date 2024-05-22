@@ -1,19 +1,5 @@
 /* eslint-disable camelcase */
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-
-export type Song = {
-  name: string;
-  artist: string;
-  comment: string;
-  filename: string;
-  duty_instruments: DutyInstrument[];
-  wave_instruments: WaveInstrument[];
-  noise_instruments: NoiseInstrument[];
-  waves: Uint8Array[];
-  ticks_per_row: number;
-  patterns: PatternCell[][][];
-  sequence: number[];
-};
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 
 export type DutyInstrument = {
   index: number;
@@ -24,6 +10,8 @@ export type DutyInstrument = {
   volume_sweep_change: number;
   frequency_sweep_time: number;
   frequency_sweep_shift: number;
+  subpattern_enabled: boolean;
+  subpattern: SubPatternCell[];
 };
 
 export type WaveInstrument = {
@@ -32,6 +20,8 @@ export type WaveInstrument = {
   length: number | null;
   volume: number;
   wave_index: number;
+  subpattern_enabled: boolean;
+  subpattern: SubPatternCell[];
 };
 
 export type NoiseInstrument = {
@@ -40,8 +30,12 @@ export type NoiseInstrument = {
   length: number | null;
   initial_volume: number;
   volume_sweep_change: number;
-  shift_clock_mask: number;
   dividing_ratio: number;
   bit_count: 7 | 15;
-  noise_macro: number[];
+  /**
+   * @deprecated noise macros aren't used starting uge v6
+   */
+  noise_macro?: number[];
+  subpattern_enabled: boolean;
+  subpattern: SubPatternCell[];
 };

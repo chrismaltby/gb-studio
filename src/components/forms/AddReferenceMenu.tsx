@@ -6,13 +6,11 @@ import React, {
   useState,
 } from "react";
 import { OptGroup } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { useDebounce } from "ui/hooks/use-debounce";
 import {
   backgroundSelectors,
@@ -23,26 +21,30 @@ import {
   sceneSelectors,
   soundSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import {
   Background,
-  CustomEvent,
+  CustomEventNormalized,
   Emote,
   Font,
   Music,
-  Scene,
+  SceneNormalized,
   Sound,
   SpriteSheet,
+  Tileset,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
 import {
   customEventName,
   sceneName,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import { FixedSizeList as List } from "react-window";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { allVariables } from "renderer/lib/variables";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
+import l10n from "shared/lib/lang/l10n";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -69,7 +71,6 @@ interface EventOptGroup {
 
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
-const MENU_GROUP_HEIGHT = 25;
 
 const backgroundToOption = (background: Background): EventOption => {
   return {
@@ -95,7 +96,7 @@ const fontToOption = (font: Font): EventOption => {
   };
 };
 
-const sceneToOption = (scene: Scene, index: number): EventOption => {
+const sceneToOption = (scene: SceneNormalized, index: number): EventOption => {
   return {
     label: sceneName(scene, index),
     value: scene.id,
@@ -140,8 +141,16 @@ const emoteToOption = (emote: Emote): EventOption => {
   };
 };
 
+const tilesetToOption = (tileset: Tileset): EventOption => {
+  return {
+    label: tileset.name,
+    value: tileset.id,
+    referenceType: "tileset",
+  };
+};
+
 const customEventToOption = (
-  customEvent: CustomEvent,
+  customEvent: CustomEventNormalized,
   index: number
 ): EventOption => {
   return {
@@ -328,35 +337,26 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const childOptionsListRef = useRef<List>(null);
 
-  const backgrounds = useSelector((state: RootState) =>
+  const backgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
-  const sprites = useSelector((state: RootState) =>
+  const sprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const emotes = useSelector((state: RootState) =>
-    emoteSelectors.selectAll(state)
-  );
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const tracks = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const sounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
-  );
-  const musicDriver = useSelector(
-    (state: RootState) => state.project.present.settings.musicDriver
+  const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
+  const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
+  const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
+  const musicDriver = useAppSelector(
+    (state) => state.project.present.settings.musicDriver
   );
 
   useEffect(() => {
@@ -371,7 +371,6 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         label: l10n("FIELD_EMOTES"),
         options: emotes.map(emoteToOption).sort(sortAlphabeticallyByLabel),
       },
-
       {
         label: l10n("FIELD_FONTS"),
         options: fonts.map(fontToOption).sort(sortAlphabeticallyByLabel),
@@ -406,6 +405,10 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         options: sprites.map(spriteToOption).sort(sortAlphabeticallyByLabel),
       },
       {
+        label: l10n("FIELD_TILESETS"),
+        options: tilesets.map(tilesetToOption).sort(sortAlphabeticallyByLabel),
+      },
+      {
         label: l10n("FIELD_VARIABLES"),
         options: allVariables
           .map((id: string) => ({
@@ -432,6 +435,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     scenes,
     customEvents,
     sounds,
+    tilesets,
   ]);
 
   const updateOptions = useCallback(() => {
@@ -608,7 +612,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
-              <>
+              <React.Fragment key={option.label}>
                 {option.groupLabel && (
                   <MenuGroup key={option.groupLabel}>
                     {option.groupLabel}
@@ -636,7 +640,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
                     </>
                   )}
                 </MenuItem>
-              </>
+              </React.Fragment>
             ))}
           </SelectMenuOptions>
           <SelectMenuOptions ref={childOptionsRef}>

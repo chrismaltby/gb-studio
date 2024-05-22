@@ -8,8 +8,9 @@ export const FormHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 4px 10px 4px 4px;
-  margin-bottom: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+  height: 38px;
+  box-sizing: border-box;
 
   & > * {
     margin-right: 10px;
@@ -50,7 +51,7 @@ export const FormRow = styled.div<FormRowProps>`
 
 export const FormDivider = styled.div`
   margin-bottom: 10px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
 `;
 
 export const FormSpacer = styled.div`

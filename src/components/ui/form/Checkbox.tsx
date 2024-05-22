@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { MenuItem } from "../menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
 
 export interface CheckboxProps {
   readonly id: string;
@@ -47,8 +47,7 @@ const StyledCheckbox = styled.div`
 const CheckboxContainer = styled.div`
   position: relative;
   display: inline-block;
-  vertical-align: middle;
-  top: 2px;
+  top: 1px;
 
   ${MenuItem} > & {
     margin-left: -5px;

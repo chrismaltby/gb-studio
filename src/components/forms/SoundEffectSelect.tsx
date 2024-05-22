@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   Option,
   Select,
@@ -11,10 +10,10 @@ import {
 import { PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import soundfxActions from "store/features/soundfx/soundfxActions";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SoundEffectSelectProps extends SelectCommonProps {
   name: string;
@@ -43,7 +42,7 @@ export const PlaySoundEffect = ({
   duration = 0.5,
   effectIndex = 0,
 }: PlaySoundEffectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -91,9 +90,7 @@ export const SoundEffectSelect = ({
   const [currentValue, setCurrentValue] = useState<Option>();
   const [options, setOptions] = useState<OptGroup[]>([]);
 
-  const sounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
-  );
+  const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
 
   useEffect(() => {
     const plugins = uniq(sounds.map((s) => s.plugin || "")).sort();

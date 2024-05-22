@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 
 interface FloatingPanelProps {
   vertical?: boolean;
@@ -14,13 +14,6 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
   border-radius: 4px;
   padding: 0 4px;
 
-  ${(props) =>
-    props.vertical
-      ? css`
-          flex-direction: column;
-        `
-      : ""}
-
   ${Button} {
     width: 36px;
     height: 36px;
@@ -28,11 +21,28 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
     padding: 5px;
     svg {
       width: 20px;
+      height: 20px;
+      max-width: 20px;
+      max-height: 20px;
     }
     & ~ ${Button} {
       margin-left: 1px;
     }
   }
+
+  ${(props) =>
+    props.vertical
+      ? css`
+          flex-direction: column;
+          padding: 4px 0;
+          ${Button} {
+            & ~ ${Button} {
+              margin-left: 0px;
+              margin-bottom: 1px;
+            }
+          }
+        `
+      : ""}
 
   ${Select} {
     width: 120px;
@@ -60,6 +70,11 @@ export const FloatingPanelDivider = styled.div`
   min-height: 1px;
   align-self: stretch;
   margin: 5px 5px;
+`;
+
+export const FloatingPanelBreak = styled.div`
+  flex-basis: 100%;
+  height: 0;
 `;
 
 export default FloatingPanel;

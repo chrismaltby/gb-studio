@@ -1,25 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import l10n from "lib/helpers/l10n";
-import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
+import l10n from "shared/lib/lang/l10n";
+import { SceneParallaxLayer } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { FormField } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
 import editorActions from "store/features/editor/editorActions";
+import { useAppDispatch } from "store/hooks";
 
 interface ParallaxOption {
   value: number;
   label: string;
 }
-
-const options: ParallaxOption[] = [
-  { value: 0, label: `${l10n("FIELD_PARALLAX_NONE")}` },
-  { value: 1, label: `1 ${l10n("FIELD_LAYER")}` },
-  { value: 2, label: `2 ${l10n("FIELD_LAYERS")}` },
-  { value: 3, label: `3 ${l10n("FIELD_LAYERS")}` },
-];
 
 interface ParallaxSelectProps {
   name: string;
@@ -142,7 +135,7 @@ const updateParallaxHeight = (
     return v;
   });
 
-  // Calculcate new total height
+  // Calculate new total height
   const layersHeight = newValue.reduce((memo, layer, layerIndex) => {
     if (layerIndex < newValue.length - 1) {
       return memo + layer.height;
@@ -161,7 +154,7 @@ const updateParallaxHeight = (
       heightOverflow -= v.height - newHeight;
       return {
         ...v,
-        height: newHeight,
+        height: i === value.length - 1 ? 0 : newHeight,
       };
     });
   }
@@ -191,7 +184,18 @@ const ParallaxSelect = ({
   sceneHeight,
   onChange,
 }: ParallaxSelectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  const options: ParallaxOption[] = useMemo(
+    () => [
+      { value: 0, label: `${l10n("FIELD_PARALLAX_NONE")}` },
+      { value: 1, label: `1 ${l10n("FIELD_LAYER")}` },
+      { value: 2, label: `2 ${l10n("FIELD_LAYERS")}` },
+      { value: 3, label: `3 ${l10n("FIELD_LAYERS")}` },
+    ],
+    []
+  );
+
   const [selectValue, setSelectValue] = useState<ParallaxOption>(options[0]);
 
   useEffect(() => {
@@ -202,7 +206,7 @@ const ParallaxSelect = ({
         options.find((o) => o.value === value.length) || options[0];
       setSelectValue(selectValue);
     }
-  }, [value]);
+  }, [options, value]);
 
   const setHoverLayer = useCallback(
     (layer: number | undefined) => {
@@ -210,6 +214,10 @@ const ParallaxSelect = ({
     },
     [dispatch]
   );
+
+  const lastLayerHeight = value?.reduce((memo, value) => {
+    return memo - value.height;
+  }, sceneHeight);
 
   return (
     <div>
@@ -238,7 +246,7 @@ const ParallaxSelect = ({
                   min={1}
                   value={
                     layerIndex === value.length - 1
-                      ? sceneHeight
+                      ? lastLayerHeight
                       : layer.height || undefined
                   }
                   placeholder="1"

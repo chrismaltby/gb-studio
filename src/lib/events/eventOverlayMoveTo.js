@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_OVERLAY_MOVE_TO";
 const groups = ["EVENT_GROUP_SCREEN"];
+const subGroups = {
+  EVENT_GROUP_SCREEN: "EVENT_GROUP_OVERLAY",
+};
 
 const fields = [
   {
@@ -47,7 +50,13 @@ module.exports = {
   id,
   description: l10n("EVENT_OVERLAY_MOVE_TO_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "overlay",
+    x: "x",
+    y: "y",
+  },
 };

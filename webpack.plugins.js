@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const BundleAnalyzerPlugin =
@@ -9,9 +10,7 @@ const gitRevisionPlugin = new GitRevisionPlugin({
   commithashCommand: "rev-list --max-count=1 --no-merges --abbrev-commit HEAD",
 });
 
-const docsUrl = pkg.version.includes("beta")
-  ? "https://develop.gbstudio.dev/docs/"
-  : "https://www.gbstudio.dev/docs/";
+const docsUrl = "https://www.gbstudio.dev/docs/";
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -20,16 +19,21 @@ const plugins = [
     VERSION: JSON.stringify(pkg.version),
     DOCS_URL: JSON.stringify(docsUrl),
   }),
-  new ForkTsCheckerWebpackPlugin({
-    async: false,
-    typescript: {
-      memoryLimit: 4096,
-    },
-  }),
 ];
 
 if (process.env.ANALYZE_BUNDLE) {
   plugins.push(new BundleAnalyzerPlugin());
+}
+
+if (!process.env.NO_TYPE_CHECKING) {
+  plugins.push(
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      typescript: {
+        memoryLimit: 4096,
+      },
+    })
+  );
 }
 
 module.exports = plugins;

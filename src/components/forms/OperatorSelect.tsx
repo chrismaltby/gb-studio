@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useMemo } from "react";
+import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import { FlexRow, FlexGrow } from "ui/spacing/Spacing";
 
@@ -14,21 +14,24 @@ interface OperatorOption {
   label: string;
 }
 
-const options: OperatorOption[] = [
-  { value: "==", label: l10n("FIELD_EQ") },
-  { value: "!=", label: l10n("FIELD_NE") },
-  { value: "<", label: l10n("FIELD_LT") },
-  { value: ">", label: l10n("FIELD_GT") },
-  { value: "<=", label: l10n("FIELD_LTE") },
-  { value: ">=", label: l10n("FIELD_GTE") },
-];
-
 export const OperatorSelect: FC<OperatorSelectProps> = ({
   name,
   value,
   onChange,
   ...selectProps
 }) => {
+  const options: OperatorOption[] = useMemo(
+    () => [
+      { value: "==", label: l10n("FIELD_EQ") },
+      { value: "!=", label: l10n("FIELD_NE") },
+      { value: "<", label: l10n("FIELD_LT") },
+      { value: ">", label: l10n("FIELD_GT") },
+      { value: "<=", label: l10n("FIELD_LTE") },
+      { value: ">=", label: l10n("FIELD_GTE") },
+    ],
+    []
+  );
+
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select

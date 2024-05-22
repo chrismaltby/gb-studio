@@ -578,7 +578,6 @@
   "FIELD_EFFECT_INDEX_DESC": "要播放的效果编号（仅适用于 fxhammer）。",
   "FIELD_PRIORITY": "优先级",
   "FIELD_PRIORITY_SOUND_DESC": "效果的优先级，高、中或低。 如果同时播放两个音效，则优先级较高的音效优先。",
-  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "启用 Emulicious C 调试",
   "FIELD_TEMPO_TOOLTIP": "每行记号数",
   "FIELD_IDLE_LABEL": "等到下一帧",
   "FIELD_FOR": "用于",

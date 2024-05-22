@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import editorActions from "../editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 
 export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 export interface TrackerState {
@@ -24,6 +24,7 @@ export interface TrackerState {
   selectedPatternCells: number[];
   selection: [number, number, number, number];
   selectedEffectCell: number | null;
+  subpatternEditorFocus: boolean;
 }
 
 export const initialState: TrackerState = {
@@ -47,13 +48,14 @@ export const initialState: TrackerState = {
   selectedPatternCells: [],
   selection: [-1, -1, -1, -1],
   selectedEffectCell: null,
+  subpatternEditorFocus: false,
 };
 
 const trackerSlice = createSlice({
   name: "tracker",
   initialState,
   reducers: {
-    init: () => initialState,
+    init: (state) => ({ ...initialState, view: state.view }),
     playTracker: (state, _action: PayloadAction<void>) => {
       state.playing = true;
     },
@@ -113,6 +115,10 @@ const trackerSlice = createSlice({
     setSelectedEffectCell: (state, _action: PayloadAction<number | null>) => {
       state.selectedPatternCells = [];
       state.selectedEffectCell = _action.payload;
+    },
+    setSubpatternEditorFocus: (state, _action: PayloadAction<boolean>) => {
+      console.log("FOCUS:", _action.payload);
+      state.subpatternEditorFocus = _action.payload;
     },
   },
   extraReducers: (builder) =>

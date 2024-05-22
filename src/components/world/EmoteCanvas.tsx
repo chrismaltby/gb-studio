@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import { DMG_PALETTE } from "consts";
 import { emoteSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
-} from "../sprites/preview/SpriteSliceCanvas.worker";
+} from "components/sprites/preview/SpriteSliceCanvas.worker";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface EmoteCanvasProps {
   emoteId: string;
@@ -19,10 +18,9 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
   const height = 16;
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const emote = useSelector((state: RootState) =>
+  const emote = useAppSelector((state) =>
     emoteSelectors.selectById(state, emoteId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -59,15 +57,11 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "emotes",
-      emote
-    )}?_v=${emote._v}`;
+    const emoteURL = assetURL("emotes", emote);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: emoteURL,
       offsetX: 0,
       offsetY: 0,
       width: 16,
@@ -77,7 +71,7 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
       objPalette: "OBP0",
       palette: DMG_PALETTE.colors,
     });
-  }, [canvasRef, emote, projectRoot, workerId]);
+  }, [canvasRef, emote, workerId]);
 
   return (
     <canvas

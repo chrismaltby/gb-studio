@@ -9,32 +9,32 @@
 #ifndef _GBT_PLAYER_
 #define _GBT_PLAYER_
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 // Plays the song pointed by data (pointer array to patterns) in given bank at
 // given initial speed.
-void gbt_play(void *data, UINT8 bank, UINT8 speed);
+void gbt_play(void *data, UINT8 bank, UINT8 speed) OLDCALL;
 
 // Pauses or unpauses music.
 // Parameter: 1 = un-pause/resume, 0 = pause
-void gbt_pause(UINT8 pause);
+void gbt_pause(UINT8 pause) OLDCALL;
 
 // Stops music and turns off sound system. Called automatically when the last
 // pattern ends and autoloop isn't activated.
-void gbt_stop(void);
+void gbt_stop(void) OLDCALL;
 
 // Enables or disables autoloop
-void gbt_loop(UINT8 loop);
+void gbt_loop(UINT8 loop) OLDCALL;
 
 // Updates player, should be called every frame.
 // NOTE: This will change the active ROM bank to 1.
-void gbt_update(void);
+void gbt_update(void) OLDCALL;
 
 // Set enabled channels to prevent the player from using that channel.
 // NOTE: If a channel is re-enabled, it can take some time to sound OK (until
 // pan and volume are modified in the song). You should only disable unused
 // channels or channels that don't change pan or volume.
-void gbt_enable_channels(UINT8 channel_flags);
+void gbt_enable_channels(UINT8 channel_flags) OLDCALL;
 
 #define GBT_CHAN_1 (1<<0)
 #define GBT_CHAN_2 (1<<1)
@@ -44,7 +44,7 @@ void gbt_enable_channels(UINT8 channel_flags);
 extern volatile UINT8 _gbt_channel3_loaded_instrument;
 
 // resets channel3 instrument; forces reloading of waveform
-inline void gbt_reset_ch3_instrument() {
+inline void gbt_reset_ch3_instrument(void) {
     _gbt_channel3_loaded_instrument = 0xffu;
 }
 

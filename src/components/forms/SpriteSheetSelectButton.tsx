@@ -1,19 +1,12 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
-import l10n from "lib/helpers/l10n";
-import { RootState } from "store/configureStore";
-import {
-  paletteSelectors,
-  spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
-import {
-  ActorDirection,
-  SpriteSheet,
-} from "store/features/entities/entitiesTypes";
+import l10n from "shared/lib/lang/l10n";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 
 interface SpriteSheetSelectProps {
@@ -22,7 +15,6 @@ interface SpriteSheetSelectProps {
   direction?: ActorDirection;
   includeInfo?: boolean;
   frame?: number;
-  paletteId?: string;
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
@@ -138,22 +130,11 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
-const typeLabel = (spriteSheet?: SpriteSheet): string => {
-  if (!spriteSheet) {
-    return "";
-  }
-  // if (spriteSheet.type === "actor_animated" || spriteSheet.type === "actor") {
-  //   return l10n("ACTOR");
-  // }
-  return l10n("FIELD_SPRITE");
-};
-
 export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   name,
   value,
   direction,
   frame,
-  paletteId,
   onChange,
   includeInfo,
   optional,
@@ -162,11 +143,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, value || optionalValue || "")
-  );
-  const palette = useSelector((state: RootState) =>
-    paletteSelectors.selectById(state, paletteId || "")
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
@@ -253,7 +231,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || optionalValue || ""}
                 direction={direction}
                 frame={frame}
-                palette={palette}
               />
             </PreviewWrapper>
           ) : (
@@ -263,8 +240,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
             <SpriteInfo>
               <SpriteInfoTitle>{spriteSheet?.name}</SpriteInfoTitle>
               <SpriteInfoRow>
-                <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
-                {typeLabel(spriteSheet)}
+                <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
+                {spriteSheet?.canvasWidth}x{spriteSheet?.canvasHeight}
               </SpriteInfoRow>
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
@@ -285,7 +262,6 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 value={value}
                 frame={frame}
                 direction={direction}
-                paletteId={paletteId}
                 onChange={onSelectChange}
                 onBlur={closeMenu}
                 optional={optional}

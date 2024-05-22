@@ -1,25 +1,17 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
-import events, {
-  engineFieldUpdateEvents,
-  engineFieldStoreEvents,
-} from "lib/events";
+import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  EVENT_ENGINE_FIELD_STORE,
-  EVENT_ENGINE_FIELD_SET,
-} from "lib/compiler/eventTypes";
-import { RootState } from "store/configureStore";
 import { Dictionary } from "@reduxjs/toolkit";
-import { EngineFieldSchema } from "store/features/engine/engineState";
 import {
-  CustomEvent,
+  CustomEventNormalized,
   ScriptEventFieldSchema,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventFormProps {
   id: string;
@@ -32,10 +24,11 @@ interface ScriptEventFormProps {
 const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Dictionary<CustomEvent>,
-  engineFields: EngineFieldSchema[]
+  customEvents: Dictionary<CustomEventNormalized>,
+  scriptEventDefs: Dictionary<ScriptEventDef>
 ) => {
-  const eventCommands = (events[command] && events[command]?.fields) || [];
+  const eventCommands =
+    (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];
   if (value.customEventId && customEvents[value.customEventId]) {
     const customEvent = customEvents[value.customEventId];
     const description = customEvent?.description
@@ -57,14 +50,10 @@ const getScriptEventFields = (
         return {
           label: `${v?.name || ""}`,
           key: `$variable[${v?.id || ""}]$`,
-          type: "union",
-          types: ["number", "variable"],
-          defaultType: "variable",
-          min: -32768,
-          max: 32767,
+          type: "value",
           defaultValue: {
-            number: 0,
-            variable: "LAST_VARIABLE",
+            type: "variable",
+            value: "0",
           },
         };
       }) || [];
@@ -86,35 +75,6 @@ const getScriptEventFields = (
     );
   }
 
-  if (
-    (command === EVENT_ENGINE_FIELD_SET ||
-      command === EVENT_ENGINE_FIELD_STORE) &&
-    value.engineFieldKey
-  ) {
-    const engineField = engineFields.find(
-      (e) => e.key === value.engineFieldKey
-    );
-    if (engineField) {
-      if (command === EVENT_ENGINE_FIELD_SET) {
-        return (
-          (engineFieldUpdateEvents[engineField.key] &&
-            engineFieldUpdateEvents[engineField.key]?.fields) ||
-          []
-        );
-      }
-      if (command === EVENT_ENGINE_FIELD_STORE) {
-        return (
-          (engineFieldStoreEvents[engineField.key] &&
-            engineFieldStoreEvents[engineField.key]?.fields) ||
-          []
-        );
-      }
-    } else {
-      return ([] as ScriptEventFieldSchema[]).concat(eventCommands, {
-        label: `Unknown field "${value.engineFieldKey}"`,
-      });
-    }
-  }
   return eventCommands;
 };
 
@@ -125,11 +85,13 @@ const ScriptEventForm = ({
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
-  const scriptEvent = useSelector((state: RootState) =>
+  const scriptEventDefs = useAppSelector((state) =>
+    selectScriptEventDefs(state)
+  );
+  const scriptEvent = useAppSelector((state) =>
     scriptEventSelectors.selectById(state, id)
   );
-  const engineFields = useSelector((state: RootState) => state.engine.fields);
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
   const command = scriptEvent?.command;
@@ -141,11 +103,11 @@ const ScriptEventForm = ({
         command,
         value || {},
         customEvents,
-        engineFields
+        scriptEventDefs
       );
     }
     return [];
-  }, [command, value, customEvents, engineFields]);
+  }, [command, value, customEvents, scriptEventDefs]);
 
   if (!scriptEvent) {
     return null;

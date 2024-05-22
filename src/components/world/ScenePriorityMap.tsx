@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { TILE_COLOR_PROP_PRIORITY } from "../../consts";
+import { TILE_COLOR_PROP_PRIORITY } from "consts";
 
 const TILE_SIZE = 8;
 

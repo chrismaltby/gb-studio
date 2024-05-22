@@ -20,7 +20,8 @@ export const ListItem = styled.div`
     background: ${(props) => props.theme.colors.list.activeBackground};
   }
 
-  &[data-selected="true"] {
+  &[data-selected="true"],
+  &[data-highlighted="true"] {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 

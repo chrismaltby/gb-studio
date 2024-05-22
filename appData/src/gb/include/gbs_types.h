@@ -1,25 +1,16 @@
 #ifndef GBS_TYPES_H
 #define GBS_TYPES_H
 
-#include <gb/gb.h>
-#include <gb/cgb.h>
-#include <gb/metasprites.h>
+#include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "data/scene_types.h"
 #include "bankdata.h"
 #include "parallax.h"
 #include "collision.h"
-
-typedef enum {
-    SCENE_TYPE_TOPDOWN = 0,
-    SCENE_TYPE_PLATFORM,
-    SCENE_TYPE_ADVENTURE,
-    SCENE_TYPE_SHMUP,
-    SCENE_TYPE_POINTNCLICK,
-    SCENE_TYPE_LOGO
-} scene_type_e;
 
 typedef enum {
     LCD_simple,

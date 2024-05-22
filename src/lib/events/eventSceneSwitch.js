@@ -26,20 +26,26 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_SCENE_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         width: "50%",
       },
       {
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_SCENE_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 255,
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         width: "50%",
       },
     ],
@@ -57,14 +63,15 @@ const fields = [
     label: l10n("FIELD_FADE_SPEED"),
     description: l10n("FIELD_SPEED_FADE_DESC"),
     type: "fadeSpeed",
+    allowNone: true,
     defaultValue: "2",
     width: "50%",
   },
 ];
 
 const compile = (input, helpers) => {
-  const { sceneSwitch } = helpers;
-  sceneSwitch(
+  const { sceneSwitchUsingScriptValues } = helpers;
+  sceneSwitchUsingScriptValues(
     input.sceneId,
     input.x,
     input.y,

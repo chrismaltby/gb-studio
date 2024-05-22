@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
-import { Font } from "store/features/entities/entitiesTypes";
+import { Font } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -33,9 +32,7 @@ export const FontSelect: FC<FontSelectProps> = ({
   optionalDefaultFontId,
   ...selectProps
 }) => {
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const [options, setOptions] = useState<FontOption[]>([]);
   const [currentFont, setCurrentFont] = useState<Font>();
   const [currentValue, setCurrentValue] = useState<FontOption>();

@@ -1,7 +1,7 @@
 #ifndef _VM_H_INCLUDE
 #define _VM_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 #include <gbdk/far_ptr.h>
 
 #ifdef VM_DEBUG_OUTPUT
@@ -22,7 +22,7 @@ BANKREF_EXTERN(VM_MAIN)
 #define FN_ARG7 -8
 
 #if defined(NINTENDO)
-#define STEP_FUNC_ATTR OLDCALL PRESERVES_REGS(b, c)
+#define STEP_FUNC_ATTR
 typedef UWORD DUMMY0_t;
 typedef UWORD DUMMY1_t;
 #elif defined(SEGA)
@@ -43,11 +43,12 @@ typedef struct SCRIPT_CMD {
 typedef UBYTE (*SCRIPT_UPDATE_FN)(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL BANKED;
 
 #define VM_REF_TO_PTR(idx) (void *)(((idx) < 0) ? THIS->stack_ptr + (idx) : script_memory + (idx))
+#define VM_GLOBAL(idx) script_memory[(idx)]
 
 typedef struct SCRIPT_CTX {
     const UBYTE * PC;
     UBYTE bank;
-    // linked list of contexts for cooperative multitasking
+    // linked list of contexts for the multitasking
     struct SCRIPT_CTX * next;
     // update function
     void * update_fn;
@@ -134,17 +135,9 @@ void vm_join(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
 void vm_terminate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
 void vm_idle(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_get_tlocal(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED;
-void vm_get_uint8(SCRIPT_CTX * THIS, INT16 idxA, UINT8 * addr) OLDCALL BANKED;
-void vm_get_int8(SCRIPT_CTX * THIS, INT16 idxA, INT8 * addr) OLDCALL BANKED;
-void vm_get_int16(SCRIPT_CTX * THIS, INT16 idxA, INT16 * addr) OLDCALL BANKED;
 void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED;
-void vm_set_uint8(SCRIPT_CTX * THIS, UINT8 * addr, INT16 idxA) OLDCALL BANKED;
-void vm_set_int8(SCRIPT_CTX * THIS, INT8 * addr, INT16 idxA) OLDCALL BANKED;
-void vm_set_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 idxA) OLDCALL BANKED;
-void vm_set_const_int8(SCRIPT_CTX * THIS, UINT8 * addr, UINT8 v) OLDCALL BANKED;
-void vm_set_const_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 v) OLDCALL BANKED;
 void vm_init_rng(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
-void vm_rand(SCRIPT_CTX * THIS, INT16 idx, UINT16 min, UINT16 limit, UINT16 mask) OLDCALL BANKED;
+void vm_rand(SCRIPT_CTX * THIS, INT16 idx, UINT16 min, UINT16 limit) OLDCALL BANKED;
 void vm_lock(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_unlock(SCRIPT_CTX * THIS) OLDCALL BANKED;
 void vm_raise(SCRIPT_CTX * THIS, UBYTE code, UBYTE size) OLDCALL BANKED;
@@ -161,7 +154,7 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL B
 UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR;
 
 // return TRUE if VM is in locked state
-inline UBYTE VM_ISLOCKED() {
+inline UBYTE VM_ISLOCKED(void) {
     return (vm_lock_state != 0);
 }
 
@@ -185,6 +178,6 @@ UBYTE script_detach_hthread(UBYTE ID) BANKED;
 #define EXCEPTION_CODE_NONE 0
 
 // process all contexts
-UBYTE script_runner_update() NONBANKED;
+UBYTE script_runner_update(void) NONBANKED;
 
 #endif

@@ -1,6 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -9,12 +13,9 @@ import {
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import {
-  SpriteSheet,
-  SpriteState,
-} from "store/features/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
-import l10n from "lib/helpers/l10n";
+import { SpriteSheet, SpriteState } from "shared/lib/entities/entitiesTypes";
+import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
+import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { Button } from "ui/buttons/Button";
 import {
@@ -22,6 +23,7 @@ import {
   ArrowJumpIcon,
   ArrowMoveIcon,
   PlusIcon,
+  SearchIcon,
 } from "ui/icons/Icons";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
@@ -30,13 +32,22 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   AnimationType,
   filterAnimationsBySpriteType,
-  getAnimationNameForType,
   getAnimationTypeByIndex,
-} from "./helpers";
+} from "shared/lib/sprites/helpers";
+import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import projectActions from "store/features/project/projectActions";
+import {
+  FileSystemNavigatorItem,
+  buildAssetNavigatorItems,
+} from "shared/lib/assets/buildAssetNavigatorItems";
 
 interface NavigatorSpritesProps {
   height: number;
   selectedId: string;
+  viewId: string;
   selectedAnimationId: string;
   selectedStateId: string;
   defaultFirst?: boolean;
@@ -61,14 +72,6 @@ interface AnimationNavigatorItem {
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 300;
-
-const spriteToNavigatorItem = (
-  sprite: SpriteSheet,
-  spriteIndex: number
-): SpriteNavigatorItem => ({
-  id: sprite.id,
-  name: sprite.name ? sprite.name : `Sprite ${spriteIndex + 1}`,
-});
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -103,6 +106,7 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
 export const NavigatorSprites = ({
   height,
   selectedId,
+  viewId,
   selectedStateId,
 }: NavigatorSpritesProps) => {
   const [splitSizes, setSplitSizes] = useState([300, 200]);
@@ -118,24 +122,22 @@ export const NavigatorSprites = ({
   const [spriteAnimations, setSpriteAnimations] = useState<
     AnimationNavigatorItem[]
   >([]);
-  const [items, setItems] = useState<SpriteNavigatorItem[]>([]);
-  const allSprites = useSelector((state: RootState) =>
+  const allSprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const spritesLookup = useSelector((state: RootState) =>
+  const spritesLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const spriteStatesLookup = useSelector((state: RootState) =>
+  const spriteStatesLookup = useAppSelector((state) =>
     spriteStateSelectors.selectEntities(state)
   );
-  const spriteAnimationsLookup = useSelector((state: RootState) =>
+  const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state)
   );
   const selectedAnimationId =
-    useSelector((state: RootState) => state.editor.selectedAnimationId) ||
-    "group";
+    useAppSelector((state) => state.editor.selectedAnimationId) || "group";
 
-  const selectedSprite = spritesLookup[selectedId];
+  const selectedSprite = spritesLookup[viewId];
   const selectedState = spriteStatesLookup[selectedStateId];
 
   const {
@@ -145,17 +147,23 @@ export const NavigatorSprites = ({
     set: closeState,
   } = useToggleableList<string>([]);
 
-  const dispatch = useDispatch();
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
 
-  useEffect(() => {
-    setItems(
-      allSprites
-        .map((sprite, spriteIndex) =>
-          spriteToNavigatorItem(sprite, spriteIndex)
-        )
-        .sort(sortByName)
-    );
-  }, [allSprites]);
+  const [spritesSearchTerm, setSpritesSearchTerm] = useState("");
+  const [spritesSearchEnabled, setSpritesSearchEnabled] = useState(false);
+
+  const nestedSpriteItems = useMemo(
+    () => buildAssetNavigatorItems(allSprites, openFolders, spritesSearchTerm),
+    [allSprites, openFolders, spritesSearchTerm]
+  );
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (selectedSprite?.states) {
@@ -173,7 +181,7 @@ export const NavigatorSprites = ({
         const stateOpen = !closedStates.includes(state.id);
         if (tree.length > 1) {
           list.push({
-            id: `${state.id}_group`,
+            id: state.id,
             animationId: "group",
             stateId: state.id,
             name: state.name || l10n("FIELD_DEFAULT"),
@@ -277,12 +285,129 @@ export const NavigatorSprites = ({
       e.stopPropagation();
       dispatch(
         entitiesActions.addSpriteState({
-          spriteSheetId: selectedId,
+          spriteSheetId: viewId,
         })
       );
     },
-    [dispatch, selectedId]
+    [dispatch, viewId]
   );
+
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameSpriteComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          projectActions.renameSpriteAsset({
+            spriteSheetId: renameId,
+            newFilename: stripInvalidPathCharacters(name),
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameStateComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editSpriteState({
+            spriteStateId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback(
+    (item: SpriteNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              projectActions.removeSpriteAsset({
+                spriteSheetId: item.id,
+              })
+            )
+          }
+        >
+          {l10n("MENU_DELETE_SPRITE")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
+
+  const renderStateContextMenu = useCallback(
+    (item: SpriteNavigatorItem) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              entitiesActions.removeSpriteState({
+                spriteSheetId: viewId,
+                spriteStateId: item.id,
+              })
+            )
+          }
+        >
+          {l10n("MENU_SPRITE_STATE_DELETE")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch, viewId]
+  );
+
+  const renderLabel = useCallback(
+    (item: FileSystemNavigatorItem<SpriteSheet>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return item.filename;
+    },
+    [toggleFolderOpen]
+  );
+
+  const showSpritesSearch = spritesSearchEnabled && splitSizes[0] > 60;
+
+  const toggleSpritesSearchEnabled = useCallback(() => {
+    if (spritesSearchEnabled) {
+      setSpritesSearchTerm("");
+    }
+    setSpritesSearchEnabled(!spritesSearchEnabled);
+  }, [spritesSearchEnabled]);
 
   return (
     <>
@@ -290,17 +415,61 @@ export const NavigatorSprites = ({
         <SplitPaneHeader
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
+          buttons={
+            <Button
+              variant={spritesSearchEnabled ? "primary" : "transparent"}
+              size="small"
+              title={l10n("TOOLBAR_SEARCH")}
+              onClick={toggleSpritesSearchEnabled}
+            >
+              <SearchIcon />
+            </Button>
+          }
         >
           {l10n("FIELD_SPRITES")}
         </SplitPaneHeader>
 
+        {showSpritesSearch && (
+          <EntityListSearch
+            type="search"
+            value={spritesSearchTerm}
+            onChange={(e) => setSpritesSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+
         <FlatList
           selectedId={selectedId}
-          items={items}
+          items={nestedSpriteItems}
           setSelectedId={setSelectedId}
-          height={splitSizes[0] - 30}
+          height={splitSizes[0] - (showSpritesSearch ? 60 : 30)}
+          onKeyDown={(e: KeyboardEvent, item) => {
+            listenForRenameStart(e);
+            if (item?.type === "folder") {
+              if (e.key === "ArrowRight") {
+                openFolder(selectedId);
+              } else if (e.key === "ArrowLeft") {
+                closeFolder(selectedId);
+              }
+            }
+          }}
         >
-          {({ item }) => <EntityListItem type="sprite" item={item} />}
+          {({ item }) => (
+            <EntityListItem
+              type={item.type === "folder" ? "folder" : "sprite"}
+              item={item}
+              rename={item.type === "file" && renameId === item.id}
+              onRename={onRenameSpriteComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+              collapsable={item.type === "folder"}
+              collapsed={!isFolderOpen(item.name)}
+              onToggleCollapse={() => toggleFolderOpen(item.name)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+            />
+          )}
         </FlatList>
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
@@ -328,21 +497,29 @@ export const NavigatorSprites = ({
           setSelectedId={setSelectAnimationId}
           height={splitSizes[1] - 30}
           onKeyDown={(e: KeyboardEvent) => {
-            if (e.key === "ArrowRight") {
+            if (e.key === "Enter") {
+              setRenameId(selectedStateId);
+            } else if (e.key === "ArrowRight") {
               openState(selectedStateId);
             } else if (e.key === "ArrowLeft") {
               closeState(selectedStateId);
             }
           }}
         >
-          {({ item }) =>
+          {({ item, index }) =>
             item.type === "state" ? (
               <EntityListItem
                 item={item}
                 type={item.type}
                 collapsable={true}
                 collapsed={!item.isOpen}
-                onToggleCollapse={toggleStateOpen(item.stateId)}
+                onToggleCollapse={() => toggleStateOpen(item.stateId)}
+                rename={index > 0 && renameId === item.id}
+                onRename={onRenameStateComplete}
+                onRenameCancel={onRenameCancel}
+                renderContextMenu={
+                  index > 0 ? renderStateContextMenu : undefined
+                }
               />
             ) : (
               <EntityListItem

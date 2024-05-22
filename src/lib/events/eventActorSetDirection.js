@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_SET_DIRECTION";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_PROPERTIES",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ACTOR_SET_DIRECTION_LABEL", {
@@ -22,40 +25,17 @@ const fields = [
     key: "direction",
     label: l10n("FIELD_DIRECTION"),
     description: l10n("FIELD_DIRECTION_DESC"),
-    type: "union",
-    types: ["direction", "variable", "property"],
-    defaultType: "direction",
+    type: "value",
     defaultValue: {
-      direction: "up",
-      variable: "LAST_VARIABLE",
-      property: "$self$:direction",
+      type: "direction",
+      value: "up",
     },
   },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    actorSetActive,
-    actorSetDirection,
-    actorSetDirectionToVariable,
-    variableFromUnion,
-    temporaryEntityVariable,
-  } = helpers;
-
-  if (input.direction.type === "direction") {
-    actorSetActive(input.actorId);
-    actorSetDirection(input.direction.value);
-  } else if (typeof input.direction === "string") {
-    actorSetActive(input.actorId);
-    actorSetDirection(input.direction);
-  } else {
-    const dirVar = variableFromUnion(
-      input.direction,
-      temporaryEntityVariable(0)
-    );
-    actorSetActive(input.actorId);
-    actorSetDirectionToVariable(dirVar);
-  }
+  const { actorSetDirectionToScriptValue } = helpers;
+  actorSetDirectionToScriptValue(input.actorId, input.direction);
 };
 
 module.exports = {
@@ -63,6 +43,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_SET_DIRECTION_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

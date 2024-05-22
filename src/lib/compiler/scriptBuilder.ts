@@ -1,62 +1,86 @@
 import { inputDec, textSpeedDec } from "./helpers";
-import { decBin, decHex, decOct, hexDec } from "../helpers/8bit";
-import trimlines from "../helpers/trimlines";
-import { is16BitCType } from "../helpers/engineFields";
+import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
+import trimlines from "shared/lib/helpers/trimlines";
+import { is16BitCType } from "shared/lib/engineFields/engineFieldToCType";
 import {
   globalVariableDefaultName,
   localVariableName,
   tempVariableName,
-} from "../helpers/variables";
-import {
+} from "shared/lib/variables/variableNames";
+import type {
   ActorDirection,
-  CustomEvent,
   Palette,
-  ScriptEvent,
-  Sound,
   DistanceUnitType,
   Variable,
-} from "store/features/entities/entitiesTypes";
+  ScriptEvent,
+  CustomEvent,
+  SoundData,
+} from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
-import { EngineFieldSchema } from "store/features/engine/engineState";
-import {
-  initialState as initialSettingsState,
-  SettingsState,
-} from "store/features/settings/settingsState";
-import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
-import tokenize from "../rpn/tokenizer";
-import shuntingYard from "../rpn/shuntingYard";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type { SettingsState } from "store/features/settings/settingsState";
+import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
+import tokenize from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
-import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
 import {
   PrecompiledScene,
   PrecompiledSprite,
   PrecompiledEmote,
-} from "./compileData2";
-import { DMG_PALETTE } from "../../consts";
+  PrecompiledTilesetData,
+  PrecompiledBackground,
+} from "./generateGBVMData";
+import { DMG_PALETTE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
   isVariableField,
   isActorField,
-  mapEvents,
-} from "../helpers/eventSystem";
+  isScriptValueField,
+} from "shared/lib/scripts/scriptDefHelpers";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   isUnionPropertyValue,
   isUnionVariableValue,
-} from "store/features/entities/entitiesHelpers";
-import { lexText } from "lib/fonts/lexText";
-import { Reference } from "components/forms/ReferencesSelect";
+  isVariableCustomEvent,
+  isVariableLocal,
+  isVariableTemp,
+  toVariableNumber,
+} from "shared/lib/entities/entitiesHelpers";
+import { lexText } from "shared/lib/compiler/lexText";
+import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import {
   defaultVariableForContext,
   ScriptEditorContextType,
-} from "components/script/ScriptEditorContext";
+} from "shared/lib/scripts/context";
+import { encodeString } from "shared/lib/helpers/fonts";
+import { mapScript } from "shared/lib/scripts/walk";
+import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { VariableMapData } from "lib/compiler/compileData";
+import {
+  isScriptValue,
+  PrecompiledValueFetch,
+  PrecompiledValueRPNOperation,
+  ScriptValue,
+  ValueOperatorType,
+  ValueUnaryOperatorType,
+} from "shared/lib/scriptValue/types";
+import {
+  mapScriptValueLeafNodes,
+  optimiseScriptValue,
+  precompileScriptValue,
+  sortFetchOperations,
+  multiplyScriptValueConst,
+  addScriptValueConst,
+  addScriptValueToScriptValue,
+} from "shared/lib/scriptValue/helpers";
 
-type ScriptOutput = string[];
+export type ScriptOutput = string[];
 
-interface ScriptBuilderEntity {
+export interface ScriptBuilderEntity {
   id: string;
+  name: string;
 }
 
 interface ScriptBuilderScene {
@@ -74,7 +98,11 @@ interface ScriptBuilderProjectile {
   collisionMask: string[];
 }
 
-type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
+export type ScriptBuilderEntityType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 type ScriptBuilderStackVariable = string | number;
 
@@ -95,25 +123,29 @@ interface ScriptBuilderFunctionArgLookup {
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
-interface ScriptBuilderOptions {
+export interface ScriptBuilderOptions {
+  scriptEventHandlers: ScriptEventHandlers;
   context: ScriptEditorContextType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
+  entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<string>;
+  variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
+  backgrounds: PrecompiledBackground[];
   statesOrder: string[];
   stateReferences: string[];
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
-  sounds: Sound[];
+  sounds: SoundData[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
+  tilesets: PrecompiledTilesetData[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
@@ -134,6 +166,7 @@ interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  debugEnabled: boolean;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -148,7 +181,8 @@ type ScriptBuilderComparisonOperator =
   | ".LT"
   | ".LTE"
   | ".AND"
-  | ".OR";
+  | ".OR"
+  | ".NOT";
 
 type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -176,6 +210,11 @@ type ScriptBuilderRPNOperation =
   | ".ABS"
   | ".MIN"
   | ".MAX"
+  | ".ATAN2"
+  | ".ISQRT"
+  | ".SHL"
+  | ".SHR"
+  | ".RND"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -222,6 +261,30 @@ type ASMSFXPriority =
   | ".SFX_PRIORITY_NORMAL"
   | ".SFX_PRIORITY_HIGH";
 
+type ScriptBuilderActorFlags =
+  | ".ACTOR_FLAG_PINNED"
+  | ".ACTOR_FLAG_HIDDEN"
+  | ".ACTOR_FLAG_ANIM_NOLOOP"
+  | ".ACTOR_FLAG_COLLISION"
+  | ".ACTOR_FLAG_PERSISTENT";
+
+type RPNHandler = {
+  ref: (variable: ScriptBuilderStackVariable) => RPNHandler;
+  refInd: (variable: ScriptBuilderStackVariable) => RPNHandler;
+  refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
+  int8: (value: number | string) => RPNHandler;
+  int16: (value: number | string) => RPNHandler;
+  operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
+  stop: () => void;
+};
+
+const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
+  ".ABS",
+  ".NOT",
+  ".B_NOT",
+  ".ISQRT",
+];
+
 // - Helpers --------------
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -259,26 +322,6 @@ export const getVariableId = (
     return variable;
   }
   return String(parseInt(variable || "0"));
-};
-
-export const toVariableNumber = (variable: string) => {
-  return variable.replace(/[^0-9]/g, "");
-};
-
-export const isVariableLocal = (variable: string) => {
-  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
-};
-
-export const isVariableTemp = (variable: string) => {
-  return ["T0", "T1"].indexOf(variable) > -1;
-};
-
-export const isVariableCustomEvent = (variable: string) => {
-  return (
-    ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(
-      variable
-    ) > -1
-  );
 };
 
 const toValidLabel = (label: string): string => {
@@ -406,6 +449,70 @@ const toScriptOperator = (
       return ".AND";
     case "||":
       return ".OR";
+    case "<<":
+      return ".SHL";
+    case ">>":
+      return ".SHR";
+  }
+  assertUnreachable(operator);
+};
+
+const valueFunctionToScriptOperator = (
+  operator: ValueOperatorType | ValueUnaryOperatorType
+): ScriptBuilderRPNOperation => {
+  switch (operator) {
+    case "add":
+      return ".ADD";
+    case "sub":
+      return ".SUB";
+    case "div":
+      return ".DIV";
+    case "mul":
+      return ".MUL";
+    case "mod":
+      return ".MOD";
+    case "eq":
+      return ".EQ";
+    case "ne":
+      return ".NE";
+    case "lt":
+      return ".LT";
+    case "lte":
+      return ".LTE";
+    case "gt":
+      return ".GT";
+    case "gte":
+      return ".GTE";
+    case "min":
+      return ".MIN";
+    case "max":
+      return ".MAX";
+    case "and":
+      return ".AND";
+    case "or":
+      return ".OR";
+    case "abs":
+      return ".ABS";
+    case "atan2":
+      return ".ATAN2";
+    case "isqrt":
+      return ".ISQRT";
+    case "not":
+      return ".NOT";
+    case "shl":
+      return ".SHL";
+    case "shr":
+      return ".SHR";
+    case "bAND":
+      return ".B_AND";
+    case "bOR":
+      return ".B_OR";
+    case "bXOR":
+      return ".B_XOR";
+    case "bNOT":
+      return ".B_NOT";
+    case "rnd":
+      return ".RND";
   }
   assertUnreachable(operator);
 };
@@ -420,6 +527,8 @@ const funToScriptOperator = (
       return ".MAX";
     case "abs":
       return ".ABS";
+    case "atan2":
+      return ".ATAN2";
   }
   assertUnreachable(fun);
 };
@@ -496,7 +605,8 @@ class ScriptBuilder {
 
   constructor(
     output: ScriptOutput,
-    options: Partial<ScriptBuilderOptions> & Pick<ScriptBuilderOptions, "scene">
+    options: Partial<ScriptBuilderOptions> &
+      Pick<ScriptBuilderOptions, "scene" | "scriptEventHandlers">
   ) {
     this.byteSize = 0;
     this.output = output;
@@ -507,11 +617,13 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
+      entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
+      backgrounds: options.backgrounds || [],
       statesOrder: options.statesOrder || [],
       stateReferences: options.stateReferences || [],
       fonts: options.fonts || [],
@@ -520,6 +632,7 @@ class ScriptBuilder {
       sounds: options.sounds || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
+      tilesets: options.tilesets || [],
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
@@ -527,11 +640,12 @@ class ScriptBuilder {
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
+      debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
-      settings: options.settings || initialSettingsState,
+      settings: options.settings || defaultProjectSettings,
     };
     this.dependencies = [];
     this.nextLabel = 1;
@@ -674,7 +788,10 @@ class ScriptBuilder {
     }
   };
 
-  private _stackPushEvaluatedExpression = (expression: string) => {
+  private _stackPushEvaluatedExpression = (
+    expression: string,
+    resultVariable?: ScriptBuilderVariable
+  ) => {
     const tokens = tokenize(expression);
     const rpnTokens = shuntingYard(tokens);
     if (rpnTokens.length > 0) {
@@ -705,9 +822,17 @@ class ScriptBuilder {
         }
         token = rpnTokens.shift();
       }
+      if (resultVariable !== undefined) {
+        rpn.refSetVariable(resultVariable);
+      }
       rpn.stop();
     } else {
-      this._stackPushConst(0);
+      // If expression empty use value 0
+      if (resultVariable !== undefined) {
+        this._setVariableConst(resultVariable, 0);
+      } else {
+        this._stackPushConst(0);
+      }
     }
   };
 
@@ -851,7 +976,10 @@ class ScriptBuilder {
     }
   };
 
-  _setVariableConst = (variable: string, value: ScriptBuilderStackVariable) => {
+  _setVariableConst = (
+    variable: ScriptBuilderVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
@@ -903,12 +1031,15 @@ class ScriptBuilder {
     }
   };
 
-  _setConstMemInt8 = (cVariable: string, value: number) => {
+  _setConstMemInt8 = (cVariable: string, value: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
   };
 
-  _setConstMemInt16 = (cVariable: string, value: number) => {
+  _setConstMemInt16 = (
+    cVariable: string,
+    value: ScriptBuilderStackVariable
+  ) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
@@ -1119,6 +1250,24 @@ class ScriptBuilder {
           return rpn.ref(variableAlias);
         }
       },
+      refSet: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetInd: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_SET_IND", variable);
+        stack.pop();
+        return rpn;
+      },
+      refSetVariable: (variable: ScriptBuilderVariable) => {
+        const variableAlias = this.getVariableAlias(variable);
+        if (this._isIndirectVariable(variable)) {
+          return rpn.refSetInd(variableAlias);
+        } else {
+          return rpn.refSet(variableAlias);
+        }
+      },
       int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
@@ -1131,7 +1280,7 @@ class ScriptBuilder {
       },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
-        if (op !== ".ABS") {
+        if (!rpnUnaryOperators.includes(op)) {
           stack.pop();
         }
         return rpn;
@@ -1149,6 +1298,160 @@ class ScriptBuilder {
     };
 
     return rpn;
+  };
+
+  _performFetchOperations = (
+    fetchOps: PrecompiledValueFetch[]
+  ): Record<string, string> => {
+    const localsLookup: Record<string, string> = {};
+    const sortedFetchOps = sortFetchOperations(fetchOps);
+
+    let currentActor = "-1";
+    let currentProperty = "";
+    let currentPropData = "";
+    let prevLocalVar = "";
+    for (const fetchOp of sortedFetchOps) {
+      const localVar = this._declareLocal("local", 1, true);
+      localsLookup[fetchOp.local] = localVar;
+      switch (fetchOp.value.type) {
+        case "property": {
+          const actorValue = fetchOp.value.target || "player";
+          const propertyValue = fetchOp.value.property || "xpos";
+
+          if (
+            actorValue === currentActor &&
+            propertyValue === currentProperty &&
+            prevLocalVar
+          ) {
+            // If requested prop was fetched previously, reuse local var, don't fetch again
+            localsLookup[fetchOp.local] = prevLocalVar;
+            delete this.localsLookup[localVar];
+            continue;
+          }
+
+          this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
+          if (currentActor !== actorValue) {
+            this.actorSetById(actorValue);
+            currentActor = actorValue;
+            currentPropData = "";
+          }
+          if (propertyValue === "xpos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 1))
+              .int16(8 * 16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "ypos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 2))
+              .int16(8 * 16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "pxpos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 1))
+              .int16(16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "pypos") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "pos") {
+              this._actorGetPosition(actorRef);
+              currentPropData = "pos";
+            }
+            this._rpn() //
+              .ref(this._localRef(actorRef, 2))
+              .int16(16)
+              .operator(".DIV")
+              .refSet(localVar)
+              .stop();
+          } else if (propertyValue === "direction") {
+            const actorRef = this._declareLocal("actor", 4);
+            this._actorGetDirection(actorRef, localVar);
+          } else if (propertyValue === "frame") {
+            const actorRef = this._declareLocal("actor", 4);
+            if (currentPropData !== "frame") {
+              this._actorGetAnimFrame(actorRef);
+              currentPropData = "frame";
+            }
+            this._set(localVar, this._localRef(actorRef, 1));
+          } else {
+            throw new Error(`Unsupported property type "${propertyValue}"`);
+          }
+          currentProperty = propertyValue;
+          prevLocalVar = localVar;
+          break;
+        }
+        case "expression": {
+          this._addComment(
+            `-- Evaluate expression ${this._expressionToHumanReadable(
+              fetchOp.value.value
+            )}`
+          );
+          this._stackPushEvaluatedExpression(fetchOp.value.value, localVar);
+          break;
+        }
+        default: {
+          assertUnreachable(fetchOp.value);
+        }
+      }
+    }
+
+    return localsLookup;
+  };
+
+  _performValueRPN = (
+    rpn: RPNHandler,
+    rpnOps: PrecompiledValueRPNOperation[],
+    localsLookup: Record<string, string>
+  ) => {
+    for (const rpnOp of rpnOps) {
+      switch (rpnOp.type) {
+        case "number": {
+          rpn.int16(rpnOp.value ?? 0);
+          break;
+        }
+        case "variable": {
+          rpn.refVariable(rpnOp.value);
+          break;
+        }
+        case "local": {
+          this._markLocalUse(localsLookup[rpnOp.value]);
+          rpn.ref(localsLookup[rpnOp.value]);
+          break;
+        }
+        case "indirect": {
+          rpn.refInd(rpnOp.value);
+          break;
+        }
+        case "direction": {
+          rpn.int16(toASMDir(rpnOp.value));
+          break;
+        }
+        default: {
+          const op = valueFunctionToScriptOperator(rpnOp.type);
+          rpn.operator(op);
+        }
+      }
+    }
   };
 
   _if = (
@@ -1342,6 +1645,19 @@ class ScriptBuilder {
 
   _actorTerminateUpdate = (addr: string) => {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
+  };
+
+  _actorSetFlags = (
+    addr: string,
+    flags: ScriptBuilderActorFlags[],
+    mask: ScriptBuilderActorFlags[]
+  ) => {
+    this._addCmd(
+      "VM_ACTOR_SET_FLAGS",
+      addr,
+      unionFlags(flags),
+      unionFlags(mask)
+    );
   };
 
   _projectileLaunch = (index: number, addr: string) => {
@@ -1794,6 +2110,46 @@ extern void __mute_mask_${symbol};
     this._addCmd(".CGB_PAL", r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4);
   };
 
+  _replaceTile = (
+    addr: ScriptBuilderStackVariable,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable,
+    numTiles: number
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE",
+      addr,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex,
+      numTiles
+    );
+  };
+
+  _replaceTileXY = (
+    x: number,
+    y: number,
+    symbol: string,
+    tileIndex: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd(
+      "VM_REPLACE_TILE_XY",
+      x,
+      y,
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      tileIndex
+    );
+  };
+
+  _getTileXY = (
+    addr: ScriptBuilderStackVariable,
+    x: ScriptBuilderStackVariable,
+    y: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd("VM_GET_TILE_XY", addr, x, y);
+  };
+
   _callFar = (symbol: string, argsLen: number) => {
     this._addCmd("VM_CALL_FAR", `___bank_${symbol}`, `_${symbol}`);
     if (argsLen > 0) {
@@ -2083,19 +2439,71 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
 
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
+    this._actorMoveTo(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorMoveToScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    useCollisions: boolean,
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Move To");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._setConst(
+      this._localRef(actorRef, 3),
+      toASMMoveFlags(moveType, useCollisions)
+    );
+    this._addComment(`-- Move Actor`);
+    this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -2118,20 +2526,93 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
+    this._actorMoveTo(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorMoveRelativeByScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    useCollisions: boolean,
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Move Relative");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(
+          addScriptValueToScriptValue(
+            {
+              type: "property",
+              target: actorId,
+              property: units === "tiles" ? "xpos" : "pxpos",
+            },
+            valueX
+          ),
+          (units === "tiles" ? 8 : 1) * 16
+        )
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(
+          addScriptValueToScriptValue(
+            {
+              type: "property",
+              target: actorId,
+              property: units === "tiles" ? "ypos" : "pypos",
+            },
+            valueY
+          ),
+          (units === "tiles" ? 8 : 1) * 16
+        )
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._setConst(
+      this._localRef(actorRef, 3),
+      toASMMoveFlags(moveType, useCollisions)
+    );
+    this._addComment(`-- Move Actor`);
+    this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -2173,15 +2654,61 @@ extern void __mute_mask_${symbol};
       .refVariable(variableX)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
+    this._actorSetPosition(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
 
+  actorSetPositionToScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Set Position");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._addComment(`-- Position Actor`);
+    this.actorSetById(actorId);
     this._actorSetPosition(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -2201,17 +2728,84 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
       .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
 
-    this._set(this._localRef(actorRef, 1), ".ARG1");
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(2);
     this._actorSetPosition(actorRef);
+    this._addNL();
+  };
+
+  actorSetPositionRelativeByScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Set Position Relative");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(
+          addScriptValueToScriptValue(
+            {
+              type: "property",
+              target: actorId,
+              property: units === "tiles" ? "xpos" : "pxpos",
+            },
+            valueX
+          ),
+          (units === "tiles" ? 8 : 1) * 16
+        )
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(
+          addScriptValueToScriptValue(
+            {
+              type: "property",
+              target: actorId,
+              property: units === "tiles" ? "ypos" : "pypos",
+            },
+            valueY
+          ),
+          (units === "tiles" ? 8 : 1) * 16
+        )
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    rpn.stop();
+    this._addComment(`-- Position Actor`);
+    this.actorSetById(actorId);
+    this._actorSetPosition(actorRef);
+    this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 
@@ -2228,14 +2822,13 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableX, ".ARG1");
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(2);
     this._addNL();
   };
 
@@ -2251,10 +2844,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableX)
       .stop();
 
-    this._setVariable(variableX, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2270,10 +2862,9 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
+      .refSetVariable(variableY)
       .stop();
 
-    this._setVariable(variableY, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -2321,9 +2912,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 2))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Up
@@ -2334,9 +2924,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 2))
       .stop();
-    this._set(this._localRef(actorRef, 2), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Left
@@ -2347,9 +2936,8 @@ extern void __mute_mask_${symbol};
       .operator(".SUB")
       .int16(0)
       .operator(".MAX")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
-    this._stackPop(1);
     this._jump(endLabel);
 
     // Right
@@ -2358,9 +2946,8 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(actorRef, 1))
       .int16(offset)
       .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
       .stop();
-    this._set(this._localRef(actorRef, 1), ".ARG0");
-    this._stackPop(1);
 
     // End
     this._label(endLabel);
@@ -2460,6 +3047,53 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  actorSetDirectionToScriptValue = (actorId: string, value: ScriptValue) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const leftLabel = this.getNextLabel();
+    const rightLabel = this.getNextLabel();
+    const upLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment("Actor Set Direction To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this.actorSetById(actorId);
+      this._actorSetDirection(actorRef, String(rpnOps[0].value || 0));
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "direction") {
+      this.actorSetById(actorId);
+      this._actorSetDirection(actorRef, toASMDir(rpnOps[0].value));
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 1)).stop();
+      this.actorSetById(actorId);
+      const newValueRef = this._localRef(actorRef, 1);
+      this._ifConst(".EQ", newValueRef, ".DIR_LEFT", leftLabel, 0);
+      this._ifConst(".EQ", newValueRef, ".DIR_RIGHT", rightLabel, 0);
+      this._ifConst(".EQ", newValueRef, ".DIR_UP", upLabel, 0);
+      // Down
+      this._actorSetDirection(actorRef, ".DIR_DOWN");
+      this._jump(endLabel);
+      // Left
+      this._label(leftLabel);
+      this._actorSetDirection(actorRef, ".DIR_LEFT");
+      this._jump(endLabel);
+      // Right
+      this._label(rightLabel);
+      this._actorSetDirection(actorRef, ".DIR_RIGHT");
+      this._jump(endLabel);
+      // Up
+      this._label(upLabel);
+      this._actorSetDirection(actorRef, ".DIR_UP");
+      this._label(endLabel);
+    }
+    this._addNL();
+  };
+
   actorEmote = (emoteId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { emotes } = this.options;
@@ -2499,13 +3133,18 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  actorSetState = (state: string) => {
+  actorSetState = (state: string, animLoop = true) => {
     const actorRef = this._declareLocal("actor", 4);
     const { statesOrder, stateReferences } = this.options;
     const stateIndex = statesOrder.indexOf(state);
     if (stateIndex > -1) {
       this._addComment("Actor Set Animation State");
       this._actorSetAnimState(actorRef, stateReferences[stateIndex]);
+      this._actorSetFlags(
+        actorRef,
+        animLoop ? [] : [".ACTOR_FLAG_ANIM_NOLOOP"],
+        [".ACTOR_FLAG_ANIM_NOLOOP"]
+      );
       this._addNL();
     }
   };
@@ -2536,6 +3175,25 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Animation Frame To Variable");
     this._setToVariable(this._localRef(actorRef, 1), variable);
+    this._actorSetAnimFrame(actorRef);
+    this._addNL();
+  };
+
+  actorSetFrameToScriptValue = (actorId: string, value: ScriptValue) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Set Animation Frame To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+    rpn.stop();
+
+    this.actorSetById(actorId);
     this._actorSetAnimFrame(actorRef);
     this._addNL();
   };
@@ -2633,7 +3291,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(dirToAngle(direction))
@@ -2654,7 +3311,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(Math.round(angle % 256))
@@ -2675,7 +3331,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .refVariable(angleVariable)
@@ -2716,7 +3371,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
@@ -2724,6 +3378,39 @@ extern void __mute_mask_${symbol};
       .stop();
     this.setActorId(".ARG1", actorId);
     this._actorGetAngle(".ARG1", ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
+    this._addNL();
+  };
+
+  launchProjectileTowardsActor = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    otherActorId: string,
+    destroyOnHit = false,
+    loopAnim = false
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    this._addComment("Launch Projectile Towards Actor");
+    this.setActorId(otherActorRef, otherActorId);
+    this._actorGetPosition(otherActorRef);
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .ref(this._localRef(otherActorRef, 2))
+      .ref(this._localRef(actorRef, 2))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(otherActorRef, 1))
+      .ref(this._localRef(actorRef, 1))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".ATAN2")
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
+      .stop();
     this._projectileLaunch(projectileIndex, ".ARG3");
     this._stackPop(4);
     this._addNL();
@@ -2985,16 +3672,20 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       cameraMoveArgsRef,
-      xOffset + Math.round(x * (units === "tiles" ? 8 : 1))
+      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * 16
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      yOffset + Math.round(y * (units === "tiles" ? 8 : 1))
+      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * 16
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(
+        cameraMoveArgsRef,
+        Math.round(speed * 16),
+        ".CAMERA_UNLOCK"
+      );
     }
     this._addNL();
   };
@@ -3009,32 +3700,98 @@ extern void __mute_mask_${symbol};
     if (units === "tiles") {
       this._rpn() //
         .refVariable(variableX)
-        .int16(8)
+        .int16(8 * 16)
         .operator(".MUL")
-        .int16(80)
+        .int16(80 * 16)
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(8)
+        .int16(8 * 16)
         .operator(".MUL")
-        .int16(72)
+        .int16(72 * 16)
         .operator(".ADD")
         .stop();
     } else {
       this._rpn() //
         .refVariable(variableX)
-        .int16(80)
+        .int16(80 * 16)
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(72)
+        .int16(72 * 16)
         .operator(".ADD")
         .stop();
     }
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(".ARG1", Math.round(speed * 16), ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
+  };
+
+  cameraMoveToScriptValues = (
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
+    const xOffset = 80 * 16;
+    const yOffset = 72 * 16;
+
+    const stackPtr = this.stackPtr;
+    this._addComment("Camera Move To");
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        addScriptValueConst(
+          multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16),
+          xOffset
+        )
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        addScriptValueConst(
+          multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16),
+          yOffset
+        )
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(cameraMoveArgsRef, 0));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(cameraMoveArgsRef, 1));
+
+    rpn.stop();
+
+    this._addComment(`-- Move Camera`);
+    if (speed === 0) {
+      this._cameraSetPos(cameraMoveArgsRef);
+    } else {
+      this._cameraMoveTo(
+        cameraMoveArgsRef,
+        Math.round(speed * 16),
+        ".CAMERA_UNLOCK"
+      );
+    }
+
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
@@ -3044,29 +3801,26 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(16)
-      .operator(".DIV")
-      .int16(8)
+      .int16(8 * 16)
       .operator(".ADD")
       .ref(this._localRef(actorRef, 2))
-      .int16(16)
-      .operator(".DIV")
-      .int16(8)
+      .int16(8 * 16)
       .operator(".ADD")
       .stop();
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     }
-    this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
+    this._cameraMoveTo(".ARG1", Math.round(speed * 16), toASMCameraLock(axis));
     this._stackPop(2);
   };
 
   cameraShake = (
     shouldShakeX: boolean,
     shouldShakeY: boolean,
-    frames: number
+    frames: number,
+    magnitude: number
   ) => {
-    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 2, true);
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
     this._addComment("Camera Shake");
     this._setConst(cameraShakeArgsRef, frames);
     this._setConst(
@@ -3078,6 +3832,65 @@ extern void __mute_mask_${symbol};
         )
       )
     );
+    this._setConst(this._localRef(cameraShakeArgsRef, 2), magnitude);
+    this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
+    this._addNL();
+  };
+
+  cameraShakeVariables = (
+    shouldShakeX: boolean,
+    shouldShakeY: boolean,
+    frames: number,
+    magnitude: string
+  ) => {
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
+    this._addComment("Camera Shake");
+    this._setConst(cameraShakeArgsRef, frames);
+    this._setConst(
+      this._localRef(cameraShakeArgsRef, 1),
+      unionFlags(
+        ([] as string[]).concat(
+          shouldShakeX ? ".CAMERA_SHAKE_X" : [],
+          shouldShakeY ? ".CAMERA_SHAKE_Y" : []
+        )
+      )
+    );
+
+    this._rpn() //
+      .refVariable(magnitude)
+      .refSet(this._localRef(cameraShakeArgsRef, 2))
+      .stop();
+
+    this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
+    this._addNL();
+  };
+
+  cameraShakeScriptValue = (
+    shouldShakeX: boolean,
+    shouldShakeY: boolean,
+    frames: number,
+    magnitude: ScriptValue
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(magnitude)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
+    this._addComment("Camera Shake");
+    this._setConst(cameraShakeArgsRef, frames);
+    this._setConst(
+      this._localRef(cameraShakeArgsRef, 1),
+      unionFlags(
+        ([] as string[]).concat(
+          shouldShakeX ? ".CAMERA_SHAKE_X" : [],
+          shouldShakeY ? ".CAMERA_SHAKE_Y" : []
+        )
+      )
+    );
+
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(this._localRef(cameraShakeArgsRef, 2)).stop();
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
   };
@@ -3118,7 +3931,12 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
+  timerScriptSet = (
+    frames = 600,
+    script: ScriptEvent[],
+    symbol?: string,
+    timer = 1
+  ) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
     const TIMER_CYCLES = 16;
@@ -3147,10 +3965,7 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Call Script
 
-  callScript = (
-    scriptId: string,
-    input: Dictionary<string | ScriptBuilderUnionValue>
-  ) => {
+  callScript = (scriptId: string, input: Dictionary<string | ScriptValue>) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
 
@@ -3172,18 +3987,44 @@ extern void __mute_mask_${symbol};
     const actorArgs = Object.values(customEvent.actors);
     const variableArgs = Object.values(customEvent.variables);
 
-    const constArgLookup: Record<number, string> = {};
+    const constArgLookup: Record<string, string> = {};
     if (variableArgs) {
       for (const variableArg of variableArgs) {
-        if (variableArg && variableArg.passByReference) {
+        if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+
           if (
             typeof variableValue !== "string" &&
-            variableValue.type === "number"
+            variableValue.type !== "variable" &&
+            variableValue.type !== "number"
           ) {
+            const [rpnOps, fetchOps] = precompileScriptValue(
+              optimiseScriptValue(variableValue)
+            );
             const argRef = this._declareLocal("arg", 1, true);
-            this._setConst(argRef, variableValue.value);
-            constArgLookup[variableValue.value] = argRef;
+
+            if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+              this._setConst(argRef, rpnOps[0].value);
+            } else {
+              const localsLookup = this._performFetchOperations(fetchOps);
+              this._addComment(`-- Calculate value`);
+              const rpn = this._rpn();
+              this._performValueRPN(rpn, rpnOps, localsLookup);
+              rpn.refSet(argRef).stop();
+            }
+
+            constArgLookup[JSON.stringify(variableValue)] = argRef;
+          } else if (variableArg.passByReference) {
+            const variableValue =
+              input?.[`$variable[${variableArg.id}]$`] || "";
+            if (
+              typeof variableValue !== "string" &&
+              variableValue.type === "number"
+            ) {
+              const argRef = this._declareLocal("arg", 1, true);
+              this._setConst(argRef, variableValue.value);
+              constArgLookup[JSON.stringify(variableValue)] = argRef;
+            }
           }
         }
       }
@@ -3211,11 +4052,6 @@ extern void __mute_mask_${symbol};
             if (typeof variableValue === "string") {
               const variableAlias = this.getVariableAlias(variableValue);
               this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
-            } else if (variableValue && variableValue.type === "number") {
-              // Arg is union number
-              const argRef = constArgLookup[variableValue.value];
-              this._stackPushReference(argRef, `Variable ${variableArg.id}`);
-              this._markLocalUse(argRef);
             } else if (variableValue && variableValue.type === "variable") {
               // Arg is a union variable
               const variableAlias = this.getVariableAlias(variableValue.value);
@@ -3228,6 +4064,11 @@ extern void __mute_mask_${symbol};
                   `Variable ${variableArg.id}`
                 );
               }
+            } else {
+              // Arg is a script value
+              const argRef = constArgLookup[JSON.stringify(variableValue)];
+              this._stackPushReference(argRef, `Variable ${variableArg.id}`);
+              this._markLocalUse(argRef);
             }
 
             // End of Pass by Reference ----------
@@ -3254,6 +4095,11 @@ extern void __mute_mask_${symbol};
                 // Arg union value is variable id
                 this._stackPush(variableAlias);
               }
+            } else {
+              // Arg is a script value
+              const argRef = constArgLookup[JSON.stringify(variableValue)];
+              this._stackPush(argRef);
+              this._markLocalUse(argRef);
             }
 
             // End of Pass by Value ----------
@@ -3276,8 +4122,6 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const eventLookup = require("lib/events").eventLookup;
     const { customEvents, compiledCustomEventScriptCache } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
@@ -3353,7 +4197,7 @@ extern void __mute_mask_${symbol};
       }
     }
 
-    const script = mapEvents(
+    const script = mapScript(
       customEvent.script,
       (event: ScriptEvent): ScriptEvent => {
         if (!event.args || event.args.__comment) return event;
@@ -3365,7 +4209,14 @@ extern void __mute_mask_${symbol};
         Object.keys(e.args).forEach((arg) => {
           const argValue = e.args[arg];
           // Update variable fields
-          if (isVariableField(e.command, arg, e.args, eventLookup)) {
+          if (
+            isVariableField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
+          ) {
             if (
               isUnionVariableValue(argValue) &&
               argValue.value &&
@@ -3383,7 +4234,14 @@ extern void __mute_mask_${symbol};
             }
           }
           // Update property fields
-          if (isPropertyField(e.command, arg, e.args, eventLookup)) {
+          if (
+            isPropertyField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
+          ) {
             const replacePropertyValueActor = (p: string) => {
               const actorValue = p.replace(/:.*/, "");
               if (actorValue === "player") {
@@ -3406,13 +4264,55 @@ extern void __mute_mask_${symbol};
           }
           // Update actor fields
           if (
-            isActorField(e.command, arg, e.args, eventLookup) &&
+            isActorField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            ) &&
             typeof argValue === "string"
           ) {
             e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
           }
+          // Update script value fields
+          if (
+            isScriptValueField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers
+            )
+          ) {
+            if (isScriptValue(argValue)) {
+              e.args[arg] = mapScriptValueLeafNodes(argValue, (val) => {
+                if (val.type === "variable") {
+                  const scriptArg = argLookup["variable"].get(val.value);
+                  if (scriptArg?.indirect) {
+                    return {
+                      type: "indirect",
+                      value: scriptArg.symbol,
+                    };
+                  }
+                } else if (val.type === "property") {
+                  const scriptArg = getArg("actor", val.target);
+                  if (scriptArg && typeof scriptArg === "string") {
+                    return {
+                      ...val,
+                      value: scriptArg,
+                    };
+                  } else if (scriptArg && typeof scriptArg !== "string") {
+                    return {
+                      ...val,
+                      target: scriptArg.symbol,
+                      value: scriptArg,
+                    };
+                  }
+                }
+                return val;
+              });
+            }
+          }
         });
-
         return e;
       }
     );
@@ -3475,11 +4375,13 @@ extern void __mute_mask_${symbol};
     const { scenes } = this.options;
     const scene = scenes.find((s) => s.id === sceneId);
     if (scene) {
-      this._setConstMemInt8(
-        "fade_frames_per_step",
-        fadeSpeeds[fadeSpeed] ?? 0x3
-      );
-      this._fadeOut(true);
+      if (fadeSpeed > 0) {
+        this._setConstMemInt8(
+          "fade_frames_per_step",
+          fadeSpeeds[fadeSpeed] ?? 0x3
+        );
+        this._fadeOut(true);
+      }
       this._setConst(actorRef, 0);
       this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
       this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
@@ -3488,6 +4390,72 @@ extern void __mute_mask_${symbol};
       if (asmDir) {
         this._actorSetDirection(actorRef, asmDir);
       }
+      this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
+      this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
+      this._importFarPtrData(scene.symbol);
+      this._addNL();
+    }
+  };
+
+  sceneSwitchUsingScriptValues = (
+    sceneId: string,
+    x: ScriptValue,
+    y: ScriptValue,
+    direction: ActorDirection = "down",
+    fadeSpeed = 2
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Load Scene");
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+
+    if (scene) {
+      if (fadeSpeed > 0) {
+        this._setConstMemInt8(
+          "fade_frames_per_step",
+          fadeSpeeds[fadeSpeed] ?? 0x3
+        );
+        this._fadeOut(true);
+      }
+
+      const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+        optimiseScriptValue(multiplyScriptValueConst(x, 8 * 16)),
+        "x"
+      );
+      const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+        optimiseScriptValue(multiplyScriptValueConst(y, 8 * 16)),
+        "y"
+      );
+
+      const localsLookup = this._performFetchOperations([
+        ...fetchOpsX,
+        ...fetchOpsY,
+      ]);
+
+      const rpn = this._rpn();
+
+      this._addComment(`-- Calculate coordinate values`);
+
+      // X Value
+      this._performValueRPN(rpn, rpnOpsX, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 1));
+
+      // Y Value
+      this._performValueRPN(rpn, rpnOpsY, localsLookup);
+      rpn.refSet(this._localRef(actorRef, 2));
+      rpn.stop();
+
+      // Move
+      this._setConst(actorRef, 0);
+      this._actorSetPosition(actorRef);
+
+      // Dir
+      const asmDir = toASMDir(direction);
+      if (asmDir) {
+        this._actorSetDirection(actorRef, asmDir);
+      }
+
+      this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(scene.symbol);
       this._addNL();
@@ -3550,6 +4518,10 @@ extern void __mute_mask_${symbol};
       return variable.symbol;
     }
 
+    if (typeof variable === "string" && variable.startsWith(".LOCAL")) {
+      return variable;
+    }
+
     // Set correct default variable for missing vars based on script context
     if (variable === "") {
       variable = defaultVariableForContext(this.options.context);
@@ -3575,6 +4547,7 @@ extern void __mute_mask_${symbol};
       entityType,
       variablesLookup,
       variableAliasLookup,
+      scene,
     } = this.options;
 
     const id = getVariableId(variable, entity);
@@ -3582,18 +4555,27 @@ extern void __mute_mask_${symbol};
     const namedVariable = variablesLookup[id || "0"];
     if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
-      variableAliasLookup[id] = symbol;
+      variableAliasLookup[id] = {
+        symbol,
+        name: namedVariable.name,
+        id: namedVariable.id,
+        isLocal: false,
+        entityType: "scene",
+        entityId: "",
+        sceneId: "",
+      };
       return symbol;
     }
 
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
-      return existingAlias;
+      return existingAlias.symbol;
     }
 
     let name = "";
-    if (entity && isVariableLocal(variable)) {
+    const isLocal = isVariableLocal(variable);
+    if (entity && isLocal) {
       const num = toVariableNumber(variable);
       const localName = localVariableName(num, entity.id, variablesLookup);
       if (entityType === "scene") {
@@ -3608,7 +4590,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableDefaultName(num);
+      name = namedVariable?.name || globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3616,14 +4598,22 @@ extern void __mute_mask_${symbol};
     let counter = 1;
 
     // Make sure new alias is unique
-    const aliases = Object.values(variableAliasLookup) as string[];
+    const aliases = Object.values(variableAliasLookup).map((v) => v?.symbol);
     while (aliases.includes(newAlias)) {
       newAlias = `${alias}_${counter}`;
       counter++;
     }
 
     // New Alias is now unique
-    variableAliasLookup[id] = newAlias;
+    variableAliasLookup[id] = {
+      symbol: newAlias,
+      id,
+      name,
+      isLocal,
+      entityType,
+      entityId: entity?.id ?? "",
+      sceneId: scene?.id ?? "",
+    };
 
     return newAlias;
   };
@@ -3634,9 +4624,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".ADD")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3646,9 +4635,19 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int8(1)
       .operator(".SUB")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
+    this._addNL();
+  };
+
+  variableAdd = (variable: ScriptBuilderVariable, value: number) => {
+    this._addComment("Variable Increment By " + value);
+    this._rpn() //
+      .refVariable(variable)
+      .int8(value)
+      .operator(".ADD")
+      .refSetVariable(variable)
+      .stop();
     this._addNL();
   };
 
@@ -3667,6 +4666,25 @@ extern void __mute_mask_${symbol};
   variableSetToValue = (variable: string, value: number | string) => {
     this._addComment("Variable Set To Value");
     this._setVariableConst(variable, value);
+    this._addNL();
+  };
+
+  variableSetToScriptValue = (variable: string, value: ScriptValue) => {
+    this._addComment("Variable Set To");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._setVariableConst(variable, rpnOps[0].value);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      this._setVariableToVariable(variable, rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(variable).stop();
+    }
     this._addNL();
   };
 
@@ -3709,9 +4727,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3733,9 +4750,27 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(setVariable);
     rpn.stop();
-    this._setVariable(setVariable, ".ARG0");
-    this._stackPop(1);
+    this._addNL();
+  };
+
+  variablesScriptValueOperation = (
+    setVariable: string,
+    operation: ScriptBuilderRPNOperation,
+    value: ScriptValue
+  ) => {
+    this._addComment(`Variables ${operation}`);
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const rpn = this._rpn();
+    rpn.refVariable(setVariable);
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.operator(operation);
+    rpn.refSetVariable(setVariable);
+    rpn.stop();
     this._addNL();
   };
 
@@ -3760,9 +4795,8 @@ extern void __mute_mask_${symbol};
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.refSetVariable(variable);
     rpn.stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3800,9 +4834,8 @@ extern void __mute_mask_${symbol};
       .refVariable(variable)
       .int16(flags)
       .operator(".B_OR")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3814,9 +4847,8 @@ extern void __mute_mask_${symbol};
       .int16(flags)
       .operator(".B_XOR")
       .operator(".B_AND")
+      .refSetVariable(variable)
       .stop();
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
     this._addNL();
   };
 
@@ -3824,9 +4856,7 @@ extern void __mute_mask_${symbol};
     this._addComment(
       `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`
     );
-    this._stackPushEvaluatedExpression(expression);
-    this._setVariable(variable, ".ARG0");
-    this._stackPop(1);
+    this._stackPushEvaluatedExpression(expression, variable);
     this._addNL();
   };
 
@@ -3876,6 +4906,27 @@ extern void __mute_mask_${symbol};
     }
     this.variableSetToUnionValue(defaultVariable, unionValue);
     return defaultVariable;
+  };
+
+  localVariableFromUnion = (
+    unionValue: ScriptBuilderUnionValue
+  ): string | ScriptBuilderFunctionArg => {
+    if (!unionValue) {
+      // Guard undefined values
+      return this.localVariableFromUnion({ type: "number", value: 0 });
+    }
+    if (unionValue.type === "variable") {
+      return unionValue.value;
+    }
+    const local = this._declareLocal("union_val", 1, true);
+    this.variableSetToUnionValue(this._localRef(local, 0), unionValue);
+    return local;
+  };
+
+  markLocalsUsed = (...locals: string[]) => {
+    locals.forEach((local) => {
+      this._markLocalUse(local);
+    });
   };
 
   variableSetToUnionValue = (
@@ -3957,6 +5008,69 @@ extern void __mute_mask_${symbol};
     }
   };
 
+  engineFieldSetToScriptValue = (key: string, value: ScriptValue) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.cType;
+      this._addComment(`Engine Field Set To Value`);
+
+      const [rpnOps, fetchOps] = precompileScriptValue(
+        optimiseScriptValue(value)
+      );
+
+      if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+        // Was single number
+        if (is16BitCType(cType)) {
+          this._setConstMemInt16(key, rpnOps[0].value);
+        } else {
+          this._setConstMemInt8(key, rpnOps[0].value);
+        }
+      } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+        // Was single variable
+        if (is16BitCType(cType)) {
+          this._setMemInt16ToVariable(key, rpnOps[0].value);
+        } else {
+          this._setMemInt8ToVariable(key, rpnOps[0].value);
+        }
+      } else {
+        // Was RPN instructions
+        const engineFieldValueRef = this._declareLocal(
+          "engine_field_val",
+          1,
+          true
+        );
+        const localsLookup = this._performFetchOperations(fetchOps);
+        this._addComment(`-- Calculate value`);
+        const rpn = this._rpn();
+        this._performValueRPN(rpn, rpnOps, localsLookup);
+        rpn.refSetVariable(engineFieldValueRef).stop();
+        if (is16BitCType(cType)) {
+          this._setMemInt16ToVariable(key, engineFieldValueRef);
+        } else {
+          this._setMemInt8ToVariable(key, engineFieldValueRef);
+        }
+      }
+      this._addNL();
+    }
+  };
+
+  engineFieldSetToDefault = (key: string) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.cType;
+      const numberValue = Number(engineField.defaultValue || 0);
+      this._addComment(`Engine Field Set To Default`);
+      if (is16BitCType(cType)) {
+        this._setConstMemInt16(key, numberValue);
+      } else {
+        this._setConstMemInt8(key, numberValue);
+      }
+      this._addNL();
+    }
+  };
+
   engineFieldStoreInVariable = (key: string, variable: string) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
@@ -3987,6 +5101,257 @@ extern void __mute_mask_${symbol};
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
     this._fadeOut(true);
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Tiles
+
+  replaceTileXY = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndex: number,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    this._addComment(`Replace Tile XY`);
+    this._stackPushConst(tileIndex);
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
+    this._stackPop(1);
+  };
+
+  replaceTileXYVariable = (
+    x: number,
+    y: number,
+    tilesetId: string,
+    tileIndexVariable: string,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+
+    const variableAlias = this.getVariableAlias(tileIndexVariable);
+
+    this._addComment(`Replace Tile XY`);
+    if (this._isIndirectVariable(tileIndexVariable)) {
+      this._stackPushInd(variableAlias);
+    } else {
+      this._stackPush(variableAlias);
+    }
+    if (tileSize === "16px") {
+      // Top left tile
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+      // Top right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y, tileset.symbol, ".ARG0");
+      // Bottom right tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(tileset.width)
+        .operator(".ADD")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x + 1, y + 1, tileset.symbol, ".ARG0");
+      // Bottom left tile
+      this._rpn() //
+        .ref(".ARG0")
+        .int8(1)
+        .operator(".SUB")
+        .refSet(".ARG0")
+        .stop();
+      this._replaceTileXY(x, y + 1, tileset.symbol, ".ARG0");
+    } else {
+      this._replaceTileXY(x, y, tileset.symbol, ".ARG0");
+    }
+    this._stackPop(1);
+  };
+
+  replaceTileXYScriptValue = (
+    x: ScriptValue,
+    y: ScriptValue,
+    tilesetId: string,
+    tileIndexValue: ScriptValue,
+    tileSize: "8px" | "16px"
+  ) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId) ?? tilesets[0];
+    if (!tileset) {
+      return;
+    }
+    const tileIndex = this._declareLocal("tile_index", 1, true);
+
+    this._addComment(`Replace Tile XY`);
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(optimiseScriptValue(x));
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(optimiseScriptValue(y));
+    const [rpnOpsTile, fetchOpsTile] = precompileScriptValue(
+      optimiseScriptValue(tileIndexValue)
+    );
+
+    if (
+      rpnOpsX.length === 1 &&
+      rpnOpsX[0].type === "number" &&
+      rpnOpsY.length === 1 &&
+      rpnOpsY[0].type === "number"
+    ) {
+      // Can optimise using constant values for X and Y coordinates
+      const localsLookup = this._performFetchOperations(fetchOpsTile);
+      const constX = rpnOpsX[0].value;
+      const constY = rpnOpsY[0].value;
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOpsTile, localsLookup);
+      rpn.refSet(tileIndex);
+      rpn.stop();
+      if (tileSize === "16px") {
+        // 16px tiles - Top left tile
+        this._replaceTileXY(constX, constY, tileset.symbol, tileIndex);
+        // 16px tiles - Top right tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX + 1, constY, tileset.symbol, tileIndex);
+        // 16px tiles - Bottom right tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(tileset.width)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX + 1, constY + 1, tileset.symbol, tileIndex);
+        // 16px tiles - Bottom left tile
+        this._rpn() //
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".SUB")
+          .refSet(tileIndex)
+          .stop();
+        this._replaceTileXY(constX, constY + 1, tileset.symbol, tileIndex);
+      } else {
+        // 8px tiles
+        this._replaceTileXY(constX, constY, tileset.symbol, tileIndex);
+      }
+    } else {
+      // Using RPN for X/Y values
+      const tileX = this._declareLocal("tile_x", 1, true);
+      const tileY = this._declareLocal("tile_y", 1, true);
+      const tileAddr = this._declareLocal("tile_addr", 1, true);
+
+      const localsLookup = this._performFetchOperations([
+        ...fetchOpsX,
+        ...fetchOpsY,
+        ...fetchOpsTile,
+      ]);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOpsX, localsLookup);
+      rpn.refSet(tileX);
+      this._performValueRPN(rpn, rpnOpsY, localsLookup);
+      rpn.refSet(tileY);
+      this._performValueRPN(rpn, rpnOpsTile, localsLookup);
+      rpn.refSet(tileIndex);
+      rpn.stop();
+
+      if (tileSize === "16px") {
+        // 16px tiles - Top left tile
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Top right tile
+        this._rpn() //
+          // Inc Tile X
+          .ref(tileX)
+          .int8(1)
+          .operator(".ADD")
+          .refSetVariable(tileX)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Bottom right tile
+        this._rpn() //
+          // Inc Tile Y
+          .ref(tileY)
+          .int8(1)
+          .operator(".ADD")
+          .refSetVariable(tileY)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(tileset.width)
+          .operator(".ADD")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+        // 16px tiles - Bottom left tile
+        this._rpn() //
+          // Inc Tile X
+          .ref(tileX)
+          .int8(1)
+          .operator(".SUB")
+          .refSetVariable(tileX)
+          // Inc Tile Index
+          .ref(tileIndex)
+          .int8(1)
+          .operator(".SUB")
+          .refSet(tileIndex)
+          .stop();
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+      } else {
+        // 8px tiles
+        this._getTileXY(tileAddr, tileX, tileY);
+        this._replaceTile(tileAddr, tileset.symbol, tileIndex, 1);
+      }
+
+      this.markLocalsUsed(tileIndex, tileAddr, tileX, tileY);
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -4089,7 +5454,7 @@ extern void __mute_mask_${symbol};
   // Palettes
 
   paletteSetBackground = (paletteIds: string[]) => {
-    const { palettes, settings } = this.options;
+    const { palettes, settings, scene } = this.options;
 
     let mask = 0;
     const writePalettes: Palette[] = [];
@@ -4099,8 +5464,20 @@ extern void __mute_mask_${symbol};
       if (paletteId === "keep") {
         continue;
       }
+      let palette = getPalette(palettes, paletteId, defaultPaletteId);
+      if (paletteId === "restore") {
+        if (scene.background.autoPalettes) {
+          // Restore from auto palette
+          palette = scene.background.autoPalettes[i] ?? palette;
+        } else {
+          // Restore from manual palette
+          const scenePaletteId =
+            scene.paletteIds[i] ?? settings.defaultBackgroundPaletteIds[i];
+          palette = getPalette(palettes, scenePaletteId, defaultPaletteId);
+        }
+      }
       mask += 1 << i;
-      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
+      writePalettes.push(palette);
     }
 
     if (mask === 0) {
@@ -4389,6 +5766,32 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  whileScriptValue = (
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const loopId = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`While`);
+    this._label(loopId);
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, endLabel, 1);
+    this._compilePath(truePath);
+    this._jump(loopId);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifVariableTrue = (
     variable: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
@@ -4436,6 +5839,79 @@ extern void __mute_mask_${symbol};
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable ${operator} Variable`);
     this._ifVariableCmpVariable(operator, variableA, variableB, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifVariableCompareScriptValue = (
+    variable: string,
+    operator: ScriptBuilderComparisonOperator,
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+
+    this._addComment(`If Variable ${operator} Value`);
+
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._ifVariableConst(operator, variable, rpnOps[0].value, trueLabel, 0);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "direction") {
+      this._ifVariableCmpVariable(
+        operator,
+        variable,
+        rpnOps[0].value,
+        trueLabel,
+        0
+      );
+    } else {
+      this._addComment(`-- Calculate value`);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const ifValueRef = this._declareLocal("if_value", 1, true);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSet(ifValueRef).stop();
+      this._ifVariableCmpVariable(operator, variable, ifValueRef, trueLabel, 0);
+    }
+
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifScriptValue = (
+    value: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const ifValueRef = this._declareLocal("if_value", 1, true);
+    this._addComment(`If`);
+
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(ifValueRef).stop();
+
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If`);
+    this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -4589,6 +6065,69 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorAtPositionByScriptValues = (
+    actorId: string,
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor At Position`);
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "x"
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(
+        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
+      ),
+      "y"
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
+
+    this.actorSetById(actorId);
+    this._actorGetPosition(actorRef);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate coordinate values`);
+
+    // X Value EQ
+    rpn.ref(this._localRef(actorRef, 1));
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.operator(".EQ");
+
+    // Y Value EQ
+    rpn.ref(this._localRef(actorRef, 2));
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.operator(".EQ");
+
+    // Both are EQ
+    rpn.operator(".AND");
+    rpn.stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifActorDirection = (
     direction: ActorDirection,
     truePath = [],
@@ -4601,6 +6140,41 @@ extern void __mute_mask_${symbol};
     this._addComment(`If Actor Facing Direction`);
     this._actorGetDirection(actorRef, actorDirRef);
     this._ifConst(".NE", actorDirRef, toASMDir(direction), falseLabel, 0);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifActorDirectionScriptValue = (
+    actorId: string,
+    directionValue: ScriptValue,
+    truePath = [],
+    falsePath = []
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const actorDirRef = this._declareLocal("actor_dir", 1, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor Facing Direction`);
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(directionValue)
+    );
+
+    this.actorSetById(actorId);
+    this._actorGetDirection(actorRef, actorDirRef);
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+
+    this._if(".NE", actorDirRef, ".ARG0", falseLabel, 1);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4882,9 +6456,92 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorDistanceScriptValueFromActor = (
+    actorId: string,
+    distanceValue: ScriptValue,
+    operator: ScriptBuilderComparisonOperator,
+    otherId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const distanceRef = this._declareLocal("distance", 1, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`If Actor Distance from Actor`);
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(distanceValue)
+    );
+
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(distanceRef);
+    rpn.stop();
+
+    this.actorSetById(actorId);
+    this._actorGetPosition(actorRef);
+    this.setActorId(otherActorRef, otherId);
+    this._actorGetPosition(otherActorRef);
+
+    // (x2-x1)^2 + (y2-y1)^2
+    this._rpn() //
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .operator(".ADD")
+      .ref(distanceRef)
+      .ref(distanceRef)
+      .operator(".MUL")
+      .operator(operator)
+      .stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   caseVariableValue = (
     variable: string,
-    cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},
+    cases: {
+      [key: string]: ScriptEvent[] | ScriptBuilderPathFunction;
+    } = {},
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
     const caseKeys = Object.keys(cases);
@@ -4979,13 +6636,18 @@ extern void __mute_mask_${symbol};
       {
         ...this.options,
         ...options,
+        scriptEventHandlers: this.options.scriptEventHandlers,
         output: [],
         loop: false,
         lock: false,
-        init: false,
         context,
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
+        branch: false,
+        debugEnabled: this.options.debugEnabled,
+        warnings: (msg: string) => {
+          console.error(msg);
+        },
       }
     );
     this.options.additionalScripts[symbol] = {
@@ -5032,6 +6694,47 @@ extern void __mute_mask_${symbol};
 
   makeSymbol = (name: string) => {
     return this._getAvailableSymbol(name);
+  };
+
+  // --------------------------------------------------------------------------
+  // Debuger
+
+  addDebugSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = (
+        scriptEventId === "autofade"
+          ? [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              "scene",
+              this.options.scene?.id ?? "",
+              "script",
+            ]
+          : [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              this.options.entityType,
+              this.options.entity?.id ?? "",
+              this.options.entityScriptKey ?? "script",
+            ]
+      )
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM$${debugSymbol}`);
+    }
+  };
+
+  addDebugEndSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = [scriptSymbolName, scriptEventId]
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM_END$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM_END$${debugSymbol}`);
+    }
   };
 
   // --------------------------------------------------------------------------

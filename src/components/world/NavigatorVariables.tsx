@@ -1,15 +1,19 @@
-import React, { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Variable } from "store/features/entities/entitiesTypes";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { Variable } from "shared/lib/entities/entitiesTypes";
+import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MenuItem } from "ui/menu/Menu";
+import l10n from "shared/lib/lang/l10n";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 interface NavigatorVariablesProps {
   height: number;
+  searchTerm: string;
 }
 
 interface NavigatorItem {
@@ -36,27 +40,74 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
-export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
+export const NavigatorVariables: FC<NavigatorVariablesProps> = ({
+  height,
+  searchTerm,
+}) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "variable" ? entityId : "";
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
     setItems(
       allVariables
         .map((value) => variableToNavigatorItem(variablesLookup[value], value))
+        .filter(
+          (value) =>
+            searchTermUpperCase.length === 0 ||
+            value.name.toLocaleUpperCase().includes(searchTermUpperCase)
+        )
         .sort(sortByName)
     );
-  }, [variablesLookup]);
+  }, [searchTerm, variablesLookup]);
 
   const setSelectedId = (id: string) => {
     dispatch(editorActions.selectVariable({ variableId: id }));
   };
+
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.renameVariable({
+            variableId: renameId,
+            name,
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback((item: NavigatorItem) => {
+    return [
+      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+        {l10n("FIELD_RENAME")}
+      </MenuItem>,
+    ];
+  }, []);
 
   return (
     <FlatList
@@ -64,7 +115,17 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
       items={items}
       setSelectedId={setSelectedId}
       height={height}
-      children={({ item }) => <EntityListItem type="variable" item={item} />}
+      onKeyDown={listenForRenameStart}
+      children={({ item }) => (
+        <EntityListItem
+          type="variable"
+          item={item}
+          rename={renameId === item.id}
+          onRename={onRenameComplete}
+          onRenameCancel={onRenameCancel}
+          renderContextMenu={renderContextMenu}
+        />
+      )}
     />
   );
 };

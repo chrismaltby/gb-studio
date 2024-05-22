@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
 import uniq from "lodash/uniq";
-import { useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
+import { useAppSelector } from "store/hooks";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import {
   OptGroup,
@@ -11,9 +10,10 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Background } from "store/features/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
+import { Background } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
+import { isMonoOverride } from "shared/lib/assets/backgrounds";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -34,16 +34,15 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
   onChange,
   ...selectProps
 }) => {
-  const backgrounds = useSelector((state: RootState) =>
+  const backgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
-  const backgroundsLookup = useSelector((state: RootState) =>
+  const backgroundsLookup = useAppSelector((state) =>
     backgroundSelectors.selectEntities(state)
   );
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentBackground, setCurrentBackground] = useState<Background>();
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -54,7 +53,11 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
       memo.push({
         label: plugin,
         options: backgrounds
-          .filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+          .filter(
+            (s) =>
+              !isMonoOverride(s.filename) &&
+              (plugin ? s.plugin === plugin : !s.plugin)
+          )
           .map((background) => {
             return {
               label: background.name,
@@ -91,18 +94,14 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
       options={options}
       onChange={onSelectChange}
       formatOptionLabel={(option: Option) => {
+        const background = backgroundsLookup[option.value];
         return (
           <OptionLabelWithPreview
             preview={
               <Thumbnail
                 style={{
                   backgroundImage:
-                    backgroundsLookup[option.value] &&
-                    `url("file://${assetFilename(
-                      projectRoot,
-                      "backgrounds",
-                      backgroundsLookup[option.value]
-                    )}?_v=${backgroundsLookup[option.value]?._v}")`,
+                    background && assetURLStyleProp("backgrounds", background),
                 }}
               />
             }
@@ -118,12 +117,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
               <Thumbnail
                 style={{
                   backgroundImage:
-                    background &&
-                    `url("file://${assetFilename(
-                      projectRoot,
-                      "backgrounds",
-                      background
-                    )}?_v=${background._v}")`,
+                    background && assetURLStyleProp("backgrounds", background),
                 }}
               />
             }

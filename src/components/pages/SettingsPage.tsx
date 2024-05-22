@@ -1,20 +1,21 @@
 import React, { FC, useCallback, useLayoutEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import { FormField } from "../library/Forms";
-import l10n from "lib/helpers/l10n";
-import castEventValue from "lib/helpers/castEventValue";
-import CustomControlsPicker from "../forms/CustomControlsPicker";
-import { PaletteSelect } from "../forms/PaletteSelect";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
+import { castEventToBool } from "renderer/lib/helpers/castEventValue";
+import CustomControlsPicker from "components/forms/CustomControlsPicker";
+import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
-import { SettingsState } from "store/features/settings/settingsState";
+import {
+  ColorModeSetting,
+  MusicDriverSetting,
+  SettingsState,
+} from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
-import EngineFieldsEditor from "../settings/EngineFieldsEditor";
+import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { Checkbox } from "ui/form/Checkbox";
 import { Input } from "ui/form/Input";
-import { RootState } from "store/configureStore";
-import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { Textarea } from "ui/form/Textarea";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -24,27 +25,28 @@ import {
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "../settings/SettingsLayout";
+} from "components/settings/SettingsLayout";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
-import { FontSelect } from "../forms/FontSelect";
-import { options as sceneTypes } from "../forms/SceneTypeSelect";
-import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
-import { ColorAnimationText } from "../settings/ColorAnimationText";
-import { MusicDriverSelect } from "../forms/MusicDriverSelect";
+import { FontSelect } from "components/forms/FontSelect";
+import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
+import { ColorAnimationText } from "components/settings/ColorAnimationText";
+import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
-import CartSettingsEditor from "../settings/CartSettingsEditor";
+import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
+import { FormField } from "ui/form/FormLayout";
+import { FixedSpacer } from "ui/spacing/Spacing";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ColorModeSelect } from "components/forms/ColorModeSelect";
 
 const SettingsPage: FC = () => {
-  const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const settings = useSelector(
-    (state: RootState) => state.project.present.settings
-  );
+  const dispatch = useAppDispatch();
+  const settings = useAppSelector((state) => state.project.present.settings);
+  const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
   const groupedFields = useGroupedEngineFields();
@@ -73,7 +75,7 @@ const SettingsPage: FC = () => {
   }, [scrollToId]);
 
   const {
-    customColorsEnabled,
+    colorMode,
     sgbEnabled,
     customHead,
     defaultBackgroundPaletteIds,
@@ -81,7 +83,11 @@ const SettingsPage: FC = () => {
     defaultFontId,
     defaultPlayerSprites,
     musicDriver,
+    openBuildLogOnWarnings,
+    generateDebugFilesEnabled,
   } = settings;
+
+  const colorEnabled = colorMode !== "mono";
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.currentTarget.value);
@@ -97,20 +103,62 @@ const SettingsPage: FC = () => {
     }
   };
 
-  const onEditSetting =
-    (id: string) =>
-    (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      editSettings({
-        [id]: castEventValue(e),
-      });
-    };
+  const onChangeSettingProp = useCallback(
+    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
+      dispatch(
+        settingsActions.editSettings({
+          [key]: value,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const onChangeColorMode = useCallback(
+    (e: ColorModeSetting) => onChangeSettingProp("colorMode", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeSGBEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("sgbEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeDefaultFontId = useCallback(
+    (e: string) => onChangeSettingProp("defaultFontId", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeMusicDriver = useCallback(
+    (e: MusicDriverSetting) => onChangeSettingProp("musicDriver", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeCustomHead = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+      onChangeSettingProp("customHead", e.currentTarget.value),
+    [onChangeSettingProp]
+  );
+
+  const onChangeOpenBuildLogOnWarnings = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("openBuildLogOnWarnings", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeGenerateDebugFilesEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
 
   const onEditPaletteId = useCallback(
     (index: number, e: string) => {
       const paletteIds = defaultBackgroundPaletteIds
         ? [...defaultBackgroundPaletteIds]
         : [];
-      paletteIds[index] = castEventValue(e);
+      paletteIds[index] = e;
       editSettings({
         defaultBackgroundPaletteIds: [
           paletteIds[0],
@@ -132,7 +180,7 @@ const SettingsPage: FC = () => {
       const paletteIds = defaultSpritePaletteIds
         ? [...defaultSpritePaletteIds]
         : [];
-      paletteIds[index] = castEventValue(e);
+      paletteIds[index] = e;
       editSettings({
         defaultSpritePaletteIds: [
           paletteIds[0],
@@ -166,12 +214,12 @@ const SettingsPage: FC = () => {
     (path: string) => {
       dispatch(
         electronActions.openFile({
-          filename: Path.join(projectRoot, "assets", path),
+          filename: Path.join("assets", path),
           type: "image",
         })
       );
     },
-    [dispatch, projectRoot]
+    [dispatch]
   );
 
   return (
@@ -189,7 +237,7 @@ const SettingsPage: FC = () => {
               />
             </SettingsSearchWrapper>
             <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
-              {l10n("SETTINGS_GBC")}
+              {l10n("SETTINGS_COLOR")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
@@ -208,7 +256,7 @@ const SettingsPage: FC = () => {
                 key={group.name}
                 onClick={onMenuItem(`settings${group.name}`)}
               >
-                {l10n(group.name)}
+                {l10n(group.name as L10NKey)}
               </SettingsMenuItem>
             ))}
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>
@@ -216,6 +264,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsCartType")}>
               {l10n("SETTINGS_CART_TYPE")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsBuild")}>
+              {l10n("SETTINGS_BUILD")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsCustomHead")}>
               {l10n("SETTINGS_CUSTOM_HEADER")}
@@ -234,23 +285,52 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsColor" />
           <CardHeading>
-            <ColorAnimationText>{l10n("SETTINGS_GBC")}</ColorAnimationText>
+            <ColorAnimationText>{l10n("SETTINGS_COLOR")}</ColorAnimationText>
           </CardHeading>
+
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_EXPORT_IN_COLOR")]}
+            searchMatches={[l10n("FIELD_COLOR_MODE")]}
           >
-            <SettingRowLabel>{l10n("FIELD_EXPORT_IN_COLOR")}</SettingRowLabel>
+            <SettingRowLabel>{l10n("FIELD_COLOR_MODE")}</SettingRowLabel>
             <SettingRowInput>
-              <Checkbox
-                id="customColorsEnabled"
-                name="customColorsEnabled"
-                checked={customColorsEnabled}
-                onChange={onEditSetting("customColorsEnabled")}
+              <ColorModeSelect
+                name="colorMode"
+                value={colorMode}
+                onChange={onChangeColorMode}
               />
+              <FormInfo>
+                {colorMode === "mono" && l10n("FIELD_COLOR_MODE_MONO_NOTE")}
+                {colorMode === "mixed" && l10n("FIELD_COLOR_MODE_MIXED_NOTE")}
+                {colorMode === "color" &&
+                  l10n("FIELD_COLOR_MODE_COLOR_LIMITATIONS_NOTE")}
+                {colorMode === "color" && (
+                  <>
+                    <br />
+                    <br />
+                    {l10n("FIELD_COLOR_MODE_COLOR_NOTE")}
+                  </>
+                )}
+                <br />
+                <br />
+                {l10n("FIELD_SUPPORTED_PLATFORMS")}:
+                <ul style={{ marginTop: 5, marginBottom: 0 }}>
+                  {colorMode !== "color" && (
+                    <li>
+                      GB{" "}
+                      {colorMode !== "mono"
+                        ? `(${l10n("FIELD_MONOCHROME_ONLY")})`
+                        : ""}
+                    </li>
+                  )}
+                  <li>GB Color</li>
+                  {colorMode !== "color" && <li>Super GB</li>}
+                  <li>Analogue Pocket</li>
+                </ul>
+              </FormInfo>
             </SettingRowInput>
           </SearchableSettingRow>
-          {customColorsEnabled && (
+          {colorEnabled && (
             <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
@@ -262,13 +342,7 @@ const SettingsPage: FC = () => {
                 <SettingRowInput>
                   <div>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                      <FormField
-                        key={index}
-                        style={{
-                          padding: 0,
-                          paddingBottom: index === 7 ? 0 : 3,
-                        }}
-                      >
+                      <FormField key={index} name={`scenePalette${index}`}>
                         <PaletteSelect
                           name={`scenePalette${index}`}
                           prefix={`${index + 1}:`}
@@ -281,9 +355,10 @@ const SettingsPage: FC = () => {
                             onEditPaletteId(index, e);
                           }}
                         />
-                        {sgbEnabled && index === 4 && (
+                        {sgbEnabled && colorMode !== "color" && index === 4 && (
                           <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
                         )}
+                        {index !== 7 && <FixedSpacer height={3} />}
                         {index === 7 && (
                           <FormInfo>{l10n("FIELD_UI_PALETTE_NOTE")}</FormInfo>
                         )}
@@ -303,13 +378,7 @@ const SettingsPage: FC = () => {
                 <SettingRowInput>
                   <div key={JSON.stringify(defaultSpritePaletteIds)}>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                      <FormField
-                        key={index}
-                        style={{
-                          padding: 0,
-                          paddingBottom: index === 7 ? 0 : 3,
-                        }}
-                      >
+                      <FormField key={index} name={`spritePalette${index}`}>
                         <PaletteSelect
                           name={`spritePalette${index}`}
                           prefix={`${index + 1}:`}
@@ -322,6 +391,7 @@ const SettingsPage: FC = () => {
                             onEditSpritePaletteId(index, e);
                           }}
                         />
+                        {index !== 7 && <FixedSpacer height={3} />}
                         {index === 7 && (
                           <FormInfo>
                             {l10n("FIELD_EMOTE_PALETTE_NOTE")}
@@ -359,16 +429,20 @@ const SettingsPage: FC = () => {
           >
             <SettingRowLabel>{l10n("FIELD_ENABLE_SGB")}</SettingRowLabel>
             <SettingRowInput>
-              <Checkbox
-                id="sgbEnabled"
-                name="sgbEnabled"
-                checked={sgbEnabled}
-                onChange={onEditSetting("sgbEnabled")}
-              />
+              {colorMode === "color" ? (
+                <FormInfo>{l10n("FIELD_SGB_UNAVAILABLE")}</FormInfo>
+              ) : (
+                <Checkbox
+                  id="sgbEnabled"
+                  name="sgbEnabled"
+                  checked={sgbEnabled}
+                  onChange={onChangeSGBEnabled}
+                />
+              )}
             </SettingRowInput>
           </SearchableSettingRow>
 
-          {sgbEnabled && (
+          {sgbEnabled && colorMode !== "color" && (
             <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
@@ -379,11 +453,7 @@ const SettingsPage: FC = () => {
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
-                    <FormField
-                      style={{
-                        padding: 0,
-                      }}
-                    >
+                    <FormField name="scenePalette">
                       <PaletteSelect
                         name="scenePalette"
                         value={
@@ -395,7 +465,7 @@ const SettingsPage: FC = () => {
                           onEditPaletteId(4, e);
                         }}
                       />
-                      {customColorsEnabled && (
+                      {colorEnabled && (
                         <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
                       )}
                     </FormField>
@@ -417,11 +487,7 @@ const SettingsPage: FC = () => {
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
-                    <FormField
-                      style={{
-                        padding: 0,
-                      }}
-                    >
+                    <FormField name="sgbBorder">
                       <UIAssetPreview
                         path="sgb/border.png"
                         onClick={() => {
@@ -444,19 +510,21 @@ const SettingsPage: FC = () => {
           <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
           {sceneTypes.map((sceneType) => (
             <SearchableSettingRow
-              key={sceneType.value}
+              key={sceneType.key}
               searchTerm={searchTerm}
-              searchMatches={[sceneType.label]}
+              searchMatches={[l10n(sceneType.label as L10NKey)]}
             >
-              <SettingRowLabel>{sceneType.label}</SettingRowLabel>
+              <SettingRowLabel>
+                {l10n(sceneType.label as L10NKey)}
+              </SettingRowLabel>
               <SettingRowInput>
                 <SpriteSheetSelect
-                  name={`defaultPlayerSprite__${sceneType.value}`}
-                  value={defaultPlayerSprites[sceneType.value] || ""}
+                  name={`defaultPlayerSprite__${sceneType.key}`}
+                  value={defaultPlayerSprites[sceneType.key] || ""}
                   optional
                   optionalLabel={l10n("FIELD_NONE")}
                   onChange={(value) =>
-                    onEditDefaultPlayerSprites(sceneType.value, value)
+                    onEditDefaultPlayerSprites(sceneType.key, value)
                   }
                 />
               </SettingRowInput>
@@ -484,7 +552,7 @@ const SettingsPage: FC = () => {
               <FontSelect
                 name="defaultFont"
                 value={defaultFontId || ""}
-                onChange={onEditSetting("defaultFontId")}
+                onChange={onChangeDefaultFontId}
               />
             </SettingRowInput>
           </SearchableSettingRow>
@@ -533,11 +601,11 @@ const SettingsPage: FC = () => {
           >
             <SettingRowLabel>{l10n("FIELD_MUSIC_FORMAT")}</SettingRowLabel>
             <SettingRowInput>
-              <FormField style={undefined}>
+              <FormField name="musicDriver">
                 <MusicDriverSelect
                   name="musicDriver"
                   value={musicDriver || ""}
-                  onChange={onEditSetting("musicDriver")}
+                  onChange={onChangeMusicDriver}
                 />
                 {musicDriver !== "gbt" ? (
                   <FormInfo>{l10n("FIELD_HUGE_DRIVER_NOTE")}</FormInfo>
@@ -580,6 +648,64 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
+          searchMatches={[
+            l10n("SETTINGS_BUILD"),
+            l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
+            l10n("FIELD_GENERATE_DEBUG_FILES"),
+          ]}
+        >
+          <CardAnchor id="settingsBuild" />
+          <CardHeading>{l10n("SETTINGS_BUILD")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="openBuildLogOnWarnings"
+                name="openBuildLogOnWarnings"
+                checked={openBuildLogOnWarnings}
+                onChange={onChangeOpenBuildLogOnWarnings}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_GENERATE_DEBUG_FILES")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_GENERATE_DEBUG_FILES")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="generateDebugFilesEnabled"
+                name="generateDebugFilesEnabled"
+                checked={generateDebugFilesEnabled}
+                onChange={onChangeGenerateDebugFilesEnabled}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          {!searchTerm && (
+            <CardButtons>
+              <Button
+                onClick={() => {
+                  onChangeSettingProp("openBuildLogOnWarnings", true);
+                  onChangeSettingProp("generateDebugFilesEnabled", false);
+                }}
+              >
+                {l10n("FIELD_RESTORE_DEFAULT")}
+              </Button>
+            </CardButtons>
+          )}
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
           searchMatches={[l10n("FIELD_CUSTOM_HTML_HEADER")]}
         >
           <CardAnchor id="settingsCustomHead" />
@@ -604,7 +730,7 @@ const SettingsPage: FC = () => {
                 placeholder={
                   'e.g. <style type"text/css">\nbody {\n  background-color: darkgreen;\n}\n</style>'
                 }
-                onChange={onEditSetting("customHead")}
+                onChange={onChangeCustomHead}
                 rows={15}
                 style={{ fontFamily: "monospace" }}
               />

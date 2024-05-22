@@ -1,7 +1,7 @@
 #ifndef _VM_gameboy_H_INCLUDE
 #define _VM_gameboy_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "vm.h"
 #include "gbs_types.h"
@@ -35,10 +35,11 @@ void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL 
 void vm_set_sprite_mode(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED;
 void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile) OLDCALL BANKED;
 
+#ifndef RUMBLE_ENABLE
 #define RUMBLE_ENABLE 0x20u
+#endif 
 void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED;
 
-void vm_load_tiles(SCRIPT_CTX * THIS, UBYTE id, UBYTE len, UBYTE bank, UBYTE * offset) OLDCALL BANKED;
 void vm_load_tileset(SCRIPT_CTX * THIS, INT16 idx, UBYTE bank, const background_t * background) OLDCALL BANKED;
 
 #endif

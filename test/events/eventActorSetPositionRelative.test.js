@@ -7,16 +7,21 @@ test("Should set player position relatively", () => {
   compile(
     {
       actorId: "player",
-      x: 5,
-      y: 9,
+      x: { type: "number", value: 5 },
+      y: { type: "number", value: 9 },
       units: "tiles",
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetPositionRelative: mockActorSetPositionRelative,
+      actorSetPositionRelativeByScriptValues: mockActorSetPositionRelative,
     }
   );
-  expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetPositionRelative).toBeCalledWith(5, 9, "tiles");
+  expect(mockActorSetPositionRelative).toBeCalledWith(
+    "player",
+    { type: "number", value: 5 },
+    { type: "number", value: 9 },
+    "tiles"
+  );
+  expect(mockactorSetActive).not.toBeCalled();
 });

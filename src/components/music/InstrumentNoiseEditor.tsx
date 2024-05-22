@@ -1,7 +1,6 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import { castEventToBool } from "renderer/lib/helpers/castEventValue";
+import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
@@ -9,8 +8,12 @@ import { FormDivider, FormRow } from "ui/form/FormLayout";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
+import { cloneDeep } from "lodash";
+import Alert, { AlertItem } from "ui/alerts/Alert";
+import API from "renderer/lib/api";
+import { useAppDispatch } from "store/hooks";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -20,7 +23,7 @@ interface InstrumentNoiseEditorProps {
 export const InstrumentNoiseEditor = ({
   instrument,
 }: InstrumentNoiseEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 
@@ -37,8 +40,23 @@ export const InstrumentNoiseEditor = ({
       );
     };
 
+  const onChangeSubpattern = (macros: number[]) => {
+    const newSubPattern = cloneDeep(instrument.subpattern);
+    macros.forEach((value, i) => {
+      newSubPattern[i].note = value + 36;
+    });
+
+    dispatch(
+      trackerDocumentActions.editSubPattern({
+        instrumentId: instrument.index,
+        instrumentType: "noise",
+        subpattern: newSubPattern,
+      })
+    );
+  };
+
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendToMusicWindow({
       action: "preview",
       note: 24, // C_5
       type: "noise",
@@ -46,6 +64,14 @@ export const InstrumentNoiseEditor = ({
       square2: false,
     });
   };
+
+  const noiseMacros = !instrument.subpattern_enabled
+    ? []
+    : instrument.subpattern
+        // .slice(0, 6)
+        .map((subpatternCell: SubPatternCell) =>
+          subpatternCell && subpatternCell.note ? subpatternCell.note - 36 : 0
+        );
 
   return (
     <>
@@ -71,17 +97,24 @@ export const InstrumentNoiseEditor = ({
           label={l10n("FIELD_BIT_COUNT")}
           checked={instrument.bit_count === 7}
           onChange={(e) => {
-            const v = castEventValue(e);
+            const v = castEventToBool(e);
             const value = v ? 7 : 15;
             onChangeField("bit_count")(value);
           }}
         />
       </FormRow>
 
-      <NoiseMacroEditorForm
-        macros={instrument.noise_macro}
-        onChange={onChangeField("noise_macro")}
-      />
+      {/* Disable the noise macro preview for now. In the future it should edit the subpattern visually  */}
+      {false ? ( // {instrument.noise_macro ? (
+        <>
+          <NoiseMacroEditorForm
+            macros={noiseMacros}
+            onChange={onChangeSubpattern}
+          />
+        </>
+      ) : (
+        ""
+      )}
 
       <FormDivider />
 
@@ -90,6 +123,13 @@ export const InstrumentNoiseEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
+      )}
     </>
   );
 };

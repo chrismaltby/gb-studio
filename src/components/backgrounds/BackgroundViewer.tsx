@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   backgroundSelectors,
   paletteSelectors,
   sceneSelectors,
+  tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import ColorizedImage from "components/world/ColorizedImage";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { DMG_PALETTE } from "../../consts";
-import { Palette } from "store/features/entities/entitiesTypes";
+import { DMG_PALETTE, TILE_SIZE } from "consts";
+import { Palette } from "shared/lib/entities/entitiesTypes";
+import { assetURL } from "shared/lib/helpers/assets";
+import AutoColorizedImage from "components/world/AutoColorizedImage";
 
 interface MetaspriteEditorProps {
   backgroundId: string;
@@ -43,6 +44,7 @@ const ImageContainer = styled.div`
 `;
 
 const ImageScale = styled.div`
+  display: flex;
   transform-origin: top left;
 `;
 
@@ -58,25 +60,29 @@ const emptyPalettes: Palette[] = [
 ] as Palette[];
 
 const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
-  const zoom = useSelector((state: RootState) => state.editor.zoomImage) / 100;
-  const previewAsSceneId = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
-  );
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, previewAsSceneId)
-  );
-  const palettesLookup = useSelector((state: RootState) =>
-    paletteSelectors.selectEntities(state)
-  );
-  const defaultPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds
+  const tileset = useAppSelector((state) =>
+    tilesetSelectors.selectById(state, backgroundId)
   );
 
+  const zoom = useAppSelector((state) => state.editor.zoomImage) / 100;
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, previewAsSceneId)
+  );
+  const palettesLookup = useAppSelector((state) =>
+    paletteSelectors.selectEntities(state)
+  );
+  const defaultPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds
+  );
+  const gbcEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);
 
   useEffect(() => {
@@ -89,47 +95,82 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
     );
   }, [scene, palettesLookup, defaultPaletteIds]);
 
-  if (!background) {
-    return <div />;
-  }
-
-  return (
-    <ScrollWrapper>
-      <ContentWrapper
-        style={{
-          minWidth: background.imageWidth * zoom + 100,
-          minHeight: background.imageHeight * zoom + 110,
-        }}
-      >
-        <ImageContainer
+  if (background) {
+    return (
+      <ScrollWrapper>
+        <ContentWrapper
           style={{
-            width: background.imageWidth * zoom,
-            height: background.imageHeight * zoom,
+            minWidth: background.imageWidth * zoom + 100,
+            minHeight: background.imageHeight * zoom + 110,
           }}
         >
-          <ImageScale
+          <ImageContainer
             style={{
-              transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              width: background.imageWidth * zoom,
+              height: background.imageHeight * zoom,
             }}
           >
-            <ColorizedImage
-              className="Scene__Background"
-              alt=""
-              width={background.width}
-              height={background.height}
-              src={`file://${assetFilename(
-                projectRoot,
-                "backgrounds",
-                background
-              )}?_v=${background._v}`}
-              tiles={background.tileColors}
-              palettes={palettes}
-            />
-          </ImageScale>
-        </ImageContainer>
-      </ContentWrapper>
-    </ScrollWrapper>
-  );
+            <ImageScale
+              style={{
+                transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              }}
+            >
+              {gbcEnabled && background.autoColor ? (
+                <AutoColorizedImage
+                  width={background.width * TILE_SIZE}
+                  height={background.height * TILE_SIZE}
+                  src={assetURL("backgrounds", background)}
+                />
+              ) : (
+                <ColorizedImage
+                  width={background.width * TILE_SIZE}
+                  height={background.height * TILE_SIZE}
+                  src={assetURL("backgrounds", background)}
+                  tiles={background.tileColors}
+                  palettes={palettes}
+                />
+              )}
+            </ImageScale>
+          </ImageContainer>
+        </ContentWrapper>
+      </ScrollWrapper>
+    );
+  }
+  if (tileset) {
+    return (
+      <ScrollWrapper>
+        <ContentWrapper
+          style={{
+            minWidth: tileset.imageWidth * zoom + 100,
+            minHeight: tileset.imageHeight * zoom + 110,
+          }}
+        >
+          <ImageContainer
+            style={{
+              width: tileset.imageWidth * zoom,
+              height: tileset.imageHeight * zoom,
+            }}
+          >
+            <ImageScale
+              style={{
+                transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
+              }}
+            >
+              <ColorizedImage
+                width={tileset.width * TILE_SIZE}
+                height={tileset.height * TILE_SIZE}
+                src={assetURL("tilesets", tileset)}
+                tiles={[]}
+                palettes={palettes}
+              />
+            </ImageScale>
+          </ImageContainer>
+        </ContentWrapper>
+      </ScrollWrapper>
+    );
+  }
+
+  return <div />;
 };
 
 export default BackgroundViewer;

@@ -1,30 +1,29 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { Song } from "lib/helpers/uge/song/Song";
-import { RootState } from "store/configureStore";
+import { Song } from "shared/lib/uge/song/Song";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
-import { clipboard, ipcRenderer } from "electron";
 import trackerActions from "store/features/tracker/trackerActions";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { getInstrumentListByType, getInstrumentTypeByChannel } from "./helpers";
 import {
   parsePatternToClipboard,
   parseClipboardToPattern,
-  getInstrumentListByType,
-  getInstrumentTypeByChannel,
-} from "./helpers";
+} from "./musicClipboardHelpers";
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
+import API from "renderer/lib/api";
+import { MusicDataPacket } from "shared/lib/music/types";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -249,7 +248,7 @@ const playNotePreview = (
 ) => {
   const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
   const instrumentList = getInstrumentListByType(song, instrumentType);
-  ipcRenderer.send("music-data-send", {
+  API.music.sendToMusicWindow({
     action: "preview",
     note: note,
     type: instrumentType,
@@ -263,12 +262,15 @@ export const SongPianoRoll = ({
   sequenceId,
   height,
 }: SongPianoRollProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const playing = useSelector((state: RootState) => state.tracker.playing);
-  const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
-  const startPlaybackPosition = useSelector(
-    (state: RootState) => state.tracker.startPlaybackPosition
+  const playing = useAppSelector((state) => state.tracker.playing);
+  const hoverNote = useAppSelector((state) => state.tracker.hoverNote);
+  const startPlaybackPosition = useAppSelector(
+    (state) => state.tracker.startPlaybackPosition
+  );
+  const subpatternEditorFocus = useAppSelector(
+    (state) => state.tracker.subpatternEditorFocus
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -281,26 +283,26 @@ export const SongPianoRoll = ({
   }, [setPlaybackState, startPlaybackPosition]);
 
   useEffect(() => {
-    const listener = (_event: any, d: any) => {
+    const listener = (_event: unknown, d: MusicDataPacket) => {
       if (d.action === "update") {
         setPlaybackState(d.update);
       }
     };
-    ipcRenderer.on("music-data", listener);
+    const unsubscribeMusicData = API.events.music.data.subscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      unsubscribeMusicData();
     };
   }, [setPlaybackState]);
 
   const setPlaybackPosition = useCallback(
-    (e: any) => {
-      const col = Math.floor(e.offsetX / CELL_SIZE);
+    (e: MouseEvent) => {
+      const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
 
       dispatch(
         trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
       );
-      ipcRenderer.send("music-data-send", {
+      API.music.sendToMusicWindow({
         action: "position",
         position: [sequenceId, col],
       });
@@ -325,14 +327,14 @@ export const SongPianoRoll = ({
     setPatternsPanelOpen(!patternsPanelOpen);
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
-  const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.visibleChannels
+  const visibleChannels = useAppSelector(
+    (state) => state.tracker.visibleChannels
   );
 
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const tool = useAppSelector((state) => state.tracker.tool);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const [draggingSelection, setDraggingSelection] = useState(false);
@@ -342,8 +344,8 @@ export const SongPianoRoll = ({
     useState<SelectionRect | undefined>();
   const [addToSelection, setAddToSelection] = useState(false);
 
-  const selectedPatternCells = useSelector(
-    (state: RootState) => state.tracker.selectedPatternCells
+  const selectedPatternCells = useAppSelector(
+    (state) => state.tracker.selectedPatternCells
   );
 
   useEffect(() => {
@@ -367,12 +369,10 @@ export const SongPianoRoll = ({
 
   const [pastedPattern, setPastedPattern] = useState<PatternCell[][]>();
 
-  const hoverColumn = useSelector(
-    (state: RootState) => state.tracker.hoverColumn
-  );
+  const hoverColumn = useAppSelector((state) => state.tracker.hoverColumn);
 
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+  const defaultInstruments = useAppSelector(
+    (state) => state.tracker.defaultInstruments
   );
   const currentInstrument = defaultInstruments[selectedChannel];
 
@@ -435,11 +435,13 @@ export const SongPianoRoll = ({
   );
 
   useEffect(() => {
-    document.addEventListener("selectionchange", onSelectAll);
-    return () => {
-      document.removeEventListener("selectionchange", onSelectAll);
-    };
-  }, [onSelectAll]);
+    if (!subpatternEditorFocus) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+  }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
     (newMoveNoteTo) => {
@@ -531,9 +533,9 @@ export const SongPianoRoll = ({
 
   // Mouse
   const handleMouseDown = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!pattern) return;
-      const col = Math.floor(e.offsetX / CELL_SIZE);
+      const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
       const note = 12 * 6 - 1 - Math.floor(e.offsetY / CELL_SIZE);
       const cell = pattern[col][selectedChannel];
 
@@ -698,7 +700,7 @@ export const SongPianoRoll = ({
   );
 
   const handleMouseMove = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!gridRef.current) return;
 
       const bounds = gridRef.current.getBoundingClientRect();
@@ -866,17 +868,23 @@ export const SongPianoRoll = ({
     };
   }, [onKeyDown, onKeyUp]);
 
-  // Clipoard
-  const onCopy = useCallback(() => {
-    if (pattern) {
-      const parsedSelectedPattern = parsePatternToClipboard(
-        pattern,
-        selectedChannel,
-        selectedPatternCells
-      );
-      dispatch(clipboardActions.copyText(parsedSelectedPattern));
-    }
-  }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
+  // Clipboard
+  const onCopy = useCallback(
+    (e) => {
+      if (e.target.nodeName === "INPUT") {
+        return;
+      }
+      if (pattern) {
+        const parsedSelectedPattern = parsePatternToClipboard(
+          pattern,
+          selectedChannel,
+          selectedPatternCells
+        );
+        dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      }
+    },
+    [selectedChannel, dispatch, pattern, selectedPatternCells]
+  );
 
   const onCut = useCallback(() => {
     if (pattern) {
@@ -904,9 +912,11 @@ export const SongPianoRoll = ({
     }
   }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
 
-  const onPaste = useCallback(() => {
+  const onPaste = useCallback(async () => {
     if (pattern) {
-      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToPattern(
+        await API.clipboard.readText()
+      );
       if (newPastedPattern) {
         refreshPastedPattern(newPastedPattern);
       }
@@ -922,9 +932,11 @@ export const SongPianoRoll = ({
     }
   }, [dispatch, pattern, refreshPastedPattern]);
 
-  const onPasteInPlace = useCallback(() => {
+  const onPasteInPlace = useCallback(async () => {
     if (pattern) {
-      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToPattern(
+        await API.clipboard.readText()
+      );
 
       if (newPastedPattern) {
         const newPattern = Array(64)
@@ -972,17 +984,19 @@ export const SongPianoRoll = ({
   }, [selectedChannel, dispatch, pattern, patternId]);
 
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("cut", onCut);
-    window.addEventListener("paste", onPaste);
-    ipcRenderer.on("paste-in-place", onPasteInPlace);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("cut", onCut);
-      window.removeEventListener("paste", onPaste);
-      ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
-    };
-  }, [onCopy, onCut, onPaste, onPasteInPlace]);
+    if (!subpatternEditorFocus) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      API.clipboard.addPasteInPlaceListener(onPasteInPlace);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+        API.clipboard.removePasteInPlaceListener(onPasteInPlace);
+      };
+    }
+  }, [onCopy, onCut, onPaste, onPasteInPlace, subpatternEditorFocus]);
 
   const v = [
     selectedChannel,
@@ -1045,7 +1059,7 @@ export const SongPianoRoll = ({
               {Array(6)
                 .fill("")
                 .map((_, i) => (
-                  <>
+                  <React.Fragment key={`pianokey_${i}`}>
                     <PianoKey
                       color="white"
                       highlight={hoverNote === MAX_NOTE - i * 12}
@@ -1099,7 +1113,7 @@ export const SongPianoRoll = ({
                     >
                       C{8 - i}
                     </PianoKey>
-                  </>
+                  </React.Fragment>
                 ))}
             </Piano>
             <SongGrid
@@ -1126,6 +1140,7 @@ export const SongPianoRoll = ({
               />
               {v.map((i) => (
                 <RollChannel
+                  key={`roll_channel_${i}`}
                   channelId={i}
                   active={selectedChannel === i}
                   renderPattern={renderPattern || []}

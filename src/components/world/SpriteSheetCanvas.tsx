@@ -1,21 +1,20 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection, Palette } from "store/features/entities/entitiesTypes";
-import { MetaspriteCanvas } from "../sprites/preview/MetaspriteCanvas";
+import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
+import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
 
 interface SpriteSheetCanvasProps {
   spriteSheetId: string;
   direction?: ActorDirection;
   frame?: number;
-  palette?: Palette;
   palettes?: Palette[];
+  previewAsMono?: boolean;
   offsetPosition?: boolean;
 }
 
@@ -30,13 +29,14 @@ const SpriteSheetCanvas = ({
   direction = "down",
   frame = 0,
   palettes,
+  previewAsMono,
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
-  const sprite = useSelector((state: RootState) =>
+  const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
 
-  const state = useSelector((state: RootState) =>
+  const state = useAppSelector((state) =>
     spriteStateSelectors.selectById(state, sprite?.states?.[0] || "")
   );
 
@@ -58,10 +58,13 @@ const SpriteSheetCanvas = ({
   if (flipX) {
     animationIndex = 0;
   }
+  if (animationIndex < 0) {
+    animationIndex = 3;
+  }
 
   const animationId = animations[animationIndex] || "";
 
-  const animation = useSelector((state: RootState) =>
+  const animation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
   const frames = animation?.frames || [];
@@ -87,6 +90,7 @@ const SpriteSheetCanvas = ({
         metaspriteId={metaspriteId}
         palettes={palettes}
         flipX={flipX}
+        previewAsMono={previewAsMono}
       />
     </Wrapper>
   );

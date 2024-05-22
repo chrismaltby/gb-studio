@@ -1,19 +1,10 @@
 import React from "react";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-export type ScriptEditorContextType = "entity" | "script" | "global";
-
-export const ScriptEditorContext =
-  React.createContext<ScriptEditorContextType>("entity");
-
-export const defaultVariableForContext = (
-  context: ScriptEditorContextType
-): string => {
-  if (context === "script") {
-    return "V0";
-  }
-  if (context === "entity") {
-    return "L0";
-  } else {
-    return "0";
-  }
-};
+export const ScriptEditorContext = React.createContext<ScriptEditorCtx>({
+  type: "entity",
+  entityType: "scene",
+  sceneId: "",
+  entityId: "",
+  scriptKey: "",
+});

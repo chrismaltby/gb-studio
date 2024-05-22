@@ -1,19 +1,23 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const webpack = require("webpack");
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
-const CopyPlugin = require("copy-webpack-plugin");
 const Path = require("path");
 
-rules.push({
-  test: /\.css$/,
-  use: [{ loader: "style-loader" }, { loader: "css-loader" }],
-});
+const rendererRules = [
+  ...rules,
+  {
+    test: /\.css$/,
+    use: [{ loader: "style-loader" }, { loader: "css-loader" }],
+  },
+];
 
-const rendererPlugins = [].concat(
-  plugins,
-  new CopyPlugin({
-    patterns: [{ from: "node_modules/vm2", to: "node_modules/vm2" }],
-  })
-);
+const rendererPlugins = [
+  ...plugins,
+  new webpack.ProvidePlugin({
+    Buffer: ["buffer", "Buffer"],
+  }),
+];
 
 const srcPath = (subdir) => {
   return Path.join(__dirname, "src", subdir);
@@ -21,9 +25,13 @@ const srcPath = (subdir) => {
 
 module.exports = {
   // Put your normal webpack config below here
-  target: "electron-renderer",
+  target: "web",
+  node: {
+    __dirname: true,
+    __filename: true,
+  },
   module: {
-    rules,
+    rules: rendererRules,
   },
   optimization: {
     minimize: false,
@@ -53,12 +61,6 @@ module.exports = {
           chunks: "all",
           priority: 2,
         },
-        "vendor-chokidar": {
-          name: "vendor-chokidar",
-          test: /[\\/]node_modules[\\/]chokidar[\\/]/,
-          chunks: "all",
-          priority: 2,
-        },
       },
     },
   },
@@ -69,12 +71,20 @@ module.exports = {
       "react-dom": "@hot-loader/react-dom",
       store: srcPath("store"),
       components: srcPath("components"),
+      lang: srcPath("lang"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
+      renderer: srcPath("renderer"),
+      shared: srcPath("shared"),
+      assets: srcPath("assets"),
+      consts: srcPath("consts.ts"),
+      wasm: Path.join(__dirname, "appData/wasm"),
+      "contributors.json": Path.join(__dirname, "contributors.json"),
+      "patrons.json": Path.join(__dirname, "patrons.json"),
     },
-  },
-  externals: {
-    vm2: "vm2",
-    fsevents: "require('fsevents')",
+    fallback: {
+      path: require.resolve("path-browserify"),
+      buffer: require.resolve("buffer"),
+    },
   },
 };

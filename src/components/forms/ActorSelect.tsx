@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Actor, ActorDirection } from "store/features/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import {
+  ActorNormalized,
+  ActorDirection,
+} from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptionLabelWithPreview,
@@ -14,10 +16,10 @@ import {
   getSceneActorIds,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { actorName } from "store/features/entities/entitiesHelpers";
-import l10n from "lib/helpers/l10n";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import l10n from "shared/lib/lang/l10n";
 
 interface ActorSelectProps {
   name: string;
@@ -45,39 +47,34 @@ export const ActorSelect = ({
   frame,
 }: ActorSelectProps) => {
   const context = useContext(ScriptEditorContext);
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const [options, setOptions] = useState<ActorOption[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const sceneType = useSelector(
-    (state: RootState) => sceneSelectors.selectById(state, sceneId)?.type
+  const sceneType = useAppSelector(
+    (state) => sceneSelectors.selectById(state, context.sceneId)?.type
   );
-  const scenePlayerSpriteSheetId = useSelector(
-    (state: RootState) =>
-      sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
+  const scenePlayerSpriteSheetId = useAppSelector(
+    (state) =>
+      sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const contextEntityId = useSelector(
-    (state: RootState) => state.editor.entityId
+  const sceneActorIds = useAppSelector((state) =>
+    getSceneActorIds(state, { id: context.sceneId })
   );
-  const sceneActorIds = useSelector((state: RootState) =>
-    getSceneActorIds(state, { id: sceneId })
-  );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
-    customEventSelectors.selectById(state, contextEntityId)
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(contextEntityId);
-  const selfActor = actorsLookup[contextEntityId];
+  const selfIndex = sceneActorIds?.indexOf(context.entityId);
+  const selfActor = actorsLookup[context.entityId];
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
-    if (context === "script" && customEvent) {
+    if (context.type === "script" && customEvent) {
       setOptions([
         {
           label: "Player",
@@ -91,9 +88,11 @@ export const ActorSelect = ({
           };
         }),
       ]);
-    } else if (context === "entity" && sceneActorIds) {
+    } else if (context.type === "entity" && sceneActorIds) {
       setOptions([
-        ...(editorType === "actor" && selfActor && selfIndex !== undefined
+        ...(context.entityType === "actor" &&
+        selfActor &&
+        selfIndex !== undefined
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
@@ -112,7 +111,7 @@ export const ActorSelect = ({
           spriteSheetId: playerSpriteSheetId,
         },
         ...sceneActorIds.map((actorId, actorIndex) => {
-          const actor = actorsLookup[actorId] as Actor;
+          const actor = actorsLookup[actorId] as ActorNormalized;
           return {
             label: actorName(actor, actorIndex),
             value: actor.id,
@@ -133,9 +132,7 @@ export const ActorSelect = ({
   }, [
     actorsLookup,
     context,
-    contextEntityId,
     customEvent,
-    editorType,
     playerSpriteSheetId,
     sceneActorIds,
     selfActor,

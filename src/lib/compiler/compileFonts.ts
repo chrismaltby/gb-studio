@@ -1,11 +1,11 @@
-import { assetFilename } from "../helpers/gbstudio";
-import { FontAssetData } from "../project/loadFontData";
-import { FontData, readFileToFontData } from "../fonts/fontData";
+import { CompiledFontData, readFileToFontData } from "lib/fonts/fontData";
+import { assetFilename } from "shared/lib/helpers/assets";
+import { FontData } from "shared/lib/entities/entitiesTypes";
 
-export type PrecompiledFontData = FontAssetData & FontData;
+export type PrecompiledFontData = FontData & CompiledFontData;
 
 const compileFonts = async (
-  fonts: FontAssetData[],
+  fonts: FontData[],
   projectRoot: string
 ): Promise<PrecompiledFontData[]> => {
   const compiled: PrecompiledFontData[] = [];

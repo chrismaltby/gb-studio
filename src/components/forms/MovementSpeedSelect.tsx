@@ -1,5 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useEffect, useMemo, useState } from "react";
+import l10n from "shared/lib/lang/l10n";
 import { Input } from "ui/form/Input";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
@@ -7,6 +7,7 @@ interface MovementSpeedSelectProps {
   name: string;
   value?: number;
   allowNone?: boolean;
+  noneLabel?: string;
   onChange?: (newValue: number) => void;
 }
 
@@ -15,29 +16,37 @@ interface MovementSpeedOption {
   label: string;
 }
 
-const options: MovementSpeedOption[] = [
-  { value: 0.5, label: `${l10n("FIELD_SPEED")} ½` },
-  { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
-  { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
-  { value: 3, label: `${l10n("FIELD_SPEED")} 3` },
-  { value: 4, label: `${l10n("FIELD_SPEED")} 4` },
-  { value: undefined, label: `${l10n("FIELD_CUSTOM_SPEED")}` },
-];
-
-const optionsWithNone: MovementSpeedOption[] = [
-  { value: 0, label: `${l10n("FIELD_NONE")}` },
-  ...options,
-];
-
 export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   name,
   value = 1,
   allowNone,
+  noneLabel,
   onChange,
 }) => {
   const [currentValue, setCurrentValue] =
     useState<MovementSpeedOption | undefined>();
   const [isCustom, setIsCustom] = useState(false);
+
+  const options: MovementSpeedOption[] = useMemo(
+    () => [
+      { value: 0.25, label: `${l10n("FIELD_SPEED")} ¼` },
+      { value: 0.5, label: `${l10n("FIELD_SPEED")} ½` },
+      { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
+      { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
+      { value: 3, label: `${l10n("FIELD_SPEED")} 3` },
+      { value: 4, label: `${l10n("FIELD_SPEED")} 4` },
+      { value: undefined, label: `${l10n("FIELD_CUSTOM_SPEED")}` },
+    ],
+    []
+  );
+
+  const optionsWithNone: MovementSpeedOption[] = useMemo(
+    () => [
+      { value: 0, label: noneLabel ?? `${l10n("FIELD_NONE")}` },
+      ...options,
+    ],
+    [noneLabel, options]
+  );
 
   useEffect(() => {
     const current = (allowNone ? optionsWithNone : options).find(
@@ -47,7 +56,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
     if (value === undefined || !current) {
       setIsCustom(true);
     }
-  }, [allowNone, value]);
+  }, [allowNone, options, optionsWithNone, value]);
 
   if (isCustom) {
     return (
@@ -93,7 +102,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
             }
           >
             {option.label}{" "}
-            {option.value === 0.5 && context === "menu"
+            {option.value === 0.25 && context === "menu"
               ? `(${l10n("FIELD_SLOWER")})`
               : ""}
             {option.value === 4 && context === "menu"

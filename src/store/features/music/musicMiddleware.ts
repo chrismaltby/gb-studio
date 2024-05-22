@@ -1,16 +1,13 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
-import ScripTracker from "lib/vendor/scriptracker/scriptracker";
+import ScripTracker from "renderer/lib/vendor/scriptracker/scriptracker";
 import { RootState } from "store/configureStore";
-import soundfxActions from "../soundfx/soundfxActions";
-import navigationActions from "../navigation/navigationActions";
+import soundfxActions from "store/features/soundfx/soundfxActions";
+import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
-import { musicSelectors } from "../entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { MusicSettings } from "../entities/entitiesTypes";
-import { ipcRenderer } from "electron";
-import { readFile } from "fs-extra";
-import { loadUGESong } from "lib/helpers/uge/ugeHelper";
-import toArrayBuffer from "lib/helpers/toArrayBuffer";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import { MusicSettings } from "shared/lib/entities/entitiesTypes";
+import { assetPath } from "shared/lib/helpers/assets";
+import API from "renderer/lib/api";
 
 let modPlayer: ScripTracker;
 
@@ -33,35 +30,21 @@ function onSongLoaded(player: ScripTracker) {
 function playMOD(filename: string, settings: MusicSettings) {
   if (modPlayer) {
     modPlayer.loadModule(
-      `file://${filename}`,
+      `gbs://project/${filename}`,
       !!settings.disableSpeedConversion
     );
   }
 }
 
 async function playUGE(filename: string, _settings: MusicSettings) {
-  const fileData = toArrayBuffer(await readFile(filename));
-  const data = loadUGESong(fileData);
-  const listener = async (_event: any, d: any) => {
-    if (d.action === "initialized") {
-      ipcRenderer.send("music-data-send", {
-        action: "play",
-        song: data,
-        position: [0, 0],
-      });
-    }
-  };
-  ipcRenderer.once("music-data", listener);
-  ipcRenderer.send("open-music");
+  API.music.playUGE(filename);
 }
 
 function pause() {
   if (modPlayer && modPlayer.isPlaying) {
     modPlayer.stop();
   }
-  if (ipcRenderer) {
-    ipcRenderer.send("close-music");
-  }
+  API.music.closeMusic();
 }
 
 const musicMiddleware: Middleware<Dispatch, RootState> =
@@ -70,8 +53,7 @@ const musicMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const track = musicSelectors.selectById(state, action.payload.musicId);
       if (track) {
-        const projectRoot = state.document.root;
-        const filename = assetFilename(projectRoot, "music", track);
+        const filename = assetPath("music", track);
         if (track.type === "uge") {
           playUGE(filename, track.settings);
         } else {

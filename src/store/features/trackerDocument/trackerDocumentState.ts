@@ -5,20 +5,19 @@ import {
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { pathExists, readFile } from "fs-extra";
 import cloneDeep from "lodash/cloneDeep";
-import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Song } from "lib/helpers/uge/song/Song";
-import { loadUGESong, saveUGESong } from "lib/helpers/uge/ugeHelper";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { Song } from "shared/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
 } from "./trackerDocumentTypes";
-import { projectTemplatesRoot } from "../../../consts";
-import copy from "lib/helpers/fsCopy";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
+import { InstrumentType } from "store/features/editor/editorState";
+import API from "renderer/lib/api";
+import type { MusicAssetData } from "lib/project/loadMusicData";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -33,48 +32,21 @@ export const initialState: TrackerDocumentState = {
   modified: false,
 };
 
-export const addNewSongFile = createAsyncThunk<string | null, string>(
-  "tracker/addNewSong",
-  async (path, _thunkApi): Promise<string | null> => {
-    const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
-    const copy2 = async (oPath: string, path: string) => {
-      try {
-        const exists = await pathExists(path);
-        if (!exists) {
-          await copy(oPath, path, {
-            overwrite: false,
-            errorOnExist: true,
-          });
-          return path;
-        } else {
-          const [filename] = path.split(".uge");
-          const matches = filename.match(/\d+$/);
-          let newFilename = `${filename} 1`;
-          if (matches) {
-            // if filename ends with number
-            const number = parseInt(matches[0]) + 1;
-            newFilename = filename.replace(/\d+$/, `${number}`);
-          }
-          const newPath = `${newFilename}.uge`;
-          await copy2(oPath, newPath);
-          return newPath;
-        }
-      } catch (e) {
-        throw new Error(e);
-      }
-    };
-    return await copy2(templatePath, path);
-  }
-);
+export const addNewSongFile = createAsyncThunk<
+  { data: MusicAssetData },
+  string
+>("tracker/addNewSong", async (path, _thunkApi): Promise<{
+  data: MusicAssetData;
+}> => {
+  return {
+    data: await API.tracker.addNewUGEFile(path),
+  };
+});
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
   "tracker/loadSong",
   async (path, _thunkApi): Promise<Song | null> => {
-    const data = await readFile(path);
-    const song = loadUGESong(new Uint8Array(data).buffer);
-    if (song) {
-      song.filename = path;
-    }
+    const song = await API.tracker.loadUGEFile(path);
     return song;
   }
 );
@@ -92,16 +64,14 @@ export const saveSongFile = createAsyncThunk<void, void>(
     }
 
     const song = state.trackerDocument.present.song;
-    const buffer = saveUGESong(song);
-    await writeFileWithBackupAsync(
-      song.filename,
-      new Uint8Array(buffer),
-      "utf8"
-    );
+    try {
+      await API.tracker.saveUGEFile(song);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 );
-
-const NUM_NOTES = 72;
 
 const trackerSlice = createSlice({
   name: "tracker",
@@ -269,6 +239,124 @@ const trackerSlice = createSlice({
         ...state.song,
         patterns,
       };
+    },
+    editSubPatternCell: (
+      state,
+      _action: PayloadAction<{
+        instrumentType: InstrumentType;
+        instrumentId: number;
+        cell: [number, number];
+        changes: Partial<SubPatternCell>;
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      let instruments: DutyInstrument[] | WaveInstrument[] | NoiseInstrument[];
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          instruments = [...state.song.duty_instruments];
+          break;
+        case "wave":
+          instruments = [...state.song.wave_instruments];
+          break;
+        case "noise":
+          instruments = [...state.song.noise_instruments];
+          break;
+      }
+      const instrumentId = _action.payload.instrumentId;
+      const [row, _col] = _action.payload.cell;
+
+      const newSubPattern = [...instruments[instrumentId].subpattern];
+      console.log(newSubPattern);
+      const newSubPatternCell = { ...newSubPattern[row] };
+      let patch = { ..._action.payload.changes };
+      if (
+        patch.effectcode &&
+        patch.effectcode !== null &&
+        newSubPatternCell.effectparam === null
+      ) {
+        patch = {
+          ...patch,
+          effectparam: 0,
+        };
+      }
+
+      newSubPattern[row] = { ...newSubPatternCell, ...patch };
+      const newInstrument = { ...instruments[instrumentId] };
+      newInstrument.subpattern = newSubPattern;
+
+      instruments[instrumentId] = newInstrument;
+
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          state.song = {
+            ...state.song,
+            duty_instruments: instruments as DutyInstrument[],
+          };
+          break;
+        case "wave":
+          state.song = {
+            ...state.song,
+            wave_instruments: instruments as WaveInstrument[],
+          };
+          break;
+        case "noise":
+          state.song = {
+            ...state.song,
+            noise_instruments: instruments as NoiseInstrument[],
+          };
+          break;
+      }
+    },
+    editSubPattern: (
+      state,
+      _action: PayloadAction<{
+        instrumentId: number;
+        instrumentType: "duty" | "wave" | "noise";
+        subpattern: SubPatternCell[];
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+      let instruments: DutyInstrument[] | WaveInstrument[] | NoiseInstrument[];
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          instruments = [...state.song.duty_instruments];
+          break;
+        case "wave":
+          instruments = [...state.song.wave_instruments];
+          break;
+        case "noise":
+          instruments = [...state.song.noise_instruments];
+          break;
+      }
+
+      const instrumentId = _action.payload.instrumentId;
+      instruments[instrumentId].subpattern = _action.payload.subpattern;
+
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          state.song = {
+            ...state.song,
+            duty_instruments: instruments as DutyInstrument[],
+          };
+          break;
+        case "wave":
+          state.song = {
+            ...state.song,
+            wave_instruments: instruments as WaveInstrument[],
+          };
+          break;
+        case "noise":
+          state.song = {
+            ...state.song,
+            noise_instruments: instruments as NoiseInstrument[],
+          };
+          break;
+      }
     },
     editWaveform: (
       state,

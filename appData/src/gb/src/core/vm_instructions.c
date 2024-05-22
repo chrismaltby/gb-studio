@@ -34,7 +34,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_invoke,                         BANK(VM_MAIN),          6}, // 0x0D
     {vm_beginthread,                    BANK(VM_MAIN),          6}, // 0x0E
     {vm_if,                             BANK(VM_MAIN),          8}, // 0x0F
-    {vm_push_value_ind,                 BANK(VM_MAIN),          2}, // 0x11
+    {vm_push_value_ind,                 BANK(VM_MAIN),          2}, // 0x10
     {vm_push_value,                     BANK(VM_MAIN),          2}, // 0x11
     {vm_reserve,                        BANK(VM_MAIN),          1}, // 0x12
     {vm_set,                            BANK(VM_MAIN),          4}, // 0x13
@@ -45,16 +45,16 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_idle,                           BANK(VM_MAIN),          0}, // 0x18
     {vm_get_tlocal,                     BANK(VM_MAIN),          4}, // 0x19
     {vm_if_const,                       BANK(VM_MAIN),          8}, // 0x1A
-    {vm_get_uint8,                      BANK(VM_MAIN),          4}, // 0x1B
-    {vm_get_int8,                       BANK(VM_MAIN),          4}, // 0x1C
-    {vm_get_int16,                      BANK(VM_MAIN),          4}, // 0x1D
-    {vm_set_uint8,                      BANK(VM_MAIN),          4}, // 0x1E
-    {vm_set_int8,                       BANK(VM_MAIN),          4}, // 0x1F
-    {vm_set_int16,                      BANK(VM_MAIN),          4}, // 0x20
-    {vm_set_const_int8,                 BANK(VM_MAIN),          3}, // 0x21
-    {vm_set_const_int16,                BANK(VM_MAIN),          4}, // 0x22
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
     {vm_init_rng,                       BANK(VM_MAIN),          2}, // 0x23
-    {vm_rand,                           BANK(VM_MAIN),          8}, // 0x24
+    {vm_rand,                           BANK(VM_MAIN),          6}, // 0x24
     {vm_lock,                           BANK(VM_MAIN),          0}, // 0x25
     {vm_unlock,                         BANK(VM_MAIN),          0}, // 0x26
     {vm_raise,                          BANK(VM_MAIN),          2}, // 0x27
@@ -96,7 +96,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_overlay_show,                   BANK(VM_UI),            4}, // 0x46
     {vm_overlay_clear,                  BANK(VM_UI),            6}, // 0x47
     {vm_choice,                         BANK(VM_UI),            4}, // 0x48
-    {vm_load_tiles,                     BANK(VM_GAMEBOY),       5}, // 0x49
+    {0, 0, 0},
     {0, 0, 0},
     {vm_set_font,                       BANK(VM_UI),            1}, // 0x4B
     {vm_overlay_set_submap_ex,          BANK(VM_UI),            2}, // 0x4C
@@ -123,7 +123,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_input_detach,                   BANK(VM_GAMEBOY),       1}, // 0x5F
 
     // music and sound instructions section
-    {vm_music_play,                     BANK(VM_MUSIC),         4}, // 0x60
+    {vm_music_play,                     BANK(VM_MUSIC),         3}, // 0x60
     {vm_music_stop,                     BANK(VM_MUSIC),         0}, // 0x61
     {vm_music_mute,                     BANK(VM_MUSIC),         1}, // 0x62
     {vm_sound_mastervol,                BANK(VM_MUSIC),         1}, // 0x63
@@ -186,5 +186,7 @@ const SCRIPT_CMD script_cmds[] = {
 
     // GBPrinter functions
     {vm_print_detect,                   BANK(VM_GBPRINTER),     3}, // 0x8C
-    {vm_print_overlay,                  BANK(VM_GBPRINTER),     5}  // 0x8D
+    {vm_print_overlay,                  BANK(VM_GBPRINTER),     5}, // 0x8D
+
+    {vm_actor_begin_update,             BANK(VM_ACTOR),         2}  // 0x8E
 };

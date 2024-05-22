@@ -1,15 +1,14 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorSounds } from "components/sounds/NavigatorSounds";
 import { SoundViewer } from "components/sounds/SoundViewer";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,11 +16,11 @@ const Wrapper = styled.div`
 `;
 
 const SoundsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -29,14 +28,27 @@ const SoundsPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
+  const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
+
+  const sound = useAppSelector((state) =>
+    soundSelectors.selectById(state, selectedId)
   );
 
-  const sound =
-    useSelector((state: RootState) =>
-      soundSelectors.selectById(state, selectedId)
-    ) || allSounds[0];
+  const lastSoundId = useRef("");
+  useEffect(() => {
+    if (sound) {
+      lastSoundId.current = sound.id;
+    }
+  }, [sound]);
+
+  const viewSoundId = useMemo(
+    () => sound?.id || lastSoundId.current || allSounds[0]?.id,
+    [allSounds, sound]
+  );
+
+  const viewSound = useAppSelector((state) =>
+    soundSelectors.selectById(state, viewSoundId)
+  );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -92,10 +104,7 @@ const SoundsPage = () => {
             height: "100%",
           }}
         >
-          <NavigatorSounds
-            height={windowHeight - 38}
-            selectedId={sound?.id || ""}
-          />
+          <NavigatorSounds height={windowHeight - 38} selectedId={selectedId} />
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
@@ -113,7 +122,7 @@ const SoundsPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          {sound && <SoundViewer file={sound} />}
+          {viewSound && <SoundViewer file={viewSound} />}
         </div>
       </div>
     </Wrapper>

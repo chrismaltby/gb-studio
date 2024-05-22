@@ -19,7 +19,7 @@
 #define ADVENTURE_CAMERA_DEADZONE 8
 #endif
 
-void adventure_init() BANKED {
+void adventure_init(void) BANKED {
     // Set camera to follow player
     camera_offset_x = 0;
     camera_offset_y = 0;
@@ -27,7 +27,7 @@ void adventure_init() BANKED {
     camera_deadzone_y = ADVENTURE_CAMERA_DEADZONE;
 }
 
-void adventure_update() BANKED {
+void adventure_update(void) BANKED {
     actor_t *hit_actor;
     UBYTE tile_start, tile_end;
     UBYTE angle = 0;
@@ -85,17 +85,17 @@ void adventure_update() BANKED {
             while (tile_start != tile_end) {
 
                 if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
-                    new_pos.x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;           
+                    new_pos.x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;
                     break;
                 }
                 tile_start++;
             }
-            PLAYER.pos.x = MIN((image_width - 16) << 4, new_pos.x);
+            PLAYER.pos.x = MIN((image_width - PLAYER.bounds.right - 1) << 4, new_pos.x);
         } else {
             UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.left) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
-                    new_pos.x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;         
+                    new_pos.x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;
                     break;
                 }
                 tile_start++;

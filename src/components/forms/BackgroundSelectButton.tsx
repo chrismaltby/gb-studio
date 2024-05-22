@@ -1,19 +1,21 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { assetFilename } from "lib/helpers/gbstudio";
-import l10n from "lib/helpers/l10n";
-import { RootState } from "store/configureStore";
+import l10n from "shared/lib/lang/l10n";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
-import warningsActions from "store/features/warnings/warningsActions";
+import assetsActions from "store/features/assets/assetsActions";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 interface BackgroundSelectProps {
   name: string;
   value?: string;
   is360: boolean;
+  tilesetId: string;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
 }
@@ -138,36 +140,57 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
+export const Pill = styled.span`
+  color: ${(props) => props.theme.colors.button.text};
+  background: ${(props) => props.theme.colors.list.activeBackground};
+  border: 0px;
+  border-radius: 16px;
+  padding: 3px 2px;
+  margin-left: 3px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+
+  :active {
+    background: ${(props) => props.theme.colors.list.selectedBackground};
+  }
+`;
+
 export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   name,
   value,
   onChange,
   is360,
+  tilesetId,
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const numTiles = useSelector(
-    (state: RootState) => state.warnings.backgrounds[value || ""]?.numTiles
+  const numTiles = useAppSelector(
+    (state) => state.assets.backgrounds[value || ""]?.numTiles
   );
-  const dispatch = useDispatch();
+  const isCGBOnly = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "color"
+  );
+  const isColor = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (value) {
       dispatch(
-        warningsActions.checkBackgroundWarnings({
+        assetsActions.loadBackgroundAssetInfo({
           backgroundId: value,
+          tilesetId,
           is360,
         })
       );
     }
-  }, [dispatch, value, is360]);
+  }, [dispatch, value, is360, tilesetId]);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -249,12 +272,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
             <Thumbnail
               style={{
                 backgroundImage:
-                  background &&
-                  `url("file://${assetFilename(
-                    projectRoot,
-                    "backgrounds",
-                    background
-                  )}?_v=${background._v}")`,
+                  background && assetURLStyleProp("backgrounds", background),
               }}
             />
           ) : (
@@ -262,13 +280,33 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           )}
           {includeInfo && (
             <SpriteInfo>
-              <SpriteInfoTitle>{background?.name}</SpriteInfoTitle>
+              <SpriteInfoTitle>
+                {background?.name}
+                {isColor && background?.autoColor && background.monoOverrideId && (
+                  <Pill
+                    title={l10n("FIELD_MONO_OVERRIDE_DESC", {
+                      filename: background.filename,
+                      tilesFilename: monoOverrideForFilename(
+                        background.filename
+                      ),
+                    })}
+                  >
+                    +
+                  </Pill>
+                )}
+              </SpriteInfoTitle>
 
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
-              <SpriteInfoRow error={numTiles > 192 && !is360}>
+              <SpriteInfoRow
+                error={
+                  (numTiles > MAX_BACKGROUND_TILES_CGB ||
+                    (!isCGBOnly && numTiles > MAX_BACKGROUND_TILES)) &&
+                  !is360
+                }
+              >
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>

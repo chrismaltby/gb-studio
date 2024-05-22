@@ -2,13 +2,13 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
-import events, { EventHandler } from "lib/events";
-import l10n from "lib/helpers/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
@@ -16,27 +16,30 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
 import { Dictionary } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
 import settingsActions from "store/features/settings/settingsActions";
-import { RootState } from "store/configureStore";
 import {
-  ScriptEvent,
+  ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   emoteSelectors,
   musicSelectors,
   sceneSelectors,
   spriteSheetSelectors,
+  tilesetSelectors,
 } from "store/features/entities/entitiesState";
-import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import { useDebounce } from "ui/hooks/use-debounce";
-import {
-  defaultVariableForContext,
-  ScriptEditorContext,
-} from "./ScriptEditorContext";
+import { ScriptEditorContext } from "./ScriptEditorContext";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
+import { EVENT_TEXT } from "consts";
+import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
+import { isScriptValue } from "shared/lib/scriptValue/types";
+import { HighlightWords } from "ui/util/HighlightWords";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -56,9 +59,11 @@ interface EventOption {
   value: string;
   group?: string;
   groupLabel?: string;
+  subGroup?: string;
+  subGroupLabel?: string;
   isFavorite: boolean;
   defaultArgs?: Record<string, unknown>;
-  event: EventHandler;
+  event: ScriptEventDef;
 }
 
 interface EventOptGroup {
@@ -74,6 +79,7 @@ interface InstanciateOptions {
   defaultActorId: string;
   defaultSpriteId: string;
   defaultEmoteId: string;
+  defaultTilesetId: string;
   defaultArgs?: Record<string, unknown>;
 }
 
@@ -83,7 +89,7 @@ const MENU_GROUP_HEIGHT = 25;
 const MENU_GROUP_SPACER = 10;
 
 const instanciateScriptEvent = (
-  handler: EventHandler,
+  handler: ScriptEventDef,
   {
     defaultSceneId,
     defaultVariableId,
@@ -91,9 +97,12 @@ const instanciateScriptEvent = (
     defaultActorId,
     defaultSpriteId,
     defaultEmoteId,
+    defaultTilesetId,
     defaultArgs,
   }: InstanciateOptions
-): Omit<ScriptEvent, "id"> => {
+): Omit<ScriptEventNormalized, "id"> => {
+  const [command, presetId] = handler.id.split("::");
+
   const flattenFields = (
     fields: ScriptEventFieldSchema[],
     memo: ScriptEventFieldSchema[] = []
@@ -112,11 +121,22 @@ const instanciateScriptEvent = (
 
   const fields = flattenFields(handler.fields || []);
 
+  const preset = presetId
+    ? handler.presets?.find((p) => p.id === presetId)
+    : undefined;
+
   const args = cloneDeep(
     fields.reduce(
       (memo, field) => {
         let replaceValue = null;
         let defaultValue = field.defaultValue;
+
+        // Pull value from preset if available
+        if (preset && preset.values[field.key ?? ""]) {
+          defaultValue = preset.values[field.key ?? ""];
+          replaceValue = defaultValue;
+        }
+
         if (field.type === "union") {
           defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
             field.defaultType || ""
@@ -132,13 +152,33 @@ const instanciateScriptEvent = (
           replaceValue = defaultSpriteId;
         } else if (defaultValue === "LAST_EMOTE") {
           replaceValue = defaultEmoteId;
+        } else if (defaultValue === "LAST_TILESET") {
+          replaceValue = defaultTilesetId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
         } else if (field.type === "events") {
-          replaceValue = undefined;
+          return memo;
         } else if (defaultValue !== undefined) {
           replaceValue = defaultValue;
         }
+
+        if (field.type === "value") {
+          replaceValue = isScriptValue(defaultValue)
+            ? mapScriptValueLeafNodes(defaultValue, (node) => {
+                if (
+                  node.type === "variable" &&
+                  node.value === "LAST_VARIABLE"
+                ) {
+                  return {
+                    ...node,
+                    value: defaultVariableId,
+                  };
+                }
+                return node;
+              })
+            : defaultValue;
+        }
+
         if (field.type === "union") {
           replaceValue = {
             type: field.defaultType,
@@ -170,36 +210,32 @@ const instanciateScriptEvent = (
         }, {} as Dictionary<string[]>)
       : undefined;
   return {
-    command: handler.id,
+    command,
     args,
     ...(children && { children }),
   };
 };
 
 const eventToOption =
-  (favorites: string[]) =>
-  (event: EventHandler): EventOption => {
-    const localisedKey = l10n(event.id); //.replace(/[^:*]*:[ ]*/g, "");
+  (favorites: string[], group?: string) =>
+  (event: ScriptEventDef): EventOption => {
+    const localisedKey = l10n(event.id as L10NKey); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
-
-    let eventGroups: string[] = [];
-    if ("groups" in event) {
-      if (Array.isArray(event.groups)) {
-        eventGroups = event.groups;
-      } else if (typeof event.groups === "string") {
-        eventGroups = [event.groups];
-      }
-    }
-
-    const groupName = eventGroups.map((key) => l10n(key)).join(" ");
-
+    const groupName = group
+      ? l10n(group as L10NKey)
+      : l10n(event.groups?.[0] as L10NKey);
+    const subGroup =
+      group && event.subGroups?.[group]
+        ? l10n(event.subGroups?.[group] as L10NKey)
+        : undefined;
     return {
       label: name,
       group: groupName,
       value: event.id,
       event,
       isFavorite: favorites.includes(event.id),
+      subGroup,
     };
   };
 
@@ -418,11 +454,24 @@ const sortAlphabeticallyByLabel = (
   return a.label < b.label ? -1 : 1;
 };
 
+const sortAlphabeticallyBySubGroupThenLabel = (
+  a: { subGroup?: string; label: string },
+  b: { subGroup?: string; label: string }
+) => {
+  const aSubGroup = a.subGroup ?? "";
+  const bSubGroup = b.subGroup ?? "";
+
+  if (aSubGroup === bSubGroup) {
+    return a.label.localeCompare(b.label);
+  }
+  return aSubGroup.localeCompare(bSubGroup);
+};
+
 const notDeprecated = (a: { deprecated?: boolean }) => {
   return !a.deprecated;
 };
 
-const identity = <T extends unknown>(i: T): T => i;
+const identity = <T,>(i: T): T => i;
 
 const AddScriptEventMenu = ({
   parentId,
@@ -432,15 +481,15 @@ const AddScriptEventMenu = ({
   before,
   onBlur,
 }: AddScriptEventMenuProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const firstLoad = useRef(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
     []
   );
-  const favoriteEvents = useSelector(
-    (state: RootState) => state.project.present.settings.favoriteEvents
+  const favoriteEvents = useAppSelector(
+    (state) => state.project.present.settings.favoriteEvents
   );
   const [favoritesCache, setFavoritesCache] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -451,20 +500,26 @@ const AddScriptEventMenu = ({
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const fuseRef = useRef<Fuse<EventOption> | null>(null);
 
-  const lastSceneId = useSelector((state: RootState) => {
+  const lastSceneId = useAppSelector((state) => {
     const ids = sceneSelectors.selectIds(state);
     return ids[ids.length - 1];
   });
-  const lastMusicId = useSelector(
-    (state: RootState) => musicSelectors.selectIds(state)[0]
+  const lastMusicId = useAppSelector(
+    (state) => musicSelectors.selectIds(state)[0]
   );
-  const lastSpriteId = useSelector(
-    (state: RootState) => spriteSheetSelectors.selectIds(state)[0]
+  const lastSpriteId = useAppSelector(
+    (state) => spriteSheetSelectors.selectIds(state)[0]
   );
-  const lastEmoteId = useSelector(
-    (state: RootState) => emoteSelectors.selectIds(state)[0]
+  const lastEmoteId = useAppSelector(
+    (state) => emoteSelectors.selectIds(state)[0]
+  );
+  const lastTilesetId = useAppSelector(
+    (state) => tilesetSelectors.selectIds(state)[0]
   );
   const context = useContext(ScriptEditorContext);
+  const scriptEventDefs = useAppSelector((state) =>
+    selectScriptEventDefsWithPresets(state)
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -474,7 +529,7 @@ const AddScriptEventMenu = ({
 
   useEffect(() => {
     const eventList = (
-      Object.values(events).filter(identity) as EventHandler[]
+      Object.values(scriptEventDefs).filter(identity) as ScriptEventDef[]
     ).filter(notDeprecated);
     fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
       includeScore: true,
@@ -508,15 +563,15 @@ const AddScriptEventMenu = ({
         }
       }
       return memo;
-    }, {} as Dictionary<EventHandler[]>);
+    }, {} as Dictionary<ScriptEventDef[]>);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat(
       (
         (firstLoad.current ? favoritesCache : favoriteEvents)
-          .map((id: string) => events[id])
-          .filter(identity) as EventHandler[]
+          .map((id: string) => scriptEventDefs[id])
+          .filter(identity) as ScriptEventDef[]
       )
         .map(eventToOption(favoriteEvents))
         .sort(sortAlphabeticallyByLabel)
@@ -531,10 +586,16 @@ const AddScriptEventMenu = ({
         }),
       groupKeys
         .map((key: string) => ({
-          label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key),
+          label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key as L10NKey),
           options: (groupedEvents[key] || [])
-            .map(eventToOption(favoriteEvents))
-            .sort(sortAlphabeticallyByLabel),
+            .map(eventToOption(favoriteEvents, key))
+            .sort(sortAlphabeticallyBySubGroupThenLabel)
+            .map((item, index, array) => {
+              if (index === 0 || item.subGroup !== array[index - 1].subGroup) {
+                return { ...item, subGroupLabel: item.subGroup };
+              }
+              return item;
+            }),
         }))
         .sort(sortAlphabeticallyByLabel)
         .map((option, optionIndex) => {
@@ -552,7 +613,7 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [favoriteEvents, favoritesCache]);
+  }, [favoriteEvents, favoritesCache, scriptEventDefs]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
@@ -575,7 +636,7 @@ const AddScriptEventMenu = ({
               {
                 value: "",
                 label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
-                event: events[EVENT_TEXT] as EventHandler,
+                event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
                 defaultArgs: {
                   text: [searchTerm],
                 },
@@ -588,7 +649,7 @@ const AddScriptEventMenu = ({
     } else {
       setOptions(allOptions);
     }
-  }, [allOptions, searchTerm]);
+  }, [allOptions, scriptEventDefs, searchTerm]);
 
   const debouncedUpdateOptions = useDebounce(updateOptions, 200);
 
@@ -622,7 +683,7 @@ const AddScriptEventMenu = ({
   );
 
   const onAdd = useCallback(
-    (newEvent: EventHandler, defaultArgs?: Record<string, unknown>) => {
+    (newEvent: ScriptEventDef, defaultArgs?: Record<string, unknown>) => {
       dispatch(
         entitiesActions.addScriptEvents({
           entityId: parentId,
@@ -633,11 +694,12 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: defaultVariableForContext(context),
+              defaultVariableId: defaultVariableForContext(context.type),
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
+              defaultTilesetId: String(lastTilesetId),
               defaultArgs,
             }),
           ],
@@ -651,6 +713,7 @@ const AddScriptEventMenu = ({
       dispatch,
       insertId,
       lastEmoteId,
+      lastTilesetId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,
@@ -774,6 +837,11 @@ const AddScriptEventMenu = ({
     []
   );
 
+  const highlightWords = useMemo(
+    () => searchTerm.split(" ").filter((i) => i),
+    [searchTerm]
+  );
+
   const menuHeight =
     MENU_HEADER_HEIGHT +
     allOptions.length * MENU_ITEM_HEIGHT +
@@ -791,7 +859,7 @@ const AddScriptEventMenu = ({
           isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
-          <SelectMenuTitle>Add Event</SelectMenuTitle>
+          <SelectMenuTitle>{l10n("SIDEBAR_ADD_EVENT")}</SelectMenuTitle>
           <SelectMenuTitle>
             {renderCategoryIndex > -1 && options[renderCategoryIndex]?.label}
           </SelectMenuTitle>
@@ -814,7 +882,9 @@ const AddScriptEventMenu = ({
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
-              <>
+              <React.Fragment
+                key={"value" in option ? option.value : option.label}
+              >
                 {option.groupLabel && (
                   <MenuGroup key={option.groupLabel}>
                     {option.groupLabel}
@@ -834,7 +904,15 @@ const AddScriptEventMenu = ({
                     "event" in option ? option.event.description : undefined
                   }
                 >
-                  {option.label}
+                  {searchTerm.length > 0 && highlightWords.length > 0 ? (
+                    <HighlightWords
+                      text={option.label}
+                      words={highlightWords}
+                    />
+                  ) : (
+                    option.label
+                  )}
+
                   {"options" in option ? (
                     <MenuItemCaret>
                       <CaretRightIcon />
@@ -868,7 +946,7 @@ const AddScriptEventMenu = ({
                     </>
                   )}
                 </MenuItem>
-              </>
+              </React.Fragment>
             ))}
           </SelectMenuOptions>
           <SelectMenuOptions ref={childOptionsRef}>
@@ -876,36 +954,43 @@ const AddScriptEventMenu = ({
               (options[renderCategoryIndex] as EventOptGroup)?.options &&
               (options[renderCategoryIndex] as EventOptGroup).options.map(
                 (childOption, childOptionIndex) => (
-                  <MenuItem
-                    key={childOption.value}
-                    data-index={childOptionIndex}
-                    selected={selectedIndex === childOptionIndex}
-                    onMouseOver={() => setSelectedIndex(childOptionIndex)}
-                    onClick={() => onSelectOption(childOptionIndex)}
-                    title={childOption.event.description}
-                  >
-                    {childOption.label}
-                    <FlexGrow />
-                    <MenuItemFavorite
-                      visible={
-                        selectedIndex === childOptionIndex ||
-                        childOption.isFavorite
-                      }
-                      isFavorite={childOption.isFavorite}
+                  <React.Fragment key={childOption.value}>
+                    {childOption.subGroupLabel && (
+                      <MenuGroup key={childOption.subGroupLabel}>
+                        {childOption.subGroupLabel}
+                      </MenuGroup>
+                    )}
+                    <MenuItem
+                      key={childOption.value}
+                      data-index={childOptionIndex}
+                      selected={selectedIndex === childOptionIndex}
+                      onMouseOver={() => setSelectedIndex(childOptionIndex)}
+                      onClick={() => onSelectOption(childOptionIndex)}
+                      title={childOption.event.description}
                     >
-                      <Button
-                        size="small"
-                        variant="transparent"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          onToggleFavoriteOption(childOptionIndex);
-                        }}
+                      {childOption.label}
+                      <FlexGrow />
+                      <MenuItemFavorite
+                        visible={
+                          selectedIndex === childOptionIndex ||
+                          childOption.isFavorite
+                        }
+                        isFavorite={childOption.isFavorite}
                       >
-                        <StarIcon />
-                      </Button>
-                    </MenuItemFavorite>
-                  </MenuItem>
+                        <Button
+                          size="small"
+                          variant="transparent"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onToggleFavoriteOption(childOptionIndex);
+                          }}
+                        >
+                          <StarIcon />
+                        </Button>
+                      </MenuItemFavorite>
+                    </MenuItem>
+                  </React.Fragment>
                 )
               )}
           </SelectMenuOptions>

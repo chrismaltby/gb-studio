@@ -5,9 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
@@ -16,7 +14,7 @@ import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile } from "store/features/entities/entitiesTypes";
+import { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
 import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -24,6 +22,10 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { Selection } from "ui/document/Selection";
+import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -132,12 +134,6 @@ const StampTilesWrapper = styled.div`
   }
 `;
 
-const Selection = styled.div`
-  position: absolute;
-  background: rgba(128, 128, 128, 0.02);
-  border: 1px solid rgba(128, 128, 128, 0.3);
-`;
-
 interface Position {
   x: number;
   y: number;
@@ -162,28 +158,24 @@ const MetaspriteEditor = ({
   spriteStateId,
   hidden,
 }: MetaspriteEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const gridRef = useRef<HTMLDivElement>(null);
   const gridSize = 8;
-  const zoom = useSelector((state: RootState) => state.editor.zoomSprite) / 100;
-  const showSpriteGrid = useSelector(
-    (state: RootState) => state.editor.showSpriteGrid
+  const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;
+  const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
   );
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
-  );
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
-  const metasprite = useSelector((state: RootState) =>
+  const metasprite = useAppSelector((state) =>
     metaspriteSelectors.selectById(state, metaspriteId)
   );
-  const metaspriteTileLookup = useSelector((state: RootState) =>
+  const metaspriteTileLookup = useAppSelector((state) =>
     metaspriteTileSelectors.selectEntities(state)
   );
-  const newTiles = useSelector(
-    (state: RootState) => state.editor.spriteTileSelection
-  );
+  const newTiles = useAppSelector((state) => state.editor.spriteTileSelection);
   const metaspriteTiles = useMemo(
     () =>
       metasprite?.tiles
@@ -191,33 +183,31 @@ const MetaspriteEditor = ({
         .filter((i) => i) || [],
     [metasprite?.tiles, metaspriteTileLookup]
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  const selectedTileIds = useAppSelector(
+    (state) => state.editor.selectedMetaspriteTileIds
   );
-  const showOnionSkin = useSelector(
-    (state: RootState) => state.editor.showOnionSkin
+  const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
+  const showBoundingBox = useAppSelector(
+    (state) => state.editor.showSpriteBoundingBox
   );
-  const showBoundingBox = useSelector(
-    (state: RootState) => state.editor.showSpriteBoundingBox
-  );
-  const spriteAnimation = useSelector((state: RootState) =>
+  const spriteAnimation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
   const [selectionOrigin, setSelectionOrigin] =
     useState<Position | undefined>();
   const [selectionRect, setSelectionRect] =
     useState<SelectionRect | undefined>();
-  const previewAsSceneId = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, previewAsSceneId)
   );
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) => state.project.present.settings.defaultSpritePaletteIds
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds
   );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
@@ -747,6 +737,38 @@ const MetaspriteEditor = ({
     [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled]
   );
 
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+
+  const renderContextMenu = useCallback(() => {
+    return renderMetaspriteTileContextMenu({
+      dispatch,
+      spriteSheetId,
+      metaspriteId,
+      selectedTileIds,
+    });
+  }, [dispatch, metaspriteId, selectedTileIds, spriteSheetId]);
+
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      const menu = renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu]
+  );
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
   if (!metasprite) {
     return null;
   }
@@ -800,6 +822,7 @@ const MetaspriteEditor = ({
                 }}
                 selected={selectedTileIds.includes(metaspriteTile.id)}
                 onMouseDown={onDragStart(metaspriteTile.id)}
+                onContextMenu={onContextMenu}
               >
                 <SpriteSliceCanvas
                   spriteSheetId={spriteSheetId}
@@ -856,6 +879,15 @@ const MetaspriteEditor = ({
           )}
         </GridWrapper>
       </ContentWrapper>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
     </ScrollWrapper>
   );
 };

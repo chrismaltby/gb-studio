@@ -1,38 +1,84 @@
 import React, {
   useCallback,
-  useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
-import PageHeader from "components/library/PageHeader";
 import entitiesActions from "store/features/entities/entitiesActions";
-import castEventValue from "lib/helpers/castEventValue";
+import { Input } from "ui/form/Input";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
 `;
 
+const Header = styled.div`
+  display: flex;
+  height: 100px;
+  align-items: center;
+  margin-bottom: 30px;
+
+  h1 {
+    margin-right: 10px;
+  }
+`;
+
+const Sidebar = styled.div`
+  background: ${(props) => props.theme.colors.sidebar.background};
+  overflow: hidden;
+  position: relative;
+`;
+
+const SidebarContent = styled.div`
+  min-width: 200px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+const Document = styled.div`
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  background: ${(props) => props.theme.colors.document.background};
+  color: ${(props) => props.theme.colors.text};
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  padding: 20px 40px;
+  max-width: 1000px;
+  min-width: 500px;
+  width: 100%;
+  flex-direction: column;
+  box-sizing: border-box;
+`;
+
 const PalettePage = () => {
-  const dispatch = useDispatch();
-  const themeContext = useContext(ThemeContext);
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const dispatch = useAppDispatch();
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -41,14 +87,35 @@ const PalettePage = () => {
   const minCenterPaneWidth = 0;
   const [edit, setEdit] = useState(false);
 
-  const allPalettes = useSelector((state: RootState) =>
+  const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state)
   );
 
-  const palette =
-    useSelector((state: RootState) =>
-      paletteSelectors.selectById(state, selectedId)
-    ) || allPalettes[0];
+  const allPaletteIds = useAppSelector((state) =>
+    paletteSelectors.selectIds(state)
+  );
+
+  const palette = useAppSelector((state) =>
+    paletteSelectors.selectById(state, selectedId)
+  );
+
+  const lastPaletteId = useRef("");
+  useEffect(() => {
+    if (palette) {
+      lastPaletteId.current = palette.id;
+    }
+  }, [palette]);
+
+  const viewPaletteId = useMemo(
+    () => palette?.id || lastPaletteId.current || allPalettes[0]?.id,
+    [allPalettes, palette]
+  );
+
+  const viewPalette = useAppSelector((state) =>
+    paletteSelectors.selectById(state, viewPaletteId)
+  );
+
+  const viewPaletteIndex = allPaletteIds.indexOf(viewPaletteId);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -90,10 +157,13 @@ const PalettePage = () => {
   }, []);
 
   const onFinishEdit = () => {
-    if (!palette.name) {
+    if (!viewPalette) {
+      return;
+    }
+    if (!viewPalette?.name) {
       dispatch(
         entitiesActions.editPalette({
-          paletteId: palette.id,
+          paletteId: viewPalette.id,
           changes: {
             name: "Palette",
           },
@@ -110,11 +180,14 @@ const PalettePage = () => {
   };
 
   const onEditName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!viewPalette) {
+      return;
+    }
     dispatch(
       entitiesActions.editPalette({
-        paletteId: palette.id,
+        paletteId: viewPalette.id,
         changes: {
-          name: castEventValue(e),
+          name: e.currentTarget.value,
         },
       })
     );
@@ -122,85 +195,54 @@ const PalettePage = () => {
 
   return (
     <Wrapper>
-      <div
+      <Sidebar
         style={{
-          transition: "opacity 0.3s ease-in-out",
           width: Math.max(200, leftPaneWidth),
-          background: themeContext.colors.sidebar.background,
-          overflow: "hidden",
-          position: "relative",
         }}
       >
-        <div
-          style={{
-            minWidth: 200,
-            position: "relative",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+        <SidebarContent>
           <NavigatorPalettes
             height={windowHeight - 38}
-            selectedId={palette?.id || ""}
+            selectedId={selectedId}
           />
-        </div>
-      </div>
+        </SidebarContent>
+      </Sidebar>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-      <div
-        style={{
-          flex: "1 1 0",
-          minWidth: 0,
-          overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
-          height: windowHeight - 38,
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <PageHeader>
-          {palette ? (
-            <h1>
-              {edit ? (
-                <input
-                  maxLength={25}
-                  value={palette.name}
-                  onChange={onEditName}
-                  onKeyDown={checkForFinishEdit}
-                  onBlur={onFinishEdit}
-                  autoFocus
-                />
-              ) : (
-                palette.name
-              )}{" "}
-              {!palette.defaultColors && !edit && (
-                <Button
-                  key="edit"
-                  onClick={onStartEdit}
-                  size="small"
-                  variant="transparent"
-                >
-                  {l10n("FIELD_RENAME")}
-                </Button>
-              )}
-            </h1>
-          ) : (
-            <h1>No palette selected</h1>
-          )}
-        </PageHeader>
-        <div
-          style={{
-            display: "flex",
-            flexGrow: 1,
-            position: "relative",
-            justifyContent: "center",
-            padding: "0 40px",
-          }}
-        >
-          <CustomPalettePicker paletteId={palette.id} />
-        </div>
-      </div>
+      <Document>
+        <Container>
+          <Header>
+            {viewPalette && (
+              <>
+                {edit ? (
+                  <Input
+                    displaySize="large"
+                    maxLength={25}
+                    value={viewPalette.name}
+                    placeholder={paletteName(viewPalette, viewPaletteIndex)}
+                    onChange={onEditName}
+                    onKeyDown={checkForFinishEdit}
+                    onBlur={onFinishEdit}
+                    autoFocus
+                  />
+                ) : (
+                  <h1>{paletteName(viewPalette, viewPaletteIndex)}</h1>
+                )}
+                {!viewPalette.defaultColors && !edit && (
+                  <Button
+                    key="edit"
+                    onClick={onStartEdit}
+                    size="small"
+                    variant="transparent"
+                  >
+                    {l10n("FIELD_RENAME")}
+                  </Button>
+                )}
+              </>
+            )}
+          </Header>
+          {viewPalette && <CustomPalettePicker paletteId={viewPaletteId} />}
+        </Container>
+      </Document>
     </Wrapper>
   );
 };

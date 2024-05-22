@@ -1,14 +1,15 @@
-import { EngineFieldSchema } from "store/features/engine/engineState";
-import {
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
   ActorDirection,
   EngineFieldValue,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import {
   avatarFontSymbol,
   PrecompiledFontData,
   PrecompiledScene,
-} from "./compileData2";
+} from "./generateGBVMData";
 import { dirEnum } from "./helpers";
+import { PrecompiledAvatarData } from "./compileAvatars";
 
 interface InitialState {
   startX: number;
@@ -18,7 +19,7 @@ interface InitialState {
   startMoveSpeed: number;
   startAnimSpeed: number;
   fonts: PrecompiledFontData[];
-  avatarFonts: undefined[];
+  avatarFonts: PrecompiledAvatarData[][];
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
   persistSceneSpriteSymbols: Record<string, string>;

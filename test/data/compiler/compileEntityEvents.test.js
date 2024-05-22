@@ -1,16 +1,21 @@
 import compileEntityEvents from "../../../src/lib/compiler/compileEntityEvents";
-import {
-  EVENT_END,
-  EVENT_TEXT,
-  EVENT_IF_TRUE,
-} from "../../../src/lib/compiler/eventTypes";
+import { EVENT_END, EVENT_TEXT, EVENT_IF_TRUE } from "../../../src/consts";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
 import { getDummyCompiledFont } from "../../dummydata";
+import { getTestScriptHandlers } from "../../getTestScriptHandlers";
 
 jest.mock("../../../src/consts");
 
-test("should compile empty events", () => {
+beforeAll(async () => {
+  await initElectronL10N();
+});
+
+test("should compile empty events", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const input = [];
-  const output = compileEntityEvents("testname", input);
+  const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
+  });
   expect(output).toEqual(`.module testname
 
 .include "vm.i"
@@ -28,7 +33,8 @@ _testname::
 `);
 });
 
-test("should collapse multiple end events", () => {
+test("should collapse multiple end events", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const input = [
     {
       command: EVENT_END,
@@ -37,7 +43,9 @@ test("should collapse multiple end events", () => {
       command: EVENT_END,
     },
   ];
-  const output = compileEntityEvents("testname", input);
+  const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
+  });
   expect(output).toEqual(`.module testname
 
 .include "vm.i"
@@ -56,6 +64,7 @@ _testname::
 });
 
 test("should output text command", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const dummyCompiledFont = await getDummyCompiledFont();
   const input = [
     {
@@ -67,6 +76,7 @@ test("should output text command", async () => {
   ];
   const strings = ["HELLO WORLD"];
   const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
     strings,
     fonts: [dummyCompiledFont],
   });
@@ -98,6 +108,7 @@ _testname::
 });
 
 test("should output text with avatar command", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const dummyCompiledFont = await getDummyCompiledFont();
 
   const input = [
@@ -119,6 +130,7 @@ test("should output text with avatar command", async () => {
   const fonts = [dummyCompiledFont];
 
   const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
     strings,
     avatars,
     fonts,
@@ -151,6 +163,7 @@ _testname::
 });
 
 test("should allow conditional statements", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const dummyCompiledFont = await getDummyCompiledFont();
 
   const input = [
@@ -183,6 +196,7 @@ test("should allow conditional statements", async () => {
   const variables = ["1", "2", "3", "4"];
   const fonts = [dummyCompiledFont];
   const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
     strings,
     variables,
     fonts,
@@ -231,6 +245,7 @@ _testname::
 });
 
 test("should allow commands after conditional", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
   const dummyCompiledFont = await getDummyCompiledFont();
   const input = [
     {
@@ -268,6 +283,7 @@ test("should allow commands after conditional", async () => {
   const variables = ["1", "2", "3", "4"];
   const fonts = [dummyCompiledFont];
   const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
     strings,
     variables,
     fonts,

@@ -6,23 +6,24 @@ import {
   Background,
   SpriteSheet,
   Music,
-} from "../../../../src/store/features/entities/entitiesTypes";
+} from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
 import projectActions, {
   ProjectData,
 } from "../../../../src/store/features/project/projectActions";
 import {
   dummyProjectData,
+  dummySceneNormalized,
   dummyScene,
-  dummySceneDenormalized,
   dummyBackground,
   dummySpriteSheet,
   dummyMusic,
-  dummyActor,
-  dummyTrigger,
+  dummyActorNormalized,
+  dummyTriggerNormalized,
   dummyPalette,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
+import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -33,7 +34,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "missingbg",
         width: 20,
@@ -46,7 +47,11 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -65,7 +70,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -86,7 +91,11 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -105,7 +114,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -126,7 +135,11 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"
@@ -142,7 +155,7 @@ test("Should fix scene widths if background has changed while project is open", 
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 20,
@@ -173,13 +186,9 @@ test("Should fix scene widths if background has changed while project is open", 
     height: 40,
   };
 
-  const action = projectActions.loadBackground.fulfilled(
-    {
-      data: loadBackground,
-    },
-    "randomid",
-    "bg1.png"
-  );
+  const action = entitiesActions.loadBackground({
+    data: loadBackground,
+  });
 
   expect(state.scenes.entities["scene1"]?.width).toBe(20);
   expect(state.scenes.entities["scene1"]?.height).toBe(18);
@@ -200,13 +209,9 @@ test("Should add new background if loaded while project is open", () => {
     height: 18,
   };
 
-  const action = projectActions.loadBackground.fulfilled(
-    {
-      data: loadBackground,
-    },
-    "randomid",
-    "bg1.png"
-  );
+  const action = entitiesActions.loadBackground({
+    data: loadBackground,
+  });
 
   expect(state.backgrounds.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -230,14 +235,13 @@ test("Should remove backgrounds that are deleted while project is open", () => {
     },
   };
 
-  const action = projectActions.removeBackground.fulfilled(
-    {
+  const action = entitiesActions.removedAsset({
+    assetType: "backgrounds",
+    asset: {
       filename: "bg1.png",
       plugin: undefined,
     },
-    "randomid",
-    "bg1.png"
-  );
+  });
 
   expect(state.backgrounds.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -254,13 +258,9 @@ test("Should add new sprite sheet if loaded while project is open", () => {
     id: "sprite1",
   };
 
-  const action = projectActions.loadSprite.fulfilled(
-    {
-      data: loadSpriteSheet,
-    },
-    "randomid",
-    "sprite1.png"
-  );
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
 
   expect(state.spriteSheets.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -288,13 +288,9 @@ test("Should update sprite sheet if modified while project is open", () => {
     filename: "sprite1.png",
   };
 
-  const action = projectActions.loadSprite.fulfilled(
-    {
-      data: loadSpriteSheet,
-    },
-    "randomid",
-    "sprite1.png"
-  );
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
 
   expect(state.spriteSheets.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -316,14 +312,13 @@ test("Should remove sprite sheets that are deleted while project is open", () =>
     },
   };
 
-  const action = projectActions.removeSprite.fulfilled(
-    {
+  const action = entitiesActions.removedAsset({
+    assetType: "sprites",
+    asset: {
       filename: "sprite1.png",
       plugin: undefined,
     },
-    "randomid",
-    "sprite1.png"
-  );
+  });
 
   expect(state.spriteSheets.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -341,13 +336,9 @@ test("Should add new music track if loaded while project is open", () => {
     filename: "track1.mod",
   };
 
-  const action = projectActions.loadMusic.fulfilled(
-    {
-      data: loadMusic,
-    },
-    "randomid",
-    "track1.mod"
-  );
+  const action = entitiesActions.loadMusic({
+    data: loadMusic,
+  });
 
   expect(state.music.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -378,13 +369,9 @@ test("Should update music track if modified while project is open", () => {
     _v: 1,
   };
 
-  const action = projectActions.loadMusic.fulfilled(
-    {
-      data: loadMusic,
-    },
-    "randomid",
-    "track1.mod"
-  );
+  const action = entitiesActions.loadMusic({
+    data: loadMusic,
+  });
 
   expect(state.music.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -407,14 +394,13 @@ test("Should remove music tracks that are deleted while project is open", () => 
     },
   };
 
-  const action = projectActions.removeMusic.fulfilled(
-    {
+  const action = entitiesActions.removedAsset({
+    assetType: "music",
+    asset: {
       filename: "track1.mod",
       plugin: undefined,
     },
-    "randomid",
-    "track1.mod"
-  );
+  });
 
   expect(state.music.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -444,7 +430,7 @@ test("Should be able to move a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -458,6 +444,7 @@ test("Should be able to move a scene", () => {
     sceneId: "scene1",
     x: 310,
     y: 520,
+    additionalSceneIds: [],
   });
 
   const newState = reducer(state, action);
@@ -471,7 +458,7 @@ test("Should update scene dimensions to match new background", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 20,
@@ -520,7 +507,7 @@ test("Should discard collisions if switched to use different background of diffe
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           actors: [],
@@ -567,7 +554,7 @@ test("Should be able to remove a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -592,7 +579,7 @@ test("Should be able to flood fill collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -624,6 +611,7 @@ test("Should be able to flood fill collisions", () => {
     brush: "fill",
     isTileProp: false,
     drawLine: false,
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);
@@ -640,7 +628,7 @@ test("Should be able to paint collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -672,6 +660,7 @@ test("Should be able to paint collisions", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: false,
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);
@@ -693,7 +682,7 @@ test("Should be able to paint collision line", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -727,6 +716,7 @@ test("Should be able to paint collision line", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: true,
+    tileLookup: [],
   });
 
   const newState = reducer(state, action);
@@ -790,7 +780,7 @@ test("Should be able to add an actor to a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -832,7 +822,7 @@ test("Should be able to add an actor to a scene with default values and variable
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -890,7 +880,7 @@ test("Should be able to move an actor with a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -903,7 +893,7 @@ test("Should be able to move an actor with a scene", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 2,
@@ -933,7 +923,7 @@ test("Should be able to move an actor between scenes", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -941,7 +931,7 @@ test("Should be able to move an actor between scenes", () => {
           triggers: [],
         },
         scene2: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene2",
           width: 10,
           height: 5,
@@ -954,7 +944,7 @@ test("Should be able to move an actor between scenes", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 2,
@@ -985,7 +975,7 @@ test("Should be able to add a trigger to a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1024,7 +1014,7 @@ test("Should be able to add a trigger to a scene with defaults", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1062,7 +1052,7 @@ test("Should be able to move a trigger with a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1075,7 +1065,7 @@ test("Should be able to move a trigger with a scene", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 5,
           y: 2,
@@ -1105,7 +1095,7 @@ test("Should be able to move a trigger between scenes", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1113,7 +1103,7 @@ test("Should be able to move a trigger between scenes", () => {
           triggers: ["trigger1"],
         },
         scene2: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene2",
           width: 10,
           height: 5,
@@ -1126,7 +1116,7 @@ test("Should be able to move a trigger between scenes", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 5,
           y: 2,
@@ -1157,7 +1147,7 @@ test("Should be able to remove an actor by id", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1168,7 +1158,7 @@ test("Should be able to remove an actor by id", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
         },
       },
@@ -1193,7 +1183,7 @@ test("Should be able to remove an actor at location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1204,7 +1194,7 @@ test("Should be able to remove an actor at location", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 6,
@@ -1232,7 +1222,7 @@ test("Should not remove actor outside of delete location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1243,7 +1233,7 @@ test("Should not remove actor outside of delete location", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 10,
           y: 6,
@@ -1271,7 +1261,7 @@ test("Should be able to remove a trigger by id", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1282,7 +1272,7 @@ test("Should be able to remove a trigger by id", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
         },
       },
@@ -1307,7 +1297,7 @@ test("Should be able to remove a trigger at location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1318,7 +1308,7 @@ test("Should be able to remove a trigger at location", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 2,
           y: 3,
@@ -1348,7 +1338,7 @@ test("Should not remove trigger outside of delete location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1359,7 +1349,7 @@ test("Should not remove trigger outside of delete location", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 2,
           y: 3,
@@ -1468,8 +1458,205 @@ test("Should be able to add custom event", () => {
   expect(newState.customEvents.ids.length).toBe(1);
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.name
-  ).toBe("");
+  ).toBe("CUSTOM_EVENT 1");
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.script
   ).toEqual([]);
+});
+
+test("Should be able to add flags to existing named variable ", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {
+        "11": {
+          id: "11",
+          name: "Powers",
+          symbol: "var_powers",
+        },
+      },
+    },
+  };
+
+  const action = actions.renameVariableFlags({
+    variableId: "11",
+    flags: {
+      flag1: "Crouch Ball",
+      flag2: "Cannon",
+      flag3: "Big Beam",
+      flag4: "Spin Jump",
+    },
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["11"]).toMatchObject({
+    id: "11",
+    name: "Powers",
+    symbol: "var_powers",
+    flags: {
+      flag1: "Crouch Ball",
+      flag2: "Cannon",
+      flag3: "Big Beam",
+      flag4: "Spin Jump",
+    },
+  });
+});
+
+test("Should be able to add flags to unnamed variable ", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {},
+    },
+  };
+
+  const action = actions.renameVariableFlags({
+    variableId: "12",
+    flags: {
+      flag1: "Crouch Ball",
+      flag2: "Cannon",
+      flag3: "Big Beam",
+      flag4: "Spin Jump",
+    },
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["12"]).toMatchObject({
+    id: "12",
+    name: "",
+    symbol: "",
+    flags: {
+      flag1: "Crouch Ball",
+      flag2: "Cannon",
+      flag3: "Big Beam",
+      flag4: "Spin Jump",
+    },
+  });
+});
+
+test("Should remove variable when name is empty and doesn't have flags ", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {
+        "13": {
+          id: "13",
+          name: "Powers",
+          symbol: "var_powers",
+        },
+      },
+    },
+  };
+  const action = actions.renameVariable({
+    variableId: "13",
+    name: "",
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["13"]).toBeUndefined();
+});
+
+test("Should not remove variable when name is empty but has named flags", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {
+        "14": {
+          id: "14",
+          name: "Powers",
+          symbol: "var_powers",
+          flags: {
+            flag1: "Crouch Ball",
+            flag2: "Cannon",
+            flag3: "Big Beam",
+            flag4: "Spin Jump",
+          },
+        },
+      },
+    },
+  };
+  const action = actions.renameVariable({
+    variableId: "14",
+    name: "",
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["14"]).toMatchObject({
+    id: "14",
+    name: "",
+    symbol: "",
+    flags: {
+      flag1: "Crouch Ball",
+      flag2: "Cannon",
+      flag3: "Big Beam",
+      flag4: "Spin Jump",
+    },
+  });
+});
+
+test("Should remove variable when all flags removed and was unnamed", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {
+        "15": {
+          id: "15",
+          name: "",
+          symbol: "",
+          flags: {
+            flag1: "Crouch Ball",
+            flag2: "Cannon",
+            flag3: "Big Beam",
+            flag4: "Spin Jump",
+          },
+        },
+      },
+    },
+  };
+  const action = actions.renameVariableFlags({
+    variableId: "15",
+    flags: {},
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["15"]).toBeUndefined();
+});
+
+test("Should not remove variable when all flags removed but variable was named", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: [],
+      entities: {
+        "16": {
+          id: "16",
+          name: "Powers",
+          symbol: "var_powers",
+          flags: {
+            flag1: "Crouch Ball",
+            flag2: "Cannon",
+            flag3: "Big Beam",
+            flag4: "Spin Jump",
+          },
+        },
+      },
+    },
+  };
+  const action = actions.renameVariableFlags({
+    variableId: "16",
+    flags: {},
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.variables.entities["16"]).toMatchObject({
+    id: "16",
+    name: "Powers",
+    symbol: "var_powers",
+    flags: {},
+  });
 });

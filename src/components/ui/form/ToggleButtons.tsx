@@ -129,7 +129,7 @@ const ToggleButtons = (props: ToggleButtonsProps) => {
               type="checkbox"
               name={props.name}
               checked={isChecked}
-              onClick={() => onToggle(type)}
+              onChange={() => onToggle(type)}
             />
             <Label htmlFor={`${props.name}__${String(type)}`} title={title}>
               {label}

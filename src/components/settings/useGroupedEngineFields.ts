@@ -1,8 +1,7 @@
 import uniq from "lodash/uniq";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import l10n from "lib/helpers/l10n";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 
 export type EngineFieldGroup = {
@@ -12,7 +11,7 @@ export type EngineFieldGroup = {
 };
 
 export const useGroupedEngineFields = () => {
-  const fields = useSelector((state: RootState) => state.engine.fields);
+  const fields = useAppSelector((state) => state.engine.fields);
   const [groupedFields, setGroupedFields] = useState<EngineFieldGroup[]>([]);
 
   useEffect(() => {
@@ -23,9 +22,9 @@ export const useGroupedEngineFields = () => {
         return {
           name: g,
           searchMatches: ([] as string[]).concat(
-            l10n(g),
+            l10n(g as L10NKey),
             groupFields.map((field) => field.key),
-            groupFields.map((field) => l10n(field.label))
+            groupFields.map((field) => l10n(field.label as L10NKey))
           ),
           fields: groupFields,
         };

@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_VARIABLE_MATH_EVALUATE";
 const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  EVENT_GROUP_MATH: "EVENT_GROUP_VARIABLES",
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_MATH",
+};
 
 const autoLabel = (fetchArg, args) => {
   if (args.expression) {
@@ -45,6 +49,7 @@ module.exports = {
   references: ["/docs/scripting/math-expressions"],
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_LAUNCH_PROJECTILE";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_ACTIONS",
+};
 
 const fields = [
   {
@@ -57,8 +60,21 @@ const fields = [
   },
   {
     type: "group",
-    width: "50%",
     fields: [
+      {
+        label: l10n("FIELD_LAUNCH_AT"),
+        key: "directionType",
+        type: "select",
+        options: [
+          ["direction", l10n("FIELD_FIXED_DIRECTION")],
+          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
+          ["target", l10n("FIELD_ACTOR_TARGET")],
+          ["angle", l10n("FIELD_ANGLE")],
+          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
+        ],
+        defaultValue: "direction",
+        alignBottom: true,
+      },
       {
         key: "otherActorId",
         label: l10n("FIELD_DIRECTION"),
@@ -89,8 +105,10 @@ const fields = [
         key: "angle",
         label: l10n("FIELD_ANGLE"),
         description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
-        type: "number",
+        type: "angle",
         defaultValue: 0,
+        min: -256,
+        max: 256,
         conditions: [
           {
             key: "directionType",
@@ -112,16 +130,17 @@ const fields = [
         ],
       },
       {
-        key: "directionType",
-        type: "selectbutton",
-        options: [
-          ["direction", l10n("FIELD_FIXED_DIRECTION")],
-          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
-          ["angle", l10n("FIELD_ANGLE")],
-          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
+        key: "targetActorId",
+        label: l10n("FIELD_TARGET"),
+        description: l10n("FIELD_PROJECTILE_TARGET_DESC"),
+        type: "actor",
+        defaultValue: "$self$",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "target",
+          },
         ],
-        inline: true,
-        defaultValue: "direction",
       },
     ],
   },
@@ -170,13 +189,13 @@ const fields = [
   },
   {
     type: "group",
+    alignBottom: true,
     fields: [
       {
         key: "loopAnim",
         label: l10n("FIELD_LOOP_ANIMATION"),
         description: l10n("FIELD_LOOP_ANIMATION_DESC"),
         type: "checkbox",
-        alignCheckbox: true,
         defaultValue: true,
       },
       {
@@ -184,7 +203,6 @@ const fields = [
         label: l10n("FIELD_DESTROY_ON_HIT"),
         description: l10n("FIELD_PROJECTILE_DESTROY_ON_HIT_DESC"),
         type: "checkbox",
-        alignCheckbox: true,
         defaultValue: true,
       },
     ],
@@ -222,6 +240,7 @@ const compile = (input, helpers) => {
     launchProjectileInSourceActorDirection,
     launchProjectileInActorDirection,
     launchProjectileInAngleVariable,
+    launchProjectileTowardsActor,
     actorSetActive,
   } = helpers;
 
@@ -285,6 +304,25 @@ const compile = (input, helpers) => {
         input.loopAnim
       );
     }
+  } else if (input.directionType === "target") {
+    if (input.actorId === input.targetActorId) {
+      launchProjectileInSourceActorDirection(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    } else {
+      launchProjectileTowardsActor(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.targetActorId,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    }
   }
 };
 
@@ -292,6 +330,7 @@ module.exports = {
   id,
   description: l10n("EVENT_LAUNCH_PROJECTILE_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
   waitUntilAfterInitFade: true,

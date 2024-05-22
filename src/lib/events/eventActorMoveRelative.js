@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_MOVE_RELATIVE";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_MOVEMENT",
+};
 
 const autoLabel = (fetchArg, input) => {
   const unitPostfix =
@@ -28,11 +31,14 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_RELATIVE_DESC"),
-        type: "number",
+        type: "value",
         min: -31,
         max: 31,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -41,11 +47,14 @@ const fields = [
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_RELATIVE_DESC"),
-        type: "number",
+        type: "value",
         min: -31,
         max: 31,
         width: "50%",
-        defaultValue: 0,
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
@@ -61,22 +70,22 @@ const fields = [
     defaultValue: "horizontal",
     flexBasis: 30,
     flexGrow: 0,
+    alignBottom: true,
   },
   {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
     description: l10n("FIELD_USE_COLLISIONS_DESC"),
     width: "50%",
-    alignCheckbox: true,
     type: "checkbox",
     defaultValue: false,
   },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveRelative } = helpers;
-  actorSetActive(input.actorId);
-  actorMoveRelative(
+  const { actorMoveRelativeByScriptValues } = helpers;
+  actorMoveRelativeByScriptValues(
+    input.actorId,
     input.x,
     input.y,
     input.useCollisions,
@@ -90,6 +99,7 @@ module.exports = {
   description: l10n("EVENT_ACTOR_MOVE_RELATIVE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   waitUntilAfterInitFade: true,

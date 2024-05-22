@@ -1,11 +1,8 @@
-import electron from "electron";
-import l10n from "../../helpers/l10n";
+import { dialog, BrowserWindow } from "electron";
+import l10n from "shared/lib/lang/l10n";
 
-const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
-const win = electron.remote?.getCurrentWindow();
-
-export default () => {
-  const dialogOptions = {
+const confirmEnableColorDialog = (win: BrowserWindow) => {
+  return dialog.showMessageBoxSync(win, {
     type: "info",
     buttons: [l10n("DIALOG_ENABLE_COLOR"), l10n("DIALOG_CANCEL")],
     defaultId: 0,
@@ -13,7 +10,7 @@ export default () => {
     title: l10n("DIALOG_ENABLE_COLOR_MODE"),
     message: l10n("DIALOG_ENABLE_COLOR_MODE"),
     detail: l10n("DIALOG_ENABLE_COLOR_MODE_DESCRIPTION"),
-  };
-
-  return dialog.showMessageBoxSync(win, dialogOptions);
+  });
 };
+
+export default confirmEnableColorDialog;

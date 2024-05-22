@@ -1,16 +1,16 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { tilesetSymbol } from "lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import { tilesetSymbol } from "shared/lib/helpers/symbols";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
+import { useAppDispatch } from "store/hooks";
 
 interface SpriteSymbolsEditorProps {
   id: string;
 }
 
 export const SpriteSymbolsEditor = ({ id }: SpriteSymbolsEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   return (
     <AssetReference
       id={id}

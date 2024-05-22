@@ -1,16 +1,18 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesState";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,11 +20,11 @@ const Wrapper = styled.div`
 `;
 
 const ImagesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -30,14 +32,27 @@ const ImagesPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allBackgrounds = useSelector((state: RootState) =>
+  const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
 
-  const background =
-    useSelector((state: RootState) =>
-      backgroundSelectors.selectById(state, selectedId)
-    ) || allBackgrounds[0];
+  const background = useAppSelector(
+    (state) =>
+      backgroundSelectors.selectById(state, selectedId) ||
+      tilesetSelectors.selectById(state, selectedId)
+  );
+
+  const lastBackgroundId = useRef("");
+  useEffect(() => {
+    if (background) {
+      lastBackgroundId.current = background.id;
+    }
+  }, [background]);
+
+  const viewBackgroundId = useMemo(
+    () => background?.id || lastBackgroundId.current || allBackgrounds[0]?.id,
+    [allBackgrounds, background]
+  );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -95,7 +110,7 @@ const ImagesPage = () => {
         >
           <NavigatorBackgrounds
             height={windowHeight - 38}
-            selectedId={background?.id || ""}
+            selectedId={selectedId || background?.id || ""}
           />
         </div>
       </div>
@@ -115,7 +130,7 @@ const ImagesPage = () => {
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
           <BackgroundPreviewSettings backgroundId={background?.id || ""} />
-          <BackgroundViewer backgroundId={background?.id || ""} />
+          <BackgroundViewer backgroundId={viewBackgroundId || ""} />
         </div>
       </div>
     </Wrapper>

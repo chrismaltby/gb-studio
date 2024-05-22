@@ -15,14 +15,12 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  height: 28px;
 
   ${Label} {
     margin-left: 5px;
     margin-bottom: 0px;
-  }
-
-  input {
-    margin-bottom: -2px;
+    margin-top: -1px;
   }
 `;
 

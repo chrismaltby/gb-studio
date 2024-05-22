@@ -51,7 +51,8 @@ const fields = [].concat(
             value: String(i + 1),
           }),
           hideFromDocs: i >= 2,
-          type: "text",
+          type: "textarea",
+          singleLine: true,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
@@ -68,7 +69,8 @@ const fields = [].concat(
             value: String(i + 1),
           }),
           hideFromDocs: i >= 2,
-          type: "text",
+          type: "textarea",
+          singleLine: true,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
@@ -87,7 +89,8 @@ const fields = [].concat(
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: "0" }),
           description: l10n("FIELD_SET_TO_VALUE_IF_MENU_DESC", { value: "0" }),
           hideFromDocs: true,
-          type: "text",
+          type: "textarea",
+          singleLine: true,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
@@ -112,7 +115,6 @@ const fields = [].concat(
     label: l10n("FIELD_LAST_OPTION_CANCELS"),
     description: l10n("FIELD_LAST_OPTION_CANCELS_DESC"),
     key: "cancelOnLastOption",
-    alignCheckbox: true,
   },
   {
     type: "checkbox",
@@ -120,7 +122,6 @@ const fields = [].concat(
     description: l10n("FIELD_CANCEL_IF_B_DESC"),
     key: "cancelOnB",
     defaultValue: true,
-    alignCheckbox: true,
   },
   {
     key: "layout",

@@ -1,17 +1,112 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+  clipboard,
+  protocol,
+} from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
-import { stat } from "fs-extra";
-import menu from "./menu";
+import {
+  copyFile,
+  pathExists,
+  readFile,
+  remove,
+  stat,
+  statSync,
+  move,
+} from "fs-extra";
+import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
-import l10n, { locales } from "lib/helpers/l10n";
-import initElectronL10n from "lib/helpers/initElectronL10n";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
+import { toThemeId } from "shared/lib/theme";
+import { isString, isStringArray, JsonValue } from "shared/types";
+import getTmp from "lib/helpers/getTmp";
+import createProject, { CreateProjectInput } from "lib/project/createProject";
+import open from "open";
+import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
+import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
+import type { ProjectData } from "store/features/project/projectActions";
+import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
+import buildProject from "lib/compiler/buildProject";
+import copy from "lib/helpers/fsCopy";
+import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
+import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import ejectEngineToDir from "lib/project/ejectEngineToDir";
+import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
+import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
+import compileData from "lib/compiler/compileData";
+import ejectBuild from "lib/compiler/ejectBuild";
+import type {
+  Background,
+  SpriteSheetData,
+  Tileset,
+} from "shared/lib/entities/entitiesTypes";
+import { getBackgroundInfo } from "lib/helpers/validation";
+import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
+import { guardAssetWithinProject } from "lib/helpers/assets";
+import type { Song } from "shared/lib/uge/song/Song";
+import { loadUGESong, saveUGESong } from "shared/lib/uge/ugeHelper";
+import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
+import type {
+  MusicDataPacket,
+  MusicDataReceivePacket,
+} from "shared/lib/music/types";
+import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
+import { compileWav } from "lib/compiler/sounds/compileWav";
+import { compileVGM } from "lib/compiler/sounds/compileVGM";
+import {
+  PrecompiledSpriteSheetData,
+  compileSprite,
+} from "lib/compiler/compileSprites";
+import { Asset, AssetType, assetFilename } from "shared/lib/helpers/assets";
+import toArrayBuffer from "lib/helpers/toArrayBuffer";
+import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
+import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
+import loadProjectData from "lib/project/loadProjectData";
+import saveProjectData from "lib/project/saveProjectData";
+import migrateWarning from "lib/project/migrateWarning";
+import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
+import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
+import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
+import watchProject from "lib/project/watchProject";
+import { loadBackgroundData } from "lib/project/loadBackgroundData";
+import { loadSpriteData } from "lib/project/loadSpriteData";
+import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
+import { loadSoundData } from "lib/project/loadSoundData";
+import { loadFontData } from "lib/project/loadFontData";
+import { loadAvatarData } from "lib/project/loadAvatarData";
+import { loadEmoteData } from "lib/project/loadEmoteData";
+import { loadTilesetData } from "lib/project/loadTilesetData";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
+import { loadEngineFields } from "lib/project/engineFields";
+import { getAutoLabel } from "shared/lib/scripts/autoLabel";
+import loadAllScriptEventHandlers, {
+  ScriptEventHandlers,
+} from "lib/project/loadScriptEventHandlers";
+import { cloneDictionary } from "lib/helpers/clone";
+import { readDebuggerSymbols } from "lib/debugger/readDebuggerSymbols";
+import {
+  DebuggerDataPacket,
+  DebuggerInitData,
+} from "shared/lib/debugger/types";
+import pickBy from "lodash/pickBy";
+import keyBy from "lodash/keyBy";
+import { loadSceneTypes } from "lib/project/sceneTypes";
+import { fileExists } from "lib/helpers/fs/fileExists";
+import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -21,6 +116,7 @@ declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
+declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 type SplashTab = "info" | "new" | "recent";
 
@@ -30,11 +126,9 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-app.allowRendererProcessReuse = false;
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: BrowserWindow | null = null;
+let projectWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
 let preferencesWindow: BrowserWindow | null = null;
 let playWindow: BrowserWindow | null = null;
@@ -44,8 +138,14 @@ let playWindowSgb = false;
 let hasCheckedForUpdate = false;
 let documentEdited = false;
 let documentName = "";
-let mainWindowCloseCancelled = false;
+let projectWindowCloseCancelled = false;
 let keepOpen = false;
+let projectPath = "";
+let cancelBuild = false;
+let musicWindowInitialized = false;
+let debuggerInitData: DebuggerInitData | null = null;
+let stopWatchingFn: (() => void) | null = null;
+let scriptEventHandlers: ScriptEventHandlers = {};
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -63,7 +163,7 @@ const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 640,
-    height: 400,
+    height: 430,
     useContentSize: true,
     resizable: false,
     maximizable: false,
@@ -72,7 +172,8 @@ const createSplash = async (forceTab?: SplashTab) => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       devTools: isDevMode,
       preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -108,7 +209,8 @@ const createPreferences = async () => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       devTools: isDevMode,
       preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -128,67 +230,68 @@ const createPreferences = async () => {
   });
 };
 
-const createWindow = async (projectPath: string) => {
-  const mainWindowState = windowStateKeeper({
+const createProjectWindow = async () => {
+  const projectWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800,
   });
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    x: mainWindowState.x,
-    y: mainWindowState.y,
-    width: Math.max(640, mainWindowState.width),
-    height: Math.max(600, mainWindowState.height),
+  projectWindow = new BrowserWindow({
+    x: projectWindowState.x,
+    y: projectWindowState.y,
+    width: Math.max(640, projectWindowState.width),
+    height: Math.max(600, projectWindowState.height),
     minWidth: 640,
     minHeight: 600,
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      nodeIntegrationInWorker: false,
       webSecurity: process.env.NODE_ENV !== "development",
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-  mainWindowCloseCancelled = false;
+  projectWindowCloseCancelled = false;
 
-  mainWindowState.manage(mainWindow);
+  projectWindowState.manage(projectWindow);
 
-  mainWindow.loadURL(
+  projectWindow.loadURL(
     `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(projectPath)}`
   );
 
-  mainWindow.setRepresentedFilename(projectPath);
+  projectWindow.setRepresentedFilename(projectPath);
 
-  mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow?.webContents.send("open-project", projectPath);
+  projectWindow.webContents.on("did-finish-load", () => {
+    sendToProjectWindow("open-project", projectPath);
     setTimeout(() => {
-      mainWindow?.show();
+      projectWindow?.show();
     }, 40);
   });
 
-  mainWindow.on("enter-full-screen", () => {
-    mainWindow?.webContents.send("enter-full-screen");
+  projectWindow.on("enter-full-screen", () => {
+    sendToProjectWindow("app:is-full-screen:changed", true);
   });
 
-  mainWindow.on("leave-full-screen", () => {
-    mainWindow?.webContents.send("leave-full-screen");
+  projectWindow.on("leave-full-screen", () => {
+    sendToProjectWindow("app:is-full-screen:changed", false);
   });
 
-  mainWindow.on("page-title-updated", (e, title) => {
+  projectWindow.on("page-title-updated", (e, title) => {
     documentName = title
       .replace(/^GB Studio -/, "")
       .replace(/\(modified\)$/, "")
       .trim();
   });
 
-  mainWindow.on("close", (e) => {
-    if (documentEdited && mainWindow) {
-      mainWindowCloseCancelled = false;
-      const choice = dialog.showMessageBoxSync(mainWindow, {
+  projectWindow.on("close", (e) => {
+    if (documentEdited && projectWindow) {
+      projectWindowCloseCancelled = false;
+      const choice = dialog.showMessageBoxSync(projectWindow, {
         type: "question",
         buttons: [
           l10n("DIALOG_SAVE"),
@@ -203,34 +306,184 @@ const createWindow = async (projectPath: string) => {
       if (choice === 0) {
         // Save
         e.preventDefault();
-        mainWindow.webContents.send("save-project-and-close");
+        sendToProjectWindow("menu:save-project-and-close");
+        return;
       } else if (choice === 1) {
         // Cancel
         e.preventDefault();
         keepOpen = false;
-        mainWindowCloseCancelled = true;
+        projectWindowCloseCancelled = true;
+        return;
       } else {
         // Don't Save
       }
     }
+
+    if (stopWatchingFn) {
+      stopWatchingFn();
+    }
   });
 
-  mainWindow.on("closed", () => {
-    mainWindow = null;
+  projectWindow.on("closed", () => {
+    projectWindow = null;
     menu.buildMenu([]);
 
     if (musicWindow) {
       musicWindow.destroy();
     }
   });
+
+  if (stopWatchingFn) {
+    stopWatchingFn();
+  }
+
+  const projectRoot = Path.dirname(projectPath);
+
+  stopWatchingFn = watchProject(projectPath, {
+    onChangedSprite: async (filename: string) => {
+      const data = await loadSpriteData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:sprite:changed", filename, data);
+    },
+    onChangedBackground: async (filename: string) => {
+      const data = await loadBackgroundData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:background:changed", filename, data);
+    },
+    onChangedUI: (filename: string) => {
+      sendToProjectWindow("watch:ui:changed", { filename });
+    },
+    onChangedMusic: async (filename: string) => {
+      const data = await loadMusicData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:music:changed", filename, data);
+    },
+    onChangedSound: async (filename: string) => {
+      const data = await loadSoundData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:sound:changed", filename, data);
+    },
+    onChangedFont: async (filename: string) => {
+      const data = await loadFontData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:font:changed", filename, data);
+    },
+    onChangedAvatar: async (filename: string) => {
+      const data = await loadAvatarData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:avatar:changed", filename, data);
+    },
+    onChangedEmote: async (filename: string) => {
+      const data = await loadEmoteData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:emote:changed", filename, data);
+    },
+    onChangedTileset: async (filename: string) => {
+      const data = await loadTilesetData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToProjectWindow("watch:tileset:changed", filename, data);
+    },
+    onRemoveSprite: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+      sendToProjectWindow("watch:sprite:removed", file, plugin);
+    },
+    onRemoveBackground: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(
+        filename,
+        projectRoot,
+        "backgrounds"
+      );
+      sendToProjectWindow("watch:background:removed", file, plugin);
+    },
+    onRemoveUI: async (filename: string) => {
+      sendToProjectWindow("watch:ui:removed", filename);
+    },
+    onRemoveMusic: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
+      sendToProjectWindow("watch:music:removed", file, plugin);
+    },
+    onRemoveSound: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "sounds");
+      sendToProjectWindow("watch:sound:removed", file, plugin);
+    },
+    onRemoveFont: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
+      sendToProjectWindow("watch:font:removed", file, plugin);
+    },
+    onRemoveAvatar: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
+      sendToProjectWindow("watch:avatar:removed", file, plugin);
+    },
+    onRemoveEmote: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
+      sendToProjectWindow("watch:emote:removed", file, plugin);
+    },
+    onRemoveTileset: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(
+        filename,
+        projectRoot,
+        "tilesets"
+      );
+      sendToProjectWindow("watch:tileset:removed", file, plugin);
+    },
+    onChangedEngineSchema: async (_filename: string) => {
+      const fields = await loadEngineFields(projectRoot);
+      const sceneTypes = await loadSceneTypes(projectRoot);
+      sendToProjectWindow("watch:engineSchema:changed", fields, sceneTypes);
+    },
+    onChangedEventPlugin: async (_filename: string) => {
+      // Reload all script event handlers and push new defs to project window
+      const projectRoot = Path.dirname(projectPath);
+      scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
+      sendToProjectWindow(
+        "watch:scriptEventDefs:changed",
+        cloneDictionary(scriptEventHandlers)
+      );
+    },
+  });
 };
+
+const sendToProjectWindow = (channel: string, ...args: unknown[]) => {
+  projectWindow?.webContents.send(channel, ...args);
+};
+
+const sendToSplashWindow = (channel: string, ...args: unknown[]) => {
+  splashWindow?.webContents.send(channel, ...args);
+};
+
+const sendToMusicWindow = (channel: string, ...args: unknown[]) => {
+  musicWindow?.webContents.send(channel, ...args);
+};
+
+const sendToGameWindow = (channel: string, ...args: unknown[]) => {
+  playWindow?.webContents.send(channel, ...args);
+};
+
+const buildLog = (msg: string) => sendToProjectWindow("build:log", msg);
+const buildErr = (msg: string) => sendToProjectWindow("build:error", msg);
 
 const waitUntilWindowClosed = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     const check = () => {
-      if (mainWindow === null) {
+      if (projectWindow === null) {
         resolve();
-      } else if (mainWindowCloseCancelled) {
+      } else if (projectWindowCloseCancelled) {
         reject();
       } else {
         setTimeout(check, 10);
@@ -267,7 +520,11 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (url: string, sgb: boolean) => {
+const createPlay = async (
+  url: string,
+  sgb: boolean,
+  debugEnabled?: boolean
+) => {
   if (playWindow && sgb !== playWindowSgb) {
     playWindow.close();
     playWindow = null;
@@ -282,24 +539,34 @@ const createPlay = async (url: string, sgb: boolean) => {
       autoHideMenuBar: true,
       useContentSize: true,
       webPreferences: {
+        contextIsolation: true,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
+        preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
+    playWindow.setAlwaysOnTop(true);
     playWindowSgb = sgb;
   } else {
     playWindow.show();
   }
 
   playWindow.setMenu(null);
-  playWindow.loadURL(`${url}?audio=true&sgb=${sgb ? "true" : "false"}`);
+  playWindow.loadURL(
+    `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
+      !!debugEnabled && !!debuggerInitData ? "true" : "false"
+    }`
+  );
 
   playWindow.on("closed", () => {
     playWindow = null;
+    sendToProjectWindow("debugger:disconnected");
   });
 };
 
-const createMusic = async (sfx?: string) => {
+const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
+  musicWindowInitialized = false;
+
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
@@ -307,8 +574,9 @@ const createMusic = async (sfx?: string) => {
       width: 330,
       height: 330,
       webPreferences: {
-        nodeIntegration: true,
-        nodeIntegrationInWorker: true,
+        contextIsolation: true,
+        nodeIntegration: false,
+        nodeIntegrationInWorker: false,
         webSecurity: process.env.NODE_ENV !== "development",
         devTools: isDevMode,
         preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -323,14 +591,38 @@ const createMusic = async (sfx?: string) => {
 
   musicWindow.on("closed", () => {
     musicWindow = null;
+    musicWindowInitialized = false;
   });
+
+  // Handle sending initial message (if given) once window is initialized
+  if (initialMessage) {
+    const listener = async (_event: unknown, d: MusicDataPacket) => {
+      if (musicWindow && d.action === "initialized") {
+        sendToMusicWindow("music:data", initialMessage);
+        ipcMain.off("music:data-receive", listener);
+      }
+    };
+    ipcMain.on("music:data-receive", listener);
+  }
 };
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "gbs",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
+]);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  initElectronL10n();
+  initElectronL10N();
 
   menu.buildMenu([]);
 
@@ -351,9 +643,27 @@ app.on("ready", async () => {
     lastArg.indexOf("-") !== 0
   ) {
     openProject(lastArg);
-  } else if (splashWindow === null && mainWindow === null) {
+  } else if (splashWindow === null && projectWindow === null) {
     createSplash();
   }
+
+  protocol.registerFileProtocol("gbs", (req, callback) => {
+    const { host, pathname } = new URL(req.url);
+    if (host === "project") {
+      // Load an asset from the current project
+      const projectRoot = Path.dirname(projectPath);
+      const filename = Path.join(projectRoot, decodeURI(pathname));
+      // Check project has permission to access this asset
+      guardAssetWithinProject(filename, projectRoot);
+      return callback({ path: filename });
+    } else if (host === "app-assets") {
+      // Load an asset from the GB Studio global assets folder
+      const filename = Path.join(assetsRoot, decodeURI(pathname));
+      // Check project has permission to access this asset
+      guardAssetWithinProject(filename, assetsRoot);
+      return callback({ path: filename });
+    }
+  });
 });
 
 app.on("open-file", async (_e, projectPath) => {
@@ -375,75 +685,303 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (splashWindow === null && mainWindow === null) {
+  if (splashWindow === null && projectWindow === null) {
     createSplash();
   }
 });
 
-ipcMain.on("open-project", async (_event, arg) => {
+ipcMain.handle("project:open", async (_event, arg) => {
   const { projectPath } = arg;
   openProject(projectPath);
 });
 
-ipcMain.on("check-full-screen", async (_event, _arg) => {
-  if (mainWindow) {
-    if (mainWindow.isFullScreen()) {
-      mainWindow.webContents.send("enter-full-screen");
-    } else {
-      mainWindow.webContents.send("leave-full-screen");
-    }
-  }
-});
-
-ipcMain.on("open-project-picker", async (_event, _arg) => {
+ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
 
-ipcMain.on("request-recent-projects", async (_event) => {
-  splashWindow &&
-    splashWindow.webContents.send(
-      "recent-projects",
-      settings.get("recentProjects")
-    );
+ipcMain.handle("get-recent-projects", async (): Promise<
+  RecentProjectData[]
+> => {
+  const recentProjects = settings.get("recentProjects");
+  if (!isStringArray(recentProjects)) return [];
+  return recentProjects.map((path) => {
+    return {
+      name: Path.basename(path),
+      dir: Path.dirname(path),
+      path,
+    };
+  });
 });
 
-ipcMain.on("clear-recent-projects", async (_event) => {
+ipcMain.handle("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });
 
-ipcMain.on("open-help", async (_event, helpPage) => {
+ipcMain.handle("open-help", async (_event, helpPage) => {
+  if (!isString(helpPage)) throw new Error("Invalid URL");
   openHelp(helpPage);
 });
 
-ipcMain.on("open-play", async (_event, url, sgb) => {
-  createPlay(url, sgb);
+ipcMain.handle("open-folder", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const folderPath = Path.join(projectRoot, assetPath);
+
+  guardAssetWithinProject(folderPath, projectRoot);
+
+  shell.openPath(folderPath);
 });
 
-ipcMain.on("document-modified", () => {
-  mainWindow?.setDocumentEdited(true);
+ipcMain.handle("open-image", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  const app = String(settings.get("imageEditorPath") || "") || undefined;
+  open(filename, { app });
+});
+
+ipcMain.handle("open-mod", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  const app = String(settings.get("musicEditorPath") || "") || undefined;
+  open(filename, { app });
+});
+
+ipcMain.handle("open-file", async (_event, assetPath) => {
+  if (!isString(assetPath)) throw new Error("Invalid Path");
+
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  shell.openPath(filename);
+});
+
+ipcMain.handle("open-external", async (_event, url) => {
+  if (!isString(url)) throw new Error("Invalid URL");
+  const allowedExternalDomains = [
+    "https://www.gbstudio.dev",
+    "https://www.itch.io",
+    "https://github.com",
+  ];
+  const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
+  if (!match) throw new Error("URL not allowed");
+  shell.openExternal(url);
+});
+
+ipcMain.handle("open-directory-picker", async () => {
+  const selection = await dialog.showOpenDialogSync({
+    properties: ["openDirectory"],
+  });
+  if (selection && selection[0]) {
+    return Path.normalize(`${selection[0]}/`);
+  }
+  return undefined;
+});
+
+ipcMain.handle("open-file-picker", async () => {
+  const selection = await dialog.showOpenDialog({
+    properties: ["openFile"],
+  });
+  if (selection && selection.filePaths[0]) {
+    return Path.normalize(selection.filePaths[0]);
+  }
+  return undefined;
+});
+
+ipcMain.handle(
+  "dialog:show-error",
+  (_event, title: string, content: string) => {
+    dialog.showErrorBox(title, content);
+  }
+);
+
+ipcMain.handle("dialog:confirm-color", async () => {
+  if (!projectWindow) {
+    return 1;
+  }
+  return confirmEnableColorDialog(projectWindow);
+});
+
+ipcMain.handle(
+  "dialog:confirm-delete-custom-event",
+  async (_event, name: string, sceneNames: string[], count: number) => {
+    return confirmDeleteCustomEvent(name, sceneNames, count);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-replace-custom-event",
+  async (_event, name: string) => {
+    return confirmReplaceCustomEvent(name);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-tracker-unsaved",
+  async (_event, name: string) => {
+    return confirmUnsavedChangesTrackerDialog(name);
+  }
+);
+
+ipcMain.handle("dialog:migrate-warning", async (_event, path: string) => {
+  return migrateWarning(path);
+});
+
+ipcMain.handle("close-project", () => {
+  projectWindow?.close();
+});
+
+ipcMain.handle("project:set-modified", () => {
+  projectWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
 });
 
-ipcMain.on("document-unmodified", () => {
-  mainWindow?.setDocumentEdited(false);
+ipcMain.handle("project:set-unmodified", () => {
+  projectWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
 });
 
-ipcMain.on("project-loaded", (_event, settings) => {
-  const { showCollisions, showConnections, showNavigator } = settings;
-  menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
-  menu.ref().getMenuItemById("showConnectionsAll").checked =
-    showConnections === "all";
-  menu.ref().getMenuItemById("showConnectionsSelected").checked =
-    showConnections === "selected" || showConnections === true;
-  menu.ref().getMenuItemById("showConnectionsNone").checked =
-    showConnections === false;
-  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
+ipcMain.handle(
+  "project:rename-asset",
+  async (
+    _event,
+    assetType: AssetType,
+    asset: Asset,
+    filename: string
+  ): Promise<boolean> => {
+    if (!filename || filename.length === 0) {
+      return false;
+    }
+    const projectRoot = Path.dirname(projectPath);
+    const originalFilename = assetFilename(projectRoot, assetType, asset);
+    const newFilename = assetFilename(projectRoot, assetType, {
+      ...asset,
+      filename,
+    });
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(originalFilename, projectRoot);
+    guardAssetWithinProject(newFilename, projectRoot);
+
+    if (await fileExists(newFilename)) {
+      return false;
+    }
+
+    await move(originalFilename, newFilename);
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:renamed",
+      avatars: "watch:avatar:renamed",
+      emotes: "watch:emote:renamed",
+      tilesets: "watch:tileset:renamed",
+      fonts: "watch:font:renamed",
+      music: "watch:music:renamed",
+      sounds: "watch:sound:renamed",
+      sprites: "watch:sprite:renamed",
+      ui: "watch:ui:renamed",
+    };
+
+    // Send watch event explicitly rather than waiting for Chokidar
+    // as Chokidar will sometimes only emit the unlink event when renaming from Node
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
+      filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
+
+ipcMain.handle(
+  "project:remove-asset",
+  async (_event, assetType: AssetType, asset: Asset): Promise<boolean> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = assetFilename(projectRoot, assetType, asset);
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+
+    if (!(await fileExists(filename))) {
+      return false;
+    }
+
+    if (!confirmDeleteAsset(assetType, asset)) {
+      return false;
+    }
+
+    try {
+      await remove(filename);
+    } catch (e) {
+      return false;
+    }
+
+    const renameEventLookup: Record<AssetType, string> = {
+      backgrounds: "watch:background:removed",
+      avatars: "watch:avatar:removed",
+      emotes: "watch:emote:removed",
+      tilesets: "watch:tileset:removed",
+      fonts: "watch:font:removed",
+      music: "watch:music:removed",
+      sounds: "watch:sound:removed",
+      sprites: "watch:sprite:removed",
+      ui: "watch:ui:removed",
+    };
+
+    sendToProjectWindow(
+      renameEventLookup[assetType],
+      asset.filename,
+      asset.plugin
+    );
+
+    return true;
+  }
+);
+
+ipcMain.handle("get-documents-path", async (_event) => {
+  return app.getPath("documents");
 });
 
-ipcMain.on("set-show-navigator", (_event, showNavigator) => {
-  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
+ipcMain.handle("get-tmp-path", async () => {
+  return getTmp();
+});
+
+ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
+  createProject(input)
+);
+
+ipcMain.handle("build:delete-cache", async (_event) => {
+  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
+  await remove(cacheRoot);
+});
+
+ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
+  const { showCollisions, showConnections, showNavigator } = settings;
+  setMenuItemChecked("showCollisions", showCollisions);
+  setMenuItemChecked("showConnectionsAll", showConnections === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    showConnections === "selected" || showConnections === true
+  );
+  setMenuItemChecked("showConnectionsNone", showConnections === false);
+  setMenuItemChecked("showNavigator", showNavigator);
 });
 
 ipcMain.on(
@@ -476,11 +1014,10 @@ ipcMain.on(
             })
             .map((plugin) => {
               return {
-                label: l10n(plugin.id) || plugin.name || plugin.name,
+                label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
                 accelerator: plugin.accelerator,
                 click() {
-                  mainWindow &&
-                    mainWindow.webContents.send("plugin-run", plugin.id);
+                  sendToProjectWindow("menu:plugin-run", plugin.id);
                 },
               };
             }),
@@ -490,35 +1027,622 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("open-music", async (_event, sfx) => {
+ipcMain.handle("set-ui-scale", (_, scale: number) => {
+  settings.set("zoomLevel", scale);
+  sendToProjectWindow("setting:ui-scale:changed", scale);
+});
+
+ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
+  settings.set("trackerKeyBindings", value);
+  sendToProjectWindow("keybindings-update", value);
+});
+
+ipcMain.handle("music:open", async (_event, sfx?: string) => {
   createMusic(sfx);
 });
 
-ipcMain.on("window-zoom", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
-});
-
-ipcMain.on("keybindings-updated", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("keybindings-update", zoomType);
-});
-
-ipcMain.on("close-music", async () => {
+ipcMain.handle("music:close", async () => {
   if (musicWindow) {
     musicWindow.destroy();
+    musicWindowInitialized = false;
   }
 });
 
-ipcMain.on("music-data-send", (_event, data) => {
-  if (musicWindow) {
-    musicWindow.webContents.send("music-data", data);
+ipcMain.on("music:data-send", (_event, data: MusicDataPacket) => {
+  if (musicWindow && musicWindowInitialized) {
+    sendToMusicWindow("music:data", data);
   }
 });
 
-ipcMain.on("music-data-receive", (_event, data) => {
-  if (mainWindow) {
-    mainWindow.webContents.send("music-data", data);
+ipcMain.on("music:data-receive", (_event, data: MusicDataReceivePacket) => {
+  if (data.action === "initialized") {
+    musicWindowInitialized = true;
+  }
+  if (projectWindow) {
+    sendToProjectWindow("music:data", data);
   }
 });
+
+ipcMain.on("debugger:data-receive", (_event, data: DebuggerDataPacket) => {
+  if (data.action === "initialized" && debuggerInitData) {
+    sendToGameWindow("debugger:data", {
+      action: "listener-ready",
+      data: debuggerInitData,
+    });
+  }
+  if (projectWindow) {
+    sendToProjectWindow("debugger:data", data);
+  }
+});
+
+ipcMain.handle("debugger:resume", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "resume",
+  });
+});
+
+ipcMain.handle("debugger:pause", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause",
+  });
+});
+
+ipcMain.handle("debugger:step", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step",
+  });
+});
+
+ipcMain.handle("debugger:step-frame", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step-frame",
+  });
+});
+
+ipcMain.handle("debugger:pause-on-script", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-script",
+    data: enabled,
+  });
+});
+
+ipcMain.handle("debugger:pause-on-var", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-var",
+    data: enabled,
+  });
+});
+
+ipcMain.handle(
+  "debugger:set-global",
+  (_event, symbol: string, value: number) => {
+    sendToGameWindow("debugger:data", {
+      action: "set-global",
+      data: { symbol, value },
+    });
+  }
+);
+
+ipcMain.handle("debugger:set-breakpoints", (_event, breakpoints: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-breakpoints",
+    data: breakpoints,
+  });
+});
+
+ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
+  sendToGameWindow("debugger:data", {
+    action: "set-watched",
+    data: variableIds,
+  });
+});
+
+ipcMain.handle("get-l10n-strings", () => getL10NData());
+ipcMain.handle("get-theme", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  return themeId;
+});
+
+ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
+ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
+  settings.set(key, value);
+});
+ipcMain.handle("settings-delete", (_, key: string) => {
+  settings.delete(key);
+});
+
+ipcMain.handle("app:get-is-full-screen", async () => {
+  if (projectWindow) {
+    return projectWindow.isFullScreen();
+  }
+  return false;
+});
+
+ipcMain.handle("clipboard:read-text", () => {
+  return clipboard.readText();
+});
+
+ipcMain.handle("clipboard:read-buffer", (_, format: string) => {
+  return clipboard.readBuffer(format);
+});
+
+ipcMain.handle("clipboard:write-text", (_, value: string) => {
+  return clipboard.writeText(value);
+});
+
+ipcMain.handle(
+  "clipboard:write-buffer",
+  (_, format: string, buffer: Buffer) => {
+    return clipboard.writeBuffer(format, buffer);
+  }
+);
+
+ipcMain.handle("project:load", async (): Promise<{
+  data: ProjectData;
+  modifiedSpriteIds: string[];
+  isMigrated: boolean;
+}> => {
+  return loadProjectData(projectPath);
+});
+
+ipcMain.handle("project:save", async (_, data: ProjectData): Promise<void> => {
+  await saveProjectData(projectPath, data);
+});
+
+ipcMain.handle(
+  "project:build",
+  async (event, project: ProjectData, options: BuildOptions) => {
+    cancelBuild = false;
+
+    const { exportBuild, buildType, sceneTypes } = options;
+    const buildStartTime = Date.now();
+    const projectRoot = Path.dirname(projectPath);
+    const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+    const colorMode = project.settings.colorMode;
+    const sgbEnabled = project.settings.sgbEnabled;
+    const debuggerEnabled =
+      options.debugEnabled || project.settings.debuggerEnabled;
+
+    try {
+      const compiledData = await buildProject(project, {
+        ...options,
+        projectRoot,
+        sceneTypes,
+        outputRoot,
+        scriptEventHandlers,
+        tmpPath: getTmp(),
+        debugEnabled: debuggerEnabled,
+        progress: (message) => {
+          if (cancelBuild) {
+            throw new Error("BUILD_CANCELLED");
+          }
+          if (
+            message !== "'" &&
+            message.indexOf("unknown or unsupported #pragma") === -1
+          ) {
+            buildLog(message);
+          }
+        },
+        warnings: (message) => {
+          buildErr(message);
+        },
+      });
+
+      if (exportBuild) {
+        await copy(
+          `${outputRoot}/build/${buildType}`,
+          `${projectRoot}/build/${buildType}`
+        );
+        shell.openPath(Path.join(projectRoot, "build", buildType));
+        buildLog(`-`);
+        buildLog(
+          `Success! ${
+            buildType === "web"
+              ? `Site is ready at ${Path.normalize(
+                  `${projectRoot}/build/web/index.html`
+                )}`
+              : `ROM is ready at ${Path.normalize(
+                  `${projectRoot}/build/rom/game.gb`
+                )}`
+          }`
+        );
+      }
+
+      if (buildType === "web" && !exportBuild) {
+        buildLog(`-`);
+        buildLog(`Success! Starting emulator...`);
+        if (debuggerEnabled) {
+          const { memoryMap, globalVariables } = await readDebuggerSymbols(
+            outputRoot
+          );
+          debuggerInitData = {
+            memoryMap,
+            globalVariables,
+            pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChanged,
+            pauseOnWatchedVariableChanged:
+              project.settings.debuggerPauseOnWatchedVariableChanged,
+            breakpoints: project.settings.debuggerBreakpoints.map(
+              (breakpoint) => breakpoint.scriptEventId
+            ),
+            watchedVariables: project.settings.debuggerWatchedVariables,
+            variableMap: keyBy(Object.values(compiledData.variableMap), "id"),
+          };
+          const gbvmScripts = pickBy(compiledData.files, (_, key) =>
+            key.endsWith(".s")
+          );
+          sendToProjectWindow("debugger:symbols", {
+            variableMap: compiledData.variableMap,
+            sceneMap: compiledData.sceneMap,
+            gbvmScripts,
+          });
+        }
+        createPlay(
+          `file://${outputRoot}/build/web/index.html`,
+          sgbEnabled && colorMode === "mono",
+          debuggerEnabled
+        );
+      }
+
+      const buildTime = Date.now() - buildStartTime;
+      buildLog(`Build Time: ${buildTime}ms`);
+    } catch (e) {
+      if (typeof e === "string") {
+        buildErr(e);
+      } else if (e instanceof Error && e.message === "BUILD_CANCELLED") {
+        buildLog(l10n("BUILD_CANCELLED"));
+      } else if (e instanceof Error) {
+        buildErr(e.toString());
+      }
+      throw e;
+    }
+  }
+);
+
+ipcMain.handle("project:build-cancel", () => {
+  cancelBuild = true;
+});
+
+ipcMain.handle("project:engine-eject", () => {
+  const cancel = confirmEjectEngineDialog();
+
+  if (cancel) {
+    return;
+  }
+
+  const projectRoot = Path.dirname(projectPath);
+  const outputDir = Path.join(projectRoot, "assets", "engine");
+
+  let ejectedEngineExists;
+  try {
+    statSync(outputDir);
+    ejectedEngineExists = true;
+  } catch (e) {
+    ejectedEngineExists = false;
+  }
+
+  if (ejectedEngineExists) {
+    const cancel2 = confirmEjectEngineReplaceDialog();
+    if (cancel2) {
+      return;
+    }
+  }
+
+  ejectEngineToDir(outputDir).then(() => {
+    shell.openPath(outputDir);
+  });
+});
+
+ipcMain.handle(
+  "project:export",
+  async (
+    event,
+    project: ProjectData,
+    engineFields: EngineFieldSchema[],
+    sceneTypes: SceneTypeSchema[],
+    exportType: ProjectExportType
+  ) => {
+    const buildStartTime = Date.now();
+
+    try {
+      const projectRoot = Path.dirname(projectPath);
+      const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+
+      const progress = (message: string) => {
+        if (
+          message !== "'" &&
+          message.indexOf("unknown or unsupported #pragma") === -1
+        ) {
+          buildLog(message);
+        }
+      };
+      const warnings = (message: string) => {
+        buildErr(message);
+      };
+
+      const tmpPath = getTmp();
+
+      // Compile project data
+      const compiledData = await compileData(project, {
+        projectRoot,
+        engineFields,
+        sceneTypes,
+        scriptEventHandlers,
+        tmpPath,
+        progress,
+        warnings,
+      });
+
+      // Export compiled data to a folder
+      await ejectBuild({
+        projectType: "gb",
+        projectRoot,
+        tmpPath,
+        projectData: project,
+        engineFields,
+        outputRoot,
+        compiledData,
+        progress,
+        warnings,
+      });
+
+      const exportRoot = Path.join(projectRoot, "build", "src");
+
+      if (exportType === "data") {
+        const dataSrcTmpPath = Path.join(outputRoot, "src", "data");
+        const dataSrcOutPath = Path.join(exportRoot, "src", "data");
+        const dataIncludeTmpPath = Path.join(outputRoot, "include", "data");
+        const dataIncludeOutPath = Path.join(exportRoot, "include", "data");
+        await remove(dataSrcOutPath);
+        await remove(dataIncludeOutPath);
+        await copy(dataSrcTmpPath, dataSrcOutPath);
+        await copy(dataIncludeTmpPath, dataIncludeOutPath);
+      } else {
+        await copy(outputRoot, exportRoot);
+      }
+
+      const buildTime = Date.now() - buildStartTime;
+      buildLog(`Build Time: ${buildTime}ms`);
+
+      shell.openPath(exportRoot);
+    } catch (e) {
+      if (typeof e === "string") {
+        buildErr(e);
+      } else if (e instanceof Error) {
+        buildErr(e.toString());
+      }
+      throw e;
+    }
+  }
+);
+
+ipcMain.handle(
+  "project:get-background-info",
+  (
+    _event,
+    background: Background,
+    tileset: Tileset | undefined,
+    is360: boolean,
+    cgbOnly: boolean
+  ) => {
+    const projectRoot = Path.dirname(projectPath);
+    return getBackgroundInfo(background, tileset, is360, cgbOnly, projectRoot);
+  }
+);
+
+ipcMain.handle(
+  "project:add-file",
+  async (_event, filename: string): Promise<void> => {
+    const projectRoot = Path.dirname(projectPath);
+    const folders = await potentialAssetFolders(filename);
+
+    if (folders.length > 0) {
+      let copyFolder: AssetFolder | undefined = folders[0];
+
+      if (folders.length > 1) {
+        copyFolder = await confirmAssetFolder(folders);
+      }
+
+      if (copyFolder) {
+        const destPath = `${projectRoot}/assets/${copyFolder}/${Path.basename(
+          filename
+        )}`;
+
+        const isInProject = Path.relative(filename, destPath) === "";
+
+        if (!isInProject) {
+          await copyFile(filename, destPath);
+        }
+      }
+    }
+  }
+);
+
+ipcMain.handle(
+  "tracker:new",
+  async (_event, assetPath: string): Promise<MusicAssetData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+
+    const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
+    const copy2 = async (
+      oPath: string,
+      path: string
+    ): Promise<MusicAssetData> => {
+      try {
+        const exists = await pathExists(path);
+        if (!exists) {
+          await copy(oPath, path, {
+            overwrite: false,
+            errorOnExist: true,
+          });
+          const data = await loadMusicData(projectRoot)(path);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+          return data;
+        } else {
+          const [filename] = path.split(".uge");
+          const matches = filename.match(/\d+$/);
+          let newFilename = `${filename} 1`;
+          if (matches) {
+            // if filename ends with number
+            const number = parseInt(matches[0]) + 1;
+            newFilename = filename.replace(/\d+$/, `${number}`);
+          }
+          const newPath = `${newFilename}.uge`;
+          await copy2(oPath, newPath);
+
+          const data = await loadMusicData(projectRoot)(newPath);
+          if (!data) {
+            console.error(`Unable to load asset ${filename}`);
+          }
+
+          return data;
+        }
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    };
+    return await copy2(templatePath, filename);
+  }
+);
+
+ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  // Convert song to UGE format and save
+  const data = await readFile(filename);
+  const song = loadUGESong(new Uint8Array(data).buffer);
+  if (song) {
+    song.filename = assetPath;
+  }
+  return song;
+});
+
+ipcMain.handle("tracker:save", async (_event, song: Song) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, song.filename);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  // Convert song to UGE format and save
+  const buffer = saveUGESong(song);
+  await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
+});
+
+ipcMain.handle("sfx:play-wav", async (_event, assetPath: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const sfx = await compileWav(filename, "asm");
+  createMusic(sfx, {
+    action: "play-sound",
+  });
+});
+
+ipcMain.handle("sfx:play-vgm", async (_event, assetPath: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const { output: sfx } = await compileVGM(filename, "asm");
+  createMusic(sfx, {
+    action: "play-sound",
+  });
+});
+
+ipcMain.handle(
+  "sfx:play-fxhammer",
+  async (_event, assetPath: string, effectIndex: number) => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = Path.join(projectRoot, assetPath);
+
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+    const { output: sfx } = await compileFXHammerSingle(
+      filename,
+      effectIndex,
+      "asm"
+    );
+    createMusic(sfx, {
+      action: "play-sound",
+    });
+  }
+);
+
+ipcMain.handle("music:play-uge", async (_event, assetPath: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = Path.join(projectRoot, assetPath);
+
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const fileData = toArrayBuffer(await readFile(filename));
+  const data = loadUGESong(fileData);
+  if (!data) {
+    console.error(`No data in song "${filename}"`);
+    return;
+  }
+  createMusic(undefined, {
+    action: "play",
+    song: data,
+    position: [0, 0],
+  });
+});
+
+ipcMain.handle(
+  "sprite:compile",
+  async (
+    _event,
+    spriteData: SpriteSheetData
+  ): Promise<PrecompiledSpriteSheetData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = assetFilename(projectRoot, "sprites", spriteData);
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+    return compileSprite(spriteData, false, projectRoot);
+  }
+);
+
+ipcMain.handle(
+  "script:get-auto-label",
+  async (_, command: string, args: Record<string, unknown>) => {
+    return getAutoLabel(command, args, scriptEventHandlers);
+  }
+);
+
+ipcMain.handle(
+  "script:post-update-fn",
+  async (
+    _,
+    command: string,
+    fieldKey: string,
+    args: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => {
+    const event = scriptEventHandlers[command];
+    if (!event) {
+      return args;
+    }
+    const field = event.fieldsLookup[fieldKey];
+    if (!field || !field.postUpdateFn) {
+      return args;
+    }
+    return {
+      ...field.postUpdateFn(args, prevArgs),
+    };
+  }
+);
 
 menu.on("new", async () => {
   newProject();
@@ -533,7 +1657,7 @@ menu.on("project", async () => {
 });
 
 menu.on("save", async () => {
-  mainWindow && mainWindow.webContents.send("save-project");
+  sendToProjectWindow("menu:save-project");
 });
 
 menu.on("saveAs", async () => {
@@ -541,47 +1665,47 @@ menu.on("saveAs", async () => {
 });
 
 menu.on("undo", async () => {
-  mainWindow && mainWindow.webContents.send("undo");
+  sendToProjectWindow("menu:undo");
 });
 
 menu.on("redo", async () => {
-  mainWindow && mainWindow.webContents.send("redo");
+  sendToProjectWindow("menu:redo");
 });
 
-menu.on("section", async (section: string) => {
-  mainWindow && mainWindow.webContents.send("section", section);
+menu.on("section", async (section) => {
+  sendToProjectWindow("menu:section", section);
 });
 
 menu.on("reloadAssets", () => {
-  mainWindow && mainWindow.webContents.send("reloadAssets");
+  sendToProjectWindow("menu:reload-assets");
 });
 
-menu.on("zoom", (zoomType: string) => {
-  mainWindow && mainWindow.webContents.send("zoom", zoomType);
+menu.on("zoom", (zoomType) => {
+  sendToProjectWindow("menu:zoom", zoomType);
 });
 
-menu.on("run", () => {
-  mainWindow && mainWindow.webContents.send("run");
+menu.on("run", (debugEnabled) => {
+  sendToProjectWindow("menu:run", debugEnabled);
 });
 
-menu.on("build", (buildType: string) => {
-  mainWindow && mainWindow.webContents.send("build", buildType);
+menu.on("build", (buildType) => {
+  sendToProjectWindow("menu:build", buildType);
 });
 
 menu.on("ejectEngine", () => {
-  mainWindow && mainWindow.webContents.send("ejectEngine");
+  sendToProjectWindow("menu:eject-engine");
 });
 
 menu.on("exportProjectSrc", () => {
-  mainWindow && mainWindow.webContents.send("exportProject", "src");
+  sendToProjectWindow("menu:export-project", "src");
 });
 
 menu.on("exportProjectData", () => {
-  mainWindow && mainWindow.webContents.send("exportProject", "data");
+  sendToProjectWindow("menu:export-project", "data");
 });
 
 menu.on("pasteInPlace", () => {
-  mainWindow && mainWindow.webContents.send("paste-in-place");
+  sendToProjectWindow("menu:paste-in-place");
 });
 
 menu.on("checkUpdates", () => {
@@ -608,31 +1732,54 @@ menu.on("preferences", () => {
   }
 });
 
-menu.on("updateSetting", (setting: string, value: string | boolean) => {
-  settings.set(setting, value);
-  if (setting === "theme") {
-    menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
-    menu.ref().getMenuItemById("themeLight").checked = value === "light";
-    menu.ref().getMenuItemById("themeDark").checked = value === "dark";
-    splashWindow && splashWindow.webContents.send("update-theme", value);
-    mainWindow && mainWindow.webContents.send("update-theme", value);
-  } else if (setting === "locale") {
-    menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
-    for (const locale of locales) {
-      menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
-    }
-    switchLanguageDialog();
-  } else {
-    if (setting === "showConnections") {
-      menu.ref().getMenuItemById("showConnectionsAll").checked =
-        value === "all";
-      menu.ref().getMenuItemById("showConnectionsSelected").checked =
-        value === "selected" || value === true;
-      menu.ref().getMenuItemById("showConnectionsNone").checked =
-        value === false;
-    }
-    mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
+menu.on("updateTheme", (value) => {
+  settings.set("theme", value as JsonValue);
+  setMenuItemChecked("themeDefault", value === undefined);
+  setMenuItemChecked("themeLight", value === "light");
+  setMenuItemChecked("themeDark", value === "dark");
+  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", newThemeId);
+  sendToProjectWindow("update-theme", newThemeId);
+});
+
+menu.on("updateLocale", (value) => {
+  settings.set("locale", value as JsonValue);
+  setMenuItemChecked("localeDefault", value === undefined);
+  for (const locale of locales) {
+    setMenuItemChecked(`locale-${locale}`, value === locale);
   }
+  switchLanguageDialog();
+  initElectronL10N();
+});
+
+menu.on("updateShowCollisions", (value) => {
+  settings.set("showCollisions", value as JsonValue);
+  sendToProjectWindow("setting:changed", "showCollisions", value);
+});
+
+menu.on("updateShowConnections", (value) => {
+  settings.set("showConnections", value as JsonValue);
+  setMenuItemChecked("showConnectionsAll", value === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    value === "selected" || value === true
+  );
+  setMenuItemChecked("showConnectionsNone", value === false);
+  sendToProjectWindow("setting:changed", "showConnections", value);
+});
+
+menu.on("updateShowNavigator", (value) => {
+  settings.set("showNavigator", value as JsonValue);
+  sendToProjectWindow("setting:changed", "showNavigator", value);
+});
+
+nativeTheme?.on("updated", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  sendToSplashWindow("update-theme", themeId);
+  sendToProjectWindow("update-theme", themeId);
 });
 
 const newProject = async () => {
@@ -641,8 +1788,8 @@ const newProject = async () => {
     splashWindow.close();
     await waitUntilSplashClosed();
   }
-  if (mainWindow) {
-    mainWindow.close();
+  if (projectWindow) {
+    projectWindow.close();
     await waitUntilWindowClosed();
   }
   await createSplash("new");
@@ -661,8 +1808,8 @@ const openProjectPicker = async () => {
   });
   if (files && files[0]) {
     keepOpen = true;
-    if (mainWindow) {
-      mainWindow.close();
+    if (projectWindow) {
+      projectWindow.close();
       await waitUntilWindowClosed();
     }
 
@@ -674,8 +1821,8 @@ const openProjectPicker = async () => {
 
 const switchProject = async () => {
   keepOpen = true;
-  if (mainWindow) {
-    mainWindow.close();
+  if (projectWindow) {
+    projectWindow.close();
     await waitUntilWindowClosed();
   }
   if (splashWindow) {
@@ -686,8 +1833,8 @@ const switchProject = async () => {
   keepOpen = false;
 };
 
-const openProject = async (projectPath: string) => {
-  const ext = Path.extname(projectPath);
+const openProject = async (newProjectPath: string) => {
+  const ext = Path.extname(newProjectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
@@ -697,7 +1844,7 @@ const openProject = async (projectPath: string) => {
   }
 
   try {
-    await stat(projectPath);
+    await stat(newProjectPath);
   } catch (e) {
     dialog.showErrorBox(
       l10n("ERROR_MISSING_PROJECT"),
@@ -706,15 +1853,19 @@ const openProject = async (projectPath: string) => {
     return;
   }
 
+  projectPath = newProjectPath;
   addRecentProject(projectPath);
+
+  const projectRoot = Path.dirname(projectPath);
+  scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
 
   keepOpen = true;
 
-  if (mainWindow) {
-    mainWindow.close();
+  if (projectWindow) {
+    projectWindow.close();
     await waitUntilWindowClosed();
   }
-  await createWindow(projectPath);
+  await createProjectWindow();
   if (splashWindow) {
     splashWindow.close();
   }
@@ -754,13 +1905,15 @@ const saveAsProjectPicker = async () => {
 };
 
 const saveAsProject = async (saveAsPath: string) => {
+  const originalProjectPath = projectPath;
   const projectName = Path.parse(saveAsPath).name;
   const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
-  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectPath = Path.join(projectDir, Path.basename(saveAsPath));
+  const newProjectDir = Path.dirname(newProjectPath);
 
   let projectExists;
   try {
-    await stat(projectPath);
+    await stat(newProjectDir);
     projectExists = true;
   } catch (e) {
     projectExists = false;
@@ -782,7 +1935,10 @@ const saveAsProject = async (saveAsPath: string) => {
     return;
   }
 
+  await copy(Path.dirname(originalProjectPath), Path.dirname(newProjectPath));
+
+  projectPath = newProjectPath;
   addRecentProject(projectPath);
 
-  mainWindow && mainWindow.webContents.send("save-as-project", projectPath);
+  sendToProjectWindow("menu:save-project");
 };

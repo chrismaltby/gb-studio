@@ -10,6 +10,6 @@ void main(void)
 		// Game main loop processing goes here
 
 		// Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
+        vsync();
     }
 }

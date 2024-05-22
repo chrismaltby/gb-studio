@@ -32,17 +32,41 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
     }
 
     // Move camera towards destination
-    if ((game_time & speed) == 0) {
-        if (camera_x > params->X) {
-            camera_x--;
-        } else if (camera_x < params->X) {
-            camera_x++;
+    UBYTE x_dest = FALSE;
+    if (camera_x > params->X) {
+        // Move left
+        camera_x -= speed;
+        if (camera_x <= params->X) {
+            camera_x = params->X;
+            x_dest = TRUE;
         }
-        if (camera_y > params->Y) {
-            camera_y--;
-        } else if (camera_y < params->Y) {
-            camera_y++;
-        }
+    } else if (camera_x < params->X) {
+        // Move right
+        camera_x += speed;
+        if (camera_x >= params->X) {
+            camera_x = params->X;
+            x_dest = TRUE;
+        }        
+    }
+
+    if (camera_y > params->Y) {
+        // Move up
+        camera_y -= speed;
+        if (camera_y <= params->Y) {
+            camera_y = params->Y;
+            if (x_dest) {
+                return;
+            }
+        }        
+    } else if (camera_y < params->Y) {
+        // Move down
+        camera_y += speed;
+        if (camera_y >= params->Y) {
+            camera_y = params->Y;
+            if (x_dest) {
+                return;
+            }
+        }      
     }
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx) + sizeof(speed) + sizeof(after_lock_camera));
@@ -66,14 +90,10 @@ UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
     if (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) {
         if (stack_frame[1] & CAMERA_SHAKE_X) {
-            BYTE value = rand() & 0x0f;
-            if (value > 10) value -= 10;
-            scroll_offset_x = value - 5;
+            scroll_offset_x = ((rand() * ((stack_frame[2] << 1) + 1)) >> 8) - stack_frame[2];
         }
         if (stack_frame[1] & CAMERA_SHAKE_Y) {
-            BYTE value = rand() & 0x0f;
-            if (value > 10) value -= 10;
-            scroll_offset_y = value - 5;
+            scroll_offset_y = ((rand() * ((stack_frame[2] << 1) + 1)) >> 8) - stack_frame[2];
         }
         ((SCRIPT_CTX *)THIS)->waitable = TRUE;
         return FALSE;

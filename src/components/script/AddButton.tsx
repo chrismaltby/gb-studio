@@ -1,15 +1,14 @@
-import ItemTypes from "lib/dnd/itemTypes";
-import l10n from "lib/helpers/l10n";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import l10n from "shared/lib/lang/l10n";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import {
   ScriptEventParentType,
   ScriptEventsRef,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useDispatch } from "react-redux";
 import {
   ScriptEventPlaceholder,
   ScriptEventWrapper,
@@ -19,6 +18,7 @@ import AddScriptEventMenu from "./AddScriptEventMenu";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -70,12 +70,16 @@ const AddButton = ({
   nestLevel,
   conditional,
 }: AddButtonProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
     useState<"bottom-right" | "top-right">("bottom-right");
   const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
+
+  const scriptEventSelectionIds = useAppSelector(
+    (state) => state.editor.scriptEventSelectionIds
+  );
 
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
     accept: ItemTypes.SCRIPT_EVENT,
@@ -104,6 +108,7 @@ const AddButton = ({
             parentId,
           },
           from: item,
+          additionalScriptEventIds: scriptEventSelectionIds,
         })
       );
 

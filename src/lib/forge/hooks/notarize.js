@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { notarize } = require("electron-notarize");
+const { notarize } = require("@electron/notarize");
+const Path = require("path");
 
-// Path from here to your build app executable:
-const buildOutput = require("path").resolve(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "out",
-  "GB Studio-darwin-x64",
-  "GB Studio.app"
-);
-
-module.exports = () => {
+module.exports = (_config, {outputPaths}) => {
+  
   if (process.platform !== "darwin") {
     console.log("Not a Mac; skipping notarization");
     return Promise.resolve();
@@ -28,12 +18,14 @@ module.exports = () => {
     return Promise.resolve();
   }
 
-  // eslint-disable-next-line consistent-return
+  const buildOutput = Path.join(outputPaths[0], "GB Studio.app");
+
   return notarize({
     appBundleId: "dev.gbstudio.gbstudio",
     appPath: buildOutput,
     appleId: process.env.APPLE_ID,
     appleIdPassword: process.env.APPLE_ID_PASSWORD,
+    teamId: process.env.APPLE_TEAM_ID
   }).catch((e) => {
     console.error(e);
     throw e;

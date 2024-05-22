@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useMemo } from "react";
+import l10n from "shared/lib/lang/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import {
   BlankIcon,
@@ -26,12 +26,6 @@ const priorityIconsLookup: Record<Priority, JSX.Element> = {
   high: <PriorityHighIcon />,
 };
 
-const priorityNamesLookup: Record<Priority, string> = {
-  low: l10n("FIELD_LOW"),
-  medium: l10n("FIELD_MEDIUM"),
-  high: l10n("FIELD_HIGH"),
-};
-
 const MenuSpacer = styled.div`
   width: 10px;
 `;
@@ -41,6 +35,15 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
   onChange,
 }) => {
   const selectedIcon = value ? priorityIconsLookup[value] : <PriorityLowIcon />;
+  const priorityNamesLookup: Record<Priority, string> = useMemo(
+    () => ({
+      low: l10n("FIELD_LOW"),
+      medium: l10n("FIELD_MEDIUM"),
+      high: l10n("FIELD_HIGH"),
+    }),
+    []
+  );
+
   const title = `${l10n("FIELD_PRIORITY")}${value ? ": " : ""}${
     value ? priorityNamesLookup[value] : ""
   }`;

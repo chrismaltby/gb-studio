@@ -1,11 +1,10 @@
 /* eslint-disable camelcase */
-const {
+import {
   is16BitCType,
   minForCType,
   maxForCType,
   clampToCType,
-  precompileEngineFields,
-} = require("../../src/lib/helpers/engineFields");
+} from "../../src/shared/lib/engineFields/engineFieldToCType";
 
 test("Should be able to determine if CType is 16-bit", () => {
   expect(is16BitCType("WORD")).toBe(true);
@@ -48,36 +47,4 @@ test("Should be able to clamp value within cType", () => {
   expect(clampToCType(500, "BYTE")).toBe(127);
   expect(clampToCType(500, "UWORD")).toBe(500);
   expect(clampToCType(500, "UBYTE")).toBe(255);
-});
-
-test("Should be able precompile memory offsets for engine fields", () => {
-  const field1 = {
-    key: "test_field_1",
-    label: "Test Field 1",
-    group: "Global",
-    type: "number",
-    cType: "UWORD",
-    defaultValue: 1,
-  };
-  const field2 = {
-    key: "test_field_2",
-    label: "Test Field 2",
-    group: "Global",
-    type: "number",
-    cType: "UBYTE",
-    defaultValue: 1,
-  };
-  const field3 = {
-    key: "test_field_3",
-    label: "Test Field 3",
-    group: "Global",
-    type: "number",
-    cType: "UBYTE",
-    defaultValue: 1,
-  };
-  expect(precompileEngineFields([field1, field2, field3])).toEqual({
-    test_field_1: field1,
-    test_field_2: field2,
-    test_field_3: field3,
-  });
 });

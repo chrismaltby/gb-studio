@@ -21,38 +21,32 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
-        max: 255,
+        max: 2047,
         width: "50%",
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          type: "number",
+          value: 0,
         },
       },
       {
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
-        type: "union",
-        types: ["number", "variable", "property"],
-        defaultType: "number",
+        type: "value",
         min: 0,
-        max: 255,
+        max: 2047,
         width: "50%",
         unitsField: "units",
         unitsDefault: "tiles",
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
-          number: 0,
-          variable: "LAST_VARIABLE",
-          property: "$self$:ypos",
+          type: "number",
+          value: 0,
         },
       },
     ],
@@ -61,31 +55,16 @@ const fields = [
     key: "speed",
     label: l10n("FIELD_SPEED"),
     description: l10n("FIELD_SPEED_PLUS_INSTANT_DESC"),
-    type: "cameraSpeed",
+    type: "moveSpeed",
     defaultValue: 0,
+    allowNone: true,
+    noneLabel: l10n("FIELD_INSTANT"),
   },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    cameraMoveTo,
-    cameraMoveToVariables,
-    variableFromUnion,
-    temporaryEntityVariable,
-  } = helpers;
-  if (input.x.type === "number" && input.y.type === "number") {
-    cameraMoveTo(
-      input.x.value,
-      input.y.value,
-      Number(input.speed),
-      input.units
-    );
-  } else {
-    // If any value is not a number transfer values into variables and use variable implementation
-    const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
-    const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
-    cameraMoveToVariables(xVar, yVar, Number(input.speed), input.units);
-  }
+  const { cameraMoveToScriptValues } = helpers;
+  cameraMoveToScriptValues(input.x, input.y, Number(input.speed), input.units);
 };
 
 module.exports = {
@@ -96,4 +75,10 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "camera",
+    x: "x",
+    y: "y",
+    units: "units",
+  },
 };

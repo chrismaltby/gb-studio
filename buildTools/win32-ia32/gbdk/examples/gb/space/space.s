@@ -116,30 +116,30 @@ _main::
 	CALL	.init_btt	; Init the tiles tables with 0xFF
 	CALL	.init_wtt
 
-	LD	BC,#.tp0	; Move tiles (standard tiles)
-	LD	HL,#0x9000-(.endtp0-.tp0)
-	LD	DE,#.endtp0-.tp0
+	LD	HL,#.tp0	; Move tiles (standard tiles)
+	LD	DE,#0x9000-(.endtp0-.tp0)
+	LD	BC,#.endtp0-.tp0
 	CALL	.copy_vram
 
-	LD	BC,#.tp1	; Move tiles (earth)
-	LD	HL,#0x8000
-	LD	DE,#.endtp1-.tp1
+	LD	HL,#.tp1	; Move tiles (earth)
+	LD	DE,#0x8000
+	LD	BC,#.endtp1-.tp1
 	CALL	.copy_vram
 
-	LD	BC,#.tp2	; Move tiles (door)
-	LD	HL,#0x8800
-	LD	DE,#.endtp2-.tp2
+	LD	HL,#.tp2	; Move tiles (door)
+	LD	DE,#0x8800
+	LD	BC,#.endtp2-.tp2
 	CALL	.copy_vram
 
-	LD	BC,#.tp3	; Move tiles (background)
-	LD	HL,#0x9000
-	LD	DE,#.endtp3-.tp3
+	LD	HL,#.tp3	; Move tiles (background)
+	LD	DE,#0x9000
+	LD	BC,#.endtp3-.tp3
 	CALL	.copy_vram
 
 	;; Draw the background
-	LD	BC,#.bkg_tiles
-	LD	HL,#0x9800
-	LD	DE,#0x0400	; One whole GB Screen
+	LD	HL,#.bkg_tiles
+	LD	DE,#0x9800
+	LD	BC,#0x0400	; One whole GB Screen
 	CALL	.copy_vram
 
 	;; Draw the frame in the window

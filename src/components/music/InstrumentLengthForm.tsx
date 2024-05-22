@@ -1,5 +1,5 @@
 import React from "react";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";

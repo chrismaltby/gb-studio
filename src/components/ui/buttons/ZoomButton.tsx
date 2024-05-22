@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { MinusIcon, PlusIcon } from "../icons/Icons";
+import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 
 export interface ZoomButtonProps {
   readonly zoom: number;

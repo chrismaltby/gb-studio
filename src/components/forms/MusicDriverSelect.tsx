@@ -1,5 +1,5 @@
-import l10n from "lib/helpers/l10n";
-import React, { FC, useEffect, useState } from "react";
+import l10n from "shared/lib/lang/l10n";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { MusicDriverSetting } from "store/features/settings/settingsState";
 import {
   Option,
@@ -11,15 +11,15 @@ import {
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;
   value?: MusicDriverSetting;
-  onChange?: (newId: string) => void;
+  onChange?: (newId: MusicDriverSetting) => void;
 }
 
-const musicDriverOptionsInfo: { [key: string]: string } = {
-  huge: l10n("FIELD_HUGE_DRIVER_INFO"),
-  gbt: l10n("FIELD_GBT_PLAYER_INFO"),
-};
+export interface MusicDriverOption {
+  value: MusicDriverSetting;
+  label: string;
+}
 
-const musicDriverOptions: Option[] = [
+const musicDriverOptions: MusicDriverOption[] = [
   {
     label: "UGE",
     value: "huge",
@@ -35,6 +35,13 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
   onChange,
 }) => {
   const [currentValue, setCurrentValue] = useState<Option>();
+  const musicDriverOptionsInfo: { [key: string]: string } = useMemo(
+    () => ({
+      huge: l10n("FIELD_HUGE_DRIVER_INFO"),
+      gbt: l10n("FIELD_GBT_PLAYER_INFO"),
+    }),
+    []
+  );
 
   useEffect(() => {
     const currentMusicDriver = musicDriverOptions.find(
@@ -45,9 +52,12 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
     }
   }, [value]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
-  };
+  const onSelectChange = useCallback(
+    (newValue: MusicDriverOption) => {
+      onChange?.(newValue.value);
+    },
+    [onChange]
+  );
 
   return (
     <Select

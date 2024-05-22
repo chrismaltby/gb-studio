@@ -1,14 +1,13 @@
 import React, { useState, useEffect, FC, useContext } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DialogueTextarea } from "ui/form/DialogueTextarea";
 import {
   customEventSelectors,
   fontSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
-import { RootState } from "store/configureStore";
-import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormTextAreaProps {
@@ -17,6 +16,7 @@ interface ScriptEventFormTextAreaProps {
   placeholder?: string;
   entityId: string;
   maxlength?: number;
+  singleLine?: boolean;
   onChange: (newValue: string) => void;
 }
 
@@ -25,24 +25,23 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   value,
   placeholder,
   maxlength,
+  singleLine = false,
   onChange,
   entityId,
 }) => {
   const context = useContext(ScriptEditorContext);
   const [variables, setVariables] = useState<NamedVariable[]>([]);
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const variablesLookup = useSelector((state: RootState) =>
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
 
   useEffect(() => {
     setVariables(
-      namedVariablesByContext(context, entityId, variablesLookup, customEvent)
+      namedVariablesByContext(context, variablesLookup, customEvent)
     );
   }, [entityId, variablesLookup, context, customEvent]);
 
@@ -56,6 +55,7 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
       fonts={fonts}
       placeholder={placeholder}
       maxlength={maxlength}
+      singleLine={singleLine}
     />
   );
 };

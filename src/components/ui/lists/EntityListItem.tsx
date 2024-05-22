@@ -1,5 +1,6 @@
-import React, { FC, ReactNode } from "react";
+import React, { ReactNode, useCallback, useState } from "react";
 import styled from "styled-components";
+import { RenameInput } from "ui/form/RenameInput";
 import {
   ActorIcon,
   AnimationIcon,
@@ -11,20 +12,27 @@ import {
   DutyIcon,
   WaveIcon,
   SongIcon,
-  FolderFilledIcon,
   BackgroundIcon,
-} from "../icons/Icons";
+  PaletteIcon,
+  CodeIcon,
+  SoundIcon,
+  FolderFilledIcon,
+  SceneIcon,
+} from "ui/icons/Icons";
+import { ContextMenu } from "ui/menu/ContextMenu";
 
 interface EntityListItemWrapperProps {
   nestLevel?: number;
 }
 
-interface EntityListItemProps {
-  item: {
-    name: string;
-    labelColor?: string;
-    warning?: string;
-  };
+type EntityListItemData = {
+  name: string;
+  labelColor?: string;
+  warning?: string;
+};
+
+type EntityListItemProps<T extends EntityListItemData> = {
+  item: T;
   type:
     | "custom"
     | "folder"
@@ -40,13 +48,27 @@ interface EntityListItemProps {
     | "song"
     | "duty"
     | "wave"
-    | "noise";
+    | "noise"
+    | "palette"
+    | "script";
   icon?: ReactNode;
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
   onToggleCollapse?: () => void;
-}
+  onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  renderContextMenu?: (item: T) => JSX.Element[] | undefined;
+  renderLabel?: (item: T) => React.ReactNode;
+} & (
+  | {
+      rename: true;
+      onRename: (name: string, item: T) => void;
+      onRenameCancel: (item: T) => void;
+    }
+  | {
+      rename?: false;
+    }
+);
 
 interface NavigatorArrowProps {
   open: boolean;
@@ -73,7 +95,7 @@ const NavigatorArrow = styled.span<NavigatorArrowProps>`
   }
 `;
 
-const EnitityListItem = styled.div<EntityListItemWrapperProps>`
+const EntityListItemWrapper = styled.div<EntityListItemWrapperProps>`
   display: flex;
   align-items: center;
   text-overflow: ellipsis;
@@ -82,7 +104,7 @@ const EnitityListItem = styled.div<EntityListItemWrapperProps>`
   padding-left: ${(props) => (props.nestLevel || 0) * 15}px;
 `;
 
-const EnitityIcon = styled.div`
+const EntityIcon = styled.div`
   svg {
     fill: ${(props) => props.theme.colors.text};
     width: 10px;
@@ -92,14 +114,14 @@ const EnitityIcon = styled.div`
   }
 `;
 
-const EnitityLabel = styled.div`
+const EntityLabel = styled.div`
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   flex-grow: 1;
 `;
 
-const EnitityWarningLabel = styled.span`
+const EntityWarningLabel = styled.span`
   color: red;
 `;
 
@@ -113,7 +135,24 @@ const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
   margin-left: 5px;
 `;
 
-export const EntityListItem: FC<EntityListItemProps> = ({
+export const EntityListSearch = styled.input`
+  margin: 5px 5px;
+  flex-grow: 1;
+  width: calc(100% - 10px);
+  border-radius: 32px;
+  color: ${(props) => props.theme.colors.text};
+  background: ${(props) => props.theme.colors.sidebar.background};
+  border: 1px solid transparent;
+  font-size: 11px;
+  padding: 2px 5px;
+
+  &:not(:placeholder-shown) {
+    background: ${(props) => props.theme.colors.input.background};
+    border: 1px solid ${(props) => props.theme.colors.input.border};
+  }
+`;
+
+export const EntityListItem = <T extends EntityListItemData>({
   item,
   type,
   icon,
@@ -121,77 +160,155 @@ export const EntityListItem: FC<EntityListItemProps> = ({
   collapsable,
   collapsed,
   onToggleCollapse,
-}) => {
+  renderContextMenu,
+  renderLabel,
+  ...props
+}: EntityListItemProps<T>) => {
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!renderContextMenu) {
+        return;
+      }
+      const menu = renderContextMenu(item);
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [item, renderContextMenu]
+  );
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
+  const onRenameComplete = useCallback(
+    (newValue: string) => {
+      if (props.rename) {
+        props.onRename(newValue, item);
+      }
+    },
+    [item, props]
+  );
+  const onRenameCancel = useCallback(() => {
+    if (props.rename) {
+      props.onRenameCancel(item);
+    }
+  }, [item, props]);
+
   return (
-    <EnitityListItem nestLevel={nestLevel}>
+    <EntityListItemWrapper nestLevel={nestLevel} onContextMenu={onContextMenu}>
       {collapsable && (
         <NavigatorArrow open={!collapsed} onClick={() => onToggleCollapse?.()}>
           <ArrowIcon />
         </NavigatorArrow>
       )}
-      {type === "custom" && icon && <EnitityIcon>{icon}</EnitityIcon>}
+      {type === "custom" && icon && <EntityIcon>{icon}</EntityIcon>}
       {type === "folder" && (
-        <EnitityIcon>
+        <EntityIcon>
           <FolderFilledIcon />
-        </EnitityIcon>
+        </EntityIcon>
+      )}
+      {type === "scene" && (
+        <EntityIcon>
+          <SceneIcon />
+        </EntityIcon>
       )}
       {type === "actor" && (
-        <EnitityIcon>
+        <EntityIcon>
           <ActorIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "trigger" && (
-        <EnitityIcon>
+        <EntityIcon>
           <TriggerIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "variable" && (
-        <EnitityIcon>
+        <EntityIcon>
           <VariableIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "sprite" && (
-        <EnitityIcon>
+        <EntityIcon>
           <SpriteIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "animation" && (
-        <EnitityIcon>
+        <EntityIcon>
           <AnimationIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "background" && (
-        <EnitityIcon>
+        <EntityIcon>
           <BackgroundIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "song" && (
-        <EnitityIcon>
+        <EntityIcon>
           <SongIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "duty" && (
-        <EnitityIcon>
+        <EntityIcon>
           <DutyIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "wave" && (
-        <EnitityIcon>
+        <EntityIcon>
           <WaveIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
       {type === "noise" && (
-        <EnitityIcon>
+        <EntityIcon>
           <NoiseIcon />
-        </EnitityIcon>
+        </EntityIcon>
       )}
-      <EnitityLabel>
-        {item.name}{" "}
-        {item.warning && (
-          <EnitityWarningLabel> ({item.warning})</EnitityWarningLabel>
-        )}
-      </EnitityLabel>
+      {type === "palette" && (
+        <EntityIcon>
+          <PaletteIcon />
+        </EntityIcon>
+      )}
+      {type === "script" && (
+        <EntityIcon>
+          <CodeIcon />
+        </EntityIcon>
+      )}
+      {type === "sound" && (
+        <EntityIcon>
+          <SoundIcon />
+        </EntityIcon>
+      )}
+      {props.rename ? (
+        <RenameInput
+          autoFocus
+          value={item.name}
+          onRenameComplete={onRenameComplete}
+          onRenameCancel={onRenameCancel}
+        />
+      ) : (
+        <EntityLabel>
+          {renderLabel ? renderLabel(item) : item.name}
+          {item.warning && (
+            <EntityWarningLabel> ({item.warning})</EntityWarningLabel>
+          )}
+        </EntityLabel>
+      )}
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}
-    </EnitityListItem>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
+    </EntityListItemWrapper>
   );
 };

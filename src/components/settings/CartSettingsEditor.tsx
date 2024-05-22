@@ -1,15 +1,14 @@
 import React, { useCallback } from "react";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
 import { Select } from "ui/form/Select";
 import { Button } from "ui/buttons/Button";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { CardButtons } from "ui/cards/Card";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
-import { useDispatch, useSelector } from "react-redux";
 import { CartType } from "store/features/settings/settingsState";
-import { RootState } from "store/configureStore";
 import { Checkbox } from "ui/form/Checkbox";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 export interface CartSettingsEditorProps {
   searchTerm?: string;
@@ -32,15 +31,14 @@ const cartOptions: CartTypeOption[] = [
 ];
 
 const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const cartType =
-    useSelector(
-      (state: RootState) => state.project.present.settings.cartType
-    ) || "mbc5";
+    useAppSelector((state) => state.project.present.settings.cartType) ||
+    "mbc5";
 
-  const batterylessEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.batterylessEnabled
+  const batterylessEnabled = useAppSelector(
+    (state) => state.project.present.settings.batterylessEnabled
   );
 
   const onChangeCartType = useCallback(

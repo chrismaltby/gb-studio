@@ -7,16 +7,28 @@ import React, {
   useState,
 } from "react";
 import { Portal } from "./Portal";
+import styled from "styled-components";
 
-type PinDirection = "top-left" | "bottom-left" | "top-right" | "bottom-right";
+export type PinDirection =
+  | "top-left"
+  | "bottom-left"
+  | "top-right"
+  | "bottom-right";
 
-export interface RelativePortalProps {
+export type RelativePortalProps = {
   children: ReactNode;
   offsetX?: number;
   offsetY?: number;
-  pin?: PinDirection;
   zIndex?: number;
-}
+} & (
+  | {
+      pin?: PinDirection;
+    }
+  | {
+      pin: "parent-edge";
+      parentWidth: number;
+    }
+);
 
 const pinStyles: Record<PinDirection, CSSProperties> = {
   "top-left": {
@@ -43,15 +55,24 @@ const pinStyles: Record<PinDirection, CSSProperties> = {
 
 const MIN_MARGIN = 10;
 
+const Pin = styled.div`
+  background: transparent;
+  width: 1px;
+  height: 1px;
+  margin-right: -1px;
+  margin-bottom: -1px;
+`;
+
 export const RelativePortal: FC<RelativePortalProps> = ({
   children,
   offsetX = 0,
   offsetY = 0,
-  pin = "top-left",
   zIndex,
+  ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const contentsRef = useRef<HTMLDivElement>(null);
+  const pin = props.pin ?? "top-left";
 
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
@@ -80,6 +101,10 @@ export const RelativePortal: FC<RelativePortalProps> = ({
           if (newX - contentsWidth - MIN_MARGIN < 0) {
             newX = contentsWidth + MIN_MARGIN;
           }
+        } else if (props.pin === "parent-edge") {
+          if (newX + contentsWidth + MIN_MARGIN > window.innerWidth) {
+            newX -= props.parentWidth + contentsWidth;
+          }
         } else {
           if (newX + contentsWidth + MIN_MARGIN > window.innerWidth) {
             newX = window.innerWidth - contentsWidth - MIN_MARGIN;
@@ -95,11 +120,11 @@ export const RelativePortal: FC<RelativePortalProps> = ({
     return () => {
       clearInterval(timer);
     };
-  }, [ref, offsetX, offsetY, pin]);
+  }, [ref, offsetX, offsetY, pin, props.pin, props]);
 
   return (
     <>
-      <div ref={ref} style={{ zIndex: zIndex }} />
+      <Pin ref={ref} />
       <Portal>
         <div
           style={{
@@ -109,7 +134,10 @@ export const RelativePortal: FC<RelativePortalProps> = ({
             zIndex,
           }}
         >
-          <div ref={contentsRef} style={pinStyles[pin]}>
+          <div
+            ref={contentsRef}
+            style={pin !== "parent-edge" ? pinStyles[pin] : undefined}
+          >
             {children}
           </div>
         </div>

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Actor, UnitType } from "store/features/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
+import React, { useContext, useEffect, useState } from "react";
+import { useAppSelector } from "store/hooks";
+import { ActorNormalized, UnitType } from "shared/lib/entities/entitiesTypes";
 import {
   OptGroup,
   Option,
@@ -15,11 +14,12 @@ import {
   getSceneActorIds,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { actorName } from "store/features/entities/entitiesHelpers";
-import l10n from "lib/helpers/l10n";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
+import l10n from "shared/lib/lang/l10n";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface PropertySelectProps {
   name: string;
@@ -44,8 +44,10 @@ const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
-const Wrapper = styled.div`
+export const PropertySelectWrapper = styled.div`
   position: relative;
+  width: 100%;
+  min-width: 78px;
 `;
 
 export const PropertySelect = ({
@@ -56,40 +58,36 @@ export const PropertySelect = ({
   unitsAllowed,
   onChangeUnits,
 }: PropertySelectProps) => {
+  const context = useContext(ScriptEditorContext);
   const [options, setOptions] = useState<ActorOptGroup[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
 
-  const editorType = useSelector((state: RootState) => state.editor.type);
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const sceneType = useSelector(
-    (state: RootState) => sceneSelectors.selectById(state, sceneId)?.type
+  const sceneType = useAppSelector(
+    (state) => sceneSelectors.selectById(state, context.sceneId)?.type
   );
-  const scenePlayerSpriteSheetId = useSelector(
-    (state: RootState) =>
-      sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
+  const scenePlayerSpriteSheetId = useAppSelector(
+    (state) =>
+      sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const contextEntityId = useSelector(
-    (state: RootState) => state.editor.entityId
+  const sceneActorIds = useAppSelector((state) =>
+    getSceneActorIds(state, { id: context.sceneId })
   );
-  const sceneActorIds = useSelector((state: RootState) =>
-    getSceneActorIds(state, { id: sceneId })
-  );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
-    customEventSelectors.selectById(state, contextEntityId)
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(contextEntityId);
-  const selfActor = actorsLookup[contextEntityId];
+  const selfIndex = sceneActorIds?.indexOf(context.entityId);
+  const selfActor = actorsLookup[context.entityId];
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
-    if (editorType === "customEvent" && customEvent) {
+    if (context.entityType === "customEvent" && customEvent) {
       setOptions(
         [
           {
@@ -143,7 +141,9 @@ export const PropertySelect = ({
     } else if (sceneActorIds) {
       setOptions(
         [
-          ...(editorType === "actor" && selfActor && selfIndex !== undefined
+          ...(context.entityType === "actor" &&
+          selfActor &&
+          selfIndex !== undefined
             ? [
                 {
                   label: `${l10n("FIELD_SELF")} (${actorName(
@@ -161,7 +161,7 @@ export const PropertySelect = ({
             spriteSheetId: playerSpriteSheetId,
           },
           ...sceneActorIds.map((actorId, actorIndex) => {
-            const actor = actorsLookup[actorId] as Actor;
+            const actor = actorsLookup[actorId] as ActorNormalized;
             return {
               label: actorName(actor, actorIndex),
               value: actor.id,
@@ -215,9 +215,8 @@ export const PropertySelect = ({
     }
   }, [
     actorsLookup,
-    contextEntityId,
+    context.entityType,
     customEvent,
-    editorType,
     playerSpriteSheetId,
     sceneActorIds,
     selfActor,
@@ -238,7 +237,7 @@ export const PropertySelect = ({
   }, [options, value]);
 
   return (
-    <Wrapper>
+    <PropertySelectWrapper>
       <Select
         name={name}
         value={currentValue}
@@ -285,6 +284,6 @@ export const PropertySelect = ({
           onChange={onChangeUnits}
         />
       )}
-    </Wrapper>
+    </PropertySelectWrapper>
   );
 };

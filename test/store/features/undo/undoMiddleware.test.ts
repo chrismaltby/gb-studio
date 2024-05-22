@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "jest-extended";
 import middleware from "../../../../src/store/features/undo/undoMiddleware";
 import { RootState } from "../../../../src/store/configureStore";
@@ -17,7 +18,11 @@ test("Should trigger undo clear history after successful project load", async ()
     {
       data: { ...dummyProjectData },
       path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
+      isMigrated: false,
     },
     "randomid",
     "project.gbsproj"

@@ -40,7 +40,7 @@ extern uint8_t font_ibm_fixed[];
 /** Initializes the font system.
     Should be called before other font functions.
  */
-void font_init();
+void font_init(void);
 
 /** Load a font and set it as the current font.
     @param font   Pointer to a font to load (usually a gbdk font)

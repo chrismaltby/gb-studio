@@ -167,7 +167,7 @@ unsigned char disp_tile[MAX_DTMF * 2];
 	Initialize for sound registers
 	ch1, ch2 are used for this routine.
 */
-void init_dial()
+void init_dial(void)
 {
 
 	NR52_REG = 0x83U;
@@ -365,7 +365,7 @@ void disp_lcd(uint8_t len, char str[MAX_DTMF])
 }
 
 /* clear display */
-void clr_disp()
+void clr_disp(void)
 {
 	set_bkg_data(OFFSET, 50, dtmf_lcd);
 	set_bkg_tiles(LCD_X, LCD_Y, LCD_WIDTH, LCD_HIGHT, init_disp);
@@ -433,7 +433,7 @@ void break_button(uint8_t x, uint8_t y)
 }
 
 
-void init_key()
+void init_key(void)
 {
 	uint8_t key_x, key_y, i;
 
@@ -503,7 +503,7 @@ void init_key()
 	move_sprite(22, key_x, key_y);
 }
 
-void init_background()
+void init_background(void)
 {
 	/* Initialize the background */
 	set_bkg_data( 0, 9, frame_lcd);
@@ -513,7 +513,7 @@ void init_background()
 	set_bkg_tiles(0, 0, 20, 18, dtmf_tile);
 }
 
-void init_cursor()
+void init_cursor(void)
 {
 	uint8_t i;
 
@@ -533,7 +533,7 @@ void move_cursor(uint8_t x, uint8_t y)
 	move_sprite(26, x+8, y+8);
 }
 
-void main()
+void main(void)
 {
 	uint8_t key1, key2, i, j, pos_x, pos_y, ch_pos;
 	uint8_t non_flick = OFF;
@@ -574,7 +574,7 @@ void main()
 	ch_pos = 0;
 
 	while(1) {
-		wait_vbl_done();
+		vsync();
 		key1 = joypad();
 
 		if(key1 != key2){

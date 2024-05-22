@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import React, { useContext, useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { RootState } from "store/configureStore";
 import { FormRow, FormField } from "ui/form/FormLayout";
+import { ThemeContext } from "styled-components";
+import { WaveEditorInput } from "components/music/WaveEditorInput";
 
 interface WaveEditorFormProps {
   waveId: number;
@@ -13,11 +13,10 @@ interface WaveEditorFormProps {
 }
 
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const themeContext = useContext(ThemeContext);
 
   const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({
     value: i,
@@ -51,9 +50,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
 
     const ctx = canvas.getContext("2d");
 
-    const defaultColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--highlight-color");
+    const defaultColor = themeContext.colors.highlight;
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;
@@ -108,7 +105,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: MouseEvent) => {
       if (e.target !== canvasRef.current) {
         return;
       }
@@ -143,13 +140,13 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseDown = (e: any) => {
+    const handleMouseDown = (e: MouseEvent) => {
       if (e.target === canvasRef.current) {
         mousedown = true;
       }
     };
 
-    const handleMouseUp = (_e: any) => {
+    const handleMouseUp = (_e: MouseEvent) => {
       if (mousedown) {
         mousedown = false;
         onEditWave(newWaves);
@@ -191,6 +188,9 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
           }}
           height={120}
         />
+      </FormRow>
+      <FormRow>
+        <WaveEditorInput waveId={waveId} onEditWave={onEditWave} />
       </FormRow>
     </>
   );

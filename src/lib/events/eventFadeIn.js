@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_FADE_IN";
 const groups = ["EVENT_GROUP_SCREEN", "EVENT_GROUP_CAMERA"];
+const subGroups = {
+  "EVENT_GROUP_CAMERA": "EVENT_GROUP_SCREEN"
+}
 
 const fields = [
   {
@@ -23,6 +26,7 @@ module.exports = {
   id,
   description: l10n("EVENT_FADE_IN_DESC"),
   groups,
+  subGroups,
   fields,
   compile,
   waitUntilAfterInitFade: true,

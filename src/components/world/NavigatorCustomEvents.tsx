@@ -1,85 +1,171 @@
-import React, { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { CustomEvent } from "store/features/entities/entitiesTypes";
-import styled from "styled-components";
-import { CodeIcon } from "ui/icons/Icons";
-import l10n from "lib/helpers/l10n";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
+import l10n from "shared/lib/lang/l10n";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { EntityListItem } from "ui/lists/EntityListItem";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import {
+  EntityNavigatorItem,
+  buildEntityNavigatorItems,
+  entityParentFolders,
+} from "shared/lib/entities/buildEntityNavigatorItems";
+import useToggleableList from "ui/hooks/use-toggleable-list";
+import { customEventName } from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorCustomEventsProps {
   height: number;
+  searchTerm: string;
 }
-
-interface NavigatorItem {
-  id: string;
-  name: string;
-}
-
-const customEventToNavigatorItem = (
-  customEvent: CustomEvent,
-  customEventIndex: number
-): NavigatorItem => ({
-  id: customEvent.id,
-  name: customEvent.name
-    ? customEvent.name
-    : `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`,
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
-  return collator.compare(a.name, b.name);
-};
-
-const NavigatorEntityRow = styled.div`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-`;
 
 export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   height,
+  searchTerm,
 }) => {
-  const [items, setItems] = useState<NavigatorItem[]>([]);
-  const customEvents = useSelector((state: RootState) =>
+  const allCustomEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "customEvent" ? entityId : "";
-  const dispatch = useDispatch();
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, selectedId)
+  );
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    setItems(customEvents.map(customEventToNavigatorItem).sort(sortByName));
-  }, [customEvents]);
+  const {
+    values: manuallyOpenedFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+    set: openFolder,
+    unset: closeFolder,
+  } = useToggleableList<string>([]);
+
+  const openFolders = useMemo(() => {
+    return [
+      ...manuallyOpenedFolders,
+      ...(customEvent ? entityParentFolders(customEvent) : []),
+    ];
+  }, [manuallyOpenedFolders, customEvent]);
+
+  const nestedCustomEventItems = useMemo(
+    () =>
+      buildEntityNavigatorItems(
+        allCustomEvents.map((customEvent, index) => ({
+          ...customEvent,
+          name: customEventName(customEvent, index),
+        })),
+        openFolders,
+        searchTerm
+      ),
+    [allCustomEvents, openFolders, searchTerm]
+  );
 
   const setSelectedId = (id: string) => {
     dispatch(editorActions.selectCustomEvent({ customEventId: id }));
   };
 
+  const [renameId, setRenameId] = useState("");
+
+  const listenForRenameStart = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        setRenameId(selectedId);
+      }
+    },
+    [selectedId]
+  );
+
+  const onRenameComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editCustomEvent({
+            customEventId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId]
+  );
+
+  const onRenameCancel = useCallback(() => {
+    setRenameId("");
+  }, []);
+
+  const renderContextMenu = useCallback(
+    (item: EntityNavigatorItem<CustomEventNormalized>) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(
+              entitiesActions.removeCustomEvent({ customEventId: item.id })
+            )
+          }
+        >
+          {l10n("MENU_DELETE_CUSTOM_EVENT")}
+        </MenuItem>,
+      ];
+    },
+    [dispatch]
+  );
+
+  const renderLabel = useCallback(
+    (item: EntityNavigatorItem<CustomEventNormalized>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return item.filename;
+    },
+    [toggleFolderOpen]
+  );
+
   return (
     <FlatList
       selectedId={selectedId}
-      items={items}
+      items={nestedCustomEventItems}
       setSelectedId={setSelectedId}
       height={height}
+      onKeyDown={(e: KeyboardEvent, item) => {
+        listenForRenameStart(e);
+        if (item?.type === "folder") {
+          if (e.key === "ArrowRight") {
+            openFolder(selectedId);
+          } else if (e.key === "ArrowLeft") {
+            closeFolder(selectedId);
+          }
+        }
+      }}
       children={({ item }) => (
-        <NavigatorEntityRow>
-          <CodeIcon />
-          {item.name}
-        </NavigatorEntityRow>
+        <EntityListItem
+          item={item}
+          type={item.type === "folder" ? "folder" : "script"}
+          rename={item.type === "entity" && renameId === item.id}
+          onRename={onRenameComplete}
+          onRenameCancel={onRenameCancel}
+          renderContextMenu={
+            item.type === "entity" ? renderContextMenu : undefined
+          }
+          collapsable={item.type === "folder"}
+          collapsed={!isFolderOpen(item.name)}
+          onToggleCollapse={() => toggleFolderOpen(item.name)}
+          nestLevel={item.nestLevel}
+          renderLabel={renderLabel}
+        />
       )}
     />
   );

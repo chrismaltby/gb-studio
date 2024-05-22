@@ -6,7 +6,14 @@ import {
   COLLISION_LEFT,
   COLLISION_RIGHT,
   TILE_PROP_LADDER,
-} from "../../consts";
+  TILE_PROPS,
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+  COLLISION_SLOPE_22_LEFT_BOT,
+} from "consts";
 
 const TILE_SIZE = 8;
 
@@ -31,10 +38,13 @@ const SceneCollisions = ({
 
       if (!ctx) return;
 
+      ctx.font = "7px Arial";
+
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
+          const tileprop = tile & TILE_PROPS;
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
             ctx.fillStyle = "rgba(250,40,40,0.6)";
             ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -76,26 +86,80 @@ const SceneCollisions = ({
               );
             }
           }
-          if (tile & TILE_PROP_LADDER) {
-            ctx.fillStyle = "rgba(0,128,0,0.6)";
-            ctx.fillRect(
-              (xi + 0.0) * TILE_SIZE,
-              yi * TILE_SIZE,
-              TILE_SIZE * 0.2,
-              TILE_SIZE
-            );
-            ctx.fillRect(
-              (xi + 0.8) * TILE_SIZE,
-              yi * TILE_SIZE,
-              TILE_SIZE * 0.2,
-              TILE_SIZE
-            );
-            ctx.fillRect(
-              xi * TILE_SIZE,
-              (yi + 0.4) * TILE_SIZE,
-              TILE_SIZE,
-              TILE_SIZE * 0.2
-            );
+          if (tileprop) {
+            switch (tileprop) {
+              case TILE_PROP_LADDER: // Ladder
+                ctx.fillStyle = "rgba(0,128,0,0.6)";
+                ctx.fillRect(
+                  (xi + 0.0) * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.2,
+                  TILE_SIZE
+                );
+                ctx.fillRect(
+                  (xi + 0.8) * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.2,
+                  TILE_SIZE
+                );
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  (yi + 0.4) * TILE_SIZE,
+                  TILE_SIZE,
+                  TILE_SIZE * 0.2
+                );
+                break;
+              case COLLISION_SLOPE_45_RIGHT: // slope right
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case COLLISION_SLOPE_22_RIGHT_TOP: // slope right shalow TOP
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case COLLISION_SLOPE_45_LEFT: // slope left
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case COLLISION_SLOPE_22_LEFT_BOT: // slope left shalow BOT
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case COLLISION_SLOPE_22_LEFT_TOP: // slope left shalow TOP
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              default:
+                ctx.fillStyle = "rgba(0,128,0,1)";
+                ctx.fillText(
+                  String(tileprop >> 4),
+                  xi * TILE_SIZE,
+                  (yi + 0.9) * TILE_SIZE
+                );
+                break;
+            }
           }
         }
       }

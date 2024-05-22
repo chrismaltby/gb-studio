@@ -6,23 +6,38 @@ test("Should be able to shake camera for a second", () => {
     {
       shakeDirection: "diagonal",
       time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
     },
     {
-      cameraShake: mockCameraShake,
+      cameraShakeScriptValue: mockCameraShake,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(true, true, 60);
+  expect(mockCameraShake).toBeCalledWith(true, true, 60, {
+    type: "number",
+    value: 5,
+  });
 });
 
 test("Should shake camera for half a second if time not set", () => {
   const mockCameraShake = jest.fn();
   compile(
-    {},
     {
-      cameraShake: mockCameraShake,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
+    },
+    {
+      cameraShakeScriptValue: mockCameraShake,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(true, false, 30);
+  expect(mockCameraShake).toBeCalledWith(true, false, 30, {
+    type: "number",
+    value: 5,
+  });
 });
 
 test("Should shake camera horizontally if directions not set", () => {
@@ -30,12 +45,19 @@ test("Should shake camera horizontally if directions not set", () => {
   compile(
     {
       time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
     },
     {
-      cameraShake: mockCameraShake,
+      cameraShakeScriptValue: mockCameraShake,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(true, false, 60);
+  expect(mockCameraShake).toBeCalledWith(true, false, 60, {
+    type: "number",
+    value: 5,
+  });
 });
 
 test("Should shake camera horizontally if direction set to horizontal", () => {
@@ -44,12 +66,19 @@ test("Should shake camera horizontally if direction set to horizontal", () => {
     {
       shakeDirection: "horizontal",
       time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
     },
     {
-      cameraShake: mockCameraShake,
+      cameraShakeScriptValue: mockCameraShake,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(true, false, 60);
+  expect(mockCameraShake).toBeCalledWith(true, false, 60, {
+    type: "number",
+    value: 5,
+  });
 });
 
 test("Should shake camera vertically if direction set to vertical", () => {
@@ -58,24 +87,39 @@ test("Should shake camera vertically if direction set to vertical", () => {
     {
       shakeDirection: "vertical",
       time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
     },
     {
-      cameraShake: mockCameraShake,
+      cameraShakeScriptValue: mockCameraShake,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(false, true, 60);
+  expect(mockCameraShake).toBeCalledWith(false, true, 60, {
+    type: "number",
+    value: 5,
+  });
 });
 
-test("Should be able to shake camera for one and a half seconds", () => {
-  const mockCameraShake = jest.fn();
+test("Should be able to set shake camera magnitude from a variable", () => {
+  const mockCameraShakeVariables = jest.fn();
+  const variable = {
+    type: "variable",
+    value: "L0",
+  };
   compile(
     {
       shakeDirection: "diagonal",
       time: 1.5,
+      magnitude: variable,
     },
     {
-      cameraShake: mockCameraShake,
+      cameraShakeScriptValue: mockCameraShakeVariables,
     }
   );
-  expect(mockCameraShake).toBeCalledWith(true, true, 90);
+  expect(mockCameraShakeVariables).toBeCalledWith(true, true, 90, {
+    type: "variable",
+    value: "L0",
+  });
 });

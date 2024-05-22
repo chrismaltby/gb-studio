@@ -13,6 +13,7 @@ const neonTheme: ThemeInterface = {
     translucent: "rgba(0,0,0,0.1)",
     hoverTranslucent: "rgba(0,0,0,0.3)",
     text: "#f5dcec",
+    background: "#241734",
     secondaryText: "#777777",
     conditional: {
       level1: "#01579b",
@@ -62,6 +63,10 @@ const neonTheme: ThemeInterface = {
       activeBackground: "#000000",
       text: "#f5dcec",
       border: "#540d6e",
+    },
+    brackets: {
+      color: "#000000",
+      hoverBackground: "#222222",
     },
     card: {
       background: "#ffffff",

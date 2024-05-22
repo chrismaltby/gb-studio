@@ -22,9 +22,9 @@ extern script_event_t timer_events[MAX_CONCURRENT_TIMERS];
 extern timer_time_t timer_values[MAX_CONCURRENT_TIMERS];
 
 void events_init(UBYTE preserve) BANKED;
-void events_update() NONBANKED;
+void events_update(void) NONBANKED;
 
 void timers_init(UBYTE preserve) BANKED;
-void timers_update() NONBANKED;
+void timers_update(void) NONBANKED;
 
 #endif

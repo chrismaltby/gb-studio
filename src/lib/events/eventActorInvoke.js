@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_INVOKE";
 const groups = ["EVENT_GROUP_ACTOR"];
+const subGroups = {
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_SCRIPT",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ACTOR_INVOKE_LABEL", {
@@ -28,6 +31,7 @@ module.exports = {
   id,
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
   deprecated: true,

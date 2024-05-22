@@ -1,11 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { DMG_PALETTE } from "../../consts";
-import { RootState } from "store/configureStore";
+import { DMG_PALETTE } from "consts";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import { Palette } from "store/features/entities/entitiesTypes";
-import PaletteBlock from "../library/PaletteBlock";
+import { Palette } from "shared/lib/entities/entitiesTypes";
+import PaletteBlock from "components/forms/PaletteBlock";
 import {
   Option,
   Select,
@@ -13,6 +12,8 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
+import l10n from "shared/lib/lang/l10n";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
@@ -24,6 +25,7 @@ interface PaletteSelectProps extends SelectCommonProps {
   optionalLabel?: string;
   optionalDefaultPaletteId?: string;
   canKeep?: boolean;
+  canRestore?: boolean;
   keepLabel?: string;
 }
 
@@ -47,12 +49,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   optionalLabel,
   optionalDefaultPaletteId,
   canKeep,
+  canRestore,
   keepLabel,
   ...selectProps
 }) => {
-  const palettes = useSelector((state: RootState) =>
-    paletteSelectors.selectAll(state)
-  );
+  const palettes = useAppSelector((state) => paletteSelectors.selectAll(state));
   const [options, setOptions] = useState<PaletteOption[]>([]);
   const [currentPalette, setCurrentPalette] = useState<Palette>();
   const [currentValue, setCurrentValue] = useState<PaletteOption>();
@@ -65,6 +66,14 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               {
                 value: "keep",
                 label: keepLabel || "Keep",
+              },
+            ] as PaletteOption[])
+          : [],
+        canRestore
+          ? ([
+              {
+                value: "restore",
+                label: l10n("FIELD_RESTORE_DEFAULT"),
               },
             ] as PaletteOption[])
           : [],
@@ -84,9 +93,9 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
           label: DMG_PALETTE.name,
           palette: DMG_PALETTE as Palette,
         },
-        palettes.map((palette) => ({
+        palettes.map((palette, index) => ({
           value: palette.id,
-          label: palette.name,
+          label: paletteName(palette, index),
           palette,
         }))
       )
@@ -94,6 +103,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   }, [
     palettes,
     canKeep,
+    canRestore,
     keepLabel,
     optional,
     optionalDefaultPaletteId,
@@ -113,6 +123,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
       setCurrentValue({
         value: "keep",
         label: keepLabel || "Keep",
+      });
+    } else if (canRestore && value === "restore") {
+      setCurrentValue({
+        value: "restore",
+        label: l10n("FIELD_RESTORE_DEFAULT"),
       });
     } else if (currentPalette) {
       setCurrentValue({
@@ -144,6 +159,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     canKeep,
     keepLabel,
     value,
+    canRestore,
   ]);
 
   const onSelectChange = (newValue: Option) => {

@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_VARIABLE_MATH";
 const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  EVENT_GROUP_MATH: "EVENT_GROUP_VARIABLES",
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_MATH",
+};
 
 const autoLabel = (fetchArg, input) => {
   const variable = fetchArg("vectorX");
@@ -151,7 +155,6 @@ const fields = [
       },
     ],
     defaultValue: false,
-    alignCheckbox: true,
   },
 ];
 
@@ -213,6 +216,7 @@ module.exports = {
   description: l10n("EVENT_VARIABLE_MATH_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };

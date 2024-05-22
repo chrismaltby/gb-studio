@@ -4,10 +4,10 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-} from "../entities/entitiesState";
-import { ScriptEventParentType } from "../entities/entitiesTypes";
+} from "store/features/entities/entitiesState";
+import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
-import editorActions from "../editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 import { pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
@@ -104,8 +104,8 @@ const copySelectedEntity =
   };
 
 const pasteClipboardEntity =
-  () => (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
-    const clipboard = pasteAny();
+  () => async (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+    const clipboard = await pasteAny();
     if (!clipboard) {
       return;
     }
@@ -123,11 +123,11 @@ const pasteClipboardEntity =
 
 const pasteClipboardEntityInPlace =
   () =>
-  (
+  async (
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
     getState: () => RootState
   ) => {
-    const clipboard = pasteAny();
+    const clipboard = await pasteAny();
     if (!clipboard) {
       return;
     }
@@ -162,7 +162,7 @@ const pasteClipboardEntityInPlace =
     }
   };
 
-export default {
+const clipboardActions = {
   ...actions,
   fetchClipboard,
   copyText,
@@ -186,3 +186,5 @@ export default {
   pasteActorAt,
   pasteSceneAt,
 };
+
+export default clipboardActions;

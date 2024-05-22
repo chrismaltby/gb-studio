@@ -1,53 +1,37 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { MentionsInput, SuggestionDataItem } from "react-mentions";
-import { NamedVariable } from "lib/helpers/variables";
+import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
-import { Font } from "store/features/entities/entitiesTypes";
+import { Font } from "shared/lib/entities/entitiesTypes";
 import CustomMention from "./CustomMention";
-import { RelativePortal } from "../layout/RelativePortal";
-import { FontSelect } from "../../forms/FontSelect";
-import { VariableSelect } from "../../forms/VariableSelect";
-import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import { FontSelect } from "components/forms/FontSelect";
+import { VariableSelect } from "components/forms/VariableSelect";
+import { TextSpeedSelect } from "components/forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
+import { portalRoot } from "ui/layout/Portal";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
 
-const speedCodes = [
-  {
-    id: "S0",
-    display: `${l10n("FIELD_INSTANT")}`,
-  },
-  {
-    id: "S1",
-    display: `${l10n("FIELD_SPEED")}\u00a01`,
-  },
-  {
-    id: "S2",
-    display: `${l10n("FIELD_SPEED")}\u00a02`,
-  },
-  {
-    id: "S3",
-    display: `${l10n("FIELD_SPEED")}\u00a03`,
-  },
-  {
-    id: "S4",
-    display: `${l10n("FIELD_SPEED")}\u00a04`,
-  },
-  {
-    id: "S5",
-    display: `${l10n("FIELD_SPEED")}\u00a05`,
-  },
-];
+interface DialogueTextareaWrapperProps {
+  singleLine?: boolean;
+}
 
-const speedCodeLookup = keyBy(speedCodes, "id");
-
-const DialogueTextareaWrapper = styled.div`
+const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
   position: relative;
+  z-index: 0;
   display: inline-block;
   width: 100%;
   font-size: ${(props) => props.theme.typography.fontSize};
@@ -62,8 +46,8 @@ const DialogueTextareaWrapper = styled.div`
     background: ${(props) => props.theme.colors.input.background};
     border-radius: 4px;
     padding: 5px;
-    min-height: 38px;
     line-height: 16px;
+    ${(props) => (!props.singleLine ? `min-height: 38px;` : "")}
   }
 
   .MentionsInput__highlighter {
@@ -103,49 +87,6 @@ const DialogueTextareaWrapper = styled.div`
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
     }
-  }
-
-  .MentionsInput__suggestions {
-    background-color: transparent !important;
-    z-index: 100 !important;
-  }
-
-  .MentionsInput__suggestions__list {
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    width: max-content;
-    min-width: 100px;
-    user-select: none;
-    box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
-      0 4px 11px hsla(0, 0%, 0%, 0.1);
-    background: ${(props) => props.theme.colors.menu.background};
-    color: ${(props) => props.theme.colors.text};
-    font-size: ${(props) => props.theme.typography.fontSize};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    padding: 4px 0;
-  }
-
-  .MentionsInput__suggestions__item {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    font-size: ${(props) => props.theme.typography.menuFontSize};
-    &:focus {
-      background: ${(props) => props.theme.colors.menu.hoverBackground};
-      outline: none;
-      box-shadow: none;
-    }
-  }
-
-  .MentionsInput__suggestions__item:hover {
-    background-color: ${(props) => props.theme.colors.menu.hoverBackground};
-  }
-
-  .MentionsInput__suggestions__item--focused {
-    background-color: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
   .Mentions__TokenVar {
@@ -226,6 +167,7 @@ export interface DialogueTextareaProps {
   entityId: string;
   fonts: Font[];
   maxlength?: number;
+  singleLine?: boolean;
   onChange: (newValue: string) => void;
 }
 
@@ -247,6 +189,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   fonts,
   entityId,
   placeholder,
+  singleLine = false,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
@@ -257,6 +200,38 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     Dictionary<SuggestionDataItem>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
+
+  const speedCodes = useMemo(
+    () => [
+      {
+        id: "S0",
+        display: `${l10n("FIELD_INSTANT")}`,
+      },
+      {
+        id: "S1",
+        display: `${l10n("FIELD_SPEED")}\u00a01`,
+      },
+      {
+        id: "S2",
+        display: `${l10n("FIELD_SPEED")}\u00a02`,
+      },
+      {
+        id: "S3",
+        display: `${l10n("FIELD_SPEED")}\u00a03`,
+      },
+      {
+        id: "S4",
+        display: `${l10n("FIELD_SPEED")}\u00a04`,
+      },
+      {
+        id: "S5",
+        display: `${l10n("FIELD_SPEED")}\u00a05`,
+      },
+    ],
+    []
+  );
+
+  const speedCodeLookup = useMemo(() => keyBy(speedCodes, "id"), [speedCodes]);
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -288,7 +263,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   }, [handleCopy]);
 
   return (
-    <DialogueTextareaWrapper>
+    <DialogueTextareaWrapper singleLine={singleLine}>
       {editMode && (
         <RelativePortal
           offsetX={editMode.x}
@@ -382,6 +357,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       )}
       <MentionsInput
         id={id}
+        singleLine={singleLine}
         className="MentionsInput"
         value={value}
         placeholder={placeholder}
@@ -390,6 +366,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           onChange(e.target.value)
         }
         inputRef={inputRef}
+        suggestionsPortalHost={portalRoot}
       >
         <CustomMention
           className="Mentions__TokenVar"

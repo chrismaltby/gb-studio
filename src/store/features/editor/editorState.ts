@@ -1,4 +1,10 @@
-import { createSlice, PayloadAction, AnyAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  AnyAction,
+  createSelector,
+  ThunkDispatch,
+} from "@reduxjs/toolkit";
 import {
   BRUSH_8PX,
   COLLISION_ALL,
@@ -6,15 +12,23 @@ import {
   DRAG_TRIGGER,
   DRAG_DESTINATION,
   DRAG_PLAYER,
-} from "../../../consts";
-import { zoomIn, zoomOut } from "lib/helpers/zoom";
-import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
-import navigationActions from "../navigation/navigationActions";
-import projectActions from "../project/projectActions";
-import settingsActions from "../settings/settingsActions";
-import entitiesActions from "../entities/entitiesActions";
-import spriteActions from "../sprite/spriteActions";
-import { MIN_SIDEBAR_WIDTH } from "lib/helpers/window/sidebar";
+  BRUSH_SLOPE,
+} from "consts";
+import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
+import {
+  ScriptEventParentType,
+  Variable,
+} from "shared/lib/entities/entitiesTypes";
+import navigationActions from "store/features/navigation/navigationActions";
+import projectActions from "store/features/project/projectActions";
+import settingsActions from "store/features/settings/settingsActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import spriteActions from "store/features/sprite/spriteActions";
+import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
+import type { NavigationSection } from "store/features/navigation/navigationState";
+import type { RootState } from "store/configureStore";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
+import { selectScriptIds } from "store/features/entities/entitiesState";
 
 export type Tool =
   | "triggers"
@@ -25,7 +39,7 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type Brush = "8px" | "16px" | "fill";
+export type Brush = "8px" | "16px" | "fill" | "magic" | "slope";
 
 export type EditorSelectionType =
   | "world"
@@ -35,12 +49,15 @@ export type EditorSelectionType =
   | "customEvent"
   | "variable";
 
-export type ZoomSection =
-  | "world"
-  | "sprites"
-  | "backgrounds"
-  | "ui"
-  | "spriteTiles";
+export const zoomSections = [
+  "world",
+  "sprites",
+  "backgrounds",
+  "ui",
+  "spriteTiles",
+] as const;
+
+export type ZoomSection = typeof zoomSections[number];
 
 export interface SpriteTileSelection {
   x: number;
@@ -56,18 +73,29 @@ export interface SelectedInstrument {
   type: InstrumentType;
 }
 
+export type SlopeIncline = "medium" | "shallow" | "steep";
+
+export interface SlopePreview {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  offset: boolean;
+  slopeIncline: SlopeIncline;
+}
+
 export interface EditorState {
   tool: Tool;
   pasteMode: boolean;
-  actorDefaults?: Partial<Actor>;
-  triggerDefaults?: Partial<Trigger>;
-  sceneDefaults?: Partial<SceneData>;
   clipboardVariables: Variable[];
   type: EditorSelectionType;
   worldFocus: boolean;
   scene: string;
   entityId: string;
   eventId: string;
+  sceneSelectionIds: string[];
+  scriptEventSelectionIds: string[];
+  scriptEventSelectionParentId: string;
   index: number;
   zoom: number;
   zoomSprite: number;
@@ -83,7 +111,6 @@ export interface EditorState {
   searchTerm: string;
   hover: {
     sceneId: string;
-    actorId: string;
     x: number;
     y: number;
   };
@@ -104,7 +131,7 @@ export interface EditorState {
   navigatorSidebarWidth: number;
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
-  profile: boolean;
+  navigatorSplitSizesManuallyEdited: boolean;
   focusSceneId: string;
   selectedSpriteSheetId: string;
   selectedSpriteStateId: string;
@@ -123,6 +150,7 @@ export interface EditorState {
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   precisionTileMode: boolean;
+  slopePreview?: SlopePreview;
 }
 
 export const initialState: EditorState = {
@@ -133,6 +161,9 @@ export const initialState: EditorState = {
   scene: "",
   entityId: "",
   eventId: "",
+  sceneSelectionIds: [],
+  scriptEventSelectionIds: [],
+  scriptEventSelectionParentId: "",
   index: 0,
   zoom: 100,
   zoomSprite: 400,
@@ -148,7 +179,6 @@ export const initialState: EditorState = {
   searchTerm: "",
   hover: {
     sceneId: "",
-    actorId: "",
     x: 0,
     y: 0,
   },
@@ -165,12 +195,12 @@ export const initialState: EditorState = {
   lastScriptTabTrigger: "",
   lastScriptTabSecondary: "",
   lockScriptEditor: false,
-  profile: false,
   worldSidebarWidth: 300,
   navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
   clipboardVariables: [],
   navigatorSplitSizes: [300, 100, 100],
+  navigatorSplitSizesManuallyEdited: false,
   focusSceneId: "",
   selectedSpriteSheetId: "",
   selectedSpriteStateId: "",
@@ -191,7 +221,65 @@ export const initialState: EditorState = {
   },
   selectedSequence: 0,
   precisionTileMode: false,
+  slopePreview: undefined,
 };
+
+const toggleScriptEventSelectedId =
+  (action: {
+    scriptEventId: string;
+    parentType: ScriptEventParentType;
+    parentId: string;
+    parentKey: string;
+  }) =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const siblingIds = selectScriptIds(
+      state.project.present.entities,
+      action.parentType,
+      action.parentId,
+      action.parentKey
+    );
+    const selectionIds = state.editor.scriptEventSelectionIds.slice();
+    const selectionParentId = state.editor.scriptEventSelectionParentId;
+    const parentId = `${action.parentType}_${action.parentId}_${action.parentKey}`;
+
+    if (siblingIds) {
+      if (selectionParentId !== parentId) {
+        // Selected from new parent, change selection to just this script event
+        dispatch(
+          actions.setScriptEventSelectedIds({
+            scriptEventIds: [action.scriptEventId],
+            parentId,
+          })
+        );
+      } else {
+        // Same parent id so toggle if event is selected or not
+        const index = selectionIds.indexOf(action.scriptEventId);
+        if (index === -1) {
+          // Add to selection
+          selectionIds.push(action.scriptEventId);
+        } else {
+          // Remove from selection
+          selectionIds.splice(index, 1);
+        }
+        // Sort to keep order of siblings
+        const sortedIds = selectionIds.slice().sort((a, b) => {
+          const indexA = siblingIds.findIndex((item) => item === a);
+          const indexB = siblingIds.findIndex((item) => item === b);
+          return indexA - indexB;
+        });
+        dispatch(
+          actions.setScriptEventSelectedIds({
+            scriptEventIds: sortedIds,
+            parentId,
+          })
+        );
+      }
+    }
+  };
 
 const editorSlice = createSlice({
   name: "editor",
@@ -199,10 +287,14 @@ const editorSlice = createSlice({
   reducers: {
     setTool: (state, action: PayloadAction<{ tool: Tool }>) => {
       state.tool = action.payload.tool;
-      state.actorDefaults = undefined;
-      state.triggerDefaults = undefined;
-      state.sceneDefaults = undefined;
       state.pasteMode = false;
+      // Reset to 8px brush is current brush not supported
+      if (
+        state.selectedBrush === BRUSH_SLOPE &&
+        action.payload.tool !== "collisions"
+      ) {
+        state.selectedBrush = BRUSH_8PX;
+      }
     },
 
     setPasteMode: (state, action: PayloadAction<boolean>) => {
@@ -248,6 +340,7 @@ const editorSlice = createSlice({
       state.scene = "";
       state.type = "world";
       state.worldFocus = true;
+      state.sceneSelectionIds = [];
     },
 
     selectSidebar: (state, _action: PayloadAction<void>) => {
@@ -276,6 +369,11 @@ const editorSlice = createSlice({
       state.scene = action.payload.sceneId;
       state.previewAsSceneId = action.payload.sceneId;
       state.worldFocus = true;
+      state.entityId = "";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
+      state.scriptEventSelectionIds = [];
     },
 
     selectCustomEvent: (
@@ -285,6 +383,7 @@ const editorSlice = createSlice({
       state.type = "customEvent";
       state.scene = "";
       state.entityId = action.payload.customEventId;
+      state.scriptEventSelectionIds = [];
     },
 
     selectVariable: (state, action: PayloadAction<{ variableId: string }>) => {
@@ -303,6 +402,10 @@ const editorSlice = createSlice({
       state.entityId = action.payload.actorId;
       state.worldFocus = true;
       state.tool = "select";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
+      state.scriptEventSelectionIds = [];
     },
 
     selectTrigger: (
@@ -315,6 +418,10 @@ const editorSlice = createSlice({
       state.entityId = action.payload.triggerId;
       state.worldFocus = true;
       state.tool = "select";
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
+      state.scriptEventSelectionIds = [];
     },
 
     dragTriggerStart: (
@@ -326,6 +433,10 @@ const editorSlice = createSlice({
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
+      state.scriptEventSelectionIds = [];
     },
 
     dragTriggerStop: (state, _action: PayloadAction<void>) => {
@@ -341,6 +452,10 @@ const editorSlice = createSlice({
       state.entityId = action.payload.actorId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
+      if (!state.sceneSelectionIds.includes(state.scene)) {
+        state.sceneSelectionIds = [action.payload.sceneId];
+      }
+      state.scriptEventSelectionIds = [];
     },
 
     dragActorStop: (state, _action: PayloadAction<void>) => {
@@ -490,6 +605,7 @@ const editorSlice = createSlice({
     editSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
       state.focusSceneId = "";
+      state.sceneSelectionIds = [];
     },
 
     setScriptTab: (state, action: PayloadAction<string>) => {
@@ -512,31 +628,16 @@ const editorSlice = createSlice({
       state.lockScriptEditor = action.payload;
     },
 
-    setProfiling: (state, action: PayloadAction<boolean>) => {
-      state.profile = action.payload;
-    },
-
-    setActorDefaults: (state, action: PayloadAction<Partial<Actor>>) => {
-      state.actorDefaults = action.payload;
-      state.tool = "actors";
-    },
-
-    setTriggerDefaults: (state, action: PayloadAction<Partial<Trigger>>) => {
-      state.triggerDefaults = action.payload;
-      state.tool = "triggers";
-    },
-
-    setSceneDefaults: (state, action: PayloadAction<Partial<SceneData>>) => {
-      state.sceneDefaults = action.payload;
-      state.tool = "scene";
-    },
-
     setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {
       state.clipboardVariables = action.payload;
     },
 
-    setNavigatorSplitSizes: (state, action: PayloadAction<number[]>) => {
-      state.navigatorSplitSizes = action.payload;
+    setNavigatorSplitSizes: (
+      state,
+      action: PayloadAction<{ sizes: number[]; manuallyEdited: boolean }>
+    ) => {
+      state.navigatorSplitSizes = action.payload.sizes;
+      state.navigatorSplitSizesManuallyEdited = action.payload.manuallyEdited;
     },
 
     setFocusSceneId: (state, action: PayloadAction<string>) => {
@@ -671,25 +772,120 @@ const editorSlice = createSlice({
     setPrecisionTileMode: (state, action: PayloadAction<boolean>) => {
       state.precisionTileMode = action.payload;
     },
+
+    setSlopePreview: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        slopePreview?: SlopePreview;
+      }>
+    ) => {
+      state.scene = action.payload.sceneId;
+      state.slopePreview = action.payload.slopePreview;
+    },
+
+    setSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = action.payload;
+      // Also focus on first scene in array
+      if (state.sceneSelectionIds.length > 0) {
+        state.scene = state.sceneSelectionIds[0];
+        state.type = "scene";
+        state.worldFocus = true;
+      }
+    },
+
+    addSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = [
+        ...state.sceneSelectionIds,
+        ...action.payload,
+      ].filter((id, index, self) => {
+        return self.indexOf(id) === index;
+      });
+      // If not currently in scene mode switch to selecting the first selected scene
+      if (state.type !== "scene" && state.sceneSelectionIds.length > 0) {
+        state.scene = state.sceneSelectionIds[0];
+        state.type = "scene";
+        state.worldFocus = true;
+      }
+    },
+
+    removeSceneSelectionIds: (state, action: PayloadAction<string[]>) => {
+      state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
+        return action.payload.indexOf(id) === -1;
+      });
+    },
+
+    toggleSceneSelectedId: (state, action: PayloadAction<string>) => {
+      // If toggling focused scene id then remove scene selection
+      if (state.scene === action.payload) {
+        state.scene = "";
+        state.type = "world";
+        state.worldFocus = true;
+        state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
+          return action.payload.indexOf(id) === -1;
+        });
+      } else {
+        const index = state.sceneSelectionIds.indexOf(action.payload);
+        if (index === -1) {
+          state.sceneSelectionIds.push(action.payload);
+          // If not currently in scene mode switch to selecting this scene
+          if (state.type !== "scene") {
+            state.scene = action.payload;
+            state.type = "scene";
+            state.worldFocus = true;
+          }
+        } else {
+          state.sceneSelectionIds.splice(index, 1);
+        }
+      }
+    },
+
+    clearSceneSelectionIds: (state) => {
+      state.sceneSelectionIds = [];
+    },
+
+    setScriptEventSelectedIds: (
+      state,
+      action: PayloadAction<{ scriptEventIds: string[]; parentId: string }>
+    ) => {
+      state.scriptEventSelectionIds = action.payload.scriptEventIds;
+      state.scriptEventSelectionParentId = action.payload.parentId;
+    },
+
+    clearScriptEventSelectionIds: (state) => {
+      state.scriptEventSelectionIds = [];
+      state.scriptEventSelectionParentId = "";
+    },
   },
   extraReducers: (builder) =>
     builder
       .addCase(entitiesActions.addScene, (state, action) => {
         state.type = "scene";
         state.scene = action.payload.sceneId;
+        state.entityId = "";
         state.worldFocus = true;
+        state.sceneSelectionIds = [action.payload.sceneId];
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addActor, (state, action) => {
         state.type = "actor";
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.actorId;
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addTrigger, (state, action) => {
         state.type = "trigger";
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.triggerId;
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
+        state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;
@@ -740,7 +936,11 @@ const editorSlice = createSlice({
       .addCase(settingsActions.editPlayerStartAt, (state, action) => {
         state.scene = action.payload.sceneId;
         state.type = "scene";
+        state.entityId = "";
         state.worldFocus = true;
+        if (!state.sceneSelectionIds.includes(state.scene)) {
+          state.sceneSelectionIds = [action.payload.sceneId];
+        }
       })
       // Force React Select dropdowns to reload with new name
       .addCase(entitiesActions.renameVariable, (state, _action) => {
@@ -750,6 +950,7 @@ const editorSlice = createSlice({
       .addCase(navigationActions.setSection, (state, _action) => {
         state.worldFocus = false;
         state.eventId = "";
+        state.scriptEventSelectionIds = [];
       })
       // Remove world focus when loading project and set scroll settings from project
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
@@ -774,6 +975,24 @@ const editorSlice = createSlice({
         state.selectedMetaspriteId =
           action.payload.spriteAnimations[0].frames[0];
       })
+      // When painting slope stop slope preview
+      .addCase(entitiesActions.paintSlopeCollision, (state) => {
+        state.slopePreview = undefined;
+      })
+      // When adding a new song file jump to it in navigator
+      .addCase(addNewSongFile.fulfilled, (state, action) => {
+        state.selectedSongId = action.payload.data.id;
+      })
+      // When grouping script events remove selection
+      .addCase(entitiesActions.groupScriptEvents, (state) => {
+        state.scriptEventSelectionIds = [];
+        state.scriptEventSelectionParentId = "";
+      })
+      // When adding new script events remove selection
+      .addCase(entitiesActions.addScriptEvents, (state) => {
+        state.scriptEventSelectionIds = [];
+        state.scriptEventSelectionParentId = "";
+      })
       // When UI changes increment UI version number
       .addMatcher(
         (action): action is AnyAction =>
@@ -791,11 +1010,42 @@ const editorSlice = createSlice({
         (state, action) => {
           state.type = "scene";
           state.scene = action.payload.sceneId;
+          state.entityId = "";
           state.worldFocus = true;
+          if (!state.sceneSelectionIds.includes(state.scene)) {
+            state.sceneSelectionIds = [action.payload.sceneId];
+          }
         }
       ),
 });
 
-export const { actions, reducer } = editorSlice;
+export const { reducer } = editorSlice;
+
+export const actions = {
+  ...editorSlice.actions,
+  toggleScriptEventSelectedId,
+};
+
+/**************************************************************************
+ * Selectors
+ */
+
+const selectSelf = (state: RootState) => state.editor;
+
+export const getZoomForSection = createSelector(
+  [selectSelf, (_state: RootState, section: NavigationSection) => section],
+  (state, section) => {
+    if (section === "world") {
+      return state.zoom;
+    }
+    if (section === "sprites") {
+      return state.zoomSprite;
+    }
+    if (section === "backgrounds") {
+      return state.zoomImage;
+    }
+    return 100;
+  }
+);
 
 export default reducer;

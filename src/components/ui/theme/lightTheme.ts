@@ -13,6 +13,7 @@ const lightTheme: ThemeInterface = {
     translucent: "rgba(255,255,255,0.3)",
     hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
+    background: "#f2f2f2",
     secondaryText: "#999999",
     conditional: {
       level1: "#b3e5fc",
@@ -62,6 +63,10 @@ const lightTheme: ThemeInterface = {
       text: "#3b3a3b",
       border: "#d4d4d4",
     },
+    brackets: {
+      color: "#d4d4d4",
+      hoverBackground: "#f2f2f2",
+    },
     card: {
       background: "#ffffff",
       text: "#3b3a3b",
@@ -74,7 +79,7 @@ const lightTheme: ThemeInterface = {
       border: "#d4d4d4",
       well: {
         background: "#dddddd",
-        boxShadow: "-1px 0px 2px 0px rgba(0, 0, 0, 0.2) inset",
+        boxShadow: "-1px 0px 10px 0px rgba(0, 0, 0, 0.1) inset",
         hoverBackground: "#cfcfcf",
       },
     },

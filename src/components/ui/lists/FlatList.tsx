@@ -2,8 +2,9 @@ import throttle from "lodash/throttle";
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
+import { getEventNodeName } from "renderer/lib/helpers/dom";
 
 export interface FlatListItem {
   id: string;
@@ -16,10 +17,12 @@ interface RowProps<T> {
   readonly data: {
     readonly items: T[];
     readonly selectedId: string;
+    readonly highlightIds?: string[];
     readonly setSelectedId?: (value: string, item: T) => void;
     readonly renderItem: (props: {
       selected: boolean;
       item: T;
+      index: number;
     }) => React.ReactNode;
   };
 }
@@ -28,11 +31,13 @@ export interface FlatListProps<T> {
   readonly height: number;
   readonly items: T[];
   readonly selectedId?: string;
+  readonly highlightIds?: string[];
   readonly setSelectedId?: (id: string, item: T) => void;
-  readonly onKeyDown?: (e: KeyboardEvent) => void;
+  readonly onKeyDown?: (e: KeyboardEvent, item?: T) => void;
   readonly children?: (props: {
     selected: boolean;
     item: T;
+    index: number;
   }) => React.ReactNode;
   readonly theme?: ThemeInterface;
 }
@@ -50,13 +55,22 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
   }
   return (
     <div
+      key={item.id}
       style={style}
       onClick={() => data.setSelectedId?.(item.id, item)}
       data-id={item.id}
     >
-      <ListItem tabIndex={-1} data-selected={data.selectedId === item.id}>
+      <ListItem
+        tabIndex={-1}
+        data-selected={data.selectedId === item.id}
+        data-highlighted={data.highlightIds?.includes(item.id)}
+      >
         {data.renderItem
-          ? data.renderItem({ item, selected: data.selectedId === item.id })
+          ? data.renderItem({
+              item,
+              selected: data.selectedId === item.id,
+              index,
+            })
           : item.name}
       </ListItem>
     </div>
@@ -66,6 +80,7 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
 export const FlatList = <T extends FlatListItem>({
   items,
   selectedId,
+  highlightIds,
   setSelectedId,
   height,
   onKeyDown,
@@ -78,7 +93,7 @@ export const FlatList = <T extends FlatListItem>({
   const selectedIndex = items.findIndex((item) => item.id === selectedId);
 
   const handleKeys = (e: KeyboardEvent) => {
-    if (!hasFocus) {
+    if (!hasFocus || getEventNodeName(e) === "INPUT") {
       return;
     }
     if (e.metaKey || e.ctrlKey) {
@@ -101,7 +116,7 @@ export const FlatList = <T extends FlatListItem>({
     } else {
       handleSearch(e.key);
     }
-    onKeyDown?.(e);
+    onKeyDown?.(e, items[selectedIndex]);
   };
 
   const throttledNext = useRef(
@@ -147,6 +162,12 @@ export const FlatList = <T extends FlatListItem>({
     }
   };
 
+  const handleClickOutside = (e: MouseEvent) => {
+    if (ref.current && hasFocus && !ref.current.contains(e.target as Node)) {
+      setHasFocus(false);
+    }
+  };
+
   const setFocus = (id: string) => {
     if (ref.current) {
       const el = ref.current.querySelector('[data-id="' + id + '"]');
@@ -158,8 +179,10 @@ export const FlatList = <T extends FlatListItem>({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
+    window.addEventListener("mousedown", handleClickOutside);
     return () => {
       window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("mousedown", handleClickOutside);
     };
   });
 
@@ -171,6 +194,10 @@ export const FlatList = <T extends FlatListItem>({
       list.current.scrollToItem(selectedIndex);
     }
   }, [selectedIndex, items, list]);
+
+  if (height <= 0) {
+    return <Wrapper ref={ref} style={{ height }}></Wrapper>;
+  }
 
   return (
     <Wrapper
@@ -184,13 +211,14 @@ export const FlatList = <T extends FlatListItem>({
       <List
         ref={list}
         width="100%"
-        height={height}
+        height={Math.max(0, height)}
         itemCount={items.length}
         itemSize={25}
         itemData={{
           items,
           selectedIndex,
           selectedId,
+          highlightIds,
           setSelectedId,
           focus: hasFocus,
           renderItem: children,

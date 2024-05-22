@@ -1,16 +1,16 @@
 import { ThunkMiddleware } from "redux-thunk";
-import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
 import { RootState } from "store/configureStore";
-import editorActions from "../editor/editorActions";
-import { musicSelectors } from "../entities/entitiesState";
-import navigationActions from "../navigation/navigationActions";
+import editorActions from "store/features/editor/editorActions";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import navigationActions from "store/features/navigation/navigationActions";
 import { saveSongFile } from "./trackerDocumentState";
 import trackerDocumentActions from "./trackerDocumentActions";
-import electronActions from "../electron/electronActions";
-import l10n from "lib/helpers/l10n";
+import electronActions from "store/features/electron/electronActions";
+import l10n from "shared/lib/lang/l10n";
+import API from "renderer/lib/api";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =
-  (store) => (next) => (action) => {
+  (store) => (next) => async (action) => {
     const state = store.getState();
 
     if (
@@ -23,7 +23,9 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         // Display confirmation and stop action if
         const songsLookup = musicSelectors.selectEntities(state);
         const selectedSong = songsLookup[state.editor.selectedSongId];
-        const option = confirmUnsavedChangesTrackerDialog(selectedSong?.name);
+        const option = await API.dialog.confirmUnsavedChangesTrackerDialog(
+          selectedSong?.name ?? ""
+        );
         switch (option) {
           case 0: // Save and continue
             store.dispatch(saveSongFile());

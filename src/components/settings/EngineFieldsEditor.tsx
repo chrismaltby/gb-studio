@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import {
   EngineFieldCType,
   EngineFieldSchema,
@@ -7,18 +6,19 @@ import {
 import { engineFieldValueSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
-import l10n from "lib/helpers/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { useGroupedEngineFields } from "./useGroupedEngineFields";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
-import { EngineFieldValue } from "store/features/entities/entitiesTypes";
+import { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import { Input } from "ui/form/Input";
 import { Checkbox } from "ui/form/Checkbox";
-import clamp from "lib/helpers/clamp";
+import clamp from "shared/lib/helpers/clamp";
 import { Select } from "ui/form/Select";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
@@ -138,7 +138,7 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
     const theValue = value !== undefined ? value : field.defaultValue;
     const options = (field.options || []).map(([value, label]) => ({
       value,
-      label: l10n(label),
+      label: l10n(label as L10NKey),
     }));
     const selectedOption = options.find((option) => option.value === theValue);
     return (
@@ -155,8 +155,8 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
 };
 
 const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
-  const dispatch = useDispatch();
-  const values = useSelector(engineFieldValueSelectors.selectEntities);
+  const dispatch = useAppDispatch();
+  const values = useAppSelector(engineFieldValueSelectors.selectEntities);
   const groupedFields = useGroupedEngineFields();
 
   const resetToDefault = (fields: EngineFieldSchema[]) => () => {
@@ -179,16 +179,16 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
         >
           <CardAnchor id={`settings${group.name}`} />
           <CardHeading>
-            {l10n("SETTINGS_ENGINE")}: {l10n(group.name)}
+            {l10n("SETTINGS_ENGINE")}: {l10n(group.name as L10NKey)}
           </CardHeading>
           {group.fields.map((field) => (
             <SearchableSettingRow
               key={field.key}
               searchTerm={searchTerm}
-              searchMatches={[l10n(field.label), field.key]}
+              searchMatches={[l10n(field.label as L10NKey), field.key]}
             >
               <SettingRowLabel htmlFor={field.key} style={{ width: 300 }}>
-                {l10n(field.label)}
+                {l10n(field.label as L10NKey)}
               </SettingRowLabel>
               <SettingRowInput>
                 <EngineFieldInput
