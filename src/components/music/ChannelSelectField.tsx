@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 interface ChannelSelectFieldProps {
   name: string;
   label: string;
+  title: string;
   index: number;
   muted: boolean;
 }
@@ -26,7 +27,6 @@ const Wrapper = styled.div`
 const ChannelButton = styled(Button)`
   flex-grow: 0;
   height: 22px;
-  width: 56px;
   margin: 0 2px;
 `;
 
@@ -43,6 +43,7 @@ const ActionGroup = styled.div`
 export const ChannelSelectField = ({
   name,
   label,
+  title,
   index,
   muted,
 }: ChannelSelectFieldProps) => {
@@ -87,6 +88,7 @@ export const ChannelSelectField = ({
     <Wrapper>
       <ChannelButton
         name={name}
+        title={title}
         variant={selectedChannel === index ? "primary" : "transparent"}
         size="medium"
         active={selectedChannel === index}

@@ -67,6 +67,9 @@ const ErrorDescription = styled.div`
   padding-top: 5px;
 `;
 
+const MIN_WIDTH_FOR_RIGHT_PANEL = 630;
+const MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL = 710;
+
 const MusicPageUge = () => {
   const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
@@ -276,6 +279,8 @@ const MusicPageUge = () => {
     }
   }, [channelStatus, sequenceId, songDocument, view, windowHeight]);
 
+  const documentWidth = windowWidth - leftPaneWidth - rightPaneWidth;
+
   return (
     <Wrapper>
       <div
@@ -330,7 +335,16 @@ const MusicPageUge = () => {
           >
             <div style={{ position: "relative", height: "60px" }}>
               <SongEditorToolsPanel selectedSong={viewSong} />
-              <SongEditorRightToolsPanel channelStatus={channelStatus} />
+              {documentWidth > MIN_WIDTH_FOR_RIGHT_PANEL && (
+                <SongEditorRightToolsPanel
+                  channelStatus={channelStatus}
+                  size={
+                    documentWidth > MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL
+                      ? "medium"
+                      : "small"
+                  }
+                />
+              )}
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}

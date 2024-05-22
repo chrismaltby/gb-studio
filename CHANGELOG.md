@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update sidebar layout to prioritise giving scripts full sidebar width
 - Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
+- Update music editor to display compressed version of channel mute/visibility controls when not enough room to display fully
 
 ### Fixed
 
