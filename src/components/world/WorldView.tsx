@@ -303,22 +303,25 @@ const WorldView = () => {
 
   //#region World Dragging
 
-  const onWorldDragMove = useCallback((e: MouseEvent) => {
-    if (!scrollRef.current) {
-      return;
-    }
-    if (!e.buttons) {
-      // If buttons isn't set that means the mouse button was likely
-      // released while the mouse cursor was outside the window
-      // so we should stop dragging
-      window.removeEventListener("mousemove", onWorldDragMove);
-      return;
-    }
-    scrollRef.current.scrollLeft -= e.movementX;
-    scrollRef.current.scrollTop -= e.movementY;
-    dragState.current.dragDistanceX -= e.movementX;
-    dragState.current.dragDistanceY -= e.movementY;
-  }, []);
+  const onWorldDragMove = useCallback(
+    (e: MouseEvent) => {
+      if (!scrollRef.current) {
+        return;
+      }
+      if (!e.buttons) {
+        // If buttons isn't set that means the mouse button was likely
+        // released while the mouse cursor was outside the window
+        // so we should stop dragging
+        window.removeEventListener("mousemove", onWorldDragMove);
+        return;
+      }
+      scrollRef.current.scrollLeft -= e.movementX;
+      scrollRef.current.scrollTop -= e.movementY;
+      dragState.current.dragDistanceX -= e.movementX;
+      dragState.current.dragDistanceY -= e.movementY;
+    },
+    [scrollRef]
+  );
 
   const onEndWorldDrag = useCallback(
     (e: MouseEvent) => {
@@ -508,7 +511,7 @@ const WorldView = () => {
     prevZoomRatio.current = zoomRatio;
     prevOnlyMatchingScene.current = onlyMatchingScene;
     prevLoaded.current = loaded;
-  }, [loaded, onlyMatchingScene, store, zoomRatio]);
+  }, [loaded, onlyMatchingScene, scrollRef, store, zoomRatio]);
 
   //#endregion
 
@@ -559,7 +562,7 @@ const WorldView = () => {
         setSelectionEnd(point);
       }
     },
-    [dispatch, scenesLookup, zoomRatio]
+    [dispatch, scenesLookup, scrollRef, zoomRatio]
   );
 
   const onEndMultiSelection = useCallback(
@@ -593,7 +596,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndMultiSelection);
       }
     },
-    [onEndMultiSelection, onMoveMultiSelection, zoomRatio]
+    [onEndMultiSelection, onMoveMultiSelection, scrollRef, zoomRatio]
   );
 
   useEffect(() => {
