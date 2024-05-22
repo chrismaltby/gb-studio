@@ -30,6 +30,7 @@ import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
+import useResizeObserver from "ui/hooks/use-resize-observer";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -88,7 +89,8 @@ const WorldView = () => {
   const dispatch = useAppDispatch();
   const store = useStore();
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollRef, scrollContainerSize] = useResizeObserver<HTMLDivElement>();
+
   const scrollContentsRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const blockWheelZoom = useRef<number>();
@@ -131,12 +133,9 @@ const WorldView = () => {
     (state) => state.editor.clipboardVariables
   );
   const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);
-  const sidebarWidth = useAppSelector(
-    (state) => state.editor.worldSidebarWidth
-  );
 
-  const viewportWidth = window.innerWidth - sidebarWidth - 17;
-  const viewportHeight = window.innerHeight - 40 - 17;
+  const viewportWidth = scrollContainerSize?.width ?? 0;
+  const viewportHeight = scrollContainerSize?.height ?? 0;
 
   const scrollWidth = useAppSelector((state) =>
     Math.max(viewportWidth, getMaxSceneRight(state) + 20)
