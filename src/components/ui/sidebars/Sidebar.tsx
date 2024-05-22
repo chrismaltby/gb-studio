@@ -1,35 +1,28 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-interface SidebarProps {
-  multiColumn?: boolean;
-}
+export const SidebarColumn = styled.div`
+  padding-top: 10px;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  border-left: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  margin-top: -1px;
+  margin-left: -1px;
+`;
 
-export const SidebarColumn = styled.div``;
-
-export const Sidebar = styled.div<SidebarProps>`
+export const Sidebar = styled.div`
   width: 100%;
   height: 100%;
-
-  ${(props) => (props.multiColumn ? stackStyles : scrollStyles)}
+  overflow: auto;
 `;
 
-const stackStyles = css`
+export const SidebarColumns = styled.div`
+  width: 100%;
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+
   display: flex;
-
+  flex-wrap: wrap;
   ${SidebarColumn} {
-    overflow-y: auto;
     flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    border-left: 1px solid ${(props) => props.theme.colors.sidebar.border};
+    width: 25%;
+    min-width: 260px;
   }
-
-  ${SidebarColumn}:first-child {
-    border-left: 0;
-  }
-`;
-
-const scrollStyles = css`
-  overflow-y: auto;
-  height: 100%;
 `;

@@ -140,28 +140,29 @@ export const WorldEditor: FC = () => {
 
   return (
     <Sidebar onClick={selectSidebar}>
+      <FormContainer>
+        <FormHeader>
+          <EditableText
+            name="name"
+            placeholder={l10n("FIELD_PROJECT_NAME")}
+            value={metadata.name || ""}
+            onChange={onChangeName}
+          />
+          {!showNotes && (
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+            >
+              <MenuItem onClick={onAddNotes}>
+                {l10n("FIELD_ADD_NOTES")}
+              </MenuItem>
+            </DropdownButton>
+          )}
+        </FormHeader>
+      </FormContainer>
       <SidebarColumn>
         <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={l10n("FIELD_PROJECT_NAME")}
-              value={metadata.name || ""}
-              onChange={onChangeName}
-            />
-            {!showNotes && (
-              <DropdownButton
-                size="small"
-                variant="transparent"
-                menuDirection="right"
-              >
-                <MenuItem onClick={onAddNotes}>
-                  {l10n("FIELD_ADD_NOTES")}
-                </MenuItem>
-              </DropdownButton>
-            )}
-          </FormHeader>
-
           {showNotes && (
             <FormRow>
               <NoteField

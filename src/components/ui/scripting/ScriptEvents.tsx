@@ -351,7 +351,7 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   border-left: 1px dotted
     ${(props) => props.theme.colors.scripting.header.backgroundAlt};
   padding-left: 10px;
-  padding-left: calc(max(10px, min(4%, 50px)));
+  padding-left: calc(max(10px, min(4%, 20px)));
   box-sizing: border-box;
   border-radius: 10px;
   position: relative;

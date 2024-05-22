@@ -54,14 +54,14 @@ const ScriptEditor = React.memo(
 
     // Reset renderTo on script tab change
     useEffect(() => {
-      setRenderTo(0);
+      setRenderTo(10);
     }, [context.entityId, context.scriptKey]);
 
     // Load long scripts asynchronously
     useEffect(() => {
       if (value.length >= renderTo) {
         timerRef.current = setTimeout(() => {
-          setRenderTo(renderTo + 1);
+          setRenderTo(renderTo + 10);
         }, 1);
         return () => {
           if (timerRef.current) {

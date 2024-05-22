@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update sidebar layout to prioritise giving scripts full sidebar width
+- Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
+
 ### Fixed
 
 - Fix "Add Flags" event tooltips localisation.
+- Fix issue where some sidebar inputs would appear above script tabs when scrolled
 
 ## [4.0.0-beta2]
 

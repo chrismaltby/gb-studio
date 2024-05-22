@@ -23,7 +23,6 @@ import SongEditorToolsPanel from "components/music/SongEditorToolsPanel";
 import SongEditorRightToolsPanel from "components/music/SongEditorRightToolsPanel";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { SongPianoRoll } from "components/music/SongPianoRoll";
-import { Music } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
@@ -350,7 +349,7 @@ const MusicPageUge = () => {
               position: "relative",
             }}
           >
-            <SongEditor multiColumn={rightPaneWidth >= 500} />
+            <SongEditor />
           </div>
         </>
       ) : (
