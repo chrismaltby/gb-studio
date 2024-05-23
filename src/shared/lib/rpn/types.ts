@@ -22,7 +22,14 @@ export const operatorSymbols = [
 ] as const;
 export type OperatorSymbol = typeof operatorSymbols[number];
 
-export const functionSymbols = ["min", "max", "abs", "atan2"] as const;
+export const functionSymbols = [
+  "min",
+  "max",
+  "abs",
+  "atan2",
+  "isqrt",
+  "rnd",
+] as const;
 export type FunctionSymbol = typeof functionSymbols[number];
 
 export const functionArgsLen: Record<FunctionSymbol, number> = {
@@ -30,6 +37,8 @@ export const functionArgsLen: Record<FunctionSymbol, number> = {
   max: 2,
   abs: 1,
   atan2: 2,
+  isqrt: 1,
+  rnd: 1,
 };
 
 export enum Associativity {

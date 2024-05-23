@@ -33,6 +33,14 @@ const functionSymbols = [
     id: "atan2(",
     display: "atan2(",
   },
+  {
+    id: "isqrt(",
+    display: "isqrt(",
+  },
+  {
+    id: "rnd(",
+    display: "rnd(",
+  },
 ];
 
 const functionSearch = (search: string) => {

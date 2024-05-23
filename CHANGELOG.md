@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
+- Add support for isqrt and rnd functions in math expressions
 
 ### Changed
 

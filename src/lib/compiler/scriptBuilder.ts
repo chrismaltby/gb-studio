@@ -529,6 +529,10 @@ const funToScriptOperator = (
       return ".ABS";
     case "atan2":
       return ".ATAN2";
+    case "isqrt":
+      return ".ISQRT";
+    case "rnd":
+      return ".RND";
   }
   assertUnreachable(fun);
 };
