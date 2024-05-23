@@ -276,6 +276,13 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
+    if (inputRef.current) {
+      // Remove spell check
+      inputRef.current.spellcheck = false;
+    }
+  }, []);
+
+  useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
   }, [variables]);
 
