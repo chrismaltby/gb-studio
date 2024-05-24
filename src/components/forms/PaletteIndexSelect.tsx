@@ -13,6 +13,7 @@ import {
   Select,
   SingleValueWithPreview,
 } from "ui/form/Select";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface PaletteIndexSelectProps {
   name: string;
@@ -48,19 +49,27 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   );
 
   useEffect(() => {
-    setOptions(
-      Array.from(Array(8)).map((_, index) => ({
-        value: index,
-        label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
-        palette:
-          palettesLookup[
-            scene
-              ? scene.spritePaletteIds?.[index] ||
-                defaultSpritePaletteIds[index]
-              : defaultSpritePaletteIds[index]
-          ],
-      }))
-    );
+    var paletteIndexOptions = Array.from(Array(8)).map((_, index) => ({
+      value: index,
+      label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
+      palette:
+        palettesLookup[
+          scene
+            ? scene.spritePaletteIds?.[index] ||
+              defaultSpritePaletteIds[index]
+            : defaultSpritePaletteIds[index]
+        ],
+    }))
+    for(let i = 0; i < paletteIndexOptions.length; i++) {
+      var palette = paletteIndexOptions[i].palette as Palette;
+      if(palette) {
+        // @TODO Maybe overkill using deepcopy but couldn't think of a cleaner way to alter the palette name
+        let copyPalette = JSON.parse(JSON.stringify(palette));
+        copyPalette.name = paletteName(copyPalette, -1);
+        paletteIndexOptions[i].palette = copyPalette;
+      }
+    }
+    setOptions(paletteIndexOptions);
   }, [scene, palettesLookup, defaultSpritePaletteIds]);
 
   useEffect(() => {
@@ -88,7 +97,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
           >
             {option.label}
             {": "}
-            {option.palette?.name || DMG_PALETTE.name}
+            {option.palette?.name || l10n("FIELD_PALETTE_DEFAULT_DMG")}
           </OptionLabelWithPreview>
         );
       }}
@@ -105,7 +114,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
           >
             {currentValue?.label}
             {": "}
-            {currentValue?.palette?.name || DMG_PALETTE.name}
+            {currentValue?.palette?.name || l10n("FIELD_PALETTE_DEFAULT_DMG")}
           </SingleValueWithPreview>
         ),
       }}

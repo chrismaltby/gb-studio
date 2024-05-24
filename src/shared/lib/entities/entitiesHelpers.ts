@@ -394,6 +394,20 @@ export const customEventName = (
 };
 
 export const paletteName = (palette: Palette, paletteIndex: number) => {
+  // If we have a default name for a palette, use the localized version
+  if(palette.defaultName) {
+    switch(palette.id) {
+      case "default-bg-1": return l10n("FIELD_PALETTE_DEFAULT_BG_1");
+      case "default-bg-2": return l10n("FIELD_PALETTE_DEFAULT_BG_2");
+      case "default-bg-3": return l10n("FIELD_PALETTE_DEFAULT_BG_3");
+      case "default-bg-4": return l10n("FIELD_PALETTE_DEFAULT_BG_4");
+      case "default-bg-5": return l10n("FIELD_PALETTE_DEFAULT_BG_5");
+      case "default-bg-6": return l10n("FIELD_PALETTE_DEFAULT_BG_6");
+      case "default-sprite": return l10n("FIELD_PALETTE_DEFAULT_SPRITES");
+      case "default-ui": return l10n("FIELD_PALETTE_DEFAULT_UI");
+    }
+  }
+  // Otherwise, use the auto-generated or user specified name
   return palette.name || defaultLocalisedPaletteName(paletteIndex);
 };
 

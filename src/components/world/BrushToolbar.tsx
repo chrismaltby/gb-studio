@@ -79,6 +79,7 @@ import {
 } from "./BrushToolbarIcons";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -569,7 +570,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               active={paletteIndex === selectedPalette}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
-              })} (${paletteIndex + 1}) - ${palettes[paletteIndex]?.name}`}
+              })} (${paletteIndex + 1}) - ${paletteName(palettes[paletteIndex], -1)}`}
             >
               <PaletteBlock
                 colors={palettes[paletteIndex]?.colors ?? []}

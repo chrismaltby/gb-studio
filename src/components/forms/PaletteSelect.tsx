@@ -90,7 +90,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
           : ([] as PaletteOption[]),
         {
           value: DMG_PALETTE.id,
-          label: DMG_PALETTE.name,
+          label: l10n("FIELD_PALETTE_DEFAULT_DMG"),
           palette: DMG_PALETTE as Palette,
         },
         palettes.map((palette, index) => ({
@@ -112,9 +112,21 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
 
   useEffect(() => {
     if (value === DMG_PALETTE.id) {
-      setCurrentPalette(DMG_PALETTE as Palette);
+      var dmgPalette: Palette = DMG_PALETTE;
+      dmgPalette.name = l10n("FIELD_PALETTE_DEFAULT_DMG");
+      setCurrentPalette(dmgPalette);
     } else {
-      setCurrentPalette(palettes.find((v) => v.id === value));
+      // @TODO Maybe overkill using deepcopy but couldn't think of a cleaner way to alter the palette name
+      var palette: Palette = palettes.find((v) => v.id === value) as Palette;
+      if (palette) {
+        // Use localized palette name if default ID exists
+        const pidx = palettes.findIndex((v) => v.id === value);
+        let copyPalette = JSON.parse(JSON.stringify(palette));
+        copyPalette.name = paletteName(copyPalette, pidx);
+        setCurrentPalette(copyPalette);
+      } else {
+        setCurrentPalette(palettes.find((v) => v.id === value));
+      }
     }
   }, [palettes, value]);
 
@@ -146,7 +158,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     } else {
       setCurrentValue({
         value: "",
-        label: DMG_PALETTE.name,
+        label: l10n("FIELD_PALETTE_DEFAULT_DMG"),
         palette: DMG_PALETTE as Palette,
       });
     }
