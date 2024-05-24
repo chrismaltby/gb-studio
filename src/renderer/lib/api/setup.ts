@@ -40,8 +40,9 @@ import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
-import { TilesetAssetData } from "lib/project/loadTilesetData";
-import { Asset, AssetType } from "shared/lib/helpers/assets";
+import type { TilesetAssetData } from "lib/project/loadTilesetData";
+import type { Asset, AssetType } from "shared/lib/helpers/assets";
+import type { Patrons } from "scripts/fetchPatrons";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -117,6 +118,7 @@ const APISetup = {
       ipcRenderer.invoke("app:get-is-full-screen"),
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
     setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
+    getPatrons: (): Promise<Patrons> => ipcRenderer.invoke("app:get-patrons"),
   },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>

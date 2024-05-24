@@ -53,7 +53,7 @@ interface LatestPatrons {
   silverTier: string[];
 }
 
-interface Patrons {
+export interface Patrons {
   goldTier: string[];
   silverTier: string[];
   pastPatrons: string[];
