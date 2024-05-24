@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where empty project message would be positioned incorrectly if World view was scrolled or zoomed
 - Fix issue where World view minimum size wasn't taking into account navigator sidebar or debugger pane causing unnecessary scroll bars
 - Fix issue where Math Expression editor would incorrectly show spellcheck errors in function names
+- Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
 
 ## [4.0.0-beta2]
 

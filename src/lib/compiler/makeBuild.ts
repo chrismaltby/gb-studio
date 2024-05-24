@@ -37,6 +37,7 @@ const makeBuild = async ({
   const env = Object.create(process.env);
   const { settings } = data;
   const colorEnabled = settings.colorMode !== "mono";
+  const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
   const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
@@ -56,7 +57,7 @@ const makeBuild = async ({
   if (colorEnabled) {
     env.COLOR = true;
   }
-  if (settings.sgbEnabled && settings.colorMode !== "color") {
+  if (sgbEnabled) {
     env.SGB = true;
   }
   if (settings.batterylessEnabled) {
@@ -84,7 +85,7 @@ const makeBuild = async ({
   // Compile Source Files
   const makeCommands = await getBuildCommands(buildRoot, {
     colorEnabled,
-    sgb: settings.sgbEnabled,
+    sgb: sgbEnabled,
     musicDriver: settings.musicDriver,
     batteryless: settings.batterylessEnabled,
     debug,
@@ -164,7 +165,7 @@ const makeBuild = async ({
     data.name || "GBStudio",
     settings.cartType,
     colorEnabled,
-    settings.sgbEnabled,
+    sgbEnabled,
     settings.musicDriver,
     debug,
     targetPlatform

@@ -1202,7 +1202,8 @@ ipcMain.handle(
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
     const colorMode = project.settings.colorMode;
-    const sgbEnabled = project.settings.sgbEnabled;
+    const sgbEnabled =
+      project.settings.sgbEnabled && project.settings.colorMode !== "color";
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
 
