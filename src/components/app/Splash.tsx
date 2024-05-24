@@ -409,6 +409,11 @@ export const Splash = () => {
                   <SplashCreditsPatron key={patron} name={patron} />
                 ))}
               </SplashCreditsGrid>
+              <SplashCreditsGrid>
+                {patrons.pastPatrons.map((patron) => (
+                  <SplashCreditsPatron key={patron} name={patron} />
+                ))}
+              </SplashCreditsGrid>
             </SplashCreditsContent>
             <SplashCreditsCloseButton>
               <AutoFocusInside>
