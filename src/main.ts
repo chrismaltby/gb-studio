@@ -107,6 +107,7 @@ import keyBy from "lodash/keyBy";
 import { loadSceneTypes } from "lib/project/sceneTypes";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
+import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1159,6 +1160,10 @@ ipcMain.handle("app:get-is-full-screen", async () => {
     return projectWindow.isFullScreen();
   }
   return false;
+});
+
+ipcMain.handle("app:get-patrons", async () => {
+  return getPatronsFromGithub();
 });
 
 ipcMain.handle("clipboard:read-text", () => {

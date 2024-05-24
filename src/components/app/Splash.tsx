@@ -37,7 +37,7 @@ import { TextField } from "ui/form/TextField";
 import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
-import patrons from "patrons.json";
+import inbuiltPatrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
 import blankPreview from "assets/templatePreview/blank.png";
@@ -46,6 +46,7 @@ import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
 import type { RecentProjectData } from "renderer/lib/api/setup";
+import type { Patrons } from "scripts/fetchPatrons";
 
 declare const DOCS_URL: string;
 
@@ -119,6 +120,8 @@ export const Splash = () => {
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
 
+  const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons as Patrons);
+
   useEffect(() => {
     async function fetchData() {
       setRecentProjects((await API.project.getRecentProjects()).reverse());
@@ -130,6 +133,10 @@ export const Splash = () => {
       setLoading(false);
     }
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    API.app.getPatrons().then(setPatrons);
   }, []);
 
   const templates: TemplateInfo[] = useMemo(
@@ -400,13 +407,28 @@ export const Splash = () => {
               </SplashCreditsGrid>
               <SplashCreditsSubHeading>Patrons</SplashCreditsSubHeading>
               <SplashCreditsGrid>
-                {patrons.goldTier.map((patron) => (
-                  <SplashCreditsPatron key={patron} name={patron} gold />
+                {(patrons.goldTier || []).map((patron) => (
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                    gold
+                  />
                 ))}
               </SplashCreditsGrid>
               <SplashCreditsGrid>
-                {patrons.silverTier.map((patron) => (
-                  <SplashCreditsPatron key={patron} name={patron} />
+                {(patrons.silverTier || []).map((patron) => (
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                  />
+                ))}
+              </SplashCreditsGrid>
+              <SplashCreditsGrid>
+                {(patrons.pastPatrons || []).map((patron) => (
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                  />
                 ))}
               </SplashCreditsGrid>
             </SplashCreditsContent>

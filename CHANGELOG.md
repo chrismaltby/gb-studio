@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Button events renamed to be more consistent
 - "Add Event" search updated to also include events that match group name when searching e.g. Searching 'Joypad' will include all Button events
 - Darkened conditional event header colours in dark theme
+- Patron list in credits now fetches most up to date list of members from GitHub if an internet connection is available
+- Previous "Name in Credits" tier members on Patreon are now still shown even after their membership has finished (your support is still very much appreciated!)
 
 ### Fixed
 
