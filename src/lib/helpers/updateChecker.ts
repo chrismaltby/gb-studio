@@ -42,13 +42,16 @@ export const getCurrentVersion = () => {
   return VERSION; /* Comes from webpack.plugins.js */
 };
 
-export const needsUpdate = async () => {
-  const currentVersion = getCurrentVersion();
-  const latestVersion = await getLatestVersion();
-  if (semverValid(currentVersion) && semverValid(latestVersion)) {
-    return semverGt(latestVersion, currentVersion);
+export const needsUpdate = (latestVersion: string) => {
+  try {
+    const currentVersion = getCurrentVersion();
+    if (semverValid(currentVersion) && semverValid(latestVersion)) {
+      return semverGt(latestVersion, currentVersion);
+    }
+    return false;
+  } catch (e) {
+    return false;
   }
-  return false;
 };
 
 export const checkForUpdate = async (force?: boolean) => {
@@ -81,7 +84,7 @@ export const checkForUpdate = async (force?: boolean) => {
       }
     }
 
-    if (await needsUpdate()) {
+    if (needsUpdate(latestVersion)) {
       if (settings.get("dontNotifyUpdatesForVersion") === latestVersion) {
         // User has chosen to ignore this version so don't show any details
         return;
