@@ -31,11 +31,10 @@ interface PatreonMember {
   };
 }
 
-interface PatreonUser {
+export interface PatreonUser {
   type: "user";
   id: string;
   attributes: {
-    vanity: string;
     full_name: string;
   };
 }
@@ -49,14 +48,14 @@ interface PatreonTier {
 }
 
 interface LatestPatrons {
-  goldTier: string[];
-  silverTier: string[];
+  goldTier: PatreonUser[];
+  silverTier: PatreonUser[];
 }
 
 export interface Patrons {
-  goldTier: string[];
-  silverTier: string[];
-  pastPatrons: string[];
+  goldTier: PatreonUser[];
+  silverTier: PatreonUser[];
+  pastPatrons: PatreonUser[];
 }
 
 interface PatreonMembersAPIResponse {
@@ -67,8 +66,10 @@ interface PatreonMembersAPIResponse {
   };
 }
 
-const caseInsensitiveSort = (a: string, b: string) =>
-  a.toLowerCase().localeCompare(b.toLowerCase());
+const caseInsensitiveSort = (a: PatreonUser, b: PatreonUser) =>
+  a.attributes.full_name
+    .toLowerCase()
+    .localeCompare(b.attributes.full_name.toLowerCase());
 
 const fetchPatreonAPI = async (url: string) => {
   const headers = {
@@ -82,8 +83,11 @@ const fetchPatreonAPI = async (url: string) => {
   return response.json();
 };
 
-const onlyUnique = <T>(value: T, index: number, array: T[]): boolean =>
-  array.indexOf(value) === index;
+const onlyUnique = (
+  value: PatreonUser,
+  index: number,
+  array: PatreonUser[]
+): boolean => array.findIndex((p) => p.id === value.id) === index;
 
 const fetchPatrons = async (): Promise<LatestPatrons> => {
   const usersLookup: Record<string, PatreonUser> = {};
@@ -92,7 +96,7 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
   const goldTierUserIds = new Set<string>();
   const silverTierUserIds = new Set<string>();
 
-  const initialEndpoint = `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members?include=user,currently_entitled_tiers&fields%5Buser%5D=full_name,vanity&fields%5Btier%5D=title`;
+  const initialEndpoint = `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members?include=user,currently_entitled_tiers&fields%5Buser%5D=full_name&fields%5Btier%5D=title`;
 
   const fetchPage = async (url: string) => {
     console.log("Fetching: " + url);
@@ -128,20 +132,19 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
     }
   };
 
-  const toUserName = (id: string): string => {
-    const user = usersLookup[id];
-    return user.attributes.full_name;
+  const toUser = (id: string): PatreonUser => {
+    return usersLookup[id];
   };
 
   await fetchPage(initialEndpoint);
 
   return {
     goldTier: Array.from(goldTierUserIds)
-      .map(toUserName)
+      .map(toUser)
       .filter(onlyUnique)
       .sort(caseInsensitiveSort),
     silverTier: Array.from(silverTierUserIds)
-      .map(toUserName)
+      .map(toUser)
       .filter(onlyUnique)
       .sort(caseInsensitiveSort),
   };
@@ -151,10 +154,10 @@ const mergePatrons = (
   newPatrons: LatestPatrons,
   prevPatrons: Patrons
 ): Patrons => {
-  const currentAllTierPatrons = [
+  const currentAllTierPatronIds = [
     ...newPatrons.goldTier,
     ...newPatrons.silverTier,
-  ];
+  ].map((p) => p.id);
   return {
     goldTier: newPatrons.goldTier,
     silverTier: newPatrons.silverTier,
@@ -163,7 +166,7 @@ const mergePatrons = (
       ...prevPatrons.silverTier,
       ...prevPatrons.pastPatrons,
     ]
-      .filter((value) => !currentAllTierPatrons.includes(value))
+      .filter((value) => !currentAllTierPatronIds.includes(value.id))
       .filter(onlyUnique)
       .sort(caseInsensitiveSort),
   };
@@ -171,7 +174,7 @@ const mergePatrons = (
 
 const main = async () => {
   const newPatrons = await fetchPatrons();
-  const mergedPatrons = mergePatrons(newPatrons, currentPatrons);
+  const mergedPatrons = mergePatrons(newPatrons, currentPatrons as Patrons);
   writeJSON("./patrons.json", mergedPatrons, {
     spaces: 2,
   });

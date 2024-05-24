@@ -1,7 +1,6 @@
 import Octokit from "@octokit/rest";
 import inbuiltPatrons from "patrons.json";
-import type { Patrons } from "scripts/fetchPatrons";
-import { isString } from "shared/types";
+import type { Patrons, PatreonUser } from "scripts/fetchPatrons";
 
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
@@ -12,6 +11,20 @@ const cache = {
     timestamp: 0,
   },
 };
+
+const isPatronUser = (input: unknown): input is PatreonUser => {
+  if (typeof input === "object" && input !== null) {
+    const obj = input as PatreonUser;
+    return (
+      obj.type === "user" &&
+      typeof obj.id === "string" &&
+      typeof obj.attributes === "object" &&
+      typeof obj.attributes.full_name === "string"
+    );
+  }
+  return false;
+};
+
 const isPatrons = (input: unknown): input is Patrons => {
   if (input === null || typeof input !== "object") {
     return false;
@@ -25,7 +38,10 @@ const isPatrons = (input: unknown): input is Patrons => {
   if (!Array.isArray(obj.goldTier) || !Array.isArray(obj.silverTier)) {
     return false;
   }
-  if (!obj.goldTier.every(isString) || !obj.silverTier.every(isString)) {
+  if (
+    !obj.goldTier.every(isPatronUser) ||
+    !obj.silverTier.every(isPatronUser)
+  ) {
     return false;
   }
   return true;

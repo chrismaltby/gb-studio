@@ -1,21 +1,106 @@
 {
   "goldTier": [
-    "Brandon Morris",
-    "Pmoth Demakes",
-    "Salvatore Tosti",
-    "TweakerInc"
+    {
+      "attributes": {
+        "full_name": "Brandon Morris"
+      },
+      "id": "483773",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Pmoth Demakes"
+      },
+      "id": "104804333",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Salvatore Tosti"
+      },
+      "id": "6588868",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "TweakerInc"
+      },
+      "id": "86351933",
+      "type": "user"
+    }
   ],
   "silverTier": [
-    "Ben Jelter",
-    "Chaison Alston",
-    "ChunkySteveo",
-    "Gumpy Function",
-    "Michael Towns (gamebuoygames)",
-    "Michel Iwaniec",
-    "Pearacidic",
-    "Ria Cayde"
+    {
+      "attributes": {
+        "full_name": "Ben Jelter"
+      },
+      "id": "159009",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Chaison Alston"
+      },
+      "id": "45011954",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "ChunkySteveo"
+      },
+      "id": "20382386",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Gumpy Function"
+      },
+      "id": "128473778",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Gumpy Function"
+      },
+      "id": "93658267",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      },
+      "id": "71689",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Michel Iwaniec"
+      },
+      "id": "27034715",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Pearacidic"
+      },
+      "id": "7243786",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Ria Cayde"
+      },
+      "id": "64844487",
+      "type": "user"
+    }
   ],
   "pastPatrons": [
-    "Martin Gauer"
+    {
+      "attributes": {
+        "full_name": "Martin Gauer"
+      },
+      "id": "3319189",
+      "type": "user"
+    }
   ]
 }

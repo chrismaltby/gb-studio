@@ -120,7 +120,7 @@ export const Splash = () => {
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
 
-  const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons);
+  const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons as Patrons);
 
   useEffect(() => {
     async function fetchData() {
@@ -408,17 +408,27 @@ export const Splash = () => {
               <SplashCreditsSubHeading>Patrons</SplashCreditsSubHeading>
               <SplashCreditsGrid>
                 {(patrons.goldTier || []).map((patron) => (
-                  <SplashCreditsPatron key={patron} name={patron} gold />
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                    gold
+                  />
                 ))}
               </SplashCreditsGrid>
               <SplashCreditsGrid>
                 {(patrons.silverTier || []).map((patron) => (
-                  <SplashCreditsPatron key={patron} name={patron} />
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                  />
                 ))}
               </SplashCreditsGrid>
               <SplashCreditsGrid>
                 {(patrons.pastPatrons || []).map((patron) => (
-                  <SplashCreditsPatron key={patron} name={patron} />
+                  <SplashCreditsPatron
+                    key={patron.id}
+                    name={patron.attributes.full_name}
+                  />
                 ))}
               </SplashCreditsGrid>
             </SplashCreditsContent>
