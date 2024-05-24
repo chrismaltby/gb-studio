@@ -1,4 +1,5 @@
 import { writeJSON } from "fs-extra";
+import currentPatrons from "../../patrons.json";
 
 if (!process.env.PATREON_ACCESS_TOKEN) {
   console.log("Env variable PATREON_ACCESS_TOKEN is not set");
@@ -47,6 +48,17 @@ interface PatreonTier {
   };
 }
 
+interface LatestPatrons {
+  goldTier: string[];
+  silverTier: string[];
+}
+
+interface Patrons {
+  goldTier: string[];
+  silverTier: string[];
+  pastPatrons: string[];
+}
+
 interface PatreonMembersAPIResponse {
   data: PatreonMember[];
   included: Array<PatreonUser | PatreonTier>;
@@ -70,7 +82,10 @@ const fetchPatreonAPI = async (url: string) => {
   return response.json();
 };
 
-const fetchPatrons = async () => {
+const onlyUnique = <T>(value: T, index: number, array: T[]): boolean =>
+  array.indexOf(value) === index;
+
+const fetchPatrons = async (): Promise<LatestPatrons> => {
   const usersLookup: Record<string, PatreonUser> = {};
   const tiersLookup: Record<string, PatreonTier> = {};
 
@@ -123,16 +138,43 @@ const fetchPatrons = async () => {
   return {
     goldTier: Array.from(goldTierUserIds)
       .map(toUserName)
+      .filter(onlyUnique)
       .sort(caseInsensitiveSort),
     silverTier: Array.from(silverTierUserIds)
       .map(toUserName)
+      .filter(onlyUnique)
+      .sort(caseInsensitiveSort),
+  };
+};
+
+const mergePatrons = (
+  newPatrons: LatestPatrons,
+  prevPatrons: Patrons
+): Patrons => {
+  const currentAllTierPatrons = [
+    ...newPatrons.goldTier,
+    ...newPatrons.silverTier,
+  ];
+  return {
+    goldTier: newPatrons.goldTier,
+    silverTier: newPatrons.silverTier,
+    pastPatrons: [
+      ...prevPatrons.goldTier,
+      ...prevPatrons.silverTier,
+      ...prevPatrons.pastPatrons,
+    ]
+      .filter((value) => !currentAllTierPatrons.includes(value))
+      .filter(onlyUnique)
       .sort(caseInsensitiveSort),
   };
 };
 
 const main = async () => {
-  const patrons = await fetchPatrons();
-  writeJSON("./patrons.json", patrons);
+  const newPatrons = await fetchPatrons();
+  const mergedPatrons = mergePatrons(newPatrons, currentPatrons);
+  writeJSON("./patrons.json", mergedPatrons, {
+    spaces: 2,
+  });
 };
 
 main();

@@ -1,1 +1,21 @@
-{"goldTier":["Brandon Morris","Pearacidic","Pmoth Demakes","Salvatore Tosti","TweakerInc"],"silverTier":["Ben Jelter","Chaison Alston","ChunkySteveo","Martin Gauer","Michel Iwaniec","Ria Cayde"]}
+{
+  "goldTier": [
+    "Brandon Morris",
+    "Pmoth Demakes",
+    "Salvatore Tosti",
+    "TweakerInc"
+  ],
+  "silverTier": [
+    "Ben Jelter",
+    "Chaison Alston",
+    "ChunkySteveo",
+    "Gumpy Function",
+    "Michael Towns (gamebuoygames)",
+    "Michel Iwaniec",
+    "Pearacidic",
+    "Ria Cayde"
+  ],
+  "pastPatrons": [
+    "Martin Gauer"
+  ]
+}
