@@ -414,6 +414,11 @@ export const paletteName = (palette: Palette, paletteIndex: number) => {
       case "default-ui":
         return l10n("FIELD_PALETTE_DEFAULT_UI");
     }
+  } else {
+    switch (palette.id) {
+      case "dmg":
+        return l10n("FIELD_PALETTE_DEFAULT_DMG");
+    }
   }
   // Otherwise, use the auto-generated or user specified name
   return palette.name || defaultLocalisedPaletteName(paletteIndex);
