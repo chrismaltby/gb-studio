@@ -33,6 +33,14 @@ const mainPlugins = [
         to: "node_modules/vm2",
         info: { minimized: true },
       },
+      {
+        from: "node_modules/acorn",
+        to: "node_modules/acorn",
+      },
+      {
+        from: "node_modules/acorn-walk",
+        to: "node_modules/acorn-walk",
+      },
     ],
   }),
 ];
@@ -69,5 +77,7 @@ module.exports = {
   externals: {
     vm2: "vm2",
     "about-window": "about-window",
+    acorn: "acorn",
+    "acorn-walk": "acorn-walk",
   },
 };
