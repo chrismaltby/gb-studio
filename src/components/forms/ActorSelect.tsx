@@ -36,7 +36,7 @@ type ActorOption = Option & {
 
 const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   id: String(i),
-  name: ` ${String.fromCharCode("A".charCodeAt(0) + i)}`,
+  letter: String.fromCharCode("A".charCodeAt(0) + i),
 }));
 
 export const ActorSelect = ({
@@ -85,7 +85,7 @@ export const ActorSelect = ({
           return {
             label:
               customEvent.actors[actor.id]?.name ??
-              l10n("FIELD_ACTOR") + actor.name,
+              `${l10n("FIELD_ACTOR")} ${actor.letter}`,
             value: actor.id,
           };
         }),
