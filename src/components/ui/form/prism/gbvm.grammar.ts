@@ -9,7 +9,8 @@ const gbvmGrammar = {
     lookbehind: true,
   },
   instruction: {
-    pattern: /VM_[^\s]*/,
+    pattern: /(^|\s)VM_[^\s]*/,
+    lookbehind: true,
   },
   asset: {
     pattern: /___bank_([^\s]*)\s*,\s*_\1/,

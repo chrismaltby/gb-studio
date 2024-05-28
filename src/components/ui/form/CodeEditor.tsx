@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, Grammar } from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import styled from "styled-components";
 import gbvmGrammar from "./prism/gbvm.grammar";
+import { useAppSelector } from "store/hooks";
+import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import ScriptEventTitle from "components/script/ScriptEventTitle";
+import l10n from "shared/lib/lang/l10n";
+import { ScrollTo } from "ui/util/ScrollTo";
 
 interface CodeEditorProps {
   value: string;
   onChange?: (newValue: string) => void;
+  currentLineNum?: number;
+}
+
+interface CodeViewerProps {
+  value: string;
   currentLineNum?: number;
 }
 
@@ -94,7 +104,17 @@ const Wrapper = styled.div`
     padding-left: 30px !important;
   }
 
-  .editor .editorLineNumber {
+  .preview pre {
+    user-select: text;
+    margin: 0px;
+    border: 0px;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    padding-left: 30px;
+  }
+
+  .editorLineNumber {
     position: absolute;
     left: 0px;
     color: ${(props) => props.theme.colors.token.code};
@@ -102,15 +122,16 @@ const Wrapper = styled.div`
     text-align: right;
     width: 25px;
     font-weight: 100;
+    user-select: none;
   }
 
-  .editor .currentLine {
+  .currentLine {
     background: ${(props) => props.theme.colors.input.border};
     width: 100%;
     display: inline-block;
   }
 
-  .editor .currentLine .editorLineNumber {
+  .currentLine .editorLineNumber {
     background: ${(props) => props.theme.colors.highlight};
     color: ${(props) => props.theme.colors.highlightText};
     opacity: 1;
@@ -158,6 +179,84 @@ export const CodeEditor = ({
           fontSize: 11,
         }}
       />
+    </Wrapper>
+  );
+};
+
+const GBVMLabel = ({ line }: { line: string }) => {
+  const scriptEventId = String(line.split("$")[2]).replace(/_/g, "-");
+  const scriptEvent = useAppSelector((state) =>
+    scriptEventSelectors.selectById(state, scriptEventId)
+  );
+
+  if (scriptEvent) {
+    return (
+      <>
+        {"; "}
+        <ScriptEventTitle
+          command={scriptEvent.command}
+          args={scriptEvent.args}
+        />
+      </>
+    );
+  }
+
+  if (scriptEventId === "autofade") {
+    return (
+      <>
+        ; {l10n("EVENT_FADE_IN")} ({l10n("FIELD_AUTOMATIC")})
+      </>
+    );
+  }
+
+  return <>; {line}</>;
+};
+
+export const CodeViewer = ({ value, currentLineNum }: CodeViewerProps) => {
+  const highlightedCode = useMemo(() => {
+    return highlight(String(value), gbvmGrammar, "gbvm")
+      .split("\n")
+      .map((line, i) => {
+        let lineEl: JSX.Element | null = (
+          <span dangerouslySetInnerHTML={{ __html: line }} />
+        );
+        if (line.startsWith("GBVM$")) {
+          lineEl = <GBVMLabel line={line} />;
+        } else if (line.startsWith(".globl GBVM$")) {
+          lineEl = <span />;
+        } else if (line.startsWith("GBVM") || line.startsWith(".globl GBVM")) {
+          return null;
+        }
+
+        return (
+          <>
+            <span
+              className={`line-${i + 1}${
+                i + 1 === currentLineNum ? " currentLine " : ""
+              }`}
+            >
+              {i + 1 === currentLineNum && <ScrollTo scrollMarginTop={32} />}
+              <span className="editorLineNumber">{i + 1}</span>
+              {lineEl}
+            </span>
+            {"\n"}
+          </>
+        );
+      });
+  }, [currentLineNum, value]);
+
+  return (
+    <Wrapper>
+      <div className="preview">
+        <pre
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 11,
+          }}
+        >
+          {highlightedCode}
+        </pre>
+      </div>
     </Wrapper>
   );
 };
