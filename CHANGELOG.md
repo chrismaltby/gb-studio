@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Previous "Name in Credits" tier members on Patreon are now still shown even after their membership has finished (your support is still very much appreciated!)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Update GBVM script view in debugger to show human readable labels
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
 
 ### Fixed
 
