@@ -95,6 +95,7 @@ import {
   isVariableCustomEvent,
   renameAssetEntity,
   defaultLocalisedCustomEventName,
+  paletteName,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
@@ -3803,6 +3804,35 @@ export const variableSelectors = variablesAdapter.getSelectors(
 export const engineFieldValueSelectors = engineFieldValuesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.engineFieldValues
 );
+
+export const getLocalisedPalettes = createSelector(
+  [paletteSelectors.selectAll],
+  (palettes) =>
+    palettes.map((palette, index) => ({
+      ...palette,
+      name: paletteName(palette, index),
+    }))
+);
+
+export const getLocalisedPalettesLookup = createSelector(
+  [getLocalisedPalettes],
+  (palettes) => keyBy(palettes, "id")
+);
+
+export const getLocalisedPaletteById = createSelector(
+  [paletteSelectors.selectById, paletteSelectors.selectIds],
+  (palette, ids) =>
+    palette && {
+      ...palette,
+      name: paletteName(palette, ids.indexOf(palette.id)),
+    }
+);
+
+export const getLocalisedDMGPalette = () =>
+  ({
+    ...DMG_PALETTE,
+    name: l10n("FIELD_PALETTE_DEFAULT_DMG"),
+  } as Palette);
 
 export const getMaxSceneRight = createSelector(
   [sceneSelectors.selectAll],

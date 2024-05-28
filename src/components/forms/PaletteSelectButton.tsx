@@ -1,16 +1,15 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import {
+  getLocalisedDMGPalette,
+  getLocalisedPaletteById,
+} from "store/features/entities/entitiesState";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
-import { DMG_PALETTE } from "consts";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { Palette } from "shared/lib/entities/entitiesTypes";
-import l10n from "shared/lib/lang/l10n";
-import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 type PaletteSelectProps = {
   name: string;
@@ -81,19 +80,10 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  const getPalette = () => {
-    let palette = useAppSelector((state) =>
-      paletteSelectors.selectById(
-        state,
-        value || optionalDefaultPaletteId || ""
-      )
-    );
-    // @TODO Maybe overkill using deepcopy but couldn't think of a cleaner way to alter the palette name
-    let copyPalette = palette ? JSON.parse(JSON.stringify(palette)) : JSON.parse(JSON.stringify(DMG_PALETTE));
-    copyPalette.name = palette ? paletteName(copyPalette, -1) : l10n("FIELD_PALETTE_DEFAULT_DMG");
-    return copyPalette;
-  };
-  const palette = getPalette();
+  const palette =
+    useAppSelector((state) =>
+      getLocalisedPaletteById(state, value || optionalDefaultPaletteId || "")
+    ) || getLocalisedDMGPalette();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const dispatch = useAppDispatch();

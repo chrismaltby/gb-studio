@@ -1,8 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { DMG_PALETTE } from "consts";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import {
+  getLocalisedDMGPalette,
+  getLocalisedPalettes,
+} from "store/features/entities/entitiesState";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
@@ -13,7 +15,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
-import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
@@ -53,10 +54,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   keepLabel,
   ...selectProps
 }) => {
-  const palettes = useAppSelector((state) => paletteSelectors.selectAll(state));
+  const palettes = useAppSelector((state) => getLocalisedPalettes(state));
   const [options, setOptions] = useState<PaletteOption[]>([]);
   const [currentPalette, setCurrentPalette] = useState<Palette>();
   const [currentValue, setCurrentValue] = useState<PaletteOption>();
+  const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
   useEffect(() => {
     setOptions(
@@ -84,18 +86,18 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
                 label: optionalLabel || "None",
                 palette:
                   palettes.find((p) => p.id === optionalDefaultPaletteId) ||
-                  DMG_PALETTE,
+                  dmgPalette,
               },
             ] as PaletteOption[])
           : ([] as PaletteOption[]),
         {
-          value: DMG_PALETTE.id,
-          label: l10n("FIELD_PALETTE_DEFAULT_DMG"),
-          palette: DMG_PALETTE as Palette,
+          value: dmgPalette.id,
+          label: dmgPalette.name,
+          palette: dmgPalette,
         },
-        palettes.map((palette, index) => ({
+        palettes.map((palette) => ({
           value: palette.id,
-          label: paletteName(palette, index),
+          label: palette.name,
           palette,
         }))
       )
@@ -108,27 +110,16 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     optional,
     optionalDefaultPaletteId,
     optionalLabel,
+    dmgPalette,
   ]);
 
   useEffect(() => {
-    if (value === DMG_PALETTE.id) {
-      var dmgPalette: Palette = DMG_PALETTE;
-      dmgPalette.name = l10n("FIELD_PALETTE_DEFAULT_DMG");
+    if (value === dmgPalette.id) {
       setCurrentPalette(dmgPalette);
     } else {
-      // @TODO Maybe overkill using deepcopy but couldn't think of a cleaner way to alter the palette name
-      var palette: Palette = palettes.find((v) => v.id === value) as Palette;
-      if (palette) {
-        // Use localized palette name if default ID exists
-        const pidx = palettes.findIndex((v) => v.id === value);
-        let copyPalette = JSON.parse(JSON.stringify(palette));
-        copyPalette.name = paletteName(copyPalette, pidx);
-        setCurrentPalette(copyPalette);
-      } else {
-        setCurrentPalette(palettes.find((v) => v.id === value));
-      }
+      setCurrentPalette(palettes.find((v) => v.id === value));
     }
-  }, [palettes, value]);
+  }, [dmgPalette, palettes, value]);
 
   useEffect(() => {
     if (canKeep && value === "keep") {
@@ -149,7 +140,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
       });
     } else if (optional) {
       const optionalPalette =
-        palettes.find((p) => p.id === optionalDefaultPaletteId) || DMG_PALETTE;
+        palettes.find((p) => p.id === optionalDefaultPaletteId) || dmgPalette;
       setCurrentValue({
         value: "",
         label: optionalLabel || "None",
@@ -158,8 +149,8 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     } else {
       setCurrentValue({
         value: "",
-        label: l10n("FIELD_PALETTE_DEFAULT_DMG"),
-        palette: DMG_PALETTE as Palette,
+        label: dmgPalette.name,
+        palette: dmgPalette,
       });
     }
   }, [
@@ -172,6 +163,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     keepLabel,
     value,
     canRestore,
+    dmgPalette,
   ]);
 
   const onSelectChange = (newValue: Option) => {

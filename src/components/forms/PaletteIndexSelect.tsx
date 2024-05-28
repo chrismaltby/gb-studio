@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { DMG_PALETTE } from "consts";
 import l10n from "shared/lib/lang/l10n";
 import {
-  paletteSelectors,
+  getLocalisedDMGPalette,
+  getLocalisedPalettesLookup,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import { Palette } from "shared/lib/entities/entitiesTypes";
@@ -13,7 +13,6 @@ import {
   Select,
   SingleValueWithPreview,
 } from "ui/form/Select";
-import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 interface PaletteIndexSelectProps {
   name: string;
@@ -42,34 +41,27 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
     sceneSelectors.selectById(state, previewAsSceneId)
   );
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    getLocalisedPalettesLookup(state)
   );
   const defaultSpritePaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultSpritePaletteIds
   );
+  const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
   useEffect(() => {
-    var paletteIndexOptions = Array.from(Array(8)).map((_, index) => ({
-      value: index,
-      label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
-      palette:
-        palettesLookup[
-          scene
-            ? scene.spritePaletteIds?.[index] ||
-              defaultSpritePaletteIds[index]
-            : defaultSpritePaletteIds[index]
-        ],
-    }))
-    for(let i = 0; i < paletteIndexOptions.length; i++) {
-      var palette = paletteIndexOptions[i].palette as Palette;
-      if(palette) {
-        // @TODO Maybe overkill using deepcopy but couldn't think of a cleaner way to alter the palette name
-        let copyPalette = JSON.parse(JSON.stringify(palette));
-        copyPalette.name = paletteName(copyPalette, -1);
-        paletteIndexOptions[i].palette = copyPalette;
-      }
-    }
-    setOptions(paletteIndexOptions);
+    setOptions(
+      Array.from(Array(8)).map((_, index) => ({
+        value: index,
+        label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
+        palette:
+          palettesLookup[
+            scene
+              ? scene.spritePaletteIds?.[index] ||
+                defaultSpritePaletteIds[index]
+              : defaultSpritePaletteIds[index]
+          ],
+      }))
+    );
   }, [scene, palettesLookup, defaultSpritePaletteIds]);
 
   useEffect(() => {
@@ -90,14 +82,14 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             preview={
               <PaletteBlock
                 type="sprite"
-                colors={option.palette?.colors || DMG_PALETTE.colors}
+                colors={option.palette?.colors || dmgPalette.colors}
                 size={20}
               />
             }
           >
             {option.label}
             {": "}
-            {option.palette?.name || l10n("FIELD_PALETTE_DEFAULT_DMG")}
+            {option.palette?.name || dmgPalette.name}
           </OptionLabelWithPreview>
         );
       }}
@@ -107,14 +99,14 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             preview={
               <PaletteBlock
                 type="sprite"
-                colors={currentValue?.palette?.colors || DMG_PALETTE.colors}
+                colors={currentValue?.palette?.colors || dmgPalette.colors}
                 size={20}
               />
             }
           >
             {currentValue?.label}
             {": "}
-            {currentValue?.palette?.name || l10n("FIELD_PALETTE_DEFAULT_DMG")}
+            {currentValue?.palette?.name || dmgPalette.name}
           </SingleValueWithPreview>
         ),
       }}
