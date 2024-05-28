@@ -31,7 +31,7 @@ interface ScriptEventTitleProps {
   args?: Record<string, unknown>;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

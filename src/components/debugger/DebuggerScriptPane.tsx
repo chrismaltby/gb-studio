@@ -6,7 +6,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { CodeEditor } from "ui/form/CodeEditor";
+import { CodeViewer } from "ui/form/CodeEditor";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import {
@@ -352,9 +352,8 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
               ) : undefined}
               {viewScriptType === "gbvm" && currentGBVMScript ? (
                 <CodeEditorWrapper>
-                  <CodeEditor
+                  <CodeViewer
                     value={currentGBVMScript}
-                    onChange={() => {}}
                     currentLineNum={currentScriptLineNum}
                   />
                 </CodeEditorWrapper>
