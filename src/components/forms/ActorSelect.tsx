@@ -77,13 +77,15 @@ export const ActorSelect = ({
     if (context.type === "script" && customEvent) {
       setOptions([
         {
-          label: l10n("FIELD_PLAYER_OPTIONS_NAME"),
+          label: l10n("FIELD_PLAYER"),
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },
         ...allCustomEventActors.map((actor) => {
           return {
-            label: customEvent.actors[actor.id]?.name ?? l10n("FIELD_ACTOR_OPTIONS_NAME") + actor.name,
+            label:
+              customEvent.actors[actor.id]?.name ??
+              l10n("FIELD_ACTOR") + actor.name,
             value: actor.id,
           };
         }),
@@ -106,7 +108,7 @@ export const ActorSelect = ({
             ]
           : []),
         {
-          label: l10n("FIELD_PLAYER_OPTIONS_NAME"),
+          label: l10n("FIELD_PLAYER"),
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },

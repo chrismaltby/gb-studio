@@ -2473,7 +2473,9 @@ const addPalette: CaseReducer<
 > = (state, action) => {
   const newPalette: Palette = {
     id: action.payload.paletteId,
-    name: `${l10n("TOOL_PALETTE_N", { number: localPaletteSelectors.selectTotal(state) + 1 })}`,
+    name: `${l10n("TOOL_PALETTE_N", {
+      number: localPaletteSelectors.selectTotal(state) + 1,
+    })}`,
     colors: [
       DMG_PALETTE.colors[0],
       DMG_PALETTE.colors[1],
@@ -2597,7 +2599,7 @@ const refreshCustomEventArgs: CaseReducer<
           );
           actors[actor] = {
             id: actor,
-            name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR_OPTIONS_NAME")} ${letter}`,
+            name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR")} ${letter}`,
           };
         };
         const addVariable = (variable: string) => {
