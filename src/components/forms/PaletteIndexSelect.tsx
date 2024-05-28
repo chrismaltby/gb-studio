@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { DMG_PALETTE } from "consts";
 import l10n from "shared/lib/lang/l10n";
 import {
-  paletteSelectors,
+  getLocalisedDMGPalette,
+  getLocalisedPalettesLookup,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import { Palette } from "shared/lib/entities/entitiesTypes";
@@ -41,11 +41,12 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
     sceneSelectors.selectById(state, previewAsSceneId)
   );
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    getLocalisedPalettesLookup(state)
   );
   const defaultSpritePaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultSpritePaletteIds
   );
+  const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
   useEffect(() => {
     setOptions(
@@ -81,14 +82,14 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             preview={
               <PaletteBlock
                 type="sprite"
-                colors={option.palette?.colors || DMG_PALETTE.colors}
+                colors={option.palette?.colors || dmgPalette.colors}
                 size={20}
               />
             }
           >
             {option.label}
             {": "}
-            {option.palette?.name || DMG_PALETTE.name}
+            {option.palette?.name || dmgPalette.name}
           </OptionLabelWithPreview>
         );
       }}
@@ -98,14 +99,14 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             preview={
               <PaletteBlock
                 type="sprite"
-                colors={currentValue?.palette?.colors || DMG_PALETTE.colors}
+                colors={currentValue?.palette?.colors || dmgPalette.colors}
                 size={20}
               />
             }
           >
             {currentValue?.label}
             {": "}
-            {currentValue?.palette?.name || DMG_PALETTE.name}
+            {currentValue?.palette?.name || dmgPalette.name}
           </SingleValueWithPreview>
         ),
       }}

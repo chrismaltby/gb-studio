@@ -682,7 +682,7 @@ export const SpriteEditor = ({
               </FormSectionTitle>
               {!isDefaultState && (
                 <FormRow>
-                  <FormField name="stateName" label="State Name">
+                  <FormField name="stateName" label={l10n("FIELD_STATE_NAME")}>
                     <AnimationStateSelect
                       name="stateName"
                       value={spriteState.name}

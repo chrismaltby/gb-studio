@@ -6,6 +6,7 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
+import l10n from "shared/lib/lang/l10n";
 
 interface ColorModeSelectProps extends SelectCommonProps {
   name: string;
@@ -18,21 +19,6 @@ export interface ColorModeOption {
   label: string;
 }
 
-const colorModeOptions: ColorModeOption[] = [
-  {
-    value: "mono",
-    label: "Monochrome",
-  },
-  {
-    value: "mixed",
-    label: "Color + Monochrome",
-  },
-  {
-    value: "color",
-    label: "Color Only",
-  },
-];
-
 export const ColorModeSelect: FC<ColorModeSelectProps> = ({
   value,
   onChange,
@@ -40,12 +26,27 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
   const [currentValue, setCurrentValue] = useState<Option>();
   const colorModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
-      mono: "GB, GB Color, Pocket",
-      mixed: "GB, GB Color, Pocket",
-      color: "GB Color, Pocket",
+      mono: l10n("FIELD_COLOR_MODE_MONO_INFO"),
+      mixed: l10n("FIELD_COLOR_MODE_COLOR_MONO_INFO"),
+      color: l10n("FIELD_COLOR_MODE_COLOR_ONLY_INFO"),
     }),
     []
   );
+
+  const colorModeOptions: ColorModeOption[] = [
+    {
+	  value: "mono",
+	  label: l10n("FIELD_COLOR_MODE_MONO"),
+    },
+    {
+	  value: "mixed",
+	  label: l10n("FIELD_COLOR_MODE_COLOR_MONO"),
+    },
+    {
+	  value: "color",
+	  label: l10n("FIELD_COLOR_MODE_COLOR_ONLY"),
+    },
+  ];
 
   useEffect(() => {
     const currentColorMode = colorModeOptions.find((e) => e.value === value);

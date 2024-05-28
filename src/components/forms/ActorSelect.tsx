@@ -36,7 +36,7 @@ type ActorOption = Option & {
 
 const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   id: String(i),
-  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
+  letter: String.fromCharCode("A".charCodeAt(0) + i),
 }));
 
 export const ActorSelect = ({
@@ -77,13 +77,15 @@ export const ActorSelect = ({
     if (context.type === "script" && customEvent) {
       setOptions([
         {
-          label: "Player",
+          label: l10n("FIELD_PLAYER"),
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },
         ...allCustomEventActors.map((actor) => {
           return {
-            label: customEvent.actors[actor.id]?.name ?? actor.name,
+            label:
+              customEvent.actors[actor.id]?.name ??
+              `${l10n("FIELD_ACTOR")} ${actor.letter}`,
             value: actor.id,
           };
         }),
@@ -106,7 +108,7 @@ export const ActorSelect = ({
             ]
           : []),
         {
-          label: "Player",
+          label: l10n("FIELD_PLAYER"),
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },

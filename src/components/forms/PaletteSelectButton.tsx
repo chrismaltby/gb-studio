@@ -1,12 +1,14 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import {
+  getLocalisedDMGPalette,
+  getLocalisedPaletteById,
+} from "store/features/entities/entitiesState";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
-import { DMG_PALETTE } from "consts";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type PaletteSelectProps = {
@@ -77,13 +79,11 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
+
   const palette =
     useAppSelector((state) =>
-      paletteSelectors.selectById(
-        state,
-        value || optionalDefaultPaletteId || ""
-      )
-    ) || DMG_PALETTE;
+      getLocalisedPaletteById(state, value || optionalDefaultPaletteId || "")
+    ) || getLocalisedDMGPalette();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const dispatch = useAppDispatch();
