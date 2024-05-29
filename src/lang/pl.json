@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1485240528",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1485240529",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -438,7 +438,7 @@
   "FIELD_PALETTE_DEFAULT_BG_N": "Domyślne BG {n}",
   "FIELD_PALETTE_DEFAULT_SPRITES": "Domyślna grafika",
   "FIELD_PALETTE_DEFAULT_UI": "Domyślne UI",
-  "FIELD_CHARACTER": "(*)Postać",
+  "FIELD_CHARACTER": "Symbol",
   "FIELD_FONT": "Font",
   "FIELD_COPY_BACKGROUND_PALETTES": "Kopiuj palety tła",
   "FIELD_COPY_SPRITE_PALETTES": "Kopiuj palety obiektów",
