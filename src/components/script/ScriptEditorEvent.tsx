@@ -19,19 +19,15 @@ import {
   ScriptEventParentType,
   ScriptEventsRef,
 } from "shared/lib/entities/entitiesTypes";
-import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,
   ScriptEventHeader,
   ScriptEventWrapper,
   ScriptEventPlaceholder,
-  ScriptEditorChildren,
   ScriptEventHeaderTitle,
   ScriptEventHeaderCaret,
   ScriptEventRenameInput,
   ScriptEventRenameInputCompleteButton,
-  ScriptEditorChildrenWrapper,
-  ScriptEditorChildrenLabel,
   ScriptEventHeaderBreakpointIndicator,
 } from "ui/scripting/ScriptEvents";
 import {
@@ -61,6 +57,7 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { getSettings } from "store/features/settings/settingsState";
 import renderScriptEventContextMenu from "components/script/renderScriptEventContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
+import { ScriptEventChildren } from "components/script/ScriptEventChildren";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -345,37 +342,18 @@ const ScriptEditorEvent = React.memo(
     const renderEvents = useCallback(
       (key: string, label: string) => {
         return (
-          <ScriptEditorChildren key={key} title={label} nestLevel={nestLevel}>
-            {label && (
-              <ScriptEditorChildrenLabel nestLevel={nestLevel}>
-                {label}
-              </ScriptEditorChildrenLabel>
-            )}
-            <ScriptEditorChildrenWrapper title="">
-              {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
-                <ScriptEditorEvent
-                  key={`${child}_${childIndex}`}
-                  id={child}
-                  index={childIndex}
-                  nestLevel={nestLevel + 1}
-                  parentType="scriptEvent"
-                  parentId={id}
-                  parentKey={key}
-                  entityId={entityId}
-                />
-              ))}
-              <AddButton
-                parentType="scriptEvent"
-                parentId={id}
-                parentKey={key}
-                nestLevel={nestLevel}
-                conditional={true}
-              />
-            </ScriptEditorChildrenWrapper>
-          </ScriptEditorChildren>
+          <ScriptEventChildren
+            key={key}
+            label={label}
+            nestLevel={nestLevel}
+            entityId={entityId}
+            parentId={id}
+            parentKey={key}
+            scriptEvent={scriptEvent}
+          />
         );
       },
-      [nestLevel, scriptEvent?.children, id, entityId]
+      [nestLevel, scriptEvent, id, entityId]
     );
 
     const onMouseEnter = useCallback(() => {

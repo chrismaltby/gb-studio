@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update GBVM script view in debugger to show human readable labels
 - Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update script branch labels to include the condition logic if there is enough vertical space
+- Update script branch labels to stay on screen when scrolling through long scripts
 
 ### Fixed
 

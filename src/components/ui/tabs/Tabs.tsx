@@ -54,7 +54,7 @@ const Wrapper = styled.div<WrapperProps>`
           margin-top: 5px;
           height: 25px;
           flex-basis: 100%;
-          padding-left: calc(2px + max(10px, min(4%, 20px)));
+          padding-left: 12px;
         `
       : ""}
 `;

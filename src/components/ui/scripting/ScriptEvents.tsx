@@ -348,17 +348,20 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 100%;
-  border-left: 1px dotted
-    ${(props) => props.theme.colors.scripting.header.backgroundAlt};
-  padding-left: 10px;
-  padding-left: calc(max(10px, min(4%, 20px)));
-  box-sizing: border-box;
-  border-radius: 10px;
-  position: relative;
-  min-height: 50px;
-  border-left: 2px solid #ccc;
+  display: flex;
   width: 100%;
   max-width: 100%;
+`;
+
+interface ScriptEditorChildrenBorderProps {
+  nestLevel: number;
+}
+
+export const ScriptEditorChildrenBorder = styled.div<ScriptEditorChildrenBorderProps>`
+  border-left: 2px solid #ccc;
+  width: 10px;
+  border-radius: 10px;
+  flex-shrink: 0;
 
   ${(props) =>
     props.nestLevel % 4 === 0
@@ -372,13 +375,13 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
           border-color: ${props.theme.colors.scripting.children.nest2Border};
         `
       : ""}
-    ${(props) =>
+  ${(props) =>
     props.nestLevel % 4 === 2
       ? css`
           border-color: ${props.theme.colors.scripting.children.nest3Border};
         `
       : ""}
-    ${(props) =>
+  ${(props) =>
     props.nestLevel % 4 === 3
       ? css`
           border-color: ${props.theme.colors.scripting.children.nest4Border};
@@ -387,23 +390,37 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
 `;
 
 export const ScriptEditorChildrenWrapper = styled.div`
+  flex-grow: 1;
   border: 1px solid ${(props) => props.theme.colors.sidebar.border};
   border-right: 0px;
+  min-width: 0;
+  align-self: flex-start;
 `;
 
 interface ScriptEditorChildrenLabelProps {
   nestLevel: number;
 }
 
-export const ScriptEditorChildrenLabel = styled.div<ScriptEditorChildrenLabelProps>`
-  position: absolute;
-  top: 50%;
-  left: -1px;
-  transform: translate(-50%, -50%) rotate(270deg);
+export const ScriptEditorChildrenLabel = styled.span<ScriptEditorChildrenLabelProps>`
+  display: inline-block;
+  position: sticky;
+  top: 35px;
+  left: 0px;
+  padding: 10px 0px;
   font-size: 8px;
-  background: ${(props) => props.theme.colors.scripting.form.background};
-  padding: 0px 5px;
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg) translate(50%, 0);
+
+  > span {
+    background: ${(props) => props.theme.colors.scripting.form.background};
+    padding: 5px 0px;
+    position: relative;
+    left: 1px;
+  }
 
   ${(props) =>
     props.nestLevel % 4 === 0
