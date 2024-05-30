@@ -682,6 +682,10 @@ const changes: EngineChange[] = [
   },
 ];
 
+export const isKnownEngineVersion = (currentVersion: string): boolean => {
+  return changes.some((change) => change.version === currentVersion);
+};
+
 const ejectEngineChangelog = (currentVersion: string) => {
   const startIndex = changes.findIndex(
     (change) => change.version === currentVersion

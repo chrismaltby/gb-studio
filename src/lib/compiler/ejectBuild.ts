@@ -4,7 +4,9 @@ import { promisify } from "util";
 import Path from "path";
 import { engineRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
+import ejectEngineChangelog, {
+  isKnownEngineVersion,
+} from "lib/project/ejectEngineChangelog";
 import {
   buildMakeDotBuildFile,
   makefileInjectToolsPath,
@@ -14,6 +16,7 @@ import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
+import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 
 const rmdir = promisify(rimraf);
 
@@ -29,14 +32,6 @@ type EjectOptions = {
   };
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
-};
-
-const readEngineVersion = async (path: string) => {
-  return (await fs.readJSON(path, { encoding: "utf8" })).version;
-};
-
-const readEngineVersionLegacy = async (path: string) => {
-  return (await fs.readFile(path, "utf8")).replace(/#.*/g, "").trim();
 };
 
 const ejectBuild = async ({
@@ -111,7 +106,7 @@ const ejectBuild = async ({
     try {
       const pluginEngineMetaPath = `${enginePluginPath}/engine.json`;
       const pluginEngineVersion = await readEngineVersion(pluginEngineMetaPath);
-      if (!pluginEngineVersion) {
+      if (!pluginEngineVersion || !isKnownEngineVersion(pluginEngineVersion)) {
         throw new Error("Missing plugin engine version");
       }
       if (pluginEngineVersion !== expectedEngineVersion) {

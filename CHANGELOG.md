@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where World view minimum size wasn't taking into account navigator sidebar or debugger pane causing unnecessary scroll bars
 - Fix issue where Math Expression editor would incorrectly show spellcheck errors in function names
 - Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
+- Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
 
 ## [4.0.0-beta2]
 
