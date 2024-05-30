@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Update GBVM script view in debugger to show human readable labels
 - Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 
 ### Fixed
 
