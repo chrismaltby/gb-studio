@@ -3446,13 +3446,14 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // UI
 
+  textNumLines = (input: string): number => {
+    return (input.match(/(\n|\r|\012|\015|\\012|\\015)/g)?.length ?? 0) + 1;
+  };
+
   textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
-    const initialNumLines = input.map(
-      (textBlock) => textBlock.split("\n").length
-    );
-
+    const initialNumLines = input.map(this.textNumLines);
     const maxNumLines = Math.max(2, Math.max.apply(null, initialNumLines));
     const textBoxHeight = Math.min(maxNumLines, MAX_DIALOGUE_LINES) + 2;
     const textBoxY = 18 - textBoxHeight;
