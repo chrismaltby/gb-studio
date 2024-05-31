@@ -1714,7 +1714,12 @@ class ScriptBuilder {
           font = newFont;
           text += textCodeSetFont(fontIndex);
         }
-      } else if (token.type === "variable" || token.type === "char") {
+      } else if (
+        token.type === "variable" ||
+        token.type === "char" ||
+        token.type === "speedVariable" ||
+        token.type === "fontVariable"
+      ) {
         const variable = token.variableId;
         if (variable.match(/^V[0-9]$/)) {
           const key = variable;
@@ -1741,10 +1746,16 @@ class ScriptBuilder {
             this.getVariableAlias(variable.replace(/^0/g, ""))
           );
         }
-        if (token.type === "variable") {
+        if (token.type === "variable" && token.fixedLength !== undefined) {
+          text += `%D${token.fixedLength}`;
+        } else if (token.type === "variable") {
           text += "%d";
-        } else {
+        } else if (token.type === "char") {
           text += "%c";
+        } else if (token.type === "speedVariable") {
+          text += "%t";
+        } else if (token.type === "fontVariable") {
+          text += "%f";
         }
       } else if (token.type === "speed") {
         text += textCodeSetSpeed(token.speed);
