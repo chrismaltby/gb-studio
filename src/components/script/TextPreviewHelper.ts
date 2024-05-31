@@ -13,6 +13,7 @@ export interface FontData {
 
 const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
+const ZERO_CHAR = 16;
 
 export const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
@@ -157,6 +158,11 @@ export const drawText = (
           (encodeChar(string[i], font.mapping) - 32) % font.widths.length;
         drawCharCode(char);
       }
+    } else if (token.type === "variable" && token.fixedLength !== undefined) {
+      for (let c = 0; c < token.fixedLength - 1; c++) {
+        drawCharCode(ZERO_CHAR);
+      }
+      drawCharCode(DOLLAR_CHAR);
     } else if (token.type === "variable") {
       drawCharCode(DOLLAR_CHAR);
       drawCharCode(DOLLAR_CHAR);
