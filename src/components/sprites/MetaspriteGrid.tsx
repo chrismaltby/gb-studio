@@ -19,6 +19,9 @@ const MetaspriteGrid = ({
   onClick,
   children,
 }: MetaspriteGridProps) => {
+  // When canvas width is not 8 or a multiple of 16 then
+  // an offset is needed to align grid lines correctly
+  const offsetGridX = width % 16 !== 0 && width !== 8 ? `${4 * zoom}px` : "0";
   return (
     <div
       style={{
@@ -33,8 +36,8 @@ const MetaspriteGrid = ({
           pointerEvents: "none",
           position: "absolute",
           bottom: 0,
-          left: (width / 2 - 8) * zoom,
-          width: 16 * zoom,
+          left: Math.max(0, width / 2 - 8) * zoom,
+          width: (width === 8 ? width : 16) * zoom,
           height: 8 * zoom,
           background: "rgba(0, 188, 212, 0.4)",
         }}
@@ -49,6 +52,7 @@ const MetaspriteGrid = ({
           bottom: 0,
           border: `${1 / zoom}px solid #d4d4d4`,
           backgroundSize: `${gridSize * zoom}px ${gridSize * zoom}px`,
+          backgroundPositionX: offsetGridX,
           backgroundImage:
             (showGrid &&
               (zoom >= 8
@@ -75,7 +79,7 @@ const MetaspriteGrid = ({
         style={{
           position: "relative",
           width,
-          transform: `translate3d(${(width / 2 - 8) * zoom}px, ${
+          transform: `translate3d(${Math.max(0, width / 2 - 8) * zoom}px, ${
             height * zoom
           }px, 0) scale(${zoom})`,
           transformOrigin: "top left",

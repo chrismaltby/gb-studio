@@ -1,13 +1,17 @@
 import React, { memo, useCallback, useEffect, useState } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
-import { actorSelectors } from "store/features/entities/entitiesState";
+import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
+import {
+  actorSelectors,
+  spriteSheetSelectors,
+} from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderActorContextMenu from "./renderActorContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
+import { SpriteBoundingBox } from "components/sprites/MetaspriteEditor";
 
 interface ActorViewProps {
   id: string;
@@ -18,15 +22,24 @@ interface ActorViewProps {
 
 interface WrapperProps {
   selected?: boolean;
+  halfWidth: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
-  width: 16px;
   height: 8px;
   background-color: rgba(247, 45, 220, 0.5);
   outline: 1px solid rgba(140, 0, 177, 0.8);
   -webkit-transform: translate3d(0, 0, 0);
+
+  ${(props) =>
+    props.halfWidth
+      ? css`
+          width: 8px;
+        `
+      : css`
+          width: 16px;
+        `}
 
   ${(props) =>
     props.selected
@@ -59,6 +72,9 @@ const ActorView = memo(
     const actor = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );
+    const sprite = useAppSelector((state) =>
+      spriteSheetSelectors.selectById(state, actor?.spriteSheetId ?? "")
+    );
     const selected = useAppSelector(
       (state) =>
         state.editor.type === "actor" &&
@@ -74,6 +90,13 @@ const ActorView = memo(
         state.project.present.settings.colorMode === "mono" ||
         (state.project.present.settings.colorMode === "mixed" &&
           state.project.present.settings.previewAsMono)
+    );
+    const boundsWidth = sprite?.boundsWidth || 16;
+    const boundsHeight = sprite?.boundsHeight || 16;
+    const boundsX = sprite?.boundsX || 0;
+    const boundsY = sprite?.boundsY || 0;
+    const showBoundingBox = useAppSelector(
+      (state) => state.editor.tool === TOOL_COLLISIONS
     );
 
     const onMouseUp = useCallback(() => {
@@ -141,6 +164,7 @@ const ActorView = memo(
         {selected && actor.isPinned && <PinScreenPreview />}
         <Wrapper
           selected={selected}
+          halfWidth={sprite?.canvasWidth === 8}
           onMouseDown={onMouseDown}
           onContextMenu={onContextMenu}
           style={{
@@ -158,6 +182,16 @@ const ActorView = memo(
                 previewAsMono={previewAsMono}
                 offsetPosition
               />
+              {showBoundingBox && (
+                <SpriteBoundingBox
+                  style={{
+                    left: boundsX,
+                    top: TILE_SIZE - boundsY - boundsHeight,
+                    width: boundsWidth,
+                    height: boundsHeight,
+                  }}
+                />
+              )}
             </CanvasWrapper>
           )}
           {contextMenu && (

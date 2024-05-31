@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Update script branch labels to include the condition logic if there is enough vertical space
 - Update script branch labels to stay on screen when scrolling through long scripts
+- Sprite editor updated to allow canvas min width of 8px with 8px width increments
+- When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
 
 ### Fixed
 

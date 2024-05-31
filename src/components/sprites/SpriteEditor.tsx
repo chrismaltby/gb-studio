@@ -610,9 +610,9 @@ export const SpriteEditor = ({
                   coordinate="w"
                   value={sprite.canvasWidth}
                   placeholder="16"
-                  min={16}
+                  min={8}
                   max={160}
-                  step={16}
+                  step={8}
                   onChange={onChangeCanvasWidth}
                 />
                 <CoordinateInput

@@ -142,7 +142,7 @@ workerCtx.onmessage = async (evt) => {
       tile.sliceY,
       8,
       16,
-      width / 2 - 8 + tile.x * (tile.flipX ? -1 : 1),
+      Math.max(0, width / 2 - 8) + tile.x * (tile.flipX ? -1 : 1),
       height - 16 - tile.y * (tile.flipY ? -1 : 1),
       8,
       16

@@ -118,7 +118,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
       : ""}
 `;
 
-const SpriteBoundingBox = styled.div`
+export const SpriteBoundingBox = styled.div`
   position: absolute;
   background: rgba(255, 193, 7, 0.58);
   box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
