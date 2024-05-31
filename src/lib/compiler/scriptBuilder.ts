@@ -1765,10 +1765,10 @@ class ScriptBuilder {
     // Replace newlines with scroll code if larger than max dialogue size
     if (scrollHeight) {
       let numNewlines = 0;
-      text = text.replace(/\\n/g, (newline) => {
+      text = text.replace(/\\012/g, (newline) => {
         numNewlines++;
         if (numNewlines > scrollHeight - 1) {
-          return "\\r";
+          return "\\015";
         }
         return newline;
       });
