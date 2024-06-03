@@ -1001,3 +1001,87 @@ test("Should do falsy conditional test when condition wrapped compared with 0 on
     "",
   ]);
 });
+
+test("should support printing fixed length variables with %D5$Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("Val = %D5$00$");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "Val = %D5"',
+  ]);
+});
+
+test("should support printing variable length variables with %d$Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("Val = %d$00$");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "Val = %d"',
+  ]);
+});
+
+test("should support printing variable length variables with just $Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("Val = $00$");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "Val = %d"',
+  ]);
+});
+
+test("should support printing variable as char code with %c$Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("Val = %c$00$");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "Val = %c"',
+  ]);
+});
+
+test("should support using variable as text speed with %t$Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("SetSpeed%t$00$NewSpeed");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "SetSpeed%tNewSpeed"',
+  ]);
+});
+
+test("should support using variable to change font with %f$Var", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    fonts: [dummyCompiledFont],
+  } as unknown as ScriptBuilderOptions);
+  sb._loadStructuredText("SetFont%f$00$NewFont");
+  expect(output).toEqual([
+    "        VM_LOAD_TEXT            1",
+    "        .dw VAR_VARIABLE_0",
+    '        .asciz "SetFont%fNewFont"',
+  ]);
+});
