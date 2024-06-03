@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
 - Add support for isqrt and rnd functions in math expressions
+- Add support for printf style tokens in text. `%D5$Variable` in text will output variable value with 5 characters and leading zeros e.g. `00042`, `%c$Variable` will output a character code based on variable value, `%t$Variable` will set text speed based on variable value, `%f$Variable` will change font based on variable value.
 
 ### Changed
 
@@ -43,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
 - Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
 - Fix title for "Call Script" events when no script has been selected
+- Fix issue where remapping '\' or 'n' in font would prevent line breaks from working
 
 ## [4.0.0-beta2]
 
