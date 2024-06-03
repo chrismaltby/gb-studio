@@ -5912,9 +5912,34 @@ extern void __mute_mask_${symbol};
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const [rpnOps, fetchOps] = precompileScriptValue(
-      optimiseScriptValue(value)
-    );
+    let testIfTruthy = true;
+    let optimisedValue = optimiseScriptValue(value);
+
+    if (optimisedValue.type === "not") {
+      // "!expression != 0" - optimise to "expression == 0"
+      optimisedValue = optimisedValue.value;
+      testIfTruthy = false;
+    } else if (
+      // "(false == expression) != 0" (left side) - optimise to "expression == 0"
+      optimisedValue.type === "eq" &&
+      ((optimisedValue.valueA.type === "number" &&
+        optimisedValue.valueA.value === 0) ||
+        optimisedValue.valueA.type === "false")
+    ) {
+      optimisedValue = optimisedValue.valueB;
+      testIfTruthy = false;
+    } else if (
+      // "(expression == false) != 0" (right side) - optimise to "expression == 0"
+      optimisedValue.type === "eq" &&
+      ((optimisedValue.valueB.type === "number" &&
+        optimisedValue.valueB.value === 0) ||
+        optimisedValue.valueB.type === "false")
+    ) {
+      optimisedValue = optimisedValue.valueA;
+      testIfTruthy = false;
+    }
+
+    const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
     const localsLookup = this._performFetchOperations(fetchOps);
     const ifValueRef = this._declareLocal("if_value", 1, true);
     this._addComment(`If`);
@@ -5926,8 +5951,13 @@ extern void __mute_mask_${symbol};
 
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    this._addComment(`If`);
-    this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
+    if (testIfTruthy) {
+      this._addComment(`If Truthy`);
+      this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
+    } else {
+      this._addComment(`If Falsy`);
+      this._ifVariableConst(".EQ", ifValueRef, 0, trueLabel, 0);
+    }
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
