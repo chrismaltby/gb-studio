@@ -9,7 +9,7 @@ interface CachedScrollProps {
 
 const CachedScroll = ({ children, cacheKey }: CachedScrollProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isProgrammaticScroll = useRef(false);
+  const isProgrammaticScroll = useRef(true);
   const isUserScrolling = useRef(false);
 
   const onScroll = useCallback(() => {
@@ -43,11 +43,6 @@ const CachedScroll = ({ children, cacheKey }: CachedScrollProps) => {
           ) {
             isProgrammaticScroll.current = true;
             scrollRef.current.scrollTop = savedPosition;
-            console.log(
-              "SCROLL TO",
-              savedPosition,
-              scrollRef.current.scrollTop
-            );
           }
 
           requestAnimationFrame(checkScroll);
