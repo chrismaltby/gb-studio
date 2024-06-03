@@ -792,3 +792,212 @@ test("Should get default alias for variable with empty name", () => {
   } as unknown as ScriptBuilderOptions);
   expect(sb.getVariableAlias("13")).toEqual("VAR_VARIABLE_13");
 });
+
+test("Should do truthy conditional test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "variable",
+      value: "L0",
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Truthy",
+    "        VM_IF_CONST             .NE, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should do falsy conditional test when condition wrapped with logical NOT", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "not",
+      value: {
+        type: "variable",
+        value: "L0",
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Falsy",
+    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should do falsy conditional test when condition wrapped compared with FALSE on right side", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "eq",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "false",
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Falsy",
+    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should do falsy conditional test when condition wrapped compared with FALSE on left side", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "eq",
+      valueA: {
+        type: "false",
+      },
+      valueB: {
+        type: "variable",
+        value: "L0",
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Falsy",
+    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should do falsy conditional test when condition wrapped compared with 0 on right side", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "eq",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "number",
+        value: 0,
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Falsy",
+    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should do falsy conditional test when condition wrapped compared with 0 on left side", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "eq",
+      valueA: {
+        type: "number",
+        value: 0,
+      },
+      valueB: {
+        type: "variable",
+        value: "L0",
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
+    "            .R_STOP",
+    "        ; If Falsy",
+    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
