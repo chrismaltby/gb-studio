@@ -40,13 +40,14 @@ export const ScriptEventChildren = ({
   const children = scriptEvent?.children?.[parentKey] || [];
   const showLabel = size.height !== undefined;
   const showFullLabel = size.height && size.height > 200;
+  const labelText = showFullLabel ? title : label;
 
   return (
     <ScriptEditorChildren nestLevel={nestLevel}>
       <ScriptEditorChildrenBorder title={title} nestLevel={nestLevel}>
-        {showLabel && (
+        {showLabel && labelText && (
           <ScriptEditorChildrenLabel nestLevel={nestLevel}>
-            <span>{showFullLabel ? title : label}</span>
+            <span>{labelText}</span>
           </ScriptEditorChildrenLabel>
         )}
       </ScriptEditorChildrenBorder>
