@@ -30,6 +30,7 @@ export const CardWrapper = styled.div<CardWrapperProps>`
   align-items: center;
   padding: 2px;
   box-sizing: border-box;
+  position: relative;
 
   ${(props) =>
     props.selected
@@ -48,6 +49,16 @@ export const CardWrapper = styled.div<CardWrapperProps>`
     max-width: 100%;
     max-height: 100%;
   }
+`;
+
+const FrameIndex = styled.div`
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: ${(props) => props.theme.colors.sidebar.background};
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
 `;
 
 const cardSource = {
@@ -134,6 +145,7 @@ class Card extends React.Component<CardProps> {
     const {
       id,
       spriteSheetId,
+      index,
       selected,
       isDragging,
       onSelect,
@@ -152,6 +164,7 @@ class Card extends React.Component<CardProps> {
                 metaspriteId={id}
                 spriteSheetId={spriteSheetId}
               />
+              <FrameIndex>{index + 1}</FrameIndex>
             </CardWrapper>
           </div>
         )

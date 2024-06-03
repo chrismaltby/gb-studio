@@ -76,7 +76,7 @@ const SpriteAnimationTimeline = ({
   const onMoveFrames = useCallback(
     (fromIndex: number, toIndex: number) => {
       dispatch(
-        entitiesActions.swapSpriteAnimationFrames({
+        entitiesActions.moveSpriteAnimationFrame({
           spriteSheetId,
           spriteAnimationId: animationId,
           fromIndex,

@@ -82,7 +82,6 @@ import {
 import {
   normalizeEntities,
   sortByFilename,
-  swap,
   isUnionVariableValue,
   isUnionPropertyValue,
   genEntitySymbol,
@@ -96,6 +95,7 @@ import {
   renameAssetEntity,
   defaultLocalisedCustomEventName,
   paletteName,
+  moveArrayElement,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
@@ -1913,7 +1913,7 @@ const editSpriteAnimation: CaseReducer<
   });
 };
 
-const swapSpriteAnimationFrames: CaseReducer<
+const moveSpriteAnimationFrame: CaseReducer<
   EntitiesState,
   PayloadAction<{
     spriteSheetId: string;
@@ -1929,7 +1929,7 @@ const swapSpriteAnimationFrames: CaseReducer<
     return;
   }
 
-  const newFrames = swap(
+  const newFrames = moveArrayElement(
     action.payload.fromIndex,
     action.payload.toIndex,
     spriteAnimation.frames
@@ -3445,7 +3445,7 @@ const entitiesSlice = createSlice({
      */
 
     editSpriteAnimation,
-    swapSpriteAnimationFrames,
+    moveSpriteAnimationFrame,
 
     /**************************************************************************
      * Sprite States

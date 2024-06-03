@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update script branch labels to stay on screen when scrolling through long scripts
 - Sprite editor updated to allow canvas min width of 8px with 8px width increments
 - When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
+- Sprite editor frames list now shows frame number
 
 ### Fixed
 
@@ -45,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
 - Fix title for "Call Script" events when no script has been selected
 - Fix issue where remapping '\' or 'n' in font would prevent line breaks from working
+- Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
 
 ## [4.0.0-beta2]
 
