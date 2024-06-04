@@ -33,6 +33,15 @@ export const lo = (longNum: number) => wrap16Bit(longNum) % 256;
 export const signed8BitVal = (dec: number) =>
   dec >= 0 ? dec & 0x7f : 0x80 + (0x80 - (Math.abs(dec) & 0x7f));
 
+export const fromSigned8Bit = (num: number): number => {
+  const masked = num & 0xff;
+  if (masked & 0x80) {
+    return masked - 0x100;
+  } else {
+    return masked;
+  }
+};
+
 export const divisibleBy8 = (n: number) => (n >> 3) << 3 === n;
 
 export const convertHexTo15BitDec = (hex: string) => {

@@ -1759,6 +1759,10 @@ class ScriptBuilder {
         }
       } else if (token.type === "speed") {
         text += textCodeSetSpeed(token.speed);
+      } else if (token.type === "gotoxy" && token.relative) {
+        text += textCodeGotoRel(token.x, token.y);
+      } else if (token.type === "gotoxy" && !token.relative) {
+        text += textCodeGoto(token.x, token.y);
       }
     });
 

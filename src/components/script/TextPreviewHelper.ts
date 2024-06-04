@@ -2,6 +2,7 @@ import { Font } from "shared/lib/entities/entitiesTypes";
 import { lexText } from "shared/lib/compiler/lexText";
 import { encodeChar } from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
+import { TILE_SIZE } from "consts";
 
 export interface FontData {
   id: string;
@@ -116,6 +117,7 @@ export const drawText = (
 ) => {
   let drawX = 0;
   let drawY = 0;
+  let leftX = 0;
 
   let font = fontsData[defaultFontId];
 
@@ -146,12 +148,18 @@ export const drawText = (
 
   const textTokens = lexText(text);
   textTokens.forEach((token) => {
-    if (token.type === "text") {
+    if (token.type === "text" && !token.hideInPreview) {
       const string = token.value;
       for (let i = 0; i < string.length; i++) {
         if (string[i] === "\n") {
-          drawX = 0;
+          drawX = leftX;
           drawY += 8;
+          continue;
+        }
+        if (string[i] === "\\" && string[i + 1] === "n") {
+          drawX = leftX;
+          drawY += 8;
+          i++;
           continue;
         }
         const char =
@@ -174,6 +182,22 @@ export const drawText = (
       if (newFont) {
         font = newFont;
       }
+    } else if (token.type === "gotoxy" && token.relative) {
+      if (token.x > 0) {
+        drawX = (Math.floor(drawX / TILE_SIZE) + (token.x - 1)) * TILE_SIZE;
+      } else if (token.x < 0) {
+        drawX = (Math.floor(drawX / TILE_SIZE) + token.x) * TILE_SIZE;
+      }
+      if (token.y > 0) {
+        drawY = (Math.floor(drawY / TILE_SIZE) + (token.y - 1)) * TILE_SIZE;
+      } else if (token.y < 0) {
+        drawY = (Math.floor(drawY / TILE_SIZE) + token.y) * TILE_SIZE;
+      }
+      leftX = drawX;
+    } else if (token.type === "gotoxy" && !token.relative) {
+      drawX = (token.x - 1) * TILE_SIZE - xOffset;
+      drawY = (token.y - 1) * TILE_SIZE - yOffset;
+      leftX = drawX;
     }
   });
 };

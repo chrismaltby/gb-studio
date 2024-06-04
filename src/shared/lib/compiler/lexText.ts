@@ -1,7 +1,10 @@
+import { fromSigned8Bit } from "shared/lib/helpers/8bit";
+
 type Token =
   | {
       type: "text";
       value: string;
+      hideInPreview?: boolean;
     }
   | {
       type: "font";
@@ -27,6 +30,12 @@ type Token =
   | {
       type: "fontVariable";
       variableId: string;
+    }
+  | {
+      type: "gotoxy";
+      x: number;
+      y: number;
+      relative?: boolean;
     };
 
 export const lexText = (inputText: string): Token[] => {
@@ -223,9 +232,76 @@ export const lexText = (inputText: string): Token[] => {
       continue;
     }
 
+    // Check for gbvm gotoxy
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "0" &&
+      inputText[i + 3] === "3" &&
+      inputText[i + 4] === "\\" &&
+      inputText[i + 5]?.match(/[0-7]/) &&
+      inputText[i + 6]?.match(/[0-7]/) &&
+      inputText[i + 7]?.match(/[0-7]/) &&
+      inputText[i + 8] === "\\" &&
+      inputText[i + 9]?.match(/[0-7]/) &&
+      inputText[i + 10]?.match(/[0-7]/) &&
+      inputText[i + 11]?.match(/[0-7]/)
+    ) {
+      tokens.push({
+        type: "gotoxy",
+        x: parseInt(inputText.substring(i + 5, i + 8), 8),
+        y: parseInt(inputText.substring(i + 9, i + 12), 8),
+      });
+      i += 11;
+      continue;
+    }
+
+    // Check for gbvm relative gotoxy
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "0" &&
+      inputText[i + 3] === "4" &&
+      inputText[i + 4] === "\\" &&
+      inputText[i + 5]?.match(/[0-7]/) &&
+      inputText[i + 6]?.match(/[0-7]/) &&
+      inputText[i + 7]?.match(/[0-7]/) &&
+      inputText[i + 8] === "\\" &&
+      inputText[i + 9]?.match(/[0-7]/) &&
+      inputText[i + 10]?.match(/[0-7]/) &&
+      inputText[i + 11]?.match(/[0-7]/)
+    ) {
+      tokens.push({
+        type: "gotoxy",
+        x: fromSigned8Bit(parseInt(inputText.substring(i + 5, i + 8), 8)),
+        y: fromSigned8Bit(parseInt(inputText.substring(i + 9, i + 12), 8)),
+        relative: true,
+      });
+      i += 11;
+      continue;
+    }
+
+    // Ignore unmatched GBVM octal in previews
+    if (inputText[i] === "\\" && inputText[i + 1]?.match(/[0-7]/)) {
+      let len = 1;
+      if (inputText[i + 2]?.match(/[0-7]/)) {
+        len++;
+        if (inputText[i + 3]?.match(/[0-7]/)) {
+          len++;
+        }
+      }
+      tokens.push({
+        type: "text",
+        value: inputText.slice(i, i + len + 1),
+        hideInPreview: true,
+      });
+      i += len;
+      continue;
+    }
+
     // Add as text token
     const lastToken = tokens[tokens.length - 1];
-    if (lastToken?.type === "text") {
+    if (lastToken?.type === "text" && !lastToken.hideInPreview) {
       lastToken.value += inputText[i];
     } else {
       tokens.push({
