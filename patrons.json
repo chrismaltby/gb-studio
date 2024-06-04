@@ -55,13 +55,6 @@
       "attributes": {
         "full_name": "Gumpy Function"
       },
-      "id": "128473778",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Gumpy Function"
-      },
       "id": "93658267",
       "type": "user"
     },
@@ -77,13 +70,6 @@
         "full_name": "Michel Iwaniec"
       },
       "id": "27034715",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Pearacidic"
-      },
-      "id": "7243786",
       "type": "user"
     },
     {
@@ -104,9 +90,23 @@
     },
     {
       "attributes": {
+        "full_name": "Gumpy Function"
+      },
+      "id": "128473778",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Martin Gauer"
       },
       "id": "3319189",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Pearacidic"
+      },
+      "id": "7243786",
       "type": "user"
     }
   ]

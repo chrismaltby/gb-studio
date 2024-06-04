@@ -18,7 +18,7 @@
     "received_events_url": "https://api.github.com/users/chrismaltby/received_events",
     "type": "User",
     "site_admin": false,
-    "contributions": 4098
+    "contributions": 4201
   },
   {
     "login": "pau-tomas",
@@ -39,7 +39,7 @@
     "received_events_url": "https://api.github.com/users/pau-tomas/received_events",
     "type": "User",
     "site_admin": false,
-    "contributions": 362
+    "contributions": 365
   },
   {
     "login": "RichardULZ",
@@ -105,6 +105,27 @@
     "contributions": 44
   },
   {
+    "login": "dependabot[bot]",
+    "id": 49699333,
+    "node_id": "MDM6Qm90NDk2OTkzMzM=",
+    "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/dependabot%5Bbot%5D",
+    "html_url": "https://github.com/apps/dependabot",
+    "followers_url": "https://api.github.com/users/dependabot%5Bbot%5D/followers",
+    "following_url": "https://api.github.com/users/dependabot%5Bbot%5D/following{/other_user}",
+    "gists_url": "https://api.github.com/users/dependabot%5Bbot%5D/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/dependabot%5Bbot%5D/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/dependabot%5Bbot%5D/subscriptions",
+    "organizations_url": "https://api.github.com/users/dependabot%5Bbot%5D/orgs",
+    "repos_url": "https://api.github.com/users/dependabot%5Bbot%5D/repos",
+    "events_url": "https://api.github.com/users/dependabot%5Bbot%5D/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/dependabot%5Bbot%5D/received_events",
+    "type": "Bot",
+    "site_admin": false,
+    "contributions": 40
+  },
+  {
     "login": "ReptiIe",
     "id": 60639480,
     "node_id": "MDQ6VXNlcjYwNjM5NDgw",
@@ -123,7 +144,7 @@
     "received_events_url": "https://api.github.com/users/ReptiIe/received_events",
     "type": "User",
     "site_admin": false,
-    "contributions": 30
+    "contributions": 32
   },
   {
     "login": "patrickmollohan",
@@ -166,27 +187,6 @@
     "type": "User",
     "site_admin": false,
     "contributions": 24
-  },
-  {
-    "login": "dependabot[bot]",
-    "id": 49699333,
-    "node_id": "MDM6Qm90NDk2OTkzMzM=",
-    "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/dependabot%5Bbot%5D",
-    "html_url": "https://github.com/apps/dependabot",
-    "followers_url": "https://api.github.com/users/dependabot%5Bbot%5D/followers",
-    "following_url": "https://api.github.com/users/dependabot%5Bbot%5D/following{/other_user}",
-    "gists_url": "https://api.github.com/users/dependabot%5Bbot%5D/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/dependabot%5Bbot%5D/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/dependabot%5Bbot%5D/subscriptions",
-    "organizations_url": "https://api.github.com/users/dependabot%5Bbot%5D/orgs",
-    "repos_url": "https://api.github.com/users/dependabot%5Bbot%5D/repos",
-    "events_url": "https://api.github.com/users/dependabot%5Bbot%5D/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/dependabot%5Bbot%5D/received_events",
-    "type": "Bot",
-    "site_admin": false,
-    "contributions": 21
   },
   {
     "login": "toxworks",
@@ -399,6 +399,27 @@
     "contributions": 5
   },
   {
+    "login": "tomo666",
+    "id": 3715832,
+    "node_id": "MDQ6VXNlcjM3MTU4MzI=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/3715832?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/tomo666",
+    "html_url": "https://github.com/tomo666",
+    "followers_url": "https://api.github.com/users/tomo666/followers",
+    "following_url": "https://api.github.com/users/tomo666/following{/other_user}",
+    "gists_url": "https://api.github.com/users/tomo666/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/tomo666/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/tomo666/subscriptions",
+    "organizations_url": "https://api.github.com/users/tomo666/orgs",
+    "repos_url": "https://api.github.com/users/tomo666/repos",
+    "events_url": "https://api.github.com/users/tomo666/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/tomo666/received_events",
+    "type": "User",
+    "site_admin": false,
+    "contributions": 5
+  },
+  {
     "login": "Rebusmind",
     "id": 9643886,
     "node_id": "MDQ6VXNlcjk2NDM4ODY=",
@@ -420,22 +441,22 @@
     "contributions": 4
   },
   {
-    "login": "Xeyler",
+    "login": "xeyler",
     "id": 11788703,
     "node_id": "MDQ6VXNlcjExNzg4NzAz",
     "avatar_url": "https://avatars.githubusercontent.com/u/11788703?v=4",
     "gravatar_id": "",
-    "url": "https://api.github.com/users/Xeyler",
-    "html_url": "https://github.com/Xeyler",
-    "followers_url": "https://api.github.com/users/Xeyler/followers",
-    "following_url": "https://api.github.com/users/Xeyler/following{/other_user}",
-    "gists_url": "https://api.github.com/users/Xeyler/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/Xeyler/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/Xeyler/subscriptions",
-    "organizations_url": "https://api.github.com/users/Xeyler/orgs",
-    "repos_url": "https://api.github.com/users/Xeyler/repos",
-    "events_url": "https://api.github.com/users/Xeyler/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/Xeyler/received_events",
+    "url": "https://api.github.com/users/xeyler",
+    "html_url": "https://github.com/xeyler",
+    "followers_url": "https://api.github.com/users/xeyler/followers",
+    "following_url": "https://api.github.com/users/xeyler/following{/other_user}",
+    "gists_url": "https://api.github.com/users/xeyler/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/xeyler/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/xeyler/subscriptions",
+    "organizations_url": "https://api.github.com/users/xeyler/orgs",
+    "repos_url": "https://api.github.com/users/xeyler/repos",
+    "events_url": "https://api.github.com/users/xeyler/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/xeyler/received_events",
     "type": "User",
     "site_admin": false,
     "contributions": 4
@@ -961,6 +982,27 @@
     "repos_url": "https://api.github.com/users/allie/repos",
     "events_url": "https://api.github.com/users/allie/events{/privacy}",
     "received_events_url": "https://api.github.com/users/allie/received_events",
+    "type": "User",
+    "site_admin": false,
+    "contributions": 1
+  },
+  {
+    "login": "Alexandr199514",
+    "id": 94646081,
+    "node_id": "U_kgDOBaQvQQ",
+    "avatar_url": "https://avatars.githubusercontent.com/u/94646081?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Alexandr199514",
+    "html_url": "https://github.com/Alexandr199514",
+    "followers_url": "https://api.github.com/users/Alexandr199514/followers",
+    "following_url": "https://api.github.com/users/Alexandr199514/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Alexandr199514/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Alexandr199514/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Alexandr199514/subscriptions",
+    "organizations_url": "https://api.github.com/users/Alexandr199514/orgs",
+    "repos_url": "https://api.github.com/users/Alexandr199514/repos",
+    "events_url": "https://api.github.com/users/Alexandr199514/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Alexandr199514/received_events",
     "type": "User",
     "site_admin": false,
     "contributions": 1
