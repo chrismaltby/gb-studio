@@ -141,6 +141,10 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
     opacity: 0.5;
   }
 
+  .CustomSelect__input {
+    color: ${(props) => props.theme.colors.text};
+  }
+
   input:focus {
     box-shadow: none !important;
   }

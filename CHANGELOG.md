@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix title for "Call Script" events when no script has been selected
 - Fix issue where remapping '\' or 'n' in font would prevent line breaks from working
 - Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
+- Fix issue where searching through menus would use very low contrast text colours when using Dark theme
 
 ## [4.0.0-beta2]
 
