@@ -3,13 +3,18 @@ import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import assetsActions from "store/features/assets/assetsActions";
-import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import {
+  FormatFolderLabel,
+  SelectMenu,
+  selectMenuStyleProps,
+} from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { FlexGrow } from "ui/spacing/Spacing";
 
 interface BackgroundSelectProps {
   name: string;
@@ -94,15 +99,12 @@ const ButtonContent = styled.div`
 `;
 
 const SpriteInfo = styled.div`
+  display: flex;
+  flex-direction: column;
   margin-left: 5px;
-  overflow: hidden;
   width: 100%;
   font-size: 11px;
   height: 100%;
-
-  & > *:not(:last-child) {
-    margin-bottom: 3px;
-  }
 `;
 
 const SpriteInfoTitle = styled.div`
@@ -121,7 +123,8 @@ const SpriteInfoRow = styled.div<SpriteInfoRowProps>`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  flex-grow: 1;
+  font-size: 9px;
+  line-height: 10px;
   opacity: 0.7;
 
   ${(props) =>
@@ -141,11 +144,14 @@ const NoValue = styled.div`
 `;
 
 export const Pill = styled.span`
+  position: absolute;
+  top: 5px;
+  left: 2px;
   color: ${(props) => props.theme.colors.button.text};
   background: ${(props) => props.theme.colors.list.activeBackground};
   border: 0px;
-  border-radius: 16px;
-  padding: 3px 2px;
+  border-radius: 3px;
+  padding: 0px 3px;
   margin-left: 3px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
@@ -281,7 +287,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           {includeInfo && (
             <SpriteInfo>
               <SpriteInfoTitle>
-                {background?.name}
+                <FormatFolderLabel label={background?.name} />
                 {isColor && background?.autoColor && background.monoOverrideId && (
                   <Pill
                     title={l10n("FIELD_MONO_OVERRIDE_DESC", {
@@ -295,7 +301,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                   </Pill>
                 )}
               </SpriteInfoTitle>
-
+              <FlexGrow />
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {background?.width}x{background?.height}
@@ -310,6 +316,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>
+              <FlexGrow />
             </SpriteInfo>
           )}
         </ButtonContent>

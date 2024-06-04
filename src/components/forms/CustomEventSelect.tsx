@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import { customEventSelectors } from "store/features/entities/entitiesState";
-import { Option, Select, SelectCommonProps } from "ui/form/Select";
+import {
+  FormatFolderLabel,
+  Option,
+  Select,
+  SelectCommonProps,
+} from "ui/form/Select";
 import { sortByLabel } from "shared/lib/helpers/sort";
 
 interface CustomEventSelectProps extends SelectCommonProps {
@@ -53,6 +58,9 @@ export const CustomEventSelect = ({
       value={currentValue}
       options={options}
       onChange={onSelectChange}
+      formatOptionLabel={(option: Option) => {
+        return <FormatFolderLabel label={option.label} />;
+      }}
       {...selectProps}
     />
   );

@@ -4,10 +4,15 @@ import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
-import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import {
+  FormatFolderLabel,
+  SelectMenu,
+  selectMenuStyleProps,
+} from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
+import { FlexGrow } from "ui/spacing/Spacing";
 
 interface SpriteSheetSelectProps {
   name: string;
@@ -95,15 +100,12 @@ const PreviewWrapper = styled.div`
 `;
 
 const SpriteInfo = styled.div`
+  display: flex;
+  flex-direction: column;
   margin-left: 5px;
-  overflow: hidden;
   width: 100%;
   font-size: 11px;
   height: 100%;
-
-  & > *:not(:last-child) {
-    margin-bottom: 3px;
-  }
 `;
 
 const SpriteInfoTitle = styled.div`
@@ -118,7 +120,8 @@ const SpriteInfoRow = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  flex-grow: 1;
+  font-size: 9px;
+  line-height: 10px;
   opacity: 0.7;
 `;
 
@@ -238,7 +241,10 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
           )}
           {includeInfo && (
             <SpriteInfo>
-              <SpriteInfoTitle>{spriteSheet?.name}</SpriteInfoTitle>
+              <SpriteInfoTitle>
+                <FormatFolderLabel label={spriteSheet?.name} />
+              </SpriteInfoTitle>
+              <FlexGrow />
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {spriteSheet?.canvasWidth}x{spriteSheet?.canvasHeight}
@@ -247,6 +253,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {spriteSheet?.numTiles}
               </SpriteInfoRow>
+              <FlexGrow />
             </SpriteInfo>
           )}
         </ButtonContent>

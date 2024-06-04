@@ -13,6 +13,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 
@@ -187,7 +188,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               />
             }
           >
-            {option.label}
+            <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>
         );
       }}
@@ -203,7 +204,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
             }
           >
             {prefix && <PaletteSelectPrefix>{prefix}</PaletteSelectPrefix>}
-            {currentValue?.label}
+            <FormatFolderLabel label={currentValue?.label} />
           </SingleValueWithPreview>
         ),
       }}

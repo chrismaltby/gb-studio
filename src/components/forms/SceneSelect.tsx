@@ -9,6 +9,7 @@ import {
   SingleValueWithPreview,
   Select,
   SelectCommonProps,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
@@ -142,7 +143,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                 />
               }
             >
-              {option.label}
+              <FormatFolderLabel label={option.label} />
             </OptionLabelWithPreview>
           );
         }}
@@ -159,7 +160,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                 />
               }
             >
-              {currentValue?.label}
+              <FormatFolderLabel label={currentValue?.label} />
             </SingleValueWithPreview>
           ),
         }}

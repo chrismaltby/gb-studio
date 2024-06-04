@@ -10,6 +10,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 
@@ -124,7 +125,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
               />
             }
           >
-            {option.label}
+            <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>
         );
       }}
@@ -139,7 +140,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
               />
             }
           >
-            {currentValue?.label}
+            <FormatFolderLabel label={currentValue?.label} />
           </SingleValueWithPreview>
         ),
       }}

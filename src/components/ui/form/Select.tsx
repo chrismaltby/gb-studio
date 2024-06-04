@@ -32,6 +32,10 @@ interface SingleValueWithPreviewProps {
   children: ReactNode;
 }
 
+interface FormatFolderLabelProps {
+  label?: string;
+}
+
 export interface SelectCommonProps {
   placeholder?: JSX.Element;
   autoFocus?: boolean;
@@ -248,6 +252,32 @@ const SingleValuePreview = styled.div`
 const SingleValuePreviewOffset = styled.div`
   transform: translate(-3px, -11px);
 `;
+
+const FormatFolderLabelWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  align-items: center;
+  small {
+    opacity: 0.6;
+    font-size: 9px;
+    line-height: 8px;
+  }
+`;
+
+export const FormatFolderLabel = ({ label }: FormatFolderLabelProps) => {
+  if (!label) {
+    return null;
+  }
+  const filePart = label.replace(/.*[\\/]/g, "");
+  const pathPart = label.slice(0, -filePart.length);
+  return (
+    <FormatFolderLabelWrapper>
+      {pathPart.length > 0 && <small>{pathPart}</small>}
+      {filePart}
+    </FormatFolderLabelWrapper>
+  );
+};
 
 export const SingleValueWithPreview: FC<SingleValueWithPreviewProps> = ({
   preview,

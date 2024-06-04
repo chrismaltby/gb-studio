@@ -9,6 +9,7 @@ import {
   SingleValueWithPreview,
   Select,
   SelectCommonProps,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import { Background } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
@@ -106,7 +107,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
               />
             }
           >
-            {option.label}
+            <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>
         );
       }}
@@ -122,7 +123,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
               />
             }
           >
-            {currentValue?.label}
+            <FormatFolderLabel label={currentValue?.label} />
           </SingleValueWithPreview>
         ),
       }}

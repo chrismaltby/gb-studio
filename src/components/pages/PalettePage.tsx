@@ -216,7 +216,6 @@ const PalettePage = () => {
                 {edit ? (
                   <Input
                     displaySize="large"
-                    maxLength={25}
                     value={viewPalette.name}
                     placeholder={paletteName(viewPalette, viewPaletteIndex)}
                     onChange={onEditName}

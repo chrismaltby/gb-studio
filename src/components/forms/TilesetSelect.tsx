@@ -13,6 +13,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import { TileCanvas } from "components/world/TileCanvas";
 import uniq from "lodash/uniq";
@@ -134,7 +135,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
                 ) : null
               }
             >
-              {option.label}
+              <FormatFolderLabel label={option.label} />
             </OptionLabelWithPreview>
           );
         }}
@@ -151,7 +152,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
                 ) : null
               }
             >
-              {currentValue?.label}
+              <FormatFolderLabel label={currentValue?.label} />
             </SingleValueWithPreview>
           ),
         }}

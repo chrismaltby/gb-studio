@@ -6,6 +6,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
   OptGroup,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import { PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
@@ -162,7 +163,7 @@ export const SoundEffectSelect = ({
               />
             }
           >
-            {option.label}
+            <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>
         );
       }}
@@ -179,7 +180,7 @@ export const SoundEffectSelect = ({
               />
             }
           >
-            {currentValue?.label}
+            <FormatFolderLabel label={currentValue?.label} />
           </SingleValueWithPreview>
         ),
       }}

@@ -8,6 +8,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
   OptGroup,
+  FormatFolderLabel,
 } from "ui/form/Select";
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
@@ -121,7 +122,7 @@ export const MusicSelect = ({
           <OptionLabelWithPreview
             preview={<PlayPauseTrack musicId={option.value} />}
           >
-            {option.label}
+            <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>
         );
       }}
@@ -130,7 +131,7 @@ export const MusicSelect = ({
           <SingleValueWithPreview
             preview={<PlayPauseTrack musicId={currentValue?.value || ""} />}
           >
-            {currentValue?.label}
+            <FormatFolderLabel label={currentValue?.label} />
           </SingleValueWithPreview>
         ),
       }}

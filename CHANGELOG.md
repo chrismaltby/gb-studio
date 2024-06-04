@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sprite editor updated to allow canvas min width of 8px with 8px width increments
 - When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
 - Sprite editor frames list now shows frame number
+- Improve layout of asset dropdowns when using folders
 
 ### Fixed
 
@@ -48,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where remapping '\' or 'n' in font would prevent line breaks from working
 - Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
 - Fix issue where searching through menus would use very low contrast text colours when using Dark theme
+- Fix issue preventing palette names from being over 25 characters long
 
 ## [4.0.0-beta2]
 
