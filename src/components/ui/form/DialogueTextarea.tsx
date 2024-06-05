@@ -20,10 +20,14 @@ import { TextSpeedSelect } from "components/forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "shared/lib/lang/l10n";
 import { portalRoot } from "ui/layout/Portal";
+import { TextGotoSelect } from "components/forms/TextGotoSelect";
+import { decOct, fromSigned8Bit } from "shared/lib/helpers/8bit";
+import { ensureNumber } from "shared/types";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
+const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
 
 interface DialogueTextareaWrapperProps {
   singleLine?: boolean;
@@ -140,6 +144,19 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
       color: ${(props) => props.theme.colors.input.background};
     }
   }
+
+  .Mentions__TokenGoto {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.code};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.code};
+      color: ${(props) => props.theme.colors.input.background};
+    }
+  }
 `;
 
 const searchVariables =
@@ -159,6 +176,16 @@ const searchVariables =
       }));
   };
 
+const extractGotoCoords = (code: string): [number, number] => {
+  const coords = code.split("\\");
+  const offsetX = fromSigned8Bit(parseInt(coords[2], 8));
+  const offsetY = fromSigned8Bit(parseInt(coords[3], 8));
+  return [
+    offsetX >= 0 ? offsetX - 1 : offsetX,
+    offsetY >= 0 ? offsetY - 1 : offsetY,
+  ];
+};
+
 export interface DialogueTextareaProps {
   id?: string;
   value: string;
@@ -176,6 +203,16 @@ type EditModeOptions =
       type: "font" | "speed" | "var" | "char";
       id: string;
       index: number;
+      x: number;
+      y: number;
+    }
+  | {
+      type: "goto";
+      id: string;
+      index: number;
+      offsetX: number;
+      offsetY: number;
+      relative: boolean;
       x: number;
       y: number;
     }
@@ -232,6 +269,20 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   );
 
   const speedCodeLookup = useMemo(() => keyBy(speedCodes, "id"), [speedCodes]);
+
+  const moveCodes = useMemo(
+    () => [
+      {
+        id: "\\003\\001\\001",
+        display: l10n("FIELD_SET_CURSOR_POSITION_TO"),
+      },
+      {
+        id: "\\004\\002\\002",
+        display: l10n("FIELD_MOVE_CURSOR_POSITION_BY"),
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -350,6 +401,39 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                   setEditMode(undefined);
                 }}
                 {...selectMenuStyleProps}
+              />
+            )}
+            {editMode.type === "goto" && (
+              <TextGotoSelect
+                value={editMode}
+                onChange={(newGoto) => {
+                  let matches = 0;
+                  const newValue = value.replace(gotoRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      const newX =
+                        newGoto.offsetX >= 0
+                          ? newGoto.offsetX + 1
+                          : newGoto.offsetX;
+                      const newY =
+                        newGoto.offsetY >= 0
+                          ? newGoto.offsetY + 1
+                          : newGoto.offsetY;
+                      return `\\00${newGoto.relative ? "4" : "3"}\\${decOct(
+                        fromSigned8Bit(ensureNumber(newX, 1))
+                      ).padStart(3, "0")}\\${decOct(
+                        fromSigned8Bit(ensureNumber(newY, 1))
+                      )}`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
               />
             )}
           </SelectMenu>
@@ -476,6 +560,43 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             setEditMode({
               type: "font",
               id: fontId,
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
+        />
+        <CustomMention
+          className="Mentions__TokenGoto"
+          trigger={/(!([A-Za-z0-9]+))$/}
+          data={moveCodes}
+          markup={`__id__`}
+          regex={/(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/}
+          displayTransform={(code: string) => {
+            const [offsetX, offsetY] = extractGotoCoords(code);
+            return `${code[3] === "3" ? "Ｐ" : "Ｍ"}(${
+              code[3] === "3" || offsetX < 0 ? offsetX : `+${offsetX}`
+            },${code[3] === "3" || offsetY < 0 ? offsetY : `+${offsetY}`})`;
+          }}
+          hoverTransform={(code) =>
+            code[3] === "3"
+              ? l10n("FIELD_SET_CURSOR_POSITION_TO")
+              : l10n("FIELD_MOVE_CURSOR_POSITION_BY")
+          }
+          onClick={(e, code, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            const [offsetX, offsetY] = extractGotoCoords(code);
+            setEditMode({
+              type: "goto",
+              id: code,
+              offsetX,
+              offsetY,
+              relative: code[3] === "4",
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,

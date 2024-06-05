@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
 - Add support for isqrt and rnd functions in math expressions
 - Add support for printf style tokens in text. `%D5$Variable` in text will output variable value with 5 characters and leading zeros e.g. `00042`, `%c$Variable` will output a character code based on variable value, `%t$Variable` will set text speed based on variable value, `%f$Variable` will change font based on variable value.
+- Add ability to change text cursor position in dialogue with "Set Cursor Position To" and "Move Cursor Position By" commands accessible by typing `!Cursor`
 
 ### Changed
 
@@ -34,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
 - Sprite editor frames list now shows frame number
 - Improve layout of asset dropdowns when using folders
+- Dialogue event titles now show names of used variables in preview
 
 ### Fixed
 

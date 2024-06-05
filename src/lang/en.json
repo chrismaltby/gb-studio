@@ -806,6 +806,9 @@
   "FIELD_SET_AS_STARTING_SCENE": "Set As Starting Scene",
   "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Open Build Log On Warnings",
   "FIELD_GENERATE_DEBUG_FILES": "Generate Debugging Files",
+  "FIELD_SET_CURSOR_POSITION_TO": "Set Cursor Position To",
+  "FIELD_MOVE_CURSOR_POSITION_BY": "Move Cursor Position By",
+  "FIELD_MOVE_BY": "Move By",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

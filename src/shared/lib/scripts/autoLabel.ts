@@ -7,6 +7,7 @@ import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import { lexText } from "../compiler/lexText";
 
 export const getAutoLabel = (
   command: string,
@@ -145,7 +146,10 @@ export const getAutoLabel = (
       return l10nInput(value);
     };
 
-    if ((fieldType === "value" || fieldType === "engineFieldValue") && isScriptValue(value)) {
+    if (
+      (fieldType === "value" || fieldType === "engineFieldValue") &&
+      isScriptValue(value)
+    ) {
       return scriptValueToString(value, {
         variableNameForId: (id) => `||variable:${id}||`,
         actorNameForId: (id) => `||actor:${id}||`,
@@ -179,6 +183,24 @@ export const getAutoLabel = (
       return `||custom-event:${value}||`;
     } else if (fieldType === "input") {
       return inputForValue(value);
+    } else if (fieldType === "text" || fieldType === "textarea") {
+      return lexText(String(value))
+        .map((t) => {
+          if (t.type === "text") {
+            return t.value;
+          } else if (t.type === "variable" && t.fixedLength !== undefined) {
+            return `%D${t.fixedLength}||variable:${t.variableId}||`;
+          } else if (t.type === "variable") {
+            return `||variable:${t.variableId}||`;
+          } else if (t.type === "char") {
+            return `%c||variable:${t.variableId}||`;
+          } else if (t.type === "gotoxy") {
+            return " ";
+          }
+          return "";
+        })
+        .join("")
+        .trim();
     }
     return String(value);
   };
