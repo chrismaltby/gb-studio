@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
 - Fix issue where searching through menus would use very low contrast text colours when using Dark theme
 - Fix issue preventing palette names from being over 25 characters long
+- Fix issue where sceneTypes in `engine.json` for plugins could cause duplicate scene types to appear
 
 ## [4.0.0-beta2]
 

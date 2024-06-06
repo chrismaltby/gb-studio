@@ -4,6 +4,7 @@ import { readJSON, pathExists } from "fs-extra";
 import type { SceneTypeSchema } from "store/features/engine/engineState";
 import { engineRoot } from "consts";
 import glob from "glob";
+import uniqBy from "lodash/uniqBy";
 
 interface EngineData {
   sceneTypes?: SceneTypeSchema[];
@@ -89,6 +90,9 @@ export const loadSceneTypes = async (
       }
     }
   }
+
+  // Remove duplicate scene types
+  sceneTypes = uniqBy(sceneTypes, (s) => s.key);
 
   return sceneTypes;
 };
