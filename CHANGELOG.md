@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.0.0-rc.1]
+## [4.0.0-rc.1] - 2024-06-06
 
 ### Added
 
@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue preventing palette names from being over 25 characters long
 - Fix issue where sceneTypes in `engine.json` for plugins could cause duplicate scene types to appear
 
-## [4.0.0-beta2]
+## [4.0.0-beta2] - 2024-05-20
 
 ### Added
 
@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where selecting effect column in music editor tracker would cause application to freeze [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue preventing documentation being accessed from splash window
 
-## [4.0.0-beta1]
+## [4.0.0-beta1] - 2024-05-13
 
 ### Added
 
