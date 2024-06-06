@@ -454,7 +454,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       >
         <CustomMention
           className="Mentions__TokenVar"
-          trigger={/(\$([A-Za-z0-9]+))$/}
+          trigger={/(\$([\p{L}0-9]+))$/u}
           markup="$__id__$"
           data={searchVariables(variables, "$")}
           regex={/\$([VLT0-9][0-9]*)\$/}
@@ -484,7 +484,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         />
         <CustomMention
           className="Mentions__TokenChar"
-          trigger={/(#([A-Za-z0-9]+))$/}
+          trigger={/(#([\p{L}0-9]+))$/u}
           markup="#__id__#"
           data={searchVariables(variables, "#")}
           regex={/#([VLT0-9][0-9]*)#/}
@@ -514,7 +514,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         />
         <CustomMention
           className="Mentions__TokenSpeed"
-          trigger={/(!([A-Za-z0-9]+))$/}
+          trigger={/(!([\p{L}0-9]+))$/u}
           data={speedCodes}
           markup="!__id__!"
           regex={/!(S[0-5]+)!/}
@@ -541,7 +541,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         />
         <CustomMention
           className="Mentions__TokenFont"
-          trigger={/(!([A-Za-z0-9]+))$/}
+          trigger={/(!([\p{L}0-9]+))$/u}
           data={fontItems}
           markup="!__id__!"
           regex={/!(F:[0-9a-f-]+)!/}
@@ -568,7 +568,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         />
         <CustomMention
           className="Mentions__TokenGoto"
-          trigger={/(!([A-Za-z0-9]+))$/}
+          trigger={/(!([\p{L}0-9]+))$/u}
           data={moveCodes}
           markup={`__id__`}
           regex={/(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/}

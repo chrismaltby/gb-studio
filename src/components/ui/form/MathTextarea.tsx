@@ -363,7 +363,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
       >
         <CustomMention
           className="Mentions__TokenVar"
-          trigger={/(\$([A-Za-z0-9]+))$/}
+          trigger={/(\$([\p{L}0-9]+))$/u}
           markup="$__id__$"
           data={searchVariables(variables)}
           regex={/\$([VLT0-9][0-9]*)\$/}
