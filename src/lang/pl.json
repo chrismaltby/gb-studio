@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1485240529",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1488240606",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -806,7 +806,10 @@
   "FIELD_SET_AS_STARTING_SCENE": "Ustaw jako scenę startową",
   "FIELD_OPEN_BUILD_LOG_ON_WARNINGS": "Otwórz dziennik kompilacji przy ostrzeżeniach",
   "FIELD_GENERATE_DEBUG_FILES": "Generuj pliki debugowania",
-	 
+  "FIELD_SET_CURSOR_POSITION_TO": "Ustaw pozycję kursora na",
+  "FIELD_MOVE_CURSOR_POSITION_BY": "Przesuń pozycję kursora o",
+  "FIELD_MOVE_BY": "Przesuń o",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
