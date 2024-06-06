@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
 - Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
 - Fix title for "Call Script" events when no script has been selected
-- Fix issue where remapping '\' or 'n' in font would prevent line breaks from working
+- Fix issue where remapping '\\' or 'n' in font would prevent line breaks from working
 - Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
 - Fix issue where searching through menus would use very low contrast text colours when using Dark theme
 - Fix issue preventing palette names from being over 25 characters long
