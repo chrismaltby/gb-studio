@@ -18,6 +18,7 @@ import {
   DMG_PALETTE,
   MIDDLE_MOUSE,
   TILE_COLOR_PROP_PRIORITY,
+  TOOL_SELECT,
 } from "consts";
 import SceneInfo from "./SceneInfo";
 import {
@@ -595,6 +596,9 @@ const SceneView = memo(
 
     const onContextMenu = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (tool !== TOOL_SELECT) {
+          return;
+        }
         if (!renderContextMenu) {
           return;
         }
@@ -604,7 +608,7 @@ const SceneView = memo(
         }
         setContextMenu({ x: e.pageX, y: e.pageY, menu });
       },
-      [renderContextMenu]
+      [renderContextMenu, tool]
     );
 
     const onContextMenuClose = useCallback(() => {
