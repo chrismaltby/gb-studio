@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
 - When using "Color Only" mode, GB rom file extension changed to ".gbc"
+- Sprite editor frame numbers updated to start from frame "0" to match values used in "Set Animation Frame" event 
 
 ### Fixed
 

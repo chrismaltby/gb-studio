@@ -164,7 +164,7 @@ class Card extends React.Component<CardProps> {
                 metaspriteId={id}
                 spriteSheetId={spriteSheetId}
               />
-              <FrameIndex>{index + 1}</FrameIndex>
+              <FrameIndex>{index}</FrameIndex>
             </CardWrapper>
           </div>
         )
