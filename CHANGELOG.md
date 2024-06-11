@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where long branch labels would cause gaps in script editor
 - Fix issue where right click context menu would appear when trying to right click to remove collisions. Context menu now only appears when using select tool
 - Fix issue where text focus could get stuck in Build Log or GBVM script preview in debugger, preventing copy/paste from working
+- Fix issue where restoring scene from stack after using camera move events would cause previous scene to load without being locked to player
 
 ## [4.0.0-rc.1] - 2024-06-06
 
