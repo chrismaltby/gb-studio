@@ -1084,6 +1084,19 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           );
         }
       }
+    } else if (
+      editorActions.selectWorld.match(action) ||
+      editorActions.selectScene.match(action) ||
+      editorActions.selectActor.match(action) ||
+      editorActions.selectTrigger.match(action) ||
+      editorActions.selectCustomEvent.match(action) ||
+      editorActions.selectVariable.match(action) ||
+      editorActions.dragActorStart.match(action) ||
+      editorActions.dragTriggerStart.match(action)
+    ) {
+      // Remove text selection (likely from debugger build log)
+      // when making a selection to allow copy/paste binding to work
+      window.getSelection()?.removeAllRanges();
     }
     next(action);
   };
