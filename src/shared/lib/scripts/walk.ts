@@ -234,13 +234,15 @@ export const walkScript = (
           String(scriptEvent.args?.customEventId || "")
         ];
       if (customEvent) {
-        if (!options.customEvents.visitedIds) {
-          options.customEvents.visitedIds = new Set<string>();
-        }
-        if (options.customEvents.visitedIds.has(customEvent.id)) {
+        if (options.customEvents.visitedIds?.has(customEvent.id)) {
           continue;
         }
-        options.customEvents.visitedIds.add(customEvent.id);
+        const visitedIds = new Set<string>(
+          options.customEvents.visitedIds
+            ? [...options.customEvents.visitedIds, customEvent.id]
+            : [customEvent.id]
+        );
+
         walkScript(
           customEvent.script,
           {
@@ -249,6 +251,7 @@ export const walkScript = (
               ...options.customEvents,
               maxDepth: options.customEvents.maxDepth - 1,
               args: scriptEvent.args || {},
+              visitedIds,
             },
           },
           callback
@@ -447,13 +450,16 @@ export const walkNormalizedScript = (
             String(scriptEvent.args?.customEventId || "")
           ];
         if (customEvent) {
-          if (!options.customEvents.visitedIds) {
-            options.customEvents.visitedIds = new Set<string>();
-          }
-          if (options.customEvents.visitedIds.has(customEvent.id)) {
+          if (options.customEvents.visitedIds?.has(customEvent.id)) {
             continue;
           }
-          options.customEvents.visitedIds.add(customEvent.id);
+
+          const visitedIds = new Set<string>(
+            options.customEvents.visitedIds
+              ? [...options.customEvents.visitedIds, customEvent.id]
+              : [customEvent.id]
+          );
+
           walkNormalizedScript(
             customEvent.script,
             lookup,
@@ -463,6 +469,7 @@ export const walkNormalizedScript = (
                 ...options.customEvents,
                 maxDepth: options.customEvents.maxDepth - 1,
                 args: scriptEvent.args || {},
+                visitedIds,
               },
             },
             callback

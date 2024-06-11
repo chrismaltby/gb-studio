@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where right click context menu would appear when trying to right click to remove collisions. Context menu now only appears when using select tool
 - Fix issue where text focus could get stuck in Build Log or GBVM script preview in debugger, preventing copy/paste from working
 - Fix issue where restoring scene from stack after using camera move events would cause previous scene to load without being locked to player
+- Fix issue where calling scripts to change sprites for multiple actors in a scene would only reserve tile memory for the first actor
 
 ## [4.0.0-rc.1] - 2024-06-06
 

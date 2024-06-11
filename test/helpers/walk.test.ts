@@ -260,3 +260,88 @@ test("should walk through commented normalized events if requested", () => {
   );
   expect(output).toEqual(["0", "1", "2"]);
 });
+
+test("should visit normalized custom script multiple times when called at same level", () => {
+  const eventIds = ["0", "2"];
+  const eventsLookup = {
+    "0": {
+      id: "0",
+      command: "EVENT_CALL_CUSTOM_EVENT",
+      args: {
+        customEventId: "s1",
+      },
+    },
+    "1": {
+      id: "1",
+    },
+    "2": {
+      id: "2",
+      command: "EVENT_CALL_CUSTOM_EVENT",
+      args: {
+        customEventId: "s1",
+      },
+    },
+  } as unknown as Record<string, ScriptEventNormalized>;
+  const customEventsLookup = {
+    s1: {
+      id: "s1",
+      script: ["1"],
+    },
+  } as unknown as Record<string, CustomEventNormalized>;
+  const output: string[] = [];
+  const myFn = (node: ScriptEventNormalized) => output.push(node.id);
+  walkNormalizedScript(
+    eventIds,
+    eventsLookup,
+    {
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: 5,
+      },
+    },
+    myFn
+  );
+  expect(output).toEqual(["0", "1", "2", "1"]);
+});
+
+test("should visit custom script multiple times when called at same level", () => {
+  const events = [
+    {
+      id: "0",
+      command: "EVENT_CALL_CUSTOM_EVENT",
+      args: {
+        customEventId: "s1",
+      },
+    },
+    {
+      id: "2",
+      command: "EVENT_CALL_CUSTOM_EVENT",
+      args: {
+        customEventId: "s1",
+      },
+    },
+  ] as unknown as ScriptEvent[];
+  const customEventsLookup = {
+    s1: {
+      id: "s1",
+      script: [
+        {
+          id: "1",
+        },
+      ],
+    },
+  } as unknown as Record<string, CustomEvent>;
+  const output: string[] = [];
+  const myFn = (node: ScriptEvent) => output.push(node.id);
+  walkScript(
+    events,
+    {
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: 5,
+      },
+    },
+    myFn
+  );
+  expect(output).toEqual(["0", "1", "2", "1"]);
+});
