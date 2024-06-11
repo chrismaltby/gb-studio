@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
 
+### Fixed
+
+- Fix issue where long branch labels would cause gaps in script editor
+
 ## [4.0.0-rc.1] - 2024-06-06
 
 ### Added

@@ -41,13 +41,24 @@ export const ScriptEventChildren = ({
   const showLabel = size.height !== undefined;
   const showFullLabel = size.height && size.height > 200;
   const labelText = showFullLabel ? title : label;
+  const labelMaxHeight = Math.max(80, size.height ? size.height : 0);
 
   return (
     <ScriptEditorChildren nestLevel={nestLevel}>
-      <ScriptEditorChildrenBorder title={title} nestLevel={nestLevel}>
+      <ScriptEditorChildrenBorder
+        title={title}
+        nestLevel={nestLevel}
+        style={{ maxHeight: labelMaxHeight }}
+      >
         {showLabel && labelText && (
           <ScriptEditorChildrenLabel nestLevel={nestLevel}>
-            <span>{labelText}</span>
+            <span
+              style={{
+                maxHeight: labelMaxHeight - 30,
+              }}
+            >
+              {labelText}
+            </span>
           </ScriptEditorChildrenLabel>
         )}
       </ScriptEditorChildrenBorder>

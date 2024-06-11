@@ -416,10 +416,14 @@ export const ScriptEditorChildrenLabel = styled.span<ScriptEditorChildrenLabelPr
   transform: rotate(180deg) translate(50%, 0);
 
   > span {
+    display: inline-block;
     background: ${(props) => props.theme.colors.scripting.form.background};
     padding: 5px 0px;
     position: relative;
-    left: 1px;
+    left: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   ${(props) =>
