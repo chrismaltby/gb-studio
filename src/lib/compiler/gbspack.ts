@@ -85,7 +85,7 @@ export const replaceBank = (
       const fnDef = `S _${fnName}`;
       // If symbol has pair
       if (newString.includes(fnDef)) {
-        const findBankedFnDef = `b_${fnName} Def${toHex(originalBank, 6)}`;
+        const findBankedFnDef = `b_${fnName} Def[0]*${toHex(originalBank, 6)}`;
         const replaceBankedFnDef = `b_${fnName} Def${toHex(bankNo, 6)}`;
         newString = newString.replace(
           new RegExp(findBankedFnDef, "g"),
@@ -101,7 +101,7 @@ export const replaceBank = (
     new RegExp(findCode, "g"),
     replaceCode
   );
-  const re = new RegExp(`__bank_([^ ]*) Def${toHex(originalBank, 6)}`, "g");
+  const re = new RegExp(`__bank_([^ ]*) Def[0]*${toHex(originalBank, 6)}`, "g");
   const result = replacedString.replace(re, (_, capture) => {
     return `__bank_${capture} Def${toHex(bankNo, 6)}`;
   });
