@@ -1,4 +1,5 @@
 #include <gbdk/platform.h>
+#include <gbdk/font.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -7,14 +8,27 @@ const uint8_t * scanline_offsets = scanline_offsets_tbl;
 
 #define SCROLL_POS 15
 #define SCROLL_POS_PIX_START ((SCROLL_POS + DEVICE_SCREEN_Y_OFFSET) * 8) - 1
-#define SCROLL_POS_PIX_END ((SCROLL_POS + DEVICE_SCREEN_X_OFFSET + 1) * 8) - 1
+#define SCROLL_POS_PIX_END ((SCROLL_POS + DEVICE_SCREEN_Y_OFFSET + 1) * 8) - 1
+
+extern uint8_t _lcd_scanline;
 
 uint8_t scroller_x = 0;
 void scanline_isr(void) {
 #if defined(NINTENDO_NES)
-    // Write directly to hardware scroll registers (only first write will have an effect)
-    PPUSCROLL = scroller_x;
-    PPUSCROLL = 0; // 2nd write (dummy)
+    switch (_lcd_scanline) {
+        case 0: 
+            move_bkg(0, 0);
+            _lcd_scanline = SCROLL_POS_PIX_START + 1;
+            break;
+        case SCROLL_POS_PIX_START + 1:
+            move_bkg(scroller_x, SCROLL_POS_PIX_START + 1);
+            _lcd_scanline = SCROLL_POS_PIX_END + 1;
+            break;
+        case SCROLL_POS_PIX_END + 1:
+            move_bkg(0, SCROLL_POS_PIX_END + 1);
+            _lcd_scanline = 0;
+            break;
+    }
 #elif defined(NINTENDO)
     switch (LYC_REG) {
         case 0: 
@@ -49,9 +63,15 @@ const uint8_t * scroller_next_char = scroller_text;
 uint8_t * scroller_vram_addr;
 uint8_t * base, * limit;
 
-extern uint8_t _lcd_scanline;
-
 void main(void) {
+    DISPLAY_OFF;
+    // Init font system / clear screen
+    font_init();
+    font_set(font_load(font_ibm));
+    // Fill the screen background with '*'
+    fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, '*' - ' ');
+    DISPLAY_ON;
+
     printf(" Scrolling %d chars", sizeof(scroller_text) - 1);
 
     CRITICAL {
@@ -92,7 +112,7 @@ void main(void) {
 #ifdef NINTENDO_NES
         // Normal indirect setting of scroll via shadow registers (written by vblank handler)
         move_bkg(0,0);
-        _lcd_scanline = SCROLL_POS;
+        _lcd_scanline = 0;
 #endif
         vsync();        
     }

@@ -6,10 +6,6 @@
 
 #include <types.h>
 
-#if !defined(__SDCC_mcs51) && !defined(__SDCC_ds390) && !defined(__SDCC_ds400) && !defined(__SDCC_hc08) && !defined(__SDCC_s08) && !defined(__SDCC_mos6502) && !defined(__SDCC_mos65c02) && !defined(__SDCC_pic14) && !defined(__SDCC_pic16) && !defined(__SDCC_pdk13) && !defined(__SDCC_pdk14) && !defined(__SDCC_pdk15)
-#define __reentrant
-#endif
-
 /** Causes normal program termination and the value of status is
     returned to the parent.
     All open streams are flushed and closed.
@@ -27,7 +23,7 @@ int getkey(void) OLDCALL;
 
     If i is negative, returns -i; else returns i.
 */
-int abs(int i) OLDCALL;
+int abs(int i);
 
 
 /** Returns the absolute value of long int __num__
@@ -141,7 +137,7 @@ extern void free (void * ptr);
     Returns: Pointer to array entry that matches the search key.
              If key is not found, NULL is returned.
 */
-extern void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
+extern void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) REENTRANT);
 
 
 /** Sort an array of __nmemb__ items
@@ -150,6 +146,6 @@ extern void *bsearch(const void *key, const void *base, size_t nmemb, size_t siz
     @param size     Size in bytes of each element in the array
     @param compar   Function used to compare and sort two elements of the array
 */
-extern void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
+extern void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) REENTRANT);
 
 #endif

@@ -10,80 +10,83 @@ uint8_t _current_ram_bank = 0;
 #define SWITCH_RAM_BANK(x) (_current_ram_bank = (SWITCH_RAM(x), (x)))
 
 // constant in base ROM
-const char const hello0[] = "hello from CODE\n";
+const char const hello_code[] = "hello from CODE\n";
+
 // variable in base RAM
 char data[20] = "DATA";
-int  addendum0 = 1;
+int  add_num_wram = 1;
 
 // constants in ROM banks
 
 void set_ROM_bank1(void) NONBANKED { SWITCH_ROM(1); }
 void set_ROM_bank2(void) NONBANKED { SWITCH_ROM(2); }
-
 __addressmod set_ROM_bank1 const CODE_1;
 __addressmod set_ROM_bank2 const CODE_2;
 
-CODE_1 const char hello1[] = "hello from CODE_1\n";
-CODE_2 const char hello2[] = "hello from CODE_2\n";
+CODE_1 const char hello_rom_1[] = "hello from CODE_1\n";
+CODE_2 const char hello_rom_2[] = "hello from CODE_2\n";
 
 // variables in RAM banks
 
-void set_RAM_bank1(void) NONBANKED { SWITCH_RAM_BANK(0); }
-void set_RAM_bank2(void) NONBANKED { SWITCH_RAM_BANK(1); }
+void set_RAM_bank0(void) NONBANKED { SWITCH_RAM_BANK(0); }
+void set_RAM_bank1(void) NONBANKED { SWITCH_RAM_BANK(1); }
+__addressmod set_RAM_bank0 DATA_0;
+__addressmod set_RAM_bank1 DATA_1;
 
-__addressmod set_RAM_bank1 DATA_0;
-__addressmod set_RAM_bank2 DATA_1;
+// Variables in SRAM Bank 0
+DATA_0 char hello_sram_0[20];
+DATA_0 int  add_num_sram_0;
 
-DATA_0 char hello1_ram[20];
-DATA_0 int  addendum1_ram;
-DATA_1 char hello2_ram[20];
-DATA_1 int  addendum2_ram;
-DATA_1 int  addendum3_ram;
+// Variables in SRAM Bank 1
+DATA_1 char hello_sram_1[20];
+DATA_1 int  add_num_sram_1a;
+DATA_1 int  add_num_sram_1b;
 
-// define array of pointers in RAM2 to the variables that are RAM2
+// define array of pointers in RAM1 to the variables that are RAM2
 // there is a flaw in compiler that disallows pointers into banks to be in the other banks
 // details: https://sourceforge.net/p/sdcc/bugs/2995/
-DATA_0 int * const CODE_1 addendum_ptr[2] = {&addendum2_ram, &addendum3_ram};
+DATA_1 int * const CODE_1 add_num__ptr[2] = {&add_num_sram_1a, &add_num_sram_1b};
 
 void main(void) {
     ENABLE_RAM;
 
-    addendum1_ram = 2;
-    addendum2_ram = 4;
-    addendum3_ram = 8;
+    add_num_sram_0 = 2;
+    add_num_sram_1a = 4;
+    add_num_sram_1b = 8;
 
     // say hello
-    for (int8_t i = 0; (hello0[i]); i++) putchar(hello0[i]);  
-    for (int8_t i = 0; (hello1[i]); i++) putchar(hello1[i]);
-    for (int8_t i = 0; (hello2[i]); i++) putchar(hello2[i]);
+    for (int8_t i = 0; (hello_code[i]); i++) putchar(hello_code[i]);
+    for (int8_t i = 0; (hello_rom_1[i]); i++) putchar(hello_rom_1[i]);
+    for (int8_t i = 0; (hello_rom_2[i]); i++) putchar(hello_rom_2[i]);
 
-    // prepare and say hello from rom bank1 to ram bank0
-    for (int8_t i = 0; (i < sizeof(hello1)); i++) hello1_ram[i] = hello1[i];
-    for (int8_t i = 0; (i < 4); i++) hello1_ram[i + 11] = data[i];
-    for (int8_t i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
+    // prepare and say hello from rom bank1 to sram bank0
+    for (int8_t i = 0; (i < sizeof(hello_rom_1)); i++) hello_sram_0[i] = hello_rom_1[i];
+    for (int8_t i = 0; (i < 4); i++) hello_sram_0[i + 11] = data[i];
+    for (int8_t i = 0; (hello_sram_0[i]); i++) putchar(hello_sram_0[i]);
 
-    // prepare and say hello from rom bank1 to ram bank1
-    for (int8_t i = 0; (i < sizeof(hello2)); i++) hello2_ram[i] = hello2[i];
-    for (int8_t i = 0; (i < 4); i++) hello2_ram[i + 11] = data[i];
-    for (int8_t i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
+    // prepare and say hello from rom bank2 to sram bank1
+    for (int8_t i = 0; (i < sizeof(hello_rom_2)); i++) hello_sram_1[i] = hello_rom_2[i];
+    for (int8_t i = 0; (i < 4); i++) hello_sram_1[i + 11] = data[i];
+    for (int8_t i = 0; (hello_sram_1[i]); i++) putchar(hello_sram_1[i]);
 
     printf("once more...\n");
-    // hello again; if we access we just access, don't care
-    for (int8_t i = 0; (hello0[i]); i++) putchar(hello0[i]);  
-    for (int8_t i = 0; (hello1[i]); i++) putchar(hello1[i]);
-    for (int8_t i = 0; (hello2[i]); i++) putchar(hello2[i]);
-    for (int8_t i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
-    for (int8_t i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
+    // say hello again; just use the vars to access them, the switching if needed is handled automatically
+    for (int8_t i = 0; (hello_code[i]); i++) putchar(hello_code[i]);
+    for (int8_t i = 0; (hello_rom_1[i]); i++) putchar(hello_rom_1[i]);
+    for (int8_t i = 0; (hello_rom_2[i]); i++) putchar(hello_rom_2[i]);
+    for (int8_t i = 0; (hello_sram_0[i]); i++) putchar(hello_sram_0[i]);
+    for (int8_t i = 0; (hello_sram_1[i]); i++) putchar(hello_sram_1[i]);
 
     printf("once more...\n");
     // if we need an address, then we use a macro switch_to()
-    printf("%s", hello0);
-    printf("%s", switch_to(hello1));    
-    printf("%s", switch_to(hello2));
-    printf("%s", switch_to(hello1_ram));
-    printf("%s", switch_to(hello2_ram));
+    printf("%s", hello_code);
+    printf("%s", switch_to(hello_rom_1));
+    printf("%s", switch_to(hello_rom_2));
+    printf("%s", switch_to(hello_sram_0));
+    printf("%s", switch_to(hello_sram_1));
 
-    printf("1+2+4+8=0x%x", (int)(addendum0 + addendum1_ram + (*addendum_ptr[0]) + (*addendum_ptr[1])));
+    // Add the RAM variables from different address spaces together
+    printf("1+2+4+8=0x%x", (int)(add_num_wram + add_num_sram_0 + (*add_num__ptr[0]) + (*add_num__ptr[1])));
 
     // stop
     while(1);

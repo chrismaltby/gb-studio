@@ -890,12 +890,24 @@ void hiramcpy(uint8_t dst, const void *src, uint8_t n) OLDCALL PRESERVES_REGS(b,
 
 /** Turns on the background layer.
     Sets bit 0 of the LCDC register to 1.
+
+    Doesn't work in CGB mode - the bit is reused to control sprite priority
+    over background and window layers instead.
+    \li If 1 (SHOW_BKG), everything works as usual.
+    \li If 0 (HIDE_BKG), all sprites are always drawn over background and window,
+    ignoring any other priority settings.
 */
 #define SHOW_BKG \
   LCDC_REG|=LCDCF_BGON
 
 /** Turns off the background layer.
     Sets bit 0 of the LCDC register to 0.
+
+    Doesn't work in CGB mode - the bit is reused to control sprite priority
+    over background and window layers instead.
+    \li If 1 (SHOW_BKG), everything works as usual.
+    \li If 0 (HIDE_BKG), all sprites are always drawn over background and window,
+    ignoring any other priority settings.
 */
 #define HIDE_BKG \
   LCDC_REG&=~LCDCF_BGON

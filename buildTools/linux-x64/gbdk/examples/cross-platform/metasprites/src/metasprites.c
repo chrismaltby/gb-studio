@@ -55,12 +55,17 @@ const uint8_t pattern[] = {0x80,0x80,0x40,0x40,0x20,0x20,0x10,0x10,0x08,0x08,0x0
 int16_t PosX, PosY;
 int16_t SpdX, SpdY;
 uint8_t PosF;
-uint8_t hide, jitter;
 uint8_t idx, rot;
 
 uint8_t flipped_data[NUM_BYTES_PER_TILE];
 
 size_t num_tiles;
+
+uint8_t joyp = 0, old_joyp = 0;
+
+#define KEY_INPUT (old_joyp = joyp, joyp = joypad())
+#define KEY_DOWN(KEY) (joyp & (KEY))
+#define KEY_PRESSED(KEY) ((joyp ^ old_joyp) & joyp & (KEY))
 
 // Table for fast reversing of bits in a byte - used for flipping in X
 const uint8_t reverse_bits[256] = {
@@ -162,10 +167,10 @@ void main(void) {
     set_sprite_palette(OAMF_CGB_PAL2, 1, cyan_pal);
     set_sprite_palette(OAMF_CGB_PAL3, 1, green_pal);
 #elif defined(NINTENDO_NES)
-    set_sprite_palette(4, 1, gray_pal);
-    set_sprite_palette(5, 1, pink_pal);
-    set_sprite_palette(6, 1, cyan_pal);
-    set_sprite_palette(7, 1, green_pal);
+    set_sprite_palette(0, 1, gray_pal);
+    set_sprite_palette(1, 1, pink_pal);
+    set_sprite_palette(2, 1, cyan_pal);
+    set_sprite_palette(3, 1, green_pal);
 #endif
 
     // Fill the screen background with a single tile pattern
@@ -193,52 +198,47 @@ void main(void) {
     PosY = (DEVICE_SCREEN_PX_HEIGHT / 2) << 4;
     SpdX = SpdY = 0;
 
-    hide = 0; jitter = 0; idx = 0; rot = 0;
+    idx = 0; rot = 0;
 
-    while(1) {        
+    while(TRUE) {        
         // Poll joypads
-        uint8_t joyp = joypad();
+        KEY_INPUT;
         
         PosF = 0;
         // Game object
-        if (joyp & J_UP) {
+        if (KEY_DOWN(J_UP)) {
             SpdY -= 2;
             if (SpdY < -32) SpdY = -32;
             PosF |= ACC_Y;
-        } else if (joyp & J_DOWN) {
+        } else if (KEY_DOWN(J_DOWN)) {
             SpdY += 2;
             if (SpdY > 32) SpdY = 32;
             PosF |= ACC_Y;
         }
 
-        if (joyp & J_LEFT) {
+        if (KEY_DOWN(J_LEFT)) {
             SpdX -= 2;
             if (SpdX < -32) SpdX = -32;
             PosF |= ACC_X;
-        } else if (joyp & J_RIGHT) {
+        } else if (KEY_DOWN(J_RIGHT)) {
             SpdX += 2;
             if (SpdX > 32) SpdX = 32;
             PosF |= ACC_X;
         }
 
         // Press B button to cycle through metasprite animations
-        if ((joyp & J_B) && (!jitter)) {
+        if (KEY_PRESSED(J_B)) {
             idx++; if (idx >= (sizeof(sprite_metasprites) >> 1)) idx = 0;
-            jitter = 10;
         }
 
         // Press A button to cycle metasprite through Normal/Flip-Y/Flip-XY/Flip-X and sub-pals
-        if ((joyp & J_A) && (!jitter)) {
+        if (KEY_PRESSED(J_A)) {
             rot++; rot &= 0xF;
-            jitter = 20;
         }
-
-        // Hide/Animate/Flip input throttling
-        if (jitter) jitter--;
 
         PosX += SpdX, PosY += SpdY; 
 
-        uint8_t hiwater = 0;
+        uint8_t hiwater = SPR_NUM_START;
 
         // NOTE: In a real game it would be better to only call the move_metasprite..()
         //       functions if something changed (such as movement or rotation). That
@@ -246,46 +246,41 @@ void main(void) {
         //
         // In this example they are called every frame to simplify the example code
 
-        // Hide the metasprite or move it & apply any rotation settings
-        if (hide)
-            hide_metasprite(sprite_metasprites[idx], SPR_NUM_START);
-        else
-        {
-            uint8_t subpal = rot >> 2;
-            switch (rot & 0x3) {
-                case 1:
-                    hiwater = move_metasprite_flipy( sprite_metasprites[idx],
-                                                     TILE_NUM_START + get_tile_offset(0, 1),
-                                                     subpal,
-                                                     SPR_NUM_START,
-                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
-                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
-                    break;
-                case 2:
-                    hiwater = move_metasprite_flipxy(sprite_metasprites[idx],
-                                                     TILE_NUM_START + get_tile_offset(1, 1),
-                                                     subpal,
-                                                     SPR_NUM_START,
-                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
-                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
-                    break;
-                case 3:
-                    hiwater = move_metasprite_flipx( sprite_metasprites[idx],
-                                                     TILE_NUM_START + get_tile_offset(1, 0),
-                                                     subpal,
-                                                     SPR_NUM_START,
-                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
-                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
-                    break;
-                default:
-                    hiwater = move_metasprite_ex(    sprite_metasprites[idx],
-                                                     TILE_NUM_START + get_tile_offset(0, 0),
-                                                     subpal,
-                                                     SPR_NUM_START,
-                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
-                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
-                    break;
-            };
+        // If not hidden the move and apply rotation to the metasprite
+        uint8_t subpal = rot >> 2;
+        switch (rot & 0x3) {
+            case 1:
+                hiwater += move_metasprite_flipy( sprite_metasprites[idx],
+                                                  TILE_NUM_START + get_tile_offset(0, 1),
+                                                  subpal,
+                                                  hiwater,
+                                                  DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                  DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
+                break;
+            case 2:
+                hiwater += move_metasprite_flipxy(sprite_metasprites[idx],
+                                                  TILE_NUM_START + get_tile_offset(1, 1),
+                                                  subpal,
+                                                  hiwater,
+                                                  DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                  DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
+                break;
+            case 3:
+                hiwater += move_metasprite_flipx( sprite_metasprites[idx],
+                                                  TILE_NUM_START + get_tile_offset(1, 0),
+                                                  subpal,
+                                                  hiwater,
+                                                  DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                  DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
+                break;
+            default:
+                hiwater += move_metasprite_ex(    sprite_metasprites[idx],
+                                                  TILE_NUM_START + get_tile_offset(0, 0),
+                                                  subpal,
+                                                  hiwater,
+                                                  DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                  DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
+                break;
         }
 
         // Hide rest of the hardware sprites, because amount of sprites differ between animation frames.

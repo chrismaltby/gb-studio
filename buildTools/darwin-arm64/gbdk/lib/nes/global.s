@@ -1,7 +1,10 @@
+        ;; Maximum number of times LCD ISR can be repeatedly called
+        .MAX_LCD_ISR_CALLS = 4
+
         ;; Transfer buffer (lower half of hardware stack)
         __vram_transfer_buffer = 0x100
         ;; Number of 8-cycles available each frame for transfer buffer
-        VRAM_DELAY_CYCLES_X8  = 172
+        VRAM_DELAY_CYCLES_X8  = 171
 
         ;;  Keypad
         .UP             = 0x08

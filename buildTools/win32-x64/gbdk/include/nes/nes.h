@@ -248,6 +248,10 @@ void add_VBL(int_handler h) NO_OVERLAY_LOCALS;
 */
 void add_LCD(int_handler h) NO_OVERLAY_LOCALS;
 
+/** The maximum number of times the LCD handler will be called per frame.
+ */
+#define MAX_LCD_ISR_CALLS 4
+
 /** Set the current screen mode - one of M_* modes
 
     Normally used by internal functions only.

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
+
 ## [4.0.0-rc.1] - 2024-06-06
 
 ### Added

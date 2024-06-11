@@ -279,16 +279,16 @@
 
         ;; Macro definitions
 
-.macro VDP_WRITE_DATA regH regL ?lbl
+.macro VDP_WRITE_DATA regH regL
         ld a, regL
-        di
         out (#.VDP_DATA), a
         ld a, regH
-        ei
+        inc hl
+        dec hl
         out (#.VDP_DATA), a
 .endm
 
-.macro VDP_WRITE_CMD regH regL ?lbl
+.macro VDP_WRITE_CMD regH regL
         ld a, regL
         di
         out (#.VDP_CMD), a

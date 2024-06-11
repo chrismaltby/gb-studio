@@ -4,6 +4,7 @@ gbdk-4.3.0
       - Changed EMU_printf() to remove dependency on stdio.h added similar EMU_fmtbuf()
       - Fixed emu_debug.h macros missing a trailing space
       - NES
+        - Many library improvements
         - Added PAL support
         - Fixed _map_tile_offset for set_bkg_based_tiles(), VRAM transfer buffer bug
         - Fixed support for 4-player controllers using fourscore
@@ -28,7 +29,7 @@ gbdk-4.3.0
       - makebin: Fixed crash when using -yS (-Wm-yS with lcc)
       - bankpack: Added -banktype= to allow forcing a bank type to CODE or LIT before packing starts
     - Examples
-      - Added HBlank copy, Read SNES joypads on NES, Game Boy Printer, Joypad test, Display System
+      - Added HBlank copy, Read SNES joypads on NES, Game Boy Printer, Joypad test, Display System, Platformer
       - Wav sample: play waveforms on the SMS/GG PSG
       - Fixes for SMS/GG: Fonts, Large Map, gbdecompress
       - Removed Analogue Pocket examples that were just duplicates of Game Boy ones

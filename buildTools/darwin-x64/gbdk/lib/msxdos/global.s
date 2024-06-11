@@ -188,7 +188,7 @@
         .VDP_TILEDATA2  = 0x5000
         .VDP_COLORDATA0 = 0x6000
         .VDP_COLORDATA1 = 0x6800
-        .VDP_COLORDATA1 = 0x7000
+        .VDP_COLORDATA2 = 0x7000
 
         .VDP_SPRDATA0   = 0x7800
 
@@ -326,7 +326,7 @@
 
         ;; Main user routine
         .globl  _main
-        
+
         ;; interrupt handler
         .globl _INT_ISR
 
@@ -342,16 +342,16 @@
         jp .BDOS
 .endm
 
-.macro VDP_WRITE_DATA regH regL ?lbl
+.macro VDP_WRITE_DATA regH regL
         ld a, regL
-        di
-        out (#.VDP_DATA), a     ; 11
-        ld a, regH              ; 4
-        ei
+        out (#.VDP_DATA), a
+        ld a, regH
+        inc hl
+        dec hl
         out (#.VDP_DATA), a
 .endm
 
-.macro VDP_WRITE_CMD regH regL ?lbl
+.macro VDP_WRITE_CMD regH regL
         ld a, regL
         di
         out (#.VDP_CMD), a

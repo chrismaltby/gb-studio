@@ -438,18 +438,18 @@ void delay(uint16_t d) Z88DK_FASTCALL;
 
 /** Reads and returns the current state of the joypad.
 */
-uint8_t joypad(void) OLDCALL PRESERVES_REGS(b, c, d, e, h, iyh, iyl);
+uint8_t joypad(void) OLDCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
 
 /** Waits until at least one of the buttons given in mask are pressed.
 */
-uint8_t waitpad(uint8_t mask) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
+uint8_t waitpad(uint8_t mask) Z88DK_FASTCALL PRESERVES_REGS(d, e, iyh, iyl);
 
 /** Waits for the directional pad and all buttons to be released.
 
     Note: Checks in a loop that doesn't HALT at all, so the CPU
     will be maxed out until this call returns.
 */
-void waitpadup(void) PRESERVES_REGS(b, c, d, e, iyh, iyl);
+void waitpadup(void) PRESERVES_REGS(d, e, iyh, iyl);
 
 /** Multiplayer joypad structure.
 
