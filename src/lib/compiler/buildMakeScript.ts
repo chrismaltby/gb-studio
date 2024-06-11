@@ -267,6 +267,7 @@ export const buildLinkFlags = (
   cartType: string,
   color = false,
   sgb = false,
+  colorOnly = false,
   musicDriver = "gbtplayer",
   debug = false,
   targetPlatform = "gb"
@@ -276,6 +277,7 @@ export const buildLinkFlags = (
     .replace(/[^A-Z]*/g, "")
     .substring(0, 15);
   const cart = cartType === "mbc3" ? "0x10" : "0x1E";
+  const gameFile = colorOnly ? "game.gbc" : "game.gb";
   return ([] as Array<string>).concat(
     // General
     [
@@ -306,7 +308,7 @@ export const buildLinkFlags = (
       : // gbtplayer
         ["-Wl-lgbt_player.lib"],
     // Output
-    targetPlatform === "gb" ? ["-o", "build/rom/game.gb"] : [],
+    targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
     targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
     [`-Wl-f${linkFile}`]
   );

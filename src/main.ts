@@ -1211,6 +1211,8 @@ ipcMain.handle(
       project.settings.sgbEnabled && project.settings.colorMode !== "color";
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
+    const colorOnly = project.settings.colorMode === "color";
+    const gameFile = colorOnly ? "game.gbc" : "game.gb";
 
     try {
       const compiledData = await buildProject(project, {
@@ -1250,8 +1252,12 @@ ipcMain.handle(
               ? `Site is ready at ${Path.normalize(
                   `${projectRoot}/build/web/index.html`
                 )}`
+              : buildType === "pocket"
+              ? `ROM is ready at ${Path.normalize(
+                  `${projectRoot}/build/pocket/game.pocket`
+                )}`
               : `ROM is ready at ${Path.normalize(
-                  `${projectRoot}/build/rom/game.gb`
+                  `${projectRoot}/build/rom/${gameFile}`
                 )}`
           }`
         );

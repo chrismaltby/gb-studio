@@ -4,7 +4,7 @@ import os from "os";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import { program } from "commander";
-import { emulatorRoot } from "../consts";
+import { binjgbRoot } from "consts";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
@@ -84,6 +84,9 @@ const main = async (
     warnings,
   });
 
+  const colorOnly = project.settings.colorMode === "color";
+  const gameFile = colorOnly ? "game.gbc" : "game.gb";
+
   if (command === "export") {
     if (program.onlyData) {
       // Export src/data and include/data to destination
@@ -110,7 +113,7 @@ const main = async (
       progress,
       warnings,
     });
-    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
     await copy(romTmpPath, destination);
   } else if (command === "make:pocket") {
     // Export ROM to destination
@@ -136,9 +139,9 @@ const main = async (
       progress,
       warnings,
     });
-    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
-    await copy(emulatorRoot, destination);
-    await copy(romTmpPath, `${destination}/rom/game.gb`);
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
+    await copy(binjgbRoot, destination);
+    await copy(romTmpPath, `${destination}/rom/${gameFile}`);
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.name);
     const author = sanitize(project.author);
@@ -163,7 +166,13 @@ const main = async (
       .replace(/___COLORS_HEAD___/g, colorsHead)
       .replace(/___PROJECT_HEAD___/g, customHead)
       .replace(/___CUSTOM_CONTROLS___/g, customControls);
+
+    const scriptJs = (
+      await readFile(`${destination}/js/script.js`, "utf8")
+    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`);
+
     await writeFile(`${destination}/index.html`, html);
+    await writeFile(`${destination}/js/script.js`, scriptJs);
   }
 };
 

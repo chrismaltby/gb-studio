@@ -38,6 +38,7 @@ const makeBuild = async ({
   const { settings } = data;
   const colorEnabled = settings.colorMode !== "mono";
   const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
+  const colorOnly = settings.colorMode === "color";
   const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
@@ -166,6 +167,7 @@ const makeBuild = async ({
     settings.cartType,
     colorEnabled,
     sgbEnabled,
+    colorOnly,
     settings.musicDriver,
     debug,
     targetPlatform

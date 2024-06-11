@@ -76,10 +76,12 @@ const buildProject = async (
     warnings,
   });
   if (buildType === "web") {
+    const colorOnly = data.settings.colorMode === "color";
+    const gameFile = colorOnly ? "game.gbc" : "game.gb";
     await copy(binjgbRoot, `${outputRoot}/build/web`);
     await copy(
-      `${outputRoot}/build/rom/game.gb`,
-      `${outputRoot}/build/web/rom/game.gb`
+      `${outputRoot}/build/rom/${gameFile}`,
+      `${outputRoot}/build/web/rom/${gameFile}`
     );
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
@@ -108,7 +110,12 @@ const buildProject = async (
       .replace(/___PROJECT_HEAD___/g, customHead)
       .replace(/___CUSTOM_CONTROLS___/g, customControls);
 
+    const scriptJs = (
+      await fs.readFile(`${outputRoot}/build/web/js/script.js`, "utf8")
+    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`);
+
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
+    await fs.writeFile(`${outputRoot}/build/web/js/script.js`, scriptJs);
   } else if (buildType === "pocket") {
     await fs.mkdir(`${outputRoot}/build/pocket`);
     await copy(
