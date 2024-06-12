@@ -966,6 +966,7 @@ export const precompileScenes = (
   scenes: Scene[],
   customEventsLookup: Dictionary<CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
+  colorMode: ColorModeSetting,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
   {
@@ -1051,6 +1052,14 @@ export const precompileScenes = (
 
     let playerSpritePersist = false;
 
+    const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
+      const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
+      if (colorMode === "color") {
+        return Math.ceil(count / 4) * 2;
+      }
+      return count;
+    };
+
     walkSceneScripts(
       scene,
       {
@@ -1097,7 +1106,7 @@ export const precompileScenes = (
             usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
-            ((sprite ? sprite.numTiles : 0) || 0) * 2
+            getSpriteTileCount(sprite)
           );
         }
 
@@ -1111,7 +1120,7 @@ export const precompileScenes = (
             usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
-            ((sprite ? sprite.numTiles : 0) || 0) * 2
+            getSpriteTileCount(sprite)
           );
           if (event.args.persist) {
             playerSpritePersist = true;
@@ -1299,6 +1308,7 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
+    colorMode,
     usedBackgrounds,
     usedSprites,
     {
