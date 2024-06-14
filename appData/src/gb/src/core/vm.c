@@ -190,8 +190,10 @@ void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * p
         case VM_OP_GE: res = (A >= B); break;
         case VM_OP_NE: res = (A != B); break;
     }
-    if (res) THIS->PC = pc;
-    if (n) THIS->stack_ptr -= n;
+    if (res){
+        THIS->PC = pc;
+        if (n) THIS->stack_ptr -= n;
+    }
 }
 // if condition; compares argument on VM stack with an immediate value
 // idxA point to arguments to compare, B is a value
@@ -208,8 +210,10 @@ void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE 
         case VM_OP_GE: res = (A >= B); break;
         case VM_OP_NE: res = (A != B); break;
     }
-    if (res) THIS->PC = pc;
-    if (n) THIS->stack_ptr -= n;
+    if (res){
+        THIS->PC = pc;
+        if (n) THIS->stack_ptr -= n;
+    }
 }
 // pushes value from VM stack onto VM stack
 // if idx >= 0 then idx is absolute, else idx is relative to VM stack pointer
