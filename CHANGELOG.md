@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue where fonts referenced from GBVM scripts weren't being included in project
+- Correct gbvm VM_IF and VM_IF_CONST docs for param N
 
 ## [4.0.0-rc.2] - 2024-06-13
 

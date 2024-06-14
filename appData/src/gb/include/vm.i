@@ -192,7 +192,7 @@ OP_VM_IF           = 0x0F
 ; @param IDXA A variable.
 ; @param IDXB B variable.
 ; @param LABEL Jump label when result is TRUE.
-; @param N Number of values to be removed from stack if the result is true.
+; @param N Number of values to be removed from stack after evaluating the condition.
 .macro VM_IF CONDITION, IDXA, IDXB, LABEL, N
         .db OP_VM_IF, #<N, #>LABEL, #<LABEL, #>IDXB, #<IDXB, #>IDXA, #<IDXA, #<CONDITION
 .endm
@@ -349,7 +349,7 @@ OP_VM_IF_CONST  = 0x1A
 ; @param IDXA A variable.
 ; @param B Immediate value to be compared with.
 ; @param LABEL Jump label when result is TRUE.
-; @param N Number of values to be removed from stack if the result is true.
+; @param N Number of values to be removed from stack after evaluating the condition.
 .macro VM_IF_CONST CONDITION, IDXA, B, LABEL, N
         .db OP_VM_IF_CONST, #<N, #>LABEL, #<LABEL, #>B, #<B, #>IDXA, #<IDXA, #<CONDITION
 .endm
