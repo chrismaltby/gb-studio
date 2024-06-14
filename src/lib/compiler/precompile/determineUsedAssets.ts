@@ -100,6 +100,7 @@ export const determineUsedAssets = ({
         const references = cmd.args?.references as Reference[];
         addReferences(references, "variable", addVariableById);
         addReferences(references, "sound", addSoundById);
+        addReferences(references, "font", addFontById);
       }
 
       // Sounds
