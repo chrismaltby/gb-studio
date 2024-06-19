@@ -41,6 +41,10 @@ const Wrapper = styled.div<WrapperProps>`
           width: 100%;
         `
       : ""}
+
+  & * {
+    min-width: 0;
+  }
 `;
 
 const ButtonCover = styled.div`
@@ -63,6 +67,7 @@ const Button = styled.button`
   width: 100%;
   flex-shrink: 0;
   align-items: stretch;
+  overflow: hidden;
 
   :hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
@@ -97,6 +102,7 @@ const PreviewWrapper = styled.div`
   justify-content: center;
   width: 48px;
   height: 100%;
+  flex-shrink: 0;
 `;
 
 const SpriteInfo = styled.div`

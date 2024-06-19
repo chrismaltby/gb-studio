@@ -93,6 +93,9 @@ const GlobalStyle = createGlobalStyle`
   body .CustomSelect__option {
     padding: 5px 10px;
     background: ${(props) => props.theme.colors.menu.background};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   body .CustomSelect__option--is-selected {

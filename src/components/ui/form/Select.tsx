@@ -272,10 +272,10 @@ export const FormatFolderLabel = ({ label }: FormatFolderLabelProps) => {
   const filePart = label.replace(/.*[\\/]/g, "");
   const pathPart = label.slice(0, -filePart.length);
   return (
-    <FormatFolderLabelWrapper>
-      {pathPart.length > 0 && <small>{pathPart}</small>}
+    <span>
+      {pathPart.length > 0 && <span>{pathPart}</span>}
       {filePart}
-    </FormatFolderLabelWrapper>
+    </span>
   );
 };
 
