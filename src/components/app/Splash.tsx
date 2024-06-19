@@ -38,8 +38,8 @@ import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
 import inbuiltPatrons from "patrons.json";
-import gbs2Preview from "assets/templatePreview/gbs2.mp4";
-import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
+import gbs2Preview from "assets/templatePreview/gbs2.png";
+import gbhtmlPreview from "assets/templatePreview/gbhtml.png";
 import blankPreview from "assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import l10n from "shared/lib/lang/l10n";
@@ -145,14 +145,14 @@ export const Splash = () => {
         id: "gbs2",
         name: l10n("SPLASH_SAMPLE_PROJECT"),
         preview: gbs2Preview,
-        videoPreview: true,
+        videoPreview: false,
         description: l10n("SPLASH_SAMPLE_PROJECT_DESCRIPTION"),
       },
       {
         id: "gbhtml",
         name: `${l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)`,
         preview: gbhtmlPreview,
-        videoPreview: true,
+        videoPreview: false,
         description: l10n("SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION"),
       },
       {
