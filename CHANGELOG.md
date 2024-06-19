@@ -5,104 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Fixed
-
-- Fix issue where fonts referenced from GBVM scripts weren't being included in project
-- Correct gbvm VM_IF and VM_IF_CONST docs for param N
-- Fixed font alignment in asset dropdowns when using folders
-- Remove videos from New Project templates in splash screen as they cause Windows to crash
-
-## [4.0.0-rc.2] - 2024-06-13
-
-### Changed
-
-- Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
-- When using "Color Only" mode, GB rom file extension changed to ".gbc"
-- Sprite editor frame numbers updated to start from frame "0" to match values used in "Set Animation Frame" event 
-
-### Fixed
-
-- Fix issue where long branch labels would cause gaps in script editor
-- Fix issue where right click context menu would appear when trying to right click to remove collisions. Context menu now only appears when using select tool
-- Fix issue where text focus could get stuck in Build Log or GBVM script preview in debugger, preventing copy/paste from working
-- Fix issue where restoring scene from stack after using camera move events would cause previous scene to load without being locked to player
-- Fix issue where calling scripts to change sprites for multiple actors in a scene would only reserve tile memory for the first actor
-- Fix issue where too many tiles were being reserved for sprite changes in "Color Only" mode causing sprite VRAM to overflow
-
-## [4.0.0-rc.1] - 2024-06-06
-
-### Added
-
-- Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
-- Add support for `isqrt` and `rnd` functions in math expressions
-- Add support for printf style tokens in text. `%D5$Variable` in text will output variable value with 5 characters and leading zeros e.g. `00042`, `%c$Variable` will output a character code based on variable value, `%t$Variable` will set text speed based on variable value, `%f$Variable` will change font based on variable value.
-- Add ability to change text cursor position in dialogue with "Set Cursor Position To" and "Move Cursor Position By" commands accessible by typing `!Cursor`
-
-### Changed
-
-- Update sidebar layout to prioritise giving scripts full sidebar width
-- Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
-- Update music editor to display compressed version of channel mute/visibility controls when not enough room to display fully
-- Keep preference for using Piano Roll or Tracker view when switching between songs in music editor rather than switching to Piano Roll view
-- Button events renamed to be more consistent
-- "Add Event" search updated to also include events that match group name when searching e.g. Searching 'Joypad' will include all Button events
-- Darkened conditional event header colours in dark theme
-- Patron list in credits now fetches most up to date list of members from GitHub if an internet connection is available
-- Previous "Name in Credits" tier members on Patreon are now still shown even after their membership has finished (your support is still very much appreciated!)
-- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
-- Update GBVM script view in debugger to show human readable labels
-- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
-- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
-- Update script branch labels to include the condition logic if there is enough vertical space
-- Update script branch labels to stay on screen when scrolling through long scripts
-- Sprite editor updated to allow canvas min width of 8px with 8px width increments
-- When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
-- Sprite editor frames list now shows frame number
-- Improve layout of asset dropdowns when using folders
-- Dialogue event titles now show names of used variables in preview
-
-### Fixed
-
-- Fix "Add Flags" event tooltips localisation.
-- Fix issue where some sidebar inputs would appear above script tabs when scrolled
-- Fix rumble support when using MBC5 cartridge [@pau-tomas](https://github.com/pau-tomas)
-- Fix issue where empty project message would be positioned incorrectly if World view was scrolled or zoomed
-- Fix issue where World view minimum size wasn't taking into account navigator sidebar or debugger pane causing unnecessary scroll bars
-- Fix issue where Math Expression editor would incorrectly show spellcheck errors in function names
-- Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
-- Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
-- Fix title for "Call Script" events when no script has been selected
-- Fix issue where remapping '\\' or 'n' in font would prevent line breaks from working
-- Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
-- Fix issue where searching through menus would use very low contrast text colours when using Dark theme
-- Fix issue preventing palette names from being over 25 characters long
-- Fix issue where sceneTypes in `engine.json` for plugins could cause duplicate scene types to appear
-- Fix issue using using non-English named variables and text codes in dialogue.
-
-## [4.0.0-beta2] - 2024-05-20
-
-### Added
-
-- Add ability for variables to be used for X/Y coordinates in replace tile events
-
-### Changed
-
-- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
-- Allow event plugins to require("shared/lib/scriptValue/helpers") to access script value helpers
-
-### Fixed
-
-- Fix issue migrating "Engine Field Update" events
-- Fix issue where shift key no longer allowed line drawing for collisions and tile painting modes
-- Fix issue where using recursive scripts could cause UI to lock up while calculating scene sprite tile count and when building game.
-- Fix issue where custom scripts parameters were not always updating as parameters were updated
-- Fix issue where "If Variable Has Flag" was always false [@pau-tomas](https://github.com/pau-tomas)
-- Fix issue where selecting effect column in music editor tracker would cause application to freeze [@pau-tomas](https://github.com/pau-tomas)
-- Fix issue preventing documentation being accessed from splash window
-
-## [4.0.0-beta1] - 2024-05-13
+## [4.0.0] - 2024-06-19
 
 ### Added
 
@@ -144,10 +47,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Build Options` to "Settings" section with option to toggle if "Build Log" should be opened automatically on warnings
 - Add `Show Navigator` button to World toolbar if navigator is closed
 - Add ability to rename flags in Variable Flags Add/Clear/Set events [@pau-tomas](https://github.com/pau-tomas)
+- Add ability for variables to be used for X/Y coordinates in replace tile events
+- Add Russian localisation. [@Alexandr199514](https://github.com/Alexandr199514)
+- Add support for `isqrt` and `rnd` functions in math expressions
+- Add support for printf style tokens in text. `%D5$Variable` in text will output variable value with 5 characters and leading zeros e.g. `00042`, `%c$Variable` will output a character code based on variable value, `%t$Variable` will set text speed based on variable value, `%f$Variable` will change font based on variable value.
+- Add ability to change text cursor position in dialogue with "Set Cursor Position To" and "Move Cursor Position By" commands accessible by typing `!Cursor`
 
 ### Changed
 
-- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Updated code generation to reduce access to stack [@pau-tomas](https://github.com/pau-tomas)
 - Update Variable Uses sidebar to include any uses within Scripts [@pau-tomas](https://github.com/pau-tomas)
@@ -158,6 +65,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dragging scenes now snaps to an 8px grid allowing easier alignment of scenes
 - Camera speed events updated to use pixels per frame values like actor movement, allowing more precise speed control and speeds faster than 1px per frame
 - Build information and warnings moved to "Build Log" section of Debugger
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Allow event plugins to require("shared/lib/scriptValue/helpers") to access script value helpers
+- Update sidebar layout to prioritise giving scripts full sidebar width
+- Update sidebar to preserve scroll position when switching between scenes/actors/triggers/scripts
+- Update music editor to display compressed version of channel mute/visibility controls when not enough room to display fully
+- Keep preference for using Piano Roll or Tracker view when switching between songs in music editor rather than switching to Piano Roll view
+- Button events renamed to be more consistent
+- "Add Event" search updated to also include events that match group name when searching e.g. Searching 'Joypad' will include all Button events
+- Darkened conditional event header colours in dark theme
+- Patron list in credits now fetches most up to date list of members from GitHub if an internet connection is available
+- Previous "Name in Credits" tier members on Patreon are now still shown even after their membership has finished (your support is still very much appreciated!)
+- Update GBVM script view in debugger to show human readable labels
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update script branch labels to include the condition logic if there is enough vertical space
+- Update script branch labels to stay on screen when scrolling through long scripts
+- Sprite editor updated to allow canvas min width of 8px with 8px width increments
+- When in collision tile drawing mode, actor sprite collision bounding boxes are now also visible
+- Sprite editor frames list now shows frame number
+- Improve layout of asset dropdowns when using folders
+- Dialogue event titles now show names of used variables in preview
+- Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
+- When using "Color Only" mode, GB rom file extension changed to ".gbc"
+- Sprite editor frame numbers updated to start from frame "0" to match values used in "Set Animation Frame" event 
 
 ### Fixed
 
@@ -177,6 +108,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where note lengths for wave instruments in .uge files were not being stored according to file specification. This may cause some .uge files created with older builds of GB Studio to not sound correct. If you need to fix any .uge files, you can use this [migrator tool](https://chrismaltby.github.io/gbs-uge-migrator/)
 - Fix issue where navigator sidebar could sometimes not be wide enough to show Add and Search buttons in section headers
 - Fix issue where document wasn't being flagged as modified until first change after migrating a project
+- Fix issue migrating "Engine Field Update" events
+- Fix issue where shift key no longer allowed line drawing for collisions and tile painting modes
+- Fix issue where using recursive scripts could cause UI to lock up while calculating scene sprite tile count and when building game.
+- Fix issue where custom scripts parameters were not always updating as parameters were updated
+- Fix issue where "If Variable Has Flag" was always false [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where selecting effect column in music editor tracker would cause application to freeze [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue preventing documentation being accessed from splash window
+- Fix "Add Flags" event tooltips localisation.
+- Fix issue where some sidebar inputs would appear above script tabs when scrolled
+- Fix rumble support when using MBC5 cartridge [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where empty project message would be positioned incorrectly if World view was scrolled or zoomed
+- Fix issue where World view minimum size wasn't taking into account navigator sidebar or debugger pane causing unnecessary scroll bars
+- Fix issue where Math Expression editor would incorrectly show spellcheck errors in function names
+- Fix issue building game when Super GB Mode was enabled before setting Color Mode to "Color Only"
+- Fix issue where using a plugin for a newer version of GB Studio would give an error saying the plugin was for an older version
+- Fix title for "Call Script" events when no script has been selected
+- Fix issue where remapping '\\' or 'n' in font would prevent line breaks from working
+- Fix issue where dragging frames in sprite editor would swap frame positions rather than shift them
+- Fix issue where searching through menus would use very low contrast text colours when using Dark theme
+- Fix issue preventing palette names from being over 25 characters long
+- Fix issue where sceneTypes in `engine.json` for plugins could cause duplicate scene types to appear
+- Fix issue using using non-English named variables and text codes in dialogue.
+- Fix issue where long branch labels would cause gaps in script editor
+- Fix issue where right click context menu would appear when trying to right click to remove collisions. Context menu now only appears when using select tool
+- Fix issue where text focus could get stuck in Build Log or GBVM script preview in debugger, preventing copy/paste from working
+- Fix issue where restoring scene from stack after using camera move events would cause previous scene to load without being locked to player
+- Fix issue where calling scripts to change sprites for multiple actors in a scene would only reserve tile memory for the first actor
+- Fix issue where too many tiles were being reserved for sprite changes in "Color Only" mode causing sprite VRAM to overflow
+- Fix issue where fonts referenced from GBVM scripts weren't being included in project
+- Correct gbvm VM_IF and VM_IF_CONST docs for param N
+- Fixed font alignment in asset dropdowns when using folders
+- Remove videos from New Project templates in splash screen as they cause Windows to crash
 
 ### Removed
 
