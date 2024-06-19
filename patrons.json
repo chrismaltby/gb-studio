@@ -9,6 +9,13 @@
     },
     {
       "attributes": {
+        "full_name": "Martin Gauer"
+      },
+      "id": "3319189",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Pmoth Demakes"
       },
       "id": "104804333",
@@ -19,13 +26,6 @@
         "full_name": "Salvatore Tosti"
       },
       "id": "6588868",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "TweakerInc"
-      },
-      "id": "86351933",
       "type": "user"
     }
   ],
@@ -60,6 +60,13 @@
     },
     {
       "attributes": {
+        "full_name": "Justin Kocian"
+      },
+      "id": "59293884",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Michael Towns (gamebuoygames)"
       },
       "id": "71689",
@@ -74,6 +81,13 @@
     },
     {
       "attributes": {
+        "full_name": "Nadim Kobeissi"
+      },
+      "id": "55013050",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "npckc"
       },
       "id": "14825686",
@@ -84,6 +98,13 @@
         "full_name": "Ria Cayde"
       },
       "id": "64844487",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Skittle"
+      },
+      "id": "57539298",
       "type": "user"
     }
   ],
@@ -104,16 +125,16 @@
     },
     {
       "attributes": {
-        "full_name": "Martin Gauer"
+        "full_name": "Pearacidic"
       },
-      "id": "3319189",
+      "id": "7243786",
       "type": "user"
     },
     {
       "attributes": {
-        "full_name": "Pearacidic"
+        "full_name": "TweakerInc"
       },
-      "id": "7243786",
+      "id": "86351933",
       "type": "user"
     }
   ]
