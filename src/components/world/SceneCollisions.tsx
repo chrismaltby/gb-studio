@@ -16,6 +16,7 @@ import {
 } from "consts";
 
 const TILE_SIZE = 8;
+const EXTRA_SYMBOLS = "89ABCDEF";
 
 interface SceneCollisionsProps {
   width: number;
@@ -174,7 +175,7 @@ const SceneCollisions = ({
                 ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 ctx.fillStyle = "rgba(255,255,255,0.9)";
                 ctx.fillText(
-                  String(tileprop_value),
+                  EXTRA_SYMBOLS[tileprop_value - 1],
                   xi * TILE_SIZE,
                   (yi + 0.9) * TILE_SIZE
                 );

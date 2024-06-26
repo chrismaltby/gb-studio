@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+const EXTRA_SYMBOLS = "89ABCDEF";
 
 export const brushToolbarCollisionTileStyles = css`
   position: relative;
@@ -248,7 +249,7 @@ export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconPro
   ${brushToolbarCollisionTileStyles}
 
   ::before {
-    content: "${(props) => (+props.value - 7)}";
+    content: "${(props) => (EXTRA_SYMBOLS[+props.value - 8])}";
     display: flex;
     width: 22px;
     height: 22px;
