@@ -242,7 +242,7 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
 `;
 
 interface BrushToolbarExtraTileIconProps {
-  value: String;
+  value: string;
 }
 
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
