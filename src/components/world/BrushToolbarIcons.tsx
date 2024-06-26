@@ -241,19 +241,20 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
 `;
 
 interface BrushToolbarExtraTileIconProps {
-  value: string;
+  value: String;
 }
 
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
   ${brushToolbarCollisionTileStyles}
 
   ::before {
-    content: "${(props) => props.value}";
+    content: "${(props) => (+props.value - 7)}";
     display: flex;
     width: 22px;
     height: 22px;
     line-height: 22px;
     align-items: center;
     justify-content: center;
+    font: 16px "Public Pixel";
   }
 `;

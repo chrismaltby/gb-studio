@@ -38,7 +38,7 @@ const SceneCollisions = ({
 
       if (!ctx) return;
 
-      ctx.font = "7px Arial";
+      ctx.font = "8px Public Pixel";
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
@@ -152,9 +152,29 @@ const SceneCollisions = ({
                 ctx.stroke(); // Render the path
                 break;
               default:
-                ctx.fillStyle = "rgba(0,128,0,1)";
+                const tileprop_value = (tileprop >> 4) - 7;
+                switch (tileprop_value) {
+                  case 1:
+                  case 2:
+                    ctx.fillStyle = `rgba(0,128,0,0.5)`;
+                    break;
+                  case 3:
+                  case 4:
+                    ctx.fillStyle = `rgba(128,0,0,0.5)`;
+                    break;
+                  case 5:
+                  case 6:
+                    ctx.fillStyle = `rgba(0,0,128,0.5)`;
+                    break;
+                  case 7:
+                  case 8:
+                    ctx.fillStyle = `rgba(128,0,128,0.5)`;
+                    break;
+                }
+                ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
                 ctx.fillText(
-                  String(tileprop >> 4),
+                  String(tileprop_value),
                   xi * TILE_SIZE,
                   (yi + 0.9) * TILE_SIZE
                 );
