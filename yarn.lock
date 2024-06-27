@@ -3091,10 +3091,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-mentions@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@types/react-mentions/-/react-mentions-3.3.0.tgz#b446362a1ae20d0c71661c22abd523e8e033220a"
-  integrity sha512-sySDvqX9N5jyOSITd/aylm2b95ALc7zw3grqShqKw7oe0SR0yR+p3O7JoIQjRfVyqYqoOC4WSGyUtoSfnBuiWw==
+"@types/react-mentions@^4.1.13":
+  version "4.1.13"
+  resolved "https://registry.yarnpkg.com/@types/react-mentions/-/react-mentions-4.1.13.tgz#293e56e14c502f6a73217fece0b870e54a0cc657"
+  integrity sha512-kRulAAjlmhCtsJ9bapO0foocknaE/rEuFKpmFEU81fBfnXZmZNBaJ9J/DBjwigT3WDHjQVUmYoi5sxEXrcdzAw==
   dependencies:
     "@types/react" "*"
 
@@ -10611,10 +10611,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-mentions@^4.0.2:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/react-mentions/-/react-mentions-4.1.1.tgz#9f74928f7a33d587151e95dc7ef303f2002790de"
-  integrity sha512-+BK8dQzXPZUBFYfbv1hwbve9lp0lGYHOUyb1hk9s13mzvmVD9S+l9oszo1CaumVjYdb9olJ4NMJW2jBRGck9Rw==
+react-mentions@^4.4.10:
+  version "4.4.10"
+  resolved "https://registry.yarnpkg.com/react-mentions/-/react-mentions-4.4.10.tgz#ae6c1e310a405597e83ce786f12c5bfb93b097ce"
+  integrity sha512-JHiQlgF1oSZR7VYPjq32wy97z1w1oE4x10EuhKjPr4WUKhVzG1uFQhQjKqjQkbVqJrmahf+ldgBTv36NrkpKpA==
   dependencies:
     "@babel/runtime" "7.4.5"
     invariant "^2.2.4"

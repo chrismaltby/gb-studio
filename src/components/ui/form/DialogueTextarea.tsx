@@ -10,7 +10,6 @@ import styled from "styled-components";
 import { MentionsInput, SuggestionDataItem } from "react-mentions";
 import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
-import { Dictionary } from "@reduxjs/toolkit";
 import { Font } from "shared/lib/entities/entitiesTypes";
 import CustomMention from "./CustomMention";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -32,6 +31,10 @@ const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
 interface DialogueTextareaWrapperProps {
   singleLine?: boolean;
 }
+
+type ExtendedSuggestionDataItem = SuggestionDataItem & {
+  searchName: string;
+};
 
 const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
   position: relative;
@@ -228,41 +231,40 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   placeholder,
   singleLine = false,
 }) => {
-  const [variablesLookup, setVariablesLookup] = useState<
-    Dictionary<NamedVariable>
-  >({});
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const [fontItems, setFontItems] = useState<SuggestionDataItem[]>([]);
-  const [fontsLookup, setFontsLookup] = useState<
-    Dictionary<SuggestionDataItem>
-  >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
 
-  const speedCodes = useMemo(
+  const speedCodes: ExtendedSuggestionDataItem[] = useMemo(
     () => [
       {
         id: "S0",
         display: `${l10n("FIELD_INSTANT")}`,
+        searchName: `instant ${l10n("FIELD_INSTANT")}`,
       },
       {
         id: "S1",
         display: `${l10n("FIELD_SPEED")}\u00a01`,
+        searchName: `speed1 ${l10n("FIELD_SPEED")}\u00a01`,
       },
       {
         id: "S2",
         display: `${l10n("FIELD_SPEED")}\u00a02`,
+        searchName: `speed2 ${l10n("FIELD_SPEED")}\u00a02`,
       },
       {
         id: "S3",
         display: `${l10n("FIELD_SPEED")}\u00a03`,
+        searchName: `speed3 ${l10n("FIELD_SPEED")}\u00a03`,
       },
       {
         id: "S4",
         display: `${l10n("FIELD_SPEED")}\u00a04`,
+        searchName: `speed4 ${l10n("FIELD_SPEED")}\u00a04`,
       },
       {
         id: "S5",
         display: `${l10n("FIELD_SPEED")}\u00a05`,
+        searchName: `speed5 ${l10n("FIELD_SPEED")}\u00a05`,
       },
     ],
     []
@@ -270,32 +272,37 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
 
   const speedCodeLookup = useMemo(() => keyBy(speedCodes, "id"), [speedCodes]);
 
-  const moveCodes = useMemo(
+  const moveCodes: ExtendedSuggestionDataItem[] = useMemo(
     () => [
       {
         id: "\\003\\001\\001",
         display: l10n("FIELD_SET_CURSOR_POSITION_TO"),
+        searchName: `cursorset ${l10n("FIELD_SET_CURSOR_POSITION_TO")}`,
       },
       {
         id: "\\004\\002\\002",
         display: l10n("FIELD_MOVE_CURSOR_POSITION_BY"),
+        searchName: `cursormove ${l10n("FIELD_MOVE_CURSOR_POSITION_BY")}`,
       },
     ],
     []
   );
 
-  useEffect(() => {
-    setVariablesLookup(keyBy(variables, "code"));
+  const variablesLookup = useMemo(() => {
+    return keyBy(variables, "code");
   }, [variables]);
 
-  useEffect(() => {
-    const items = fonts.map((f) => ({
+  const fontItems: ExtendedSuggestionDataItem[] = useMemo(() => {
+    return fonts.map((f) => ({
       id: `F:${f.id}`,
       display: `${l10n("FIELD_FONT")}: ${f.name}`,
+      searchName: `font ${l10n("FIELD_FONT")} ${f.name}`,
     }));
-    setFontItems(items);
-    setFontsLookup(keyBy(items, "id"));
   }, [fonts]);
+
+  const fontsLookup = useMemo(() => {
+    return keyBy(fontItems, "id");
+  }, [fontItems]);
 
   const handleCopy = useCallback((e: ClipboardEvent) => {
     if (e.target !== inputRef.current) {
@@ -312,6 +319,54 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       document.removeEventListener("copy", handleCopy);
     };
   }, [handleCopy]);
+
+  const searchLocalisedSuggestions = useCallback(
+    (
+      items: ExtendedSuggestionDataItem[],
+      searchTerm: string
+    ): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      return items.filter((item) => {
+        return item.searchName
+          .toLocaleLowerCase()
+          .includes(searchTermLowerCase);
+      });
+    },
+    []
+  );
+
+  const searchFonts = useCallback(
+    (searchTerm: string): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      if ("font".includes(searchTermLowerCase)) {
+        return fontItems;
+      }
+      return searchLocalisedSuggestions(fontItems, searchTermLowerCase);
+    },
+    [fontItems, searchLocalisedSuggestions]
+  );
+
+  const searchSpeedCodes = useCallback(
+    (searchTerm: string): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      if ("speed".includes(searchTermLowerCase)) {
+        return speedCodes;
+      }
+      return searchLocalisedSuggestions(speedCodes, searchTermLowerCase);
+    },
+    [searchLocalisedSuggestions, speedCodes]
+  );
+
+  const searchMoveCodes = useCallback(
+    (searchTerm: string): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      if ("cursor".includes(searchTermLowerCase)) {
+        return moveCodes;
+      }
+      return searchLocalisedSuggestions(moveCodes, searchTermLowerCase);
+    },
+    [moveCodes, searchLocalisedSuggestions]
+  );
 
   return (
     <DialogueTextareaWrapper singleLine={singleLine}>
@@ -515,7 +570,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         <CustomMention
           className="Mentions__TokenSpeed"
           trigger={/(!([\p{L}0-9]+))$/u}
-          data={speedCodes}
+          data={searchSpeedCodes}
           markup="!__id__!"
           regex={/!(S[0-5]+)!/}
           displayTransform={(_speedCode: string) => "Ｓ"}
@@ -542,7 +597,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         <CustomMention
           className="Mentions__TokenFont"
           trigger={/(!([\p{L}0-9]+))$/u}
-          data={fontItems}
+          data={searchFonts}
           markup="!__id__!"
           regex={/!(F:[0-9a-f-]+)!/}
           displayTransform={(_fontCode) => {
@@ -569,7 +624,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         <CustomMention
           className="Mentions__TokenGoto"
           trigger={/(!([\p{L}0-9]+))$/u}
-          data={moveCodes}
+          data={searchMoveCodes}
           markup={`__id__`}
           regex={/(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/}
           displayTransform={(code: string) => {
