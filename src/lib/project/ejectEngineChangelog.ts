@@ -680,6 +680,13 @@ const changes: EngineChange[] = [
     description: createDescription("Updates", ["Optimize atan2()"]),
     modifiedFiles: ["src/core/math_atan2.c"],
   },
+  {
+    version: "4.0.0-e1",
+    description: createDescription("Fixes", [
+      "Fix typo with white tile reference in UI",
+    ]),
+    modifiedFiles: ["include/ui.h", "src/core/ui.c", "src/core/vm_ui.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
