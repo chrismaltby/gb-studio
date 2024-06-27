@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix typo with white tile reference in engine UI [@kevinfoley](https://github.com/kevinfoley)
+- Fix issue where text codes would only autocomplete only using localised names. `!Font`, `!Speed`, `!Instant` and `!Cursor` will no list results regardless of user's language setting
 
 ## [4.0.0] - 2024-06-19
 
