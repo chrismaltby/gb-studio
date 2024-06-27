@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 
+### Fixed
+
+- Fix typo with white tile reference in engine UI [@kevinfoley](https://github.com/kevinfoley)
+
 ## [4.0.0] - 2024-06-19
 
 ### Added

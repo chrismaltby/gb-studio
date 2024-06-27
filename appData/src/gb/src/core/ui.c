@@ -112,7 +112,7 @@ void ui_init(void) BANKED {
     text_scroll_addr            = GetWinAddr();
     text_scroll_width           = 20;
     text_scroll_height          = 8;
-    text_scroll_fill            = ui_while_tile;
+    text_scroll_fill            = ui_white_tile;
 
     text_sound_bank             = SFX_STOP_BANK;
 
@@ -131,7 +131,7 @@ void ui_load_tiles(void) BANKED {
     SetBankedBkgData(ui_cursor_tile, 1, cursor_image, BANK(cursor_image));
 
     memset(vwf_tile_data, TEXT_BKG_FILL_W, 16);
-    set_bkg_data(ui_while_tile, 1, vwf_tile_data);
+    set_bkg_data(ui_white_tile, 1, vwf_tile_data);
     memset(vwf_tile_data, TEXT_BKG_FILL_B, 16);
     set_bkg_data(ui_black_tile, 1, vwf_tile_data);
 }

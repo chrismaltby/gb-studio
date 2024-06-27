@@ -182,7 +182,7 @@ void vm_overlay_set_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h
     THIS;
     text_scroll_addr = GetWinAddr() + (y << 5) + x;
     text_scroll_width = w; text_scroll_height = h;
-    text_scroll_fill = (color) ? ui_while_tile : ui_black_tile;
+    text_scroll_fill = (color) ? ui_white_tile : ui_black_tile;
 }
 
 // clears overlay window
@@ -200,7 +200,7 @@ void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBY
             VBK_REG = 0;
         }
 #endif
-        fill_win_rect(x, y, w, h, ((color) ? ui_while_tile : ui_black_tile));
+        fill_win_rect(x, y, w, h, ((color) ? ui_white_tile : ui_black_tile));
         if (options & UI_AUTOSCROLL) vm_overlay_set_scroll(THIS, x, y, w, h, color);
     }
 }
@@ -235,7 +235,7 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
         VBK_REG = 0;
     }
 #endif
-    scroll_rect(base_addr, w, h, ((color) ? ui_while_tile : ui_black_tile));
+    scroll_rect(base_addr, w, h, ((color) ? ui_white_tile : ui_black_tile));
 }
 
 void set_xy_win_submap(const UBYTE * source, UBYTE bank, UBYTE width, UBYTE x, UBYTE y, UBYTE w, UBYTE h) OLDCALL;
