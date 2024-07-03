@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- MAX_GLOBAL_VARS made available in `game_globals.h` for use in engine plugins [@kinostl](https://github.com/kinostl)
+
 ### Changed
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
