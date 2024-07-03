@@ -1,7 +1,20 @@
 import "focus-visible";
 import { createGlobalStyle } from "styled-components";
+import pixelFont from "assets/fonts/PublicPixel.woff2";
+
+// Load font for use in Canvas elements
+new FontFace("Public Pixel", `url("${pixelFont}")`).load().then((font) => {
+  document.fonts.add(font);
+});
 
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+      font-family: 'Public Pixel';
+      src: url('${pixelFont}') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+  }
+
   html,
   body {
     width: 100%;

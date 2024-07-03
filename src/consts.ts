@@ -58,6 +58,8 @@ export const BRUSH_FILL = "fill";
 export const BRUSH_MAGIC = "magic";
 export const BRUSH_SLOPE = "slope";
 
+export const COLLISIONS_EXTRA_SYMBOLS = "89ABCDEF";
+
 export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
 export const COLLISION_LEFT = 0x4;
