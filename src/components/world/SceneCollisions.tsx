@@ -153,8 +153,8 @@ const SceneCollisions = ({
                 ctx.stroke(); // Render the path
                 break;
               default:
-                const tileprop_value = (tileprop >> 4) - 7;
-                switch (tileprop_value) {
+                const tilepropValue = (tileprop >> 4) - 7;
+                switch (tilepropValue) {
                   case 1:
                   case 2:
                     ctx.fillStyle = `rgba(0,128,0,0.5)`;
@@ -180,7 +180,7 @@ const SceneCollisions = ({
                 );
                 ctx.fillStyle = "rgba(255,255,255,0.9)";
                 ctx.fillText(
-                  COLLISIONS_EXTRA_SYMBOLS[tileprop_value - 1],
+                  COLLISIONS_EXTRA_SYMBOLS[tilepropValue - 1],
                   xi * TILE_SIZE,
                   (yi + 0.9) * TILE_SIZE
                 );
