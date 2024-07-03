@@ -74,6 +74,10 @@ export const isActorField = (
   args: ScriptEventArgs,
   scriptEventDefs: ScriptEventDefs
 ) => {
+  // Custom event calls
+  if (fieldName.startsWith("$actor[")) {
+    return true;
+  }
   const field = getField(cmd, fieldName, scriptEventDefs);
   return !!field && field.type === "actor" && isFieldVisible(field, args);
 };

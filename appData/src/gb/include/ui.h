@@ -27,7 +27,7 @@
 #define MENU_CANCEL_ON_B_PRESSED 0x02U
 
 #define ui_bkg_tile   0x07u
-#define ui_while_tile 0xC9u
+#define ui_white_tile 0xC9u
 #define ui_black_tile 0xCAu
 
 #define ui_cursor_tile 0xCBu

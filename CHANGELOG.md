@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- MAX_GLOBAL_VARS made available in `game_globals.h` for use in engine plugins [@kinostl](https://github.com/kinostl)
+
+### Changed
+
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
+
+### Fixed
+
+- Fix typo with white tile reference in engine UI [@kevinfoley](https://github.com/kevinfoley)
+- Fix issue where text codes would only autocomplete only using localised names. `!Font`, `!Speed`, `!Instant` and `!Cursor` will no list results regardless of user's language setting
+- Fix issue where rename button wouldn't appear for variables used in script values
+- Fix issue where actors referenced within scripts were not always being linked correctly
+- Fix issue where moving actors relatively off left or top of screen would cause coordinates to wrap, causing them to move in wrong direction
+- Fix issue in Japanese localisation where dialogue and expression text editors would show caret at incorrect location
+
 ## [4.0.0] - 2024-06-19
 
 ### Added

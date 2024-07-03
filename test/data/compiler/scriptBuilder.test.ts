@@ -1,3 +1,4 @@
+import { Dictionary } from "@reduxjs/toolkit";
 import { PrecompiledScene } from "../../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
@@ -1084,4 +1085,152 @@ test("should support using variable to change font with %f$Var", async () => {
     "        .dw VAR_VARIABLE_0",
     '        .asciz "SetFont%fNewFont"',
   ]);
+});
+
+test("should allow passing actors to custom event", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    scene: {
+      id: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_ACTOR_SET_POSITION",
+            args: {
+              actorId: "0",
+              x: {
+                type: "number",
+                value: 0,
+              },
+              y: {
+                type: "number",
+                value: 0,
+              },
+            },
+            id: "event1",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`
+  );
+});
+
+test("should allow passing actors to nested custom event", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    scene: {
+      id: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_ACTOR_SET_POSITION",
+            args: {
+              actorId: "0",
+              x: {
+                type: "number",
+                value: 0,
+              },
+              y: {
+                type: "number",
+                value: 0,
+              },
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$actor[0]$": "0",
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script2", {
+    "$actor[0]$": "actorS0A0",
+  });
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    `VM_PUSH_VALUE           .SCRIPT_ARG_0_ACTOR`
+  );
 });
