@@ -2039,6 +2039,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
         return `#define ${string} ${stringIndex}\n`;
       })
       .join("") +
+    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
     `\n` +
     `#endif\n`;
 
