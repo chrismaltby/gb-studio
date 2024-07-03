@@ -13,10 +13,10 @@ import {
   COLLISION_SLOPE_45_LEFT,
   COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISIONS_EXTRA_SYMBOLS,
 } from "consts";
 
 const TILE_SIZE = 8;
-const EXTRA_SYMBOLS = "89ABCDEF";
 
 interface SceneCollisionsProps {
   width: number;
@@ -172,10 +172,15 @@ const SceneCollisions = ({
                     ctx.fillStyle = `rgba(128,0,128,0.5)`;
                     break;
                 }
-                ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE,
+                  TILE_SIZE
+                );
                 ctx.fillStyle = "rgba(255,255,255,0.9)";
                 ctx.fillText(
-                  EXTRA_SYMBOLS[tileprop_value - 1],
+                  COLLISIONS_EXTRA_SYMBOLS[tileprop_value - 1],
                   xi * TILE_SIZE,
                   (yi + 0.9) * TILE_SIZE
                 );
