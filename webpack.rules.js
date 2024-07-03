@@ -28,7 +28,7 @@ module.exports = [
     ],
   },
   {
-    test: /\.(png|jpe?g|gif|mp4)$/i,
+    test: /\.(png|jpe?g|gif|mp4|woff2)$/i,
     exclude: /(node_modules|.webpack)/,
     loader: "file-loader",
     options: {
