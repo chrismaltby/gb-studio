@@ -1042,6 +1042,7 @@ const ValueSelect = ({
               name={name}
               entityId={entityId}
               value={value.value}
+              allowRename
               onChange={(newValue) => {
                 onChange({
                   type: "variable",

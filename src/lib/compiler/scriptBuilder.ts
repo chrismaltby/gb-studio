@@ -2381,6 +2381,9 @@ extern void __mute_mask_${symbol};
     if (typeof id === "number") {
       this.actorIndex = id;
       this._setConst(addr, this.actorIndex);
+    } else if (typeof id === "string" && id.startsWith(".")) {
+      this.actorIndex = -1;
+      this._set(addr, id);
     } else if (typeof id === "string") {
       const newIndex = this.getActorIndex(id);
       this.actorIndex = newIndex;
@@ -2510,10 +2513,12 @@ extern void __mute_mask_${symbol};
 
     // X Value
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 1));
 
     // Y Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 2));
 
     rpn.stop();
@@ -2619,10 +2624,12 @@ extern void __mute_mask_${symbol};
 
     // X Value
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 1));
 
     // Y Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 2));
 
     rpn.stop();
@@ -3985,7 +3992,10 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Call Script
 
-  callScript = (scriptId: string, input: Dictionary<string | ScriptValue>) => {
+  callScript = (
+    scriptId: string,
+    input: Dictionary<string | ScriptValue | ScriptBuilderFunctionArg>
+  ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
 
@@ -4016,7 +4026,8 @@ extern void __mute_mask_${symbol};
           if (
             typeof variableValue !== "string" &&
             variableValue.type !== "variable" &&
-            variableValue.type !== "number"
+            variableValue.type !== "number" &&
+            variableValue.type !== "argument"
           ) {
             const [rpnOps, fetchOps] = precompileScriptValue(
               optimiseScriptValue(variableValue)
@@ -4057,6 +4068,8 @@ extern void __mute_mask_${symbol};
           if (typeof actorValue === "string") {
             const actorIndex = this.getActorIndex(actorValue);
             this._stackPushConst(actorIndex, `Actor ${actorArg.id}`);
+          } else if (actorValue.type === "argument") {
+            this._stackPush(actorValue.symbol);
           }
         }
       }

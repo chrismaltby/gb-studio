@@ -871,7 +871,7 @@ OP_VM_ACTOR_SET_ANIM_SET        = 0x84
 ; * `\004\x\y` Sets the position for the next character relative to the last character.
 ; * `\005` Escapes the next character.
 ; * `\006\mask` Waits for input to continue to the next character.
-; * `\007\n` Inverts the colors of the following characters.
+; * `\007\n` Inverts the colors of the following characters. `\007\002` enables inverted colors, `\007\001` disables them.
 ; * `\010\x` Switches between left to right (`x` = `01`) and right to left (`x` = `02`) printing.
 ; * `\011` Zero width symbol.
 ; * `\n` Next line.
