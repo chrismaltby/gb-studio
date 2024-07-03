@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where rename button wouldn't appear for variables used in script values
 - Fix issue where actors referenced within scripts were not always being linked correctly
 - Fix issue where moving actors relatively off left or top of screen would cause coordinates to wrap, causing them to move in wrong direction
+- Fix issue in Japanese localisation where dialogue and expression text editors would show caret at incorrect location
 
 ## [4.0.0] - 2024-06-19
 
