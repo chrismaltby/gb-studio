@@ -429,6 +429,8 @@
   "FIELD_CHARACTER_ENCODING": "Character Encoding",
   "FIELD_ON_SAVE": "On Save",
   "FIELD_ON_SAVE_DESC": "A script to run after the save is completed. This won't be run on game load so you can use it show a 'Save Was Successful' message.",
+  "FIELD_ON_LOAD": "On Load",
+  "FIELD_ON_LOAD_DESC": "A script to run after this save data has been loaded.",
   "FIELD_SEND_VARIABLE": "Send Variable",
   "FIELD_RECEIVE_VARIABLE": "Receive Variable",
   "FIELD_PACKET_SIZE": "Packet Size",

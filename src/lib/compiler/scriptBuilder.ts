@@ -75,6 +75,8 @@ import {
   addScriptValueConst,
   addScriptValueToScriptValue,
 } from "shared/lib/scriptValue/helpers";
+import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
+import keyBy from "lodash/keyBy";
 
 export type ScriptOutput = string[];
 
@@ -5698,10 +5700,14 @@ extern void __mute_mask_${symbol};
 
   dataSave = (
     slot = 0,
-    onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    onLoadPath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
+    const { customEvents, scriptEventHandlers } = this.options;
+
     const hasLoadedRef = this._declareLocal("has_loaded", 1, true);
     const loadedLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
     this._addComment(`Save Data to Slot ${slot}`);
     this._raiseException("EXCEPTION_SAVE", 1);
     this._saveSlot(slot);
@@ -5709,7 +5715,37 @@ extern void __mute_mask_${symbol};
     this._ifConst(".EQ", hasLoadedRef, 1, loadedLabel, 0);
     this._addNL();
     this._compilePath(onSavePath);
+    this._jump(endLabel);
     this._label(loadedLabel);
+    if (Array.isArray(onLoadPath)) {
+      // Inject autofade into load script
+      const customEventsLookup = keyBy(customEvents, "id");
+      const autoFadeId = calculateAutoFadeEventId(
+        onLoadPath,
+        customEventsLookup,
+        scriptEventHandlers
+      );
+      const autoFadeIndex = autoFadeId
+        ? onLoadPath.findIndex((item) => item.id === autoFadeId)
+        : -1;
+      const fadeEvent = {
+        id: "autofade",
+        command: "EVENT_FADE_IN",
+        args: {
+          speed: 2,
+        },
+      };
+      if (autoFadeIndex > -1) {
+        onLoadPath.splice(autoFadeIndex, 0, fadeEvent);
+      } else if (autoFadeId !== "MANUAL") {
+        onLoadPath.push(fadeEvent);
+      }
+    }
+    this._compilePath(onLoadPath);
+    if (!Array.isArray(onLoadPath)) {
+      this._fadeIn(true);
+    }
+    this._label(endLabel);
     this._addNL();
   };
 

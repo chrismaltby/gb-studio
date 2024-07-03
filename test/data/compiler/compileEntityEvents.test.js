@@ -340,3 +340,235 @@ _testname::
         VM_STOP
 `);
 });
+
+test("should be able to set script to run when saved data resumes", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const input = [
+    {
+      id: "event1",
+      command: "EVENT_SAVE_DATA",
+      args: {
+        saveSlot: 0,
+        __scriptTabs: "save",
+      },
+      children: {
+        true: [
+          {
+            id: "event2",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: 'VM_DEBUG        0\n.asciz "OnSave Path"',
+            },
+          },
+        ],
+        load: [
+          {
+            id: "event3",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: 'VM_DEBUG        0\n.asciz "OnLoad Path"',
+            },
+          },
+        ],
+      },
+    },
+  ];
+  const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
+  });
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+
+.area _CODE_255
+
+.LOCAL_TMP0_HAS_LOADED = -1
+.LOCAL_TMP1_WAIT_ARGS = -1
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        VM_RESERVE              1
+
+        ; Save Data to Slot 0
+        VM_RAISE                EXCEPTION_SAVE, 1
+            .SAVE_SLOT 0
+        VM_POLL_LOADED          .LOCAL_TMP0_HAS_LOADED
+        VM_IF_CONST             .EQ, .LOCAL_TMP0_HAS_LOADED, 1, 1$, 0
+
+        VM_DEBUG        0
+        .asciz "OnSave Path"
+
+        VM_JUMP                 2$
+1$:
+        VM_DEBUG        0
+        .asciz "OnLoad Path"
+
+        ; Wait N Frames
+        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
+        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+
+        ; Fade In
+        VM_SET_CONST_INT8       _fade_frames_per_step, 3
+        VM_FADE_IN              1
+
+2$:
+
+        ; Stop Script
+        VM_STOP
+`);
+});
+
+test("should inject fadein correctly when saved data resumes", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const input = [
+    {
+      id: "event1",
+      command: "EVENT_SAVE_DATA",
+      args: {
+        saveSlot: 0,
+        __scriptTabs: "save",
+      },
+      children: {
+        true: [
+          {
+            id: "event2",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: 'VM_DEBUG        0\n.asciz "OnSave Path"',
+            },
+          },
+        ],
+        load: [
+          {
+            id: "event4",
+            command: "EVENT_ACTOR_EMOTE",
+            args: {
+              actorId: "$self$",
+              emoteId: "603fd18d-674c-4360-9f57-5fb4b935b442",
+            },
+          },
+          {
+            id: "event3",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: 'VM_DEBUG        0\n.asciz "OnLoad Path"',
+            },
+          },
+        ],
+      },
+    },
+  ];
+  const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
+  });
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+
+.area _CODE_255
+
+.LOCAL_TMP0_HAS_LOADED = -4
+.LOCAL_TMP1_WAIT_ARGS = -4
+.LOCAL_ACTOR = -4
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        VM_RESERVE              4
+
+        ; Save Data to Slot 0
+        VM_RAISE                EXCEPTION_SAVE, 1
+            .SAVE_SLOT 0
+        VM_POLL_LOADED          .LOCAL_TMP0_HAS_LOADED
+        VM_IF_CONST             .EQ, .LOCAL_TMP0_HAS_LOADED, 1, 1$, 0
+
+        VM_DEBUG        0
+        .asciz "OnSave Path"
+
+        VM_JUMP                 2$
+1$:
+        ; Wait N Frames
+        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
+        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+
+        ; Fade In
+        VM_SET_CONST_INT8       _fade_frames_per_step, 3
+        VM_FADE_IN              1
+
+        ; Actor Set Active
+        VM_SET_CONST            .LOCAL_ACTOR, 0
+
+        VM_DEBUG        0
+        .asciz "OnLoad Path"
+
+2$:
+
+        ; Stop Script
+        VM_STOP
+`);
+});
+
+test("should inject fadein even when no saved data onload is defined", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const input = [
+    {
+      id: "event1",
+      command: "EVENT_SAVE_DATA",
+      args: {
+        saveSlot: 0,
+        __scriptTabs: "save",
+      },
+    },
+  ];
+  const output = compileEntityEvents("testname", input, {
+    scriptEventHandlers,
+  });
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+
+.area _CODE_255
+
+.LOCAL_TMP0_HAS_LOADED = -1
+.LOCAL_TMP1_WAIT_ARGS = -1
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        VM_RESERVE              1
+
+        ; Save Data to Slot 0
+        VM_RAISE                EXCEPTION_SAVE, 1
+            .SAVE_SLOT 0
+        VM_POLL_LOADED          .LOCAL_TMP0_HAS_LOADED
+        VM_IF_CONST             .EQ, .LOCAL_TMP0_HAS_LOADED, 1, 1$, 0
+
+        VM_JUMP                 2$
+1$:
+        ; Wait N Frames
+        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
+        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+
+        ; Fade In
+        VM_SET_CONST_INT8       _fade_frames_per_step, 3
+        VM_FADE_IN              1
+
+2$:
+
+        ; Stop Script
+        VM_STOP
+`);
+});

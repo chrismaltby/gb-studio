@@ -137,7 +137,8 @@ void process_VM(void) {
                         remove_LCD_ISRs();
                         // load game state from SRAM
                         vm_loaded_state = data_load(ReadBankedUBYTE(vm_exception_params_offset, vm_exception_params_bank));
-                        fade_in = !(load_scene(current_scene.ptr, current_scene.bank, FALSE));
+                        load_scene(current_scene.ptr, current_scene.bank, FALSE);
+                        fade_in = FALSE;
                         break;
                     }
                     default: {

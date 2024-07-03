@@ -687,6 +687,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/ui.h", "src/core/ui.c", "src/core/vm_ui.c"],
   },
+  {
+    version: "4.0.0-e2",
+    description: createDescription("Fixes", [
+      "Add support for onLoad callback when loading saved data",
+    ]),
+    modifiedFiles: ["src/core/core.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
