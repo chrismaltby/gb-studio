@@ -5,11 +5,10 @@ test("Should be able to set player sprite sheet", () => {
   compile(
     {
       spriteSheetId: "abc",
-      persist: false
     },
     {
-      playerSetSprite: mockPlayerSetSprite
+      playerSetSprite: mockPlayerSetSprite,
     }
   );
-  expect(mockPlayerSetSprite).toBeCalledWith("abc", false);
+  expect(mockPlayerSetSprite).toBeCalledWith("abc");
 });

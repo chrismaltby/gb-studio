@@ -14,18 +14,11 @@ const fields = [
     type: "sprite",
     defaultValue: "LAST_SPRITE",
   },
-  {
-    key: "persist",
-    label: l10n("FIELD_REPLACE_SCENE_TYPE_DEFAULT"),
-    description: l10n("FIELD_REPLACE_SCENE_TYPE_DEFAULT_DESC"),
-    type: "checkbox",
-    defaultValue: false,
-  },
 ];
 
 const compile = (input, helpers) => {
   const { playerSetSprite } = helpers;
-  playerSetSprite(input.spriteSheetId, input.persist);
+  playerSetSprite(input.spriteSheetId);
 };
 
 module.exports = {

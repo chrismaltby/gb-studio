@@ -92,7 +92,6 @@ export type PrecompiledScene = Scene & {
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
   sprites: PrecompiledSprite[];
-  playerSpritePersist: boolean;
 };
 
 export interface PrecompiledSceneEventPtrs {

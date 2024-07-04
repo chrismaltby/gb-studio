@@ -3144,19 +3144,14 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  playerSetSprite = (spriteSheetId: string, persist: boolean) => {
+  playerSetSprite = (spriteSheetId: string) => {
     const actorRef = this._declareLocal("actor", 4);
-    const { sprites, scene } = this.options;
+    const { sprites } = this.options;
     const sprite = sprites.find((s) => s.id === spriteSheetId);
     if (sprite) {
       this._addComment("Player Set Spritesheet");
       this._setConst(actorRef, 0);
       this._actorSetSpritesheet(actorRef, sprite.symbol);
-      if (persist) {
-        const symbol = sprite.symbol;
-        this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
-        this._setConst(`PLAYER_SPRITE_${scene.type}_DATA`, `_${symbol}`);
-      }
       this._addNL();
     }
   };

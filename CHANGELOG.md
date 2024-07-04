@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where moving actors relatively off left or top of screen would cause coordinates to wrap, causing them to move in wrong direction
 - Fix issue in Japanese localisation where dialogue and expression text editors would show caret at incorrect location
 
+### Removed
+
+- Removed "Replace Default For Scene Type" checkbox from "Set Player Sprite Sheet" event which hasn't worked since the early 3.0 releases and contained multiple issues even when "working". Recommended replacement is to use scripts in Scene "On Init" and Save Data "On Load" to initialise player sprites based on variables
+
 ## [4.0.0] - 2024-06-19
 
 ### Added

@@ -1050,8 +1050,6 @@ export const precompileScenes = (
       }
     };
 
-    let playerSpritePersist = false;
-
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
       const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
       if (colorMode === "color") {
@@ -1122,9 +1120,6 @@ export const precompileScenes = (
             actorsExclusiveLookup[actorId] || 0,
             getSpriteTileCount(sprite)
           );
-          if (event.args.persist) {
-            playerSpritePersist = true;
-          }
         }
       }
     );
@@ -1174,7 +1169,6 @@ export const precompileScenes = (
         );
       }),
       playerSprite,
-      playerSpritePersist,
       actorsExclusiveLookup,
       actorsData: [],
       triggersData: [],
@@ -1454,45 +1448,6 @@ const compile = async (
     {} as Record<string, VariableMapData>
   );
 
-  // Determine which scene types need to support persisting player sprite
-  const persistSceneTypes = precompiled.sceneData.reduce((memo, scene) => {
-    if (scene.playerSpritePersist && !memo.includes(scene.type)) {
-      memo.push(scene.type);
-    }
-    return memo;
-  }, [] as string[]);
-
-  const persistSceneSpriteSymbols: Record<string, string> = {};
-  persistSceneTypes.forEach((sceneType) => {
-    const bankVar = `PLAYER_SPRITE_${sceneType}_BANK`;
-    const dataVar = `PLAYER_SPRITE_${sceneType}_DATA`;
-    variableAliasLookup[bankVar] = {
-      symbol: bankVar,
-      id: "",
-      name: "Player Sprite Bank",
-      isLocal: false,
-      entityType: "scene",
-      entityId: "",
-      sceneId: "",
-    };
-    variableAliasLookup[dataVar] = {
-      symbol: dataVar,
-      id: "",
-      name: "Player Sprite Data",
-      isLocal: false,
-      entityType: "scene",
-      entityId: "",
-      sceneId: "",
-    };
-    const sprite =
-      precompiled.usedSprites.find(
-        (sprite) =>
-          projectData.settings.defaultPlayerSprites &&
-          sprite.id === projectData.settings.defaultPlayerSprites[sceneType]
-      ) || precompiled.usedSprites[0];
-    persistSceneSpriteSymbols[sceneType] = sprite.symbol;
-  });
-
   // Add event data
   const additionalScripts: Dictionary<{
     symbol: string;
@@ -1639,19 +1594,6 @@ const compile = async (
                   entityType: "scene",
                   entityId: scene.id,
                   scriptKey: "script",
-                },
-              }
-            : [],
-          persistSceneTypes.includes(scene.type) && !scene.playerSpriteSheetId
-            ? {
-                // Load sprite from var
-                id: "",
-                command: "EVENT_GBVM_SCRIPT",
-                args: {
-                  script: `VM_PUSH_CONST 0
-VM_PUSH_VALUE PLAYER_SPRITE_${scene.type}_BANK
-VM_PUSH_VALUE PLAYER_SPRITE_${scene.type}_DATA
-VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
                 },
               }
             : [],
@@ -2056,7 +1998,6 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     avatarFonts,
     engineFields,
     engineFieldValues: projectData.engineFieldValues,
-    persistSceneSpriteSymbols,
   });
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
