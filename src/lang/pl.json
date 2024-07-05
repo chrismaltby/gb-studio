@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1490240704",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1493240705",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -482,7 +482,10 @@
   "FIELD_UI_PALETTE_NOTE": "Uwaga: GB Paleta tła #8 odpowiada również za elementy UI (interfejsu użytkownika) takie jak okna i menu",
   "FIELD_EMOTE_PALETTE_NOTE": "Uwaga: GB Paleta obiektów #8 jest używana również do emotikonów",
   "FIELD_SGB_PALETTE_NOTE": "Uwaga: Domyślna paleta dla Super GB jest współdziedziczona z paletą kolorów GB nr #5, zmiana którejkolwiek z nich spowoduje aktualizację dla drugiej wartość.",
-  "FIELD_CART_BATTERYLESS": "Włącz zapis bez baterii (tylko karty flash)",
+  "FIELD_CART_BATTERYLESS": "Zapisz dane gry do ROM (wsparcie tylko dla kart flash)",
+  "FIELD_CART_BATTERYLESS_MORE_INFO_1": "Ta funkcja powoduje zapis danych gry do banku ROM i jest kompatybilna tylko z niektórymi (często bootlegowymi) kartami flash.",
+  "FIELD_CART_BATTERYLESS_MORE_INFO_2": "Jeśli masz wątpliwości, najlepiej zostaw to ustawienie wyłączone.",
+  "FIELD_CART_BATTERYLESS_MORE_INFO_3": "Kompilacje gry do wersji web lub podglądu zignorują to ustawienie, aby zapewnić kompatybilność z wbudowanym emulatorem.",
   "FIELD_ANIMATION_SETTINGS": "Ustawienie animacji",
   "FIELD_DUPLICATE": "Duplikuj",
   "FIELD_PREVIOUS_FRAME": "Poprzednia klatka",
