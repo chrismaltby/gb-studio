@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Improve legibility of extra collision tiles by using a pixel font "Public Pixel" by GGBot [@kinostl](https://github.com/kinostl)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 
 ### Fixed
 
