@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve legibility of extra collision tiles by using a pixel font "Public Pixel" by GGBot [@kinostl](https://github.com/kinostl)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Changed wording of batteryless save feature and added warning when feature is enabled to explain that only very specific cartridges will be supported
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 
 ### Fixed
 
