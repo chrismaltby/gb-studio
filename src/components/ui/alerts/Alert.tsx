@@ -13,13 +13,17 @@ const Alert = styled.div<AlertProps>`
   border-radius: 4px;
   font-size: 12px;
 
-  ${AlertItem}:first-child {
+  ${AlertItem}:first-child,
+  > p:first-child {
     padding-top: 0;
+    margin-top: 0;
   }
 
-  ${AlertItem}:last-child {
+  ${AlertItem}:last-child,
+  > p:last-child {
     border-bottom: 0;
     padding-bottom: 0;
+    margin-bottom: 0;
   }
 
   ${(props) =>
