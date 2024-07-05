@@ -40,6 +40,7 @@ const makeBuild = async ({
   const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
   const colorOnly = settings.colorMode === "color";
   const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
+  const batterylessEnabled = settings.batterylessEnabled && buildType !== "web";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const buildToolsVersion = await fs.readFile(
@@ -61,7 +62,7 @@ const makeBuild = async ({
   if (sgbEnabled) {
     env.SGB = true;
   }
-  if (settings.batterylessEnabled) {
+  if (batterylessEnabled) {
     env.BATTERYLESS = true;
   }
   env.COLOR_MODE = settings.colorMode;
@@ -88,7 +89,7 @@ const makeBuild = async ({
     colorEnabled,
     sgb: sgbEnabled,
     musicDriver: settings.musicDriver,
-    batteryless: settings.batterylessEnabled,
+    batteryless: batterylessEnabled,
     debug,
     platform: process.platform,
     targetPlatform,
@@ -140,7 +141,7 @@ const makeBuild = async ({
     bankOffset: 1,
     filter: 255,
     extension: "rel",
-    additional: settings.batterylessEnabled ? 4 : 0,
+    additional: batterylessEnabled ? 4 : 0,
     reserve:
       settings.musicDriver !== "huge"
         ? {
