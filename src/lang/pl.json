@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1488240606",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1490240704",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -429,6 +429,8 @@
   "FIELD_CHARACTER_ENCODING": "Kodowanie znaków",
   "FIELD_ON_SAVE": "Przy zapisie",
   "FIELD_ON_SAVE_DESC": "Skrypt do wykonania po zakończeniu zapisu. Funkcja nie zostanie uruchomiona podczas wczytania gry, zatem można użyć tej opcji do wyświetlenia komunikatu np. 'Zapisano stan gry!'.",
+  "FIELD_ON_LOAD": "Przy wczytaniu",
+  "FIELD_ON_LOAD_DESC": "Skrypt do wykonania po wczytaniu tego zapisu gry.",
   "FIELD_SEND_VARIABLE": "Wyślij zmienną",
   "FIELD_RECEIVE_VARIABLE": "Wczytaj zmienną",
   "FIELD_PACKET_SIZE": "Rozmiar pakietu",
