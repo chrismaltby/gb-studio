@@ -5,7 +5,7 @@ import { Label } from "./Label";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { Input } from "ui/form/Input";
+import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { variableSelectors } from "store/features/entities/entitiesState";
 
@@ -34,7 +34,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const VariableRenameInput = styled(Input)`
+const VariableRenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;

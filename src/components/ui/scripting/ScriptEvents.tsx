@@ -1,11 +1,12 @@
 import styled, { css } from "styled-components";
+import { IMEUnstyledInput } from "ui/form/IMEInput";
 
 export const ScriptEventPlaceholder = styled.div`
   background: ${(props) => props.theme.colors.scripting.placeholder.background};
   height: 25px;
 `;
 
-export const ScriptEventRenameInput = styled.input`
+export const ScriptEventRenameInput = styled(IMEUnstyledInput)`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   font-size: 11px;

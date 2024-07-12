@@ -8,10 +8,10 @@ import {
   Select as DefaultSelect,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Input } from "ui/form/Input";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
+import { IMEInput } from "ui/form/IMEInput";
 
 interface AnimationStateSelectProps extends SelectCommonProps {
   name: string;
@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const StateRenameInput = styled(Input)`
+const StateRenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;

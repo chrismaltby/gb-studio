@@ -33,7 +33,7 @@ import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { MenuOverlay } from "ui/menu/Menu";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import AddReferenceMenu from "./AddReferenceMenu";
-import { Input } from "ui/form/Input";
+import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { RootState } from "store/configureStore";
@@ -466,7 +466,7 @@ const RenameWrapper = styled.div`
   margin: -3px 0;
 `;
 
-const RenameInput = styled(Input)`
+const RenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;

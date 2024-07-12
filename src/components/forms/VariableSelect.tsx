@@ -16,7 +16,7 @@ import {
   namedVariablesByContext,
 } from "renderer/lib/variables";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
-import { Input } from "ui/form/Input";
+import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -48,7 +48,7 @@ const Select = styled(DefaultSelect)`
   }
 `;
 
-const VariableRenameInput = styled(Input)`
+const VariableRenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;

@@ -17,7 +17,7 @@ import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { Input } from "ui/form/Input";
+import { IMEInput } from "ui/form/IMEInput";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
@@ -214,7 +214,7 @@ const PalettePage = () => {
             {viewPalette && (
               <>
                 {edit ? (
-                  <Input
+                  <IMEInput
                     displaySize="large"
                     value={viewPalette.name}
                     placeholder={paletteName(viewPalette, viewPaletteIndex)}

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
+import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { CheckIcon } from "ui/icons/Icons";
 
-export const Input = styled.input`
+export const Input = styled(IMEUnstyledInput)`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   min-width: 0;

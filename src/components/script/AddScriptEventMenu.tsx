@@ -40,6 +40,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { HighlightWords } from "ui/util/HighlightWords";
+import { IMEUnstyledInput } from "ui/form/IMEInput";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -257,7 +258,7 @@ const SelectMenuSearchWrapper = styled.div`
   box-sizing: border-box;
 `;
 
-const SelectMenuInput = styled.input`
+const SelectMenuInput = styled(IMEUnstyledInput)`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border: 1px solid ${(props) => props.theme.colors.input.border};

@@ -45,6 +45,7 @@ import { FixedSizeList as List } from "react-window";
 import { allVariables } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
+import { IMEUnstyledInput } from "ui/form/IMEInput";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -178,7 +179,7 @@ const SelectMenuSearchWrapper = styled.div`
   box-sizing: border-box;
 `;
 
-const SelectMenuInput = styled.input`
+const SelectMenuInput = styled(IMEUnstyledInput)`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border: 1px solid ${(props) => props.theme.colors.input.border};

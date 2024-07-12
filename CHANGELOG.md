@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing script in Call Script event would keep references to previous script's args causing issues when nesting scripts
 - Fix issue where commented conditional statements within custom scripts could cause "Unknown arg" errors
 - Fix issue causing much higher CPU use when using "If" statements and expressions compared with version 3.2
+- Fix issue when using IME input for languages such as Japanese, Chinese, Korean where rename and search functionality would finish early while text is still being composed [@tomo666](https://github.com/tomo666)
 
 ### Removed
 
