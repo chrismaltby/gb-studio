@@ -359,6 +359,11 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     (state) => state.project.present.settings.musicDriver
   );
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   useEffect(() => {
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat([
       {
@@ -550,7 +555,14 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         setSelectedIndex(Math.max(selectedIndex - 1, 0));
         scrollIntoViewIfNeeded(selectedIndex - 1);
       } else if (e.key === "Enter") {
-        onSelectOption(selectedIndex);
+        if (!isComposing || isFocusOut) {
+          onSelectOption(selectedIndex);
+          isFocusOut = false;
+        } else if (isComposing) {
+          // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+          // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+          isFocusOut = true;
+        }
       }
     },
     [
@@ -605,6 +617,8 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
             placeholder={l10n("TOOLBAR_SEARCH")}
             onKeyDown={onKeyDown}
             onChange={onChangeSearchTerm}
+            onCompositionStart={onRenameCompositionStart}
+            onCompositionEnd={onRenameCompositionEnd}
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper

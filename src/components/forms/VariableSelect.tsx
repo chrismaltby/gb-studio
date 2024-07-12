@@ -165,6 +165,11 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const canRename =
     allowRename && !valueIsTemp && context.entityType !== "customEvent";
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
@@ -217,7 +222,14 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onRenameFinish();
+      if (!isComposing || isFocusOut) {
+        onRenameFinish();
+        isFocusOut = false;
+      } else if (isComposing) {
+        // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+        // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+        isFocusOut = true;
+      }
     } else if (e.key === "Escape") {
       setRenameVisible(false);
     }
@@ -269,6 +281,8 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           onKeyDown={onRenameKeyDown}
           onFocus={onRenameFocus}
           onBlur={onRenameFinish}
+          onCompositionStart={onRenameCompositionStart}
+          onCompositionEnd={onRenameCompositionEnd}
           autoFocus
         />
       ) : (

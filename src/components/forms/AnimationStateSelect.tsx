@@ -126,6 +126,11 @@ const AnimationStateSelect = ({
     spriteStateSelectors.selectAll(state)
   );
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   const onRenameStart = () => {
     if (currentValue) {
       setEditValue(currentValue.label);
@@ -144,7 +149,14 @@ const AnimationStateSelect = ({
 
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onRenameFinish();
+      if (!isComposing || isFocusOut) {
+        onRenameFinish();
+        isFocusOut = false;
+      } else if (isComposing) {
+        // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+        // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+        isFocusOut = true;
+      }
     } else if (e.key === "Escape") {
       setRenameVisible(false);
     }
@@ -198,6 +210,8 @@ const AnimationStateSelect = ({
           onKeyDown={onRenameKeyDown}
           onFocus={onRenameFocus}
           onBlur={onRenameFinish}
+          onCompositionStart={onRenameCompositionStart}
+          onCompositionEnd={onRenameCompositionEnd}
           autoFocus
         />
       ) : (

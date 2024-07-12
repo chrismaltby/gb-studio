@@ -63,6 +63,10 @@ export const RenameInput = ({
   onRenameCancel,
 }: RenameInputProps) => {
   const [name, setName] = useState(value ?? "");
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
 
   const onRenameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +81,14 @@ export const RenameInput = ({
         onRenameCancel();
         setName(value ?? "");
       } else if (e.key === "Enter") {
-        onRenameComplete(name);
+        if (!isComposing || isFocusOut) {
+          onRenameComplete(name);
+          isFocusOut = false;
+        } else if (isComposing) {
+          // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+          // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+          isFocusOut = true;
+        }
       }
     },
     [name, onRenameCancel, onRenameComplete, value]
@@ -99,6 +110,8 @@ export const RenameInput = ({
         onChange={onRenameChange}
         onKeyDown={onRenameKeyDown}
         onBlur={onRenameBlur}
+        onCompositionStart={onRenameCompositionStart}
+        onCompositionEnd={onRenameCompositionEnd}
       />
       <CompleteButton onClick={onRenameBlur} title={l10n("FIELD_RENAME")}>
         <CheckIcon />

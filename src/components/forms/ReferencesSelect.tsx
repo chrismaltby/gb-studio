@@ -539,6 +539,11 @@ export const AssetReference = <
   const [renameVisible, setRenameVisible] = useState(false);
   const [customSymbol, setCustomSymbol] = useState("");
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   const onCopy = useCallback(
     (symbol: string) => {
       dispatch(clipboardActions.copyText(copyTransform(symbol)));
@@ -557,7 +562,14 @@ export const AssetReference = <
 
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onRenameFinish();
+      if (!isComposing || isFocusOut) {
+        onRenameFinish();
+        isFocusOut = false;
+      } else if (isComposing) {
+        // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+        // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+        isFocusOut = true;
+      }
     } else if (e.key === "Escape") {
       setRenameVisible(false);
     }
@@ -593,6 +605,8 @@ export const AssetReference = <
               onKeyDown={onRenameKeyDown}
               onFocus={onRenameFocus}
               onBlur={onRenameFinish}
+              onCompositionStart={onRenameCompositionStart}
+              onCompositionEnd={onRenameCompositionEnd}
               autoFocus
             />
             <RenameCompleteButton
@@ -661,6 +675,11 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
   const [customSymbol, setCustomSymbol] = useState("");
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   const onCopy = useCallback(
     (symbol: string) => {
       dispatch(clipboardActions.copyText(symbol));
@@ -679,7 +698,14 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
 
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onRenameFinish();
+      if (!isComposing || isFocusOut) {
+        onRenameFinish();
+        isFocusOut = false;
+      } else if (isComposing) {
+        // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+        // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+        isFocusOut = true;
+      }
     } else if (e.key === "Escape") {
       setRenameVisible(false);
     }
@@ -709,6 +735,8 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
               onKeyDown={onRenameKeyDown}
               onFocus={onRenameFocus}
               onBlur={onRenameFinish}
+              onCompositionStart={onRenameCompositionStart}
+              onCompositionEnd={onRenameCompositionEnd}
               autoFocus
             />
             <RenameCompleteButton

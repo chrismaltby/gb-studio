@@ -500,6 +500,11 @@ const AddScriptEventMenu = ({
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const fuseRef = useRef<Fuse<EventOption> | null>(null);
 
+  const [isComposing, setComposition] = useState(false);
+  const onRenameCompositionStart = () => setComposition(true);
+  const onRenameCompositionEnd = () => setComposition(false);
+  var isFocusOut = false;
+
   const lastSceneId = useAppSelector((state) => {
     const ids = sceneSelectors.selectIds(state);
     return ids[ids.length - 1];
@@ -807,7 +812,14 @@ const AddScriptEventMenu = ({
         setSelectedIndex(Math.max(selectedIndex - 1, 0));
         scrollIntoViewIfNeeded(selectedIndex - 1);
       } else if (e.key === "Enter") {
-        onSelectOption(selectedIndex);
+        if (!isComposing || isFocusOut) {
+          onSelectOption(selectedIndex);
+          isFocusOut = false;
+        } else if (isComposing) {
+          // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
+          // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
+          isFocusOut = true;
+        }
       } else if (e.key === "Tab") {
         e.preventDefault();
         onToggleFavoriteOption(selectedIndex);
@@ -875,6 +887,8 @@ const AddScriptEventMenu = ({
             placeholder={l10n("TOOLBAR_SEARCH")}
             onKeyDown={onKeyDown}
             onChange={onChangeSearchTerm}
+            onCompositionStart={onRenameCompositionStart}
+            onCompositionEnd={onRenameCompositionEnd}
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper
