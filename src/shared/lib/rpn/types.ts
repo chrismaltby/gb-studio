@@ -86,3 +86,11 @@ export type Token =
   | TokenFunction
   | TokenOperator
   | TokenSeperator;
+
+export type RPNToken = TokenVal | TokenVar | TokenFunction | TokenOperator;
+
+const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
+
+export const isRPNToken = (token: Token): token is RPNToken => {
+  return rpnTokenTypes.includes(token.type as typeof rpnTokenTypes[number]);
+};

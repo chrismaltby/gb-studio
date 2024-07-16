@@ -1,13 +1,13 @@
 import { getAssociativity, getPrecedence, getArgsLen } from "./helpers";
-import { Associativity, Token } from "./types";
+import { Associativity, RPNToken, Token, isRPNToken } from "./types";
 
-const shuntingYard = (input: Token[]): Token[] => {
+const shuntingYard = (input: Token[]): RPNToken[] => {
   if (input.length === 0) {
     // Input was empty
     return [{ type: "VAL", value: 0 }];
   }
 
-  const output: Token[] = [];
+  const output: RPNToken[] = [];
   const operatorStack: Token[] = [];
   const functionStack: Token[] = [];
 
@@ -39,7 +39,7 @@ const shuntingYard = (input: Token[]): Token[] => {
         operatorStack[operatorStack.length - 1].type !== "LBRACE"
       ) {
         const stackTail = operatorStack.pop();
-        if (stackTail) {
+        if (stackTail && isRPNToken(stackTail)) {
           output.push(stackTail);
         }
       }
@@ -95,7 +95,7 @@ const shuntingYard = (input: Token[]): Token[] => {
               getPrecedence(operatorStack[operatorStack.length - 1])))
       ) {
         const stackTail = operatorStack.pop();
-        if (stackTail) {
+        if (stackTail && isRPNToken(stackTail)) {
           output.push(stackTail);
         }
       }
@@ -124,7 +124,7 @@ const shuntingYard = (input: Token[]): Token[] => {
         operatorStack[operatorStack.length - 1].type !== "LBRACE"
       ) {
         const stackTail = operatorStack.pop();
-        if (stackTail) {
+        if (stackTail && isRPNToken(stackTail)) {
           output.push(stackTail);
         }
       }
@@ -143,7 +143,7 @@ const shuntingYard = (input: Token[]): Token[] => {
         operatorStack[operatorStack.length - 1].type === "FUN"
       ) {
         const stackTail = operatorStack.pop();
-        if (stackTail) {
+        if (stackTail && isRPNToken(stackTail)) {
           output.push(stackTail);
         }
 
@@ -186,7 +186,7 @@ const shuntingYard = (input: Token[]): Token[] => {
       throw new Error("Mismatched parenthesis.");
     }
     const stackTail = operatorStack.pop();
-    if (stackTail) {
+    if (stackTail && isRPNToken(stackTail)) {
       output.push(stackTail);
     }
   }
