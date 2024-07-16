@@ -5989,25 +5989,35 @@ extern void __mute_mask_${symbol};
       testIfTruthy = false;
     }
 
-    const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
-    const localsLookup = this._performFetchOperations(fetchOps);
-    const ifValueRef = this._declareLocal("if_value", 1, true);
-    this._addComment(`If`);
-
-    this._addComment(`-- Calculate value`);
-    const rpn = this._rpn();
-    this._performValueRPN(rpn, rpnOps, localsLookup);
-    rpn.refSet(ifValueRef).stop();
-
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    if (testIfTruthy) {
-      this._addComment(`If Truthy`);
-      this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
+
+    if (optimisedValue.type === "variable") {
+      if (testIfTruthy) {
+        this._addComment(`If Truthy`);
+        this._ifVariableConst(".NE", optimisedValue.value, 0, trueLabel, 0);
+      } else {
+        this._addComment(`If Falsy`);
+        this._ifVariableConst(".EQ", optimisedValue.value, 0, trueLabel, 0);
+      }
     } else {
-      this._addComment(`If Falsy`);
-      this._ifVariableConst(".EQ", ifValueRef, 0, trueLabel, 0);
+      const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`If`);
+
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.stop();
+      if (testIfTruthy) {
+        this._addComment(`If Truthy`);
+        this._ifConst(".NE", ".ARG0", 0, trueLabel, 1);
+      } else {
+        this._addComment(`If Falsy`);
+        this._ifConst(".EQ", ".ARG0", 0, trueLabel, 1);
+      }
     }
+
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
