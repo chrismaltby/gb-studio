@@ -138,6 +138,7 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           ),
         };
       }
+      /* istanbul ignore next: unreachable */
       assertUnreachable(input.type);
     }
 
@@ -182,6 +183,7 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           },
         };
       }
+      /* istanbul ignore next: unreachable */
       assertUnreachable(type);
     }
     return {
@@ -228,19 +230,23 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
       "<<": "shl",
       ">>": "shr",
     };
+
     const scriptValueOperator = operatorMap[operator];
+
+    /* istanbul ignore else: unreachable else branch */
     if (scriptValueOperator) {
       return scriptValueOperator;
+    } else {
+      assertUnreachable(scriptValueOperator);
+      return "eq";
     }
-    assertUnreachable(scriptValueOperator);
-    return "eq";
   }
 
   for (const operation of rpnTokens) {
     if (operation.type === "VAR") {
       stack.push({
         type: "variable",
-        value: operation.symbol?.replace(/\$/g, "").replace(/^0/g, ""),
+        value: operation.symbol.replace(/\$/g, "").replace(/^0/g, ""),
       });
     } else if (operation.type === "VAL") {
       stack.push({

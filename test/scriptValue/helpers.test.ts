@@ -1,7 +1,9 @@
 import { ScriptValue } from "../../src/shared/lib/scriptValue/types";
 import {
+  addScriptValueConst,
   addScriptValueToScriptValue,
   expressionToScriptValue,
+  multiplyScriptValueConst,
   optimiseScriptValue,
   precompileScriptValue,
 } from "../../src/shared/lib/scriptValue/helpers";
@@ -21,6 +23,75 @@ test("should perform constant folding for addition", () => {
   expect(optimiseScriptValue(input)).toEqual({
     type: "number",
     value: 8,
+  });
+});
+
+test("should not perform constant folding when one or more inputs is not constant", () => {
+  const input: ScriptValue = {
+    type: "add",
+    valueA: {
+      type: "number",
+      value: 5,
+    },
+    valueB: {
+      type: "variable",
+      value: "L0",
+    },
+  };
+  const input2: ScriptValue = {
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "number",
+      value: 5,
+    },
+  };
+  const input3: ScriptValue = {
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "variable",
+      value: "L0",
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "add",
+    valueA: {
+      type: "number",
+      value: 5,
+    },
+    valueB: {
+      type: "variable",
+      value: "L0",
+    },
+  });
+  expect(optimiseScriptValue(input2)).toEqual({
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "number",
+      value: 5,
+    },
+  });
+  expect(optimiseScriptValue(input3)).toEqual({
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "variable",
+      value: "L0",
+    },
   });
 });
 
@@ -93,6 +164,24 @@ test("should round down to nearest int when constant folding for division", () =
   expect(optimiseScriptValue(input)).toEqual({
     type: "number",
     value: 4,
+  });
+});
+
+test("should perform constant folding for modulo", () => {
+  const input: ScriptValue = {
+    type: "mod",
+    valueA: {
+      type: "number",
+      value: 21,
+    },
+    valueB: {
+      type: "number",
+      value: 8,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 5,
   });
 });
 
@@ -390,6 +479,318 @@ test("should perform constant folding for max", () => {
   });
 });
 
+test("should perform constant folding for 'and'", () => {
+  const input: ScriptValue = {
+    type: "and",
+    valueA: {
+      type: "number",
+      value: 1,
+    },
+    valueB: {
+      type: "number",
+      value: 0,
+    },
+  };
+  const input2: ScriptValue = {
+    type: "and",
+    valueA: {
+      type: "number",
+      value: 3,
+    },
+    valueB: {
+      type: "number",
+      value: 1,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 0,
+  });
+  expect(optimiseScriptValue(input2)).toEqual({
+    type: "number",
+    value: 1,
+  });
+});
+
+test("should perform constant folding for 'or'", () => {
+  const input: ScriptValue = {
+    type: "or",
+    valueA: {
+      type: "number",
+      value: 1,
+    },
+    valueB: {
+      type: "number",
+      value: 0,
+    },
+  };
+  const input2: ScriptValue = {
+    type: "or",
+    valueA: {
+      type: "number",
+      value: 0,
+    },
+    valueB: {
+      type: "number",
+      value: 0,
+    },
+  };
+  const input3: ScriptValue = {
+    type: "or",
+    valueA: {
+      type: "number",
+      value: 1,
+    },
+    valueB: {
+      type: "number",
+      value: 5,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 1,
+  });
+  expect(optimiseScriptValue(input2)).toEqual({
+    type: "number",
+    value: 0,
+  });
+  expect(optimiseScriptValue(input3)).toEqual({
+    type: "number",
+    value: 1,
+  });
+});
+
+test("should perform constant folding for shift left", () => {
+  const input: ScriptValue = {
+    type: "shl",
+    valueA: {
+      type: "number",
+      value: 3,
+    },
+    valueB: {
+      type: "number",
+      value: 4,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 48,
+  });
+});
+
+test("should perform constant folding for shift right", () => {
+  const input: ScriptValue = {
+    type: "shr",
+    valueA: {
+      type: "number",
+      value: 48,
+    },
+    valueB: {
+      type: "number",
+      value: 4,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 3,
+  });
+});
+
+test("should perform constant folding for binary AND", () => {
+  const input: ScriptValue = {
+    type: "bAND",
+    valueA: {
+      type: "number",
+      value: 85,
+    },
+    valueB: {
+      type: "number",
+      value: 240,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 80,
+  });
+});
+
+test("should perform constant folding for binary OR", () => {
+  const input: ScriptValue = {
+    type: "bOR",
+    valueA: {
+      type: "number",
+      value: 85,
+    },
+    valueB: {
+      type: "number",
+      value: 240,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 245,
+  });
+});
+
+test("should perform constant folding for binary XOR", () => {
+  const input: ScriptValue = {
+    type: "bXOR",
+    valueA: {
+      type: "number",
+      value: 85,
+    },
+    valueB: {
+      type: "number",
+      value: 240,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 165,
+  });
+});
+
+test("should perform constant folding for atan2", () => {
+  const input: ScriptValue = {
+    type: "atan2",
+    valueA: {
+      type: "number",
+      value: 8,
+    },
+    valueB: {
+      type: "number",
+      value: 10,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 91,
+  });
+});
+
+test("should perform constant folding for 'not'", () => {
+  const input: ScriptValue = {
+    type: "not",
+    value: {
+      type: "number",
+      value: 8,
+    },
+  };
+  const input2: ScriptValue = {
+    type: "not",
+    value: {
+      type: "number",
+      value: 0,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 0,
+  });
+  expect(optimiseScriptValue(input2)).toEqual({
+    type: "number",
+    value: 1,
+  });
+});
+
+test("should perform constant folding for 'abs'", () => {
+  const input: ScriptValue = {
+    type: "abs",
+    value: {
+      type: "number",
+      value: -7,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 7,
+  });
+});
+
+test("should perform constant folding for integer sqrt", () => {
+  const input: ScriptValue = {
+    type: "isqrt",
+    value: {
+      type: "number",
+      value: 29,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: 5,
+  });
+});
+
+test("should perform constant folding for binary NOT", () => {
+  const input: ScriptValue = {
+    type: "bNOT",
+    value: {
+      type: "number",
+      value: 85,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "number",
+    value: -86,
+  });
+});
+
+test("should perform constant folding for rnd function's input but perform calculation at runtime", () => {
+  const input: ScriptValue = {
+    type: "rnd",
+    value: {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 5,
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    },
+  };
+  const input2: ScriptValue = {
+    type: "rnd",
+    value: {
+      type: "number",
+      value: 85,
+    },
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "rnd",
+    value: {
+      type: "number",
+      value: 8,
+    },
+  });
+  expect(optimiseScriptValue(input2)).toEqual({
+    type: "rnd",
+    value: {
+      type: "number",
+      value: 85,
+    },
+  });
+});
+
+test("should convert expressions to script values when optimising", () => {
+  const input: ScriptValue = {
+    type: "expression",
+    value: "$00$ + 8",
+  };
+  expect(optimiseScriptValue(input)).toEqual({
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "0",
+    },
+    valueB: {
+      type: "number",
+      value: 8,
+    },
+  });
+});
+
 test("should perform constant folding for nested input", () => {
   const input: ScriptValue = {
     type: "mul",
@@ -597,6 +998,42 @@ test("should add two script values", () => {
     valueB: {
       type: "number",
       value: 5,
+    },
+  });
+});
+
+test("should add a const number to a script value", () => {
+  const inputA: ScriptValue = {
+    type: "variable",
+    value: "0",
+  };
+  expect(addScriptValueConst(inputA, 12)).toEqual({
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "0",
+    },
+    valueB: {
+      type: "number",
+      value: 12,
+    },
+  });
+});
+
+test("should multiply a const number with a script value", () => {
+  const inputA: ScriptValue = {
+    type: "variable",
+    value: "0",
+  };
+  expect(multiplyScriptValueConst(inputA, 8)).toEqual({
+    type: "mul",
+    valueA: {
+      type: "variable",
+      value: "0",
+    },
+    valueB: {
+      type: "number",
+      value: 8,
     },
   });
 });
