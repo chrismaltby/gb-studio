@@ -330,9 +330,11 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
           });
         }
       } else {
+        /* istanbul ignore next: unreachable */
         assertUnreachable(operation.function);
       }
     } else {
+      /* istanbul ignore next: unreachable */
       assertUnreachable(operation);
     }
   }

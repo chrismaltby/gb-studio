@@ -1044,6 +1044,84 @@ test("should convert expression (~~($V0$)) to script value", () => {
   });
 });
 
+test("should convert expression (min($L0$, 10)) to script value", () => {
+  const input = "min($L0$, 10)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "min",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "number",
+      value: 10,
+    },
+  });
+});
+
+test("should convert expression (max($L0$, 10)) to script value", () => {
+  const input = "max($L0$, 10)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "max",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "number",
+      value: 10,
+    },
+  });
+});
+
+test("should convert expression (abs($L0$)) to script value", () => {
+  const input = "abs($L0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "abs",
+    value: {
+      type: "variable",
+      value: "L0",
+    },
+  });
+});
+
+test("should convert expression (rnd($L0$)) to script value", () => {
+  const input = "rnd($L0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "rnd",
+    value: {
+      type: "variable",
+      value: "L0",
+    },
+  });
+});
+
+test("should convert expression (isqrt($L0$)) to script value", () => {
+  const input = "isqrt($L0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "isqrt",
+    value: {
+      type: "variable",
+      value: "L0",
+    },
+  });
+});
+
+test("should convert expression (atan2($L0$, 10)) to script value", () => {
+  const input = "atan2($L0$, 10)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "atan2",
+    valueA: {
+      type: "variable",
+      value: "L0",
+    },
+    valueB: {
+      type: "number",
+      value: 10,
+    },
+  });
+});
+
 test("should throw error when converting (* 8) to script value", () => {
   const input = "* 8";
   expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
