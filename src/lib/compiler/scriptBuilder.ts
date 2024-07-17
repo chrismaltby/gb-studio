@@ -5992,28 +5992,29 @@ extern void __mute_mask_${symbol};
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
 
+    this._addComment(`If`);
+
     if (optimisedValue.type === "variable") {
       if (testIfTruthy) {
-        this._addComment(`If Truthy`);
+        this._addComment(`-- If Truthy`);
         this._ifVariableConst(".NE", optimisedValue.value, 0, trueLabel, 0);
       } else {
-        this._addComment(`If Falsy`);
+        this._addComment(`-- If Falsy`);
         this._ifVariableConst(".EQ", optimisedValue.value, 0, trueLabel, 0);
       }
     } else {
       const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
       const localsLookup = this._performFetchOperations(fetchOps);
-      this._addComment(`If`);
 
       this._addComment(`-- Calculate value`);
       const rpn = this._rpn();
       this._performValueRPN(rpn, rpnOps, localsLookup);
       rpn.stop();
       if (testIfTruthy) {
-        this._addComment(`If Truthy`);
+        this._addComment(`-- If Truthy`);
         this._ifConst(".NE", ".ARG0", 0, trueLabel, 1);
       } else {
-        this._addComment(`If Falsy`);
+        this._addComment(`-- If Falsy`);
         this._ifConst(".EQ", ".ARG0", 0, trueLabel, 1);
       }
     }
