@@ -419,7 +419,6 @@ const toScriptOperator = (
     case "+":
       return ".ADD";
     case "-":
-    case "u":
       return ".SUB";
     case "/":
       return ".DIV";

@@ -1054,6 +1054,73 @@ test("should throw error when converting min(5,) to script value", () => {
   expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
 });
 
+test("should convert expression (-5) to script value", () => {
+  const input = "-5";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "sub",
+    valueA: {
+      type: "number",
+      value: 0,
+    },
+    valueB: {
+      type: "number",
+      value: 5,
+    },
+  });
+});
+
+test("should convert expression (10-5) to script value", () => {
+  const input = "10-5";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "sub",
+    valueA: {
+      type: "number",
+      value: 10,
+    },
+    valueB: {
+      type: "number",
+      value: 5,
+    },
+  });
+});
+
+test("should convert expression (10+(-5)) to script value", () => {
+  const input = "10+(-5)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "add",
+    valueA: {
+      type: "number",
+      value: 10,
+    },
+    valueB: {
+      type: "sub",
+      valueA: {
+        type: "number",
+        value: 0,
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    },
+  });
+});
+
+test("should convert expression (true || false) to script value", () => {
+  const input = "true || false";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "or",
+    valueA: {
+      type: "number",
+      value: 1,
+    },
+    valueB: {
+      type: "number",
+      value: 0,
+    },
+  });
+});
+
 test("should add two script values", () => {
   const inputA: ScriptValue = {
     type: "variable",

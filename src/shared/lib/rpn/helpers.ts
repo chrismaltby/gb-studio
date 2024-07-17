@@ -1,3 +1,4 @@
+import { assertUnreachable } from "shared/lib/helpers/assert";
 import {
   Associativity,
   FunctionSymbol,
@@ -44,7 +45,6 @@ export const getPrecedence = (token: Token): number => {
   }
   if (token.type === "OP") {
     switch (token.operator) {
-      case "u":
       case "~":
       case "!":
         return 14;
@@ -77,6 +77,7 @@ export const getPrecedence = (token: Token): number => {
       case "||":
         return 3;
     }
+    /* istanbul ignore next */
     assertUnreachable(token.operator);
   }
   return -1;
@@ -85,7 +86,7 @@ export const getPrecedence = (token: Token): number => {
 export const getAssociativity = (token: Token): Associativity => {
   if (
     token.type === "OP" &&
-    (token.operator === "u" || token.operator === "!" || token.operator === "~")
+    (token.operator === "!" || token.operator === "~")
   ) {
     return Associativity.Right;
   }
@@ -94,8 +95,4 @@ export const getAssociativity = (token: Token): Associativity => {
 
 export const getArgsLen = (symbol: FunctionSymbol) => {
   return functionArgsLen[symbol];
-};
-
-const assertUnreachable = (_x: never): never => {
-  throw new Error("Didn't expect to get here");
 };

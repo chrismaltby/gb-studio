@@ -1,4 +1,4 @@
-import { assertUnreachable } from "../scriptValue/format";
+import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { getAssociativity, getPrecedence, getArgsLen } from "./helpers";
 import {
   Associativity,
@@ -211,6 +211,7 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
       lastOp = token.operator;
       stackCount -= getOperatorArgsLen(token.operator) - 1;
     } else {
+      /* istanbul ignore next */
       assertUnreachable(token);
     }
     if (stackCount <= 0) {

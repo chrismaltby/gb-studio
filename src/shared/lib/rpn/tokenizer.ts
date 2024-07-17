@@ -86,7 +86,7 @@ const tokenizer = (input: string): Token[] => {
             },
             {
               type: "OP",
-              operator: "u",
+              operator: "-",
             },
           ];
         }
