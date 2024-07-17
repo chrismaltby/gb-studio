@@ -194,7 +194,7 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
   return input;
 };
 
-const expressionToScriptValue = (expression: string): ScriptValue => {
+export const expressionToScriptValue = (expression: string): ScriptValue => {
   const tokens = tokenize(expression);
   const rpnTokens = shuntingYard(tokens);
 
@@ -235,7 +235,7 @@ const expressionToScriptValue = (expression: string): ScriptValue => {
     if (operation.type === "VAR") {
       stack.push({
         type: "variable",
-        value: operation.symbol?.replace(/\$/g, ""), // Remove dollar signs
+        value: operation.symbol?.replace(/\$/g, "").replace(/^0/g, ""),
       });
     } else if (operation.type === "VAL") {
       stack.push({
