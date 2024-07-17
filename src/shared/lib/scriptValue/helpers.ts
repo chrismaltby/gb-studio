@@ -228,7 +228,12 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
       "<<": "shl",
       ">>": "shr",
     };
-    return operator ? operatorMap[operator] : "eq"; // Default to 'eq' if operator is not found
+    const scriptValueOperator = operatorMap[operator];
+    if (scriptValueOperator) {
+      return scriptValueOperator;
+    }
+    assertUnreachable(scriptValueOperator);
+    return "eq";
   }
 
   for (const operation of rpnTokens) {
