@@ -13,7 +13,7 @@ const tokenizer = (input: string): Token[] => {
   return (
     input
       .replace(/\s+/g, "")
-      .split(/(<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~@(),])/)
+      .split(/(<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/)
       .filter(identity)
       .map((token) => {
         if (isNumeric(token)) {

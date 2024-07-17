@@ -980,6 +980,80 @@ test("should convert expression ($V0$ + 8) to script value", () => {
   });
 });
 
+test("should convert expression (!($V0$)) to script value", () => {
+  const input = "!($V0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "not",
+    value: {
+      type: "variable",
+      value: "V0",
+    },
+  });
+});
+
+test("should convert expression (!!($V0$)) to script value", () => {
+  const input = "!!($V0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "not",
+    value: {
+      type: "not",
+      value: {
+        type: "variable",
+        value: "V0",
+      },
+    },
+  });
+});
+
+test("should convert expression (!(!($V0$))) to script value", () => {
+  const input = "!(!($V0$))";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "not",
+    value: {
+      type: "not",
+      value: {
+        type: "variable",
+        value: "V0",
+      },
+    },
+  });
+});
+
+test("should convert expression (~($V0$)) to script value", () => {
+  const input = "~($V0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "bNOT",
+    value: {
+      type: "variable",
+      value: "V0",
+    },
+  });
+});
+
+test("should convert expression (~~($V0$)) to script value", () => {
+  const input = "~~($V0$)";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "bNOT",
+    value: {
+      type: "bNOT",
+      value: {
+        type: "variable",
+        value: "V0",
+      },
+    },
+  });
+});
+
+test("should throw error when converting (* 8) to script value", () => {
+  const input = "* 8";
+  expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
+});
+
+test("should throw error when converting min(5,) to script value", () => {
+  const input = "min(5,)";
+  expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
+});
+
 test("should add two script values", () => {
   const inputA: ScriptValue = {
     type: "variable",

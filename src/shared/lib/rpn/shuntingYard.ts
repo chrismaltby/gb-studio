@@ -1,5 +1,12 @@
+import { assertUnreachable } from "../scriptValue/format";
 import { getAssociativity, getPrecedence, getArgsLen } from "./helpers";
-import { Associativity, RPNToken, Token, isRPNToken } from "./types";
+import {
+  Associativity,
+  RPNToken,
+  Token,
+  isRPNToken,
+  getOperatorArgsLen,
+} from "./types";
 
 const shuntingYard = (input: Token[]): RPNToken[] => {
   if (input.length === 0) {
@@ -189,6 +196,29 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
     if (stackTail && isRPNToken(stackTail)) {
       output.push(stackTail);
     }
+  }
+
+  // Validate output
+  let stackCount = 0;
+  let lastOp = "";
+  for (const token of output) {
+    if (token.type === "VAL" || token.type === "VAR") {
+      stackCount++;
+    } else if (token.type === "FUN") {
+      lastOp = token.function;
+      stackCount -= getArgsLen(token.function) - 1;
+    } else if (token.type === "OP") {
+      lastOp = token.operator;
+      stackCount -= getOperatorArgsLen(token.operator) - 1;
+    } else {
+      assertUnreachable(token);
+    }
+    if (stackCount <= 0) {
+      throw new Error(`Not enough operands for ${lastOp}.`);
+    }
+  }
+  if (stackCount > 1) {
+    throw new Error(`Invalid expression.`);
   }
 
   return output;

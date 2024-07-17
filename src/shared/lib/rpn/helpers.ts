@@ -46,6 +46,7 @@ export const getPrecedence = (token: Token): number => {
     switch (token.operator) {
       case "u":
       case "~":
+      case "!":
         return 14;
       case "*":
       case "/":
@@ -82,7 +83,10 @@ export const getPrecedence = (token: Token): number => {
 };
 
 export const getAssociativity = (token: Token): Associativity => {
-  if (token.type === "OP" && token.operator === "u") {
+  if (
+    token.type === "OP" &&
+    (token.operator === "u" || token.operator === "!" || token.operator === "~")
+  ) {
     return Associativity.Right;
   }
   return Associativity.Left;

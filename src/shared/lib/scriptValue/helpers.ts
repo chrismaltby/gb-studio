@@ -214,6 +214,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
       "+": "add",
       "-": "sub",
       "%": "mod",
+      "!": "not",
       "&": "bAND",
       "|": "bOR",
       "^": "bXOR",

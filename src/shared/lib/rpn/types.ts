@@ -8,6 +8,7 @@ export const operatorSymbols = [
   "|",
   "^",
   "~",
+  "!",
   "u",
   "==",
   "!=",
@@ -93,4 +94,32 @@ const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
 
 export const isRPNToken = (token: Token): token is RPNToken => {
   return rpnTokenTypes.includes(token.type as typeof rpnTokenTypes[number]);
+};
+
+const operatorArgsLen: Record<OperatorSymbol, number> = {
+  "/": 2,
+  "*": 2,
+  "+": 2,
+  "-": 2,
+  "%": 2,
+  "&": 2,
+  "|": 2,
+  "^": 2,
+  "~": 1,
+  "!": 1,
+  u: 1,
+  "==": 2,
+  "!=": 2,
+  "<": 2,
+  "<=": 2,
+  ">": 2,
+  ">=": 2,
+  "&&": 2,
+  "||": 2,
+  "<<": 2,
+  ">>": 2,
+};
+
+export const getOperatorArgsLen = (operator: OperatorSymbol): number => {
+  return operatorArgsLen[operator];
 };

@@ -435,6 +435,8 @@ const toScriptOperator = (
       return ".B_XOR";
     case "~":
       return ".B_NOT";
+    case "!":
+      return ".NOT";
     case "==":
       return ".EQ";
     case "!=":
