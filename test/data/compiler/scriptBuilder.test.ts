@@ -1284,7 +1284,7 @@ test("Should expand expressions for if conditional falsy test", () => {
   ]);
 });
 
-test("Should optimising expressions when expanding for if conditional test", () => {
+test("Should optimise expressions when expanding for if conditional test", () => {
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
   sb.ifScriptValue(
