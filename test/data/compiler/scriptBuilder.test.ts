@@ -1204,3 +1204,127 @@ test("should allow passing actors to nested custom event", async () => {
     `VM_PUSH_VALUE           .SCRIPT_ARG_0_ACTOR`
   );
 });
+
+test("Should expand expressions for if conditional test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "number",
+        value: 42,
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    42",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Truthy",
+    "        VM_IF_CONST             .NE, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should expand expressions for if conditional falsy test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "not",
+      value: {
+        type: "add",
+        valueA: {
+          type: "variable",
+          value: "L0",
+        },
+        valueB: {
+          type: "number",
+          value: 42,
+        },
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    42",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should optimising expressions when expanding for if conditional test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 42,
+        },
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    52",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Truthy",
+    "        VM_IF_CONST             .NE, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
