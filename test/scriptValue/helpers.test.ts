@@ -1,5 +1,6 @@
 import { ScriptValue } from "../../src/shared/lib/scriptValue/types";
 import {
+  addScriptValueToScriptValue,
   expressionToScriptValue,
   optimiseScriptValue,
   precompileScriptValue,
@@ -574,6 +575,28 @@ test("should convert expression ($V0$ + 8) to script value", () => {
     valueB: {
       type: "number",
       value: 8,
+    },
+  });
+});
+
+test("should add two script values", () => {
+  const inputA: ScriptValue = {
+    type: "variable",
+    value: "0",
+  };
+  const inputB: ScriptValue = {
+    type: "number",
+    value: 5,
+  };
+  expect(addScriptValueToScriptValue(inputA, inputB)).toEqual({
+    type: "add",
+    valueA: {
+      type: "variable",
+      value: "0",
+    },
+    valueB: {
+      type: "number",
+      value: 5,
     },
   });
 });
