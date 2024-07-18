@@ -31,6 +31,8 @@ import {
   ScriptEventNormalized,
   Sound,
   Tileset,
+  CustomEventVariable,
+  CustomEventActor,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -45,6 +47,20 @@ import { Asset, assetNameFromFilename } from "shared/lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
 import isEqual from "lodash/isEqual";
 import { isNormalizedScriptEqual } from "shared/lib/scripts/scriptHelpers";
+import {
+  ScriptEventDefs,
+  isActorField,
+  isPropertyField,
+  isScriptValueField,
+  isVariableField,
+} from "shared/lib/scripts/scriptDefHelpers";
+import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import {
+  extractScriptValueActorIds,
+  extractScriptValueVariables,
+} from "shared/lib/scriptValue/helpers";
+import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
+import { sortByKey } from "shared/lib/helpers/sortByKey";
 
 export interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -673,4 +689,150 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
 
 export const isSlope = (value: number) => {
   return COLLISION_SLOPE_VALUES.includes(value);
+};
+
+export const updateCustomEventArgs = (
+  customEvent: CustomEventNormalized,
+  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventDefs: ScriptEventDefs
+) => {
+  const variables = {} as Dictionary<CustomEventVariable>;
+  const actors = {} as Dictionary<CustomEventActor>;
+  const oldVariables = customEvent.variables;
+  const oldActors = customEvent.actors;
+
+  walkNormalizedScript(
+    customEvent.script,
+    scriptEventLookup,
+    undefined,
+    (scriptEvent) => {
+      const args = scriptEvent.args;
+      if (!args) return;
+      Object.keys(args).forEach((arg) => {
+        const addActor = (actor: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(actor)
+          );
+          actors[actor] = {
+            id: actor,
+            name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR")} ${letter}`,
+          };
+        };
+        const addVariable = (variable: string) => {
+          const letter = String.fromCharCode(
+            "A".charCodeAt(0) + parseInt(variable[1])
+          );
+          variables[variable] = {
+            id: variable,
+            name: oldVariables[variable]?.name || `Variable ${letter}`,
+            passByReference: oldVariables[variable]?.passByReference ?? true,
+          };
+        };
+        const addPropertyActor = (property: string) => {
+          const actor = property && property.replace(/:.*/, "");
+          if (actor !== "player" && actor !== "$self$") {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(actor)
+            );
+            actors[actor] = {
+              id: actor,
+              name: oldActors[actor]?.name || `Actor ${letter}`,
+            };
+          }
+        };
+
+        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
+          const actor = args[arg];
+          if (
+            actor &&
+            actor !== "player" &&
+            actor !== "$self$" &&
+            typeof actor === "string"
+          ) {
+            addActor(actor);
+          }
+        }
+
+        if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
+          const variable = args[arg];
+          if (
+            isUnionVariableValue(variable) &&
+            variable.value &&
+            isVariableCustomEvent(variable.value)
+          ) {
+            addVariable(variable.value);
+          } else if (
+            typeof variable === "string" &&
+            isVariableCustomEvent(variable)
+          ) {
+            addVariable(variable);
+          }
+        }
+        if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
+          const property = args[arg];
+          if (isUnionPropertyValue(property) && property.value) {
+            addPropertyActor(property.value);
+          } else if (typeof property === "string") {
+            addPropertyActor(property);
+          }
+        }
+        if (
+          isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)
+        ) {
+          const value = isScriptValue(args[arg])
+            ? (args[arg] as ScriptValue)
+            : undefined;
+          const actors = value ? extractScriptValueActorIds(value) : [];
+          const variables = value ? extractScriptValueVariables(value) : [];
+          for (const actor of actors) {
+            addPropertyActor(actor);
+          }
+          for (const variable of variables) {
+            if (isVariableCustomEvent(variable)) {
+              addVariable(variable);
+            }
+          }
+        }
+      });
+      if (args.text || args.expression) {
+        let text;
+        if (args.text) {
+          text = Array.isArray(args.text) ? args.text.join() : args.text;
+        } else if (args.expression) {
+          text = args.expression;
+        }
+        if (text && typeof text === "string") {
+          const variablePtrs = text.match(/\$V[0-9]\$/g);
+          if (variablePtrs) {
+            variablePtrs.forEach((variablePtr: string) => {
+              const variable = variablePtr[2];
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(variable, 10)
+              ).toUpperCase();
+              const variableId = `V${variable}`;
+              variables[variableId] = {
+                id: variableId,
+                name: oldVariables[variableId]?.name || `Variable ${letter}`,
+                passByReference:
+                  oldVariables[variableId]?.passByReference ?? true,
+              };
+            });
+          }
+        }
+      }
+    }
+  );
+
+  customEvent.variables = sortByKey(variables);
+  customEvent.actors = actors;
+};
+
+export const updateAllCustomEventsArgs = (
+  customEvents: CustomEventNormalized[],
+  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventDefs: ScriptEventDefs
+) => {
+  for (const customEvent of customEvents) {
+    updateCustomEventArgs(customEvent, scriptEventLookup, scriptEventDefs);
+  }
 };

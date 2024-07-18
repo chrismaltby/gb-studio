@@ -30,13 +30,7 @@ import {
   COLLISION_RIGHT,
   COLLISION_LEFT,
 } from "consts";
-import {
-  isActorField,
-  isVariableField,
-  isPropertyField,
-  ScriptEventDefs,
-  isScriptValueField,
-} from "shared/lib/scripts/scriptDefHelpers";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "store/features/settings/settingsActions";
@@ -61,8 +55,6 @@ import {
   Variable,
   CustomEventNormalized,
   ScriptEventNormalized,
-  CustomEventVariable,
-  CustomEventActor,
   ProjectEntitiesData,
   MusicSettings,
   EngineFieldValue,
@@ -82,8 +74,6 @@ import {
 import {
   normalizeEntities,
   sortByFilename,
-  isUnionVariableValue,
-  isUnionPropertyValue,
   genEntitySymbol,
   ensureSymbolsUnique,
   removeAssetEntity,
@@ -91,24 +81,15 @@ import {
   updateEntitySymbol,
   isSlope,
   defaultLocalisedSceneName,
-  isVariableCustomEvent,
   renameAssetEntity,
   defaultLocalisedCustomEventName,
   paletteName,
   moveArrayElement,
+  updateCustomEventArgs,
+  updateAllCustomEventsArgs,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
-import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { walkNormalizedScript } from "shared/lib/scripts/walk";
-import {
-  extractScriptValueActorIds,
-  extractScriptValueVariables,
-} from "shared/lib/scriptValue/helpers";
-import {
-  isScriptValue,
-  isValueNumber,
-  ScriptValue,
-} from "shared/lib/scriptValue/types";
+import { isValueNumber } from "shared/lib/scriptValue/types";
 import keyBy from "lodash/keyBy";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
@@ -263,6 +244,7 @@ const loadProject: CaseReducer<
   EntitiesState,
   PayloadAction<{
     data: ProjectEntitiesData;
+    scriptEventDefs: ScriptEventDefs;
   }>
 > = (state, action) => {
   const data = normalizeEntities(action.payload.data);
@@ -299,6 +281,11 @@ const loadProject: CaseReducer<
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
+  updateAllCustomEventsArgs(
+    Object.values(state.customEvents.entities) as CustomEventNormalized[],
+    state.scriptEvents.entities,
+    action.payload.scriptEventDefs
+  );
 };
 
 const loadBackground: CaseReducer<
@@ -2579,137 +2566,11 @@ const refreshCustomEventArgs: CaseReducer<
   if (!customEvent) {
     return;
   }
-  const scriptEventDefs = action.payload.scriptEventDefs;
-  const variables = {} as Dictionary<CustomEventVariable>;
-  const actors = {} as Dictionary<CustomEventActor>;
-  const oldVariables = customEvent.variables;
-  const oldActors = customEvent.actors;
-
-  walkNormalizedScript(
-    customEvent.script,
+  updateCustomEventArgs(
+    customEvent,
     state.scriptEvents.entities,
-    undefined,
-    (scriptEvent) => {
-      const args = scriptEvent.args;
-      if (!args) return;
-      if (args.__comment) return;
-      Object.keys(args).forEach((arg) => {
-        const addActor = (actor: string) => {
-          const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(actor)
-          );
-          actors[actor] = {
-            id: actor,
-            name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR")} ${letter}`,
-          };
-        };
-        const addVariable = (variable: string) => {
-          const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(variable[1])
-          );
-          variables[variable] = {
-            id: variable,
-            name: oldVariables[variable]?.name || `Variable ${letter}`,
-            passByReference: oldVariables[variable]?.passByReference ?? true,
-          };
-        };
-        const addPropertyActor = (property: string) => {
-          const actor = property && property.replace(/:.*/, "");
-          if (actor !== "player" && actor !== "$self$") {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(actor)
-            );
-            actors[actor] = {
-              id: actor,
-              name: oldActors[actor]?.name || `Actor ${letter}`,
-            };
-          }
-        };
-
-        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const actor = args[arg];
-          if (
-            actor &&
-            actor !== "player" &&
-            actor !== "$self$" &&
-            typeof actor === "string"
-          ) {
-            addActor(actor);
-          }
-        }
-
-        if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const variable = args[arg];
-          if (
-            isUnionVariableValue(variable) &&
-            variable.value &&
-            isVariableCustomEvent(variable.value)
-          ) {
-            addVariable(variable.value);
-          } else if (
-            typeof variable === "string" &&
-            isVariableCustomEvent(variable)
-          ) {
-            addVariable(variable);
-          }
-        }
-        if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
-          const property = args[arg];
-          if (isUnionPropertyValue(property) && property.value) {
-            addPropertyActor(property.value);
-          } else if (typeof property === "string") {
-            addPropertyActor(property);
-          }
-        }
-        if (
-          isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)
-        ) {
-          const value = isScriptValue(args[arg])
-            ? (args[arg] as ScriptValue)
-            : undefined;
-          const actors = value ? extractScriptValueActorIds(value) : [];
-          const variables = value ? extractScriptValueVariables(value) : [];
-          for (const actor of actors) {
-            addPropertyActor(actor);
-          }
-          for (const variable of variables) {
-            if (isVariableCustomEvent(variable)) {
-              addVariable(variable);
-            }
-          }
-        }
-      });
-      if (args.text || args.expression) {
-        let text;
-        if (args.text) {
-          text = Array.isArray(args.text) ? args.text.join() : args.text;
-        } else if (args.expression) {
-          text = args.expression;
-        }
-        if (text && typeof text === "string") {
-          const variablePtrs = text.match(/\$V[0-9]\$/g);
-          if (variablePtrs) {
-            variablePtrs.forEach((variablePtr: string) => {
-              const variable = variablePtr[2];
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(variable, 10)
-              ).toUpperCase();
-              const variableId = `V${variable}`;
-              variables[variableId] = {
-                id: variableId,
-                name: oldVariables[variableId]?.name || `Variable ${letter}`,
-                passByReference:
-                  oldVariables[variableId]?.passByReference ?? true,
-              };
-            });
-          }
-        }
-      }
-    }
+    action.payload.scriptEventDefs
   );
-
-  customEvent.variables = sortByKey(variables);
-  customEvent.actors = actors;
 };
 
 /**************************************************************************

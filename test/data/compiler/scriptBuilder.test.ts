@@ -136,7 +136,7 @@ test("Should be able to wait for N frames to pass", async () => {
   });
   sb.wait(20);
   expect(output).toEqual([
-    "        ; Wait N Frames",
+    "        ; Wait 20 Frames",
     "        VM_SET_CONST            .LOCAL_TMP0_WAIT_ARGS, 20",
     "        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP0_WAIT_ARGS",
     "",
@@ -808,13 +808,8 @@ test("Should do truthy conditional test", () => {
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Truthy",
-    "        VM_IF_CONST             .NE, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Truthy",
+    "        VM_IF_CONST             .NE, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -841,13 +836,8 @@ test("Should do falsy conditional test when condition wrapped with logical NOT",
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Falsy",
-    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -877,13 +867,8 @@ test("Should do falsy conditional test when condition wrapped compared with FALS
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Falsy",
-    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -913,13 +898,8 @@ test("Should do falsy conditional test when condition wrapped compared with FALS
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Falsy",
-    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -950,13 +930,8 @@ test("Should do falsy conditional test when condition wrapped compared with 0 on
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Falsy",
-    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -987,13 +962,8 @@ test("Should do falsy conditional test when condition wrapped compared with 0 on
 
   expect(output).toEqual([
     "        ; If",
-    "        ; -- Calculate value",
-    "        VM_RPN",
-    "            .R_REF      VAR_VARIABLE_0",
-    "            .R_REF_SET  .LOCAL_TMP0_IF_VALUE",
-    "            .R_STOP",
-    "        ; If Falsy",
-    "        VM_IF_CONST             .EQ, .LOCAL_TMP0_IF_VALUE, 0, 1$, 0",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, VAR_VARIABLE_0, 0, 1$, 0",
     "        ; FALSE",
     "        VM_JUMP                 2$",
     "1$:",
@@ -1233,4 +1203,128 @@ test("should allow passing actors to nested custom event", async () => {
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
     `VM_PUSH_VALUE           .SCRIPT_ARG_0_ACTOR`
   );
+});
+
+test("Should expand expressions for if conditional test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "number",
+        value: 42,
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    42",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Truthy",
+    "        VM_IF_CONST             .NE, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should expand expressions for if conditional falsy test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "not",
+      value: {
+        type: "add",
+        valueA: {
+          type: "variable",
+          value: "L0",
+        },
+        valueB: {
+          type: "number",
+          value: 42,
+        },
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    42",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Falsy",
+    "        VM_IF_CONST             .EQ, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
+});
+
+test("Should optimise expressions when expanding for if conditional test", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb.ifScriptValue(
+    {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 42,
+        },
+      },
+    },
+    () => output.push("        ; TRUE"),
+    () => output.push("        ; FALSE")
+  );
+
+  expect(output).toEqual([
+    "        ; If",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    52",
+    "            .R_OPERATOR .ADD",
+    "            .R_STOP",
+    "        ; -- If Truthy",
+    "        VM_IF_CONST             .NE, .ARG0, 0, 1$, 1",
+    "        ; FALSE",
+    "        VM_JUMP                 2$",
+    "1$:",
+    "        ; TRUE",
+    "2$:",
+    "",
+  ]);
 });
