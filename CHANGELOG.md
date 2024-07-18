@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Changed wording of batteryless save feature and added warning when feature is enabled to explain that only very specific cartridges will be supported
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Optimise wait event CPU use when when waiting for 1-4 frames by using VM_IDLE
 
 ### Fixed
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where selecting the current field in engine field events caused the value to be lost
 - Fix issue where changing script in Call Script event would keep references to previous script's args causing issues when nesting scripts
 - Fix issue where commented conditional statements within custom scripts could cause "Unknown arg" errors
+- Fix issue causing much higher CPU use when using "If" statements and expressions compared with version 3.2
 
 ### Removed
 

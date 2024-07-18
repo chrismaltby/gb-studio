@@ -419,7 +419,6 @@ const toScriptOperator = (
     case "+":
       return ".ADD";
     case "-":
-    case "u":
       return ".SUB";
     case "/":
       return ".DIV";
@@ -435,6 +434,8 @@ const toScriptOperator = (
       return ".B_XOR";
     case "~":
       return ".B_NOT";
+    case "!":
+      return ".NOT";
     case "==":
       return ".EQ";
     case "!=":
@@ -3453,12 +3454,18 @@ extern void __mute_mask_${symbol};
   };
 
   wait = (frames: number) => {
-    const waitArgsRef = this._declareLocal("wait_args", 1, true);
-    const stackPtr = this.stackPtr;
-    this._addComment("Wait N Frames");
-    this._setConst(waitArgsRef, Math.round(frames));
-    this._invoke("wait_frames", 0, waitArgsRef);
-    this._assertStackNeutral(stackPtr);
+    this._addComment(`Wait ${frames} Frames`);
+    if (frames < 5) {
+      for (let i = 0; i < frames; i++) {
+        this._idle();
+      }
+    } else {
+      const waitArgsRef = this._declareLocal("wait_args", 1, true);
+      const stackPtr = this.stackPtr;
+      this._setConst(waitArgsRef, Math.round(frames));
+      this._invoke("wait_frames", 0, waitArgsRef);
+      this._assertStackNeutral(stackPtr);
+    }
     this._addNL();
   };
 
@@ -5997,25 +6004,36 @@ extern void __mute_mask_${symbol};
       testIfTruthy = false;
     }
 
-    const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
-    const localsLookup = this._performFetchOperations(fetchOps);
-    const ifValueRef = this._declareLocal("if_value", 1, true);
-    this._addComment(`If`);
-
-    this._addComment(`-- Calculate value`);
-    const rpn = this._rpn();
-    this._performValueRPN(rpn, rpnOps, localsLookup);
-    rpn.refSet(ifValueRef).stop();
-
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    if (testIfTruthy) {
-      this._addComment(`If Truthy`);
-      this._ifVariableConst(".NE", ifValueRef, 0, trueLabel, 0);
+
+    this._addComment(`If`);
+
+    if (optimisedValue.type === "variable") {
+      if (testIfTruthy) {
+        this._addComment(`-- If Truthy`);
+        this._ifVariableConst(".NE", optimisedValue.value, 0, trueLabel, 0);
+      } else {
+        this._addComment(`-- If Falsy`);
+        this._ifVariableConst(".EQ", optimisedValue.value, 0, trueLabel, 0);
+      }
     } else {
-      this._addComment(`If Falsy`);
-      this._ifVariableConst(".EQ", ifValueRef, 0, trueLabel, 0);
+      const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);
+      const localsLookup = this._performFetchOperations(fetchOps);
+
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.stop();
+      if (testIfTruthy) {
+        this._addComment(`-- If Truthy`);
+        this._ifConst(".NE", ".ARG0", 0, trueLabel, 1);
+      } else {
+        this._addComment(`-- If Falsy`);
+        this._ifConst(".EQ", ".ARG0", 0, trueLabel, 1);
+      }
     }
+
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
