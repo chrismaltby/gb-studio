@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where save/load wouldn't work in game preview or web export when "Enable Batteryless Saving" was enabled, this setting is now ignored unless exporting a ROM file
 - Fix issue where selecting the current field in engine field events caused the value to be lost
 - Fix issue where changing script in Call Script event would keep references to previous script's args causing issues when nesting scripts
+- Fix issue where commented conditional statements within custom scripts could cause "Unknown arg" errors
 
 ### Removed
 

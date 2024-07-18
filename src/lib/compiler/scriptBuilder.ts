@@ -55,7 +55,7 @@ import {
   ScriptEditorContextType,
 } from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
-import { mapScript } from "shared/lib/scripts/walk";
+import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
 import {
@@ -4235,7 +4235,7 @@ extern void __mute_mask_${symbol};
       }
     }
 
-    const script = mapScript(
+    const script = mapUncommentedScript(
       customEvent.script,
       (event: ScriptEvent): ScriptEvent => {
         if (!event.args || event.args.__comment) return event;
@@ -4575,7 +4575,7 @@ extern void __mute_mask_${symbol};
     if (variable.match(/^V[0-9]$/)) {
       const arg = this.options.argLookup.variable.get(variable);
       if (!arg) {
-        throw new Error("Cant find arg: " + arg);
+        throw new Error("Cant find arg: " + variable);
       }
       return arg.symbol;
     }
