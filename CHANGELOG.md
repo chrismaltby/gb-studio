@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where moving actors relatively off left or top of screen would cause coordinates to wrap, causing them to move in wrong direction
 - Fix issue in Japanese localisation where dialogue and expression text editors would show caret at incorrect location
 - Fix issue where save/load wouldn't work in game preview or web export when "Enable Batteryless Saving" was enabled, this setting is now ignored unless exporting a ROM file
+- Fix issue causing much higher CPU use when using "If" statements and expressions compared with version 3.2
 
 ### Removed
 
