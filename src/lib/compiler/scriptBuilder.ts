@@ -4206,7 +4206,15 @@ extern void __mute_mask_${symbol};
         return "player";
       }
       if (!argLookup[type].get(value)) {
-        throw new Error("Unknown arg " + type + " " + value);
+        throw new Error(
+          "Unknown arg " +
+            type +
+            " " +
+            value +
+            ' within script "' +
+            customEvent.name +
+            '"'
+        );
       }
       return argLookup[type].get(value);
     };
