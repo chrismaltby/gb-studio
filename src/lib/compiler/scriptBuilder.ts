@@ -3454,12 +3454,18 @@ extern void __mute_mask_${symbol};
   };
 
   wait = (frames: number) => {
-    const waitArgsRef = this._declareLocal("wait_args", 1, true);
-    const stackPtr = this.stackPtr;
-    this._addComment("Wait N Frames");
-    this._setConst(waitArgsRef, Math.round(frames));
-    this._invoke("wait_frames", 0, waitArgsRef);
-    this._assertStackNeutral(stackPtr);
+    this._addComment(`Wait ${frames} Frames`);
+    if (frames < 5) {
+      for (let i = 0; i < frames; i++) {
+        this._idle();
+      }
+    } else {
+      const waitArgsRef = this._declareLocal("wait_args", 1, true);
+      const stackPtr = this.stackPtr;
+      this._setConst(waitArgsRef, Math.round(frames));
+      this._invoke("wait_frames", 0, waitArgsRef);
+      this._assertStackNeutral(stackPtr);
+    }
     this._addNL();
   };
 
