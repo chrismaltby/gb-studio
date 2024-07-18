@@ -1,4 +1,7 @@
-import { ScriptValue } from "../../src/shared/lib/scriptValue/types";
+import {
+  PrecompiledValueFetch,
+  ScriptValue,
+} from "../../src/shared/lib/scriptValue/types";
 import {
   addScriptValueConst,
   addScriptValueToScriptValue,
@@ -6,6 +9,7 @@ import {
   multiplyScriptValueConst,
   optimiseScriptValue,
   precompileScriptValue,
+  sortFetchOperations,
 } from "../../src/shared/lib/scriptValue/helpers";
 
 test("should perform constant folding for addition", () => {
@@ -1255,4 +1259,75 @@ test("should multiply a const number with a script value", () => {
       value: 8,
     },
   });
+});
+
+test("should sort fetch operations so that properties on same target/prop are grouped together", () => {
+  const input: PrecompiledValueFetch[] = [
+    {
+      local: "tmp1",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+    },
+    {
+      local: "tmp2",
+      value: {
+        type: "property",
+        target: "actor2",
+        property: "xpos",
+      },
+    },
+    {
+      local: "tmp3",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "ypos",
+      },
+    },
+    {
+      local: "tmp4",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+    },
+  ];
+  expect(sortFetchOperations(input)).toEqual([
+    {
+      local: "tmp1",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+    },
+    {
+      local: "tmp4",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+    },
+    {
+      local: "tmp3",
+      value: {
+        type: "property",
+        target: "actor1",
+        property: "ypos",
+      },
+    },
+    {
+      local: "tmp2",
+      value: {
+        type: "property",
+        target: "actor2",
+        property: "xpos",
+      },
+    },
+  ]);
 });
