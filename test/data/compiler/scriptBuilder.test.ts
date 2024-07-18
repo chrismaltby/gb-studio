@@ -136,7 +136,7 @@ test("Should be able to wait for N frames to pass", async () => {
   });
   sb.wait(20);
   expect(output).toEqual([
-    "        ; Wait N Frames",
+    "        ; Wait 20 Frames",
     "        VM_SET_CONST            .LOCAL_TMP0_WAIT_ARGS, 20",
     "        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP0_WAIT_ARGS",
     "",

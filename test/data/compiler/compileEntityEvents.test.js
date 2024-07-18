@@ -381,12 +381,11 @@ test("should be able to set script to run when saved data resumes", async () => 
 .include "vm.i"
 .include "data/game_globals.i"
 
-.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+.globl _fade_frames_per_step
 
 .area _CODE_255
 
 .LOCAL_TMP0_HAS_LOADED = -1
-.LOCAL_TMP1_WAIT_ARGS = -1
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -408,9 +407,8 @@ _testname::
         VM_DEBUG        0
         .asciz "OnLoad Path"
 
-        ; Wait N Frames
-        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
-        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+        ; Wait 1 Frames
+        VM_IDLE
 
         ; Fade In
         VM_SET_CONST_INT8       _fade_frames_per_step, 3
@@ -471,12 +469,11 @@ test("should inject fadein correctly when saved data resumes", async () => {
 .include "vm.i"
 .include "data/game_globals.i"
 
-.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+.globl _fade_frames_per_step
 
 .area _CODE_255
 
 .LOCAL_TMP0_HAS_LOADED = -4
-.LOCAL_TMP1_WAIT_ARGS = -4
 .LOCAL_ACTOR = -4
 
 ___bank_testname = 255
@@ -496,9 +493,8 @@ _testname::
 
         VM_JUMP                 2$
 1$:
-        ; Wait N Frames
-        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
-        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+        ; Wait 1 Frames
+        VM_IDLE
 
         ; Fade In
         VM_SET_CONST_INT8       _fade_frames_per_step, 3
@@ -537,12 +533,11 @@ test("should inject fadein even when no saved data onload is defined", async () 
 .include "vm.i"
 .include "data/game_globals.i"
 
-.globl b_wait_frames, _wait_frames, _fade_frames_per_step
+.globl _fade_frames_per_step
 
 .area _CODE_255
 
 .LOCAL_TMP0_HAS_LOADED = -1
-.LOCAL_TMP1_WAIT_ARGS = -1
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -558,9 +553,8 @@ _testname::
 
         VM_JUMP                 2$
 1$:
-        ; Wait N Frames
-        VM_SET_CONST            .LOCAL_TMP1_WAIT_ARGS, 1
-        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP1_WAIT_ARGS
+        ; Wait 1 Frames
+        VM_IDLE
 
         ; Fade In
         VM_SET_CONST_INT8       _fade_frames_per_step, 3
