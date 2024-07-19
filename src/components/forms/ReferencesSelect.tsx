@@ -542,7 +542,6 @@ export const AssetReference = <
   const [isComposing, setComposition] = useState(false);
   const onRenameCompositionStart = () => setComposition(true);
   const onRenameCompositionEnd = () => setComposition(false);
-  var isFocusOut = false;
 
   const onCopy = useCallback(
     (symbol: string) => {
@@ -562,13 +561,8 @@ export const AssetReference = <
 
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (!isComposing || isFocusOut) {
+      if (!isComposing) {
         onRenameFinish();
-        isFocusOut = false;
-      } else if (isComposing) {
-        // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
-        // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
-        isFocusOut = true;
       }
     } else if (e.key === "Escape") {
       setRenameVisible(false);

@@ -94,7 +94,6 @@ const ScriptEditorEvent = React.memo(
     const [isComposing, setComposition] = useState(false);
     const onRenameCompositionStart = () => setComposition(true);
     const onRenameCompositionEnd = () => setComposition(false);
-    var isFocusOut = false;
 
     const clipboardFormat = useAppSelector(
       (state) => state.clipboard.data?.format
@@ -249,13 +248,8 @@ const ScriptEditorEvent = React.memo(
 
     const onDetectRenameComplete = useCallback((e) => {
       if (e.key === "Enter") {
-        if (!isComposing || isFocusOut) {
+        if (!isComposing) {
           setRename(false);
-          isFocusOut = false;
-        } else if (isComposing) {
-          // We cannot set isComposing to false as state here as it will trigger back to true again when the Enter key is pressed
-          // So instead, we set a flag to immediately focus out when user is not composing in IME mode and Enter key is entered
-          isFocusOut = true;
         }
       }
     }, [isComposing]);
