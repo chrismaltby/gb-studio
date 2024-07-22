@@ -202,8 +202,8 @@ _ui_draw_frame_row::
         jr z, 2$
 
         WAIT_STAT
-        ld a, e
-        ld (hl+), a
+        ld (hl), e
+        inc hl
 
         dec c
         jr z, 2$
@@ -215,8 +215,9 @@ _ui_draw_frame_row::
         jr z, 1$
 3$:
         WAIT_STAT
-        ld a, e
-        ld (hl+), a
+        ld (hl), e
+        inc hl
+
         dec c
         dec b
         jr nz, 3$

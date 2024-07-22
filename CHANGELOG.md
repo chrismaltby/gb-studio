@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed wording of batteryless save feature and added warning when feature is enabled to explain that only very specific cartridges will be supported
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Optimise wait event CPU use when when waiting for 1-4 frames by using VM_IDLE
+- Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 
 ### Fixed
 

@@ -694,6 +694,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/core.c"],
   },
+  {
+    version: "4.0.1-e0",
+    description: createDescription("Fixes", [
+      "Improve VRAM write timing in the submap and frame drawing functions",
+    ]),
+    modifiedFiles: ["src/core/set_tile_submap.s", "src/core/ui_a.s"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
