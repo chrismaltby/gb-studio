@@ -1304,6 +1304,8 @@
   "MENU_DELETE_SPRITE": "Delete Sprite",
   "MENU_DELETE_SOUND_EFFECT": "Delete Sound Effect",
   "MENU_DELETE_PALETTE": "Delete Palette",
+  "MENU_SPELLING": "Spelling and Grammar",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Check Spelling While Typing",
 
   "// 11": "Warnings -----------------------------------------------------",
 

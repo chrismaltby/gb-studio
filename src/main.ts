@@ -268,6 +268,7 @@ const createProjectWindow = async () => {
   projectWindow.setRepresentedFilename(projectPath);
 
   projectWindow.webContents.on("did-finish-load", () => {
+    refreshSpellCheck();
     sendToProjectWindow("open-project", projectPath);
     setTimeout(() => {
       projectWindow?.show();
@@ -1764,6 +1765,12 @@ menu.on("updateLocale", (value) => {
   initElectronL10N();
 });
 
+menu.on("updateCheckSpelling", (value) => {
+  settings.set("checkSpelling", value as JsonValue);
+  setMenuItemChecked("checkSpelling", value !== false);
+  refreshSpellCheck();
+});
+
 menu.on("updateShowCollisions", (value) => {
   settings.set("showCollisions", value as JsonValue);
   sendToProjectWindow("setting:changed", "showCollisions", value);
@@ -1900,6 +1907,11 @@ const addRecentProject = (projectPath: string) => {
       .slice(-10)
   );
   app.addRecentDocument(projectPath);
+};
+
+const refreshSpellCheck = () => {
+  const spellCheckEnabled = settings.get("checkSpelling") !== false;
+  projectWindow?.webContents.session.setSpellCheckerEnabled(spellCheckEnabled);
 };
 
 const saveAsProjectPicker = async () => {

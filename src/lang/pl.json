@@ -1304,6 +1304,8 @@
   "MENU_DELETE_SPRITE": "Usuń grafikę (sprite)",
   "MENU_DELETE_SOUND_EFFECT": "Usuń dźwięk",
   "MENU_DELETE_PALETTE": "Usuń paletę",
+  "MENU_SPELLING": "Pisownia i gramatyka",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Sprawdzaj pisownię w trakcie pisania",
   
   "// 11": "Warnings -----------------------------------------------------",
 

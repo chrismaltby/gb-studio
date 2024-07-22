@@ -1284,6 +1284,8 @@
   "MENU_DELETE_SPRITE": "Eliminar Sprite",
   "MENU_DELETE_SOUND_EFFECT": "Eliminar efecto de sonido",
   "MENU_DELETE_PALETTE": "Eliminar paleta",
+  "MENU_SPELLING": "Ortografía y gramática",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Comprobar ortografía al escribir",
 
   "// 11": "Warnings -----------------------------------------------------",
 

@@ -35,6 +35,7 @@ type MenuListenerKey =
   | "updateShowCollisions"
   | "updateShowConnections"
   | "updateShowNavigator"
+  | "updateCheckSpelling"
   | "run"
   | "build"
   | "ejectEngine"
@@ -63,6 +64,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateShowCollisions: [],
   updateShowConnections: [],
   updateShowNavigator: [],
+  updateCheckSpelling: [],
   run: [],
   build: [],
   ejectEngine: [],
@@ -183,6 +185,23 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
         },
         { role: "delete", label: l10n("MENU_DELETE") },
         { role: "selectAll", label: l10n("MENU_SELECT_ALL") },
+        { type: "separator" },
+        {
+          label: l10n("MENU_SPELLING"),
+          submenu: [
+            {
+              label: l10n("MENU_CHECK_SPELLING_WHILE_TYPING"),
+              type: "checkbox",
+              checked: settings.get("checkSpelling") !== false,
+              click() {
+                notifyListeners(
+                  "updateCheckSpelling",
+                  settings.get("checkSpelling") === false
+                );
+              },
+            },
+          ],
+        },
       ],
     },
     {

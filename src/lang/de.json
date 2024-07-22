@@ -1154,6 +1154,8 @@
   "MENU_SELECT_ALL": "Alles Auswählen",
   "MENU_WINDOW": "Fenster",
   "MENU_HELP": "Hilfe",
+  "MENU_SPELLING": "Rechtschreibung und Grammatik",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Rechtschreibung während der Eingabe prüfen",
 
   "// 11": "Warnings -----------------------------------------------------",
 

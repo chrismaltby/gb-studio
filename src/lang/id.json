@@ -1304,6 +1304,8 @@
   "MENU_DELETE_SPRITE": "Hapus Sprite",
   "MENU_DELETE_SOUND_EFFECT": "Hapus Efek Suara",
   "MENU_DELETE_PALETTE": "Hapus Palet",
+  "MENU_SPELLING": "Ejaan dan Grammar",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Periksa Ejaan Saat Mengetik",
 
   "// 11": "Peringatan ---------------------------------------------------",
 

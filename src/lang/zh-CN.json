@@ -1299,6 +1299,8 @@
   "MENU_DELETE_SPRITE": "删除精灵",
   "MENU_DELETE_SOUND_EFFECT": "删除声音效果",
   "MENU_DELETE_PALETTE": "删除调色板",
+  "MENU_SPELLING": "拼写和语法",
+  "MENU_CHECK_SPELLING_WHILE_TYPING" : "键入内容时检查拼写",
 
   "// 11": "Warnings -----------------------------------------------------",
 
