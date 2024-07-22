@@ -18,6 +18,16 @@ const fields = [
     label: l10n("CUSTOM_EVENT"),
     description: l10n("FIELD_SCRIPT_CALL_DESC"),
     key: "customEventId",
+    postUpdateFn: (newArgs, prevArgs) => {
+      // Reset args if custom event changed
+      if (newArgs.customEventId !== prevArgs.customEventId) {
+        return {
+          customEventId: newArgs.customEventId,
+        };
+      } else {
+        return newArgs;
+      }
+    },
   },
   {
     type: "break",

@@ -53,6 +53,41 @@ export const mapScript = (
 };
 
 /**
+ * Updates all script events within an array using a map function, skipping any which are commented
+ *
+ * @param script - An array of `ScriptEvent` objects to be mapped over. Defaults to an empty array if not provided.
+ * @param callback - A mapping function that is applied to each ScriptEvent.
+ * @returns An array of `ScriptEvent` objects that are the result of applying the `callback` function to each element of the `events` array.
+ */
+export const mapUncommentedScript = (
+  script: ScriptEvent[] = [],
+  callback: (e: ScriptEvent) => ScriptEvent
+): ScriptEvent[] => {
+  return script
+    .map((scriptEvent): ScriptEvent | undefined => {
+      if (scriptEvent && scriptEvent.children) {
+        if (scriptEvent?.args?.__comment) {
+          // Skip commented events
+          return undefined;
+        }
+        const newEvent = callback(scriptEvent);
+        return {
+          ...newEvent,
+          children: mapValues(
+            newEvent.children || scriptEvent.children,
+            (childEvents) => mapUncommentedScript(childEvents, callback)
+          ),
+        };
+      }
+      if (!scriptEvent) {
+        return scriptEvent;
+      }
+      return callback(scriptEvent);
+    })
+    .filter((i) => i) as ScriptEvent[];
+};
+
+/**
  * Updates all script events within a single scene, including any actors or triggers within that scene using a map function
  *
  * @param scene - The denormalized scene

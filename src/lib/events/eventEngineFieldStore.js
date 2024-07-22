@@ -30,6 +30,8 @@ const fields = [
           engineFieldKey: newArgs.engineFieldKey,
           value: undefined,
         };
+      } else {
+        return newArgs;
       }
     },
   },
