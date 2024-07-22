@@ -253,18 +253,6 @@ const SingleValuePreviewOffset = styled.div`
   transform: translate(-3px, -11px);
 `;
 
-const FormatFolderLabelWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  white-space: nowrap;
-  align-items: center;
-  small {
-    opacity: 0.6;
-    font-size: 9px;
-    line-height: 8px;
-  }
-`;
-
 export const FormatFolderLabel = ({ label }: FormatFolderLabelProps) => {
   if (!label) {
     return null;

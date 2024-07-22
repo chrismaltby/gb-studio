@@ -7,7 +7,7 @@ import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
 import { isScriptValue } from "shared/lib/scriptValue/types";
-import { lexText } from "../compiler/lexText";
+import { lexText } from "shared/lib/compiler/lexText";
 
 export const getAutoLabel = (
   command: string,

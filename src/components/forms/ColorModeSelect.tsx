@@ -33,27 +33,30 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
     []
   );
 
-  const colorModeOptions: ColorModeOption[] = [
-    {
-	  value: "mono",
-	  label: l10n("FIELD_COLOR_MODE_MONO"),
-    },
-    {
-	  value: "mixed",
-	  label: l10n("FIELD_COLOR_MODE_COLOR_MONO"),
-    },
-    {
-	  value: "color",
-	  label: l10n("FIELD_COLOR_MODE_COLOR_ONLY"),
-    },
-  ];
+  const colorModeOptions: ColorModeOption[] = useMemo(
+    () => [
+      {
+        value: "mono",
+        label: l10n("FIELD_COLOR_MODE_MONO"),
+      },
+      {
+        value: "mixed",
+        label: l10n("FIELD_COLOR_MODE_COLOR_MONO"),
+      },
+      {
+        value: "color",
+        label: l10n("FIELD_COLOR_MODE_COLOR_ONLY"),
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const currentColorMode = colorModeOptions.find((e) => e.value === value);
     if (currentColorMode) {
       setCurrentValue(currentColorMode);
     }
-  }, [value]);
+  }, [colorModeOptions, value]);
 
   const onSelectChange = useCallback(
     (newValue: ColorModeOption) => {

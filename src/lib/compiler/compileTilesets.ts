@@ -25,7 +25,7 @@ const tilesetBuildCache: Record<
 const compileTilesets = async (
   tilesets: TilesetData[],
   projectRoot: string,
-  { warnings }: CompileTilesetOptions
+  { warnings: _ }: CompileTilesetOptions
 ): Promise<PrecompiledTilesetData[]> => {
   const tilesetData = await promiseLimit(
     10,

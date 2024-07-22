@@ -104,7 +104,7 @@ export const InstrumentVolumeEditor = ({
       }
       ctx.stroke();
     }
-  }, [initialVolume, length, volumeSweepChange]);
+  }, [initialVolume, length, themeContext.colors.highlight, volumeSweepChange]);
 
   return (
     <>
