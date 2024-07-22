@@ -493,7 +493,9 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     (index: number) => {
       if (
         index === -1 ||
-        (selectedCategoryIndex === -1 && "options" in options[index])
+        (selectedCategoryIndex === -1 &&
+          options[index] &&
+          "options" in options[index])
       ) {
         setSelectedCategoryIndex(index);
         setRenderedCategoryIndex(index);
@@ -501,7 +503,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         inputRef.current?.focus();
       } else if (selectedCategoryIndex === -1) {
         const option = options[index];
-        if ("referenceType" in option) {
+        if (option && "referenceType" in option) {
           onAdd({
             type: option.referenceType,
             id: option.value,
@@ -512,7 +514,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         const categoryOption = options[selectedCategoryIndex];
         if ("options" in categoryOption) {
           const option = categoryOption.options[index];
-          if ("referenceType" in option) {
+          if (option && "referenceType" in option) {
             onAdd({
               type: option.referenceType,
               id: option.value,
