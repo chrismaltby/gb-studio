@@ -13,10 +13,14 @@ export const locales = glob
   .sync(localesPath)
   .map((path) => Path.basename(path, ".json"));
 
-const initElectronL10N = () => {
+export const getAppLocale = () => {
   const settingsLocale = app && settings.get("locale");
   const systemLocale = app ? app.getLocale() : "en";
-  const appLocale = String(settingsLocale || systemLocale);
+  return String(settingsLocale || systemLocale);
+};
+
+const initElectronL10N = () => {
+  const appLocale = getAppLocale();
   loadLanguage(appLocale);
 };
 

@@ -80,7 +80,10 @@ import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
-import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
+import initElectronL10N, {
+  getAppLocale,
+  locales,
+} from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -1763,6 +1766,7 @@ menu.on("updateLocale", (value) => {
   }
   switchLanguageDialog();
   initElectronL10N();
+  refreshSpellCheck();
 });
 
 menu.on("updateCheckSpelling", (value) => {
@@ -1911,7 +1915,17 @@ const addRecentProject = (projectPath: string) => {
 
 const refreshSpellCheck = () => {
   const spellCheckEnabled = settings.get("checkSpelling") !== false;
-  projectWindow?.webContents.session.setSpellCheckerEnabled(spellCheckEnabled);
+  if (projectWindow) {
+    const session = projectWindow.webContents.session;
+    const appLocale = getAppLocale();
+    const spellCheckLanguages = session.availableSpellCheckerLanguages.filter(
+      (lang) => lang === appLocale
+    );
+    session.setSpellCheckerEnabled(spellCheckEnabled);
+    session.setSpellCheckerLanguages(
+      spellCheckLanguages.length > 0 ? spellCheckLanguages : ["en"]
+    );
+  }
 };
 
 const saveAsProjectPicker = async () => {
