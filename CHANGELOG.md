@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Optimised loading of large projects by upgrading to newer version of Normalizr
+
 ### Fixed
 
 - Fixed spell check to use chosen application language where possible

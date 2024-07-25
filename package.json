@@ -78,7 +78,7 @@
     "json-loader": "^0.5.7",
     "lodash": "^4.17.21",
     "node-gzip": "^1.1.2",
-    "normalizr": "^3.4.0",
+    "normalizr": "^3.6.2",
     "open": "^7.3.0",
     "path-browserify": "^1.0.1",
     "pngjs": "^6.0.0",
