@@ -3523,7 +3523,7 @@ extern void __mute_mask_${symbol};
   ) => {
     this._addComment("Text Set Animation Speed");
     this._setConstMemInt8("text_ff_joypad", allowFastForward ? 1 : 0);
-    this._setConstMemInt8("text_draw_speed", textSpeedDec(textSpeed));
+    this._setConstMemInt8("text_draw_speed", textSpeed);
     this._setConstMemInt8("text_out_speed", speedOut);
     this._setConstMemInt8("text_in_speed", speedIn);
     this._addNL();

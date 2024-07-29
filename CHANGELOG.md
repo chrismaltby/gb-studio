@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix spell check to use chosen application language where possible
 - Fix stack error preventing use of rnd() within "if" statements
 - Fix 'wait for input' text code responsiveness when using slower text speeds
+- Fix "Text Draw Speed 4" when using "Set Text Animation Speed"
 
 ## [4.0.1] - 2024-07-22
 
