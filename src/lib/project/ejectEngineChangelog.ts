@@ -701,6 +701,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/set_tile_submap.s", "src/core/ui_a.s"],
   },
+  {
+    version: "4.0.2-e0",
+    description: createDescription("Fixes", [
+      "Improve 'wait for input' text code responsiveness when using slower text speeds",
+    ]),
+    modifiedFiles: ["src/core/ui.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

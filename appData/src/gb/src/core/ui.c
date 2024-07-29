@@ -375,9 +375,11 @@ UBYTE ui_draw_text_buffer_char(void) BANKED {
                     } else {
                         // go back to 0x06 control code
                         ui_text_ptr--;
+                        current_text_speed = 0;
                         return FALSE;
                     }
                 }
+                current_text_speed = ui_time_masks[text_draw_speed];
                 break;
             case 0x07:
                 // set text color
