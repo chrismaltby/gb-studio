@@ -1328,3 +1328,20 @@ test("Should optimise expressions when expanding for if conditional test", () =>
     "",
   ]);
 });
+
+test("Should allow rnd to be used in rpn without script neutral error", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb._rpn().int8(8).operator(".RND").stop();
+  sb._stackPop(1);
+  expect(sb._stop).not.toThrow();
+  expect(output).toEqual([
+    "        VM_RPN",
+    "            .R_INT8     8",
+    "            .R_OPERATOR .RND",
+    "            .R_STOP",
+    "        VM_POP                  1",
+    "        ; Stop Script",
+    "        VM_STOP",
+  ]);
+});

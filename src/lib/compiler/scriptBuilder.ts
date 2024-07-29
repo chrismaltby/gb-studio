@@ -285,6 +285,7 @@ const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
   ".NOT",
   ".B_NOT",
   ".ISQRT",
+  ".RND",
 ];
 
 // - Helpers --------------
