@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Optimised loading of large projects by upgrading to newer version of Normalizr
+- Improved text contrast on world status bar (info for current scene + x/y coordinate of hovered tile)
 
 ### Fixed
 

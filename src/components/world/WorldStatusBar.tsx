@@ -45,7 +45,6 @@ const Container = styled.div<ContainerProps>`
 
 const Text = styled.div`
   color: ${(props) => props.theme.colors.text};
-  opacity: 0.5;
   padding: 0 5px;
 `;
 
