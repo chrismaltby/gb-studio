@@ -38,7 +38,6 @@ extern UBYTE win_pos_y, win_dest_pos_y;
 extern UBYTE win_speed;
 
 extern UBYTE text_drawn;
-extern UBYTE text_wait;
 
 #define TEXT_OPT_DEFAULT 0
 #define TEXT_OPT_PRESERVE_POS 1

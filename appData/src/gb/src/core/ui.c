@@ -35,7 +35,6 @@ UBYTE win_speed;
 
 UBYTE text_drawn;
 UBYTE current_text_speed;
-UBYTE text_wait;
 
 UBYTE text_options;
 UBYTE text_in_speed;
@@ -278,13 +277,6 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 
 UBYTE ui_draw_text_buffer_char(void) BANKED {
     static UBYTE current_font_idx, current_text_bkg_fill, current_vwf_direction, current_text_ff_joypad, current_text_draw_speed;
-
-//    if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
-
-    if ((!text_ff) && (text_wait)) {
-        text_wait--;
-        return FALSE;
-    }
 
     if (ui_text_ptr == 0) {
         // set the delay mask

@@ -708,6 +708,19 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/ui.c"],
   },
+  {
+    version: "4.0.3-e0",
+    description: createDescription("Fixes", [
+      "Remove unused text_wait variable from ui",
+      "Minor performance improvement of itoa_fmt()",
+    ]),
+    modifiedFiles: [
+      "include/ui.h",
+      "src/core/ui.c",
+      "src/core/vm_ui.c",
+      "src/core/vm_ui_a.s",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

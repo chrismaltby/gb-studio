@@ -109,7 +109,7 @@ void vm_display_text(SCRIPT_CTX * THIS, UBYTE options, UBYTE start_tile) OLDCALL
 
     INPUT_RESET;
     text_options = options;
-    text_drawn = text_wait = text_ff = FALSE;
+    text_drawn = text_ff = FALSE;
 
 #ifdef CGB
         if (_is_CGB) {
