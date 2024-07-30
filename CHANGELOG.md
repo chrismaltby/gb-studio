@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tilesets asset folder added to all sample projects  [@pau-tomas](https://github.com/pau-tomas)
+
 ### Changed
 
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
