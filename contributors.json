@@ -18,7 +18,7 @@
     "received_events_url": "https://api.github.com/users/chrismaltby/received_events",
     "type": "User",
     "site_admin": false,
-    "contributions": 4291
+    "contributions": 4303
   },
   {
     "login": "pau-tomas",
@@ -39,7 +39,7 @@
     "received_events_url": "https://api.github.com/users/pau-tomas/received_events",
     "type": "User",
     "site_admin": false,
-    "contributions": 365
+    "contributions": 366
   },
   {
     "login": "RichardULZ",
