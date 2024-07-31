@@ -814,6 +814,12 @@
   "FIELD_SET_CURSOR_POSITION_TO": "Set Cursor Position To",
   "FIELD_MOVE_CURSOR_POSITION_BY": "Move Cursor Position By",
   "FIELD_MOVE_BY": "Move By",
+  "FIELD_OPT_NONE": "No Optimisation",
+  "FIELD_FAST": "Fast",
+  "FIELD_SLOW": "Slow",
+  "FIELD_PLACEBO": "Placebo",
+  "FIELD_COMPILER_PRESET": "Compiler Preset",
+  "FIELD_COMPILER_OPTIMISATION": "Optimise ROM For",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

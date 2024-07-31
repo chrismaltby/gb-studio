@@ -152,6 +152,21 @@ export const getBuildCommands = async (
         `-c`,
       ];
 
+      const settings = require("electron-settings");
+      
+      var compilerPreset = Number(settings.get("compilerPreset") || 3000);
+      buildArgs.push(`-Wf"--max-allocs-per-node ` + compilerPreset + `"`);
+
+      var compilerOptimisation = Number(settings.get("compilerOptimisation") || 0);
+      switch (compilerOptimisation) {
+        case 1:
+          buildArgs.push("-Wf--opt-code-speed");
+          break;
+        case 2:
+          buildArgs.push("-Wf--opt-code-size");
+          break;
+      }
+
       if (colorEnabled) {
         buildArgs.push("-DCGB");
       }

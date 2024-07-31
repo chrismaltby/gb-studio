@@ -86,6 +86,8 @@ export type SettingsState = {
   previewAsMono: boolean;
   openBuildLogOnWarnings: boolean;
   generateDebugFilesEnabled: boolean;
+  compilerOptimisation: number;
+  compilerPreset: number;
 };
 
 export const initialState: SettingsState = defaultProjectSettings;
@@ -123,6 +125,14 @@ const settingsSlice = createSlice({
 
     setShowNavigator: (state, action: PayloadAction<boolean>) => {
       state.showNavigator = action.payload;
+    },
+
+    setCompilerOptimisation: (state, action: PayloadAction<number>) => {
+      state.compilerOptimisation = action.payload;
+    },
+
+    setCompilerPreset: (state, action: PayloadAction<number>) => {
+      state.compilerPreset = action.payload;
     },
 
     toggleFavoriteEvent: (state, action: PayloadAction<string>) => {

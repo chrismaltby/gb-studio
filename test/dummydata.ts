@@ -280,6 +280,8 @@ export const dummyProjectData: ProjectData = {
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
+    compilerOptimisation: 0,
+    compilerPreset: 0,
   },
 };
 

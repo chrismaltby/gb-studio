@@ -38,6 +38,8 @@ const Preferences = () => {
   const [musicEditorPath, setMusicEditorPath] = useState<string>("");
   const [zoomLevel, setZoomLevel] = useState<number>(0);
   const [trackerKeyBindings, setTrackerKeyBindings] = useState<number>(0);
+  const [compilerPreset, setCompilerPreset] = useState<number>(3000);
+  const [compilerOptimisation, setCompilerOptimisation] = useState<number>(0);
 
   const currentZoomValue = zoomOptions.find((o) => o.value === zoomLevel);
 
@@ -48,6 +50,8 @@ const Preferences = () => {
       setMusicEditorPath(await API.settings.getString("musicEditorPath", ""));
       setZoomLevel(await API.settings.app.getUIScale());
       setTrackerKeyBindings(await API.settings.app.getTrackerKeyBindings());
+      setCompilerPreset(await API.settings.app.getCompilerPreset());
+      setCompilerOptimisation(await API.settings.app.getCompilerOptimisation());
     }
     fetchData();
   }, []);
@@ -67,6 +71,33 @@ const Preferences = () => {
 
   const currentTrackerKeyBindings = trackerKeyBindingsOptions.find(
     (o) => o.value === trackerKeyBindings
+  );
+
+  const compilerPresetOptions: Options[] = useMemo(
+    () => [
+      { value: 3000,   label: l10n("FIELD_DEFAULT") },
+      { value: 1000,   label: l10n("FIELD_FAST") },
+      { value: 50000,  label: l10n("FIELD_SLOW") },
+      { value: 100000, label: l10n("FIELD_PLACEBO") },
+    ],
+    []
+  );
+
+  const currentCompilerPreset = compilerPresetOptions.find(
+    (o) => o.value === compilerPreset
+  );
+
+  const compilerOptimisationOptions: Options[] = useMemo(
+    () => [
+      { value: 0, label: l10n("FIELD_NONE") },
+      { value: 1, label: l10n("FIELD_SPEED") },
+      { value: 2, label: l10n("FIELD_SIZE") },
+    ],
+    []
+  );
+
+  const currentCompilerOptimisation = compilerOptimisationOptions.find(
+    (o) => o.value === compilerOptimisation
   );
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +140,16 @@ const Preferences = () => {
     setTmpPath(await API.paths.getTmpPath());
   };
 
+  const onChangeCompilerPreset = (value: number) => {
+    setCompilerPreset(value);
+    API.settings.app.setCompilerPreset(value);
+  };
+
+  const onChangeCompilerOptimisation = (value: number) => {
+    setCompilerOptimisation(value);
+    API.settings.app.setCompilerOptimisation(value);
+  };
+
   return (
     <ThemeProvider>
       <GlobalStyle />
@@ -136,6 +177,26 @@ const Preferences = () => {
         </FormRow>
 
         <FlexGrow />
+        <FormRow>
+          <FormField name="compilerPreset" label={l10n("FIELD_COMPILER_PRESET")}>
+            <Select
+              value={currentCompilerPreset}
+              options={compilerPresetOptions}
+              onChange={(newValue: Options) => {
+                onChangeCompilerPreset(newValue.value);
+              }}
+            />
+          </FormField>
+          <FormField name="compilerOptimisation" label={l10n("FIELD_COMPILER_OPTIMISATION")}>
+            <Select
+              value={currentCompilerOptimisation}
+              options={compilerOptimisationOptions}
+              onChange={(newValue: Options) => {
+                onChangeCompilerOptimisation(newValue.value);
+              }}
+            />
+          </FormField>
+        </FormRow>
 
         <FormRow>
           <FormField

@@ -206,6 +206,8 @@ export const defaultProjectSettings: SettingsState = {
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
+  compilerOptimisation: 0,
+  compilerPreset: 3000,
 };
 
 export {

@@ -153,6 +153,14 @@ const APISetup = {
         ipcRenderer.invoke("set-tracker-keybindings", value),
       getTrackerKeyBindings: () =>
         APISetup.settings.getNumber("trackerKeyBindings", 0),
+      getCompilerPreset: () =>
+        APISetup.settings.getNumber("compilerPreset", 3000),
+      setCompilerPreset: (value: number) =>
+        APISetup.settings.set("compilerPreset", value),
+      getCompilerOptimisation: () =>
+        APISetup.settings.getNumber("compilerOptimisation", 0),
+      setCompilerOptimisation: (value: number) =>
+        APISetup.settings.set("compilerOptimisation", value),
     },
   },
   dialog: {
