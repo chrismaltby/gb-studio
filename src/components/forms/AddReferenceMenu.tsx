@@ -32,7 +32,7 @@ import {
   Music,
   SceneNormalized,
   Sound,
-  SpriteSheet,
+  SpriteSheetNormalized,
   Tileset,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
@@ -81,7 +81,7 @@ const backgroundToOption = (background: Background): EventOption => {
   };
 };
 
-const spriteToOption = (sprite: SpriteSheet): EventOption => {
+const spriteToOption = (sprite: SpriteSheetNormalized): EventOption => {
   return {
     label: sprite.name,
     value: sprite.id,

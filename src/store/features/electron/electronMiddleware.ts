@@ -63,7 +63,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         return;
       }
     } else if (projectActions.loadProject.fulfilled.match(action)) {
-      API.project.updateProjectWindowMenu(action.payload.data.settings);
+      API.project.updateProjectWindowMenu(action.payload.resources.settings);
     } else if (settingsActions.setShowNavigator.match(action)) {
       const state = store.getState();
       const projectSettings = getSettings(state);
@@ -72,7 +72,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         showNavigator: action.payload,
       });
     } else if (projectActions.loadProject.rejected.match(action)) {
-      API.project.close();
+      console.log("PROJECT LOAD FAILED");
+      // API.project.close();
     } else if (projectActions.closeProject.match(action)) {
       API.project.close();
     } else if (entitiesActions.removeCustomEvent.match(action)) {

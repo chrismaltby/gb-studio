@@ -31,7 +31,8 @@ const metadataSlice = createSlice({
   },
   extraReducers: (builder) =>
     builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
-      const { name, author, notes, _version, _release } = action.payload.data;
+      const { name, author, notes, _version, _release } =
+        action.payload.resources.metadata;
       return {
         ...state,
         name,

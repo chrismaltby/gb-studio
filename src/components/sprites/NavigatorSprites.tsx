@@ -13,7 +13,10 @@ import {
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { SpriteSheet, SpriteState } from "shared/lib/entities/entitiesTypes";
+import {
+  SpriteSheetNormalized,
+  SpriteState,
+} from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
@@ -389,7 +392,7 @@ export const NavigatorSprites = ({
   );
 
   const renderLabel = useCallback(
-    (item: FileSystemNavigatorItem<SpriteSheet>) => {
+    (item: FileSystemNavigatorItem<SpriteSheetNormalized>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

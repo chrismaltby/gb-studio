@@ -4,11 +4,13 @@ import reducer, {
   getSettings,
 } from "../../../../src/store/features/settings/settingsState";
 import actions from "../../../../src/store/features/settings/settingsActions";
-import projectActions, {
-  ProjectData,
-} from "../../../../src/store/features/project/projectActions";
-import { dummyProjectData, dummyRootState } from "../../../dummydata";
+import projectActions from "../../../../src/store/features/project/projectActions";
+import {
+  dummyCompressedProjectResources,
+  dummyRootState,
+} from "../../../dummydata";
 import { RootState } from "../../../../src/store/configureStore";
+import { CompressedProjectResources } from "shared/lib/resources/types";
 
 test("Should be able to change settings", () => {
   const state: SettingsState = {
@@ -42,10 +44,10 @@ test("Should fetch settings from loaded project", () => {
     worldScrollY: 0,
   };
 
-  const loadData: ProjectData = {
-    ...dummyProjectData,
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
     settings: {
-      ...dummyProjectData.settings,
+      ...dummyCompressedProjectResources.settings,
       worldScrollX: 50,
       worldScrollY: 60,
     },
@@ -53,7 +55,7 @@ test("Should fetch settings from loaded project", () => {
 
   const action = projectActions.loadProject.fulfilled(
     {
-      data: loadData,
+      resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],

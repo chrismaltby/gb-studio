@@ -15,15 +15,15 @@ import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
-import type { ProjectData } from "store/features/project/projectActions";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
+import { ProjectResources } from "shared/lib/resources/types";
 
 const rmdir = promisify(rimraf);
 
 type EjectOptions = {
   projectType: "gb";
   engineFields: EngineFieldSchema[];
-  projectData: ProjectData;
+  projectData: ProjectResources;
   outputRoot: string;
   projectRoot: string;
   tmpPath: string;
@@ -161,9 +161,10 @@ const ejectBuild = async ({
         let source = await fs.readFile(filename, "utf8");
 
         engineFile.fields.forEach((engineField) => {
-          const engineValue = projectData.engineFieldValues.find(
-            (v) => v.id === engineField.key
-          );
+          const engineValue =
+            projectData.engineFieldValues.engineFieldValues.find(
+              (v) => v.id === engineField.key
+            );
           const value =
             engineValue && engineValue.value !== undefined
               ? engineValue.value

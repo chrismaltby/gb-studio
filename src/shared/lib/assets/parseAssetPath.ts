@@ -1,4 +1,5 @@
 import Path from "path";
+import { pathToPosix } from "shared/lib/helpers/path";
 
 const parseAssetPath = (
   filename: string,
@@ -9,9 +10,11 @@ const parseAssetPath = (
   const plugin = relativePath.startsWith("plugins")
     ? relativePath.split(Path.sep)[1]
     : undefined;
-  const file = plugin
-    ? Path.relative(`plugins/${plugin}/${assetFolder}/`, relativePath)
-    : Path.relative(`assets/${assetFolder}/`, relativePath);
+  const file = pathToPosix(
+    plugin
+      ? Path.relative(`plugins/${plugin}/${assetFolder}/`, relativePath)
+      : Path.relative(`assets/${assetFolder}/`, relativePath)
+  );
   return {
     relativePath,
     plugin,

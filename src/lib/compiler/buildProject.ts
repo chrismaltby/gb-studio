@@ -4,13 +4,13 @@ import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
 import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-import type { ProjectData } from "store/features/project/projectActions";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
+import { ProjectResources } from "shared/lib/resources/types";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -26,7 +26,7 @@ type BuildOptions = {
 };
 
 const buildProject = async (
-  data: ProjectData,
+  data: ProjectResources,
   {
     buildType = "rom",
     projectRoot = "/tmp",
@@ -84,8 +84,8 @@ const buildProject = async (
       `${outputRoot}/build/web/rom/${gameFile}`
     );
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
-    const projectName = sanitize(data.name);
-    const author = sanitize(data.author);
+    const projectName = sanitize(data.metadata.name);
+    const author = sanitize(data.metadata.author);
     const colorsHead =
       data.settings.colorMode !== "mono"
         ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`

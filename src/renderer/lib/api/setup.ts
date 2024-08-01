@@ -18,7 +18,6 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type {
   Background,
@@ -43,6 +42,11 @@ import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { TilesetAssetData } from "lib/project/loadTilesetData";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
+import type { LoadProjectResult } from "lib/project/loadProjectData";
+import {
+  ProjectResources,
+  WriteResourcesPatch,
+} from "shared/lib/resources/types";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -189,12 +193,14 @@ const APISetup = {
     openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
     openProject: (projectPath: string) =>
       ipcRenderer.invoke("project:open", { projectPath }),
+    getResourceChecksums: (): Promise<Record<string, string>> =>
+      ipcRenderer.invoke("project:get-resource-checksums"),
     createProject: (input: CreateProjectInput) =>
       ipcRenderer.invoke("create-project", input),
     updateProjectWindowMenu: (settings: SettingsState) =>
       ipcRenderer.invoke("project:update-project-window-menu", settings),
     close: () => ipcRenderer.invoke("close-project"),
-    build: (data: ProjectData, options: BuildOptions) =>
+    build: (data: ProjectResources, options: BuildOptions) =>
       ipcRenderer.invoke("project:build", data, options),
     buildCancel: () => ipcRenderer.invoke("project:build-cancel"),
     onBuildLog: (
@@ -205,7 +211,7 @@ const APISetup = {
     ) => ipcRenderer.on("build:error", listener),
     ejectEngine: () => ipcRenderer.invoke("project:engine-eject"),
     exportProject: (
-      data: ProjectData,
+      data: ProjectResources,
       engineFields: EngineFieldSchema[],
       sceneTypes: SceneTypeSchema[],
       exportType: ProjectExportType
@@ -232,15 +238,9 @@ const APISetup = {
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
-    loadProject: (): Promise<{
-      data: ProjectData;
-      scriptEventDefs: ScriptEventDefs;
-      engineFields: EngineFieldSchema[];
-      sceneTypes: SceneTypeSchema[];
-      modifiedSpriteIds: string[];
-      isMigrated: boolean;
-    }> => ipcRenderer.invoke("project:load"),
-    saveProject: (data: ProjectData): Promise<void> =>
+    loadProject: (): Promise<LoadProjectResult> =>
+      ipcRenderer.invoke("project:load"),
+    saveProject: (data: WriteResourcesPatch): Promise<void> =>
       ipcRenderer.invoke("project:save", data),
     setModified: () => ipcRenderer.invoke("project:set-modified"),
     setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),

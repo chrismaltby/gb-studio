@@ -12,19 +12,19 @@ import type {
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
-import type { ProjectData } from "store/features/project/projectActions";
 import keyBy from "lodash/keyBy";
+import { ProjectResources } from "shared/lib/resources/types";
 
 export const determineUsedAssets = ({
   projectData,
   customEventsLookup,
   scriptEventHandlers,
 }: {
-  projectData: ProjectData;
+  projectData: ProjectResources;
   customEventsLookup: Dictionary<CustomEvent>;
   scriptEventHandlers: ScriptEventHandlers;
 }) => {
-  const variablesLookup = keyBy(projectData.variables, "id");
+  const variablesLookup = keyBy(projectData.variables.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
   const fontsLookup = keyBy(projectData.fonts, "id");
 

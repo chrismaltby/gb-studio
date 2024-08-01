@@ -25,6 +25,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
 if (projectPath) {
+  console.log("FIRE OPEN PROJECT", new Date().valueOf());
   store.dispatch(projectActions.openProject(projectPath));
   initKeyBindings();
 }

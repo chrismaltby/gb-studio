@@ -3,7 +3,7 @@ import {
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
-  SpriteSheet,
+  SpriteSheetNormalized,
   SpriteState,
 } from "shared/lib/entities/entitiesTypes";
 
@@ -17,7 +17,7 @@ const detectSpriteComplete = createAction<{
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
   state: SpriteState;
-  changes: Partial<SpriteSheet>;
+  changes: Partial<SpriteSheetNormalized>;
 }>("sprite/detect/fulfilled");
 
 const compileSprite = createAction(

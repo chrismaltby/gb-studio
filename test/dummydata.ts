@@ -1,7 +1,7 @@
 import {
   SceneNormalized,
   Background,
-  SpriteSheet,
+  SpriteSheetNormalized,
   Music,
   ActorNormalized,
   TriggerNormalized,
@@ -36,6 +36,13 @@ import {
   PrecompiledBackground,
   PrecompiledSprite,
 } from "../src/lib/compiler/generateGBVMData";
+import {
+  CompressedBackgroundResource,
+  CompressedSceneResourceWithChildren,
+  ProjectResources,
+  SceneResource,
+} from "shared/lib/resources/types";
+import { compressProjectResources } from "shared/lib/resources/compression";
 
 export const dummySceneNormalized: SceneNormalized = {
   id: "",
@@ -61,6 +68,18 @@ export const dummySceneNormalized: SceneNormalized = {
 };
 
 export const dummyScene: Scene = dummySceneNormalized as unknown as Scene;
+
+export const dummySceneResource: SceneResource = {
+  _resourceType: "scene",
+  ...dummySceneNormalized,
+} as unknown as SceneResource;
+
+export const dummyCompressedSceneResource: CompressedSceneResourceWithChildren =
+  {
+    _resourceType: "scene",
+    ...dummySceneNormalized,
+    collisions: "",
+  } as unknown as CompressedSceneResourceWithChildren;
 
 export const dummyActorNormalized: ActorNormalized = {
   id: "dummyActor1",
@@ -138,7 +157,13 @@ export const dummyBackground: Background = {
   _v: 0,
 };
 
-export const dummySpriteSheet: SpriteSheet = {
+export const dummyCompressedBackgroundResource: CompressedBackgroundResource = {
+  _resourceType: "background",
+  ...dummyBackground,
+  collisions: "",
+} as unknown as CompressedBackgroundResource;
+
+export const dummySpriteSheet: SpriteSheetNormalized = {
   id: "",
   name: "",
   symbol: "sprite_0",
@@ -282,6 +307,96 @@ export const dummyProjectData: ProjectData = {
     generateDebugFilesEnabled: false,
   },
 };
+
+export const dummyProjectResources: ProjectResources = {
+  metadata: {
+    _resourceType: "project",
+    name: "",
+    _version: "2.0.0",
+    _release: "1",
+    author: "",
+    notes: "",
+  },
+  scenes: [],
+  backgrounds: [],
+  sprites: [],
+  palettes: [],
+  scripts: [],
+  variables: {
+    _resourceType: "variables",
+    variables: [],
+  },
+  music: [],
+  fonts: [],
+  avatars: [],
+  emotes: [],
+  sounds: [],
+  tilesets: [],
+  engineFieldValues: {
+    _resourceType: "engineFieldValues",
+    engineFieldValues: [],
+  },
+  settings: {
+    _resourceType: "settings",
+    startSceneId: "",
+    startX: 0,
+    startY: 0,
+    startMoveSpeed: 1,
+    startAnimSpeed: 3,
+    startDirection: "down",
+    playerPaletteId: "",
+    showCollisions: true,
+    showConnections: true,
+    worldScrollX: 0,
+    worldScrollY: 0,
+    zoom: 100,
+    sgbEnabled: false,
+    defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
+    defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
+    defaultSpritePaletteId: "",
+    defaultUIPaletteId: "",
+    customHead: "",
+    navigatorSplitSizes: [300, 100, 100],
+    showNavigator: true,
+    defaultFontId: "",
+    defaultCharacterEncoding: "",
+    defaultPlayerSprites: {},
+    musicDriver: "huge",
+    cartType: "mbc5",
+    batterylessEnabled: false,
+    favoriteEvents: [],
+    showCollisionSlopeTiles: false,
+    showCollisionExtraTiles: false,
+    customColorsWhite: "E8F8E0",
+    customColorsLight: "B0F088",
+    customColorsDark: "509878",
+    customColorsBlack: "202850",
+    customControlsUp: ["ArrowUp", "w"],
+    customControlsDown: ["ArrowDown", "s"],
+    customControlsLeft: ["ArrowLeft", "a"],
+    customControlsRight: ["ArrowRight", "d"],
+    customControlsA: ["Alt", "z", "j"],
+    customControlsB: ["Control", "k", "x"],
+    customControlsStart: ["Enter"],
+    customControlsSelect: ["Shift"],
+    debuggerEnabled: false,
+    debuggerScriptType: "editor",
+    debuggerVariablesFilter: "all",
+    debuggerCollapsedPanes: [],
+    debuggerPauseOnScriptChanged: false,
+    debuggerPauseOnWatchedVariableChanged: false,
+    debuggerBreakpoints: [],
+    debuggerWatchedVariables: [],
+    colorMode: "mono",
+    previewAsMono: false,
+    openBuildLogOnWarnings: true,
+    generateDebugFilesEnabled: false,
+  },
+};
+
+export const dummyCompressedProjectResources = compressProjectResources(
+  dummyProjectResources
+);
 
 export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
   const compiledFontsRet = await compileFonts(
