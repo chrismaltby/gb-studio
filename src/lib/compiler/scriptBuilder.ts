@@ -3474,7 +3474,8 @@ extern void __mute_mask_${symbol};
   // UI
 
   textNumLines = (input: string): number => {
-    return (input.match(/(\n|\r|\012|\015|\\012|\\015)/g)?.length ?? 0) + 1;
+    // eslint-disable-next-line no-control-regex
+    return (input.match(/(\n|\r|\x0a|\x0d|\\012|\\015)/g)?.length ?? 0) + 1;
   };
 
   textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {

@@ -2,7 +2,7 @@
 import "jest-extended";
 import middleware from "../../../../src/store/features/undo/undoMiddleware";
 import { RootState } from "../../../../src/store/configureStore";
-import { dummyProjectData } from "../../../dummydata";
+import { dummyCompressedProjectResources } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
 import projectActions from "../../../../src/store/features/project/projectActions";
 import { ActionCreators } from "redux-undo";
@@ -16,7 +16,7 @@ test("Should trigger undo clear history after successful project load", async ()
   const next = jest.fn();
   const action = projectActions.loadProject.fulfilled(
     {
-      data: { ...dummyProjectData },
+      resources: { ...dummyCompressedProjectResources },
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],

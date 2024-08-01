@@ -4,8 +4,8 @@ import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
 interface AnimationSpeedSelectProps {
   name: string;
-  value?: number | null;
-  onChange?: (newValue: number | null) => void;
+  value?: number;
+  onChange?: (newValue: number) => void;
 }
 
 interface AnimationSpeedOption {

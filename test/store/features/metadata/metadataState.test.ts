@@ -4,7 +4,10 @@ import reducer, {
 } from "../../../../src/store/features/metadata/metadataState";
 import projectActions from "../../../../src/store/features/project/projectActions";
 import actions from "../../../../src/store/features/metadata/metadataActions";
-import { dummyProjectData, dummyRootState } from "../../../dummydata";
+import {
+  dummyCompressedProjectResources,
+  dummyRootState,
+} from "../../../dummydata";
 import { RootState } from "../../../../src/store/configureStore";
 
 test("Should change the path and root to new path and root and set loaded to true after loading is finished", () => {
@@ -13,10 +16,13 @@ test("Should change the path and root to new path and root and set loaded to tru
   };
   const action = projectActions.loadProject.fulfilled(
     {
-      data: {
-        ...dummyProjectData,
-        name: "Testing Project",
-        author: "Chris",
+      resources: {
+        ...dummyCompressedProjectResources,
+        metadata: {
+          ...dummyCompressedProjectResources.metadata,
+          name: "Testing Project",
+          author: "Chris",
+        },
       },
       path: "new_test_root/project_copy.gbsproj",
       scriptEventDefs: {},

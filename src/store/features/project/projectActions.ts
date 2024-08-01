@@ -1,4 +1,4 @@
-import { createAsyncThunk, createAction, Dictionary } from "@reduxjs/toolkit";
+import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import {
   EntitiesState,
   ProjectEntitiesData,
@@ -11,17 +11,16 @@ import {
   SoundData,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type { RootState } from "store/configureStore";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
 import { denormalizeEntities } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
-import {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
+import type { LoadProjectResult } from "lib/project/loadProjectData";
+import { ProjectResources } from "shared/lib/resources/types";
+import { compressProjectResources } from "shared/lib/resources/compression";
+import { buildCompressedProjectResourcesPatch } from "shared/lib/resources/patch";
 
 let saving = false;
 
@@ -38,15 +37,25 @@ export const denormalizeProject = (project: {
   entities: EntitiesState;
   settings: SettingsState;
   metadata: MetadataState;
-}): ProjectData => {
+}): ProjectResources => {
+  console.time("denormalizeProject");
+  // @TODO Set this to return Readonly<ProjectResources>
   const entitiesData = denormalizeEntities(project.entities);
-  return JSON.parse(
-    JSON.stringify({
+  console.timeEnd("denormalizeProject");
+
+  console.log({ entitiesData });
+  console.log({ entitiesData });
+  return {
+    ...entitiesData,
+    settings: {
+      _resourceType: "settings",
+      ...project.settings,
+    },
+    metadata: {
+      _resourceType: "project",
       ...project.metadata,
-      ...entitiesData,
-      settings: project.settings,
-    })
-  );
+    },
+  };
 };
 
 export const trimProjectData = (data: ProjectData): ProjectData => {
@@ -124,33 +133,19 @@ const openProject = createAction<string>("project/openProject");
 const closeProject = createAction<void>("project/closeProject");
 
 const loadProject = createAsyncThunk<
-  {
-    data: ProjectData;
-    path: string;
-    scriptEventDefs: Dictionary<ScriptEventDef>;
-    engineFields: EngineFieldSchema[];
-    sceneTypes: SceneTypeSchema[];
-    modifiedSpriteIds: string[];
-    isMigrated: boolean;
-  },
+  LoadProjectResult & { path: string },
   string
 >("project/loadProject", async (path) => {
-  const {
-    data,
-    scriptEventDefs,
-    engineFields,
-    sceneTypes,
-    modifiedSpriteIds,
-    isMigrated,
-  } = await API.project.loadProject();
+  console.log("CALL API LOAD PROJECT", new Date().valueOf());
+  console.time("projectActions.loadProject");
+  const data = await API.project.loadProject();
+  console.timeEnd("projectActions.loadProject");
+  // throw new Error("CANCEL LOAD");
+  // console.log({ resources });
+  console.log("loadProject action", { data });
   return {
-    data,
+    ...data,
     path,
-    scriptEventDefs,
-    engineFields,
-    sceneTypes,
-    modifiedSpriteIds,
-    isMigrated,
   };
 });
 
@@ -253,6 +248,8 @@ const removeSoundAsset = createAction<{ soundId: string }>(
 const saveProject = createAsyncThunk<void>(
   "project/saveProject",
   async (_, thunkApi) => {
+    console.log("SAVE PROJECT");
+    console.time("saveProject action PREPARE SAVE PROJECT");
     const state = thunkApi.getState() as RootState;
 
     if (!state.document.loaded) {
@@ -265,11 +262,11 @@ const saveProject = createAsyncThunk<void>(
     saving = true;
 
     try {
-      const normalizedProject = trimProjectData(
-        denormalizeProject(state.project.present)
-      );
+      const normalizedProject = denormalizeProject(state.project.present);
 
-      const data: ProjectData = {
+      console.log({ normalizedProject });
+
+      const data = compressProjectResources({
         ...normalizedProject,
         settings: {
           ...normalizedProject.settings,
@@ -280,10 +277,29 @@ const saveProject = createAsyncThunk<void>(
             ? state.editor.navigatorSplitSizes
             : normalizedProject.settings.navigatorSplitSizes,
         },
-      };
+      });
+      console.log({ compressedData: data });
+      console.timeEnd("saveProject action PREPARE SAVE PROJECT");
 
       // Save
-      await API.project.saveProject(data);
+      console.timeEnd("saveProject action PREPARE SAVE PROJECT");
+
+      console.time("saveProject action GET CHECKSUMS");
+      const resourceChecksums = await API.project.getResourceChecksums();
+      console.timeEnd("saveProject action GET CHECKSUMS");
+      console.log({ resourceChecksums });
+
+      console.time("saveProject action CREATE PATCH");
+      const patch = buildCompressedProjectResourcesPatch(
+        data,
+        resourceChecksums
+      );
+      console.timeEnd("saveProject action CREATE PATCH");
+      console.log({ patch });
+      console.time("saveProject action SEND TO MAIN");
+
+      await API.project.saveProject(patch);
+      console.timeEnd("saveProject action SEND TO MAIN");
     } catch (e) {
       console.error(e);
     }

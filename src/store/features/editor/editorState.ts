@@ -955,18 +955,18 @@ const editorSlice = createSlice({
       // Remove world focus when loading project and set scroll settings from project
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
         state.worldFocus = false;
-        state.zoom = action.payload.data.settings?.zoom || state.zoom;
+        state.zoom = action.payload.resources.settings?.zoom || state.zoom;
         state.worldScrollX =
-          action.payload.data.settings?.worldScrollX || state.worldScrollX;
+          action.payload.resources.settings?.worldScrollX || state.worldScrollX;
         state.worldScrollY =
-          action.payload.data.settings?.worldScrollY || state.worldScrollY;
+          action.payload.resources.settings?.worldScrollY || state.worldScrollY;
         if (
           initialState.navigatorSplitSizes.length ===
-          action.payload.data.settings?.navigatorSplitSizes?.length
+          action.payload.resources.settings?.navigatorSplitSizes?.length
         ) {
           // Only use navigatorSplitSizes if correct number of splits provided
           state.navigatorSplitSizes =
-            action.payload.data.settings?.navigatorSplitSizes ||
+            action.payload.resources.settings?.navigatorSplitSizes ||
             state.navigatorSplitSizes;
         }
       })

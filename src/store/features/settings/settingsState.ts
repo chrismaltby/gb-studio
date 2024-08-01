@@ -170,7 +170,7 @@ const settingsSlice = createSlice({
     builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
       return {
         ...state,
-        ...action.payload.data.settings,
+        ...action.payload.resources.settings,
       };
     }),
 });

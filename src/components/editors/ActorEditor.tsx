@@ -18,6 +18,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
   ActorDirection,
   ActorNormalized,
+  CollisionGroup,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
@@ -256,12 +257,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
 
   const onChangeAnimSpeed = useCallback(
-    (e: number | null) => onChangeActorProp("animSpeed", e),
+    (e: number) => onChangeActorProp("animSpeed", e),
     [onChangeActorProp]
   );
 
   const onChangeCollisionGroup = useCallback(
-    (e: string) => onChangeActorProp("collisionGroup", e),
+    (e: CollisionGroup) => onChangeActorProp("collisionGroup", e),
     [onChangeActorProp]
   );
 

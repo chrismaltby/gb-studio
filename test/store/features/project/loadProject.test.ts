@@ -2,7 +2,7 @@ import reducer, {
   initialState,
 } from "../../../../src/store/features/document/documentState";
 import actions from "../../../../src/store/features/project/projectActions";
-import { dummyProjectData } from "../../../dummydata";
+import { dummyCompressedProjectResources } from "../../../dummydata";
 
 test("Should set loaded state to false while loading project", () => {
   const state = {
@@ -24,7 +24,7 @@ test("Should change the path and root to new path and root and set loaded to tru
   };
   const action = actions.loadProject.fulfilled(
     {
-      data: dummyProjectData,
+      resources: dummyCompressedProjectResources,
       path: "new_test_root/project_copy.gbsproj",
       scriptEventDefs: {},
       engineFields: [],

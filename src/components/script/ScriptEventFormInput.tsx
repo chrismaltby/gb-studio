@@ -34,6 +34,7 @@ import React, { useCallback, useContext } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   ActorDirection,
+  CollisionGroup,
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
@@ -543,7 +544,7 @@ const ScriptEventFormInput = ({
         <OffscreenSkeletonInput>
           <CollisionMaskPicker
             id={id}
-            value={value}
+            value={value as CollisionGroup[]}
             onChange={onChangeField}
             includePlayer={field.includePlayer}
             multiple
@@ -555,7 +556,7 @@ const ScriptEventFormInput = ({
         <OffscreenSkeletonInput>
           <CollisionMaskPicker
             id={id}
-            value={String(value)}
+            value={String(value) as CollisionGroup}
             onChange={onChangeField}
             includePlayer={field.includePlayer}
           />

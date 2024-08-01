@@ -260,7 +260,7 @@ export const WorldEditor: FC = () => {
             >
               <AnimationSpeedSelect
                 name="startAnimSpeed"
-                value={settings.startAnimSpeed}
+                value={settings.startAnimSpeed ?? 3}
                 onChange={onChangeStartAnimSpeed}
               />
             </FormField>

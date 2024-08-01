@@ -11,12 +11,12 @@ import ensureBuildTools from "./ensureBuildTools";
 import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
 import { gbspack } from "./gbspack";
 import l10n from "shared/lib/lang/l10n";
-import type { ProjectData } from "store/features/project/projectActions";
+import { ProjectResources } from "shared/lib/resources/types";
 
 type MakeOptions = {
   buildRoot: string;
   tmpPath: string;
-  data: ProjectData;
+  data: ProjectResources;
   buildType: "rom" | "web" | "pocket";
   debug: boolean;
   progress: (msg: string) => void;
@@ -164,7 +164,7 @@ const makeBuild = async ({
       : `../_gbstools/gbdk/bin/lcc`;
   const linkArgs = buildLinkFlags(
     linkFilePath,
-    data.name || "GBStudio",
+    data.metadata.name || "GBStudio",
     settings.cartType,
     colorEnabled,
     sgbEnabled,
