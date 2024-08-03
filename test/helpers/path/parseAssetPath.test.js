@@ -21,6 +21,9 @@ test("Should parse posix asset paths", async () => {
   expect(plugin).toBe(undefined);
   expect(relativePath).toBe("assets/backgrounds/testing.png");
   expect(file).toBe("testing.png");
+
+  PathMock.relative = PathActual.relative;
+  PathMock.sep = PathActual.sep;
 });
 
 test("Should parse win32 asset paths", async () => {
@@ -41,6 +44,9 @@ test("Should parse win32 asset paths", async () => {
   expect(plugin).toBe(undefined);
   expect(relativePath).toBe("assets\\backgrounds\\testing.png");
   expect(file).toBe("testing.png");
+
+  PathMock.relative = PathActual.relative;
+  PathMock.sep = PathActual.sep;
 });
 
 test("Should parse posix plugin paths", async () => {
@@ -61,6 +67,9 @@ test("Should parse posix plugin paths", async () => {
   expect(plugin).toBe("myplugin");
   expect(relativePath).toBe("plugins/myplugin/backgrounds/testing.png");
   expect(file).toBe("testing.png");
+
+  PathMock.relative = PathActual.relative;
+  PathMock.sep = PathActual.sep;
 });
 
 test("Should parse win32 plugin paths", async () => {
@@ -81,4 +90,7 @@ test("Should parse win32 plugin paths", async () => {
   expect(plugin).toBe("myplugin");
   expect(relativePath).toBe("plugins\\myplugin\\backgrounds\\testing.png");
   expect(file).toBe("testing.png");
+
+  PathMock.relative = PathActual.relative;
+  PathMock.sep = PathActual.sep;
 });
