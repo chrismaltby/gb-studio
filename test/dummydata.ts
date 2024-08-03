@@ -8,6 +8,8 @@ import {
   Palette,
   CustomEventNormalized,
   Scene,
+  Actor,
+  Trigger,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -105,6 +107,8 @@ export const dummyActorNormalized: ActorNormalized = {
   hit3Script: [],
 };
 
+export const dummyActor: Actor = dummyActorNormalized as unknown as Actor;
+
 export const dummyTriggerNormalized: TriggerNormalized = {
   id: "",
   name: "",
@@ -116,6 +120,9 @@ export const dummyTriggerNormalized: TriggerNormalized = {
   script: [],
   leaveScript: [],
 };
+
+export const dummyTrigger: Trigger =
+  dummyTriggerNormalized as unknown as Trigger;
 
 export const dummyPalette: Palette = {
   id: "",
