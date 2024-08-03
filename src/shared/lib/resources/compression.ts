@@ -54,9 +54,16 @@ export const decompress8bitNumberString = (str: string): number[] => {
         // Read the count
         const countStart = i;
         const countEnd = str.indexOf("+", countStart);
+        if (countStart === countEnd || countEnd === -1) {
+          // No count or no end of count marker found - string was invalid
+          return [];
+        }
         count = parseInt(str.slice(countStart, countEnd), 16);
         i = countEnd + 1;
       }
+    } else {
+      // value was missing count / markers - string was invalid
+      return [];
     }
     // Add the value `count` times to the array
     for (let j = 0; j < count; j++) {
@@ -66,7 +73,7 @@ export const decompress8bitNumberString = (str: string): number[] => {
   return arr;
 };
 
-const decompressSceneResource = (
+export const decompressSceneResource = (
   scene: CompressedSceneResourceWithChildren
 ): SceneResource => {
   return {
@@ -75,7 +82,7 @@ const decompressSceneResource = (
   };
 };
 
-const decompressBackgroundResource = (
+export const decompressBackgroundResource = (
   background: CompressedBackgroundResource
 ): BackgroundResource => {
   return {

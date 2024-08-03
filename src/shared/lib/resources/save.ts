@@ -83,20 +83,15 @@ export const buildResourceExportBuffer = (
   };
 
   console.time("SAVING PROJECT : build scene resources");
-  let sceneIndex = 0;
   for (const scene of projectResources.scenes) {
-    const sceneFolder = getSceneFolderPath(scene, sceneIndex);
-    const sceneFilename = getSceneResourcePath(scene, sceneIndex);
+    const sceneFolder = getSceneFolderPath(scene);
+    const sceneFilename = getSceneResourcePath(scene);
     // Scene Actors
     if (scene.actors.length > 0) {
       let actorIndex = 0;
       for (const actor of scene.actors) {
         if (actor) {
-          const actorFilename = getActorResourcePath(
-            sceneFolder,
-            actor,
-            actorIndex
-          );
+          const actorFilename = getActorResourcePath(sceneFolder, actor);
           writeResource<ActorResource>(actorFilename, "actor", {
             ...actor,
             _index: actorIndex,
@@ -110,11 +105,7 @@ export const buildResourceExportBuffer = (
       let triggerIndex = 0;
       for (const trigger of scene.triggers) {
         if (trigger) {
-          const triggerFilename = getTriggerResourcePath(
-            sceneFolder,
-            trigger,
-            triggerIndex
-          );
+          const triggerFilename = getTriggerResourcePath(sceneFolder, trigger);
           writeResource<TriggerResource>(triggerFilename, "trigger", {
             ...trigger,
             _index: triggerIndex,
@@ -129,7 +120,6 @@ export const buildResourceExportBuffer = (
       "scene",
       omit(scene, "actors", "triggers")
     );
-    sceneIndex++;
   }
   console.timeEnd("SAVING PROJECT : build scene resources");
 
@@ -150,18 +140,14 @@ export const buildResourceExportBuffer = (
     writeResource<SpriteResource>(spriteFilename, "sprite", sprite);
   }
 
-  let paletteIndex = 0;
   for (const palette of projectResources.palettes) {
-    const paletteFilename = getPaletteResourcePath(palette, paletteIndex);
+    const paletteFilename = getPaletteResourcePath(palette);
     writeResource<PaletteResource>(paletteFilename, "palette", palette);
-    paletteIndex++;
   }
 
-  let scriptIndex = 0;
   for (const script of projectResources.scripts) {
-    const scriptFilename = getScriptResourcePath(script, scriptIndex);
+    const scriptFilename = getScriptResourcePath(script);
     writeResource<ScriptResource>(scriptFilename, "script", script);
-    scriptIndex++;
   }
 
   for (const song of projectResources.music) {
