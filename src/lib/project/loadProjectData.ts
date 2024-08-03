@@ -1,4 +1,3 @@
-import fs from "fs-extra";
 import path from "path";
 import uuid from "uuid/v4";
 import loadAllBackgroundData, {
