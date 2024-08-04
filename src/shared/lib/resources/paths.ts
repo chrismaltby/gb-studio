@@ -11,40 +11,21 @@ import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilen
 
 type Entity = { id: string; name: string };
 
-export const sceneResourceName = (scene: Entity) => scene.name || `Scene`;
-
-export const actorResourceName = (actor: Entity) => actor.name || `Actor`;
-
-export const triggerResourceName = (trigger: Entity) =>
-  trigger.name || `Trigger`;
-
-export const paletteResourceName = (palette: Entity) =>
-  palette.name || `Palette`;
-
-export const scriptResourceName = (script: Entity) => script.name || `Script`;
-
-const entityToFilePath = (entity: Entity, nameOverride?: string): string => {
-  const name = nameOverride || entity.name;
-  return `${stripInvalidPathCharacters(name)
-    .toLocaleLowerCase()
-    .replace(/\\/g, "/")
-    .replace(/\s+/g, "_")}__${entity.id}`;
+const entityToFilePath = (entity: Entity, fallbackName: string): string => {
+  return (
+    `${stripInvalidPathCharacters(entity.name)
+      .toLocaleLowerCase()
+      .replace(/\\/g, "/")
+      .replace(/\s+/g, "_")}` || fallbackName
+  );
 };
 
 const actorToFileName = (actor: Entity): string => {
-  const name = actorResourceName(actor);
-  return `${stripInvalidPathCharacters(name)
-    .toLocaleLowerCase()
-    .replace(/[/\\]/g, "_")
-    .replace(/\s+/g, "_")}__${actor.id}`;
+  return entityToFilePath(actor, "actor").replace(/[/\\]/g, "_");
 };
 
 const triggerToFileName = (trigger: Entity): string => {
-  const name = triggerResourceName(trigger);
-  return `${stripInvalidPathCharacters(name)
-    .toLocaleLowerCase()
-    .replace(/[/\\]/g, "_")
-    .replace(/\s+/g, "_")}__${trigger.id}`;
+  return entityToFilePath(trigger, "trigger").replace(/[/\\]/g, "_");
 };
 
 const resourceTypeFolderLookup = {
@@ -66,7 +47,7 @@ const resourceTypeFolderLookup = {
 export const getResourceAssetPath = (resource: Resource): string =>
   Path.join(
     resourceTypeFolderLookup[resource._resourceType],
-    `${entityToFilePath(resource)}.gbsres`
+    `${entityToFilePath(resource, "asset")}.gbsres`
   );
 
 export const getSceneFolderPath = (
@@ -74,12 +55,11 @@ export const getSceneFolderPath = (
 ): string =>
   Path.join(
     resourceTypeFolderLookup[scene._resourceType],
-    `${entityToFilePath(scene, sceneResourceName(scene))}`
+    `${entityToFilePath(scene, "scene")}`
   );
 
-export const getSceneResourcePath = (
-  scene: CompressedSceneResourceWithChildren
-): string => Path.join(getSceneFolderPath(scene), `scene.gbsres`);
+export const getSceneResourcePath = (sceneFolder: string): string =>
+  Path.join(sceneFolder, `scene.gbsres`);
 
 export const getActorResourcePath = (
   sceneFolder: string,
@@ -118,7 +98,7 @@ export const getSceneResourcePaths = (
   const getActorPath = curryActorResourcePath(sceneFolder);
   const getTriggerPath = curryTriggerResourcePath(sceneFolder);
   return [
-    getSceneResourcePath(scene),
+    getSceneResourcePath(sceneFolder),
     scene.actors.map(getActorPath),
     scene.triggers.map(getTriggerPath),
   ].flat();
@@ -127,11 +107,11 @@ export const getSceneResourcePaths = (
 export const getPaletteResourcePath = (palette: PaletteResource) =>
   Path.join(
     resourceTypeFolderLookup[palette._resourceType],
-    `${entityToFilePath(palette, paletteResourceName(palette))}.gbsres`
+    `${entityToFilePath(palette, "palette")}.gbsres`
   );
 
 export const getScriptResourcePath = (script: ScriptResource) =>
   Path.join(
     resourceTypeFolderLookup[script._resourceType],
-    `${entityToFilePath(script, scriptResourceName(script))}.gbsres`
+    `${entityToFilePath(script, "script")}.gbsres`
   );

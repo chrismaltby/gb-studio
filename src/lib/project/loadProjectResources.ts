@@ -31,7 +31,7 @@ import { readJson } from "lib/helpers/fs/readJson";
 import { Value } from "@sinclair/typebox/value";
 import { TSchema } from "@sinclair/typebox/build/cjs/type/schema";
 import { Type, Static } from "@sinclair/typebox";
-import { pathToPosix } from "shared/lib/helpers/path";
+import { naturalSortPaths, pathToPosix } from "shared/lib/helpers/path";
 
 const globAsync = promisify(glob);
 
@@ -84,8 +84,8 @@ export const loadProjectResources = async (
   metadataResource: ProjectMetadataResource
 ): Promise<CompressedProjectResources> => {
   console.time("loadProjectData.loadProject globResources");
-  const projectResources = await globAsync(
-    path.join(projectRoot, "project", "**/*.gbsres")
+  const projectResources = naturalSortPaths(
+    await globAsync(path.join(projectRoot, "project", "**/*.gbsres"))
   );
   console.timeEnd("loadProjectData.loadProject globResources");
 

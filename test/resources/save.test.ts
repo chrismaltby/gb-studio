@@ -169,25 +169,23 @@ describe("save.ts", () => {
 
       // Verify one of the encoded resources
       const actorResource = buffer.find((file) =>
-        file.path.includes("actor1.gbsres")
+        file.path.includes("actor_1.gbsres")
       );
       expect(actorResource).toBeDefined();
       if (actorResource) {
         expect(actorResource.path).toBe(
-          "project/scenes/scene_1__scene1/actors/actor_1__actor1.gbsres"
+          "project/scenes/scene_1/actors/actor_1.gbsres"
         );
         expect(actorResource.checksum).toBe(SparkMD5.hash(actorResource.data));
         expect(JSON.parse(actorResource.data)._resourceType).toBe("actor");
       }
 
       const sceneResource = buffer.find((file) =>
-        file.path.includes("scene1/scene.gbsres")
+        file.path.includes("scene_1/scene.gbsres")
       );
       expect(sceneResource).toBeDefined();
       if (sceneResource) {
-        expect(sceneResource.path).toBe(
-          "project/scenes/scene_1__scene1/scene.gbsres"
-        );
+        expect(sceneResource.path).toBe("project/scenes/scene_1/scene.gbsres");
         expect(sceneResource.checksum).toBe(SparkMD5.hash(sceneResource.data));
         expect(JSON.parse(sceneResource.data)._resourceType).toBe("scene");
       }
