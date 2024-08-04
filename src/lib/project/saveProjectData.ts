@@ -1,41 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { ensureDir, pathExists, remove } from "fs-extra";
+import { ensureDir, remove } from "fs-extra";
 import glob from "glob";
 import { promisify } from "util";
-import { writeFileAndFlushAsync } from "lib/helpers/fs/writeFileAndFlush";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import Path from "path";
 import { WriteResourcesPatch } from "shared/lib/resources/types";
 import promiseLimit from "lib/helpers/promiseLimit";
 import { uniq } from "lodash";
 import { pathToPosix } from "shared/lib/helpers/path";
+import { encodeResource } from "shared/lib/resources/save";
 
 const CONCURRENT_RESOURCE_SAVE_COUNT = 8;
 
 const globAsync = promisify(glob);
-
-export const encodeResource = <T extends Record<string, unknown>>(
-  resourceType: string,
-  data: T
-): string => {
-  const {
-    // Extract id so it can be moved to top of data
-    id,
-    // Remove internal data so it isn't stored to disk
-    __type,
-    // Extract remaining data to write to disk
-    ...rest
-  } = data;
-  return JSON.stringify(
-    {
-      _resourceType: resourceType,
-      id,
-      ...rest,
-    },
-    null,
-    2
-  );
-};
 
 const saveProjectData = async (
   projectPath: string,
@@ -59,12 +35,6 @@ const saveProjectData = async (
   );
   const expectedResourcePaths: Set<string> = new Set(patch.paths);
   console.timeEnd("SAVING PROJECT : existingResourcePaths");
-
-  let forceWrite = true;
-  if (await pathExists(projectPartsFolder)) {
-    // await copy(projectPartsFolder, projectPartsBckFolder);
-    forceWrite = false;
-  }
 
   console.time("Ensure Resource Dirs");
   const resourceDirPaths = uniq(
