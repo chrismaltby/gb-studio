@@ -71,9 +71,9 @@ import {
   optimiseScriptValue,
   precompileScriptValue,
   sortFetchOperations,
-  multiplyScriptValueConst,
   addScriptValueConst,
   addScriptValueToScriptValue,
+  shiftLeftScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -593,6 +593,13 @@ export const toProjectileHash = ({
 
 const MAX_DIALOGUE_LINES = 5;
 const fadeSpeeds = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f];
+
+const scriptValueToSubpixels = (
+  value: ScriptValue,
+  units: DistanceUnitType
+) => {
+  return shiftLeftScriptValueConst(value, units === "tiles" ? 0x7 : 0x4);
+};
 
 // ------------------------
 
@@ -2463,12 +2470,12 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".MUL")
+      .int16(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".MUL")
+      .int16(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
 
@@ -2494,15 +2501,11 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Move To");
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
       "y"
     );
 
@@ -2586,7 +2589,7 @@ extern void __mute_mask_${symbol};
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(
-        multiplyScriptValueConst(
+        scriptValueToSubpixels(
           addScriptValueToScriptValue(
             {
               type: "property",
@@ -2595,14 +2598,14 @@ extern void __mute_mask_${symbol};
             },
             valueX
           ),
-          (units === "tiles" ? 8 : 1) * 16
+          units
         )
       ),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
       optimiseScriptValue(
-        multiplyScriptValueConst(
+        scriptValueToSubpixels(
           addScriptValueToScriptValue(
             {
               type: "property",
@@ -2611,7 +2614,7 @@ extern void __mute_mask_${symbol};
             },
             valueY
           ),
-          (units === "tiles" ? 8 : 1) * 16
+          units
         )
       ),
       "y"
@@ -2682,12 +2685,12 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".MUL")
+      .int16(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".MUL")
+      .int16(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
 
@@ -2707,15 +2710,11 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Set Position");
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
       "y"
     );
 
@@ -2783,7 +2782,7 @@ extern void __mute_mask_${symbol};
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(
-        multiplyScriptValueConst(
+        scriptValueToSubpixels(
           addScriptValueToScriptValue(
             {
               type: "property",
@@ -2792,14 +2791,14 @@ extern void __mute_mask_${symbol};
             },
             valueX
           ),
-          (units === "tiles" ? 8 : 1) * 16
+          units
         )
       ),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
       optimiseScriptValue(
-        multiplyScriptValueConst(
+        scriptValueToSubpixels(
           addScriptValueToScriptValue(
             {
               type: "property",
@@ -2808,7 +2807,7 @@ extern void __mute_mask_${symbol};
             },
             valueY
           ),
-          (units === "tiles" ? 8 : 1) * 16
+          units
         )
       ),
       "y"
@@ -3732,13 +3731,13 @@ extern void __mute_mask_${symbol};
     if (units === "tiles") {
       this._rpn() //
         .refVariable(variableX)
-        .int16(8 * 16)
-        .operator(".MUL")
+        .int16(0x7) // Multiply 128
+        .operator(".SHL")
         .int16(80 * 16)
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(8 * 16)
-        .operator(".MUL")
+        .int16(0x7) // Multiply 128
+        .operator(".SHL")
         .int16(72 * 16)
         .operator(".ADD")
         .stop();
@@ -3775,19 +3774,13 @@ extern void __mute_mask_${symbol};
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(
-        addScriptValueConst(
-          multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16),
-          xOffset
-        )
+        addScriptValueConst(scriptValueToSubpixels(valueX, units), xOffset)
       ),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
       optimiseScriptValue(
-        addScriptValueConst(
-          multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16),
-          yOffset
-        )
+        addScriptValueConst(scriptValueToSubpixels(valueY, units), yOffset)
       ),
       "y"
     );
@@ -4465,11 +4458,11 @@ extern void __mute_mask_${symbol};
       }
 
       const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-        optimiseScriptValue(multiplyScriptValueConst(x, 8 * 16)),
+        optimiseScriptValue(scriptValueToSubpixels(x, "tiles")),
         "x"
       );
       const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-        optimiseScriptValue(multiplyScriptValueConst(y, 8 * 16)),
+        optimiseScriptValue(scriptValueToSubpixels(y, "tiles")),
         "y"
       );
 
@@ -6203,15 +6196,11 @@ extern void __mute_mask_${symbol};
     this._addComment(`If Actor At Position`);
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueX, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(
-        multiplyScriptValueConst(valueY, (units === "tiles" ? 8 : 1) * 16)
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
       "y"
     );
 
@@ -6467,33 +6456,33 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .operator(".ADD")
@@ -6533,33 +6522,33 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .operator(".ADD")
@@ -6614,33 +6603,33 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(8 * 16)
-      .operator(".DIV")
+      .int16(0x7)
+      .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .operator(".ADD")

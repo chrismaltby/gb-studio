@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 
 ## [4.0.2] - 2024-07-29
 

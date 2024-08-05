@@ -501,6 +501,34 @@ export const multiplyScriptValueConst = (
   };
 };
 
+export const shiftLeftScriptValueConst = (
+  value: ScriptValue,
+  num: number
+): ScriptValue => {
+  return {
+    type: "shl",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};
+
+export const shiftRightScriptValueConst = (
+  value: ScriptValue,
+  num: number
+): ScriptValue => {
+  return {
+    type: "shr",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};
+
 export const addScriptValueConst = (
   value: ScriptValue,
   num: number
