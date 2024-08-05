@@ -59,6 +59,13 @@ const AppToolbar: FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const loaded = useAppSelector((state) => state.document.loaded);
   const modified = useAppSelector((state) => state.document.modified);
+  const saving = useAppSelector((state) => state.document.saving);
+  const saveStep = useAppSelector((state) => state.document.saveStep);
+  const saveError = useAppSelector((state) => state.document.saveError);
+  const saveWriteProgress = useAppSelector(
+    (state) => state.document.saveWriteProgress
+  );
+
   const name = useAppSelector((state) => state.project.present.metadata.name);
   const section = useAppSelector((state) => state.navigation.section);
   const zoom = useAppSelector((state) => getZoomForSection(state, section));
@@ -186,12 +193,26 @@ const AppToolbar: FC = () => {
     return <Toolbar />;
   }
 
+  let appTitle = name || "Untitled";
+  if (saveError) {
+    appTitle = `${l10n("TOOLBAR_SAVING_ERROR")} [${saveStep}]`;
+  } else if (saving && saveStep === "writing") {
+    const writeProgress =
+      saveWriteProgress.total > 0 &&
+      saveWriteProgress.completed !== saveWriteProgress.total
+        ? ` ${saveWriteProgress.completed}/${saveWriteProgress.total}`
+        : "";
+    appTitle += ` (${l10n("TOOLBAR_WRITING_FILES")}${writeProgress})`;
+  } else if (saving) {
+    appTitle += ` (${l10n("TOOLBAR_SAVING")})`;
+  } else if (modified) {
+    appTitle += ` (${l10n("TOOLBAR_MODIFIED")})`;
+  }
+
   return (
     <Toolbar focus={windowFocus}>
       <Helmet>
-        <title>{`GB Studio - ${name || "Untitled"}${
-          modified ? ` (${l10n("TOOLBAR_MODIFIED")})` : ""
-        }`}</title>
+        <title>{`GB Studio - ${appTitle}`}</title>
       </Helmet>
       <DropdownButton
         label={
@@ -228,11 +249,7 @@ const AppToolbar: FC = () => {
         />
       )}
       <FlexGrow />
-      {showTitle && (
-        <ToolbarText>
-          {name || "Untitled"} {modified && ` (${l10n("TOOLBAR_MODIFIED")})`}
-        </ToolbarText>
-      )}
+      {showTitle && <ToolbarText>{appTitle}</ToolbarText>}
       <FlexGrow />
       {showSearch && (
         <SearchInput

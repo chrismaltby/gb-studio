@@ -13,9 +13,14 @@ const CONCURRENT_RESOURCE_SAVE_COUNT = 8;
 
 const globAsync = promisify(glob);
 
+interface SaveProjectDataOptions {
+  progress?: (completed: number, total: number) => void;
+}
+
 const saveProjectData = async (
   projectPath: string,
-  patch: WriteResourcesPatch
+  patch: WriteResourcesPatch,
+  options?: SaveProjectDataOptions
 ) => {
   console.time("SAVING PROJECT");
   console.log("SAVE PROJECT DATA" + projectPath);
@@ -27,6 +32,12 @@ const saveProjectData = async (
   const projectPartsFolder = Path.join(projectFolder, "project");
 
   console.time("SAVING PROJECT : existingResourcePaths");
+
+  let completedCount = 0;
+
+  const notifyProgress = () => {
+    options?.progress?.(completedCount, writeBuffer.length);
+  };
 
   const existingResourcePaths = new Set(
     (await globAsync(Path.join(projectPartsFolder, "**/*.gbsres"))).map(
@@ -52,11 +63,14 @@ const saveProjectData = async (
 
   console.log("WRITE BUFFER SIZE=" + writeBuffer.length);
   console.time("Flush Write Buffer");
+  notifyProgress();
   await promiseLimit(
     CONCURRENT_RESOURCE_SAVE_COUNT,
     writeBuffer.map(({ path, data }) => async () => {
       console.log("WRITE FILE", path);
       await writeFileWithBackupAsync(Path.join(projectFolder, path), data);
+      completedCount++;
+      notifyProgress();
     })
   );
   console.timeEnd("Flush Write Buffer");

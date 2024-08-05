@@ -25,7 +25,7 @@
   "NAV_IMAGES": "Images",
 
   "// 3": "Toolbar --------------------------------------------------",
-  "TOOLBAR_MODIFIED": "modified",
+  "TOOLBAR_MODIFIED": "Modified",
   "TOOLBAR_ZOOM_IN": "Zoom In",
   "TOOLBAR_ZOOM_OUT": "Zoom Out",
   "TOOLBAR_ZOOM_RESET": "Zoom Reset",
@@ -36,6 +36,9 @@
   "TOOLBAR_EXPORT_POCKET": "Export Pocket",
   "TOOLBAR_RUN": "Run",
   "TOOLBAR_SEARCH": "Search...",
+  "TOOLBAR_SAVING": "Saving",
+  "TOOLBAR_SAVING_ERROR": "Error While Saving",
+  "TOOLBAR_WRITING_FILES": "Writing To Disk",
 
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Select",

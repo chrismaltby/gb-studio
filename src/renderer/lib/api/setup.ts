@@ -418,6 +418,11 @@ const APISetup = {
         "debugger:disconnected"
       ),
     },
+    project: {
+      saveProgress: createSubscribeAPI<
+        (event: IpcRendererEvent, completed: number, total: number) => void
+      >("project:save-progress"),
+    },
     settings: {
       uiScaleChanged: createSubscribeAPI<
         (event: IpcRendererEvent, scale: number) => void

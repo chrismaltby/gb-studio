@@ -13,7 +13,7 @@ type Entity = { id: string; name: string };
 
 const entityToFilePath = (entity: Entity, fallbackName: string): string => {
   return (
-    `${stripInvalidPathCharacters(entity.name)
+    `${stripInvalidPathCharacters(entity.name || "")
       .toLocaleLowerCase()
       .replace(/\\/g, "/")
       .replace(/\s+/g, "_")}` || fallbackName

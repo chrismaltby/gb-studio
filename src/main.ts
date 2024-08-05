@@ -1205,7 +1205,11 @@ ipcMain.handle("project:load", async (): Promise<LoadProjectResult> => {
 ipcMain.handle(
   "project:save",
   async (_, data: WriteResourcesPatch): Promise<void> => {
-    await saveProjectData(projectPath, data);
+    await saveProjectData(projectPath, data, {
+      progress: (completed: number, total: number) => {
+        sendToProjectWindow("project:save-progress", completed, total);
+      },
+    });
   }
 );
 

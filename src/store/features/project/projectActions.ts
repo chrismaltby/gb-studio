@@ -33,6 +33,18 @@ export type ProjectData = ProjectEntitiesData & {
   settings: SettingsState;
 };
 
+export const saveSteps = [
+  "saving",
+  "normalizing",
+  "compressing",
+  "checksums",
+  "patching",
+  "writing",
+  "complete",
+] as const;
+
+export type SaveStep = typeof saveSteps[number];
+
 export const denormalizeProject = (project: {
   entities: EntitiesState;
   settings: SettingsState;
@@ -131,6 +143,11 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
 
 const openProject = createAction<string>("project/openProject");
 const closeProject = createAction<void>("project/closeProject");
+
+const setSaveStep = createAction<SaveStep>("project/setSaveStep");
+const setSaveWriteProgress = createAction<{ completed: number; total: number }>(
+  "project/setSaveWriteProgress"
+);
 
 const loadProject = createAsyncThunk<
   LoadProjectResult & { path: string },
@@ -262,9 +279,13 @@ const saveProject = createAsyncThunk<void>(
     saving = true;
 
     try {
+      thunkApi.dispatch(setSaveStep("normalizing"));
+
       const normalizedProject = denormalizeProject(state.project.present);
 
       console.log({ normalizedProject });
+
+      thunkApi.dispatch(setSaveStep("compressing"));
 
       const data = compressProjectResources({
         ...normalizedProject,
@@ -284,10 +305,14 @@ const saveProject = createAsyncThunk<void>(
       // Save
       console.timeEnd("saveProject action PREPARE SAVE PROJECT");
 
+      thunkApi.dispatch(setSaveStep("checksums"));
+
       console.time("saveProject action GET CHECKSUMS");
       const resourceChecksums = await API.project.getResourceChecksums();
       console.timeEnd("saveProject action GET CHECKSUMS");
       console.log({ resourceChecksums });
+
+      thunkApi.dispatch(setSaveStep("patching"));
 
       console.time("saveProject action CREATE PATCH");
       const patch = buildCompressedProjectResourcesPatch(
@@ -298,10 +323,17 @@ const saveProject = createAsyncThunk<void>(
       console.log({ patch });
       console.time("saveProject action SEND TO MAIN");
 
+      thunkApi.dispatch(setSaveStep("writing"));
+
       await API.project.saveProject(patch);
+
+      thunkApi.dispatch(setSaveStep("complete"));
+
       console.timeEnd("saveProject action SEND TO MAIN");
     } catch (e) {
       console.error(e);
+      saving = false;
+      throw e;
     }
 
     saving = false;
@@ -316,6 +348,8 @@ const projectActions = {
   addFileToProject,
   reloadAssets,
   saveProject,
+  setSaveStep,
+  setSaveWriteProgress,
   renameAsset,
   renameBackgroundAsset,
   renameTilesetAsset,
