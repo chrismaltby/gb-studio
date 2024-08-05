@@ -30,6 +30,7 @@ import {
   EngineFieldValuesResource,
   MusicResource,
   PaletteResource,
+  ProjectMetadataResource,
   SettingsResource,
   SpriteResource,
   VariablesResource,
@@ -102,7 +103,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   console.timeEnd("loadProjectData.loadProject sceneTypes");
 
   const { _version: originalVersion, _release: originalRelease } =
-    originalJson as any;
+    originalJson as ProjectMetadataResource;
 
   const isMigrated =
     resources.metadata._version !== originalVersion ||
