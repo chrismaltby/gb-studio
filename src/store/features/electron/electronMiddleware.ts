@@ -18,6 +18,8 @@ import API from "renderer/lib/api";
 import { EVENT_CALL_CUSTOM_EVENT, NAVIGATOR_MIN_WIDTH } from "consts";
 import l10n from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
+import { unwrapResult } from "@reduxjs/toolkit";
+import errorActions from "store/features/error/errorActions";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -72,8 +74,27 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         showNavigator: action.payload,
       });
     } else if (projectActions.loadProject.rejected.match(action)) {
-      console.log("PROJECT LOAD FAILED");
-      // API.project.close();
+      console.error(action);
+      try {
+        unwrapResult(action);
+      } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "message" in error &&
+          typeof error.message === "string"
+        ) {
+          store.dispatch(
+            errorActions.setGlobalError({
+              message: error.message,
+              filename: "",
+              line: 0,
+              col: 0,
+              stackTrace: error.message,
+            })
+          );
+        }
+      }
     } else if (projectActions.closeProject.match(action)) {
       API.project.close();
     } else if (entitiesActions.removeCustomEvent.match(action)) {

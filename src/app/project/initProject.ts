@@ -50,6 +50,23 @@ window.addEventListener("error", (error) => {
   return false;
 });
 
+window.addEventListener("unhandledrejection", (error) => {
+  error.stopPropagation();
+  error.preventDefault();
+  console.log(error);
+  console.error(error);
+  store.dispatch(
+    errorActions.setGlobalError({
+      message: error.reason.message,
+      filename: "",
+      line: 0,
+      col: 0,
+      stackTrace: error.reason.stack,
+    })
+  );
+  return false;
+});
+
 const onUndo = () => {
   if (store.getState().trackerDocument.past.length > 0) {
     store.dispatch({ type: TRACKER_UNDO });
