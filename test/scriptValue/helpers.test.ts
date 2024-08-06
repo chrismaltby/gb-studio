@@ -10,6 +10,7 @@ import {
   optimiseScriptValue,
   precompileScriptValue,
   sortFetchOperations,
+  walkScriptValue,
 } from "../../src/shared/lib/scriptValue/helpers";
 
 test("should perform constant folding for addition", () => {
@@ -1330,4 +1331,139 @@ test("should sort fetch operations so that properties on same target/prop are gr
       },
     },
   ]);
+});
+
+describe("walkScriptValue", () => {
+  const logValues = (input: ScriptValue): string[] => {
+    const values: string[] = [];
+    walkScriptValue(input, (val) => values.push(val.type));
+    return values;
+  };
+
+  test("should walk through a simple add operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 5,
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+    expect(logValues(input)).toEqual(["add", "number", "number"]);
+  });
+
+  test("should walk through nested operations", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 5,
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 5,
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+    };
+    expect(logValues(input)).toEqual([
+      "mul",
+      "sub",
+      "number",
+      "number",
+      "add",
+      "number",
+      "number",
+    ]);
+  });
+
+  test("should walk through unary operation", () => {
+    const input: ScriptValue = {
+      type: "not",
+      value: {
+        type: "number",
+        value: 1,
+      },
+    };
+    expect(logValues(input)).toEqual(["not", "number"]);
+  });
+
+  test("should walk through unary operation with nested binary operation", () => {
+    const input: ScriptValue = {
+      type: "not",
+      value: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 1,
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+    };
+    expect(logValues(input)).toEqual(["not", "add", "number", "number"]);
+  });
+
+  test("should handle complex nested structure", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "sub",
+        valueA: {
+          type: "add",
+          valueA: {
+            type: "number",
+            value: 2,
+          },
+          valueB: {
+            type: "number",
+            value: 3,
+          },
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+      valueB: {
+        type: "div",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+    };
+    expect(logValues(input)).toEqual([
+      "mul",
+      "sub",
+      "add",
+      "number",
+      "number",
+      "number",
+      "div",
+      "number",
+      "number",
+    ]);
+  });
 });

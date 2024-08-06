@@ -342,7 +342,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
   return stack.length === 1 ? stack[0] : zero;
 };
 
-const walkScriptValue = (
+export const walkScriptValue = (
   input: ScriptValue,
   fn: (val: ScriptValue) => void
 ): void => {
@@ -352,6 +352,9 @@ const walkScriptValue = (
   }
   if ("valueB" in input && input.valueB) {
     walkScriptValue(input.valueB, fn);
+  }
+  if ("value" in input && input.value && isUnaryOperation(input)) {
+    walkScriptValue(input.value, fn);
   }
 };
 
