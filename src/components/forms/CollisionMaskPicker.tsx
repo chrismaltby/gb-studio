@@ -38,7 +38,7 @@ const CollisionMaskPicker = ({
           ? [
               {
                 value: "",
-                label: "None",
+                label: l10n("FIELD_NONE"),
                 title: l10n("FIELD_NONE"),
               },
             ]
@@ -47,7 +47,7 @@ const CollisionMaskPicker = ({
           ? [
               {
                 value: "player",
-                label: "Player",
+                label: l10n("FIELD_PLAYER"),
                 title: l10n("FIELD_PLAYER"),
               },
             ]
