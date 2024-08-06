@@ -6,6 +6,7 @@ import {
   addScriptValueConst,
   addScriptValueToScriptValue,
   expressionToScriptValue,
+  extractScriptValueVariables,
   multiplyScriptValueConst,
   optimiseScriptValue,
   precompileScriptValue,
@@ -1465,5 +1466,192 @@ describe("walkScriptValue", () => {
       "number",
       "number",
     ]);
+  });
+});
+
+describe("extractScriptValueVariables", () => {
+  test("should extract single variable from a simple add operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "V0",
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual(["V0"]);
+  });
+
+  test("should extract multiple variables from nested operations", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "sub",
+        valueA: {
+          type: "variable",
+          value: "V1",
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "add",
+        valueA: {
+          type: "variable",
+          value: "V2",
+        },
+        valueB: {
+          type: "variable",
+          value: "V3",
+        },
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual(["V1", "V2", "V3"]);
+  });
+
+  test("should handle unary operation with variable", () => {
+    const input: ScriptValue = {
+      type: "not",
+      value: {
+        type: "variable",
+        value: "V4",
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual(["V4"]);
+  });
+
+  test("should handle operation with no variables", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 5,
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual([]);
+  });
+
+  test("should extract variables from complex nested structure", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "sub",
+        valueA: {
+          type: "add",
+          valueA: {
+            type: "variable",
+            value: "V5",
+          },
+          valueB: {
+            type: "variable",
+            value: "V6",
+          },
+        },
+        valueB: {
+          type: "variable",
+          value: "V7",
+        },
+      },
+      valueB: {
+        type: "div",
+        valueA: {
+          type: "variable",
+          value: "V8",
+        },
+        valueB: {
+          type: "variable",
+          value: "V9",
+        },
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual([
+      "V5",
+      "V6",
+      "V7",
+      "V8",
+      "V9",
+    ]);
+  });
+
+  test("should extract variables from expression", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "42 * ($10$ * $V4$) + $T0$",
+    };
+    expect(extractScriptValueVariables(input)).toEqual(["10", "V4", "T0"]);
+  });
+
+  test("should extract variables from nested expressions", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "expression",
+        value: "$V1$ * ($V2$ + $V3$)",
+      },
+      valueB: {
+        type: "expression",
+        value: "($V4$ - $V5$) / $V6$",
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual([
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5",
+      "V6",
+    ]);
+  });
+
+  test("should handle expression with no variables", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "42 * (3 + 5)",
+    };
+    expect(extractScriptValueVariables(input)).toEqual([]);
+  });
+
+  test("should handle complex expression with variables", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "42 * ($10$ * $V4$) + $T0$ + min($L1$, 10)",
+    };
+    expect(extractScriptValueVariables(input)).toEqual([
+      "10",
+      "V4",
+      "T0",
+      "L1",
+    ]);
+  });
+
+  test("should handle nested expression within operation", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "expression",
+        value: "$V1$ * 3",
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "expression",
+          value: "$V2$ + 5",
+        },
+        valueB: {
+          type: "variable",
+          value: "V3",
+        },
+      },
+    };
+    expect(extractScriptValueVariables(input)).toEqual(["V1", "V2", "V3"]);
   });
 });

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix localisation of collision mask input field
 - Fix issue where using variables used within Not, Rnd(), Abs(), etc. in scripts were not being listed as parameters
+- Fix Variable Uses list to include variables used in script value calculations
 
 ## [4.0.2] - 2024-07-29
 

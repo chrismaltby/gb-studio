@@ -16,12 +16,15 @@ import {
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
   ScriptEventDefs,
+  isScriptValueField,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
+import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 export type VariableUse = {
   id: string;
@@ -94,25 +97,45 @@ workerCtx.onmessage = async (evt) => {
         return;
       }
       for (const arg in scriptEvent.args) {
+        const argValue = scriptEvent.args[arg];
+
+        // If field was a script value extract used variables in value
+        // and check if any match this variable
         if (
-          !isVariableField(
+          isScriptValueField(
             scriptEvent.command,
             arg,
             scriptEvent.args,
             scriptEventDefs
           )
         ) {
-          continue;
+          if (isScriptValue(argValue)) {
+            const variables = extractScriptValueVariables(argValue);
+            if (!variables.includes(variableId)) {
+              continue;
+            }
+          }
         }
+        // If field was a variable check if it matches this variable
+        else if (
+          isVariableField(
+            scriptEvent.command,
+            arg,
+            scriptEvent.args,
+            scriptEventDefs
+          )
+        ) {
+          const isVariableId =
+            argValue === variableId ||
+            (isUnionValue(argValue) &&
+              argValue.type === "variable" &&
+              argValue.value === variableId);
 
-        const argValue = scriptEvent.args[arg];
-        const isVariableId =
-          argValue === variableId ||
-          (isUnionValue(argValue) &&
-            argValue.type === "variable" &&
-            argValue.value === variableId);
-
-        if (!isVariableId) {
+          if (!isVariableId) {
+            continue;
+          }
+        } else {
+          // Field was not a script value or a variable so can be ignored
           continue;
         }
 

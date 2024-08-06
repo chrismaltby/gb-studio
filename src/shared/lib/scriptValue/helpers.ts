@@ -399,15 +399,13 @@ export const extractScriptValueVariables = (input: ScriptValue): string[] => {
     } else if (val.type === "expression") {
       const text = val.value;
       if (text && typeof text === "string") {
-        const variablePtrs = text.match(/\$V[0-9]\$/g);
-        if (variablePtrs) {
-          variablePtrs.forEach((variablePtr: string) => {
-            const variable = variablePtr[2];
-            const variableId = `V${variable}`;
-            if (!variables.includes(variableId)) {
-              variables.push(variableId);
-            }
-          });
+        const expressionValue = expressionToScriptValue(text);
+        const expressionVariables =
+          extractScriptValueVariables(expressionValue);
+        for (const expressionVariable of expressionVariables) {
+          if (!variables.includes(expressionVariable)) {
+            variables.push(expressionVariable);
+          }
         }
       }
     }
