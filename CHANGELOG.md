@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Tilesets asset folder added to all sample projects  [@pau-tomas](https://github.com/pau-tomas)
+- Add `_stackPushVariable(variable)` and `_isIndirectVariable(variable)` helpers for use in plugins
 
 ### Changed
 

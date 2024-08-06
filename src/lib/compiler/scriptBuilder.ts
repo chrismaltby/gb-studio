@@ -909,6 +909,15 @@ class ScriptBuilder {
     this.stackPtr++;
   };
 
+  _stackPushVariable = (variable: ScriptBuilderVariable) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isIndirectVariable(variable)) {
+      this._stackPushInd(variableAlias);
+    } else {
+      this._stackPush(variableAlias);
+    }
+  };
+
   _stackPushReference = (
     addr: ScriptBuilderStackVariable,
     comment?: string
@@ -2213,15 +2222,15 @@ extern void __mute_mask_${symbol};
     return false;
   };
 
-  _isFunctionArg(x: unknown): x is ScriptBuilderFunctionArg {
+  _isFunctionArg = (x: unknown): x is ScriptBuilderFunctionArg => {
     return (
       isObject(x) && typeof x["type"] === "string" && x.type === "argument"
     );
-  }
+  };
 
-  _isIndirectVariable(x: ScriptBuilderVariable): boolean {
+  _isIndirectVariable = (x: ScriptBuilderVariable): boolean => {
     return this._isFunctionArg(x) && x.indirect;
-  }
+  };
 
   _declareLocal = (
     symbol: string,
