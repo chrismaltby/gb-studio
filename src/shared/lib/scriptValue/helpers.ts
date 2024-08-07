@@ -358,6 +358,31 @@ export const walkScriptValue = (
   }
 };
 
+// recursively search script value for matching node, stop iterating on first match
+export const someInScriptValue = (
+  input: ScriptValue,
+  fn: (val: ScriptValue) => boolean
+): boolean => {
+  const stack: ScriptValue[] = [input];
+
+  while (stack.length > 0) {
+    const currentNode = stack.pop();
+    if (!currentNode) continue;
+
+    if (fn(currentNode)) {
+      return true;
+    }
+
+    if ("valueA" in currentNode && "valueB" in currentNode) {
+      stack.push(currentNode.valueB, currentNode.valueA);
+    } else if ("value" in currentNode && isUnaryOperation(currentNode)) {
+      stack.push(currentNode.value);
+    }
+  }
+
+  return false;
+};
+
 export const mapScriptValueLeafNodes = (
   input: ScriptValue,
   fn: (val: ScriptValue) => ScriptValue
@@ -411,6 +436,25 @@ export const extractScriptValueVariables = (input: ScriptValue): string[] => {
     }
   });
   return variables;
+};
+
+// recursively search script value for node containing variable, stop iterating on first match
+export const variableInScriptValue = (
+  variable: string,
+  input: ScriptValue
+): boolean => {
+  return someInScriptValue(input, (val) => {
+    if (val.type === "variable" && val.value === variable) {
+      return true;
+    } else if (val.type === "expression") {
+      const text = val.value;
+      if (text && typeof text === "string") {
+        const expressionValue = expressionToScriptValue(text);
+        return variableInScriptValue(variable, expressionValue);
+      }
+    }
+    return false;
+  });
 };
 
 export const precompileScriptValue = (

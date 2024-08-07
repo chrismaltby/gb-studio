@@ -10,7 +10,9 @@ import {
   multiplyScriptValueConst,
   optimiseScriptValue,
   precompileScriptValue,
+  someInScriptValue,
   sortFetchOperations,
+  variableInScriptValue,
   walkScriptValue,
 } from "../../src/shared/lib/scriptValue/helpers";
 
@@ -1653,5 +1655,466 @@ describe("extractScriptValueVariables", () => {
       },
     };
     expect(extractScriptValueVariables(input)).toEqual(["V1", "V2", "V3"]);
+  });
+});
+
+describe("someInScriptValue", () => {
+  test("should return true for a simple add operation with a matching node", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "V0",
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+    const result = someInScriptValue(
+      input,
+      (node) => node.type === "number" && node.value === 3
+    );
+    expect(result).toBe(true);
+  });
+
+  test("should return false for a simple add operation with no matching node", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "V0",
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+    const result = someInScriptValue(
+      input,
+      (node) => node.type === "number" && node.value === 4
+    );
+    expect(result).toBe(false);
+  });
+
+  test("should return true for a nested operation with a matching node", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 2,
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    };
+    const result = someInScriptValue(
+      input,
+      (node) => node.type === "number" && node.value === 5
+    );
+    expect(result).toBe(true);
+  });
+
+  test("should return false for a nested operation with no matching node", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 2,
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    };
+    const result = someInScriptValue(
+      input,
+      (node) => node.type === "number" && node.value === 10
+    );
+    expect(result).toBe(false);
+  });
+
+  test("should return true for a unary operation with a matching node", () => {
+    const input: ScriptValue = {
+      type: "not",
+      value: {
+        type: "true",
+      },
+    };
+    const result = someInScriptValue(input, (node) => node.type === "true");
+    expect(result).toBe(true);
+  });
+
+  test("should return false for a unary operation with no matching node", () => {
+    const input: ScriptValue = {
+      type: "not",
+      value: {
+        type: "true",
+      },
+    };
+    const result = someInScriptValue(input, (node) => node.type === "false");
+    expect(result).toBe(false);
+  });
+
+  test("should return true when root node itself matches", () => {
+    const input: ScriptValue = {
+      type: "true",
+    };
+    const result = someInScriptValue(input, (node) => node.type === "true");
+    expect(result).toBe(true);
+  });
+
+  test("should handle complex nested operations", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "mul",
+        valueA: {
+          type: "variable",
+          value: "V0",
+        },
+        valueB: {
+          type: "div",
+          valueA: {
+            type: "number",
+            value: 6,
+          },
+          valueB: {
+            type: "number",
+            value: 2,
+          },
+        },
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 4,
+        },
+      },
+    };
+    const result = someInScriptValue(
+      input,
+      (node) => node.type === "variable" && node.value === "V0"
+    );
+    expect(result).toBe(true);
+  });
+
+  test("should exit early on first matching node in simple add operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 3,
+      },
+      valueB: {
+        type: "number",
+        value: 4,
+      },
+    };
+
+    const mockFn = jest.fn(
+      (node) => node.type === "number" && node.value === 3
+    );
+
+    const result = someInScriptValue(input, mockFn);
+
+    expect(result).toBe(true);
+    expect(mockFn).toHaveBeenCalledTimes(2);
+  });
+
+  test("should exit early on first matching node in nested operation", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 2,
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    };
+
+    const mockFn = jest.fn(
+      (node) => node.type === "number" && node.value === 3
+    );
+
+    const result = someInScriptValue(input, mockFn);
+
+    expect(result).toBe(true);
+    expect(mockFn).toHaveBeenCalledTimes(4);
+  });
+
+  test("should exit early on first matching node in complex nested operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "mul",
+        valueA: {
+          type: "variable",
+          value: "V0",
+        },
+        valueB: {
+          type: "div",
+          valueA: {
+            type: "number",
+            value: 6,
+          },
+          valueB: {
+            type: "number",
+            value: 2,
+          },
+        },
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 4,
+        },
+      },
+    };
+
+    const mockFn = jest.fn(
+      (node) => node.type === "number" && node.value === 6
+    );
+
+    const result = someInScriptValue(input, mockFn);
+
+    expect(result).toBe(true);
+    expect(mockFn).toHaveBeenCalledTimes(5);
+  });
+
+  test("should exit early on first matching node even if it's a unary operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "not",
+        value: {
+          type: "true",
+        },
+      },
+      valueB: {
+        type: "false",
+      },
+    };
+
+    const mockFn = jest.fn((node) => node.type === "true");
+
+    const result = someInScriptValue(input, mockFn);
+
+    expect(result).toBe(true);
+    expect(mockFn).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe("variableInScriptValue", () => {
+  test("should return true when variable is found in a simple add operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "V0",
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(true);
+  });
+
+  test("should return false when variable is not found in a simple add operation", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "V1",
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(false);
+  });
+
+  test("should return true when variable is found in a nested operation", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "variable",
+          value: "V0",
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(true);
+  });
+
+  test("should return false when variable is not found in a nested operation", () => {
+    const input: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "variable",
+          value: "V1",
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(false);
+  });
+
+  test("should return true when variable is found in an expression", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "5 + $V0$",
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(true);
+  });
+
+  test("should return false when variable is not found in an expression", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "10 * $V1$",
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(false);
+  });
+
+  test("should handle complex nested operations", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "mul",
+        valueA: {
+          type: "variable",
+          value: "V0",
+        },
+        valueB: {
+          type: "div",
+          valueA: {
+            type: "number",
+            value: 6,
+          },
+          valueB: {
+            type: "number",
+            value: 2,
+          },
+        },
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 4,
+        },
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(true);
+  });
+
+  test("should return false if variable not present in complex nested operations", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "mul",
+        valueA: {
+          type: "variable",
+          value: "V1",
+        },
+        valueB: {
+          type: "div",
+          valueA: {
+            type: "number",
+            value: 6,
+          },
+          valueB: {
+            type: "number",
+            value: 2,
+          },
+        },
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 4,
+        },
+      },
+    };
+
+    const result = variableInScriptValue("V0", input);
+    expect(result).toBe(false);
   });
 });

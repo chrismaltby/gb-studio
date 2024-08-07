@@ -23,7 +23,7 @@ import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
-import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
+import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 
 export type VariableUse = {
@@ -109,11 +109,11 @@ workerCtx.onmessage = async (evt) => {
             scriptEventDefs
           )
         ) {
-          if (isScriptValue(argValue)) {
-            const variables = extractScriptValueVariables(argValue);
-            if (!variables.includes(variableId)) {
-              continue;
-            }
+          if (
+            !isScriptValue(argValue) ||
+            !variableInScriptValue(variableId, argValue)
+          ) {
+            continue;
           }
         }
         // If field was a variable check if it matches this variable
