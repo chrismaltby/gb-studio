@@ -1,0 +1,51 @@
+name: Coverage Report
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "21.6.2"
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: |
+          yarn --ignore-engines
+
+      - name: Generate Coverage
+        run: |
+          yarn coverage
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./coverage/lcov-report"
+
+  deploy-coverage:
+    runs-on: ubuntu-latest
+    needs: coverage
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
