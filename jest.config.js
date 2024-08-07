@@ -10,7 +10,6 @@ module.exports = {
   },
   moduleNameMapper: {
     // Mocks
-    electron: "<rootDir>/test/__mocks__/electronMock.js",
     "^!!raw-loader!(.*)\\.css$": "<rootDir>/test/__mocks__/styleMock.js",
     "^renderer/lib/api": "<rootDir>/test/__mocks__/apiMock.ts",
     // Event imports
@@ -24,5 +23,6 @@ module.exports = {
     "^ui(.*)$": "<rootDir>/src/components/ui/$1",
     "^renderer(.*)$": "<rootDir>/src/renderer/$1",
     "^shared(.*)$": "<rootDir>/src/shared/$1",
+    "patrons.json": "<rootDir>/patrons.json",
   },
 };

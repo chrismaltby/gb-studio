@@ -3,5 +3,11 @@
 import "@testing-library/jest-dom";
 import APIMock from "./__mocks__/apiMock";
 
-(global as any).__non_webpack_require__ = (a: any) => require(a);
-(global as any).API = APIMock;
+const mockGlobal = global as any;
+
+mockGlobal.__non_webpack_require__ = (a: any) => require(a);
+mockGlobal.API = APIMock;
+
+mockGlobal.SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY =
+  "SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY";
+mockGlobal.SPLASH_WINDOW_WEBPACK_ENTRY = "SPLASH_WINDOW_WEBPACK_ENTRY";
