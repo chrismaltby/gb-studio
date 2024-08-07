@@ -96,6 +96,22 @@ workerCtx.onmessage = async (evt) => {
       if (!scriptEvent.args) {
         return;
       }
+
+      // If already found this actor skip it
+      if (actor && useLookup[actor.id] && useLookup[scene.id]) {
+        return;
+      }
+
+      // If already found this trigger skip it
+      if (trigger && useLookup[trigger.id] && useLookup[scene.id]) {
+        return;
+      }
+
+      // If already found this scene skip it
+      if (!actor && !trigger && useLookup[scene.id]) {
+        return;
+      }
+
       for (const arg in scriptEvent.args) {
         const argValue = scriptEvent.args[arg];
 
@@ -197,6 +213,15 @@ workerCtx.onmessage = async (evt) => {
       scriptEventsLookup,
       undefined,
       (scriptEvent: ScriptEventNormalized) => {
+        if (!scriptEvent.args) {
+          return;
+        }
+
+        // If already found this script skip it
+        if (useLookup[customEvent.id]) {
+          return;
+        }
+
         for (const arg in scriptEvent.args) {
           if (
             !isVariableField(
@@ -220,7 +245,7 @@ workerCtx.onmessage = async (evt) => {
             continue;
           }
 
-          if (!useLookup[customEvent.id])
+          if (!useLookup[customEvent.id]) {
             uses.push({
               id: customEvent.id,
               name: customEventName(customEvent, customEventIndex),
@@ -229,7 +254,8 @@ workerCtx.onmessage = async (evt) => {
               customEvent,
               customEventIndex: customEventIndex,
             });
-          useLookup[customEvent.id] = true;
+            useLookup[customEvent.id] = true;
+          }
         }
       }
     );
