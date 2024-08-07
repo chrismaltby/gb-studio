@@ -16,12 +16,15 @@ import {
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
   ScriptEventDefs,
+  isScriptValueField,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
+import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 export type VariableUse = {
   id: string;
@@ -93,26 +96,62 @@ workerCtx.onmessage = async (evt) => {
       if (!scriptEvent.args) {
         return;
       }
+
+      // If already found this actor skip it
+      if (actor && useLookup[actor.id] && useLookup[scene.id]) {
+        return;
+      }
+
+      // If already found this trigger skip it
+      if (trigger && useLookup[trigger.id] && useLookup[scene.id]) {
+        return;
+      }
+
+      // If already found this scene skip it
+      if (!actor && !trigger && useLookup[scene.id]) {
+        return;
+      }
+
       for (const arg in scriptEvent.args) {
+        const argValue = scriptEvent.args[arg];
+
+        // If field was a script value extract used variables in value
+        // and check if any match this variable
         if (
-          !isVariableField(
+          isScriptValueField(
             scriptEvent.command,
             arg,
             scriptEvent.args,
             scriptEventDefs
           )
         ) {
-          continue;
+          if (
+            !isScriptValue(argValue) ||
+            !variableInScriptValue(variableId, argValue)
+          ) {
+            continue;
+          }
         }
+        // If field was a variable check if it matches this variable
+        else if (
+          isVariableField(
+            scriptEvent.command,
+            arg,
+            scriptEvent.args,
+            scriptEventDefs
+          )
+        ) {
+          const isVariableId =
+            argValue === variableId ||
+            (isUnionValue(argValue) &&
+              argValue.type === "variable" &&
+              argValue.value === variableId);
 
-        const argValue = scriptEvent.args[arg];
-        const isVariableId =
-          argValue === variableId ||
-          (isUnionValue(argValue) &&
-            argValue.type === "variable" &&
-            argValue.value === variableId);
-
-        if (!isVariableId) {
+          if (!isVariableId) {
+            continue;
+          }
+        } else {
+          // Field was not a script value or a variable so can be ignored
           continue;
         }
 
@@ -174,6 +213,15 @@ workerCtx.onmessage = async (evt) => {
       scriptEventsLookup,
       undefined,
       (scriptEvent: ScriptEventNormalized) => {
+        if (!scriptEvent.args) {
+          return;
+        }
+
+        // If already found this script skip it
+        if (useLookup[customEvent.id]) {
+          return;
+        }
+
         for (const arg in scriptEvent.args) {
           if (
             !isVariableField(
@@ -197,7 +245,7 @@ workerCtx.onmessage = async (evt) => {
             continue;
           }
 
-          if (!useLookup[customEvent.id])
+          if (!useLookup[customEvent.id]) {
             uses.push({
               id: customEvent.id,
               name: customEventName(customEvent, customEventIndex),
@@ -206,7 +254,8 @@ workerCtx.onmessage = async (evt) => {
               customEvent,
               customEventIndex: customEventIndex,
             });
-          useLookup[customEvent.id] = true;
+            useLookup[customEvent.id] = true;
+          }
         }
       }
     );

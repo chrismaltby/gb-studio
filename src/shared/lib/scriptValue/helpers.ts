@@ -342,7 +342,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
   return stack.length === 1 ? stack[0] : zero;
 };
 
-const walkScriptValue = (
+export const walkScriptValue = (
   input: ScriptValue,
   fn: (val: ScriptValue) => void
 ): void => {
@@ -353,6 +353,34 @@ const walkScriptValue = (
   if ("valueB" in input && input.valueB) {
     walkScriptValue(input.valueB, fn);
   }
+  if ("value" in input && input.value && isUnaryOperation(input)) {
+    walkScriptValue(input.value, fn);
+  }
+};
+
+// recursively search script value for matching node, stop iterating on first match
+export const someInScriptValue = (
+  input: ScriptValue,
+  fn: (val: ScriptValue) => boolean
+): boolean => {
+  const stack: ScriptValue[] = [input];
+
+  while (stack.length > 0) {
+    const currentNode = stack.pop();
+    if (!currentNode) continue;
+
+    if (fn(currentNode)) {
+      return true;
+    }
+
+    if ("valueA" in currentNode && "valueB" in currentNode) {
+      stack.push(currentNode.valueB, currentNode.valueA);
+    } else if ("value" in currentNode && isUnaryOperation(currentNode)) {
+      stack.push(currentNode.value);
+    }
+  }
+
+  return false;
 };
 
 export const mapScriptValueLeafNodes = (
@@ -396,20 +424,37 @@ export const extractScriptValueVariables = (input: ScriptValue): string[] => {
     } else if (val.type === "expression") {
       const text = val.value;
       if (text && typeof text === "string") {
-        const variablePtrs = text.match(/\$V[0-9]\$/g);
-        if (variablePtrs) {
-          variablePtrs.forEach((variablePtr: string) => {
-            const variable = variablePtr[2];
-            const variableId = `V${variable}`;
-            if (!variables.includes(variableId)) {
-              variables.push(variableId);
-            }
-          });
+        const expressionValue = expressionToScriptValue(text);
+        const expressionVariables =
+          extractScriptValueVariables(expressionValue);
+        for (const expressionVariable of expressionVariables) {
+          if (!variables.includes(expressionVariable)) {
+            variables.push(expressionVariable);
+          }
         }
       }
     }
   });
   return variables;
+};
+
+// recursively search script value for node containing variable, stop iterating on first match
+export const variableInScriptValue = (
+  variable: string,
+  input: ScriptValue
+): boolean => {
+  return someInScriptValue(input, (val) => {
+    if (val.type === "variable" && val.value === variable) {
+      return true;
+    } else if (val.type === "expression") {
+      const text = val.value;
+      if (text && typeof text === "string") {
+        const expressionValue = expressionToScriptValue(text);
+        return variableInScriptValue(variable, expressionValue);
+      }
+    }
+    return false;
+  });
 };
 
 export const precompileScriptValue = (
@@ -493,6 +538,34 @@ export const multiplyScriptValueConst = (
 ): ScriptValue => {
   return {
     type: "mul",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};
+
+export const shiftLeftScriptValueConst = (
+  value: ScriptValue,
+  num: number
+): ScriptValue => {
+  return {
+    type: "shl",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};
+
+export const shiftRightScriptValueConst = (
+  value: ScriptValue,
+  num: number
+): ScriptValue => {
+  return {
+    type: "shr",
     valueA: value,
     valueB: {
       type: "number",
