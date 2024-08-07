@@ -1,5 +1,5 @@
 import electron, { BrowserWindow } from "electron";
-import { createSplash } from "../../src/main";
+import { createPreferences, createSplash } from "../../src/main";
 import { mocked } from "jest-mock";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
@@ -102,5 +102,29 @@ describe("Electron Main Process", () => {
     jest.runAllTimers();
 
     expect(mockedCheckForUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  test("createPreferences creates a BrowserWindow", async () => {
+    const mockBrowserWindow = {
+      loadURL: jest.fn(),
+      on: jest.fn(),
+      webContents: {
+        on: jest.fn(),
+      },
+      setMenu: jest.fn(),
+      show: jest.fn(),
+    } as unknown as jest.Mocked<BrowserWindow>;
+
+    mockedElectron.BrowserWindow.mockImplementationOnce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      () => mockBrowserWindow as any
+    );
+
+    await createPreferences();
+
+    expect(BrowserWindow).toHaveBeenCalledTimes(1);
+    expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
+      `PREFERENCES_WINDOW_WEBPACK_ENTRY`
+    );
   });
 });
