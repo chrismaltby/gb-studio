@@ -70,7 +70,7 @@ export const buildResourceExportBuffer = (
 
   const seenPaths = new Set<string>();
 
-  const getUniquePath = (path: string) => {
+  const getUniquePath = (path: string): string => {
     if (!seenPaths.has(path)) {
       seenPaths.add(path);
       return path;
