@@ -1,4 +1,4 @@
-import { copy, readJSON, readFile, writeFile } from "fs-extra";
+import { copy, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import os from "os";
 import rimraf from "rimraf";
@@ -13,6 +13,8 @@ import { loadEngineFields } from "lib/project/engineFields";
 import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
 import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 import { loadSceneTypes } from "lib/project/sceneTypes";
+import loadProject from "lib/project/loadProjectData";
+import { decompressProjectResources } from "shared/lib/resources/compression";
 
 const rmdir = promisify(rimraf);
 
@@ -25,11 +27,12 @@ const main = async (
   projectFile: string,
   destination: string
 ) => {
+  initElectronL10N();
+
   // Load project file
   const projectRoot = Path.resolve(Path.dirname(projectFile));
-  const project = await readJSON(projectFile);
-
-  initElectronL10N();
+  const loadedProject = await loadProject(projectFile);
+  const project = decompressProjectResources(loadedProject.resources);
 
   // Load script event handlers + plugins
   const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
@@ -143,8 +146,8 @@ const main = async (
     await copy(binjgbRoot, destination);
     await copy(romTmpPath, `${destination}/rom/${gameFile}`);
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
-    const projectName = sanitize(project.name);
-    const author = sanitize(project.author);
+    const projectName = sanitize(project.metadata.name);
+    const author = sanitize(project.metadata.author);
     const colorsHead =
       project.settings.colorMode !== "mono"
         ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
