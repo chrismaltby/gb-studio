@@ -147,17 +147,26 @@ export type ProjectMetadataResource = {
   _release: string;
 };
 
-export type CompressedSceneResourceWithChildren = CompressedSceneResource & {
-  actors: ActorResource[];
-  triggers: TriggerResource[];
-};
+export const CompressedSceneResourceWithChildren = Type.Composite([
+  CompressedSceneResource,
+  Type.Object({
+    actors: Type.Array(ActorResource),
+    triggers: Type.Array(TriggerResource),
+  }),
+]);
 
-export type SceneResource = Omit<
-  CompressedSceneResourceWithChildren,
-  "collisions"
-> & {
-  collisions: number[];
-};
+export type CompressedSceneResourceWithChildren = Static<
+  typeof CompressedSceneResourceWithChildren
+>;
+
+export const SceneResource = Type.Composite([
+  Type.Omit(CompressedSceneResourceWithChildren, ["collisions"]),
+  Type.Object({
+    collisions: Type.Array(Type.Number()),
+  }),
+]);
+
+export type SceneResource = Static<typeof SceneResource>;
 
 export const ScriptVariable = Type.Object({
   id: Type.String(),
@@ -213,12 +222,14 @@ export type CompressedBackgroundResource = Static<
   typeof CompressedBackgroundResource
 >;
 
-export type BackgroundResource = Omit<
-  CompressedBackgroundResource,
-  "tileColors"
-> & {
-  tileColors: number[];
-};
+export const BackgroundResource = Type.Composite([
+  Type.Omit(CompressedBackgroundResource, ["tileColors"]),
+  Type.Object({
+    tileColors: Type.Array(Type.Number()),
+  }),
+]);
+
+export type BackgroundResource = Static<typeof BackgroundResource>;
 
 export const TilesetResource = Type.Object({
   _resourceType: Type.Literal("tileset"),

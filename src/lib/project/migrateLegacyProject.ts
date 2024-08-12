@@ -1,3 +1,4 @@
+import { Static, TSchema } from "@sinclair/typebox";
 import migrateProject from "lib/project/migrateProject";
 import identity from "lodash/identity";
 import { BackgroundData, Scene } from "shared/lib/entities/entitiesTypes";
@@ -6,12 +7,26 @@ import {
   compressBackgroundResource,
 } from "shared/lib/resources/compression";
 import {
+  ActorResource,
+  AvatarResource,
+  BackgroundResource,
   CompressedBackgroundResource,
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
+  EmoteResource,
+  FontResource,
+  MusicResource,
+  PaletteResource,
+  SceneResource,
+  ScriptResource,
+  SoundResource,
+  SpriteResource,
+  TilesetResource,
+  TriggerResource,
 } from "shared/lib/resources/types";
 import type { ScriptEventDefs } from "shared/lib/scripts/eventHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
+import { Value } from "@sinclair/typebox/value";
 
 export const migrateLegacyProject = (
   project: ProjectData,
@@ -23,16 +38,16 @@ export const migrateLegacyProject = (
   console.timeEnd("loadProjectData.loadProject migrateProject");
 
   const encodeResource =
-    <T extends string>(type: T) =>
-    <D>(data: D): D & { _resourceType: T } => ({
-      _resourceType: type,
-      ...data,
-    });
+    <T extends TSchema, D extends object>(castAs: T) =>
+    (data: Partial<D>): Static<T> =>
+      Value.Cast(castAs, {
+        ...data,
+      });
 
   const encodeScene = (scene: Scene): CompressedSceneResourceWithChildren => {
-    const encodeScene = encodeResource("scene");
-    const encodeActor = encodeResource("actor");
-    const encodeTrigger = encodeResource("trigger");
+    const encodeScene = encodeResource(SceneResource);
+    const encodeActor = encodeResource(ActorResource);
+    const encodeTrigger = encodeResource(TriggerResource);
     return compressSceneResource(
       encodeScene({
         ...scene,
@@ -53,7 +68,7 @@ export const migrateLegacyProject = (
   const encodeBackground = (
     background: BackgroundData
   ): CompressedBackgroundResource => {
-    const encodeBackground = encodeResource("background");
+    const encodeBackground = encodeResource(BackgroundResource);
     return compressBackgroundResource(encodeBackground(background));
   };
 
@@ -61,30 +76,34 @@ export const migrateLegacyProject = (
     scenes: migratedProject.scenes.filter(identity).map(encodeScene),
     scripts: migratedProject.customEvents
       .filter(identity)
-      .map(encodeResource("script")),
+      .map(encodeResource(ScriptResource)),
     sprites: migratedProject.spriteSheets
       .filter(identity)
-      .map(encodeResource("sprite")),
+      .map(encodeResource(SpriteResource)),
     backgrounds: migratedProject.backgrounds
       .filter(identity)
       .map(encodeBackground),
     emotes: migratedProject.emotes
       .filter(identity)
-      .map(encodeResource("emote")),
+      .map(encodeResource(EmoteResource)),
     avatars: migratedProject.avatars
       .filter(identity)
-      .map(encodeResource("avatar")),
+      .map(encodeResource(AvatarResource)),
     tilesets: migratedProject.tilesets
       .filter(identity)
-      .map(encodeResource("tileset")),
-    fonts: migratedProject.fonts.filter(identity).map(encodeResource("font")),
+      .map(encodeResource(TilesetResource)),
+    fonts: migratedProject.fonts
+      .filter(identity)
+      .map(encodeResource(FontResource)),
     sounds: migratedProject.sounds
       .filter(identity)
-      .map(encodeResource("sound")),
-    music: migratedProject.music.filter(identity).map(encodeResource("music")),
+      .map(encodeResource(SoundResource)),
+    music: migratedProject.music
+      .filter(identity)
+      .map(encodeResource(MusicResource)),
     palettes: migratedProject.palettes
       .filter(identity)
-      .map(encodeResource("palette")),
+      .map(encodeResource(PaletteResource)),
     variables: {
       _resourceType: "variables",
       variables: migratedProject.variables,
