@@ -85,6 +85,7 @@
   "SIDEBAR_VARIABLE_USES": "Variable Uses",
   "SIDEBAR_INSTRUMENT": "Instrument",
   "SIDEBAR_SUBPATTERN": "Subpattern",
+  "SIDEBAR_SCRIPT_USES": "Script Uses",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
@@ -814,6 +815,8 @@
   "FIELD_SET_CURSOR_POSITION_TO": "Set Cursor Position To",
   "FIELD_MOVE_CURSOR_POSITION_BY": "Move Cursor Position By",
   "FIELD_MOVE_BY": "Move By",
+  "FIELD_SCRIPT_NOT_USED": "Script hasn't been used in project",
+  "FIELD_VIEW_SCRIPT_USES": "View Script Uses",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
