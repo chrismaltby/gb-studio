@@ -138,14 +138,16 @@ export const CompressedSceneResource = Type.Object({
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;
 
-export type ProjectMetadataResource = {
-  _resourceType: "project";
-  name: string;
-  author: string;
-  notes: string;
-  _version: string;
-  _release: string;
-};
+export const ProjectMetadataResource = Type.Object({
+  _resourceType: Type.Literal("project"),
+  name: Type.String(),
+  author: Type.String(),
+  notes: Type.String(),
+  _version: Type.String(),
+  _release: Type.String(),
+});
+
+export type ProjectMetadataResource = Static<typeof ProjectMetadataResource>;
 
 export const CompressedSceneResourceWithChildren = Type.Composite([
   CompressedSceneResource,

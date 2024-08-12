@@ -14,15 +14,19 @@ import {
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
   EmoteResource,
+  EngineFieldValuesResource,
   FontResource,
   MusicResource,
   PaletteResource,
+  ProjectMetadataResource,
   SceneResource,
   ScriptResource,
+  SettingsResource,
   SoundResource,
   SpriteResource,
   TilesetResource,
   TriggerResource,
+  VariablesResource,
 } from "shared/lib/resources/types";
 import type { ScriptEventDefs } from "shared/lib/scripts/eventHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
@@ -104,25 +108,25 @@ export const migrateLegacyProject = (
     palettes: migratedProject.palettes
       .filter(identity)
       .map(encodeResource(PaletteResource)),
-    variables: {
+    variables: encodeResource(VariablesResource)({
       _resourceType: "variables",
       variables: migratedProject.variables,
-    },
-    engineFieldValues: {
+    }),
+    engineFieldValues: encodeResource(EngineFieldValuesResource)({
       _resourceType: "engineFieldValues",
       engineFieldValues: migratedProject.engineFieldValues,
-    },
-    settings: {
+    }),
+    settings: encodeResource(SettingsResource)({
       _resourceType: "settings",
       ...migratedProject.settings,
-    },
-    metadata: {
+    }),
+    metadata: encodeResource(ProjectMetadataResource)({
       _resourceType: "project",
       name: migratedProject.name,
       author: migratedProject.author,
       notes: migratedProject.notes,
       _version: migratedProject._version,
       _release: migratedProject._release,
-    },
+    }),
   };
 };
