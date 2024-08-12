@@ -7,7 +7,7 @@ import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import {
   EntityNavigatorItem,
   buildEntityNavigatorItems,
@@ -15,6 +15,7 @@ import {
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
+import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 
 interface NavigatorCustomEventsProps {
   height: number;
@@ -34,6 +35,8 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, selectedId)
   );
+  const showUses = useAppSelector((state) => state.editor.showScriptUses);
+
   const dispatch = useAppDispatch();
 
   const {
@@ -100,11 +103,34 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
     setRenameId("");
   }, []);
 
+  const setShowUses = useCallback(
+    (value: boolean) => {
+      dispatch(editorActions.setShowScriptUses(value));
+    },
+    [dispatch]
+  );
+
   const renderContextMenu = useCallback(
     (item: EntityNavigatorItem<CustomEventNormalized>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          <MenuItemIcon>
+            <BlankIcon />
+          </MenuItemIcon>
           {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-view-mode" />,
+        <MenuItem key="view-editor" onClick={() => setShowUses(false)}>
+          <MenuItemIcon>
+            {!showUses ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {l10n("MENU_EDIT_CUSTOM_EVENT")}
+        </MenuItem>,
+        <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
+          <MenuItemIcon>
+            {showUses ? <CheckIcon /> : <BlankIcon />}
+          </MenuItemIcon>
+          {l10n("FIELD_VIEW_SCRIPT_USES")}
         </MenuItem>,
         <MenuDivider key="div-delete" />,
         <MenuItem
@@ -115,11 +141,14 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
             )
           }
         >
+          <MenuItemIcon>
+            <BlankIcon />
+          </MenuItemIcon>
           {l10n("MENU_DELETE_CUSTOM_EVENT")}
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch, setShowUses, showUses]
   );
 
   const renderLabel = useCallback(

@@ -8,11 +8,6 @@ import { render, screen, fireEvent } from "../../react-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "../../../src/store/configureStore";
 import { ScriptEditorContext } from "../../../src/components/script/ScriptEditorContext";
-import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
-
-beforeEach(async () => {
-  await initElectronL10N();
-});
 
 test("Should use default variable name with not renamed", () => {
   const state = {
@@ -249,7 +244,7 @@ test("Should be able to rename variable", async () => {
     {}
   );
 
-  fireEvent.click(screen.getByTitle("Rename"));
+  fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
     "textbox"
@@ -315,7 +310,7 @@ test("Should cancel rename when Escape is pressed", async () => {
     {}
   );
 
-  fireEvent.click(screen.getByTitle("Rename"));
+  fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
     "textbox"
@@ -377,7 +372,7 @@ test("Should complete rename when Escape is pressed", async () => {
     {}
   );
 
-  fireEvent.click(screen.getByTitle("Rename"));
+  fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
     "textbox"

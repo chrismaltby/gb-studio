@@ -151,6 +151,7 @@ export interface EditorState {
   selectedSequence: number;
   precisionTileMode: boolean;
   slopePreview?: SlopePreview;
+  showScriptUses: boolean;
 }
 
 export const initialState: EditorState = {
@@ -222,6 +223,7 @@ export const initialState: EditorState = {
   selectedSequence: 0,
   precisionTileMode: false,
   slopePreview: undefined,
+  showScriptUses: false,
 };
 
 const toggleScriptEventSelectedId =
@@ -855,6 +857,10 @@ const editorSlice = createSlice({
     clearScriptEventSelectionIds: (state) => {
       state.scriptEventSelectionIds = [];
       state.scriptEventSelectionParentId = "";
+    },
+
+    setShowScriptUses: (state, action: PayloadAction<boolean>) => {
+      state.showScriptUses = action.payload;
     },
   },
   extraReducers: (builder) =>

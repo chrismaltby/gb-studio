@@ -169,7 +169,7 @@ if (isDevMode) {
   });
 }
 
-const createSplash = async (forceTab?: SplashTab) => {
+export const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 640,
@@ -208,7 +208,7 @@ const createSplash = async (forceTab?: SplashTab) => {
   });
 };
 
-const createPreferences = async () => {
+export const createPreferences = async () => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
@@ -240,7 +240,7 @@ const createPreferences = async () => {
   });
 };
 
-const createProjectWindow = async () => {
+export const createProjectWindow = async () => {
   const projectWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800,
@@ -531,7 +531,7 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (
+export const createPlay = async (
   url: string,
   sgb: boolean,
   debugEnabled?: boolean
@@ -575,7 +575,10 @@ const createPlay = async (
   });
 };
 
-const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
+export const createMusic = async (
+  sfx?: string,
+  initialMessage?: MusicDataPacket
+) => {
   musicWindowInitialized = false;
 
   if (!musicWindow) {
