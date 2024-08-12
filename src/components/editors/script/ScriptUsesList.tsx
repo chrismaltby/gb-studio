@@ -130,6 +130,7 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
     <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
       <SplitPaneHeader
         collapsed={false}
+        onToggle={onClose}
         buttons={
           <Button variant="transparent" size="small" onClick={onClose}>
             {l10n("MENU_EDIT_CUSTOM_EVENT")}
