@@ -249,48 +249,42 @@ const loadProject: CaseReducer<
     action.payload.resources
   );
 
-  const data2 = normalizeEntityResources(uncompressedResources);
+  const data = normalizeEntityResources(uncompressedResources);
 
-  actorsAdapter.setAll(state.actors, data2.entities.actors || {});
-  triggersAdapter.setAll(state.triggers, data2.entities.triggers || {});
-  scenesAdapter.setAll(state.scenes, data2.entities.scenes || {});
+  actorsAdapter.setAll(state.actors, data.entities.actors || {});
+  triggersAdapter.setAll(state.triggers, data.entities.triggers || {});
+  scenesAdapter.setAll(state.scenes, data.entities.scenes || {});
   scriptEventsAdapter.setAll(
     state.scriptEvents,
-    data2.entities.scriptEvents || {}
+    data.entities.scriptEvents || {}
   );
-  backgroundsAdapter.setAll(
-    state.backgrounds,
-    data2.entities.backgrounds || {}
-  );
-  spriteSheetsAdapter.setAll(state.spriteSheets, data2.entities.sprites || {});
-  metaspritesAdapter.setAll(
-    state.metasprites,
-    data2.entities.metasprites || {}
-  );
+  backgroundsAdapter.setAll(state.backgrounds, data.entities.backgrounds || {});
+  spriteSheetsAdapter.setAll(state.spriteSheets, data.entities.sprites || {});
+  metaspritesAdapter.setAll(state.metasprites, data.entities.metasprites || {});
   metaspriteTilesAdapter.setAll(
     state.metaspriteTiles,
-    data2.entities.metaspriteTiles || {}
+    data.entities.metaspriteTiles || {}
   );
   spriteAnimationsAdapter.setAll(
     state.spriteAnimations,
-    data2.entities.spriteAnimations || {}
+    data.entities.spriteAnimations || {}
   );
   spriteStatesAdapter.setAll(
     state.spriteStates,
-    data2.entities.spriteStates || {}
+    data.entities.spriteStates || {}
   );
-  palettesAdapter.setAll(state.palettes, data2.entities.palettes || {});
-  musicAdapter.setAll(state.music, data2.entities.music || {});
-  soundsAdapter.setAll(state.sounds, data2.entities.sounds || {});
-  fontsAdapter.setAll(state.fonts, data2.entities.fonts || {});
-  avatarsAdapter.setAll(state.avatars, data2.entities.avatars || {});
-  emotesAdapter.setAll(state.emotes, data2.entities.emotes || {});
-  tilesetsAdapter.setAll(state.tilesets, data2.entities.tilesets || {});
-  customEventsAdapter.setAll(state.customEvents, data2.entities.scripts || {});
-  variablesAdapter.setAll(state.variables, data2.entities.variables || {});
+  palettesAdapter.setAll(state.palettes, data.entities.palettes || {});
+  musicAdapter.setAll(state.music, data.entities.music || {});
+  soundsAdapter.setAll(state.sounds, data.entities.sounds || {});
+  fontsAdapter.setAll(state.fonts, data.entities.fonts || {});
+  avatarsAdapter.setAll(state.avatars, data.entities.avatars || {});
+  emotesAdapter.setAll(state.emotes, data.entities.emotes || {});
+  tilesetsAdapter.setAll(state.tilesets, data.entities.tilesets || {});
+  customEventsAdapter.setAll(state.customEvents, data.entities.scripts || {});
+  variablesAdapter.setAll(state.variables, data.entities.variables || {});
   engineFieldValuesAdapter.setAll(
     state.engineFieldValues,
-    data2.entities.engineFieldValues || {}
+    data.entities.engineFieldValues || {}
   );
 
   fixAllScenesWithModifiedBackgrounds(state);
