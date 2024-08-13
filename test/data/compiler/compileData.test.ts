@@ -399,7 +399,13 @@ test("should compile simple project into files object", async () => {
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
     scriptEventHandlers,
-  } as any);
+    engineFields: [],
+    sceneTypes: [],
+    tmpPath: `${__dirname}/_tmp`,
+    debugEnabled: false,
+    progress: (_msg: string) => {},
+    warnings: (_msg: string) => {},
+  });
   expect(compiled).toBeInstanceOf(Object);
 });
 
