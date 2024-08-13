@@ -1,0 +1,25 @@
+{
+  "_resourceType": "trigger",
+  "id": "8eb44daa-5e41-4101-902b-facabd873b7f",
+  "_index": 5,
+  "symbol": "trigger_24",
+  "name": "",
+  "x": 5,
+  "y": 11,
+  "width": 5,
+  "height": 1,
+  "script": [
+    {
+      "id": "172f2ea6-aa4d-4bac-b66f-aa7caea4ee95",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Clothes..."
+        ],
+        "avatarId": ""
+      },
+      "__type": "event"
+    }
+  ],
+  "leaveScript": []
+}

@@ -1,0 +1,33 @@
+{
+  "_resourceType": "actor",
+  "id": "26bced35-c28a-4394-907e-d657789afdb5",
+  "_index": 2,
+  "symbol": "actor_sign_post_3",
+  "name": "Sign Post 3",
+  "x": 15,
+  "y": 11,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "e2def9ee-3c5c-42fb-90e2-c6d073d97d9b",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Add sprites to\nassets/sprites"
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

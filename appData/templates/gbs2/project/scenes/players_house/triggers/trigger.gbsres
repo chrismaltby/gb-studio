@@ -1,0 +1,25 @@
+{
+  "_resourceType": "trigger",
+  "id": "456a497e-f7dd-4269-97d4-6657de1f1a33",
+  "_index": 0,
+  "symbol": "trigger_19",
+  "name": "",
+  "x": 6,
+  "y": 15,
+  "width": 2,
+  "height": 2,
+  "script": [
+    {
+      "id": "cfafe4c9-2222-4aa6-becd-0da59d121731",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Still the best\ncontroller."
+        ],
+        "avatarId": ""
+      },
+      "__type": "event"
+    }
+  ],
+  "leaveScript": []
+}

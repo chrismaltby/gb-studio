@@ -1,0 +1,77 @@
+{
+  "_resourceType": "trigger",
+  "id": "86bfaf71-2475-4b34-9266-e7263bff6465",
+  "_index": 1,
+  "symbol": "trigger_31",
+  "name": "",
+  "x": 42,
+  "y": 0,
+  "width": 1,
+  "height": 14,
+  "script": [
+    {
+      "id": "e07e7b76-8205-4bc3-abd5-189325fbb959",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "L0",
+        "__collapseElse": false,
+        "__disableElse": true,
+        "condition": {
+          "type": "eq",
+          "valueA": {
+            "type": "variable",
+            "value": "L0"
+          },
+          "valueB": {
+            "type": "false"
+          }
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "b4de53c7-94a0-4d55-a56c-e151989a8a31",
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "L0",
+              "value": {
+                "type": "true"
+              }
+            }
+          },
+          {
+            "id": "f42318ef-d901-46ca-b090-bbdd81f042fa",
+            "command": "EVENT_ACTOR_SET_DIRECTION",
+            "args": {
+              "actorId": "871ea302-1cc1-463c-b9d7-530aac38fe81",
+              "direction": {
+                "type": "direction",
+                "value": "left"
+              }
+            }
+          },
+          {
+            "id": "55fe90ac-4f8c-470c-a5e3-9cf9a713abb7",
+            "command": "EVENT_ACTOR_EMOTE",
+            "args": {
+              "actorId": "871ea302-1cc1-463c-b9d7-530aac38fe81",
+              "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
+            }
+          },
+          {
+            "id": "e9ddb897-534c-48e3-a550-09d4f32e9ce8",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "!S0!PLEASE!S3! !S0!HELP!!!S2!\nMy garden..."
+              ],
+              "avatarId": ""
+            }
+          }
+        ],
+        "false": []
+      }
+    }
+  ],
+  "leaveScript": []
+}

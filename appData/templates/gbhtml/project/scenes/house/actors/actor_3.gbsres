@@ -1,0 +1,33 @@
+{
+  "_resourceType": "actor",
+  "id": "4e43d51b-f316-480c-818d-1ad4016f27ef",
+  "_index": 3,
+  "symbol": "actor_15",
+  "name": "",
+  "x": 3,
+  "y": 11,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "19a1f2b5-fa36-438b-bc61-02fdeb5cb62b",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Add backgrounds to\nassets/backgrounds"
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

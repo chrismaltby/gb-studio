@@ -1,0 +1,33 @@
+{
+  "_resourceType": "script",
+  "id": "e9f494a1-aabf-421b-a7b2-40211e77d9de",
+  "name": "enemies/ship/Enemy Ship Hit Player",
+  "symbol": "script_enemy_ship_hit_playe",
+  "description": "Shake screen and play sound effect",
+  "variables": {},
+  "actors": {},
+  "script": [
+    {
+      "id": "c044c230-a1bc-45d0-9cfa-b0619ae6a896",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.5,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        }
+      }
+    },
+    {
+      "id": "a9613d9d-0501-4361-9d11-79a5b14575d0",
+      "command": "EVENT_SOUND_PLAY_EFFECT",
+      "args": {
+        "type": "crash",
+        "pitch": 4,
+        "frequency": 200,
+        "duration": 0.5,
+        "wait": false
+      }
+    }
+  ]
+}

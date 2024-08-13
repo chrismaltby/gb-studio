@@ -1,0 +1,60 @@
+{
+  "_resourceType": "script",
+  "id": "872f61cf-bd62-4e58-92ee-a751e7335fe9",
+  "name": "Init Menu",
+  "symbol": "script_init_menu",
+  "description": "Attach Menu To Start Button",
+  "variables": {},
+  "actors": {},
+  "script": [
+    {
+      "id": "e0d0e206-405f-4630-be85-09266b48c735",
+      "command": "EVENT_GROUP",
+      "args": {
+        "__label": "Attach Menu",
+        "__collapse": false
+      },
+      "children": {
+        "true": [
+          {
+            "id": "6286540a-2c0b-4474-a840-f59561712a0d",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false,
+              "persist": true
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "fea801d2-740a-4d12-9296-e82b896dd184",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "cff0fc18-362f-4c1a-9554-3cfcf830a785",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

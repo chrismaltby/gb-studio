@@ -1,0 +1,43 @@
+{
+  "_resourceType": "actor",
+  "id": "e63a0fb5-2d9e-4a85-9ba0-e711e6de6cdc",
+  "_index": 0,
+  "symbol": "actor_sign_post_5",
+  "name": "Sign Post",
+  "x": 44,
+  "y": 13,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "149845e1-e0b4-4a2e-97e3-4a59c8bc2634",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Welcome to\nGBStudio!"
+      }
+    },
+    {
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "DO NOT FEED\nTHE ELEPHANT"
+        ],
+        "avatarId": "6845dca5-d9d8-472a-93a7-81889d878516"
+      },
+      "id": "bca7e9ec-e3bf-4fb6-b79e-88527e878ef6"
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

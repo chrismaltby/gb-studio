@@ -1,0 +1,39 @@
+{
+  "_resourceType": "trigger",
+  "id": "b8145b02-efce-4214-8be1-3a9f6850a8a1",
+  "_index": 7,
+  "symbol": "trigger_7",
+  "name": "",
+  "x": 16,
+  "y": 40,
+  "width": 2,
+  "height": 1,
+  "script": [
+    {
+      "id": "c3d7fe25-7111-461e-88c1-ede54ab30c2c",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Locked...",
+        "avatarId": ""
+      }
+    },
+    {
+      "id": "41d62a66-81ce-423b-9a7f-3be48197adcb",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 0
+        },
+        "y": {
+          "type": "number",
+          "value": 1
+        },
+        "moveType": "horizontal",
+        "useCollisions": false
+      }
+    }
+  ],
+  "leaveScript": []
+}

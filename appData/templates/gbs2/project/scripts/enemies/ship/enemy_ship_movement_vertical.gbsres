@@ -1,0 +1,106 @@
+{
+  "_resourceType": "script",
+  "id": "d6bb5d0f-9c04-44a8-9f5d-b7f62db8805a",
+  "name": "enemies/ship/Enemy Ship Movement Vertical",
+  "symbol": "script_enemy_ship_movement__2",
+  "description": "Move up and down shooting in middle of movement",
+  "variables": {},
+  "actors": {
+    "0": {
+      "id": "0",
+      "name": "Enemy Ship"
+    }
+  },
+  "script": [
+    {
+      "id": "ce32db2a-5910-4967-b1ba-58b4c21a0c8d",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "0",
+        "x": {
+          "type": "number",
+          "value": 0
+        },
+        "y": {
+          "type": "number",
+          "value": -2
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "ba69b1ec-7e2f-4288-8ec3-a7517cf64ff2",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "0",
+        "x": {
+          "type": "number",
+          "value": 0
+        },
+        "y": {
+          "type": "number",
+          "value": 2
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "3520ba19-c7c9-4392-b2eb-8a1ee76de4f6",
+      "command": "EVENT_LAUNCH_PROJECTILE",
+      "args": {
+        "spriteSheetId": "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
+        "actorId": "0",
+        "direction": "left",
+        "speed": 1,
+        "collisionGroup": "1",
+        "collisionMask": [
+          "player"
+        ],
+        "animSpeed": 7,
+        "lifeTime": 1,
+        "directionType": "direction",
+        "angleVariable": "0",
+        "angle": 0,
+        "otherActorId": "$self$",
+        "loopAnim": true,
+        "destroyOnHit": true
+      }
+    },
+    {
+      "id": "d5d8356c-b6be-4e50-bb7b-bc2c2533cb77",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "0",
+        "x": {
+          "type": "number",
+          "value": 0
+        },
+        "y": {
+          "type": "number",
+          "value": 2
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "7711ad1b-f8dd-4267-8a7d-990fbd031958",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "0",
+        "x": {
+          "type": "number",
+          "value": 0
+        },
+        "y": {
+          "type": "number",
+          "value": -2
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    }
+  ]
+}

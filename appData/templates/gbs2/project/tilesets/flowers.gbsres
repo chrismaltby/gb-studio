@@ -1,0 +1,11 @@
+{
+  "_resourceType": "tileset",
+  "id": "d7042527-d20e-486d-93e6-66b9397df510",
+  "name": "flowers",
+  "symbol": "tileset_flowers",
+  "width": 4,
+  "height": 1,
+  "imageWidth": 32,
+  "imageHeight": 8,
+  "filename": "flowers.png"
+}

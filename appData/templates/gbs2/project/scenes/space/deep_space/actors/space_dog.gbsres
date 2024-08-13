@@ -1,0 +1,72 @@
+{
+  "_resourceType": "actor",
+  "id": "8b18019e-754f-4cbb-9676-ca3901b2bc96",
+  "_index": 0,
+  "symbol": "actor_space_dog",
+  "name": "Space Dog",
+  "x": 14,
+  "y": 14,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "c8f60bb4-d40a-4994-b819-e18b569372a0",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "5",
+        "__collapseElse": false,
+        "condition": {
+          "type": "variable",
+          "value": "5"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "877d5cb7-0d8d-410b-a5ed-0d4356c96e10",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "You can use the\nportal behind me\nto get home."
+              ],
+              "avatarId": ""
+            }
+          }
+        ],
+        "false": [
+          {
+            "id": "2564e652-8f4f-4012-8b6b-c43335e4d583",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": "How did you get\nhere!?",
+              "avatarId": ""
+            }
+          },
+          {
+            "id": "afb820b9-6653-44af-b38b-b2cfa488b79d",
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "5",
+              "value": {
+                "type": "true"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

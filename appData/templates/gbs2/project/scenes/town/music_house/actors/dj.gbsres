@@ -1,0 +1,116 @@
+{
+  "_resourceType": "actor",
+  "id": "8e2d73a9-eaf9-4fa8-a493-854cecf2de8d",
+  "_index": 2,
+  "symbol": "actor_20",
+  "name": "DJ",
+  "x": 15,
+  "y": 11,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "a9ee1856-b62b-49d8-8eb3-cdf681fa2e76",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 255,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "17",
+        "__collapseElse": false,
+        "condition": {
+          "type": "eq",
+          "valueA": {
+            "type": "variable",
+            "value": "17"
+          },
+          "valueB": {
+            "type": "false"
+          }
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "Welcome to the\nMusic House!",
+                "Try the instruments to\nplay some tunes",
+                "And use the machines at\nthe back to play some\nsound effects"
+              ],
+              "avatarId": ""
+            },
+            "id": "92b67a21-405d-423e-8a9f-f40382fb42ea"
+          }
+        ],
+        "false": [
+          {
+            "command": "EVENT_ACTOR_EMOTE",
+            "args": {
+              "actorId": "$self$",
+              "emoteId": "e9e38933-9942-44ca-943c-a85fa46d8139"
+            },
+            "id": "628c434d-402e-469d-b422-bed38fd84f90"
+          },
+          {
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "YEAH!",
+                "You can edit any song\nwith the Music Editor"
+              ],
+              "avatarId": ""
+            },
+            "id": "753125e9-3087-4523-ac29-f22aa451f8e1"
+          }
+        ]
+      },
+      "id": "832c82bf-1e5d-4203-8e10-04d103fbf82f"
+    }
+  ],
+  "startScript": [],
+  "updateScript": [
+    {
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "17",
+        "__collapseElse": false,
+        "condition": {
+          "type": "variable",
+          "value": "17"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "command": "EVENT_ACTOR_SET_ANIMATION_SPEED",
+            "args": {
+              "actorId": "$self$",
+              "speed": 15
+            },
+            "id": "1a4e3a8d-3408-4bc3-9780-136d3640f7f9"
+          }
+        ],
+        "false": [
+          {
+            "command": "EVENT_ACTOR_SET_ANIMATION_SPEED",
+            "args": {
+              "actorId": "$self$",
+              "speed": 255
+            },
+            "id": "f72e2154-1880-47f9-b71e-09dd0a6670cb"
+          }
+        ]
+      },
+      "id": "2b24c596-a5a0-4774-a68d-b028f82e4c67"
+    }
+  ],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

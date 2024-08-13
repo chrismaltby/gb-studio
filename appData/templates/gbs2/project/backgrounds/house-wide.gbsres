@@ -1,0 +1,13 @@
+{
+  "_resourceType": "background",
+  "id": "5b192b93-3957-4b76-8c92-423eabbcd285",
+  "name": "house-wide",
+  "symbol": "bg_house_wide",
+  "width": 32,
+  "height": 18,
+  "imageWidth": 256,
+  "imageHeight": 144,
+  "filename": "house-wide.png",
+  "tileColors": "",
+  "autoColor": false
+}

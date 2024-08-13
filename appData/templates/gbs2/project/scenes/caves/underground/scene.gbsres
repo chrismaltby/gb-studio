@@ -1,0 +1,127 @@
+{
+  "_resourceType": "scene",
+  "id": "3509d273-bf7e-4946-89ce-a489df5a449d",
+  "type": "TOPDOWN",
+  "name": "caves/Underground",
+  "symbol": "scene_underground",
+  "x": 144,
+  "y": 924,
+  "width": 32,
+  "height": 32,
+  "backgroundId": "f3102db4-2273-411d-b33f-4d6f65959c60",
+  "tilesetId": "",
+  "paletteIds": [
+    "444c886c-6214-48d7-8e3c-4dca4f65dec7"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "02ae19dc-29ba-438b-9437-712f79c5c758",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "f17f5f7a-3373-44c3-93f2-5a7b9b9fe0ff",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "13b2addd-b10e-4342-94ae-9a0de8d84b7f",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "87ed9670-71b4-4307-a5fa-cb86f9ef0f98",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      },
+      "__type": "event"
+    },
+    {
+      "id": "119d6f6f-5d19-4f2b-b2c0-5859e8ee2836",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "b64b574c-2ba2-428f-925f-8aff5a299af2",
+        "loop": true
+      }
+    },
+    {
+      "id": "4434a78c-23e6-464a-9b03-916b537343e9",
+      "command": "EVENT_GROUP",
+      "args": {
+        "__label": "Fix Game Breaking Bug",
+        "__collapse": false
+      },
+      "children": {
+        "true": [
+          {
+            "id": "648db27d-c819-42ea-9acb-45e2e4a54857",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "16",
+              "__collapseElse": true,
+              "__disableElse": true,
+              "condition": {
+                "type": "variable",
+                "value": "16"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "1b7fb9ee-e8d1-450e-99e3-265dfbb2b1dd",
+                  "command": "EVENT_ACTOR_SET_POSITION",
+                  "args": {
+                    "actorId": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
+                    "x": {
+                      "type": "number",
+                      "value": 24
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 15
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00c3+0f1a+006+0f!00b+0f2+007+0f2+002+0f!006+0f!00b+0f2+007+0f2+002+0f!006+0f!002+0f2+0014+0f!006+0f!002+0f2+0014+0f!006+0f!0018+0f!006+0f!0018+0f!006+0f!0018+0f!006+0f!00d+0f2+009+0f!006+0f!00d+0f2+009+0f!006+0f!004+0f2+0012+0f!006+0f!004+0f2+0012+0f!006+0f15+002+0f3+004+0f17+002+0f5+002+0f!001c+0f!002+0f!001c+0f!002+0f!00f+0f4+002+0f4+003+0f!002+0f!00d+0f6+002+0f4+003+0f!002+0f!00d+0f4+006+0f2+003+0f!002+0f!00d+0f4+006+0f2+00!0f3+002+0f!00d+0f4+006+0f2+00!0f3+002+0f!00f+0f2+006+0f2+003+0f!002+0f!00f+0f2+006+0f2+00!0f3+002+0f!00f+0f2+006+0f2+00!0f3+002+0f14+002+0f8+0015+0f!002+0f!008+"
+}

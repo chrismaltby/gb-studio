@@ -1,0 +1,43 @@
+{
+  "_resourceType": "actor",
+  "id": "076a0612-024a-426a-85fc-3e1054b9f74e",
+  "_index": 4,
+  "symbol": "actor_4",
+  "name": "",
+  "x": 4,
+  "y": 6,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "1e27bb8e-c805-435a-8b87-05b4f50da4f0",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "9769786a-b499-4657-917e-05c7e96cf2f4",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Meow!"
+      }
+    },
+    {
+      "id": "c585ca68-8cb8-4a26-bcff-072845e80702",
+      "command": "EVENT_SET_VALUE",
+      "args": {
+        "variable": "0",
+        "value": {
+          "type": "true"
+        }
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

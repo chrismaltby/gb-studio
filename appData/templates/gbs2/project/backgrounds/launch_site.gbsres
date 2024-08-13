@@ -1,0 +1,13 @@
+{
+  "_resourceType": "background",
+  "id": "00e9b250-b602-4e5d-998c-fe0c8f23c91d",
+  "name": "launch_site",
+  "symbol": "bg_launch_site",
+  "width": 20,
+  "height": 18,
+  "imageWidth": 160,
+  "imageHeight": 144,
+  "filename": "launch_site.png",
+  "tileColors": "005+039+008+02!002+039+003+02!007+039+006+02!004+039+005+02!004+03b+009+03b+02!008+03b+005+02!004+03d+00!02!005+03d+007+03d+0016+02!0012+02!003c+02!0012+02!0028+",
+  "autoColor": false
+}

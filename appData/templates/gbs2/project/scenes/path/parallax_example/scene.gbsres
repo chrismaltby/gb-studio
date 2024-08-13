@@ -1,0 +1,104 @@
+{
+  "_resourceType": "scene",
+  "id": "896aee79-9b53-4ac1-b41f-b1ddf96da7ff",
+  "type": "PLATFORM",
+  "name": "path/Parallax Example",
+  "symbol": "scene_parallax_example",
+  "x": 338,
+  "y": 521,
+  "width": 80,
+  "height": 18,
+  "backgroundId": "b48f4eda-5654-4760-b8a9-4fd3f7e7ed5e",
+  "tilesetId": "",
+  "paletteIds": [
+    "2801a5c2-3b0b-41b9-90c9-ec2af73d825d",
+    "",
+    "",
+    "",
+    "aa5d38da-49d6-4160-a033-a54ec7964f47",
+    "5dafcf6e-b1d8-4c6b-b105-32d877f561e4",
+    "5dafcf6e-b1d8-4c6b-b105-32d877f561e4"
+  ],
+  "spritePaletteIds": [
+    "",
+    "c2af2d33-8fcb-4a07-b9a0-15d6b7a98767"
+  ],
+  "autoFadeSpeed": 1,
+  "parallax": [
+    {
+      "height": 10,
+      "speed": 4
+    },
+    {
+      "height": 3,
+      "speed": 1
+    },
+    {
+      "height": 1,
+      "speed": 0
+    }
+  ],
+  "script": [
+    {
+      "id": "a0f6f228-cf76-4e25-8f8a-f880cdc0d8b8",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "1363d986-e226-46b7-a26e-00a3037a06d4",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "22cd0670-873d-46d7-8663-adc52fd72df7",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "5500efc3-935e-41af-bae8-a56febb667f5",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      }
+    },
+    {
+      "id": "684c3eae-94a9-479b-92fa-f9b3b0a5004e",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "9aac47ff-51d7-48bf-9f15-1ce01b3872a4",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00460+0f50+00f0+"
+}

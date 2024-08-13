@@ -1,0 +1,238 @@
+{
+  "_resourceType": "scene",
+  "id": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+  "type": "TOPDOWN",
+  "name": "Menu",
+  "symbol": "scene_menu",
+  "x": 332,
+  "y": 598,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "b49ea566-b022-478c-979d-ec3ee255fdc5",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "4238f3cb-81b4-4f62-882f-f9f03f16eb3e",
+      "command": "EVENT_ACTOR_DEACTIVATE",
+      "args": {
+        "actorId": "player"
+      }
+    },
+    {
+      "id": "8fbafff7-f504-40dc-8978-be7b03f1be8d",
+      "command": "EVENT_GROUP",
+      "args": {
+        "__label": "Set Checkboxes",
+        "__collapse": true
+      },
+      "children": {
+        "true": [
+          {
+            "id": "7bd56a3f-d5fb-4687-9992-611951c22b8c",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "4",
+              "__collapseElse": true,
+              "__label": "Quest1 Check",
+              "__collapse": false,
+              "condition": {
+                "type": "variable",
+                "value": "4"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "a8caa0f6-6345-42d8-a9c0-e1ed9f4be716",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "d983c34a-9eba-4cb3-83cf-4e6ddb6d39ad",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          },
+          {
+            "id": "af46bbe1-3e65-4596-8e16-eb1b76e6aece",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "5",
+              "__collapseElse": true,
+              "__label": "Quest2 Check",
+              "__collapse": false,
+              "condition": {
+                "type": "variable",
+                "value": "5"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "d8761bfe-53d6-43e9-ba8b-02c83f6c447b",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "044598b7-a634-427d-9c88-e998fabe8d9a",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          },
+          {
+            "id": "ab93c5d4-edf3-4ec6-ac67-b777d88228f2",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "6",
+              "__collapseElse": true,
+              "__label": "Quest3 Check",
+              "__collapse": false,
+              "condition": {
+                "type": "variable",
+                "value": "6"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "b88ab766-536f-4126-9c4b-3509818a7bbe",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "6d80f0f6-047d-4494-811d-5f526e58959e",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          },
+          {
+            "id": "8e84c2be-2733-466d-84d3-12d63bcaf215",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "7",
+              "__collapseElse": true,
+              "__label": "Quest4 Check",
+              "condition": {
+                "type": "variable",
+                "value": "7"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "bf7af60e-825d-434b-ba3a-ed6d7550ea36",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "51558c54-c7e2-46d1-9015-f7b83a6a4ff4",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          },
+          {
+            "id": "efa718ed-2c90-4ae7-893e-da319fc0091f",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "8",
+              "__collapseElse": true,
+              "__label": "Quest5 Check",
+              "condition": {
+                "type": "variable",
+                "value": "8"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "b120f730-357a-4533-8b50-43914bd5dcd2",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "62ecd9f0-005a-402f-8ad0-8ec8c3b514f3",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          },
+          {
+            "id": "9b3104a7-a34f-405b-9f0f-115a141549b6",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "9",
+              "__collapseElse": true,
+              "__label": "Quest6 Check",
+              "condition": {
+                "type": "variable",
+                "value": "9"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "8d9236d9-ce7e-4111-87ac-29fdb3b7e6b8",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "4c9409a4-0872-486e-a1a1-5b74caaa6960",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "caf988fd-46ba-4df4-87e3-afe81256c4cd",
+      "command": "EVENT_AWAIT_INPUT",
+      "args": {
+        "input": [
+          "a",
+          "b",
+          "start",
+          "select"
+        ],
+        "__collapse": false
+      }
+    },
+    {
+      "id": "6fa3eeb1-f945-4c8b-8a9f-664484b98857",
+      "command": "EVENT_SCENE_POP_STATE",
+      "args": {
+        "fadeSpeed": "2"
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": ""
+}

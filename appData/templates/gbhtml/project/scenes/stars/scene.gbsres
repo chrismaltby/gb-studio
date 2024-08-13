@@ -1,0 +1,29 @@
+{
+  "_resourceType": "scene",
+  "id": "8a52b387-2a88-4741-8d4e-ca56acea4672",
+  "type": "TOPDOWN",
+  "name": "Stars",
+  "symbol": "scene_stars",
+  "x": 829,
+  "y": 485,
+  "width": 32,
+  "height": 32,
+  "backgroundId": "40fda058-df90-4205-a239-fe77bce4fa79",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "872f61cf-bd62-4e58-92ee-a751e7335fe9"
+      },
+      "id": "58ccd46d-1e5e-40a3-9836-bd05b85553a2"
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00400+"
+}

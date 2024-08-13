@@ -1,0 +1,48 @@
+{
+  "_resourceType": "script",
+  "id": "a02c8ee7-1478-4317-80d7-1c3fc9704e8d",
+  "name": "common/Init Weapons",
+  "symbol": "script_init_weapons",
+  "description": "Attach bullets to A button for Shooter scenes",
+  "variables": {},
+  "actors": {},
+  "script": [
+    {
+      "id": "72f90b54-19db-4794-9cdd-e89647b95af0",
+      "command": "EVENT_SET_INPUT_SCRIPT",
+      "args": {
+        "input": [
+          "a"
+        ]
+      },
+      "children": {
+        "true": [
+          {
+            "id": "b5d82058-ed83-492e-ad43-a011d637d9e2",
+            "command": "EVENT_LAUNCH_PROJECTILE",
+            "args": {
+              "spriteSheetId": "450a3571-cc76-41be-8c95-818d60b83c59",
+              "actorId": "player",
+              "direction": "right",
+              "speed": 3,
+              "collisionGroup": "1",
+              "collisionMask": [
+                "1"
+              ],
+              "__collapse": false,
+              "animSpeed": 7,
+              "lifeTime": 1.2,
+              "directionType": "direction",
+              "angleVariable": "0",
+              "angle": 0,
+              "otherActorId": "$self$",
+              "loopAnim": true,
+              "destroyOnHit": true
+            }
+          }
+        ]
+      },
+      "__type": "event"
+    }
+  ]
+}

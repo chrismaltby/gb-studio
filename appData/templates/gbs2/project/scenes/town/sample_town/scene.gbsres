@@ -1,0 +1,172 @@
+{
+  "_resourceType": "scene",
+  "id": "94c18861-b352-4f49-a64d-52f2e3415077",
+  "type": "TOPDOWN",
+  "name": "town/Sample Town",
+  "symbol": "scene_sample_town",
+  "x": 800.25,
+  "y": 30,
+  "width": 56,
+  "height": 56,
+  "backgroundId": "053f83aa-a4e3-413b-98af-1bb0d0818ddc",
+  "tilesetId": "",
+  "paletteIds": [
+    "320dcbf4-2760-4e0d-8e2b-41970675034f",
+    "b550d28a-9cb7-4f19-82fb-d839725f2419",
+    "036c985f-d774-4a94-813c-9ac43c52627f",
+    "",
+    "",
+    "2ebac764-bebb-4707-920b-2a975675b2cb"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "af225b94-4b34-4d10-93b8-1609c0e149d8",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "078bea48-4423-443d-a079-cb9280aea0f6",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "41c36cd9-f218-47db-94af-1c0b7ee256d2",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "dd21c899-25f7-41d8-a419-3a72e0b99ccb",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cd43ac8c-de3e-40c8-878e-0c0b66a9978f",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "9aac47ff-51d7-48bf-9f15-1ce01b3872a4",
+        "loop": true
+      }
+    },
+    {
+      "command": "EVENT_SET_TIMER_SCRIPT",
+      "args": {
+        "timer": 1,
+        "duration": 0.3,
+        "frames": 30,
+        "__scriptTabs": "end"
+      },
+      "children": {
+        "script": [
+          {
+            "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
+            "args": {
+              "x": {
+                "type": "number",
+                "value": 22
+              },
+              "y": {
+                "type": "number",
+                "value": 6
+              },
+              "tileIndex": {
+                "type": "number",
+                "value": 0
+              },
+              "variable": "L0",
+              "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a",
+              "frames": {
+                "type": "number",
+                "value": 4
+              }
+            },
+            "id": "fb3e9a6c-a491-457e-8c93-d0971516643a"
+          },
+          {
+            "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
+            "args": {
+              "x": {
+                "type": "number",
+                "value": 22
+              },
+              "y": {
+                "type": "number",
+                "value": 17
+              },
+              "tileIndex": {
+                "type": "number",
+                "value": 4
+              },
+              "variable": "L1",
+              "tilesetId": "4991cc19-85b6-45f9-bef6-39496dc2c62a",
+              "frames": {
+                "type": "number",
+                "value": 4
+              }
+            },
+            "id": "418dc58d-8057-41e3-ada5-96e620d889f5"
+          },
+          {
+            "command": "EVENT_REPLACE_TILE_XY_SEQUENCE",
+            "args": {
+              "x": {
+                "type": "number",
+                "value": 4
+              },
+              "y": {
+                "type": "number",
+                "value": 11
+              },
+              "tileIndex": {
+                "type": "number",
+                "value": 0
+              },
+              "variable": "L2",
+              "tilesetId": "d7042527-d20e-486d-93e6-66b9397df510",
+              "frames": {
+                "type": "number",
+                "value": 4
+              }
+            },
+            "id": "77f7c1aa-6c94-4b45-a05a-3914ec07e588"
+          }
+        ]
+      },
+      "id": "1c3b6106-9c84-42c7-9c9e-c8f98863ff1a"
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "0f13+00c+0f8+00d+0f17+00c+0f8+00d+0f17+00c+0f8+00e+0f4+002+0f2+002+0f2+002+0f2+002+0f2+00!0f!00d+0f6+00e+0f6+006+0f6+004+0f2+00d+0f4+00f+0f6+006+0f6+004+0f3+00d+0f2+0010+0f6+006+0f6+004+0f13+0010+0f4+007+0f2+002+0f2+006+0f4+002+0fc+00f+0f5+006+0f2+002+0f2+007+0f3+002+0fd+00d+0f6+001d+0f4+002+0f6+004+0fb+001d+0f4+002+0f6+004+0fa+001f+0f2+004+0f5+004+0fb+003+0f2+0020+0f4+004+0f5+00!0f5+002+0f4+002e+0f4+002+0f4+002d+0f4+004+0f2+002e+0f5+001d+0f2+0014+0f5+00d+0fd+002+0f4+0014+0f4+009+0f5+00b+0f2+00!0f6+0011+0f4+008+0f3+0010+0f!002+0f6+0010+0f5+007+0f!0012+0f!002+0f6+007+0f2+007+0f5+007+0f4+00f+0f!00!0f6+007+0f4+007+0f4+00a+0f3+00b+0f3+00!0f4+009+0f4+006+0f4+00d+0fd+004+0f2+006+0f2+003+0f2+007+0f5+001d+0f2+005+0f4+009+0f7+001c+0f4+004+0f6+007+0f7+001c+0f4+005+0f6+006+0f6+001e+0f2+008+0f4+007+0f11+00e+0f2+002+0f2+009+0f2+009+0f11+00c+0f8+0013+0f11+00c+0f9+0013+0fb+002+0f2+00e+0f9+00d+0ff+0014+0f8+00d+0fe+0016+0f6+00e+0fd+0018+0f4+00!0f3+009+0f10+0018+0f2+002+0f4+007+0f4+00!0fd+006+0f6+009+0fa+007+0f4+002+0fc+003+0f2+00!0f6+009+0f6+00!0f2+009+0f2+004+0fa+003+0f!00!0f!00!0f6+009+0f6+0012+0fe+00!0f!00!0f2+002+0f2+009+0f2+002+0f2+0010+0f5+00c+0f!00!0f2+002+0f2+009+0f2+002+0f2+0010+0f5+00c+0f!0026+0f5+00c+0f2+001e+0fc+00c+0f2+001e+0fc+00c+0f2+001e+0f1a+001e+0fc+002c+0f3+002+0f7+002c+0f3+002+0f7+0035+0f3+0035+0f11+0026+0f4+00d+0f2+0025+0fe4+"
+}

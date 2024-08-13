@@ -1,0 +1,35 @@
+{
+  "_resourceType": "actor",
+  "id": "de25f99f-4126-4a23-8652-d0a2b3597a4e",
+  "_index": 8,
+  "symbol": "actor_26",
+  "name": "Sign Post 2",
+  "x": 16,
+  "y": 7,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "5c40ff98-9295-455b-adbb-82808806e7fb",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "This drumkit plays \na song with a drum base"
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

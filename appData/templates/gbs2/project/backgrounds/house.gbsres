@@ -1,0 +1,13 @@
+{
+  "_resourceType": "background",
+  "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
+  "name": "house",
+  "symbol": "bg_house",
+  "width": 20,
+  "height": 18,
+  "imageWidth": 160,
+  "imageHeight": 144,
+  "filename": "house.png",
+  "tileColors": "002a+0110+004+0110+0011a+",
+  "autoColor": false
+}

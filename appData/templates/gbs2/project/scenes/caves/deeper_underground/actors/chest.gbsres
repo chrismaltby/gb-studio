@@ -1,0 +1,106 @@
+{
+  "_resourceType": "actor",
+  "id": "114806de-0098-4bac-a152-7f61497f7c99",
+  "_index": 0,
+  "symbol": "actor_chest",
+  "name": "Chest",
+  "x": 27,
+  "y": 15,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "d4206af4-4d12-4cfd-a4a8-faa11d4aff34",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "ea4b563c-2be6-4022-845d-a436911059c5",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "9",
+        "__collapseElse": false,
+        "condition": {
+          "type": "variable",
+          "value": "9"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "4dc1d020-c2a6-402d-b092-10f0e5025af3",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": "Empty...",
+              "avatarId": ""
+            }
+          }
+        ],
+        "false": [
+          {
+            "command": "EVENT_ACTOR_SET_STATE",
+            "args": {
+              "actorId": "$self$",
+              "spriteStateId": "Open"
+            },
+            "id": "82a92fd2-66d2-4cad-aed9-809bfad282c3"
+          },
+          {
+            "id": "7f0ecbb1-df33-4802-8b69-ab68970f7562",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "Wow! Found\nGOLD COIN."
+              ],
+              "avatarId": ""
+            }
+          },
+          {
+            "id": "65f97ab7-ef10-4ce2-899c-946a6cf420e3",
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "9",
+              "value": {
+                "type": "true"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "startScript": [
+    {
+      "id": "7ef18fac-6a8e-4ec8-a4a0-c452e46047e4",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "9",
+        "__collapseElse": false,
+        "condition": {
+          "type": "variable",
+          "value": "9"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "command": "EVENT_ACTOR_SET_STATE",
+            "args": {
+              "actorId": "$self$",
+              "spriteStateId": "Open"
+            },
+            "id": "053a60e2-cc26-403e-acd3-e9c4c4a507ae"
+          }
+        ],
+        "false": []
+      }
+    }
+  ],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

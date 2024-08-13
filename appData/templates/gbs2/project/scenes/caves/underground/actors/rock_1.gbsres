@@ -1,0 +1,33 @@
+{
+  "_resourceType": "actor",
+  "id": "417dfd42-2e13-4850-92e8-c52efe866116",
+  "_index": 4,
+  "symbol": "actor_rock_1",
+  "name": "Rock 1",
+  "x": 19,
+  "y": 27,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "3939e8d2-3987-4a22-953e-f1d82134eccf",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 0.5,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "c0b973b7-12d4-4ea0-b813-25645a563a79",
+      "command": "EVENT_ACTOR_PUSH",
+      "args": {
+        "continue": false
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

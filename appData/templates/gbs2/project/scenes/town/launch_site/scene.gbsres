@@ -1,0 +1,83 @@
+{
+  "_resourceType": "scene",
+  "id": "6a82648b-e0fe-4a31-861e-0c4af5b83ba2",
+  "type": "TOPDOWN",
+  "name": "town/Launch Site",
+  "symbol": "scene_launch_site",
+  "x": 1276,
+  "y": 30,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "00e9b250-b602-4e5d-998c-fe0c8f23c91d",
+  "tilesetId": "",
+  "paletteIds": [
+    "320dcbf4-2760-4e0d-8e2b-41970675034f",
+    "",
+    "036c985f-d774-4a94-813c-9ac43c52627f",
+    "9fb1f41b-54d4-43c6-8731-16de50176aa0"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "e17e8930-d840-41d3-bf16-2660d381254e",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "5fedf608-78db-434f-8552-377ab171241b",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "1665fa23-f395-4b85-90e2-a04a3cddbe36",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "70e4e0f6-9db1-4671-b465-ac67ee713cf2",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "05562a6d-e1a7-49b8-95fc-c143b4ba166f",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "9aac47ff-51d7-48bf-9f15-1ce01b3872a4",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "0f4+002+0f!006+0f!002+0f7+003+0f!006+0f!003+0f5+004+0f!006+0f!004+0f3+005+0f!006+0f!005+0f3+003+0f2+006+0f2+003+0f4+003+0f2+006+0f2+003+0f4+004+0f!006+0f!004+0f3+005+0f!006+0f5+00!0f3+004+0f!006+0f2+002+0f5+004+0f9+002+0f5+0010+0f3+0012+0f3+0010+0f4+0010+0f4+0010+0f3+0012+0f6+00a+0fb+008+0f6+"
+}

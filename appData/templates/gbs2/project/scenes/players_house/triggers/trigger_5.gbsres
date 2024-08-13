@@ -1,0 +1,22 @@
+{
+  "_resourceType": "trigger",
+  "id": "a9fcbe4f-495e-41d6-b796-3baa4e065946",
+  "_index": 4,
+  "symbol": "trigger_23",
+  "name": "",
+  "x": 18,
+  "y": 2,
+  "width": 2,
+  "height": 13,
+  "script": [
+    {
+      "id": "e8f54e0e-320c-48b4-9436-be7d7c5257ec",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Such a nice day to\ngo into town!",
+        "avatarId": ""
+      }
+    }
+  ],
+  "leaveScript": []
+}

@@ -1,0 +1,53 @@
+{
+  "_resourceType": "actor",
+  "id": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+  "_index": 7,
+  "symbol": "actor_hider",
+  "name": "Hider",
+  "x": 36,
+  "y": 24,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "46a3db76-878e-4896-892b-d1afa7d5e2f0",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "687b8207-3228-4376-8517-bb7327e777fb",
+      "command": "EVENT_ACTOR_EMOTE",
+      "args": {
+        "actorId": "$self$",
+        "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
+      }
+    },
+    {
+      "id": "2c8ba53e-becc-4a5f-8b4f-a34e41ad48f9",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Oh you got me!"
+        ]
+      }
+    },
+    {
+      "id": "226d1384-37ce-44f8-a831-aa3f84c9e478",
+      "command": "EVENT_SET_VALUE",
+      "args": {
+        "variable": "10",
+        "value": {
+          "type": "true"
+        }
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

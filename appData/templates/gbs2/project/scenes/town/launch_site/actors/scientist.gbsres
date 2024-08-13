@@ -1,0 +1,186 @@
+{
+  "_resourceType": "actor",
+  "id": "685ffbff-21f7-4d22-9a61-7cf2c20d8125",
+  "_index": 1,
+  "symbol": "actor_scientist",
+  "name": "Scientist",
+  "x": 8,
+  "y": 12,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "7a27b229-5f3d-4eaa-b20c-07997673324d",
+  "paletteId": "",
+  "direction": "up",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "29251383-06c9-45b4-ab62-ac34947a076f",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Can't you see\nthat I'm busy?"
+        ],
+        "avatarId": ""
+      }
+    },
+    {
+      "id": "4e18b34f-2a44-4d33-8cea-95584b78392f",
+      "command": "EVENT_ACTOR_SET_DIRECTION",
+      "args": {
+        "actorId": "$self$",
+        "direction": {
+          "type": "direction",
+          "value": "up"
+        }
+      }
+    },
+    {
+      "id": "d36425b5-5422-4f25-802d-31d19c7b5b73",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Oh, that? That's\nmy spaceship.",
+        "avatarId": ""
+      }
+    },
+    {
+      "id": "b894d71d-bd03-479d-a5a5-15d6acbd0a76",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "HANDS OFF!",
+        "avatarId": ""
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [
+    {
+      "id": "4098286b-f3f6-44ef-a72c-34a205b68868",
+      "command": "EVENT_ACTOR_MOVE_TO",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 8
+        },
+        "y": {
+          "type": "number",
+          "value": 12
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "f1375da1-cfa4-470e-9f64-45070c885c3d",
+      "command": "EVENT_ACTOR_SET_DIRECTION",
+      "args": {
+        "actorId": "$self$",
+        "direction": {
+          "type": "direction",
+          "value": "up"
+        }
+      }
+    },
+    {
+      "id": "44e1d263-1858-45b4-abfe-e92e4dc8ad2f",
+      "command": "EVENT_WAIT",
+      "args": {
+        "time": 2
+      }
+    },
+    {
+      "id": "ebbbc840-5742-4498-930e-1f1387d824f6",
+      "command": "EVENT_ACTOR_MOVE_TO",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 6
+        },
+        "y": {
+          "type": "number",
+          "value": 12
+        },
+        "moveType": "horizontal",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "0ec85df3-0c84-4a83-91c0-94aa13c8165a",
+      "command": "EVENT_ACTOR_SET_DIRECTION",
+      "args": {
+        "actorId": "$self$",
+        "direction": {
+          "type": "direction",
+          "value": "up"
+        }
+      }
+    },
+    {
+      "id": "f89fa994-c563-4c6d-a0f8-3d721d4d153b",
+      "command": "EVENT_WAIT",
+      "args": {
+        "time": 2
+      }
+    },
+    {
+      "id": "4f8461eb-c1f7-4450-8c26-2af30c43097e",
+      "command": "EVENT_ACTOR_MOVE_TO",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 4
+        },
+        "y": {
+          "type": "number",
+          "value": 10
+        },
+        "moveType": "horizontal",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "66cb420a-4b26-42d9-8113-1089a94d564d",
+      "command": "EVENT_ACTOR_SET_DIRECTION",
+      "args": {
+        "actorId": "$self$",
+        "direction": {
+          "type": "direction",
+          "value": "up"
+        }
+      }
+    },
+    {
+      "id": "9a8b7652-723e-498f-a41b-2a842a86971f",
+      "command": "EVENT_WAIT",
+      "args": {
+        "time": 4
+      }
+    },
+    {
+      "id": "1581c6bb-245d-4733-bff0-94a73722a7ac",
+      "command": "EVENT_ACTOR_MOVE_TO",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 8
+        },
+        "y": {
+          "type": "number",
+          "value": 12
+        },
+        "moveType": "vertical",
+        "useCollisions": false
+      }
+    }
+  ],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}
