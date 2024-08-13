@@ -19,6 +19,7 @@ import {
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import { dummyActor, dummyBackground, dummyScene } from "../../dummydata";
+import os from "os";
 
 test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene as unknown as PrecompiledScene;
@@ -401,7 +402,7 @@ test("should compile simple project into files object", async () => {
     scriptEventHandlers,
     engineFields: [],
     sceneTypes: [],
-    tmpPath: `${__dirname}/_tmp`,
+    tmpPath: os.tmpdir(),
     debugEnabled: false,
     progress: (_msg: string) => {},
     warnings: (_msg: string) => {},
