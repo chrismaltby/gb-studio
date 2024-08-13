@@ -1,0 +1,27 @@
+{
+  "_resourceType": "scene",
+  "id": "4ebc5249-2878-434c-aab7-091dec325fc6",
+  "type": "TOPDOWN",
+  "name": "town/Music House",
+  "symbol": "scene_17",
+  "x": 1278,
+  "y": 245,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "b340b9a2-2865-4e05-91c0-148846a693c8",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "command": "EVENT_MUSIC_STOP",
+      "args": {},
+      "id": "919e8390-3d03-4bfb-ba3e-5119c1bff417"
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "003d+0f12+002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f8+002+0f8+009+0f!002+0f!0010+0f4+008+"
+}

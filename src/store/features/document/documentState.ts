@@ -1,16 +1,30 @@
 import { createSlice, AnyAction } from "@reduxjs/toolkit";
-import projectActions from "store/features/project/projectActions";
+import projectActions, {
+  SaveStep,
+} from "store/features/project/projectActions";
 
 export interface DocumentState {
   modified: boolean;
   loaded: boolean;
   saving: boolean;
+  saveStep: SaveStep;
+  saveWriteProgress: {
+    completed: number;
+    total: number;
+  };
+  saveError: boolean;
 }
 
 export const initialState: DocumentState = {
   modified: false,
   loaded: false,
   saving: false,
+  saveStep: "complete",
+  saveWriteProgress: {
+    completed: 0,
+    total: 0,
+  },
+  saveError: false,
 };
 
 const documentSlice = createSlice({
@@ -27,14 +41,29 @@ const documentSlice = createSlice({
         state.loaded = true;
       })
       .addCase(projectActions.saveProject.pending, (state, _action) => {
-        state.saving = true;
+        if (!state.saving) {
+          state.saving = true;
+          state.saveStep = "saving";
+          state.saveError = false;
+        }
       })
       .addCase(projectActions.saveProject.rejected, (state, _action) => {
         state.saving = false;
+        if (state.saveStep !== "saving") {
+          state.saveError = true;
+        }
       })
       .addCase(projectActions.saveProject.fulfilled, (state, _action) => {
         state.saving = false;
         state.modified = false;
+        state.saveStep = "complete";
+        state.saveError = false;
+      })
+      .addCase(projectActions.setSaveStep, (state, action) => {
+        state.saveStep = action.payload;
+      })
+      .addCase(projectActions.setSaveWriteProgress, (state, action) => {
+        state.saveWriteProgress = action.payload;
       })
       .addMatcher(
         (action: AnyAction): action is AnyAction =>

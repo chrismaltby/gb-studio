@@ -1,0 +1,40 @@
+{
+  "_resourceType": "actor",
+  "id": "dc9e5886-f39c-4480-a543-c0436b79bb67",
+  "_index": 4,
+  "symbol": "actor_sign_post_1",
+  "name": "Sign Post 1",
+  "x": 3,
+  "y": 5,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "0fda232e-04c4-4f82-9874-b73f384f0028",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "This room is\npretty empty."
+      }
+    },
+    {
+      "id": "2d151fc7-c78f-452d-84ab-9d11caf772c4",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "Try to edit\nhouse.png"
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

@@ -1,0 +1,33 @@
+{
+  "_resourceType": "actor",
+  "id": "1959165a-339d-444a-b69b-098086e5ebca",
+  "_index": 1,
+  "symbol": "actor_portal",
+  "name": "Portal",
+  "x": 14,
+  "y": 10,
+  "frame": 0,
+  "animate": true,
+  "spriteSheetId": "94eb6557-0cfc-453e-8e1f-ddb191ac8536",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [],
+  "startScript": [
+    {
+      "id": "74f7eced-04a9-429c-bfa9-a5d1c2ffe71f",
+      "command": "EVENT_ACTOR_COLLISIONS_DISABLE",
+      "args": {
+        "actorId": "$self$"
+      }
+    }
+  ],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

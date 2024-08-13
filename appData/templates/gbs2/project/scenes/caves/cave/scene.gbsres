@@ -1,0 +1,82 @@
+{
+  "_resourceType": "scene",
+  "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
+  "type": "TOPDOWN",
+  "name": "caves/Cave",
+  "symbol": "scene_cave",
+  "x": 575,
+  "y": 275,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
+  "tilesetId": "",
+  "paletteIds": [
+    "444c886c-6214-48d7-8e3c-4dca4f65dec7"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "cb03e339-073a-4773-845c-2ab245f13c1f",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "ee0a5f74-4941-4bec-9443-98d9b188c254",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "affd9e83-3995-44cc-9926-2ffcb94cf25d",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "8662a1cf-044b-4e3b-9fe9-c5273490ad3f",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      },
+      "__type": "event"
+    },
+    {
+      "id": "afa86c47-5acc-498e-9ab0-e8727c7a24dd",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "a48b4a96-9a5a-4511-b38a-98d56dd996ba",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "003d+0f12+002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f8+002+0f8+009+0f!002+0f!008+"
+}

@@ -1,0 +1,153 @@
+{
+  "_resourceType": "scene",
+  "id": "6bcc8670-b44d-4892-a37a-77a35f5a7668",
+  "type": "SHMUP",
+  "name": "space/Space Battle",
+  "symbol": "scene_space_battle",
+  "x": 144,
+  "y": 724,
+  "width": 255,
+  "height": 18,
+  "backgroundId": "28a8b376-b6c5-4e6d-8d7d-2a409d73cd1b",
+  "tilesetId": "",
+  "paletteIds": [
+    "d73adccf-4071-4012-b0a6-9c3973a2dc0e",
+    "325f5712-ff6c-40e7-b105-c6d795846783"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "349d17cf-18f1-42be-acc2-e76c9441d1ce",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "a02c8ee7-1478-4317-80d7-1c3fc9704e8d",
+        "__name": "Init Weapons"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "72f90b54-19db-4794-9cdd-e89647b95af0",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "a"
+              ]
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "b5d82058-ed83-492e-ad43-a011d637d9e2",
+                  "command": "EVENT_LAUNCH_PROJECTILE",
+                  "args": {
+                    "spriteSheetId": "450a3571-cc76-41be-8c95-818d60b83c59",
+                    "actorId": "player",
+                    "direction": "right",
+                    "speed": 3,
+                    "collisionGroup": "1",
+                    "collisionMask": [
+                      "1"
+                    ],
+                    "__collapse": false,
+                    "animSpeed": 7,
+                    "lifeTime": 1.2,
+                    "directionType": "direction",
+                    "angleVariable": "0",
+                    "angle": 0,
+                    "otherActorId": "$self$",
+                    "loopAnim": true,
+                    "destroyOnHit": true
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ffbc81cc-7fd2-4b40-a1c7-98759a5f4565",
+      "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
+      "args": {
+        "actorId": "$self$",
+        "speed": 0.5,
+        "__collapse": false
+      }
+    },
+    {
+      "id": "9fdf6184-f7fa-4b3f-9889-2476c138462a",
+      "command": "EVENT_ACTOR_MOVE_RELATIVE",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 4
+        },
+        "y": {
+          "type": "number",
+          "value": 0
+        },
+        "moveType": "horizontal",
+        "useCollisions": false
+      }
+    },
+    {
+      "id": "66dcc558-b987-49ec-a177-d5f5e10e0b90",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "a7c68b7f-00bc-4872-9ce8-fe5e62f9b565",
+        "loop": true
+      }
+    },
+    {
+      "id": "9fb64342-20eb-4eee-bb72-07ebfee26885",
+      "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
+      "args": {
+        "actorId": "$self$",
+        "speed": 1,
+        "__collapse": false
+      }
+    }
+  ],
+  "playerHit1Script": [
+    {
+      "id": "57a67cd7-2542-4883-b687-12bf4e76ca59",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.5,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        }
+      }
+    }
+  ],
+  "playerHit2Script": [
+    {
+      "id": "1567a446-59af-4aa5-b812-1902ceed6711",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.5,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        }
+      }
+    }
+  ],
+  "playerHit3Script": [
+    {
+      "id": "9785818e-bf26-405d-9ac5-f908acacccbf",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.5,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        }
+      }
+    }
+  ],
+  "collisions": "0011ee+"
+}

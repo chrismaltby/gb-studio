@@ -1,0 +1,35 @@
+{
+  "_resourceType": "actor",
+  "id": "0434c6f6-14c9-4bea-80fd-4a7818fc364d",
+  "_index": 4,
+  "symbol": "actor_sign_post_4",
+  "name": "Sign Post",
+  "x": 134,
+  "y": 13,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "3b39bf7d-5a47-4b97-bfd6-ef1759ec738b",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "This way to\nSample Town!"
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

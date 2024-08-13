@@ -1,0 +1,9 @@
+{
+  "_resourceType": "emote",
+  "id": "2d4b251d-0241-40eb-98e1-e396b236772c",
+  "name": "sleep",
+  "symbol": "emote_sleep",
+  "width": 16,
+  "height": 16,
+  "filename": "sleep.png"
+}

@@ -1,6 +1,8 @@
 import type { EntityState, Dictionary } from "@reduxjs/toolkit";
 import type { ScriptEditorContextType } from "shared/lib/scripts/context";
 
+export type CollisionGroup = "" | "1" | "2" | "3" | "player";
+
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type SpriteAnimationType =
   | "fixed"
@@ -49,9 +51,9 @@ export type ScriptEventArgs = Record<string, unknown>;
 export type ScriptEvent = {
   id: string;
   command: string;
-  symbol?: string;
-  args?: ScriptEventArgs;
-  children?: Dictionary<ScriptEvent[]>;
+  symbol?: string | undefined;
+  args?: ScriptEventArgs | undefined;
+  children?: Record<string, ScriptEvent[] | undefined> | undefined;
 };
 
 export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
@@ -86,12 +88,12 @@ export type Actor = {
   paletteId: string;
   frame: number;
   moveSpeed: number;
-  animSpeed: number | null;
+  animSpeed: number;
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
   persistent: boolean;
-  collisionGroup: string;
+  collisionGroup: CollisionGroup;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];
@@ -265,7 +267,6 @@ export type CustomEventVariable = {
   id: string;
   name: string;
   passByReference: boolean;
-  type?: "8bit" | "16bit";
 };
 
 export type CustomEventActor = {
@@ -289,7 +290,7 @@ export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
 
 export type EngineFieldValue = {
   id: string;
-  value: number | string | boolean | undefined;
+  value?: number | string | boolean | undefined;
 };
 
 export type MetaspriteTile = {
@@ -355,12 +356,14 @@ export type SpriteSheet = {
   boundsWidth: number;
   boundsHeight: number;
   animSpeed: number | null;
+  states: SpriteStateData[];
+};
+
+export type SpriteSheetNormalized = Omit<SpriteSheet, "states"> & {
   states: string[];
 };
 
-export type SpriteSheetData = Omit<SpriteSheet, "states" | "_v" | "inode"> & {
-  states: SpriteStateData[];
-};
+export type SpriteSheetData = Omit<SpriteSheet, "_v" | "inode">;
 
 export type SceneParallaxLayer = {
   height: number;
@@ -443,7 +446,7 @@ export interface EntitiesState {
   scenes: EntityState<SceneNormalized>;
   scriptEvents: EntityState<ScriptEventNormalized>;
   backgrounds: EntityState<Background>;
-  spriteSheets: EntityState<SpriteSheet>;
+  spriteSheets: EntityState<SpriteSheetNormalized>;
   metasprites: EntityState<Metasprite>;
   metaspriteTiles: EntityState<MetaspriteTile>;
   spriteAnimations: EntityState<SpriteAnimation>;

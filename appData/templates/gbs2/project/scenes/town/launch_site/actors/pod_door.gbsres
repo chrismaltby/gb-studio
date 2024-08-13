@@ -1,0 +1,33 @@
+{
+  "_resourceType": "actor",
+  "id": "0950d56c-866c-4d02-bd63-cd3fff4fe2bf",
+  "_index": 0,
+  "symbol": "actor_pod_door",
+  "name": "Pod Door",
+  "x": 15,
+  "y": 9,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "058c0142-0c1e-4762-b5ac-e085d84fc734",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 255,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [],
+  "startScript": [
+    {
+      "id": "4511a09b-f290-4c54-ac18-a3660278e369",
+      "command": "EVENT_ACTOR_DEACTIVATE",
+      "args": {
+        "actorId": "$self$"
+      }
+    }
+  ],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

@@ -1,0 +1,74 @@
+{
+  "_resourceType": "scene",
+  "id": "a5f430d1-da9c-4313-934a-79da3c40bbdc",
+  "type": "TOPDOWN",
+  "name": "Dream",
+  "symbol": "scene_dream",
+  "x": 1019,
+  "y": 931,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "1da35172-aea4-40b4-8215-7992d9245b34",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "fe077452-bd5b-486a-8bcf-871c8bface15",
+      "command": "EVENT_ACTOR_DEACTIVATE",
+      "args": {
+        "actorId": "$self$"
+      }
+    },
+    {
+      "id": "cd305da2-f0dc-4063-b4fc-71dafbc15c0b",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "326b3cbc-1e3d-4a43-846f-c962ece2c317",
+        "loop": false
+      }
+    },
+    {
+      "id": "8a9ed399-aa4b-49d0-854d-8752a796d21c",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Huh?"
+        ],
+        "avatarId": ""
+      }
+    },
+    {
+      "id": "56dcd9e1-85d4-46e5-81b4-122fcc6b91a3",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "I guess it was\na dream..."
+        ],
+        "avatarId": ""
+      }
+    },
+    {
+      "id": "93cf5981-bcc6-4a04-ac1d-30ec212fbb8e",
+      "command": "EVENT_SWITCH_SCENE",
+      "args": {
+        "sceneId": "896aee79-9b53-4ac1-b41f-b1ddf96da7ff",
+        "x": {
+          "type": "number",
+          "value": 4
+        },
+        "y": {
+          "type": "number",
+          "value": 13
+        },
+        "direction": "right",
+        "fadeSpeed": "4"
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00168+"
+}

@@ -1,15 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import compile, {
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
-import { compileSceneProjectiles } from "../../../src/lib/compiler/generateGBVMData";
-import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
+import {
+  compileSceneProjectiles,
+  PrecompiledBackground,
+  PrecompiledScene,
+  PrecompiledSprite,
+} from "../../../src/lib/compiler/generateGBVMData";
+import { EVENT_TEXT, EVENT_IF_TRUE } from "../../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 import { getTestScriptHandlers } from "../../getTestScriptHandlers";
+import { ProjectResources } from "shared/lib/resources/types";
+import {
+  BackgroundData,
+  Scene,
+  TilesetData,
+} from "shared/lib/entities/entitiesTypes";
+import { dummyActor, dummyBackground, dummyScene } from "../../dummydata";
+import os from "os";
 
 test("should take into account state value when building projectiles", () => {
-  const scene = projectileStateTest.scene;
-  const sprites = projectileStateTest.sprites;
+  const scene = projectileStateTest.scene as unknown as PrecompiledScene;
+  const sprites = projectileStateTest.sprites as unknown as PrecompiledSprite[];
   const out = compileSceneProjectiles(scene, 0, sprites);
   expect(out).toEqual(projectileStateTest.expectedOutput);
 });
@@ -143,9 +157,10 @@ test("should compile simple project into files object", async () => {
                       },
                     },
                     {
-                      command: EVENT_SET_TRUE,
+                      command: "EVENT_SET_VALUE",
                       args: {
                         variable: "1",
+                        value: { type: "true" },
                       },
                     },
                   ],
@@ -375,13 +390,22 @@ test("should compile simple project into files object", async () => {
     palettes: [],
     avatars: [],
     emotes: [],
-  };
+    variables: {
+      variables: [],
+    },
+    engineFieldValues: {
+      engineFieldValues: [],
+    },
+  } as unknown as ProjectResources;
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
     scriptEventHandlers,
-    // eventEmitter: {
-    //   emit: (a, b) => console.log(a, ":", b)
-    // }
+    engineFields: [],
+    sceneTypes: [],
+    tmpPath: os.tmpdir(),
+    debugEnabled: false,
+    progress: (_msg: string) => {},
+    warnings: (_msg: string) => {},
   });
   expect(compiled).toBeInstanceOf(Object);
 });
@@ -406,68 +430,76 @@ test("should precompile image data", async () => {
       imageHeight: 144,
       filename: "test_img2.png",
     },
-  ];
+  ] as BackgroundData[];
   const scenes = [
     {
+      ...dummyScene,
       id: "1",
       name: "first_scene",
       backgroundId: "2b",
       actors: [],
       triggers: [],
     },
-  ];
-  const tilesets = [];
+  ] as Scene[];
+  const tilesets = [] as TilesetData[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
     tilesets,
     {},
-    false,
+    "mono",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(1);
-  expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
+  expect(backgroundLookup["2b"]).toMatchObject(backgrounds[0]);
   expect(backgroundLookup["3b"]).toBeUndefined();
 });
 
 test("should precompile scenes", async () => {
   const scenes = [
     {
+      ...dummyScene,
       id: "1",
       backgroundId: "3",
       type: "TOPDOWN",
       actors: [
         {
+          ...dummyActor,
           spriteSheetId: "5",
         },
       ],
       triggers: [],
     },
     {
+      ...dummyScene,
       id: "2",
       backgroundId: "4",
       type: "TOPDOWN",
       actors: [
         {
+          ...dummyActor,
           spriteSheetId: "5",
         },
         {
+          ...dummyActor,
           spriteSheetId: "6",
         },
       ],
       triggers: [],
     },
-  ];
+  ] as Scene[];
   const usedBackgrounds = [
     {
+      ...dummyBackground,
       id: "3",
     },
     {
+      ...dummyBackground,
       id: "4",
     },
-  ];
+  ] as unknown as PrecompiledBackground[];
   const spriteData = [
     {
       id: "5",
@@ -475,7 +507,7 @@ test("should precompile scenes", async () => {
     {
       id: "6",
     },
-  ];
+  ] as unknown as PrecompiledSprite[];
   const defaultPlayerSprites = {
     TOPDOWN: "5",
   };
@@ -483,6 +515,7 @@ test("should precompile scenes", async () => {
     scenes,
     {},
     defaultPlayerSprites,
+    "mono",
     usedBackgrounds,
     spriteData,
     { warnings: () => {} }
@@ -495,7 +528,7 @@ test("should precompile scenes", async () => {
 
 test("should precompile script", async () => {});
 
-test.only("should include extra backgrounds when using common tilesets", async () => {
+test("should include extra backgrounds when using common tilesets", async () => {
   const backgrounds = [
     {
       id: "2b",
@@ -515,9 +548,10 @@ test.only("should include extra backgrounds when using common tilesets", async (
       imageHeight: 144,
       filename: "test_img2.png",
     },
-  ];
+  ] as BackgroundData[];
   const scenes = [
     {
+      ...dummyScene,
       id: "1",
       name: "first_scene",
       backgroundId: "2b",
@@ -526,6 +560,7 @@ test.only("should include extra backgrounds when using common tilesets", async (
       triggers: [],
     },
     {
+      ...dummyScene,
       id: "1",
       name: "second_scene",
       backgroundId: "2b",
@@ -533,7 +568,7 @@ test.only("should include extra backgrounds when using common tilesets", async (
       actors: [],
       triggers: [],
     },
-  ];
+  ] as Scene[];
   const tilesets = [
     {
       id: "t1",
@@ -553,13 +588,13 @@ test.only("should include extra backgrounds when using common tilesets", async (
       imageHeight: 16,
       filename: "tile_img2.png",
     },
-  ];
+  ] as TilesetData[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
     tilesets,
     {},
-    false,
+    "mono",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }

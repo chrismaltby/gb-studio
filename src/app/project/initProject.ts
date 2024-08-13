@@ -49,6 +49,23 @@ window.addEventListener("error", (error) => {
   return false;
 });
 
+window.addEventListener("unhandledrejection", (error) => {
+  error.stopPropagation();
+  error.preventDefault();
+  // eslint-disable-next-line no-console
+  console.error(error);
+  store.dispatch(
+    errorActions.setGlobalError({
+      message: error.reason.message,
+      filename: "",
+      line: 0,
+      col: 0,
+      stackTrace: error.reason.stack,
+    })
+  );
+  return false;
+});
+
 const onUndo = () => {
   if (store.getState().trackerDocument.past.length > 0) {
     store.dispatch({ type: TRACKER_UNDO });
@@ -286,10 +303,18 @@ API.events.watch.scriptEventDefs.changed.subscribe((_, scriptEventDefs) => {
 // Menu
 
 API.events.menu.saveProject.subscribe(() => {
+  const state = store.getState();
+  if (!state.document.loaded || state.document.saving) {
+    return;
+  }
   store.dispatch(projectActions.saveProject());
 });
 
 API.events.menu.onSaveAndCloseProject.subscribe(async () => {
+  const state = store.getState();
+  if (!state.document.loaded || state.document.saving) {
+    return;
+  }
   await store.dispatch(projectActions.saveProject());
   window.close();
 });
@@ -416,4 +441,8 @@ API.events.debugger.symbols.subscribe(
 
 API.events.debugger.disconnected.subscribe(() => {
   store.dispatch(debuggerActions.disconnect());
+});
+
+API.events.project.saveProgress.subscribe((_, completed, total) => {
+  store.dispatch(projectActions.setSaveWriteProgress({ completed, total }));
 });

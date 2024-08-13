@@ -1,0 +1,80 @@
+{
+  "_resourceType": "scene",
+  "id": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55",
+  "type": "TOPDOWN",
+  "name": "town/Top House",
+  "symbol": "scene_top_house",
+  "x": 576,
+  "y": 75,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "b340b9a2-2865-4e05-91c0-148846a693c8",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "842b7147-5f06-4681-a805-ade03704b145",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "62299dc1-35d8-4d52-a18c-cef2b9f4431e",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "b748db79-94d9-4b88-9550-3b213783b35d",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "bea439f6-afb6-43b8-9f31-04338b4ef1d5",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            },
+            "__type": "event"
+          }
+        ]
+      },
+      "__type": "event"
+    },
+    {
+      "id": "3ad0968d-0eea-4ead-a5f5-9fb89ed3de7f",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "326b3cbc-1e3d-4a43-846f-c962ece2c317",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "003d+0f12+002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f8+002+0f8+009+0f!002+0f!0010+0f4+008+"
+}

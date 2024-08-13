@@ -1,0 +1,62 @@
+{
+  "_resourceType": "script",
+  "id": "275fa6d7-1cb5-49ec-8e45-a5164f25ff7a",
+  "name": "enemies/turnip/Turnip Init",
+  "symbol": "script_turnip_init",
+  "description": "Hide Turnip if already defeated",
+  "variables": {
+    "V1": {
+      "id": "V1",
+      "name": "Defeated",
+      "passByReference": true
+    }
+  },
+  "actors": {
+    "0": {
+      "id": "0",
+      "name": "Turnip"
+    }
+  },
+  "script": [
+    {
+      "id": "e35c9478-d3ba-45f7-9e14-5eb38239eebb",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "V1",
+        "__collapseElse": false,
+        "__disableElse": true,
+        "condition": {
+          "type": "variable",
+          "value": "V1"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "ae86ba6a-86c1-4cfd-a2e7-319a2f88e517",
+            "command": "EVENT_ACTOR_DEACTIVATE",
+            "args": {
+              "actorId": "0"
+            }
+          },
+          {
+            "id": "14d203e8-309b-4911-8726-f0b378d14acc",
+            "command": "EVENT_ACTOR_SET_POSITION",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": 0
+              }
+            }
+          }
+        ],
+        "false": []
+      }
+    }
+  ]
+}

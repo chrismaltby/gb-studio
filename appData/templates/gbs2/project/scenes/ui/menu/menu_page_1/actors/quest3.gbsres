@@ -1,0 +1,56 @@
+{
+  "_resourceType": "actor",
+  "id": "6d80f0f6-047d-4494-811d-5f526e58959e",
+  "_index": 2,
+  "symbol": "actor_quest3",
+  "name": "Quest3",
+  "x": 2,
+  "y": 8,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "f0c3033d-e82a-407d-9fe2-3d5da4f59c09",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 255,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [],
+  "startScript": [
+    {
+      "id": "a9fd8357-40f2-4f70-aeb2-2f35ba0f264b",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "2",
+        "__collapseElse": true,
+        "__label": "Quest Check",
+        "__collapse": false,
+        "condition": {
+          "type": "variable",
+          "value": "2"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "d6de506d-8e84-48b8-a401-c9b89f9703e9",
+            "command": "EVENT_ACTOR_SET_FRAME",
+            "args": {
+              "actorId": "$self$",
+              "frame": {
+                "type": "number",
+                "value": 1
+              }
+            }
+          }
+        ],
+        "false": []
+      }
+    }
+  ],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

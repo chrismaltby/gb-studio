@@ -1,0 +1,39 @@
+{
+  "_resourceType": "actor",
+  "id": "b1c94e73-7160-4ea2-aed9-2c1e29fc9360",
+  "_index": 5,
+  "symbol": "actor_23",
+  "name": "Machine",
+  "x": 11,
+  "y": 3,
+  "frame": 0,
+  "animate": true,
+  "spriteSheetId": "8cb9c002-1abc-458c-9588-9b55af8efb08",
+  "paletteId": "78b1f1eb-13ad-4822-b109-8a693bae141c",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "command": "EVENT_SOUND_PLAY_EFFECT",
+      "args": {
+        "type": "ca718340-6862-49ef-b052-0a086eda78f4",
+        "priority": "medium",
+        "pitch": 4,
+        "frequency": 200,
+        "duration": 0.5,
+        "wait": true,
+        "effect": 7
+      },
+      "id": "e2505426-00f2-4185-a132-4227f0a5ddeb"
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

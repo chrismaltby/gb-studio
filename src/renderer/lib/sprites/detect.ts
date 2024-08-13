@@ -5,7 +5,7 @@ import type {
   MetaspriteTile,
   SpriteAnimation,
   SpriteAnimationType,
-  SpriteSheet,
+  SpriteSheetNormalized,
   SpriteState,
 } from "shared/lib/entities/entitiesTypes";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
@@ -25,11 +25,11 @@ interface DetectedSprite {
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
   state: SpriteState;
-  changes: Partial<SpriteSheet>;
+  changes: Partial<SpriteSheetNormalized>;
 }
 
 export const detect = (
-  spriteSheet: SpriteSheet,
+  spriteSheet: SpriteSheetNormalized,
   projectRoot: string
 ): Promise<DetectedSprite> => {
   const filename = `file://${assetFilename(
@@ -161,7 +161,7 @@ export const detect = (
         animations: animations.map((a) => a.id),
       };
 
-      const changes: Partial<SpriteSheet> = {
+      const changes: Partial<SpriteSheetNormalized> = {
         canvasWidth: roundUp16(furthestX * 2),
         canvasHeight: roundUp16(furthestY),
       };
@@ -181,7 +181,9 @@ export const detect = (
 };
 
 // Classic detection - GB Studio 1.0 & 2.0 sprite format
-export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
+export const detectClassic = (
+  spriteSheet: SpriteSheetNormalized
+): DetectedSprite => {
   const numFrames = Math.floor(spriteSheet.width / 16);
 
   const animations: SpriteAnimation[] = Array.from(Array(8)).map(() => ({
@@ -300,7 +302,7 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
     animations: animations.map((a) => a.id),
   };
 
-  const changes: Partial<SpriteSheet> = {
+  const changes: Partial<SpriteSheetNormalized> = {
     canvasWidth: 16,
     canvasHeight: 16,
   };

@@ -1,0 +1,72 @@
+{
+  "_resourceType": "scene",
+  "id": "3509d273-bf7e-4946-89ce-a489df5a449d",
+  "type": "TOPDOWN",
+  "name": "Underground",
+  "symbol": "scene_underground",
+  "x": 831,
+  "y": 74,
+  "width": 32,
+  "height": 32,
+  "backgroundId": "f3102db4-2273-411d-b33f-4d6f65959c60",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "872f61cf-bd62-4e58-92ee-a751e7335fe9"
+      },
+      "id": "2a3a40d0-68f6-4967-b071-687134f04139"
+    },
+    {
+      "id": "4434a78c-23e6-464a-9b03-916b537343e9",
+      "command": "EVENT_GROUP",
+      "args": {
+        "__label": "Fix Game Breaking Bug"
+      },
+      "children": {
+        "true": [
+          {
+            "id": "648db27d-c819-42ea-9acb-45e2e4a54857",
+            "command": "EVENT_IF",
+            "args": {
+              "variable": "12",
+              "__collapseElse": true,
+              "condition": {
+                "type": "variable",
+                "value": "12"
+              }
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "1b7fb9ee-e8d1-450e-99e3-265dfbb2b1dd",
+                  "command": "EVENT_ACTOR_SET_POSITION",
+                  "args": {
+                    "actorId": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
+                    "x": {
+                      "type": "number",
+                      "value": 24
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 15
+                    }
+                  }
+                }
+              ],
+              "false": []
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00c3+0f1a+006+0f!00b+0f2+007+0f2+002+0f!006+0f!00b+0f2+007+0f2+002+0f!006+0f!002+0f2+0014+0f!006+0f!002+0f2+0014+0f!006+0f!0018+0f!006+0f!0018+0f!006+0f!0018+0f!006+0f!00d+0f2+009+0f!006+0f!00d+0f2+009+0f!006+0f!004+0f2+0012+0f!006+0f!004+0f2+0012+0f!006+0f15+002+0f3+004+0f17+002+0f5+002+0f!001c+0f!002+0f!001c+0f!002+0f!00f+0f4+002+0f4+003+0f!002+0f!00d+0f6+002+0f4+003+0f!002+0f!00d+0f4+006+0f2+003+0f!002+0f!00d+0f4+006+0f2+00!0f3+002+0f!00d+0f4+006+0f2+00!0f3+002+0f!00f+0f2+006+0f2+003+0f!002+0f!00f+0f2+006+0f2+00!0f3+002+0f!00f+0f2+006+0f2+00!0f3+002+0f14+002+0f8+0015+0f!002+0f!008+"
+}

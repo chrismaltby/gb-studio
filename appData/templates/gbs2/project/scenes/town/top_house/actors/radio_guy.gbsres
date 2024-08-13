@@ -1,0 +1,88 @@
+{
+  "_resourceType": "actor",
+  "id": "566c8812-a204-45b5-b93a-c113c10c20de",
+  "_index": 0,
+  "symbol": "actor_radio_guy",
+  "name": "Radio Guy",
+  "x": 12,
+  "y": 5,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "40dcd163-9f72-4861-8131-b01eb9baa000",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "8208a6a1-7d0e-465b-ac1f-16868e6d250e",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "14",
+        "condition": {
+          "type": "eq",
+          "valueA": {
+            "type": "variable",
+            "value": "14"
+          },
+          "valueB": {
+            "type": "false"
+          }
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "94a866d1-d4cd-485b-8519-364104412bdb",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": "Have you tried\nusing this radio?"
+            }
+          }
+        ],
+        "false": [
+          {
+            "id": "aedfbb0e-a49e-4b10-a334-cc217f44e9d8",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": "Yeah it doesn't\nfit does it?"
+            }
+          },
+          {
+            "id": "6bd9950b-775e-4d5b-96f1-0e5488317c87",
+            "command": "EVENT_ACTOR_EMOTE",
+            "args": {
+              "actorId": "566c8812-a204-45b5-b93a-c113c10c20de",
+              "emoteId": "a410a4c7-a37d-48ea-917b-f531ba557841"
+            }
+          },
+          {
+            "id": "5728dc6b-4c2c-4255-aa1b-b1f6211a2219",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": "But it's all I\nhave right now..."
+            }
+          },
+          {
+            "id": "f06cbcf4-9788-46ed-80bb-f7aca4ec925f",
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "2",
+              "value": {
+                "type": "true"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

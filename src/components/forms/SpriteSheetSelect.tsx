@@ -2,7 +2,10 @@ import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import { ActorDirection, SpriteSheet } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorDirection,
+  SpriteSheetNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -20,7 +23,7 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   direction?: ActorDirection;
   frame?: number;
   onChange?: (newId: string) => void;
-  filter?: (spriteSheet: SpriteSheet) => boolean;
+  filter?: (spriteSheet: SpriteSheetNormalized) => boolean;
   optional?: boolean;
   optionalLabel?: string;
 }
@@ -28,7 +31,7 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
 const buildOptions = (
   memo: OptGroup[],
   plugin: string | undefined,
-  spriteSheets: SpriteSheet[]
+  spriteSheets: SpriteSheetNormalized[]
 ) => {
   memo.push({
     label: plugin ? plugin : "",
@@ -55,7 +58,8 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     spriteSheetSelectors.selectAll(state)
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentSpriteSheet, setCurrentSpriteSheet] = useState<SpriteSheet>();
+  const [currentSpriteSheet, setCurrentSpriteSheet] =
+    useState<SpriteSheetNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {

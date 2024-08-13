@@ -271,7 +271,7 @@ const compileImage = async (
 			// tile index > 128 is allocated with an unused tile offset
 			// to allow as much tiles as possible for sprite data
 			const bankSize = vramData[inVRAM2 ? 1 : 0].length / 16;
-			const offset = reservedOffset - bankSize;
+			const offset = Math.max(reservedOffset - bankSize, 0);
 			tilemap[index] = tileIndex + offset;
 		}
 	  } else {

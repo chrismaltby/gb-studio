@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { CollisionGroup } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 
@@ -9,18 +10,18 @@ type CollisionMaskPickerProps = {
 } & (
   | {
       multiple: true;
-      value: string[];
-      onChange: (newValue: string[]) => void;
+      value: CollisionGroup[];
+      onChange: (newValue: CollisionGroup[]) => void;
     }
   | {
       multiple?: false;
-      value: string;
-      onChange: (newValue: string) => void;
+      value: CollisionGroup;
+      onChange: (newValue: CollisionGroup) => void;
     }
 );
 
 interface CollisionMaskPickerOption {
-  value: string;
+  value: CollisionGroup;
   label: React.ReactNode;
   title: string;
 }

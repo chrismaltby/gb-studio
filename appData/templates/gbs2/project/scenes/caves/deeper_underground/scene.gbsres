@@ -1,0 +1,80 @@
+{
+  "_resourceType": "scene",
+  "id": "a15eed10-615c-488a-b972-b4b37ccfc14e",
+  "type": "PLATFORM",
+  "name": "caves/Deeper Underground",
+  "symbol": "scene_deeper_underground",
+  "x": 428.5,
+  "y": 926.5,
+  "width": 32,
+  "height": 18,
+  "backgroundId": "4135b165-6706-4d52-b77b-6314650b175e",
+  "tilesetId": "",
+  "paletteIds": [
+    "444c886c-6214-48d7-8e3c-4dca4f65dec7"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "23de90eb-bd01-4caf-954a-17b4fef4ec62",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "7a2ed9a0-7f52-4a37-a8fb-191783bf27f9",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "952eda61-6b68-4484-8fd3-a27f22d9ba9b",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "b209fdef-cd81-4eef-bf30-ea0cdf4c44e8",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "c2e89ec2-ccd9-40e0-ae35-498fdd72c086",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "b64b574c-2ba2-428f-925f-8aff5a299af2",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00!0f4+10!0fe+00d+0f!003+10!00d+0f!00d+0f!003+10!008+10!004+0f!00d+0f!003+10!008+10!004+0f!005+0f2+006+0f!003+10!008+10!004+0f!003+0f2+002+0f2+004+0fd+11!0f8+004+0f4+003+0f!00b+10!006+0f2+004+0f4+003+0f!00b+10!006+0f2+004+0f4+003+0f!00b+10!004+10!00!0f2+004+0f4+003+0f!00b+10!004+10!00!0f2+004+0f4+003+0f!00b+10!004+10!00!0f2+004+0f4+002+0f12+11!0f3+004+0f4+002+0f!004+0f2+00b+10!007+0f4+002+0f!0011+10!007+0f4+002+0f!0011+10!007+0f4+002+0f!0011+10!007+0f4+002+0f1e+0021+"
+}

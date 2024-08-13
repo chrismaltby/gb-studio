@@ -1,0 +1,9 @@
+{
+  "_resourceType": "music",
+  "id": "a3129a0f-f3ee-482c-a60b-3066698541e6",
+  "name": "Tronimal_EchoExample",
+  "symbol": "song_echo_example",
+  "filename": "Tronimal_EchoExample.uge",
+  "settings": {},
+  "type": "uge"
+}

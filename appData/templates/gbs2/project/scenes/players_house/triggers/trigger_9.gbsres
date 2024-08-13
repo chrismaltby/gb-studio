@@ -1,0 +1,25 @@
+{
+  "_resourceType": "trigger",
+  "id": "89abaf5f-8130-4b23-ac2d-31c1d3e98aab",
+  "_index": 8,
+  "symbol": "trigger_27",
+  "name": "",
+  "x": 5,
+  "y": 13,
+  "width": 5,
+  "height": 2,
+  "script": [
+    {
+      "id": "a9398180-a336-494c-b090-938259c58ee4",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": [
+          "Even more\nclothes..."
+        ],
+        "avatarId": ""
+      },
+      "__type": "event"
+    }
+  ],
+  "leaveScript": []
+}

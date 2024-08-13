@@ -54,8 +54,8 @@ import { ensureNumber } from "shared/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
-export const LATEST_PROJECT_VERSION = "4.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "4";
+export const LATEST_PROJECT_VERSION = "4.1.0";
+export const LATEST_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -394,7 +394,7 @@ export const migrateFrom120To200Actors = (
             actor.movementType === "static" &&
             actor.animate !== true
           ) {
-            animSpeed = null;
+            animSpeed = 255;
           }
           return {
             ...actor,
@@ -877,7 +877,7 @@ const migrateFrom200r4To200r5Actors = (data: ProjectData): ProjectData => {
 
   const fixAnimSpeed = (speed: unknown) => {
     if (speed === "" || speed === null) {
-      return null;
+      return 255;
     }
     if (speed === undefined) {
       return 3;

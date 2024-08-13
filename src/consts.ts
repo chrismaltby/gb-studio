@@ -209,6 +209,53 @@ export const defaultProjectSettings: SettingsState = {
   generateDebugFilesEnabled: false,
 };
 
+export const defaultPalettes: Palette[] = [
+  {
+    id: "default-bg-1",
+    name: "Default BG 1",
+    colors: ["F8E8C8", "D89048", "A82820", "301850"],
+  },
+  {
+    id: "default-bg-2",
+    name: "Default BG 2",
+    colors: ["E0F8A0", "78C838", "488818", "081800"],
+  },
+  {
+    id: "default-bg-3",
+    name: "Default BG 3",
+    colors: ["F8D8A8", "E0A878", "785888", "002030"],
+  },
+  {
+    id: "default-bg-4",
+    name: "Default BG 4",
+    colors: ["B8D0D0", "D880D8", "8000A0", "380000"],
+  },
+  {
+    id: "default-bg-5",
+    name: "Default BG 5",
+    colors: ["F8F8B8", "90C8C8", "486878", "082048"],
+  },
+  {
+    id: "default-bg-6",
+    name: "Default BG 6",
+    colors: ["F8D8B0", "78C078", "688840", "583820"],
+  },
+  {
+    id: "default-sprite",
+    name: "Default Sprites",
+    colors: ["F8F0E0", "D88078", "B05010", "000000"],
+  },
+  {
+    id: "default-ui",
+    name: "Default UI",
+    colors: ["F8F8B8", "90C8C8", "486878", "082048"],
+  },
+] as {
+  id: string;
+  name: string;
+  colors: [string, string, string, string];
+}[];
+
 export {
   engineRoot,
   buildToolsRoot,

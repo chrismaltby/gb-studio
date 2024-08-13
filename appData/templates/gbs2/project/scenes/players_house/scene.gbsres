@@ -1,0 +1,85 @@
+{
+  "_resourceType": "scene",
+  "id": "c22cad6f-1191-4623-911d-1ec9a7b52fe6",
+  "type": "POINTNCLICK",
+  "name": "Player's House",
+  "symbol": "scene_player_s_house",
+  "x": 148,
+  "y": 526,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "0af9ba31-7864-4664-9603-b211dc0f3793",
+  "tilesetId": "",
+  "paletteIds": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "default-sprite"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "7b6132c6-bb47-4c09-bc3d-0a33f53c43e7",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "768f30c9-0665-4777-b7d0-e743551a826a",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "ab12dde3-3225-4639-9b3f-b929f6f8eefe",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "4fd4f466-8ab5-4fb8-b477-e2e64071abaf",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "646647bb-e8b8-41cb-add9-e9d3531aceac",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "326b3cbc-1e3d-4a43-846f-c962ece2c317",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": ""
+}

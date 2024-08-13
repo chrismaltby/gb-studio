@@ -1,0 +1,63 @@
+{
+  "_resourceType": "script",
+  "id": "2fe3aa9b-1ada-4d85-91f0-b1f4f9dcc910",
+  "name": "enemies/ship/Enemy Ship Destroy",
+  "symbol": "script_enemy_ship_destroy",
+  "description": "Play enemy explosion animation and play sound effect",
+  "variables": {},
+  "actors": {
+    "0": {
+      "id": "0",
+      "name": "Enemy"
+    }
+  },
+  "script": [
+    {
+      "id": "2bf0ecde-c6c8-498f-9136-006f3a84b916",
+      "command": "EVENT_ACTOR_COLLISIONS_DISABLE",
+      "args": {
+        "actorId": "0"
+      }
+    },
+    {
+      "id": "57e79254-644a-4568-817d-36d232b7a639",
+      "command": "EVENT_ACTOR_STOP_UPDATE",
+      "args": {
+        "actorId": "0"
+      }
+    },
+    {
+      "id": "6dfadc84-37a1-4a5c-b49b-6be1c0073c21",
+      "command": "EVENT_SOUND_PLAY_EFFECT",
+      "args": {
+        "type": "crash",
+        "pitch": 4,
+        "frequency": 200,
+        "duration": 0.5,
+        "wait": false
+      }
+    },
+    {
+      "command": "EVENT_ACTOR_SET_STATE",
+      "args": {
+        "actorId": "0",
+        "spriteStateId": "Explode"
+      },
+      "id": "d42ecb5b-8088-4156-b203-a45bf85137ee"
+    },
+    {
+      "id": "4aec2ab7-1a8f-4b54-b4fc-7cb4fded05de",
+      "command": "EVENT_WAIT",
+      "args": {
+        "time": 0.5
+      }
+    },
+    {
+      "id": "71e2e1f2-a765-4644-8bcd-ac75c174fae7",
+      "command": "EVENT_ACTOR_DEACTIVATE",
+      "args": {
+        "actorId": "0"
+      }
+    }
+  ]
+}

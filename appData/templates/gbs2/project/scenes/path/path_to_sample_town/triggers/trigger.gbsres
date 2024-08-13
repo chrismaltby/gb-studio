@@ -1,0 +1,40 @@
+{
+  "_resourceType": "trigger",
+  "id": "dffe092c-bd4f-4be0-aa37-c0998ab0ca9f",
+  "_index": 0,
+  "symbol": "trigger_30",
+  "name": "",
+  "x": 56,
+  "y": 17,
+  "width": 3,
+  "height": 1,
+  "script": [
+    {
+      "id": "4051f7e9-6af4-416f-85e9-2c3a171913e9",
+      "command": "EVENT_ACTOR_SET_POSITION",
+      "args": {
+        "actorId": "$self$",
+        "x": {
+          "type": "number",
+          "value": 52
+        },
+        "y": {
+          "type": "number",
+          "value": 13
+        }
+      }
+    },
+    {
+      "id": "a37c47f5-9cca-4b82-b240-46b1b4e8d232",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.1,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        }
+      }
+    }
+  ],
+  "leaveScript": []
+}

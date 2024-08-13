@@ -1,0 +1,13 @@
+{
+  "_resourceType": "background",
+  "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
+  "name": "outside",
+  "symbol": "bg_outside",
+  "width": 32,
+  "height": 32,
+  "imageWidth": 256,
+  "imageHeight": 256,
+  "filename": "outside.png",
+  "tileColors": "",
+  "autoColor": false
+}

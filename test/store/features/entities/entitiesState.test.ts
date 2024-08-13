@@ -4,37 +4,37 @@ import reducer, {
 import {
   EntitiesState,
   Background,
-  SpriteSheet,
   Music,
+  SpriteSheetNormalized,
 } from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
-import projectActions, {
-  ProjectData,
-} from "../../../../src/store/features/project/projectActions";
+import projectActions from "../../../../src/store/features/project/projectActions";
 import {
-  dummyProjectData,
   dummySceneNormalized,
-  dummyScene,
   dummyBackground,
   dummySpriteSheet,
   dummyMusic,
   dummyActorNormalized,
   dummyTriggerNormalized,
   dummyPalette,
+  dummyCompressedSceneResource,
+  dummyCompressedProjectResources,
+  dummyCompressedBackgroundResource,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
+import { CompressedProjectResources } from "shared/lib/resources/types";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
     ...initialState,
   };
 
-  const loadData: ProjectData = {
-    ...dummyProjectData,
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
     scenes: [
       {
-        ...dummyScene,
+        ...dummyCompressedSceneResource,
         id: "scene1",
         backgroundId: "missingbg",
         width: 20,
@@ -45,7 +45,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
 
   const action = projectActions.loadProject.fulfilled(
     {
-      data: loadData,
+      resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
@@ -66,11 +66,11 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ...initialState,
   };
 
-  const loadData: ProjectData = {
-    ...dummyProjectData,
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
     scenes: [
       {
-        ...dummyScene,
+        ...dummyCompressedSceneResource,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -79,7 +79,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ],
     backgrounds: [
       {
-        ...dummyBackground,
+        ...dummyCompressedBackgroundResource,
         id: "bg1",
         width: 64,
         height: 40,
@@ -89,7 +89,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
 
   const action = projectActions.loadProject.fulfilled(
     {
-      data: loadData,
+      resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
@@ -110,11 +110,11 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ...initialState,
   };
 
-  const loadData: ProjectData = {
-    ...dummyProjectData,
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
     scenes: [
       {
-        ...dummyScene,
+        ...dummyCompressedSceneResource,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -123,7 +123,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ],
     backgrounds: [
       {
-        ...dummyBackground,
+        ...dummyCompressedBackgroundResource,
         id: "bg1",
         width: 20,
         height: 18,
@@ -133,7 +133,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
 
   const action = projectActions.loadProject.fulfilled(
     {
-      data: loadData,
+      resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
@@ -253,7 +253,7 @@ test("Should add new sprite sheet if loaded while project is open", () => {
     ...initialState,
   };
 
-  const loadSpriteSheet: SpriteSheet = {
+  const loadSpriteSheet: SpriteSheetNormalized = {
     ...dummySpriteSheet,
     id: "sprite1",
   };
@@ -282,7 +282,7 @@ test("Should update sprite sheet if modified while project is open", () => {
     },
   };
 
-  const loadSpriteSheet: SpriteSheet = {
+  const loadSpriteSheet: SpriteSheetNormalized = {
     ...dummySpriteSheet,
     id: "sprite1",
     filename: "sprite1.png",

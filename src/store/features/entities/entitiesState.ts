@@ -49,13 +49,12 @@ import {
   TriggerNormalized,
   SceneNormalized,
   Background,
-  SpriteSheet,
+  SpriteSheetNormalized,
   Palette,
   Music,
   Variable,
   CustomEventNormalized,
   ScriptEventNormalized,
-  ProjectEntitiesData,
   MusicSettings,
   EngineFieldValue,
   Metasprite,
@@ -72,7 +71,6 @@ import {
   Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import {
-  normalizeEntities,
   sortByFilename,
   genEntitySymbol,
   ensureSymbolsUnique,
@@ -87,6 +85,7 @@ import {
   moveArrayElement,
   updateCustomEventArgs,
   updateAllCustomEventsArgs,
+  normalizeEntityResources,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -95,6 +94,8 @@ import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
+import type { LoadProjectResult } from "lib/project/loadProjectData";
+import { decompressProjectResources } from "shared/lib/resources/compression";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -108,7 +109,7 @@ const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
-const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
+const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
   sortComparer: sortByFilename,
 });
 const tilesetsAdapter = createEntityAdapter<Tileset>({
@@ -242,42 +243,50 @@ const first = <T>(array: T[]): T | undefined => {
 
 const loadProject: CaseReducer<
   EntitiesState,
-  PayloadAction<{
-    data: ProjectEntitiesData;
-    scriptEventDefs: ScriptEventDefs;
-  }>
+  PayloadAction<LoadProjectResult>
 > = (state, action) => {
-  const data = normalizeEntities(action.payload.data);
-  const entities = data.entities;
-  actorsAdapter.setAll(state.actors, entities.actors || {});
-  triggersAdapter.setAll(state.triggers, entities.triggers || {});
-  scenesAdapter.setAll(state.scenes, entities.scenes || {});
-  scriptEventsAdapter.setAll(state.scriptEvents, entities.scriptEvents || {});
-  backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds || {});
-  spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets || {});
-  metaspritesAdapter.setAll(state.metasprites, entities.metasprites || {});
+  const uncompressedResources = decompressProjectResources(
+    action.payload.resources
+  );
+
+  const data = normalizeEntityResources(uncompressedResources);
+
+  actorsAdapter.setAll(state.actors, data.entities.actors || {});
+  triggersAdapter.setAll(state.triggers, data.entities.triggers || {});
+  scenesAdapter.setAll(state.scenes, data.entities.scenes || {});
+  scriptEventsAdapter.setAll(
+    state.scriptEvents,
+    data.entities.scriptEvents || {}
+  );
+  backgroundsAdapter.setAll(state.backgrounds, data.entities.backgrounds || {});
+  spriteSheetsAdapter.setAll(state.spriteSheets, data.entities.sprites || {});
+  metaspritesAdapter.setAll(state.metasprites, data.entities.metasprites || {});
   metaspriteTilesAdapter.setAll(
     state.metaspriteTiles,
-    entities.metaspriteTiles || {}
+    data.entities.metaspriteTiles || {}
   );
   spriteAnimationsAdapter.setAll(
     state.spriteAnimations,
-    entities.spriteAnimations || {}
+    data.entities.spriteAnimations || {}
   );
-  spriteStatesAdapter.setAll(state.spriteStates, entities.spriteStates || {});
-  palettesAdapter.setAll(state.palettes, entities.palettes || {});
-  musicAdapter.setAll(state.music, entities.music || {});
-  soundsAdapter.setAll(state.sounds, entities.sounds || {});
-  fontsAdapter.setAll(state.fonts, entities.fonts || {});
-  avatarsAdapter.setAll(state.avatars, entities.avatars || {});
-  emotesAdapter.setAll(state.emotes, entities.emotes || {});
-  tilesetsAdapter.setAll(state.tilesets, entities.tilesets || {});
-  customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
-  variablesAdapter.setAll(state.variables, entities.variables || {});
+  spriteStatesAdapter.setAll(
+    state.spriteStates,
+    data.entities.spriteStates || {}
+  );
+  palettesAdapter.setAll(state.palettes, data.entities.palettes || {});
+  musicAdapter.setAll(state.music, data.entities.music || {});
+  soundsAdapter.setAll(state.sounds, data.entities.sounds || {});
+  fontsAdapter.setAll(state.fonts, data.entities.fonts || {});
+  avatarsAdapter.setAll(state.avatars, data.entities.avatars || {});
+  emotesAdapter.setAll(state.emotes, data.entities.emotes || {});
+  tilesetsAdapter.setAll(state.tilesets, data.entities.tilesets || {});
+  customEventsAdapter.setAll(state.customEvents, data.entities.scripts || {});
+  variablesAdapter.setAll(state.variables, data.entities.variables || {});
   engineFieldValuesAdapter.setAll(
     state.engineFieldValues,
-    entities.engineFieldValues || {}
+    data.entities.engineFieldValues || {}
   );
+
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
@@ -383,7 +392,7 @@ const renamedAsset: CaseReducer<
 const loadSprite: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: SpriteSheet;
+    data: SpriteSheetNormalized;
   }>
 > = (state, action) => {
   upsertAssetEntity(
@@ -417,7 +426,7 @@ const loadDetectedSprite: CaseReducer<
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
     state: SpriteState;
-    changes: Partial<SpriteSheet>;
+    changes: Partial<SpriteSheetNormalized>;
   }>
 > = (state, action) => {
   const spriteSheet = localSpriteSheetSelectors.selectById(
@@ -1427,7 +1436,10 @@ const updateMonoOverrideIds = (state: EntitiesState) => {
 
 const editSpriteSheet: CaseReducer<
   EntitiesState,
-  PayloadAction<{ spriteSheetId: string; changes: Partial<SpriteSheet> }>
+  PayloadAction<{
+    spriteSheetId: string;
+    changes: Partial<SpriteSheetNormalized>;
+  }>
 > = (state, action) => {
   const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
   const patch = { ...action.payload.changes };

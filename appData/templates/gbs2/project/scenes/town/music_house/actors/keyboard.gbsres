@@ -1,0 +1,103 @@
+{
+  "_resourceType": "actor",
+  "id": "02504caf-8b1c-42b1-986f-bf5014097aa6",
+  "_index": 0,
+  "symbol": "actor_18",
+  "name": "Keyboard",
+  "x": 5,
+  "y": 10,
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "a933db32-62f4-40a9-bf7c-bf44df85b1a4",
+  "paletteId": "",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "L0",
+        "__collapseElse": false,
+        "condition": {
+          "type": "eq",
+          "valueA": {
+            "type": "variable",
+            "value": "L0"
+          },
+          "valueB": {
+            "type": "false"
+          }
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "command": "EVENT_MUSIC_PLAY",
+            "args": {
+              "musicId": "a3129a0f-f3ee-482c-a60b-3066698541e6",
+              "loop": true
+            },
+            "id": "2b34a437-e3c5-4f19-8923-3b9ee5e928fb"
+          },
+          {
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "L0",
+              "value": {
+                "type": "true"
+              }
+            },
+            "id": "b8aa88dc-5c90-4c11-81ab-69ab20a85ecf"
+          },
+          {
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "17",
+              "value": {
+                "type": "true"
+              }
+            },
+            "id": "f89dabf9-73d5-43de-a4fb-518a792c8dab"
+          }
+        ],
+        "false": [
+          {
+            "command": "EVENT_MUSIC_STOP",
+            "args": {},
+            "id": "421d4689-03e0-4466-989e-5e7c9acd8e0c"
+          },
+          {
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "L0",
+              "value": {
+                "type": "false"
+              }
+            },
+            "id": "262a5994-9ee9-4716-adb2-baed6aae3410"
+          },
+          {
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "17",
+              "value": {
+                "type": "false"
+              }
+            },
+            "id": "09ae63e7-d877-4a35-b473-eb0a8b505008"
+          }
+        ]
+      },
+      "id": "1773237f-26de-4568-9967-c6c76b211a1b"
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

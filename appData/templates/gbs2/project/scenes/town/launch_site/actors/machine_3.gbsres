@@ -1,0 +1,34 @@
+{
+  "_resourceType": "actor",
+  "id": "f0e99382-7663-4fcc-8de0-a1bb069fa726",
+  "_index": 4,
+  "symbol": "actor_machine_1",
+  "name": "Machine",
+  "x": 6,
+  "y": 10,
+  "frame": 0,
+  "animate": true,
+  "spriteSheetId": "8cb9c002-1abc-458c-9588-9b55af8efb08",
+  "paletteId": "78b1f1eb-13ad-4822-b109-8a693bae141c",
+  "direction": "down",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "isPinned": false,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "f33a2e4e-dd3b-4cc0-9207-9fac74bf3753",
+      "command": "EVENT_TEXT",
+      "args": {
+        "text": "BEEP... BOOP...",
+        "avatarId": ""
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}

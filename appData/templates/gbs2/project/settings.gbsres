@@ -1,0 +1,111 @@
+{
+  "_resourceType": "settings",
+  "startSceneId": "382961a1-e615-4b92-92a7-f1a791b50b7a",
+  "startX": 0,
+  "startY": 0,
+  "startMoveSpeed": 1,
+  "startAnimSpeed": 15,
+  "startDirection": "right",
+  "showCollisions": true,
+  "showConnections": true,
+  "showCollisionSlopeTiles": false,
+  "showCollisionExtraTiles": false,
+  "sgbEnabled": false,
+  "customHead": "",
+  "defaultBackgroundPaletteIds": [
+    "default-bg-1",
+    "default-bg-2",
+    "default-bg-3",
+    "default-bg-4",
+    "default-bg-5",
+    "default-bg-6",
+    "dmg",
+    "default-ui"
+  ],
+  "defaultSpritePaletteIds": [
+    "default-sprite",
+    "default-sprite",
+    "default-sprite",
+    "default-sprite",
+    "default-sprite",
+    "default-sprite",
+    "default-sprite",
+    "default-sprite"
+  ],
+  "defaultSpritePaletteId": "default-sprite",
+  "defaultUIPaletteId": "default-ui",
+  "playerPaletteId": "",
+  "navigatorSplitSizes": [
+    616,
+    191,
+    191
+  ],
+  "showNavigator": true,
+  "defaultFontId": "948c169c-8e4b-491c-a5f0-66898bbf45d9",
+  "defaultCharacterEncoding": "",
+  "defaultPlayerSprites": {
+    "TOPDOWN": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
+    "PLATFORM": "c0310735-3e7c-4ff1-bcff-b07d818d433b",
+    "ADVENTURE": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
+    "SHMUP": "2f2d492c-dba2-434c-93c9-d1301e88d5e9",
+    "POINTNCLICK": "a827b612-578f-4cb9-a2bf-fd54b197b83f",
+    "LOGO": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
+  },
+  "musicDriver": "huge",
+  "cartType": "mbc5",
+  "batterylessEnabled": false,
+  "favoriteEvents": [
+    "EVENT_TEXT",
+    "EVENT_SWITCH_SCENE"
+  ],
+  "customColorsWhite": "E8F8E0",
+  "customColorsLight": "B0F088",
+  "customColorsDark": "509878",
+  "customColorsBlack": "202850",
+  "customControlsUp": [
+    "ArrowUp",
+    "w"
+  ],
+  "customControlsDown": [
+    "ArrowDown",
+    "s"
+  ],
+  "customControlsLeft": [
+    "ArrowLeft",
+    "a"
+  ],
+  "customControlsRight": [
+    "ArrowRight",
+    "d"
+  ],
+  "customControlsA": [
+    "Alt",
+    "z",
+    "j"
+  ],
+  "customControlsB": [
+    "Control",
+    "k",
+    "x"
+  ],
+  "customControlsStart": [
+    "Enter"
+  ],
+  "customControlsSelect": [
+    "Shift"
+  ],
+  "debuggerEnabled": false,
+  "debuggerScriptType": "editor",
+  "debuggerVariablesFilter": "all",
+  "debuggerCollapsedPanes": [],
+  "debuggerPauseOnScriptChanged": false,
+  "debuggerPauseOnWatchedVariableChanged": false,
+  "debuggerBreakpoints": [],
+  "debuggerWatchedVariables": [],
+  "colorMode": "mixed",
+  "previewAsMono": false,
+  "openBuildLogOnWarnings": true,
+  "generateDebugFilesEnabled": false,
+  "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
+  "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
+}

@@ -23,7 +23,7 @@ import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import l10n from "shared/lib/lang/l10n";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
-import { SpriteSheet } from "shared/lib/entities/entitiesTypes";
+import { SpriteSheetNormalized } from "shared/lib/entities/entitiesTypes";
 import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprites";
@@ -134,7 +134,7 @@ const SceneInfo = () => {
       return;
     }
     const newActorWarnings: string[] = [];
-    const usedSpriteSheets: SpriteSheet[] = [];
+    const usedSpriteSheets: SpriteSheetNormalized[] = [];
 
     const addSprite = (id: string, force = false) => {
       const spriteSheet = spriteSheetsLookup[id];
@@ -147,7 +147,7 @@ const SceneInfo = () => {
     };
 
     if (scene) {
-      const actorsExclusiveLookup: Record<string, SpriteSheet> = {};
+      const actorsExclusiveLookup: Record<string, SpriteSheetNormalized> = {};
 
       // Events
       walkNormalizedSceneScripts(

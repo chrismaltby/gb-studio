@@ -34,7 +34,6 @@ import createProject, { CreateProjectInput } from "lib/project/createProject";
 import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
-import type { ProjectData } from "store/features/project/projectActions";
 import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
 import buildProject from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
@@ -75,7 +74,9 @@ import { Asset, AssetType, assetFilename } from "shared/lib/helpers/assets";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
-import loadProjectData from "lib/project/loadProjectData";
+import loadProjectData, {
+  LoadProjectResult,
+} from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
@@ -111,6 +112,11 @@ import { loadSceneTypes } from "lib/project/sceneTypes";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
+import {
+  ProjectResources,
+  WriteResourcesPatch,
+} from "shared/lib/resources/types";
+import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1192,21 +1198,30 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("project:load", async (): Promise<{
-  data: ProjectData;
-  modifiedSpriteIds: string[];
-  isMigrated: boolean;
-}> => {
+ipcMain.handle("project:load", async (): Promise<LoadProjectResult> => {
   return loadProjectData(projectPath);
 });
 
-ipcMain.handle("project:save", async (_, data: ProjectData): Promise<void> => {
-  await saveProjectData(projectPath, data);
+ipcMain.handle(
+  "project:save",
+  async (_, data: WriteResourcesPatch): Promise<void> => {
+    await saveProjectData(projectPath, data, {
+      progress: (completed: number, total: number) => {
+        sendToProjectWindow("project:save-progress", completed, total);
+      },
+    });
+  }
+);
+
+ipcMain.handle("project:get-resource-checksums", async (): Promise<
+  Record<string, string>
+> => {
+  return loadProjectResourceChecksums(projectPath);
 });
 
 ipcMain.handle(
   "project:build",
-  async (event, project: ProjectData, options: BuildOptions) => {
+  async (event, project: ProjectResources, options: BuildOptions) => {
     cancelBuild = false;
 
     const { exportBuild, buildType, sceneTypes } = options;
@@ -1358,7 +1373,7 @@ ipcMain.handle(
   "project:export",
   async (
     event,
-    project: ProjectData,
+    project: ProjectResources,
     engineFields: EngineFieldSchema[],
     sceneTypes: SceneTypeSchema[],
     exportType: ProjectExportType

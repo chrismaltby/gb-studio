@@ -1,0 +1,29 @@
+{
+  "_resourceType": "scene",
+  "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
+  "type": "TOPDOWN",
+  "name": "Cave",
+  "symbol": "scene_cave",
+  "x": 638,
+  "y": 73,
+  "width": 20,
+  "height": 18,
+  "backgroundId": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
+  "tilesetId": "",
+  "paletteIds": [],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "872f61cf-bd62-4e58-92ee-a751e7335fe9"
+      },
+      "id": "73600b38-1b67-4b91-920e-b97faa41ed65"
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "003d+0f12+002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f!0010+0f!002+0f8+002+0f8+009+0f!002+0f!008+"
+}

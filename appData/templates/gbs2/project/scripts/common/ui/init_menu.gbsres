@@ -1,0 +1,48 @@
+{
+  "_resourceType": "script",
+  "id": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+  "name": "common/ui/Init Menu",
+  "symbol": "script_init_menu",
+  "description": "Attach Quest Menu to Start Button",
+  "variables": {},
+  "actors": {},
+  "script": [
+    {
+      "id": "078bea48-4423-443d-a079-cb9280aea0f6",
+      "command": "EVENT_SET_INPUT_SCRIPT",
+      "args": {
+        "input": [
+          "start"
+        ],
+        "__collapse": false
+      },
+      "children": {
+        "true": [
+          {
+            "id": "41c36cd9-f218-47db-94af-1c0b7ee256d2",
+            "command": "EVENT_SCENE_PUSH_STATE",
+            "args": {}
+          },
+          {
+            "id": "dd21c899-25f7-41d8-a419-3a72e0b99ccb",
+            "command": "EVENT_SWITCH_SCENE",
+            "args": {
+              "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": 0
+              },
+              "direction": "",
+              "fadeSpeed": "2"
+            }
+          }
+        ]
+      },
+      "__type": "event"
+    }
+  ]
+}

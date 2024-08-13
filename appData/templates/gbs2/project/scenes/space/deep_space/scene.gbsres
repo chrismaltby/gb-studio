@@ -1,0 +1,80 @@
+{
+  "_resourceType": "scene",
+  "id": "51d42da5-b7ce-48b4-a435-1902368d6d5c",
+  "type": "TOPDOWN",
+  "name": "space/Deep Space",
+  "symbol": "scene_deep_space",
+  "x": 722,
+  "y": 928,
+  "width": 32,
+  "height": 32,
+  "backgroundId": "40fda058-df90-4205-a239-fe77bce4fa79",
+  "tilesetId": "",
+  "paletteIds": [
+    "d73adccf-4071-4012-b0a6-9c3973a2dc0e"
+  ],
+  "spritePaletteIds": [],
+  "autoFadeSpeed": 1,
+  "script": [
+    {
+      "id": "1a9baf55-a935-4b71-b2af-fcb2f7a395a1",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
+        "__name": "Init Menu"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "c780cce7-e3a8-4121-9b0c-61f84677edc2",
+            "command": "EVENT_SET_INPUT_SCRIPT",
+            "args": {
+              "input": [
+                "start"
+              ],
+              "__collapse": false
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "acb6d4bd-5b28-4f5c-8611-21691bf0639b",
+                  "command": "EVENT_SCENE_PUSH_STATE",
+                  "args": {}
+                },
+                {
+                  "id": "d17e36d6-e3d1-467b-9ebb-13d3b6762372",
+                  "command": "EVENT_SWITCH_SCENE",
+                  "args": {
+                    "sceneId": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "direction": "",
+                    "fadeSpeed": "2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "5e70f3c6-2f91-41e2-aa09-46a6097680cf",
+      "command": "EVENT_MUSIC_PLAY",
+      "args": {
+        "musicId": "46f8a9fd-46ca-4fbf-944c-4f981c7f3bde",
+        "loop": true
+      }
+    }
+  ],
+  "playerHit1Script": [],
+  "playerHit2Script": [],
+  "playerHit3Script": [],
+  "collisions": "00400+"
+}

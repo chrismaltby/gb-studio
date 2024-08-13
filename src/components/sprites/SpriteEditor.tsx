@@ -17,7 +17,7 @@ import {
   MetaspriteTile,
   ObjPalette,
   SpriteAnimationType,
-  SpriteSheet,
+  SpriteSheetNormalized,
   SpriteState,
 } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
@@ -106,7 +106,10 @@ export const SpriteEditor = ({
   const selectSidebar = () => {};
 
   const onChangeSpriteSheetProp = useCallback(
-    <K extends keyof SpriteSheet>(key: K, value: SpriteSheet[K]) => {
+    <K extends keyof SpriteSheetNormalized>(
+      key: K,
+      value: SpriteSheetNormalized[K]
+    ) => {
       dispatch(
         entitiesActions.editSpriteSheet({
           spriteSheetId: id,
