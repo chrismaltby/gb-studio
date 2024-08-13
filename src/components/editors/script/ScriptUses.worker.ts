@@ -84,13 +84,6 @@ workerCtx.onmessage = async (evt) => {
     triggersLookup,
     undefined,
     (scriptEvent, scene, actor, trigger) => {
-      console.log("CHECKING SCRIPT EVENT ");
-      if (scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT") {
-        console.log("FOUND EVENT_CALL_CUSTOM_EVENT", {
-          scriptId,
-          b: scriptEvent?.args?.customEventId,
-        });
-      }
       if (
         scriptEvent.command !== "EVENT_CALL_CUSTOM_EVENT" ||
         !scriptEvent.args ||
