@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Changed project file structure. The `.gbsproj` file will now contain very little information, instead each scene, actor, trigger, etc is individually stored in a `.gbsres` file in a `projects/` folder allowing for better support for version control + working in teams. Migration is automatic on first save after loading a project
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
