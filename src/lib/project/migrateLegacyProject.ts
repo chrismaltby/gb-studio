@@ -76,38 +76,25 @@ export const migrateLegacyProject = (
     return compressBackgroundResource(encodeBackground(background));
   };
 
+  const map = <A, B>(arr: A[] | undefined, mapFn: (a: A) => B): B[] => {
+    if (!arr) {
+      return [];
+    }
+    return arr.filter(identity).map(mapFn);
+  };
+
   return {
-    scenes: migratedProject.scenes.filter(identity).map(encodeScene),
-    scripts: migratedProject.customEvents
-      .filter(identity)
-      .map(encodeResource(ScriptResource)),
-    sprites: migratedProject.spriteSheets
-      .filter(identity)
-      .map(encodeResource(SpriteResource)),
-    backgrounds: migratedProject.backgrounds
-      .filter(identity)
-      .map(encodeBackground),
-    emotes: migratedProject.emotes
-      .filter(identity)
-      .map(encodeResource(EmoteResource)),
-    avatars: migratedProject.avatars
-      .filter(identity)
-      .map(encodeResource(AvatarResource)),
-    tilesets: migratedProject.tilesets
-      .filter(identity)
-      .map(encodeResource(TilesetResource)),
-    fonts: migratedProject.fonts
-      .filter(identity)
-      .map(encodeResource(FontResource)),
-    sounds: migratedProject.sounds
-      .filter(identity)
-      .map(encodeResource(SoundResource)),
-    music: migratedProject.music
-      .filter(identity)
-      .map(encodeResource(MusicResource)),
-    palettes: migratedProject.palettes
-      .filter(identity)
-      .map(encodeResource(PaletteResource)),
+    scenes: map(migratedProject.scenes, encodeScene),
+    scripts: map(migratedProject.customEvents, encodeResource(ScriptResource)),
+    sprites: map(migratedProject.spriteSheets, encodeResource(SpriteResource)),
+    backgrounds: map(migratedProject.backgrounds, encodeBackground),
+    emotes: map(migratedProject.emotes, encodeResource(EmoteResource)),
+    avatars: map(migratedProject.avatars, encodeResource(AvatarResource)),
+    tilesets: map(migratedProject.tilesets, encodeResource(TilesetResource)),
+    fonts: map(migratedProject.fonts, encodeResource(FontResource)),
+    sounds: map(migratedProject.sounds, encodeResource(SoundResource)),
+    music: map(migratedProject.music, encodeResource(MusicResource)),
+    palettes: map(migratedProject.palettes, encodeResource(PaletteResource)),
     variables: encodeResource(VariablesResource)({
       _resourceType: "variables",
       variables: migratedProject.variables,
