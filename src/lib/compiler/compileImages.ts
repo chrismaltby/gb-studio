@@ -26,7 +26,7 @@ import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
-const TILE_BANK_SIZE = 192;
+const TILE_BANK_SIZE = 256;
 
 type PrecompiledBackgroundData = BackgroundData & {
   commonTilesetId?: string;

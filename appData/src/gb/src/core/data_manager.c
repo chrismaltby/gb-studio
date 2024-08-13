@@ -16,8 +16,6 @@
 #include "data/spritesheet_none.h"
 #include "data/data_bootstrap.h"
 
-#define ALLOC_BKG_TILES_TOWARDS_SPR
-
 #define EMOTE_SPRITE_SIZE       4
 
 far_ptr_t current_scene;

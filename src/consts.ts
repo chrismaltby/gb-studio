@@ -30,8 +30,8 @@ const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
 const MAX_SPRITE_TILES = 64;
 
-export const MAX_BACKGROUND_TILES = 16 * 12;
-export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
+export const MAX_BACKGROUND_TILES = 16 * 16;
+export const MAX_BACKGROUND_TILES_CGB = 16 * 16 * 2;
 
 const SCREEN_WIDTH = 20;
 const SCREEN_HEIGHT = 18;
