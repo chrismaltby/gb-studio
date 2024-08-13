@@ -3,21 +3,22 @@ export const maxSpriteTilesForBackgroundTilesLength = (
   isCGBOnly: boolean,
   backgroundAllocationStrat: number,
 ) => {
-  const reserveUITiles = !((backgroundAllocationStrat >> 1) & 1);
-  if (isCGBOnly) {
-    if (backgroundTilesLength <= 256) {
-      return ((reserveUITiles)? 192: 256);
-    }
-    if (backgroundTilesLength * 0.5 < ((reserveUITiles)? 192: 256)) {
-      return ((reserveUITiles)? 192: 256) - Math.ceil((backgroundTilesLength / 2 - 128) / 2) * 2;
-    }
-    return 128;
-  }
-  if (backgroundTilesLength <= 128) {
-    return ((reserveUITiles)? 96: 128);
-  }
-  if (backgroundTilesLength < ((reserveUITiles)? 192: 256)) {
-    return ((reserveUITiles)? 96: 128) - Math.ceil((backgroundTilesLength - 128) / 2);
-  }
-  return 64;
+	const reverseAllocation = !(backgroundAllocationStrat & 1);
+	const reserveUITiles = !((backgroundAllocationStrat >> 1) & 1);
+	if (isCGBOnly) {
+		if (backgroundTilesLength <= 256) {
+			return ((reserveUITiles)? 192: 256);
+		}
+		if (reverseAllocation && backgroundTilesLength * 0.5 < ((reserveUITiles)? 192: 256)) {
+			return ((reserveUITiles)? 192: 256) - Math.ceil((backgroundTilesLength / 2 - 128) / 2) * 2;
+		}
+		return 128;
+	}
+	if (backgroundTilesLength <= 128) {
+		return ((reserveUITiles)? 96: 128);
+	}
+	if (reverseAllocation && backgroundTilesLength < ((reserveUITiles)? 192: 256)) {
+		return ((reserveUITiles)? 96: 128) - Math.ceil((backgroundTilesLength - 128) / 2);
+	}
+	return 64;
 };
