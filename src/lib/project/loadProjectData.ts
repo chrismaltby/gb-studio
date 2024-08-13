@@ -78,13 +78,8 @@ const sortByName = (a: { name: string }, b: { name: string }) => {
 const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   const projectRoot = path.dirname(projectPath);
 
-  console.time("loadProjectData.loadProject scriptEventDefs");
   const scriptEventDefs = await loadAllScriptEventHandlers(projectRoot);
-  console.timeEnd("loadProjectData.loadProject scriptEventDefs");
-
-  console.time("loadProjectData.loadProject readJson");
   const originalJson = await readJson(projectPath);
-  console.timeEnd("loadProjectData.loadProject readJson");
 
   const resources = !isProjectMetadataResource(originalJson)
     ? migrateLegacyProject(
@@ -94,13 +89,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       )
     : await loadProjectResources(projectRoot, originalJson);
 
-  console.time("loadProjectData.loadProject engineFields");
   const engineFields = await loadEngineFields(projectRoot);
-  console.timeEnd("loadProjectData.loadProject engineFields");
-
-  console.time("loadProjectData.loadProject sceneTypes");
   const sceneTypes = await loadSceneTypes(projectRoot);
-  console.timeEnd("loadProjectData.loadProject sceneTypes");
 
   const { _version: originalVersion, _release: originalRelease } =
     originalJson as ProjectMetadataResource;
@@ -109,7 +99,6 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     resources.metadata._version !== originalVersion ||
     resources.metadata._release !== originalRelease;
 
-  console.time("loadProjectData.loadProject loadAssets");
   const [
     backgrounds,
     sprites,
@@ -129,7 +118,6 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     loadAllEmoteData(projectRoot),
     loadAllTilesetData(projectRoot),
   ]);
-  console.timeEnd("loadProjectData.loadProject loadAssets");
 
   const modifiedSpriteIds: string[] = [];
 
@@ -143,8 +131,6 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     return entity;
   };
 
-  console.time("loadProjectData.loadProject build sceneResources");
-
   const sceneResources: CompressedSceneResourceWithChildren[] =
     resources.scenes.map((s) => {
       return addMissingEntityId({
@@ -154,11 +140,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       });
     });
 
-  console.timeEnd("loadProjectData.loadProject build sceneResources");
-
-  console.time("loadProjectData.loadProject build scriptResources");
   const scriptResources = resources.scripts.map(addMissingEntityId);
-  console.timeEnd("loadProjectData.loadProject build scriptResources");
 
   const mergeAssetsWithResources = <
     R extends Asset & { name: string },
@@ -219,7 +201,6 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     });
   };
 
-  console.time("loadProjectData.loadProject build backgroundResources");
   const backgroundResources = mergeAssetsWithResources<
     CompressedBackgroundResource,
     BackgroundAssetData
@@ -242,9 +223,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       tileColors: "",
     };
   });
-  console.timeEnd("loadProjectData.loadProject build backgroundResources");
 
-  console.time("loadProjectData.loadProject build spriteResources");
   const spriteResources = mergeAssetsWithResources<
     SpriteResource,
     SpriteAssetData
@@ -293,49 +272,37 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       }),
     } as SpriteResource;
   });
-  console.timeEnd("loadProjectData.loadProject build spriteResources");
 
-  console.time("loadProjectData.loadProject build emoteResources");
   const emoteResources = mergeAssetIdAndSymbolsWithResources(
     emotes,
     resources.emotes,
     "emote"
   );
-  console.timeEnd("loadProjectData.loadProject build emoteResources");
 
-  console.time("loadProjectData.loadProject build avatarResources");
   const avatarResources = mergeAssetIdsWithResources(
     avatars,
     resources.avatars,
     "avatar"
   );
-  console.timeEnd("loadProjectData.loadProject build avatarResources");
 
-  console.time("loadProjectData.loadProject build tilesetResources");
   const tilesetResources = mergeAssetIdAndSymbolsWithResources(
     tilesets,
     resources.tilesets,
     "tileset"
   );
-  console.timeEnd("loadProjectData.loadProject build tilesetResources");
 
-  console.time("loadProjectData.loadProject build soundResources");
   const soundResources = mergeAssetIdAndSymbolsWithResources(
     sounds,
     resources.sounds,
     "sound"
   );
-  console.timeEnd("loadProjectData.loadProject build soundResources");
 
-  console.time("loadProjectData.loadProject build fontResources");
   const fontResources = mergeAssetIdAndSymbolsWithResources(
     fonts,
     resources.fonts,
     "font"
   );
-  console.timeEnd("loadProjectData.loadProject build fontResources");
 
-  console.time("loadProjectData.loadProject build musicResources");
   const musicResources = mergeAssetsWithResources<
     MusicResource,
     MusicAssetData
@@ -357,9 +324,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       settings: {},
     };
   });
-  console.timeEnd("loadProjectData.loadProject build musicResources");
 
-  console.time("loadProjectData.loadProject build paletteResources");
   const paletteResources: PaletteResource[] =
     resources.palettes.map(addMissingEntityId);
 
@@ -381,22 +346,13 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       });
     }
   }
-  console.timeEnd("loadProjectData.loadProject build paletteResources");
 
-  console.time("loadProjectData.loadProject build variablesResource");
   const variablesResource: VariablesResource = resources.variables;
-  console.timeEnd("loadProjectData.loadProject build variablesResource");
 
-  console.time("loadProjectData.loadProject build engineFieldValuesResource");
   const engineFieldValuesResource: EngineFieldValuesResource =
     resources.engineFieldValues;
-  console.timeEnd(
-    "loadProjectData.loadProject build engineFieldValuesResource"
-  );
 
-  console.time("loadProjectData.loadProject build settingsResource");
   const settingsResource: SettingsResource = resources.settings;
-  console.timeEnd("loadProjectData.loadProject build settingsResource");
 
   return {
     resources: {
