@@ -802,6 +802,8 @@
   "FIELD_COPY_VALUE": "Copy Value",
   "FIELD_PASTE_VALUE": "Paste Value",
   "FIELD_STACK": "Stack",
+  "FIELD_PRIORITIZE_SPRITE_ALLOC": "Prioritize Sprite Allocation",
+  "FIELD_RESERVE_UI_TILES": "Reserve UI Tiles",
   "FIELD_COMMON_TILESET": "Common Tileset",
   "FIELD_COMMON_TILESET_DESC": "Setting a common tileset for a scene will cause the selected tileset tiles to always be loaded in the same order. Careful use of this on two scenes will allow you to seamlessly switch between the scenes with no transition and no tile glitching.",
   "FIELD_AUTO_COLOR": "Auto Color",

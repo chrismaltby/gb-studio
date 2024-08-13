@@ -388,6 +388,7 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
+  allocationStrat: number;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];

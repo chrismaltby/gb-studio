@@ -43,6 +43,7 @@ export const dummySceneNormalized: SceneNormalized = {
   symbol: "scene_0",
   backgroundId: "",
   tilesetId: "",
+  allocationStrat: 0,
   x: 0,
   y: 0,
   width: 20,
@@ -122,6 +123,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
     symbol: "ta_1",
     data: new Uint8Array(),
   },
+  allocationStrat: 0,
 };
 
 export const dummyBackground: Background = {

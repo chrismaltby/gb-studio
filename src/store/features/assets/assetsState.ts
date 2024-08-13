@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type BackgroundAsset = {
   id: string;
   is360: boolean;
+  allocationStrat: number;
   isCGBOnly: boolean;
   tilesetId?: string;
   warnings: string[];
@@ -31,6 +32,7 @@ const assetsSlice = createSlice({
         backgroundId: string;
         tilesetId?: string;
         is360: boolean;
+		allocationStrat: number;
       }>
     ) => {
       state.backgroundsLoading = true;
@@ -40,6 +42,7 @@ const assetsSlice = createSlice({
       action: PayloadAction<{
         id: string;
         is360: boolean;
+		allocationStrat: number;
         tilesetId?: string;
         isCGBOnly: boolean;
         warnings: string[];
@@ -51,6 +54,7 @@ const assetsSlice = createSlice({
       state.backgrounds[action.payload.id] = {
         id: action.payload.id,
         is360: action.payload.is360,
+		allocationStrat: action.payload.allocationStrat,
         tilesetId: action.payload.tilesetId,
         isCGBOnly: action.payload.isCGBOnly,
         warnings: action.payload.warnings,

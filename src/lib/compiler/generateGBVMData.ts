@@ -26,6 +26,7 @@ export interface PrecompiledBackground {
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
   autoPalettes?: Palette[];
+  allocationStrat: number,
 }
 
 export interface ProjectileData {
@@ -70,7 +71,7 @@ export interface PrecompiledTileData {
 export interface PrecompiledTilemapData {
   symbol: string;
   data: number[] | Uint8Array;
-  is360: boolean;
+  is360: boolean;  
 }
 
 interface Entity {
@@ -922,6 +923,7 @@ export const compileBackground = (
       cgb_tilemap_attr: color
         ? toFarPtr(background.tilemapAttr.symbol)
         : "{ NULL, NULL }",
+	  allocation_strat: background.allocationStrat,
     },
     ([] as string[]).concat(
       background.tileset?.symbol ?? [],

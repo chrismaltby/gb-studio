@@ -97,6 +97,7 @@ typedef struct background_t {
     far_ptr_t cgb_tileset;
     far_ptr_t tilemap;              // far pointer to array of bytes with map
     far_ptr_t cgb_tilemap_attr;     // far pointer to array of bytes with CGB attributes (may be NULL)
+	uint8_t allocation_strat;
 } background_t;
 
 typedef struct tileset_t {

@@ -10,7 +10,7 @@ import {
 } from "shared/lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
-import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB, UI_TILE_LENGTH } from "consts";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -39,6 +39,7 @@ export const getBackgroundInfo = async (
   background: BackgroundData,
   commonTileset: Tileset | undefined,
   is360: boolean,
+  allocationStrat: number,
   isCGBOnly: boolean,
   projectPath: string,
   precalculatedTilesetLength?: number
@@ -95,20 +96,21 @@ export const getBackgroundInfo = async (
   ) {
     warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
   }
-  if (tilesetLength > MAX_BACKGROUND_TILES && !is360 && !isCGBOnly) {
+  let max_bg_tiles = (MAX_BACKGROUND_TILES - (((allocationStrat >> 1) & 1)? 0: (UI_TILE_LENGTH)));
+  if (tilesetLength > max_bg_tiles && !is360 && !isCGBOnly) {
     warnings.push(
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
-        maxTilesetLength: MAX_BACKGROUND_TILES,
+        maxTilesetLength: max_bg_tiles,
       })
     );
   }
-
-  if (tilesetLength > MAX_BACKGROUND_TILES_CGB && !is360 && isCGBOnly) {
+  max_bg_tiles = (MAX_BACKGROUND_TILES_CGB - (((allocationStrat >> 1) & 1)? 0: (UI_TILE_LENGTH * 2)));
+  if (tilesetLength > max_bg_tiles && !is360 && isCGBOnly) {
     warnings.push(
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
-        maxTilesetLength: MAX_BACKGROUND_TILES_CGB,
+        maxTilesetLength: max_bg_tiles,
       })
     );
   }

@@ -1444,10 +1444,11 @@ ipcMain.handle(
     background: Background,
     tileset: Tileset | undefined,
     is360: boolean,
+	allocationStrat: number,
     cgbOnly: boolean
   ) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, tileset, is360, cgbOnly, projectRoot);
+    return getBackgroundInfo(background, tileset, is360, allocationStrat, cgbOnly, projectRoot);
   }
 );
 

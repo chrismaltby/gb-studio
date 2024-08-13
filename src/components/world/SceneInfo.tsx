@@ -119,6 +119,9 @@ const SceneInfo = () => {
   const backgroundNumTiles = useAppSelector(
     (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
+  const backgroundAllocationStrat = useAppSelector(
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.allocationStrat
+  );
   const isCGBOnly = useAppSelector(
     (state) => state.project.present.settings.colorMode === "color"
   );
@@ -399,7 +402,7 @@ const SceneInfo = () => {
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =
     scene.type !== "LOGO"
-      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles, isCGBOnly)
+      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles, isCGBOnly, backgroundAllocationStrat)
       : MAX_LOGO_SPRITE_TILES;
 
   return (

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
-import { castEventToInt } from "renderer/lib/helpers/castEventValue";
+import { castEventToBool, castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
@@ -42,6 +42,7 @@ import { SettingsState } from "store/features/settings/settingsState";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
 import { Button } from "ui/buttons/Button";
+import { CheckboxField } from "ui/form/CheckboxField";
 import {
   LockIcon,
   LockOpenIcon,
@@ -149,7 +150,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId
   );
-
+  const [allocationStrat, setAllocationStrat] = useState<number>(
+    (scene?.allocationStrat || 0)
+  );
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
   );
@@ -386,6 +389,24 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       })
     );
   };
+  
+  const onChangeReverseAllocationEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+	  const newStrat = castEventToBool(e)? (allocationStrat & ~1): (allocationStrat | 1);
+	  onChangeSceneProp("allocationStrat", newStrat);
+	  setAllocationStrat(newStrat);
+	},
+    [allocationStrat, onChangeSceneProp]
+  );
+  
+  const onChangeReserveUITilesEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+	  const newStrat = castEventToBool(e)? (allocationStrat & ~2): (allocationStrat | 2);
+	  onChangeSceneProp("allocationStrat", newStrat);
+	  setAllocationStrat(newStrat);
+	},
+    [allocationStrat, onChangeSceneProp]
+  );
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
@@ -647,6 +668,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         tilesetId={scene.tilesetId}
                         onChange={onChangeBackgroundId}
                         is360={scene.type === "LOGO"}
+						allocationStrat={scene.allocationStrat}
                         includeInfo
                       />
                       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -687,6 +709,22 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     </div>
                   </FormField>
                 </FormRow>
+				{(scene.type !== "LOGO") && (
+					<FormRow>
+						<CheckboxField
+							name="allocationStrat_reverseAllocation"
+							label={l10n("FIELD_PRIORITIZE_SPRITE_ALLOC")}
+							checked={!(scene.allocationStrat & 1)}
+							onChange={onChangeReverseAllocationEnabled}
+						/>
+						<CheckboxField
+							name="allocationStrat_reserveUITiles"
+							label={l10n("FIELD_RESERVE_UI_TILES")}
+							checked={!(scene.allocationStrat & 2)}
+							onChange={onChangeReserveUITilesEnabled}
+						/>
+					</FormRow>
+				)}
 
                 {commonTilesetOpen && (
                   <FormRow>
@@ -717,7 +755,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     </Alert>
                   )}
                 </FormRow>
-
+				
                 {/* <FormDivider /> */}
               </FormContainer>
             </SidebarColumn>
