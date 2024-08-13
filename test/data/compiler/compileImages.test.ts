@@ -181,12 +181,10 @@ test("should handle overflow correctly for color only mode", async () => {
   }
   // First bank - second block
   for (let i = 0x100; i <= 0x180; i += 2) {
-    console.log({ i, expectedVal: i - 0x80 });
     expect(res[0].tilemap[i]).toEqual((i - 0x100) / 2 + 0x80);
   }
   // Second bank - second block
   for (let i = 0x101; i <= 0x180; i += 2) {
-    console.log({ i, expectedVal: i - 0x80 });
     expect(res[0].tilemap[i]).toEqual(Math.floor((i - 0x100) / 2) + 0x80);
   }
   // Overflow
