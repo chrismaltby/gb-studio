@@ -83,13 +83,10 @@ export const loadProjectResources = async (
   projectRoot: string,
   metadataResource: ProjectMetadataResource
 ): Promise<CompressedProjectResources> => {
-  console.time("loadProjectData.loadProject globResources");
   const projectResources = naturalSortPaths(
     await globAsync(path.join(projectRoot, "project", "**/*.gbsres"))
   );
-  console.timeEnd("loadProjectData.loadProject globResources");
 
-  console.time("loadProjectData.loadProject readResources2");
   const resources = (
     await promiseLimit(
       CONCURRENT_RESOURCE_LOAD_COUNT,
@@ -107,9 +104,7 @@ export const loadProjectResources = async (
       })
     )
   ).filter(identity) as RawResource[];
-  console.timeEnd("loadProjectData.loadProject readResources2");
 
-  console.time("loadProjectData.loadProject build resourcesLookup");
   const resourcesLookup: ResourceLookup = {
     actors: [],
     triggers: [],
@@ -192,27 +187,15 @@ export const loadProjectResources = async (
     }
   }
 
-  console.timeEnd("loadProjectData.loadProject build resourcesLookup");
-
-  console.time("loadProjectData.loadProject build sortActors");
   resourcesLookup.actors.sort(sortByIndex);
-  console.timeEnd("loadProjectData.loadProject build sortActors");
-
-  console.time("loadProjectData.loadProject build sortTriggers");
   resourcesLookup.triggers.sort(sortByIndex);
-  console.timeEnd("loadProjectData.loadProject build sortTriggers");
 
-  console.time("loadProjectData.loadProject build actorsBySceneFolderLookup");
   const actorSubFolder = `${path.posix.sep}actors${path.posix.sep}`;
   const actorsBySceneFolderLookup = groupBy(resourcesLookup.actors, (row) => {
     const actorFolderIndex = row.path.lastIndexOf(actorSubFolder);
     return row.path.substring(0, actorFolderIndex);
   });
-  console.timeEnd(
-    "loadProjectData.loadProject build actorsBySceneFolderLookup"
-  );
 
-  console.time("loadProjectData.loadProject build triggersBySceneFolderLookup");
   const triggerSubFolder = `${path.posix.sep}triggers${path.posix.sep}`;
   const triggersBySceneFolderLookup = groupBy(
     resourcesLookup.triggers,
@@ -221,11 +204,6 @@ export const loadProjectResources = async (
       return row.path.substring(0, triggerFolderIndex);
     }
   );
-  console.timeEnd(
-    "loadProjectData.loadProject build triggersBySceneFolderLookup"
-  );
-
-  console.time("loadProjectData.loadProject build sceneResources");
 
   const extractData = <T>(value: { data: T }): T => value.data;
   const extractDataArray = <T>(arr: { data: T }[] | undefined): T[] =>
@@ -243,24 +221,15 @@ export const loadProjectResources = async (
       };
     });
 
-  console.timeEnd("loadProjectData.loadProject build sceneResources");
-
-  console.time("loadProjectData.loadProject build variablesResource");
   const variablesResource: VariablesResource = resourcesLookup.variables[0]
     ?.data ?? { _resourceType: "variables", variables: [] };
-  console.timeEnd("loadProjectData.loadProject build variablesResource");
 
-  console.time("loadProjectData.loadProject build engineFieldValuesResource");
   const engineFieldValuesResource: EngineFieldValuesResource =
     (resourcesLookup.engineFieldValues ?? [])[0]?.data ?? {
       _resourceType: "engineFieldValues",
       engineFieldValues: [],
     };
-  console.timeEnd(
-    "loadProjectData.loadProject build engineFieldValuesResource"
-  );
 
-  console.time("loadProjectData.loadProject build settingsResource");
   const settingsResource: SettingsResource = (
     resourcesLookup.settings ?? []
   ).reduce(
@@ -272,7 +241,6 @@ export const loadProjectResources = async (
     },
     { _resourceType: "settings", ...defaultProjectSettings }
   );
-  console.timeEnd("loadProjectData.loadProject build settingsResource");
 
   return {
     scenes: sceneResources,

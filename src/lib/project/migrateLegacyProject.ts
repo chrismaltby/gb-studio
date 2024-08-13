@@ -37,9 +37,7 @@ export const migrateLegacyProject = (
   projectRoot: string,
   scriptEventDefs: ScriptEventDefs
 ): CompressedProjectResources => {
-  console.time("loadProjectData.loadProject migrateProject");
   const migratedProject = migrateProject(project, projectRoot, scriptEventDefs);
-  console.timeEnd("loadProjectData.loadProject migrateProject");
 
   const encodeResource =
     <T extends TSchema, D extends object>(castAs: T) =>

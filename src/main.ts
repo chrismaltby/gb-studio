@@ -1199,10 +1199,7 @@ ipcMain.handle(
 );
 
 ipcMain.handle("project:load", async (): Promise<LoadProjectResult> => {
-  console.time("handle project:load");
-  const data = await loadProjectData(projectPath);
-  console.timeEnd("handle project:load");
-  return data;
+  return loadProjectData(projectPath);
 });
 
 ipcMain.handle(
@@ -1381,11 +1378,7 @@ ipcMain.handle(
     sceneTypes: SceneTypeSchema[],
     exportType: ProjectExportType
   ) => {
-    console.time("project:export");
     const buildStartTime = Date.now();
-
-    console.log("GOT RESOURCES");
-    console.timeEnd("project:export");
 
     try {
       const projectRoot = Path.dirname(projectPath);

@@ -57,9 +57,6 @@ export const encodeResource = <T extends Record<string, unknown>>(
 export const buildResourceExportBuffer = (
   projectResources: CompressedProjectResources
 ): WriteFile[] => {
-  console.time("SAVING PROJECT");
-  console.log("SAVE PROJECT DATA");
-
   const projectPartsFolder = "project";
   const variablesResFilename = Path.join(`variables.gbsres`);
   const settingsResFilename = Path.join(`settings.gbsres`);
@@ -101,7 +98,6 @@ export const buildResourceExportBuffer = (
     });
   };
 
-  console.time("SAVING PROJECT : build scene resources");
   for (const scene of projectResources.scenes) {
     const sceneFolder = getUniquePath(getSceneFolderPath(scene));
     const sceneFilename = getUniquePath(getSceneResourcePath(sceneFolder));
@@ -144,9 +140,6 @@ export const buildResourceExportBuffer = (
       omit(scene, "actors", "triggers")
     );
   }
-  console.timeEnd("SAVING PROJECT : build scene resources");
-
-  console.time("SAVING PROJECT : build background resources");
 
   for (const background of projectResources.backgrounds) {
     const backgroundFilename = getUniquePath(getResourceAssetPath(background));
@@ -156,7 +149,6 @@ export const buildResourceExportBuffer = (
       background
     );
   }
-  console.timeEnd("SAVING PROJECT : build background resources");
 
   for (const sprite of projectResources.sprites) {
     const spriteFilename = getUniquePath(getResourceAssetPath(sprite));
@@ -231,8 +223,6 @@ export const buildResourceExportBuffer = (
     "engineFieldValues",
     projectResources.engineFieldValues
   );
-
-  console.timeEnd("SAVING PROJECT");
 
   return writeBuffer;
 };

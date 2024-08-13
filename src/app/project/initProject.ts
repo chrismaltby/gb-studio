@@ -25,7 +25,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
 if (projectPath) {
-  console.log("FIRE OPEN PROJECT", new Date().valueOf());
   store.dispatch(projectActions.openProject(projectPath));
   initKeyBindings();
 }
@@ -53,7 +52,7 @@ window.addEventListener("error", (error) => {
 window.addEventListener("unhandledrejection", (error) => {
   error.stopPropagation();
   error.preventDefault();
-  console.log(error);
+  // eslint-disable-next-line no-console
   console.error(error);
   store.dispatch(
     errorActions.setGlobalError({

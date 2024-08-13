@@ -50,13 +50,7 @@ export const denormalizeProject = (project: {
   settings: SettingsState;
   metadata: MetadataState;
 }): ProjectResources => {
-  console.time("denormalizeProject");
-  // @TODO Set this to return Readonly<ProjectResources>
   const entitiesData = denormalizeEntities(project.entities);
-  console.timeEnd("denormalizeProject");
-
-  console.log({ entitiesData });
-  console.log({ entitiesData });
   return {
     ...entitiesData,
     settings: {
@@ -153,13 +147,7 @@ const loadProject = createAsyncThunk<
   LoadProjectResult & { path: string },
   string
 >("project/loadProject", async (path) => {
-  console.log("CALL API LOAD PROJECT", new Date().valueOf());
-  console.time("projectActions.loadProject");
   const data = await API.project.loadProject();
-  console.timeEnd("projectActions.loadProject");
-  // throw new Error("CANCEL LOAD");
-  // console.log({ resources });
-  console.log("loadProject action", { data });
   return {
     ...data,
     path,
@@ -265,8 +253,6 @@ const removeSoundAsset = createAction<{ soundId: string }>(
 const saveProject = createAsyncThunk<void>(
   "project/saveProject",
   async (_, thunkApi) => {
-    console.log("SAVE PROJECT");
-    console.time("saveProject action PREPARE SAVE PROJECT");
     const state = thunkApi.getState() as RootState;
 
     if (!state.document.loaded) {
@@ -283,8 +269,6 @@ const saveProject = createAsyncThunk<void>(
 
       const normalizedProject = denormalizeProject(state.project.present);
 
-      console.log({ normalizedProject });
-
       thunkApi.dispatch(setSaveStep("compressing"));
 
       const data = compressProjectResources({
@@ -299,37 +283,21 @@ const saveProject = createAsyncThunk<void>(
             : normalizedProject.settings.navigatorSplitSizes,
         },
       });
-      console.log({ compressedData: data });
-      console.timeEnd("saveProject action PREPARE SAVE PROJECT");
 
       // Save
-      console.timeEnd("saveProject action PREPARE SAVE PROJECT");
-
       thunkApi.dispatch(setSaveStep("checksums"));
-
-      console.time("saveProject action GET CHECKSUMS");
       const resourceChecksums = await API.project.getResourceChecksums();
-      console.timeEnd("saveProject action GET CHECKSUMS");
-      console.log({ resourceChecksums });
 
       thunkApi.dispatch(setSaveStep("patching"));
-
-      console.time("saveProject action CREATE PATCH");
       const patch = buildCompressedProjectResourcesPatch(
         data,
         resourceChecksums
       );
-      console.timeEnd("saveProject action CREATE PATCH");
-      console.log({ patch });
-      console.time("saveProject action SEND TO MAIN");
 
       thunkApi.dispatch(setSaveStep("writing"));
-
       await API.project.saveProject(patch);
 
       thunkApi.dispatch(setSaveStep("complete"));
-
-      console.timeEnd("saveProject action SEND TO MAIN");
     } catch (e) {
       console.error(e);
       saving = false;

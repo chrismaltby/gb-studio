@@ -245,24 +245,11 @@ const loadProject: CaseReducer<
   EntitiesState,
   PayloadAction<LoadProjectResult>
 > = (state, action) => {
-  console.log("ENTITIES HANDLE LOAD PROJECT START", new Date().valueOf());
-  console.time("entitiesState.loadProject");
-
-  console.time("entitiesState.loadProject uncompressResources");
   const uncompressedResources = decompressProjectResources(
     action.payload.resources
   );
-  console.timeEnd("entitiesState.loadProject uncompressResources");
-
-  console.time("entitiesState.loadProject normalizeEntityResources");
 
   const data2 = normalizeEntityResources(uncompressedResources);
-
-  console.log({ data2 });
-  console.timeEnd("entitiesState.loadProject normalizeEntityResources");
-
-  // const entities = data.entities;
-  console.time("entitiesState.loadProject setA");
 
   actorsAdapter.setAll(state.actors, data2.entities.actors || {});
   triggersAdapter.setAll(state.triggers, data2.entities.triggers || {});
@@ -280,9 +267,6 @@ const loadProject: CaseReducer<
     state.metasprites,
     data2.entities.metasprites || {}
   );
-  console.timeEnd("entitiesState.loadProject setA");
-  console.time("entitiesState.loadProject setB");
-
   metaspriteTilesAdapter.setAll(
     state.metaspriteTiles,
     data2.entities.metaspriteTiles || {}
@@ -299,9 +283,6 @@ const loadProject: CaseReducer<
   musicAdapter.setAll(state.music, data2.entities.music || {});
   soundsAdapter.setAll(state.sounds, data2.entities.sounds || {});
   fontsAdapter.setAll(state.fonts, data2.entities.fonts || {});
-  console.timeEnd("entitiesState.loadProject setB");
-  console.time("entitiesState.loadProject setC");
-
   avatarsAdapter.setAll(state.avatars, data2.entities.avatars || {});
   emotesAdapter.setAll(state.emotes, data2.entities.emotes || {});
   tilesetsAdapter.setAll(state.tilesets, data2.entities.tilesets || {});
@@ -311,33 +292,15 @@ const loadProject: CaseReducer<
     state.engineFieldValues,
     data2.entities.engineFieldValues || {}
   );
-  console.timeEnd("entitiesState.loadProject setC");
 
-  console.time("entitiesState.loadProject fixAllScenesWithModifiedBackgrounds");
   fixAllScenesWithModifiedBackgrounds(state);
-  console.timeEnd(
-    "entitiesState.loadProject fixAllScenesWithModifiedBackgrounds"
-  );
-
-  console.time("entitiesState.loadProject updateMonoOverrideIds");
   updateMonoOverrideIds(state);
-  console.timeEnd("entitiesState.loadProject updateMonoOverrideIds");
-
-  console.time("entitiesState.loadProject ensureSymbolsUnique");
   ensureSymbolsUnique(state);
-  console.timeEnd("entitiesState.loadProject ensureSymbolsUnique");
-
-  console.time("entitiesState.loadProject updateAllCustomEventsArgs");
   updateAllCustomEventsArgs(
     Object.values(state.customEvents.entities) as CustomEventNormalized[],
     state.scriptEvents.entities,
     action.payload.scriptEventDefs
   );
-  console.timeEnd("entitiesState.loadProject updateAllCustomEventsArgs");
-
-  console.timeEnd("entitiesState.loadProject");
-
-  console.log("ENTITIES HANDLE LOAD PROJECT END", new Date().valueOf());
 };
 
 const loadBackground: CaseReducer<

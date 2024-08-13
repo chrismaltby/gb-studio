@@ -15,13 +15,10 @@ export const loadProjectResourceChecksums = async (
   const projectRoot = path.dirname(projectPath);
   const projectResourcesRoot = path.join(projectRoot, "project");
 
-  console.time("loadProjectResourceHashes.loadProject globResources");
   const projectResources = await globAsync(
     path.join(projectResourcesRoot, "**/*.gbsres")
   );
-  console.timeEnd("loadProjectResourceHashes.loadProject globResources");
 
-  console.time("loadProjectResourceHashes.loadProject readResources2");
   const resources = await promiseLimit(
     CONCURRENT_RESOURCE_LOAD_COUNT,
     projectResources.map((projectResourcePath) => async () => {
@@ -32,7 +29,7 @@ export const loadProjectResourceChecksums = async (
       };
     })
   );
-  console.timeEnd("loadProjectResourceHashes.loadProject readResources2");
+
   return resources.reduce((memo, { path, data }) => {
     memo[path] = data;
     return memo;
