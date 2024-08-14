@@ -94,6 +94,7 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
 
   .CustomSelect__single-value {
     color: ${(props) => props.theme.colors.input.text};
+    width: 100%;
   }
 
   .CustomSelect__placeholder {

@@ -1,6 +1,6 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import type { SettingsState } from "store/features/settings/settingsState";
+import { SettingsResource } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -134,7 +134,7 @@ export const EVENT_FADE_IN = "EVENT_FADE_IN";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_GROUP = "EVENT_GROUP";
 
-export const defaultProjectSettings: SettingsState = {
+export const defaultProjectSettings: Omit<SettingsResource, "_resourceType"> = {
   startSceneId: "",
   startX: 0,
   startY: 0,
@@ -206,6 +206,8 @@ export const defaultProjectSettings: SettingsState = {
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
+  compilerOptimisation: "none",
+  compilerPreset: 3000,
 };
 
 export const defaultPalettes: Palette[] = [

@@ -42,6 +42,10 @@ import { FormField } from "ui/form/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
+import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { CompilerOptimisationSelect } from "components/forms/CompilerOptimisationSelect";
+import { CompilerOptimisation } from "shared/lib/resources/types";
+import Alert from "ui/alerts/Alert";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -85,6 +89,8 @@ const SettingsPage: FC = () => {
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
+    compilerOptimisation,
+    compilerPreset,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -150,6 +156,17 @@ const SettingsPage: FC = () => {
   const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeCompilerOptimisation = useCallback(
+    (value: CompilerOptimisation) =>
+      onChangeSettingProp("compilerOptimisation", value),
+    [onChangeSettingProp]
+  );
+
+  const onChangeCompilerPreset = useCallback(
+    (value: number) => onChangeSettingProp("compilerPreset", value),
     [onChangeSettingProp]
   );
 
@@ -652,6 +669,8 @@ const SettingsPage: FC = () => {
             l10n("SETTINGS_BUILD"),
             l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
             l10n("FIELD_GENERATE_DEBUG_FILES"),
+            l10n("FIELD_COMPILER_PRESET"),
+            l10n("FIELD_COMPILER_OPTIMISATION"),
           ]}
         >
           <CardAnchor id="settingsBuild" />
@@ -690,12 +709,49 @@ const SettingsPage: FC = () => {
             </SettingRowInput>
           </SearchableSettingRow>
 
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_COMPILER_OPTIMISATION")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_COMPILER_OPTIMISATION")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <CompilerOptimisationSelect
+                name={"compilerOptimisation"}
+                value={compilerOptimisation}
+                onChange={onChangeCompilerOptimisation}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_COMPILER_PRESET")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_COMPILER_PRESET")}</SettingRowLabel>
+            <SettingRowInput>
+              <CompilerPresetSelect
+                name={"compilerPreset"}
+                value={compilerPreset}
+                onChange={onChangeCompilerPreset}
+              />
+              {compilerOptimisation !== "none" && compilerPreset !== 3000 && (
+                <Alert variant="warning" style={{ marginTop: 3 }}>
+                  <p>{l10n("FIELD_COMPILER_OPTIONS_WARNING")}</p>
+                </Alert>
+              )}
+            </SettingRowInput>
+          </SearchableSettingRow>
+
           {!searchTerm && (
             <CardButtons>
               <Button
                 onClick={() => {
                   onChangeSettingProp("openBuildLogOnWarnings", true);
                   onChangeSettingProp("generateDebugFilesEnabled", false);
+                  onChangeSettingProp("compilerOptimisation", "none");
+                  onChangeSettingProp("compilerPreset", 3000);
                 }}
               >
                 {l10n("FIELD_RESTORE_DEFAULT")}

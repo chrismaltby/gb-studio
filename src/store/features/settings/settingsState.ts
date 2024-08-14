@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
@@ -14,81 +13,9 @@ export type BreakpointData = {
   context: ScriptEditorCtx;
 };
 
-export type SettingsState = {
-  startSceneId: string;
-  startX: number;
-  startY: number;
-  startMoveSpeed: number;
-  startAnimSpeed: number | null;
-  startDirection: ActorDirection;
-  showCollisions: boolean;
-  showConnections: ShowConnectionsSetting;
-  showCollisionSlopeTiles: boolean;
-  showCollisionExtraTiles: boolean;
-  worldScrollX: number;
-  worldScrollY: number;
-  zoom: number;
-  sgbEnabled: boolean;
-  customHead: string;
-  defaultBackgroundPaletteIds: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string
-  ];
-  defaultSpritePaletteIds: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string
-  ];
-  defaultSpritePaletteId: string;
-  defaultUIPaletteId: string;
-  playerPaletteId: string;
-  navigatorSplitSizes: number[];
-  showNavigator: boolean;
-  defaultFontId: string;
-  defaultCharacterEncoding: string;
-  defaultPlayerSprites: Record<string, string>;
-  musicDriver: MusicDriverSetting;
-  cartType: CartType;
-  batterylessEnabled: boolean;
-  favoriteEvents: string[];
-  customColorsWhite: string;
-  customColorsLight: string;
-  customColorsDark: string;
-  customColorsBlack: string;
-  customControlsUp: string[];
-  customControlsDown: string[];
-  customControlsLeft: string[];
-  customControlsRight: string[];
-  customControlsA: string[];
-  customControlsB: string[];
-  customControlsStart: string[];
-  customControlsSelect: string[];
-  debuggerEnabled: boolean;
-  debuggerScriptType: "editor" | "gbvm";
-  debuggerVariablesFilter: "all" | "watched";
-  debuggerCollapsedPanes: string[];
-  debuggerPauseOnScriptChanged: boolean;
-  debuggerPauseOnWatchedVariableChanged: boolean;
-  debuggerBreakpoints: BreakpointData[];
-  debuggerWatchedVariables: string[];
-  colorMode: ColorModeSetting;
-  previewAsMono: boolean;
-  openBuildLogOnWarnings: boolean;
-  generateDebugFilesEnabled: boolean;
-};
+export type SettingsState = typeof defaultProjectSettings;
 
-export const initialState: SettingsState = defaultProjectSettings;
+export const initialState = defaultProjectSettings;
 
 const settingsSlice = createSlice({
   name: "settings",

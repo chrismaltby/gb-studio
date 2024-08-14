@@ -3,6 +3,7 @@ import { promisify } from "util";
 import { pathExists, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
+import { CompilerOptimisation } from "shared/lib/resources/types";
 
 const globAsync = promisify(glob);
 
@@ -15,6 +16,8 @@ type BuildOptions = {
   batteryless: boolean;
   targetPlatform: "gb" | "pocket";
   cartType: "mbc3" | "mbc5";
+  compilerOptimisation: CompilerOptimisation;
+  compilerPreset: number;
 };
 
 const buildMakeScript = async (
@@ -119,6 +122,8 @@ export const getBuildCommands = async (
     batteryless,
     targetPlatform,
     cartType,
+    compilerPreset,
+    compilerOptimisation,
   }: BuildOptions
 ) => {
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -151,6 +156,14 @@ export const getBuildCommands = async (
         `-Wf-MMD`,
         `-c`,
       ];
+
+      buildArgs.push(`-Wf"--max-allocs-per-node ${compilerPreset ?? 3000}"`);
+
+      if (compilerOptimisation === "speed") {
+        buildArgs.push("-Wf--opt-code-speed");
+      } else if (compilerOptimisation === "size") {
+        buildArgs.push("-Wf--opt-code-size");
+      }
 
       if (colorEnabled) {
         buildArgs.push("-DCGB");

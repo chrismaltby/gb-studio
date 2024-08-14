@@ -820,6 +820,10 @@
   "FIELD_MOVE_BY": "Move By",
   "FIELD_SCRIPT_NOT_USED": "Script hasn't been used in project",
   "FIELD_VIEW_SCRIPT_USES": "View Script Uses",
+  "FIELD_PLACEBO": "Placebo",
+  "FIELD_COMPILER_PRESET": "Compiler Preset",
+  "FIELD_COMPILER_OPTIMISATION": "Optimise ROM For",
+  "FIELD_COMPILER_OPTIONS_WARNING": "Some combinations of Compiler Preset and Optimisation settings may not work together. If you are unable to build after changing these settings, try resetting them back to their default values.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

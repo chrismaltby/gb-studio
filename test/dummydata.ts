@@ -326,6 +326,8 @@ export const dummyProjectData: ProjectData = {
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
+    compilerOptimisation: "none",
+    compilerPreset: 3000,
   },
 };
 
@@ -554,6 +556,8 @@ export const dummySettingsResource: SettingsResource = {
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
+  compilerOptimisation: "none",
+  compilerPreset: 3000,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -649,6 +653,8 @@ export const dummyProjectResources: ProjectResources = {
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
+    compilerOptimisation: "none",
+    compilerPreset: 3000,
   },
 };
 
