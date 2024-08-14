@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1498240812",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1501240814",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -36,6 +36,9 @@
   "TOOLBAR_EXPORT_POCKET": "Eksportuj do urządzenia Pocket",
   "TOOLBAR_RUN": "Uruchom",
   "TOOLBAR_SEARCH": "Szukaj...",
+  "TOOLBAR_SAVING": "Zapisywanie",
+  "TOOLBAR_SAVING_ERROR": "Błąd podczas zapisywania",
+  "TOOLBAR_WRITING_FILES": "Zapisywanie na dysk",
 
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Tryb zaznaczenia",
