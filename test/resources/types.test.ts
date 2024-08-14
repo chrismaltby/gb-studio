@@ -550,7 +550,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate SettingsResource", () => {
-    const validSettings = {
+    const validSettings: SettingsResource = {
       _resourceType: "settings",
       startSceneId: "scene1",
       startX: 10,
@@ -623,6 +623,8 @@ describe("TypeBox Schemas", () => {
       previewAsMono: false,
       openBuildLogOnWarnings: true,
       generateDebugFilesEnabled: false,
+      compilerOptimisation: "none",
+      compilerPreset: 3000,
     };
     const invalidSettings = {
       _resourceType: "settings",
