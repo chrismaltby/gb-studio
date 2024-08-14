@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Tilesets asset folder added to all sample projects  [@pau-tomas](https://github.com/pau-tomas)
+- Tilesets asset folder added to all sample projects [@pau-tomas](https://github.com/pau-tomas)
 - Add `_stackPushVariable(variable)` and `_isIndirectVariable(variable)` helpers for use in plugins
-- Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project 
+- Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project
 
 ### Changed
 
@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 
 ### Fixed
 
@@ -163,7 +164,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dialogue event titles now show names of used variables in preview
 - Updated to [GBDK](https://github.com/gbdk-2020/gbdk-2020) version 4.3.0
 - When using "Color Only" mode, GB rom file extension changed to ".gbc"
-- Sprite editor frame numbers updated to start from frame "0" to match values used in "Set Animation Frame" event 
+- Sprite editor frame numbers updated to start from frame "0" to match values used in "Set Animation Frame" event
 
 ### Fixed
 
