@@ -43,6 +43,14 @@ export type ScriptEventHelperDef =
       actorId: string;
       distance: string;
       operator: string;
+    }
+  | {
+      type: "bounds";
+      actorId: string;
+      x: string;
+      y: string;
+      width: string;
+      height: string;
     };
 
 export type ScriptEventPresetValue = {

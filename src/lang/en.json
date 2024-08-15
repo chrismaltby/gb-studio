@@ -824,6 +824,8 @@
   "FIELD_COMPILER_PRESET": "Compiler Preset",
   "FIELD_COMPILER_OPTIMISATION": "Optimise ROM For",
   "FIELD_COMPILER_OPTIONS_WARNING": "Some combinations of Compiler Preset and Optimisation settings may not work together. If you are unable to build after changing these settings, try resetting them back to their default values.",
+  "FIELD_BOX_WIDTH_DESC": "The box width",
+  "FIELD_BOX_HEIGHT_DESC": "The box height",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1187,6 +1189,9 @@
   "EVENT_SCRIPT_LOCK_DESC": "Pause other scripts and scene updates until this script has finished or is unlocked.",
   "EVENT_SCRIPT_UNLOCK": "Script Unlock",
   "EVENT_SCRIPT_UNLOCK_DESC": "If locked, unlock this script so other scripts can run and the scene can update.",
+  "EVENT_ACTOR_SET_COLLISION_BOX": "Set Actor Collision Bounding Box",
+  "EVENT_ACTOR_SET_COLLISION_BOX_DESC": "Set the collision bounding box of an actor to a position and size.",
+  "EVENT_ACTOR_SET_COLLISION_BOX_LABEL": "Set {actor} Collision Bounding Box To {{x},{y},{width},{height}}",
 
   "// 10": "Menu -----------------------------------------------------",
 

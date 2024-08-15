@@ -57,6 +57,13 @@ const OverlayPos = styled.div`
   background: blue;
 `;
 
+const BoundsMarker = styled.div`
+  position: absolute;
+  background: rgba(255, 193, 7, 0.58);
+  box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset,
+    0 0 1000px 1000px rgba(0, 0, 0, 0.6);
+`;
+
 const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
@@ -280,6 +287,57 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
             left: (x || 0) * TILE_SIZE,
             top: (y || 0) * TILE_SIZE,
             background: color === "white" ? "#e0f8cf" : "#081820",
+          }}
+        />
+      </EventHelperWrapper>
+    );
+  }
+
+  if (scriptEventDef.helper.type === "bounds") {
+    const x =
+      ensureMaybeNumber(argValue(event.args?.[scriptEventDef.helper.x]), 0) ??
+      0;
+    const y =
+      ensureMaybeNumber(argValue(event.args?.[scriptEventDef.helper.y]), 0) ??
+      0;
+    const width =
+      ensureMaybeNumber(
+        argValue(event.args?.[scriptEventDef.helper.width]),
+        0
+      ) ?? 8;
+    const height =
+      ensureMaybeNumber(
+        argValue(event.args?.[scriptEventDef.helper.height]),
+        0
+      ) ?? 8;
+    const actorId = ensureMaybeString(
+      argValue(event.args?.[scriptEventDef.helper.actorId ?? ""]),
+      ""
+    );
+
+    if (actorId === undefined || (x === undefined && y === undefined)) {
+      return <div />;
+    }
+
+    let actor;
+    if (actorId === "$self$" && editorActorId !== undefined) {
+      actor = actorsLookup[editorActorId];
+    } else {
+      actor = actorsLookup[actorId];
+    }
+
+    if (!actor) {
+      return <div />;
+    }
+
+    return (
+      <EventHelperWrapper>
+        <BoundsMarker
+          style={{
+            left: actor.x * TILE_SIZE + (x || 0),
+            top: actor.y * TILE_SIZE - (y || 0) - height + 9,
+            width: width,
+            height: height,
           }}
         />
       </EventHelperWrapper>
