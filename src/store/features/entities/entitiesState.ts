@@ -990,6 +990,7 @@ const addActor: CaseReducer<
     frame: 0,
     animate: false,
     spriteSheetId,
+    prefabId: "",
     direction: "down",
     moveSpeed: 1,
     animSpeed: 15,

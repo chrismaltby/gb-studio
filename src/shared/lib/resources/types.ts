@@ -77,6 +77,7 @@ export const ActorResource = Type.Object({
   _index: Type.Number(),
   id: Type.String(),
   symbol: Type.String(),
+  prefabId: Type.String(),
   name: Type.String(),
   x: Type.Number(),
   y: Type.Number(),
@@ -99,6 +100,15 @@ export const ActorResource = Type.Object({
 });
 
 export type ActorResource = Static<typeof ActorResource>;
+
+export const ActorPrefabResource = Type.Composite([
+  Type.Omit(ActorResource, ["_resourceType", "prefabId"]),
+  Type.Object({
+    _resourceType: Type.Literal("actorPrefab"),
+  }),
+]);
+
+export type ActorPrefabResource = Static<typeof ActorPrefabResource>;
 
 export const TriggerResource = Type.Object({
   _resourceType: Type.Literal("trigger"),

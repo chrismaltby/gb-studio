@@ -84,6 +84,7 @@ export type Actor = {
   notes?: string;
   x: number;
   y: number;
+  prefabId: string;
   spriteSheetId: string;
   paletteId: string;
   frame: number;
