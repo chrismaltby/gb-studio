@@ -1360,7 +1360,7 @@ const precompile = async (
 // #endregion
 
 const compile = async (
-  projectData: ProjectResources,
+  rawProjectData: ProjectResources,
   {
     projectRoot = "/tmp",
     scriptEventHandlers,
@@ -1390,11 +1390,32 @@ const compile = async (
   const symbols: Dictionary<string> = {};
   const sceneMap: Record<string, SceneMapData> = {};
 
-  if (projectData.scenes.length === 0) {
+  if (rawProjectData.scenes.length === 0) {
     throw new Error(
       "No scenes are included in your project. Add some scenes in the Game World editor and try again."
     );
   }
+
+  const actorPrefabsLookup = keyBy(rawProjectData.actorPrefabs, "id");
+
+  const projectData = {
+    ...rawProjectData,
+    scenes: rawProjectData.scenes.map((scene) => ({
+      ...scene,
+      actors: scene.actors.map((actor) => {
+        const prefab = actorPrefabsLookup[actor.prefabId];
+        if (!prefab) {
+          return actor;
+        }
+        return {
+          ...actor,
+          ...prefab,
+          _resourceType: actor._resourceType,
+          id: actor.id,
+        };
+      }),
+    })),
+  };
 
   const precompiled = await precompile(
     projectData,

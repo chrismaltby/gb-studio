@@ -102,7 +102,14 @@ export const ActorResource = Type.Object({
 export type ActorResource = Static<typeof ActorResource>;
 
 export const ActorPrefabResource = Type.Composite([
-  Type.Omit(ActorResource, ["_resourceType", "_index", "prefabId", "x", "y"]),
+  Type.Omit(ActorResource, [
+    "_resourceType",
+    "_index",
+    "prefabId",
+    "x",
+    "y",
+    "symbol",
+  ]),
   Type.Object({
     _resourceType: Type.Literal("actorPrefab"),
   }),

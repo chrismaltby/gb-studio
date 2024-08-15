@@ -1397,7 +1397,7 @@ const removeTriggerAt: CaseReducer<
 const addActorPrefab: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    actorId: string;
+    actorPrefabId: string;
     defaults?: Partial<ActorPrefabNormalized>;
   }>
 > = (state, action) => {
@@ -1419,14 +1419,13 @@ const addActorPrefab: CaseReducer<
     persistent: false,
     collisionGroup: "",
     ...(action.payload.defaults || {}),
-    symbol: genEntitySymbol(state, "actor_0"),
     script: [],
     startScript: [],
     updateScript: [],
     hit1Script: [],
     hit2Script: [],
     hit3Script: [],
-    id: action.payload.actorId,
+    id: action.payload.actorPrefabId,
   };
 
   actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
@@ -2720,6 +2719,17 @@ export const selectScriptIds = (
     }
     const newScript = (customEvent[parentKey as "script"] = []);
     return newScript;
+  } else if (parentType === "actorPrefab") {
+    const actorPrefab = state.actorPrefabs.entities[parentId];
+    if (!actorPrefab) return;
+    const script = actorPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (actorPrefab[parentKey as "script"] = []);
+    return newScript;
+  } else {
+    assertUnreachable(parentType);
   }
 };
 
@@ -3306,7 +3316,7 @@ const entitiesSlice = createSlice({
         return {
           payload: {
             ...payload,
-            actorId: uuid(),
+            actorPrefabId: uuid(),
           },
         };
       },

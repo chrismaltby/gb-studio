@@ -429,7 +429,6 @@ export const dummyScriptResource: ScriptResource = {
 
 export const dummyActorPrefabResource: ActorPrefabResource = {
   _resourceType: "actorPrefab",
-  symbol: "",
   script: [],
   id: "",
   name: "",

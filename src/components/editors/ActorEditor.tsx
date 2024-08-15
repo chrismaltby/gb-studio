@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
@@ -52,6 +53,7 @@ import {
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 import CachedScroll from "ui/util/CachedScroll";
+import { ActorPrefabSelect } from "components/forms/ActorPrefabSelect";
 
 interface ActorEditorProps {
   id: string;
@@ -118,7 +120,23 @@ const getScriptKey = (
 };
 
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
-  const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
+  const actorData = useAppSelector((state) =>
+    actorSelectors.selectById(state, id)
+  );
+  const prefab = useAppSelector((state) =>
+    actorPrefabSelectors.selectById(state, actorData?.prefabId ?? "")
+  );
+
+  const actor = useMemo(() => {
+    if (!actorData || !prefab) {
+      return actorData;
+    }
+    return {
+      ...actorData,
+      ...prefab,
+    };
+  }, [actorData, prefab]);
+
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const clipboardFormat = useAppSelector(
     (state) => state.clipboard.data?.format
@@ -248,6 +266,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const onChangeDirection = useCallback(
     (e: ActorDirection) => onChangeActorProp("direction", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeActorPrefab = useCallback(
+    (e: string) => onChangeActorProp("prefabId", e),
     [onChangeActorProp]
   );
 
@@ -479,6 +502,18 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       onChange={onChangeDirection}
                     />
                   </FormField>
+                </FormRow>
+              </FormContainer>
+            </SidebarColumn>
+
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <ActorPrefabSelect
+                    value={actor.prefabId}
+                    onChange={onChangeActorPrefab}
+                    name={"actorPrefab"}
+                  />
                 </FormRow>
               </FormContainer>
             </SidebarColumn>

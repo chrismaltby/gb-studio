@@ -121,11 +121,11 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
-export type ActorPrefab = Omit<Actor, "prefabId" | "x" | "y">;
+export type ActorPrefab = Omit<Actor, "prefabId" | "x" | "y" | "symbol">;
 
 export type ActorPrefabNormalized = Omit<
   ActorNormalized,
-  "prefabId" | "x" | "y"
+  "prefabId" | "x" | "y" | "symbol"
 >;
 
 export const triggerScriptKeys = ["script", "leaveScript"] as const;

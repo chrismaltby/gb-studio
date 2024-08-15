@@ -13,17 +13,13 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
-  ActorDirection,
-  ActorNormalized,
   ActorPrefabNormalized,
   CollisionGroup,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
-import { Checkbox } from "ui/form/Checkbox";
-import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
+import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { CheckboxField } from "ui/form/CheckboxField";
-import DirectionPicker from "components/forms/DirectionPicker";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
@@ -41,7 +37,6 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
-import { KeysMatching } from "shared/types";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
@@ -234,11 +229,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
     [onChangeActorPrefabProp]
   );
 
-  const onChangeDirection = useCallback(
-    (e: ActorDirection) => onChangeActorPrefabProp("direction", e),
-    [onChangeActorPrefabProp]
-  );
-
   const onChangeMoveSpeed = useCallback(
     (e: number) => onChangeActorPrefabProp("moveSpeed", e),
     [onChangeActorPrefabProp]
@@ -259,18 +249,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
       onChangeActorPrefabProp("persistent", castEventToBool(e)),
     [onChangeActorPrefabProp]
   );
-
-  const onToggleField = (key: KeysMatching<ActorNormalized, boolean>) => () => {
-    const currentValue = !!actor?.[key];
-    dispatch(
-      entitiesActions.editActorPrefab({
-        actorPrefabId: id,
-        changes: {
-          [key]: !currentValue,
-        },
-      })
-    );
-  };
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
@@ -417,40 +395,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                 )}
               </SidebarColumn>
             )}
-
-            <SidebarColumn>
-              <FormContainer>
-                <FormRow>
-                  <FormField
-                    name="actorDirection"
-                    label={l10n("FIELD_DIRECTION")}
-                  >
-                    <DirectionPicker
-                      id="actorDirection"
-                      value={actor.direction}
-                      onChange={onChangeDirection}
-                    />
-                  </FormField>
-                  <DropdownButton
-                    menuDirection="right"
-                    label={<PinIcon />}
-                    showArrow={false}
-                    variant={actor.isPinned ? "primary" : "normal"}
-                    style={{
-                      padding: "5px 0",
-                      minWidth: 28,
-                      marginTop: 18,
-                    }}
-                  >
-                    <MenuItem onClick={onToggleField("isPinned")}>
-                      <Checkbox id="pin" name="pin" checked={actor.isPinned} />{" "}
-                      Pin to Screen
-                    </MenuItem>
-                  </DropdownButton>
-                </FormRow>
-              </FormContainer>
-            </SidebarColumn>
-
             <SidebarColumn>
               <FormContainer>
                 <FormRow>

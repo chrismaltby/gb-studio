@@ -1,7 +1,8 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
@@ -69,9 +70,24 @@ const CanvasWrapper = styled.div`
 const ActorView = memo(
   ({ id, sceneId, palettes, editable }: ActorViewProps) => {
     const dispatch = useAppDispatch();
-    const actor = useAppSelector((state) =>
+
+    const actorData = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );
+    const prefab = useAppSelector((state) =>
+      actorPrefabSelectors.selectById(state, actorData?.prefabId ?? "")
+    );
+
+    const actor = useMemo(() => {
+      if (!actorData || !prefab) {
+        return actorData;
+      }
+      return {
+        ...actorData,
+        ...prefab,
+      };
+    }, [actorData, prefab]);
+
     const sprite = useAppSelector((state) =>
       spriteSheetSelectors.selectById(state, actor?.spriteSheetId ?? "")
     );
