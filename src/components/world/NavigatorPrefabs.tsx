@@ -15,19 +15,18 @@ import {
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
+import { actorPrefabSelectors } from "store/features/entities/entitiesState";
 
 interface NavigatorPrefabsProps {
   height: number;
   searchTerm: string;
 }
 
-const placeholderEmptyActorPrefabs: ActorPrefabNormalized[] = [];
-
 export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   height,
   searchTerm,
 }) => {
-  const allActorPrefabs = placeholderEmptyActorPrefabs;
+  const allActorPrefabs = useAppSelector(actorPrefabSelectors.selectAll);
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "actorPrefab" ? entityId : "";
@@ -53,7 +52,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
 
   const nestedPrefabItems = useMemo(
     () =>
-      ([] as EntityNavigatorItem<any>[]).concat(
+      ([] as EntityNavigatorItem<ActorPrefabNormalized>[]).concat(
         {
           id: "actors",
           type: "folder",

@@ -120,7 +120,10 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
-export type ActorPrefabNormalized = Omit<ActorNormalized, "prefabId">;
+export type ActorPrefabNormalized = Omit<
+  ActorNormalized,
+  "prefabId" | "x" | "y"
+>;
 
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
@@ -446,6 +449,7 @@ export interface EntitiesState {
   actors: EntityState<ActorNormalized>;
   triggers: EntityState<TriggerNormalized>;
   scenes: EntityState<SceneNormalized>;
+  actorPrefabs: EntityState<ActorPrefabNormalized>;
   scriptEvents: EntityState<ScriptEventNormalized>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheetNormalized>;

@@ -64,6 +64,16 @@ export const Navigator = () => {
   ) => {
     e.stopPropagation();
     dispatch(entitiesActions.addCustomEvent());
+    if (Math.floor(splitSizes[2]) <= COLLAPSED_SIZE) {
+      togglePane(2);
+    }
+  };
+
+  const onAddActorPrefab = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    dispatch(entitiesActions.addActorPrefab());
     if (Math.floor(splitSizes[1]) <= COLLAPSED_SIZE) {
       togglePane(1);
     }
@@ -171,7 +181,7 @@ export const Navigator = () => {
                 label={<PlusIcon />}
                 showArrow={false}
               >
-                <MenuItem>{l10n("ACTOR")}</MenuItem>
+                <MenuItem onClick={onAddActorPrefab}>{l10n("ACTOR")}</MenuItem>
                 <MenuItem>{l10n("TRIGGER")}</MenuItem>
               </DropdownButton>
               <FixedSpacer width={5} />

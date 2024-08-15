@@ -69,6 +69,7 @@ import {
   ScriptEventParentType,
   Sound,
   Tileset,
+  ActorPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -106,6 +107,7 @@ const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
 const actorsAdapter = createEntityAdapter<ActorNormalized>();
 const triggersAdapter = createEntityAdapter<TriggerNormalized>();
 const scenesAdapter = createEntityAdapter<SceneNormalized>();
+const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
@@ -143,6 +145,7 @@ export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
+  actorPrefabs: actorPrefabsAdapter.getInitialState(),
   scriptEvents: scriptEventsAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
@@ -1381,6 +1384,48 @@ const removeTriggerAt: CaseReducer<
 
     triggersAdapter.removeOne(state.triggers, removeTriggerId);
   }
+};
+
+/**************************************************************************
+ * Actor Prefabs
+ */
+
+const addActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    defaults?: Partial<ActorPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const spriteSheetId = first(localSpriteSheetSelectors.selectAll(state))?.id;
+  if (!spriteSheetId) {
+    return;
+  }
+
+  const newActorPrefab: ActorPrefabNormalized = {
+    name: "",
+    frame: 0,
+    animate: false,
+    spriteSheetId,
+    direction: "down",
+    moveSpeed: 1,
+    animSpeed: 15,
+    paletteId: "",
+    isPinned: false,
+    persistent: false,
+    collisionGroup: "",
+    ...(action.payload.defaults || {}),
+    symbol: genEntitySymbol(state, "actor_0"),
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
+    id: action.payload.actorId,
+  };
+
+  actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
 };
 
 /**************************************************************************
@@ -3225,6 +3270,22 @@ const entitiesSlice = createSlice({
     resizeTrigger,
 
     /**************************************************************************
+     * Actor Prefabs
+     */
+
+    addActorPrefab: {
+      reducer: addActorPrefab,
+      prepare: (payload?: { defaults?: Partial<ActorPrefabNormalized> }) => {
+        return {
+          payload: {
+            ...payload,
+            actorId: uuid(),
+          },
+        };
+      },
+    },
+
+    /**************************************************************************
      * Backgrounds
      */
 
@@ -3626,6 +3687,9 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 );
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scenes
+);
+export const actorPrefabSelectors = actorPrefabsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.actorPrefabs
 );
 export const scriptEventSelectors = scriptEventsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scriptEvents
