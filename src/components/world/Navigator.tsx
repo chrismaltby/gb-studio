@@ -16,6 +16,8 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListSearch } from "ui/lists/EntityListItem";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { NavigatorPrefabs } from "./NavigatorPrefabs";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuItem } from "ui/menu/Menu";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -151,14 +153,16 @@ export const Navigator = () => {
           collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
           buttons={
             <>
-              <Button
+              <DropdownButton
                 variant="transparent"
                 size="small"
                 title={l10n("SIDEBAR_ADD_PREFAB")}
-                onClick={onAddCustomEvent}
+                label={<PlusIcon />}
+                showArrow={false}
               >
-                <PlusIcon />
-              </Button>
+                <MenuItem>{l10n("ACTOR")}</MenuItem>
+                <MenuItem>{l10n("TRIGGER")}</MenuItem>
+              </DropdownButton>
               <FixedSpacer width={5} />
               <Button
                 variant={scriptsSearchEnabled ? "primary" : "transparent"}
