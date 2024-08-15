@@ -77,6 +77,10 @@ export const Navigator = () => {
   const [scriptsSearchEnabled, setScriptsSearchEnabled] = useState(false);
   const showScriptsSearch = scriptsSearchEnabled && splitSizes[1] > 60;
 
+  const [prefabsSearchTerm, setPrefabsSearchTerm] = useState("");
+  const [prefabsSearchEnabled, setPrefabsSearchEnabled] = useState(false);
+  const showPrefabsSearch = prefabsSearchEnabled && splitSizes[1] > 60;
+
   const [variablesSearchTerm, setVariablesSearchTerm] = useState("");
   const [variablesSearchEnabled, setVariablesSearchEnabled] = useState(false);
   const showVariablesSearch = variablesSearchEnabled && splitSizes[2] > 60;
@@ -87,6 +91,13 @@ export const Navigator = () => {
     }
     setScenesSearchEnabled(!scenesSearchEnabled);
   }, [scenesSearchEnabled]);
+
+  const togglePrefabsSearchEnabled = useCallback(() => {
+    if (prefabsSearchEnabled) {
+      setPrefabsSearchTerm("");
+    }
+    setPrefabsSearchEnabled(!prefabsSearchEnabled);
+  }, [prefabsSearchEnabled]);
 
   const toggleScriptsSearchEnabled = useCallback(() => {
     if (scriptsSearchEnabled) {
@@ -165,10 +176,10 @@ export const Navigator = () => {
               </DropdownButton>
               <FixedSpacer width={5} />
               <Button
-                variant={scriptsSearchEnabled ? "primary" : "transparent"}
+                variant={prefabsSearchEnabled ? "primary" : "transparent"}
                 size="small"
                 title={l10n("TOOLBAR_SEARCH")}
-                onClick={toggleScriptsSearchEnabled}
+                onClick={togglePrefabsSearchEnabled}
               >
                 <SearchIcon />
               </Button>
@@ -177,18 +188,18 @@ export const Navigator = () => {
         >
           {l10n("SIDEBAR_PREFABS")}
         </SplitPaneHeader>
-        {showScriptsSearch && (
+        {showPrefabsSearch && (
           <EntityListSearch
             type="search"
-            value={scriptsSearchTerm}
-            onChange={(e) => setScriptsSearchTerm(e.currentTarget.value)}
+            value={prefabsSearchTerm}
+            onChange={(e) => setPrefabsSearchTerm(e.currentTarget.value)}
             placeholder={l10n("TOOLBAR_SEARCH")}
             autoFocus
           />
         )}
         <NavigatorPrefabs
-          height={splitSizes[1] - (showScriptsSearch ? 60 : 30)}
-          searchTerm={scriptsSearchTerm}
+          height={splitSizes[1] - (showPrefabsSearch ? 60 : 30)}
+          searchTerm={prefabsSearchTerm}
         />
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
