@@ -1192,6 +1192,9 @@
   "EVENT_ACTOR_SET_COLLISION_BOX": "Set Actor Collision Bounding Box",
   "EVENT_ACTOR_SET_COLLISION_BOX_DESC": "Set the collision bounding box of an actor to a position and size.",
   "EVENT_ACTOR_SET_COLLISION_BOX_LABEL": "Set {actor} Collision Bounding Box To {{x},{y},{width},{height}}",
+  "EVENT_TEXT_SET_SOUND_EFFECT": "Set Text Sound Effect",
+  "EVENT_TEXT_SET_SOUND_EFFECT_DESC": "Set a sound effect to play as each text character is displayed.",
+  "EVENT_TEXT_REMOVE_SOUND_EFFECT": "Remove Text Sound Effect",
 
   "// 10": "Menu -----------------------------------------------------",
 

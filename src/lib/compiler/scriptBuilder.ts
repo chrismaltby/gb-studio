@@ -2111,6 +2111,19 @@ extern void __mute_mask_${symbol};
     return symbol;
   };
 
+  _textSetSound = (symbol: string) => {
+    this._addCmd(
+      "VM_SET_TEXT_SOUND",
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      `___mute_mask_${symbol}`
+    );
+  };
+
+  _textRemoveSound = () => {
+    this._addCmd("VM_SET_TEXT_SOUND", `0`, `0`, `0`);
+  };
+
   _paletteLoad = (
     mask: number,
     type: ScriptBuilderPaletteType,
@@ -5499,6 +5512,75 @@ extern void __mute_mask_${symbol};
       );
     }
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Text Sound
+
+  textSetSoundTone = (period = 1600, toneFrames = 30) => {
+    this._addComment("Text Set Sound Tone");
+    const symbol = this._soundPlayBasic(1, toneFrames, [
+      0x00,
+      (0x0 << 6) | 0x01,
+      (0x0f << 4) | 0x00,
+      period & 0x00ff,
+      0x80 | ((period & 0x0700) >> 8),
+    ]);
+    this._textSetSound(symbol);
+    this._addNL();
+  };
+
+  textSetSoundBeep = (pitch = 4, frames = 30) => {
+    this._addComment("Text Set Sound Beep");
+    let pitchValue = pitch - 1;
+    if (pitchValue < 0) {
+      pitchValue = 0;
+    }
+    if (pitchValue >= 8) {
+      pitchValue = 7;
+    }
+    pitchValue = pitchValue & 0x07;
+    const symbol = this._soundPlayBasic(4, frames, [
+      0x01,
+      (0x0f << 4) | 0x02,
+      0x20 | 0x08 | pitchValue,
+      0x80 | 0x40,
+    ]);
+    this._textSetSound(symbol);
+    this._addNL();
+  };
+
+  textSetSoundCrash = (frames = 30) => {
+    this._addComment("Text Set Sound Crash");
+    const symbol = this._soundPlayBasic(4, frames, [
+      0x01,
+      (0x0f << 4) | 0x02,
+      0x13,
+      0x80,
+    ]);
+    this._textSetSound(symbol);
+    this._addNL();
+  };
+
+  textSetSound = (soundId: string, effect?: number) => {
+    this._addComment(`Text Set Sound`);
+    const { sounds } = this.options;
+    const sound = sounds.find((s) => s.id === soundId);
+    if (sound) {
+      this._textSetSound(
+        `${sound.symbol}${
+          sound.type === "fxhammer"
+            ? "_" + String(effect ?? 0).padStart(2, "0")
+            : ""
+        }`
+      );
+    }
+    this._addNL();
+  };
+
+  textRemoveSound = () => {
+    this._addComment(`Text Remove Sound`);
+    this._textRemoveSound();
   };
 
   // --------------------------------------------------------------------------

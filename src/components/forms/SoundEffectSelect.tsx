@@ -24,9 +24,10 @@ interface SoundEffectSelectProps extends SelectCommonProps {
   frequency?: number;
   duration?: number;
   effectIndex?: number;
+  allowNone?: boolean;
 }
 
-type EffectType = "beep" | "tone" | "crash";
+type EffectType = "beep" | "tone" | "crash" | "none";
 
 interface PlaySoundEffectProps extends SelectCommonProps {
   effect?: EffectType;
@@ -67,6 +68,10 @@ export const PlaySoundEffect = ({
     [dispatch, duration, effect, effectIndex, frequency, pitch]
   );
 
+  if (effect === "none") {
+    return <div />;
+  }
+
   return (
     <Button
       size="small"
@@ -86,6 +91,7 @@ export const SoundEffectSelect = ({
   duration,
   frequency,
   effectIndex,
+  allowNone,
   ...selectProps
 }: SoundEffectSelectProps) => {
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -95,35 +101,45 @@ export const SoundEffectSelect = ({
 
   useEffect(() => {
     const plugins = uniq(sounds.map((s) => s.plugin || "")).sort();
-    setOptions([
-      {
-        label: l10n("FIELD_BASIC"),
-        options: [
+    setOptions(
+      ([] as OptGroup[]).concat(
+        allowNone
+          ? {
+              label: "",
+              options: [{ label: l10n("FIELD_NONE"), value: "none" }],
+            }
+          : [],
+        [
           {
-            label: l10n("FIELD_EFFECT_BEEP"),
-            value: "beep",
+            label: l10n("FIELD_BASIC"),
+            options: [
+              {
+                label: l10n("FIELD_EFFECT_BEEP"),
+                value: "beep",
+              },
+              {
+                label: l10n("FIELD_EFFECT_TONE"),
+                value: "tone",
+              },
+              {
+                label: l10n("FIELD_EFFECT_CRASH"),
+                value: "crash",
+              },
+            ],
           },
-          {
-            label: l10n("FIELD_EFFECT_TONE"),
-            value: "tone",
-          },
-          {
-            label: l10n("FIELD_EFFECT_CRASH"),
-            value: "crash",
-          },
-        ],
-      },
-      ...plugins.map((pluginKey) => ({
-        label: pluginKey || l10n("FIELD_FILES"),
-        options: sounds
-          .filter((track) => (track.plugin || "") === pluginKey)
-          .map((track) => ({
-            label: track.name,
-            value: track.id,
+          ...plugins.map((pluginKey) => ({
+            label: pluginKey || l10n("FIELD_FILES"),
+            options: sounds
+              .filter((track) => (track.plugin || "") === pluginKey)
+              .map((track) => ({
+                label: track.name,
+                value: track.id,
+              })),
           })),
-      })),
-    ]);
-  }, [sounds]);
+        ]
+      )
+    );
+  }, [allowNone, sounds]);
 
   useEffect(() => {
     let option: Option | null = null;

@@ -727,6 +727,7 @@ const ScriptEventFormInput = ({
           pitch={argValue(args.pitch) as number | undefined}
           frequency={argValue(args.frequency) as number | undefined}
           effectIndex={argValue(args.effect) as number | undefined}
+          allowNone={field.allowNone}
         />
       </OffscreenSkeletonInput>
     );

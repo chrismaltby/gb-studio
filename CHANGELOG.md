@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project
 - Add ability to change compiler optimisation settings in Build Options section on Settings page [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "Set Actor Collision Bounding Box" to modify collision shape
+- Add event "Set Text Sound Effect" to set a sound effect to play as each dialogue text character is displayed
 
 ### Changed
 
