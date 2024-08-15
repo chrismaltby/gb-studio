@@ -78,7 +78,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   );
 
   const setSelectedId = (id: string) => {
-    // dispatch(editorActions.selectCustomEvent({ customEventId: id }));
+    dispatch(editorActions.selectActorPrefab({ actorPrefabId: id }));
   };
 
   const [renameId, setRenameId] = useState("");

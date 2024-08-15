@@ -257,6 +257,10 @@ const loadProject: CaseReducer<
   actorsAdapter.setAll(state.actors, data.entities.actors || {});
   triggersAdapter.setAll(state.triggers, data.entities.triggers || {});
   scenesAdapter.setAll(state.scenes, data.entities.scenes || {});
+  actorPrefabsAdapter.setAll(
+    state.actorPrefabs,
+    data.entities.actorPrefabs || {}
+  );
   scriptEventsAdapter.setAll(
     state.scriptEvents,
     data.entities.scriptEvents || {}

@@ -379,6 +379,15 @@ const editorSlice = createSlice({
       state.scriptEventSelectionIds = [];
     },
 
+    selectActorPrefab: (
+      state,
+      action: PayloadAction<{ actorPrefabId: string }>
+    ) => {
+      state.type = "actorPrefab";
+      state.scene = "";
+      state.entityId = action.payload.actorPrefabId;
+    },
+
     selectCustomEvent: (
       state,
       action: PayloadAction<{ customEventId: string }>

@@ -36,6 +36,8 @@ import {
   CustomEvent,
   Trigger,
   SpriteSheet,
+  ActorPrefab,
+  ActorPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -84,6 +86,7 @@ export interface NormalizedEntities {
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
   tilesets: Record<EntityId, Tileset>;
+  actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
@@ -96,6 +99,7 @@ export interface NormalizedResult {
   backgrounds: EntityId[];
   spriteSheets: EntityId[];
   palettes: EntityId[];
+  actorPrefabs: EntityId[];
   scripts: EntityId[];
   music: EntityId[];
   sounds: EntityId[];
@@ -135,6 +139,7 @@ export interface DenormalizedEntities {
   variables: {
     variables: Variable[];
   };
+  actorPrefabs: ActorPrefab[];
 }
 
 const inodeToAssetCache: Dictionary<Asset> = {};
@@ -162,6 +167,14 @@ const actorSchema = new schema.Entity("actors", {
 const triggerSchema = new schema.Entity("triggers", {
   script: [scriptEventSchema],
   leaveScript: [scriptEventSchema],
+});
+const actorPrefabSchema = new schema.Entity("actorPrefabs", {
+  script: [scriptEventSchema],
+  startScript: [scriptEventSchema],
+  updateScript: [scriptEventSchema],
+  hit1Script: [scriptEventSchema],
+  hit2Script: [scriptEventSchema],
+  hit3Script: [scriptEventSchema],
 });
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
@@ -207,6 +220,7 @@ const resourcesSchema = {
   scenes: [sceneSchema],
   actors: [actorSchema],
   triggers: [triggerSchema],
+  actorPrefabs: [actorPrefabSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   sounds: [soundSchema],
@@ -234,6 +248,7 @@ export const denormalizeEntities = (
     scenes: state.scenes.ids,
     actors: state.actors.ids,
     triggers: state.triggers.ids,
+    actorPrefabs: state.actorPrefabs.ids,
     backgrounds: state.backgrounds.ids,
     sprites: state.spriteSheets.ids,
     palettes: state.palettes.ids,
@@ -251,6 +266,10 @@ export const denormalizeEntities = (
     actors: state.actors.entities as Record<EntityId, ActorNormalized>,
     triggers: state.triggers.entities as Record<EntityId, TriggerNormalized>,
     scenes: state.scenes.entities as Record<EntityId, SceneNormalized>,
+    actorPrefabs: state.actorPrefabs.entities as Record<
+      EntityId,
+      ActorPrefabNormalized
+    >,
     scriptEvents: state.scriptEvents.entities as Record<
       EntityId,
       ScriptEventNormalized
@@ -318,6 +337,9 @@ export const denormalizeEntities = (
         _index: triggerIndex,
       })),
     })),
+    actorPrefabs: denormalizedEntities.actorPrefabs.map(
+      entityToResource("actorPrefab")
+    ),
     backgrounds: denormalizedEntities.backgrounds.map(
       entityToResource("background")
     ),

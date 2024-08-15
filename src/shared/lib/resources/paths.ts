@@ -1,4 +1,5 @@
 import {
+  ActorPrefabResource,
   ActorResource,
   CompressedSceneResourceWithChildren,
   PaletteResource,
@@ -42,6 +43,7 @@ const resourceTypeFolderLookup = {
   scene: "scenes",
   actor: "actors",
   trigger: "triggers",
+  actorPrefab: "prefabs/actors",
 };
 
 export const getResourceAssetPath = (resource: Resource): string =>
@@ -114,4 +116,10 @@ export const getScriptResourcePath = (script: ScriptResource) =>
   Path.join(
     resourceTypeFolderLookup[script._resourceType],
     `${entityToFilePath(script, "script")}.gbsres`
+  );
+
+export const getActorPrefabResourcePath = (actorPrefab: ActorPrefabResource) =>
+  Path.join(
+    resourceTypeFolderLookup[actorPrefab._resourceType],
+    `${entityToFilePath(actorPrefab, "actor")}.gbsres`
   );

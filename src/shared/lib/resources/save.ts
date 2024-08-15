@@ -1,5 +1,6 @@
 import Path from "path";
 import {
+  ActorPrefabResource,
   ActorResource,
   AvatarResource,
   CompressedBackgroundResource,
@@ -20,6 +21,7 @@ import {
   WriteFile,
 } from "shared/lib/resources/types";
 import {
+  getActorPrefabResourcePath,
   getActorResourcePath,
   getPaletteResourcePath,
   getResourceAssetPath,
@@ -158,6 +160,17 @@ export const buildResourceExportBuffer = (
   for (const palette of projectResources.palettes) {
     const paletteFilename = getUniquePath(getPaletteResourcePath(palette));
     writeResource<PaletteResource>(paletteFilename, "palette", palette);
+  }
+
+  for (const actorPrefab of projectResources.actorPrefabs) {
+    const actorPrefabFilename = getUniquePath(
+      getActorPrefabResourcePath(actorPrefab)
+    );
+    writeResource<ActorPrefabResource>(
+      actorPrefabFilename,
+      "actorPrefab",
+      actorPrefab
+    );
   }
 
   for (const script of projectResources.scripts) {

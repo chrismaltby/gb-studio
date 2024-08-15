@@ -142,6 +142,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const scriptResources = resources.scripts.map(addMissingEntityId);
 
+  const actorPrefabResources = resources.actorPrefabs.map(addMissingEntityId);
+
   const mergeAssetsWithResources = <
     R extends Asset & { name: string },
     A extends Asset
@@ -357,6 +359,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   return {
     resources: {
       scenes: sceneResources,
+      actorPrefabs: actorPrefabResources,
       scripts: scriptResources,
       sprites: spriteResources,
       backgrounds: backgroundResources,

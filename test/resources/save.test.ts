@@ -6,6 +6,7 @@ import {
 import { CompressedProjectResources } from "shared/lib/resources/types";
 import SparkMD5 from "spark-md5";
 import {
+  dummyActorPrefabResource,
   dummyActorResource,
   dummyAvatarResource,
   dummyBackgroundResource,
@@ -90,6 +91,13 @@ describe("save.ts", () => {
           ...dummyPaletteResource,
           id: "palette1",
           name: "Palette 1",
+        },
+      ],
+      actorPrefabs: [
+        {
+          ...dummyActorPrefabResource,
+          id: "actorPrefab1",
+          name: "Actor Prefab 1",
         },
       ],
       scripts: [

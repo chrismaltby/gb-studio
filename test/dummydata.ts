@@ -39,6 +39,7 @@ import {
   PrecompiledSprite,
 } from "../src/lib/compiler/generateGBVMData";
 import {
+  ActorPrefabResource,
   ActorResource,
   AvatarResource,
   CompressedBackgroundResource,
@@ -426,6 +427,29 @@ export const dummyScriptResource: ScriptResource = {
   script: [],
 };
 
+export const dummyActorPrefabResource: ActorPrefabResource = {
+  _resourceType: "actorPrefab",
+  symbol: "",
+  script: [],
+  id: "",
+  name: "",
+  startScript: [],
+  updateScript: [],
+  hit1Script: [],
+  hit2Script: [],
+  hit3Script: [],
+  spriteSheetId: "",
+  paletteId: "",
+  frame: 0,
+  moveSpeed: 0,
+  animSpeed: 0,
+  direction: "up",
+  animate: false,
+  isPinned: false,
+  persistent: false,
+  collisionGroup: "",
+};
+
 export const dummyMusicResource: MusicResource = {
   _resourceType: "music",
   id: "music1",
@@ -585,6 +609,7 @@ export const dummyProjectResources: ProjectResources = {
   backgrounds: [],
   sprites: [],
   palettes: [],
+  actorPrefabs: [],
   scripts: [],
   variables: {
     _resourceType: "variables",

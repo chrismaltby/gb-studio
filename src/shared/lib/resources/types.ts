@@ -658,6 +658,7 @@ export type Resource =
 
 export type CompressedProjectResources = {
   scenes: CompressedSceneResourceWithChildren[];
+  actorPrefabs: ActorPrefabResource[];
   scripts: ScriptResource[];
   sprites: SpriteResource[];
   backgrounds: CompressedBackgroundResource[];

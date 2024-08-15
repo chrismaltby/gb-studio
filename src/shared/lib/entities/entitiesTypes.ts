@@ -120,6 +120,8 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
+export type ActorPrefab = Omit<Actor, "prefabId" | "x" | "y">;
+
 export type ActorPrefabNormalized = Omit<
   ActorNormalized,
   "prefabId" | "x" | "y"

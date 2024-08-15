@@ -1,5 +1,6 @@
 import path from "path";
 import {
+  ActorPrefabResource,
   ActorResource,
   AvatarResource,
   CompressedBackgroundResource,
@@ -64,6 +65,7 @@ interface ResourceLookup {
   actors: ResourceWithPath<ActorResource>[];
   triggers: ResourceWithPath<TriggerResource>[];
   scenes: ResourceWithPath<CompressedSceneResource>[];
+  actorPrefabs: ResourceWithPath<ActorPrefabResource>[];
   scripts: ResourceWithPath<ScriptResource>[];
   backgrounds: ResourceWithPath<CompressedBackgroundResource>[];
   sprites: ResourceWithPath<SpriteResource>[];
@@ -109,6 +111,7 @@ export const loadProjectResources = async (
     actors: [],
     triggers: [],
     scenes: [],
+    actorPrefabs: [],
     scripts: [],
     backgrounds: [],
     sprites: [],
@@ -160,6 +163,7 @@ export const loadProjectResources = async (
     cast(ActorResource, resourcesLookup.actors),
     cast(TriggerResource, resourcesLookup.triggers),
     cast(CompressedSceneResource, resourcesLookup.scenes),
+    cast(ActorPrefabResource, resourcesLookup.actorPrefabs),
     cast(ScriptResource, resourcesLookup.scripts),
     cast(CompressedBackgroundResource, resourcesLookup.backgrounds),
     cast(SpriteResource, resourcesLookup.sprites),
@@ -244,6 +248,7 @@ export const loadProjectResources = async (
 
   return {
     scenes: sceneResources,
+    actorPrefabs: extractDataArray(resourcesLookup.actorPrefabs),
     scripts: extractDataArray(resourcesLookup.scripts),
     sprites: extractDataArray(resourcesLookup.sprites),
     backgrounds: extractDataArray(resourcesLookup.backgrounds),

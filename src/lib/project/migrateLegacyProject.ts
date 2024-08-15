@@ -83,6 +83,7 @@ export const migrateLegacyProject = (
 
   return {
     scenes: map(migratedProject.scenes, encodeScene),
+    actorPrefabs: [],
     scripts: map(migratedProject.customEvents, encodeResource(ScriptResource)),
     sprites: map(migratedProject.spriteSheets, encodeResource(SpriteResource)),
     backgrounds: map(migratedProject.backgrounds, encodeBackground),
