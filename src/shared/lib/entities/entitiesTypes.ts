@@ -44,7 +44,8 @@ export type ScriptEventParentType =
   | "actor"
   | "trigger"
   | "scriptEvent"
-  | "customEvent";
+  | "customEvent"
+  | "actorPrefab";
 
 export type ScriptEventArgs = Record<string, unknown>;
 

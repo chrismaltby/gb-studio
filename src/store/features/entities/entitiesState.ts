@@ -1432,6 +1432,29 @@ const addActorPrefab: CaseReducer<
   actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
 };
 
+const editActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorPrefabId: string;
+    changes: Partial<ActorPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const actorPrefab = localActorPrefabSelectors.selectById(
+    state,
+    action.payload.actorPrefabId
+  );
+  const patch = { ...action.payload.changes };
+
+  if (!actorPrefab) {
+    return;
+  }
+
+  actorPrefabsAdapter.updateOne(state.actorPrefabs, {
+    id: action.payload.actorPrefabId,
+    changes: patch,
+  });
+};
+
 /**************************************************************************
  * Backgrounds
  */
@@ -3289,6 +3312,8 @@ const entitiesSlice = createSlice({
       },
     },
 
+    editActorPrefab,
+
     /**************************************************************************
      * Backgrounds
      */
@@ -3659,6 +3684,9 @@ const localTriggerSelectors = triggersAdapter.getSelectors(
 );
 const localSceneSelectors = scenesAdapter.getSelectors(
   (state: EntitiesState) => state.scenes
+);
+const localActorPrefabSelectors = actorPrefabsAdapter.getSelectors(
+  (state: EntitiesState) => state.actorPrefabs
 );
 const localCustomEventSelectors = customEventsAdapter.getSelectors(
   (state: EntitiesState) => state.customEvents

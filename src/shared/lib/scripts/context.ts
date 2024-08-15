@@ -1,4 +1,9 @@
-export type EntityType = "scene" | "actor" | "trigger" | "customEvent";
+export type EntityType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent"
+  | "actorPrefab";
 
 export type ScriptEditorCtx = {
   type: "entity" | "script" | "global";

@@ -6,6 +6,7 @@ import { SceneEditor } from "./SceneEditor";
 import { WorldEditor } from "./WorldEditor";
 import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
+import { ActorPrefabEditor } from "./ActorPrefabEditor";
 
 const EditorSidebar = () => {
   const type = useAppSelector((state) => state.editor.type);
@@ -23,6 +24,9 @@ const EditorSidebar = () => {
   }
   if (type === "world") {
     return <WorldEditor />;
+  }
+  if (type === "actorPrefab") {
+    return <ActorPrefabEditor key="entityId" id={entityId} />;
   }
   if (type === "customEvent") {
     return <CustomEventEditor key="entityId" id={entityId} />;

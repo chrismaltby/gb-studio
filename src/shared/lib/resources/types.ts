@@ -475,6 +475,7 @@ export const EntityType = Type.Union([
   Type.Literal("actor"),
   Type.Literal("trigger"),
   Type.Literal("customEvent"),
+  Type.Literal("actorPrefab"),
 ]);
 
 export const DebuggerScriptType = Type.Union([
