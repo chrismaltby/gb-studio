@@ -103,6 +103,28 @@ const ejectBuild = async ({
     progress("Local engine not found, using default engine");
   }
 
+  // Remove unused scene type files
+  const usedSceneTypes = sceneTypes.filter((type) =>
+    compiledData.usedSceneTypeIds.includes(type.key)
+  );
+  const unusedSceneTypes = sceneTypes.filter(
+    (type) => !compiledData.usedSceneTypeIds.includes(type.key)
+  );
+  const usedFiles = usedSceneTypes
+    .map((sceneType) => sceneType.files ?? [])
+    .flat();
+  const unusedFiles = unusedSceneTypes
+    .map((sceneType) => sceneType.files ?? [])
+    .flat()
+    .filter((file) => !usedFiles.includes(file));
+
+  for (const filename of unusedFiles) {
+    const unusedFilePath = Path.join(outputRoot, filename);
+    if (isFilePathWithinFolder(unusedFilePath, outputRoot)) {
+      await fs.remove(unusedFilePath);
+    }
+  }
+
   progress("Looking for engine plugins in plugins/*/engine");
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
   for (const enginePluginPath of enginePlugins) {
@@ -186,28 +208,6 @@ const ejectBuild = async ({
         await fs.writeFile(filename, source);
       })
   );
-
-  // Remove unused scene type files
-  const usedSceneTypes = sceneTypes.filter((type) =>
-    compiledData.usedSceneTypeIds.includes(type.key)
-  );
-  const unusedSceneTypes = sceneTypes.filter(
-    (type) => !compiledData.usedSceneTypeIds.includes(type.key)
-  );
-  const usedFiles = usedSceneTypes
-    .map((sceneType) => sceneType.files ?? [])
-    .flat();
-  const unusedFiles = unusedSceneTypes
-    .map((sceneType) => sceneType.files ?? [])
-    .flat()
-    .filter((file) => !usedFiles.includes(file));
-
-  for (const filename of unusedFiles) {
-    const unusedFilePath = Path.join(outputRoot, filename);
-    if (isFilePathWithinFolder(unusedFilePath, outputRoot)) {
-      await fs.remove(unusedFilePath);
-    }
-  }
 
   await fs.ensureDir(`${outputRoot}/include/data`);
   await fs.ensureDir(`${outputRoot}/src/data`);
