@@ -1416,6 +1416,7 @@ ipcMain.handle(
         tmpPath,
         projectData: project,
         engineFields,
+        sceneTypes,
         outputRoot,
         compiledData,
         progress,

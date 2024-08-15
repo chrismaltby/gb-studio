@@ -4,6 +4,7 @@ import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
+  EngineFieldValue,
   Palette,
   Scene,
   SceneParallaxLayer,
@@ -13,6 +14,10 @@ import { CompiledFontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 
 export interface PrecompiledBackground {
   id: string;
@@ -1182,4 +1187,72 @@ export const compileSaveSignature = (data: string) => {
   };
   const hash = generateHash(data);
   return `const unsigned long save_signature = 0x${decHex32Val(hash)};`;
+};
+
+export const compileSceneTypes = (sceneTypes: SceneTypeSchema[]) => {
+  return (
+    `#ifndef SCENE_TYPES_H\n#define SCENE_TYPES_H\n\n` +
+    `typedef enum {\n` +
+    sceneTypes
+      .map((t, i) => {
+        return `    SCENE_TYPE_${t.key.toUpperCase()}${i === 0 ? " = 0" : ""}`;
+      })
+      .join(",\n") +
+    `\n} scene_type_e;\n` +
+    `#endif\n`
+  );
+};
+
+export const compileSceneFnPtrs = (sceneTypes: SceneTypeSchema[]) => {
+  return (
+    `.include "macro.i"\n\n` +
+    `.area _CODE\n\n` +
+    `_state_start_fns::\n` +
+    sceneTypes
+      .map((t) => {
+        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_init`;
+      })
+      .join("\n") +
+    `\n\n` +
+    `_state_update_fns::\n` +
+    sceneTypes
+      .map((t) => {
+        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_update`;
+      })
+      .join("\n")
+  );
+};
+
+export const compileStateDefines = (
+  engineFields: EngineFieldSchema[],
+  engineFieldValues: EngineFieldValue[],
+  usedSceneTypeIds: string[]
+) => {
+  return (
+    `#ifndef STATES_DEFINES_H\n#define STATES_DEFINES_H\n\n` +
+    // Add define fields from engineFields
+    engineFields
+      .filter(
+        // Add define types without explict file set to data/data_bootstrap.h
+        (engineField) =>
+          engineField.cType === "define" &&
+          !engineField.file &&
+          (!engineField.sceneType ||
+            usedSceneTypeIds.includes(engineField.sceneType))
+      )
+      .map((engineField, defineIndex, defineFields) => {
+        const engineValue = engineFieldValues.find(
+          (v) => v.id === engineField.key
+        );
+        const value =
+          engineValue && engineValue.value !== undefined
+            ? engineValue.value
+            : engineField.defaultValue;
+        return `#define ${String(engineField.key).padEnd(32, " ")} ${value}${
+          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
+        }`;
+      })
+      .join("") +
+    `#endif\n`
+  );
 };

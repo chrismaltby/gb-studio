@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Only the scene types that were used in your game are now compiled, improving build time if only some scene types were used
 
 ### Fixed
 

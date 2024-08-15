@@ -22,10 +22,8 @@ interface InitialState {
   avatarFonts: PrecompiledAvatarData[][];
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
+  usedSceneTypeIds: string[];
 }
-
-const notDefine = (engineField: EngineFieldSchema) =>
-  engineField.cType !== "define";
 
 export const compileScriptEngineInit = ({
   startX,
@@ -38,7 +36,16 @@ export const compileScriptEngineInit = ({
   avatarFonts,
   engineFields,
   engineFieldValues,
-}: InitialState) => `.include "vm.i"
+  usedSceneTypeIds,
+}: InitialState) => {
+  const usedEngineFields = engineFields.filter(
+    (engineField: EngineFieldSchema) =>
+      engineField.cType !== "define" &&
+      (!engineField.sceneType ||
+        usedSceneTypeIds.includes(engineField.sceneType))
+  );
+
+  return `.include "vm.i"
 .include "macro.i"
 .include "data/game_globals.i"
 
@@ -72,16 +79,14 @@ ${avatarFonts
 ___bank_script_engine_init = 255
 .globl ___bank_script_engine_init
 
-${engineFields
-  .filter(notDefine)
+${usedEngineFields
   .map((engineField) => {
     return `.globl _${engineField.key}`;
   })
   .join("\n")}
 
 _script_engine_init::
-${engineFields
-  .filter(notDefine)
+${usedEngineFields
   .map((engineField) => {
     const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
     const value =
@@ -95,3 +100,4 @@ ${engineFields
         ; return from init routine
         VM_RET_FAR
 `;
+};

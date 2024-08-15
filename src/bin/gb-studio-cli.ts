@@ -74,6 +74,7 @@ const main = async (
     projectRoot,
     projectData: project,
     engineFields,
+    sceneTypes,
     outputRoot: tmpBuildDir,
     tmpPath,
     compiledData,

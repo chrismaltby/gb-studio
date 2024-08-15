@@ -56,6 +56,7 @@ const buildProject = async (
     tmpPath,
     projectData: data,
     engineFields,
+    sceneTypes,
     outputRoot,
     compiledData,
     progress,

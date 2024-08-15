@@ -3,6 +3,7 @@
   "fields": [
     {
       "key": "INPUT_PLATFORM_JUMP",
+      "sceneType": "PLATFORM",
       "label": "FIELD_INPUT_JUMP",
       "group": "GAMETYPE_PLATFORMER",
       "type": "select",
@@ -16,6 +17,7 @@
     },
     {
       "key": "INPUT_PLATFORM_RUN",
+      "sceneType": "PLATFORM",
       "label": "FIELD_INPUT_RUN",
       "group": "GAMETYPE_PLATFORMER",
       "type": "select",
@@ -28,6 +30,7 @@
     },
     {
       "key": "INPUT_PLATFORM_INTERACT",
+      "sceneType": "PLATFORM",
       "label": "FIELD_INPUT_INTERACT",
       "group": "GAMETYPE_PLATFORMER",
       "type": "select",
@@ -42,6 +45,7 @@
     },
     {
       "key": "plat_min_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_MIN_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -52,6 +56,7 @@
     },
     {
       "key": "plat_walk_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_WALK_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -62,6 +67,7 @@
     },
     {
       "key": "plat_run_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_RUN_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -72,6 +78,7 @@
     },
     {
       "key": "plat_climb_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_CLIMB_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -82,6 +89,7 @@
     },
     {
       "key": "plat_walk_acc",
+      "sceneType": "PLATFORM",
       "label": "FIELD_WALK_ACC",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -92,6 +100,7 @@
     },
     {
       "key": "plat_run_acc",
+      "sceneType": "PLATFORM",
       "label": "FIELD_RUN_ACC",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -102,6 +111,7 @@
     },
     {
       "key": "plat_dec",
+      "sceneType": "PLATFORM",
       "label": "FIELD_DECELERATION",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -112,6 +122,7 @@
     },
     {
       "key": "plat_jump_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_JUMP_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -122,6 +133,7 @@
     },
     {
       "key": "plat_grav",
+      "sceneType": "PLATFORM",
       "label": "FIELD_GRAVITY",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -132,6 +144,7 @@
     },
     {
       "key": "plat_hold_grav",
+      "sceneType": "PLATFORM",
       "label": "FIELD_GRAVITY_JUMP",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -142,6 +155,7 @@
     },
     {
       "key": "plat_max_fall_vel",
+      "sceneType": "PLATFORM",
       "label": "FIELD_MAX_FALL_VEL",
       "group": "GAMETYPE_PLATFORMER",
       "type": "slider",
@@ -152,6 +166,7 @@
     },
     {
       "key": "shooter_scroll_speed",
+      "sceneType": "SHMUP",
       "label": "FIELD_SCROLL_SPEED",
       "group": "GAMETYPE_SHMUP",
       "type": "slider",
@@ -162,6 +177,7 @@
     },
     {
       "key": "INPUT_TOPDOWN_INTERACT",
+      "sceneType": "TOPDOWN",
       "label": "FIELD_INPUT_INTERACT",
       "group": "GAMETYPE_TOP_DOWN",
       "type": "select",
@@ -174,6 +190,7 @@
     },
     {
       "key": "topdown_grid",
+      "sceneType": "TOPDOWN",
       "label": "FIELD_GRID_SIZE",
       "group": "GAMETYPE_TOP_DOWN",
       "type": "select",
@@ -200,27 +217,33 @@
   "sceneTypes": [
     {
       "key": "TOPDOWN",
-      "label": "GAMETYPE_TOP_DOWN"
+      "label": "GAMETYPE_TOP_DOWN",
+      "files": ["include/states/topdown.h", "src/states/topdown.c"]
     },
     {
       "key": "PLATFORM",
-      "label": "GAMETYPE_PLATFORMER"
+      "label": "GAMETYPE_PLATFORMER",
+      "files": ["include/states/platform.h", "src/states/platform.c"]
     },
     {
       "key": "ADVENTURE",
-      "label": "GAMETYPE_ADVENTURE"
+      "label": "GAMETYPE_ADVENTURE",
+      "files": ["include/states/adventure.h", "src/states/adventure.c"]
     },
     {
       "key": "SHMUP",
-      "label": "GAMETYPE_SHMUP"
+      "label": "GAMETYPE_SHMUP",
+      "files": ["include/states/shmup.h", "src/states/shmup.c"]
     },
     {
       "key": "POINTNCLICK",
-      "label": "GAMETYPE_POINT_N_CLICK"
+      "label": "GAMETYPE_POINT_N_CLICK",
+      "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"]
     },
     {
       "key": "LOGO",
-      "label": "GAMETYPE_LOGO"
+      "label": "GAMETYPE_LOGO",
+      "files": ["include/states/logo.h", "src/states/logo.c"]
     }
   ]
 }

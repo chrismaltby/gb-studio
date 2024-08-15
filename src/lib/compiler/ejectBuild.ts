@@ -14,21 +14,27 @@ import {
 import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldSchema,
+  SceneTypeSchema,
+} from "store/features/engine/engineState";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 import { ProjectResources } from "shared/lib/resources/types";
+import { isFilePathWithinFolder } from "lib/helpers/path";
 
 const rmdir = promisify(rimraf);
 
 type EjectOptions = {
   projectType: "gb";
   engineFields: EngineFieldSchema[];
+  sceneTypes: SceneTypeSchema[];
   projectData: ProjectResources;
   outputRoot: string;
   projectRoot: string;
   tmpPath: string;
   compiledData: {
     files: Record<string, string>;
+    usedSceneTypeIds: string[];
   };
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
@@ -37,6 +43,7 @@ type EjectOptions = {
 const ejectBuild = async ({
   projectType = "gb",
   engineFields = [],
+  sceneTypes = [],
   projectData,
   outputRoot = "/tmp",
   projectRoot = "/tmp",
@@ -179,6 +186,28 @@ const ejectBuild = async ({
         await fs.writeFile(filename, source);
       })
   );
+
+  // Remove unused scene type files
+  const usedSceneTypes = sceneTypes.filter((type) =>
+    compiledData.usedSceneTypeIds.includes(type.key)
+  );
+  const unusedSceneTypes = sceneTypes.filter(
+    (type) => !compiledData.usedSceneTypeIds.includes(type.key)
+  );
+  const usedFiles = usedSceneTypes
+    .map((sceneType) => sceneType.files ?? [])
+    .flat();
+  const unusedFiles = unusedSceneTypes
+    .map((sceneType) => sceneType.files ?? [])
+    .flat()
+    .filter((file) => !usedFiles.includes(file));
+
+  for (const filename of unusedFiles) {
+    const unusedFilePath = Path.join(outputRoot, filename);
+    if (isFilePathWithinFolder(unusedFilePath, outputRoot)) {
+      await fs.remove(unusedFilePath);
+    }
+  }
 
   await fs.ensureDir(`${outputRoot}/include/data`);
   await fs.ensureDir(`${outputRoot}/src/data`);

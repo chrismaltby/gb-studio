@@ -8,6 +8,7 @@ export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
 
 export type EngineFieldSchema = {
   key: string;
+  sceneType?: string;
   label: string;
   group: string;
   type: EngineFieldType;
@@ -22,6 +23,7 @@ export type EngineFieldSchema = {
 export type SceneTypeSchema = {
   key: string;
   label: string;
+  files?: string[];
 };
 
 export interface EngineState {

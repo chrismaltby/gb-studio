@@ -1,4 +1,5 @@
 import keyBy from "lodash/keyBy";
+import uniq from "lodash/uniq";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
 import compileEntityEvents from "./compileEntityEvents";
@@ -65,6 +66,9 @@ import {
   PrecompiledPalette,
   PrecompiledSceneEventPtrs,
   sceneName,
+  compileSceneTypes,
+  compileSceneFnPtrs,
+  compileStateDefines,
 } from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -1380,6 +1384,7 @@ const compile = async (
   files: Record<string, string>;
   sceneMap: Record<string, SceneMapData>;
   variableMap: Record<string, VariableMapData>;
+  usedSceneTypeIds: string[];
 }> => {
   const output: Record<string, string> = {};
   const symbols: Dictionary<string> = {};
@@ -1987,18 +1992,6 @@ const compile = async (
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
 
-  output[`script_engine_init.s`] = compileScriptEngineInit({
-    startX,
-    startY,
-    startDirection,
-    startScene,
-    startMoveSpeed,
-    startAnimSpeed: ensureNumber(startAnimSpeed, 15),
-    fonts: precompiled.usedFonts,
-    avatarFonts,
-    engineFields,
-    engineFieldValues: projectData.engineFieldValues.engineFieldValues,
-  });
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
@@ -2013,57 +2006,36 @@ const compile = async (
     `void bootstrap_init(void) BANKED;\n\n` +
     `#endif\n`;
 
-  output[`scene_types.h`] =
-    `#ifndef SCENE_TYPES_H\n#define SCENE_TYPES_H\n\n` +
-    `typedef enum {\n` +
-    sceneTypes
-      .map((t, i) => {
-        return `    SCENE_TYPE_${t.key.toUpperCase()}${i === 0 ? " = 0" : ""}`;
-      })
-      .join(",\n") +
-    `\n} scene_type_e;\n` +
-    `#endif\n`;
+  const usedSceneTypeIds = uniq(
+    ["LOGO"].concat(precompiled.sceneData.map((scene) => scene.type))
+  );
+  const usedSceneTypes = sceneTypes.filter((type) =>
+    usedSceneTypeIds.includes(type.key)
+  );
 
-  output[`../states/states_ptrs.s`] =
-    `.include "macro.i"\n\n` +
-    `.area _CODE\n\n` +
-    `_state_start_fns::\n` +
-    sceneTypes
-      .map((t) => {
-        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_init`;
-      })
-      .join("\n") +
-    `\n\n` +
-    `_state_update_fns::\n` +
-    sceneTypes
-      .map((t) => {
-        return `    IMPORT_FAR_PTR _${t.key.toLowerCase()}_update`;
-      })
-      .join("\n");
+  output[`scene_types.h`] = compileSceneTypes(usedSceneTypes);
 
-  output[`states_defines.h`] =
-    `#ifndef STATES_DEFINES_H\n#define STATES_DEFINES_H\n\n` +
-    // Add define fields from engineFields
-    engineFields
-      .filter(
-        // Add define types without explict file set to data/data_bootstrap.h
-        (engineField) => engineField.cType === "define" && !engineField.file
-      )
-      .map((engineField, defineIndex, defineFields) => {
-        const engineValue =
-          projectData.engineFieldValues.engineFieldValues.find(
-            (v) => v.id === engineField.key
-          );
-        const value =
-          engineValue && engineValue.value !== undefined
-            ? engineValue.value
-            : engineField.defaultValue;
-        return `#define ${String(engineField.key).padEnd(32, " ")} ${value}${
-          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
-        }`;
-      })
-      .join("") +
-    `#endif\n`;
+  output[`../states/states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
+
+  output[`states_defines.h`] = compileStateDefines(
+    engineFields,
+    projectData.engineFieldValues.engineFieldValues,
+    usedSceneTypeIds
+  );
+
+  output[`script_engine_init.s`] = compileScriptEngineInit({
+    startX,
+    startY,
+    startDirection,
+    startScene,
+    startMoveSpeed,
+    startAnimSpeed: ensureNumber(startAnimSpeed, 15),
+    fonts: precompiled.usedFonts,
+    avatarFonts,
+    engineFields,
+    engineFieldValues: projectData.engineFieldValues.engineFieldValues,
+    usedSceneTypeIds,
+  });
 
   output[`game_signature.c`] = compileSaveSignature(
     JSON.stringify(projectData)
@@ -2073,6 +2045,7 @@ const compile = async (
     files: output,
     sceneMap,
     variableMap,
+    usedSceneTypeIds,
   };
 };
 
