@@ -65,7 +65,9 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
             name: actorName(actorPrefab, index),
           })),
           openFolders,
-          searchTerm
+          searchTerm,
+          undefined,
+          1
         ),
         {
           id: "triggers",
@@ -199,7 +201,11 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           renderContextMenu={
             item.type === "entity" ? renderContextMenu : undefined
           }
-          collapsable={item.type === "folder"}
+          collapsable={
+            item.type === "folder" &&
+            item.id !== "actors" &&
+            item.id !== "triggers"
+          }
           collapsed={!isFolderOpen(item.name)}
           onToggleCollapse={() => toggleFolderOpen(item.name)}
           nestLevel={item.nestLevel}
