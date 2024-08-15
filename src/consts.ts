@@ -173,7 +173,7 @@ export const defaultProjectSettings: Omit<SettingsResource, "_resourceType"> = {
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
   playerPaletteId: "",
-  navigatorSplitSizes: [300, 100, 100],
+  navigatorSplitSizes: [400, 30, 30, 30],
   showNavigator: true,
   defaultFontId: "",
   defaultCharacterEncoding: "",

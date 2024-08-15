@@ -47,7 +47,8 @@ export type EditorSelectionType =
   | "actor"
   | "trigger"
   | "customEvent"
-  | "variable";
+  | "variable"
+  | "actorPrefab";
 
 export const zoomSections = [
   "world",
@@ -200,7 +201,7 @@ export const initialState: EditorState = {
   navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
   clipboardVariables: [],
-  navigatorSplitSizes: [300, 100, 100],
+  navigatorSplitSizes: [400, 30, 30, 30],
   navigatorSplitSizesManuallyEdited: false,
   focusSceneId: "",
   selectedSpriteSheetId: "",

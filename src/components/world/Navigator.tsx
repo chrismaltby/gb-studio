@@ -15,6 +15,7 @@ import { NavigatorVariables } from "./NavigatorVariables";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListSearch } from "ui/lists/EntityListItem";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { NavigatorPrefabs } from "./NavigatorPrefabs";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -44,7 +45,7 @@ export const Navigator = () => {
   const [onDragStart, togglePane] = useSplitPane({
     sizes: splitSizes,
     setSizes: updateSplitSizes,
-    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE],
+    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE],
     collapsedSize: COLLAPSED_SIZE,
     reopenSize: REOPEN_SIZE,
     maxTotal: height,
@@ -153,6 +154,49 @@ export const Navigator = () => {
               <Button
                 variant="transparent"
                 size="small"
+                title={l10n("SIDEBAR_ADD_PREFAB")}
+                onClick={onAddCustomEvent}
+              >
+                <PlusIcon />
+              </Button>
+              <FixedSpacer width={5} />
+              <Button
+                variant={scriptsSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleScriptsSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
+          }
+        >
+          {l10n("SIDEBAR_PREFABS")}
+        </SplitPaneHeader>
+        {showScriptsSearch && (
+          <EntityListSearch
+            type="search"
+            value={scriptsSearchTerm}
+            onChange={(e) => setScriptsSearchTerm(e.currentTarget.value)}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            autoFocus
+          />
+        )}
+        <NavigatorPrefabs
+          height={splitSizes[1] - (showScriptsSearch ? 60 : 30)}
+          searchTerm={scriptsSearchTerm}
+        />
+      </Pane>
+      <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
+      <Pane style={{ height: splitSizes[2] }}>
+        <SplitPaneHeader
+          onToggle={() => togglePane(2)}
+          collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
+          buttons={
+            <>
+              <Button
+                variant="transparent"
+                size="small"
                 title={l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
                 onClick={onAddCustomEvent}
               >
@@ -182,15 +226,15 @@ export const Navigator = () => {
           />
         )}
         <NavigatorCustomEvents
-          height={splitSizes[1] - (showScriptsSearch ? 60 : 30)}
+          height={splitSizes[2] - (showScriptsSearch ? 60 : 30)}
           searchTerm={scriptsSearchTerm}
         />
       </Pane>
-      <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
-      <Pane style={{ height: splitSizes[2] }}>
+      <SplitPaneVerticalDivider onMouseDown={onDragStart(2)} />
+      <Pane style={{ height: splitSizes[3] }}>
         <SplitPaneHeader
-          onToggle={() => togglePane(2)}
-          collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
+          onToggle={() => togglePane(3)}
+          collapsed={Math.floor(splitSizes[3]) <= COLLAPSED_SIZE}
           buttons={
             <Button
               variant={variablesSearchEnabled ? "primary" : "transparent"}
@@ -214,7 +258,7 @@ export const Navigator = () => {
           />
         )}
         <NavigatorVariables
-          height={splitSizes[2] - (showVariablesSearch ? 60 : 30)}
+          height={splitSizes[3] - (showVariablesSearch ? 60 : 30)}
           searchTerm={variablesSearchTerm}
         />
       </Pane>

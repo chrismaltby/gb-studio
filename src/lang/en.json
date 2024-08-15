@@ -89,6 +89,9 @@
   "SIDEBAR_INSTRUMENT": "Instrument",
   "SIDEBAR_SUBPATTERN": "Subpattern",
   "SIDEBAR_SCRIPT_USES": "Script Uses",
+  "SIDEBAR_PREFABS": "Prefabs",
+  "SIDEBAR_PREFAB_USES": "Prefab Uses",
+  "SIDEBAR_ADD_PREFAB": "Add Prefab",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
@@ -826,6 +829,9 @@
   "FIELD_COMPILER_OPTIONS_WARNING": "Some combinations of Compiler Preset and Optimisation settings may not work together. If you are unable to build after changing these settings, try resetting them back to their default values.",
   "FIELD_BOX_WIDTH_DESC": "The box width",
   "FIELD_BOX_HEIGHT_DESC": "The box height",
+  "FIELD_TRIGGERS": "Triggers",
+  "FIELD_EDIT_PREFAB": "Edit Prefab",
+  "FIELD_VIEW_PREFAB_USES": "View Prefab Uses",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1324,6 +1330,7 @@
   "MENU_DELETE_PALETTE": "Delete Palette",
   "MENU_SPELLING": "Spelling and Grammar",
   "MENU_CHECK_SPELLING_WHILE_TYPING" : "Check Spelling While Typing",
+  "MENU_DELETE_PREFAB": "Delete Prefab",
 
   "// 11": "Warnings -----------------------------------------------------",
 

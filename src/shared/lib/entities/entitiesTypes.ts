@@ -120,6 +120,8 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
+export type ActorPrefabNormalized = Omit<ActorNormalized, "prefabId">;
+
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
