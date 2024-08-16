@@ -442,9 +442,7 @@ export const dummyActorPrefabResource: ActorPrefabResource = {
   frame: 0,
   moveSpeed: 0,
   animSpeed: 0,
-  direction: "up",
   animate: false,
-  isPinned: false,
   persistent: false,
   collisionGroup: "",
 };

@@ -108,6 +108,8 @@ export const ActorPrefabResource = Type.Composite([
     "prefabId",
     "x",
     "y",
+    "direction",
+    "isPinned",
     "symbol",
   ]),
   Type.Object({

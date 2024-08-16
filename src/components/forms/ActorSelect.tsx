@@ -145,7 +145,7 @@ export const ActorSelect = ({
                 )})`,
                 value: "$self$",
                 spriteSheetId: selfPrefab.spriteSheetId,
-                direction: selfPrefab.direction,
+                direction: "down" as ActorDirection,
               },
             ]
           : []),

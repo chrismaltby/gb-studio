@@ -301,8 +301,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
 
   const showAnimSpeed = true;
 
-  const showCollisionGroup = !actor.isPinned;
-
   const showNotes = actor.notes || notesOpen;
 
   const lockButton = (
@@ -405,7 +403,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                     <SpriteSheetSelectButton
                       name="actorSprite"
                       value={actor.spriteSheetId}
-                      direction={actor.direction}
+                      direction={"down"}
                       frame={0}
                       onChange={onChangeSpriteSheetId}
                       includeInfo
@@ -442,25 +440,24 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                 </FormRow>
               </FormContainer>
             </SidebarColumn>
-            {showCollisionGroup && (
-              <SidebarColumn>
-                <FormContainer>
-                  <FormRow>
-                    <FormField
-                      name="actorCollisionGroup"
-                      label={l10n("FIELD_COLLISION_GROUP")}
-                    >
-                      <CollisionMaskPicker
-                        id="actorCollisionGroup"
-                        value={actor.collisionGroup}
-                        onChange={onChangeCollisionGroup}
-                        includeNone
-                      />
-                    </FormField>
-                  </FormRow>
-                </FormContainer>
-              </SidebarColumn>
-            )}
+
+            <SidebarColumn>
+              <FormContainer>
+                <FormRow>
+                  <FormField
+                    name="actorCollisionGroup"
+                    label={l10n("FIELD_COLLISION_GROUP")}
+                  >
+                    <CollisionMaskPicker
+                      id="actorCollisionGroup"
+                      value={actor.collisionGroup}
+                      onChange={onChangeCollisionGroup}
+                      includeNone
+                    />
+                  </FormField>
+                </FormRow>
+              </FormContainer>
+            </SidebarColumn>
           </SidebarColumns>
         )}
         <StickyTabs>
