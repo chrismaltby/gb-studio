@@ -1,5 +1,5 @@
 import type { EntityState, Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEditorContextType } from "shared/lib/scripts/context";
+import type { ScriptEditorCtxType } from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
@@ -538,7 +538,7 @@ export interface ScriptEventFieldSchema {
   types?: string[];
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
-  allowedContexts?: ScriptEditorContextType[];
+  allowedContexts?: ScriptEditorCtxType[];
   unitsField?: string;
   unitsDefault?: UnitType;
   unitsAllowed?: UnitType[];

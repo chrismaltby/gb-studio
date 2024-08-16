@@ -50,10 +50,8 @@ import {
 import { lexText } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
-import {
-  defaultVariableForContext,
-  ScriptEditorContextType,
-} from "shared/lib/scripts/context";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
+import type { ScriptEditorCtxType } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
@@ -127,7 +125,7 @@ interface ScriptBuilderFunctionArgLookup {
 
 export interface ScriptBuilderOptions {
   scriptEventHandlers: ScriptEventHandlers;
-  context: ScriptEditorContextType;
+  context: ScriptEditorCtxType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
   sceneIndex: number;
@@ -6828,7 +6826,7 @@ extern void __mute_mask_${symbol};
       inputSymbol ? inputSymbol : `script_${type}_0`
     );
     // Set script context to calculate default value for missing vars
-    let context: ScriptEditorContextType = this.options.context;
+    let context: ScriptEditorCtxType = this.options.context;
     if (type === "custom") {
       context = "script";
     } else if (context === "script") {

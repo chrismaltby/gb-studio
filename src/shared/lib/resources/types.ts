@@ -472,6 +472,7 @@ export type CartType = Static<typeof CartType>;
 export const ScriptEditorCtxType = Type.Union([
   Type.Literal("entity"),
   Type.Literal("script"),
+  Type.Literal("prefab"),
   Type.Literal("global"),
 ]);
 

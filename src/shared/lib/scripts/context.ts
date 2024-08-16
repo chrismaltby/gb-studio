@@ -1,3 +1,5 @@
+import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+
 export type EntityType =
   | "scene"
   | "actor"
@@ -6,7 +8,7 @@ export type EntityType =
   | "actorPrefab";
 
 export type ScriptEditorCtx = {
-  type: "entity" | "script" | "global";
+  type: ScriptEditorCtxType;
   sceneId: string;
   entityId: string;
   entityType: EntityType;
@@ -14,10 +16,8 @@ export type ScriptEditorCtx = {
   executingId?: string;
 };
 
-export type ScriptEditorContextType = "entity" | "script" | "global";
-
 export const defaultVariableForContext = (
-  context: ScriptEditorContextType
+  context: ScriptEditorCtxType
 ): string => {
   if (context === "script") {
     return "V0";

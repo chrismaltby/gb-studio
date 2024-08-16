@@ -286,7 +286,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
 
   const scriptCtx: ScriptEditorCtx = useMemo(
     () => ({
-      type: "entity",
+      type: "prefab",
       entityType: "actorPrefab",
       entityId: id,
       sceneId: "",
