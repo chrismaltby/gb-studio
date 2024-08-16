@@ -24,7 +24,7 @@ import {
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
-import { PinIcon } from "ui/icons/Icons";
+import { CaretRightIcon, PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
@@ -47,11 +47,45 @@ import { ActorPrefabEditorScripts } from "components/editors/prefab/ActorPrefabE
 import { ActorPrefabEditorProperties } from "components/editors/prefab/ActorPrefabEditorProperties";
 import { ActorEditorScripts } from "./actor/ActorEditorScripts";
 import { ActorEditorProperties } from "./actor/ActorEditorProperties";
+import { PillButton } from "ui/buttons/PillButton";
+import { Button } from "ui/buttons/Button";
+import { FlexGrow } from "ui/spacing/Spacing";
+import styled from "styled-components";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
 }
+
+const PrefabHeader = styled.div`
+  width: 100%;
+  background: #03a9f4;
+  color: #fff;
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  padding: 8px 10px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+
+  ${PillButton} {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 5px;
+  }
+
+  ${Button} {
+    color: #fff;
+  }
+
+  svg {
+    fill: #fff;
+    max-height: 10px;
+  }
+`;
 
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
@@ -241,6 +275,74 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           </FormContainer>
         )}
 
+        {prefab && (
+          <PrefabHeader>
+            {/* <PrefabHeader
+              style={{
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+              }}
+            > */}
+            {l10n("SIDEBAR_PREFABS")}
+            <CaretRightIcon />
+            <PillButton
+              variant="blue"
+              onClick={() => {
+                dispatch(
+                  editorActions.selectActorPrefab({
+                    actorPrefabId: prefab.id,
+                  })
+                );
+              }}
+            >
+              {prefab.name}
+            </PillButton>
+            <FlexGrow />
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+              onMouseDown={onFetchClipboard}
+            >
+              <MenuItem
+                onClick={() => {
+                  dispatch(
+                    editorActions.selectActorPrefab({
+                      actorPrefabId: prefab.id,
+                    })
+                  );
+                  dispatch(editorActions.setShowScriptUses(false));
+                }}
+              >
+                Edit Prefab
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  dispatch(
+                    editorActions.selectActorPrefab({
+                      actorPrefabId: prefab.id,
+                    })
+                  );
+                  dispatch(editorActions.setShowScriptUses(true));
+                }}
+              >
+                View Prefab Uses
+              </MenuItem>
+              <MenuDivider />
+              <MenuItem>Unpack Prefab</MenuItem>
+            </DropdownButton>
+            {/* <Button size="small" variant="transparent">
+              Unpack
+            </Button> */}
+            {/* <ActorPrefabSelect
+                      value={actor.prefabId}
+                      onChange={onChangeActorPrefab}
+                      name={"actorPrefab"}
+                    /> */}
+          </PrefabHeader>
+        )}
+
         {!lockScriptEditor && (
           <SidebarColumns>
             {(showSymbols || showNotes) && (
@@ -312,18 +414,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       onChange={onChangeDirection}
                     />
                   </FormField>
-                </FormRow>
-              </FormContainer>
-            </SidebarColumn>
-
-            <SidebarColumn>
-              <FormContainer>
-                <FormRow>
-                  <ActorPrefabSelect
-                    value={actor.prefabId}
-                    onChange={onChangeActorPrefab}
-                    name={"actorPrefab"}
-                  />
                 </FormRow>
               </FormContainer>
             </SidebarColumn>

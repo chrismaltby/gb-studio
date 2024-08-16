@@ -18,10 +18,35 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { ActorPrefabEditorProperties } from "./prefab/ActorPrefabEditorProperties";
 import { ActorPrefabEditorScripts } from "./prefab/ActorPrefabEditorScripts";
+import { FlexGrow } from "ui/spacing/Spacing";
+import {
+  SplitPaneHeader,
+  Wrapper as SplitPaneHeaderWrapper,
+} from "ui/splitpane/SplitPaneHeader";
+import styled from "styled-components";
+import { ActorPrefabUsesList } from "./prefab/ActorPrefabUsesList";
 
 interface ActorPrefabEditorProps {
   id: string;
 }
+
+const FlexWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const UsesCollapsedWrapper = styled.div`
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 17px;
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
+
+  ${SplitPaneHeaderWrapper} {
+    border-bottom: 0;
+  }
+`;
 
 export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   const actorPrefabIds = useAppSelector(actorPrefabSelectors.selectIds);
@@ -43,6 +68,8 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   );
 
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
+
+  const showUses = useAppSelector((state) => state.editor.showScriptUses);
 
   const dispatch = useAppDispatch();
 
@@ -103,6 +130,13 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
     setNotesOpen(true);
   };
 
+  const setShowUses = useCallback(
+    (value: boolean) => {
+      dispatch(editorActions.setShowScriptUses(value));
+    },
+    [dispatch]
+  );
+
   if (!prefab) {
     return <WorldEditor />;
   }
@@ -114,60 +148,85 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   return (
     <Sidebar onClick={selectSidebar}>
       <CachedScroll key={scrollKey} cacheKey={scrollKey}>
-        {!lockScriptEditor && (
-          <FormContainer>
-            <FormHeader>
-              <EditableText
-                name="name"
-                placeholder={actorName(prefab, index)}
-                value={prefab.name || ""}
-                onChange={onChangeName}
-              />
-              <DropdownButton
-                size="small"
-                variant="transparent"
-                menuDirection="right"
-                onMouseDown={onFetchClipboard}
-              >
-                {!showNotes && (
-                  <MenuItem onClick={onAddNotes}>
-                    {l10n("FIELD_ADD_NOTES")}
+        <FlexWrapper>
+          {!lockScriptEditor && (
+            <FormContainer>
+              <FormHeader>
+                <EditableText
+                  name="name"
+                  placeholder={actorName(prefab, index)}
+                  value={prefab.name || ""}
+                  onChange={onChangeName}
+                />
+                <DropdownButton
+                  size="small"
+                  variant="transparent"
+                  menuDirection="right"
+                  onMouseDown={onFetchClipboard}
+                >
+                  {!showNotes && (
+                    <MenuItem onClick={onAddNotes}>
+                      {l10n("FIELD_ADD_NOTES")}
+                    </MenuItem>
+                  )}
+                  <MenuItem onClick={onCopy}>
+                    {l10n("MENU_COPY_ACTOR")}
                   </MenuItem>
-                )}
-                <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
-                {clipboardFormat === ClipboardTypeActors && (
-                  <MenuItem onClick={onPaste}>
-                    {l10n("MENU_PASTE_ACTOR")}
+                  {clipboardFormat === ClipboardTypeActors && (
+                    <MenuItem onClick={onPaste}>
+                      {l10n("MENU_PASTE_ACTOR")}
+                    </MenuItem>
+                  )}
+                  <MenuDivider />
+                  <MenuItem onClick={onRemove}>
+                    {l10n("MENU_DELETE_ACTOR")}
                   </MenuItem>
-                )}
-                <MenuDivider />
-                <MenuItem onClick={onRemove}>
-                  {l10n("MENU_DELETE_ACTOR")}
-                </MenuItem>
-              </DropdownButton>
-            </FormHeader>
-          </FormContainer>
-        )}
-        {!lockScriptEditor && (
-          <SidebarColumns>
-            {showNotes && (
-              <SidebarColumn>
-                {showNotes && (
-                  <FormContainer>
-                    <FormRow>
-                      <NoteField
-                        value={prefab.notes || ""}
-                        onChange={onChangeNotes}
-                      />
-                    </FormRow>
-                  </FormContainer>
-                )}
-              </SidebarColumn>
-            )}
-            <ActorPrefabEditorProperties prefab={prefab} />
-          </SidebarColumns>
-        )}
-        <ActorPrefabEditorScripts prefab={prefab} />
+                </DropdownButton>
+              </FormHeader>
+            </FormContainer>
+          )}
+
+          {showUses ? (
+            <ActorPrefabUsesList id={id} onClose={() => setShowUses(false)} />
+          ) : (
+            <>
+              {!lockScriptEditor && (
+                <SidebarColumns>
+                  {showNotes && (
+                    <SidebarColumn>
+                      {showNotes && (
+                        <FormContainer>
+                          <FormRow>
+                            <NoteField
+                              value={prefab.notes || ""}
+                              onChange={onChangeNotes}
+                            />
+                          </FormRow>
+                        </FormContainer>
+                      )}
+                    </SidebarColumn>
+                  )}
+                  <ActorPrefabEditorProperties prefab={prefab} />
+                </SidebarColumns>
+              )}
+              <ActorPrefabEditorScripts prefab={prefab} />
+            </>
+          )}
+
+          {!showUses && (
+            <>
+              <FlexGrow />
+              <UsesCollapsedWrapper>
+                <SplitPaneHeader
+                  collapsed={true}
+                  onToggle={() => setShowUses(true)}
+                >
+                  {l10n("SIDEBAR_PREFAB_USES")}
+                </SplitPaneHeader>
+              </UsesCollapsedWrapper>
+            </>
+          )}
+        </FlexWrapper>
       </CachedScroll>
     </Sidebar>
   );

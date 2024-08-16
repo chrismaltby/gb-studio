@@ -217,7 +217,7 @@ export const TabBar = <T extends string>({
 
 export const StickyTabs = styled.div`
   position: sticky;
-  top: 0;
+  top: 38px;
   z-index: 1;
   background: ${(props) => props.theme.colors.sidebar.background};
   box-shadow: ${(props) => props.theme.colors.sidebar.well.boxShadow};

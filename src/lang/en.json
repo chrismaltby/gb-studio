@@ -833,6 +833,8 @@
   "FIELD_EDIT_PREFAB": "Edit Prefab",
   "FIELD_VIEW_PREFAB_USES": "View Prefab Uses",
   "FIELD_INSTANTIATE_PREFAB": "Instantiate Prefab",
+  "FIELD_PREFAB": "Prefab",
+  "FIELD_PREFAB_NOT_USED": "Prefab hasn't been used in project",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1332,6 +1334,7 @@
   "MENU_SPELLING": "Spelling and Grammar",
   "MENU_CHECK_SPELLING_WHILE_TYPING" : "Check Spelling While Typing",
   "MENU_DELETE_PREFAB": "Delete Prefab",
+  "MENU_EDIT_PREFAB": "Edit Prefab",
 
   "// 11": "Warnings -----------------------------------------------------",
 

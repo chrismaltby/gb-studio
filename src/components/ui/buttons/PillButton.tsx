@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 export interface PillButtonProps {
-  readonly variant?: "normal" | "primary";
+  readonly variant?: "normal" | "primary" | "blue";
 }
 
 export const PillButton = styled.button<PillButtonProps>`
@@ -17,6 +17,7 @@ export const PillButton = styled.button<PillButtonProps>`
   }
 
   ${(props) => (props.variant === "primary" ? primaryStyles : "")}
+  ${(props) => (props.variant === "blue" ? blueStyles : "")}
 `;
 
 const primaryStyles = css`
@@ -34,5 +35,22 @@ const primaryStyles = css`
   :focus {
     box-shadow: 0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
+  }
+`;
+
+const blueStyles = css`
+  background: #1976d2;
+  border-color: transparent;
+  color: #fff;
+
+  svg {
+    fill: #fff;
+  }
+
+  :active {
+    opacity: 0.8;
+  }
+  :focus {
+    box-shadow: 0 0 0px 2px #fff, 0 0 0px 4px #1976d2;
   }
 `;
