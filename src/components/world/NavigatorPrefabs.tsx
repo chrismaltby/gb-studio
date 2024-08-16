@@ -14,8 +14,10 @@ import {
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
-import { CheckIcon, BlankIcon } from "ui/icons/Icons";
+import { CheckIcon, BlankIcon, InstantiateIcon } from "ui/icons/Icons";
 import { actorPrefabSelectors } from "store/features/entities/entitiesState";
+import { Button } from "ui/buttons/Button";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
 interface NavigatorPrefabsProps {
   height: number;
@@ -169,10 +171,28 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
         );
+      } else if (item.entity?.spriteSheetId !== undefined) {
+        const prefab = item.entity;
+        return (
+          <FlexRow>
+            <FlexGrow style={{ overflow: "hidden" }}>{item.filename}</FlexGrow>
+            <Button
+              size="small"
+              variant="transparent"
+              title={l10n("FIELD_INSTANTIATE_PREFAB")}
+              onClick={() => {
+                dispatch(editorActions.setTool({ tool: "actors" }));
+                dispatch(editorActions.setPrefabId(prefab.id));
+              }}
+            >
+              <InstantiateIcon />
+            </Button>
+          </FlexRow>
+        );
       }
       return item.filename;
     },
-    [toggleFolderOpen]
+    [dispatch, toggleFolderOpen]
   );
 
   return (

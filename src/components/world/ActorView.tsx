@@ -71,25 +71,18 @@ const ActorView = memo(
   ({ id, sceneId, palettes, editable }: ActorViewProps) => {
     const dispatch = useAppDispatch();
 
-    const actorData = useAppSelector((state) =>
+    const actor = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );
     const prefab = useAppSelector((state) =>
-      actorPrefabSelectors.selectById(state, actorData?.prefabId ?? "")
+      actorPrefabSelectors.selectById(state, actor?.prefabId ?? "")
     );
 
-    const actor = useMemo(() => {
-      if (!actorData || !prefab) {
-        return actorData;
-      }
-      return {
-        ...actorData,
-        ...prefab,
-      };
-    }, [actorData, prefab]);
-
     const sprite = useAppSelector((state) =>
-      spriteSheetSelectors.selectById(state, actor?.spriteSheetId ?? "")
+      spriteSheetSelectors.selectById(
+        state,
+        prefab?.spriteSheetId ?? actor?.spriteSheetId ?? ""
+      )
     );
     const selected = useAppSelector(
       (state) =>
@@ -191,7 +184,7 @@ const ActorView = memo(
           {showSprite && (
             <CanvasWrapper>
               <SpriteSheetCanvas
-                spriteSheetId={actor.spriteSheetId}
+                spriteSheetId={sprite?.id ?? ""}
                 direction={actor.direction}
                 frame={0}
                 palettes={palettes}

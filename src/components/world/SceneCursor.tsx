@@ -168,6 +168,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     (state) => state.project.present.settings.showCollisions
   );
 
+  const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
+
   const [resize, setResize] = useState<boolean>(false);
   const data = useRef<{
     lockX?: boolean;
@@ -610,11 +612,16 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           sceneId,
           x,
           y,
+          defaults: editorPrefabId
+            ? {
+                prefabId: editorPrefabId,
+              }
+            : undefined,
         })
       );
     }
     dispatch(editorActions.setTool({ tool: "select" }));
-  }, [dispatch, pasteMode, sceneId, x, y]);
+  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
 
   const onMouseDownTrigger = useCallback(() => {
     if (pasteMode) {

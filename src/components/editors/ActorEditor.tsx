@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -20,122 +20,44 @@ import {
   ActorDirection,
   ActorNormalized,
   CollisionGroup,
-  ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
-import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
-import { CheckboxField } from "ui/form/CheckboxField";
+import { PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
-import ScriptEditor from "components/script/ScriptEditor";
 import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import { NoteField } from "ui/form/NoteField";
-import { StickyTabs, TabBar, TabSettings } from "ui/tabs/Tabs";
-import { Button } from "ui/buttons/Button";
 import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { KeysMatching } from "shared/types";
-import {
-  castEventToBool,
-  castEventToInt,
-} from "renderer/lib/helpers/castEventValue";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 import CachedScroll from "ui/util/CachedScroll";
 import { ActorPrefabSelect } from "components/forms/ActorPrefabSelect";
+import { ActorPrefabEditorScripts } from "components/editors/prefab/ActorPrefabEditorScripts";
+import { ActorPrefabEditorProperties } from "components/editors/prefab/ActorPrefabEditorProperties";
+import { ActorEditorScripts } from "./actor/ActorEditorScripts";
+import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
 }
 
-interface ScriptHandler {
-  value: ScriptEventNormalized[];
-  onChange: (newValue: ScriptEventNormalized[]) => void;
-}
-
-interface ScriptHandlers {
-  start: ScriptHandler;
-  interact: ScriptHandler;
-  update: ScriptHandler;
-  hit: {
-    hitPlayer: ScriptHandler;
-    hit1: ScriptHandler;
-    hit2: ScriptHandler;
-    hit3: ScriptHandler;
-  };
-}
-
-type ActorScriptKey =
-  | "script"
-  | "startScript"
-  | "updateScript"
-  | "hit1Script"
-  | "hit2Script"
-  | "hit3Script";
-
-type DefaultTab = "interact" | "start" | "update";
-type CollisionTab = "hit" | "start" | "update";
-type HitTab = "hitPlayer" | "hit1" | "hit2" | "hit3";
-
-const getScriptKey = (
-  primaryTab: DefaultTab | CollisionTab,
-  secondaryTab: HitTab
-): ActorScriptKey => {
-  if (primaryTab === "interact") {
-    return "script";
-  }
-  if (primaryTab === "start") {
-    return "startScript";
-  }
-  if (primaryTab === "update") {
-    return "updateScript";
-  }
-  if (primaryTab === "hit") {
-    if (secondaryTab === "hitPlayer") {
-      return "script";
-    }
-    if (secondaryTab === "hit1") {
-      return "hit1Script";
-    }
-    if (secondaryTab === "hit2") {
-      return "hit2Script";
-    }
-    if (secondaryTab === "hit3") {
-      return "hit3Script";
-    }
-  }
-  return "script";
-};
-
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
-  const actorData = useAppSelector((state) =>
-    actorSelectors.selectById(state, id)
-  );
+  const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const prefab = useAppSelector((state) =>
-    actorPrefabSelectors.selectById(state, actorData?.prefabId ?? "")
+    actorPrefabSelectors.selectById(state, actor?.prefabId ?? "")
   );
-
-  const actor = useMemo(() => {
-    if (!actorData || !prefab) {
-      return actorData;
-    }
-    return {
-      ...actorData,
-      ...prefab,
-    };
-  }, [actorData, prefab]);
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const clipboardFormat = useAppSelector(
@@ -150,76 +72,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
 
-  const defaultTabs: Record<DefaultTab, string> = useMemo(
-    () => ({
-      interact: l10n("SIDEBAR_ON_INTERACT"),
-      start: l10n("SIDEBAR_ON_INIT"),
-      update: l10n("SIDEBAR_ON_UPDATE"),
-    }),
-    []
-  );
-
-  const collisionTabs: Record<CollisionTab, string> = useMemo(
-    () => ({
-      hit: l10n("SIDEBAR_ON_HIT"),
-      start: l10n("SIDEBAR_ON_INIT"),
-      update: l10n("SIDEBAR_ON_UPDATE"),
-    }),
-    []
-  );
-
-  const hitTabs: Record<HitTab, string> = useMemo(
-    () => ({
-      hitPlayer: l10n("FIELD_PLAYER"),
-      hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
-      hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
-      hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
-    }),
-    []
-  );
-
-  const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
-  const secondaryTabs = Object.keys(hitTabs);
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
-  const lastScriptTabSecondary = useAppSelector(
-    (state) => state.editor.lastScriptTabSecondary
-  );
-  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
-  const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
-    ? lastScriptTabSecondary
-    : secondaryTabs[0];
-
-  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
-  );
-  const [scriptModeSecondary, setScriptModeSecondary] = useState<
-    keyof ScriptHandlers["hit"]
-  >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
-
-  // Make sure currently selected script tab is availble
-  // when collision group is modified otherwise use first available tab
-  useEffect(() => {
-    const tabs = Object.keys(
-      actor?.collisionGroup ? collisionTabs : defaultTabs
-    );
-    if (!tabs.includes(scriptMode)) {
-      setScriptMode(tabs[0] as keyof ScriptHandlers);
-    }
-  }, [scriptMode, actor?.collisionGroup, collisionTabs, defaultTabs]);
 
   const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useAppDispatch();
-
-  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
-    setScriptMode(mode);
-    dispatch(editorActions.setScriptTab(mode));
-  };
-
-  const onChangeScriptModeSecondary = (mode: keyof ScriptHandlers["hit"]) => {
-    setScriptModeSecondary(mode);
-    dispatch(editorActions.setScriptTabSecondary(mode));
-  };
 
   const onChangeActorProp = useCallback(
     <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {
@@ -289,12 +146,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     [onChangeActorProp]
   );
 
-  const onChangePersistent = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeActorProp("persistent", castEventToBool(e)),
-    [onChangeActorProp]
-  );
-
   const onToggleField = (key: KeysMatching<ActorNormalized, boolean>) => () => {
     const currentValue = !!actor?.[key];
     dispatch(
@@ -335,23 +186,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     setNotesOpen(true);
   };
 
-  const onToggleLockScriptEditor = () => {
-    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
-  };
-
-  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
-
-  const scriptCtx: ScriptEditorCtx = useMemo(
-    () => ({
-      type: "entity",
-      entityType: "actor",
-      entityId: id,
-      sceneId,
-      scriptKey,
-    }),
-    [id, sceneId, scriptKey]
-  );
-
   if (!scene || !actor) {
     return <WorldEditor />;
   }
@@ -362,31 +196,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const showNotes = actor.notes || notesOpen;
 
-  const lockButton = (
-    <Button
-      size="small"
-      variant={lockScriptEditor ? "primary" : "transparent"}
-      onClick={onToggleLockScriptEditor}
-      title={
-        lockScriptEditor
-          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
-          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
-      }
-    >
-      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
-    </Button>
-  );
-
-  const scriptButton = (
-    <ScriptEditorDropdownButton
-      value={actor[scriptKey]}
-      type="actor"
-      entityId={actor.id}
-      scriptKey={scriptKey}
-    />
-  );
-
-  const scrollKey = `${actor.id}_${scriptKey}`;
+  const scrollKey = `${actor.id}_${lastScriptTab}`;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -518,128 +328,19 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               </FormContainer>
             </SidebarColumn>
 
-            <SidebarColumn>
-              <FormContainer>
-                <FormRow>
-                  <FormField
-                    name="actorSprite"
-                    label={l10n("FIELD_SPRITE_SHEET")}
-                  >
-                    <SpriteSheetSelectButton
-                      name="actorSprite"
-                      value={actor.spriteSheetId}
-                      direction={actor.direction}
-                      frame={0}
-                      onChange={onChangeSpriteSheetId}
-                      includeInfo
-                    />
-                  </FormField>
-                </FormRow>
-              </FormContainer>
-            </SidebarColumn>
-            <SidebarColumn>
-              <FormContainer>
-                <FormRow>
-                  <FormField
-                    name="actorMoveSpeed"
-                    label={l10n("FIELD_MOVEMENT_SPEED")}
-                  >
-                    <MovementSpeedSelect
-                      name="actorMoveSpeed"
-                      value={actor.moveSpeed}
-                      onChange={onChangeMoveSpeed}
-                    />
-                  </FormField>
-                  {showAnimSpeed && (
-                    <FormField
-                      name="actorAnimSpeed"
-                      label={l10n("FIELD_ANIMATION_SPEED")}
-                    >
-                      <AnimationSpeedSelect
-                        name="actorAnimSpeed"
-                        value={actor.animSpeed}
-                        onChange={onChangeAnimSpeed}
-                      />
-                    </FormField>
-                  )}
-                </FormRow>
-              </FormContainer>
-            </SidebarColumn>
-            {showCollisionGroup && (
-              <SidebarColumn>
-                <FormContainer>
-                  <FormRow>
-                    <FormField
-                      name="actorCollisionGroup"
-                      label={l10n("FIELD_COLLISION_GROUP")}
-                    >
-                      <CollisionMaskPicker
-                        id="actorCollisionGroup"
-                        value={actor.collisionGroup}
-                        onChange={onChangeCollisionGroup}
-                        includeNone
-                      />
-                    </FormField>
-                  </FormRow>
-                </FormContainer>
-              </SidebarColumn>
+            {prefab ? (
+              <ActorPrefabEditorProperties prefab={prefab} />
+            ) : (
+              <ActorEditorProperties actor={actor} />
             )}
           </SidebarColumns>
         )}
 
-        <StickyTabs>
-          {actor.collisionGroup ? (
-            <TabBar
-              value={scriptMode as CollisionTab}
-              values={collisionTabs}
-              onChange={onChangeScriptMode}
-              overflowActiveTab={
-                scriptMode === "hit" || scriptMode === "update"
-              }
-              buttons={
-                <>
-                  {lockButton}
-                  {scriptButton}
-                </>
-              }
-            />
-          ) : (
-            <TabBar
-              value={scriptMode as DefaultTab}
-              values={defaultTabs}
-              onChange={onChangeScriptMode}
-              overflowActiveTab={scriptMode === "update"}
-              buttons={
-                <>
-                  {lockButton}
-                  {scriptButton}
-                </>
-              }
-            />
-          )}
-          {scriptMode === "hit" && (
-            <TabBar
-              variant="secondary"
-              value={scriptModeSecondary}
-              values={hitTabs}
-              onChange={onChangeScriptModeSecondary}
-            />
-          )}
-          {scriptMode === "update" && (
-            <TabSettings>
-              <CheckboxField
-                name="persistent"
-                label={l10n("FIELD_KEEP_RUNNING_WHILE_OFFSCREEN")}
-                checked={actor.persistent}
-                onChange={onChangePersistent}
-              />
-            </TabSettings>
-          )}
-        </StickyTabs>
-
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor value={actor[scriptKey]} />
-        </ScriptEditorContext.Provider>
+        {prefab ? (
+          <ActorPrefabEditorScripts prefab={prefab} />
+        ) : (
+          <ActorEditorScripts actor={actor} sceneId={sceneId} />
+        )}
       </CachedScroll>
     </Sidebar>
   );

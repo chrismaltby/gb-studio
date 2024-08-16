@@ -153,6 +153,7 @@ export interface EditorState {
   precisionTileMode: boolean;
   slopePreview?: SlopePreview;
   showScriptUses: boolean;
+  prefabId: string;
 }
 
 export const initialState: EditorState = {
@@ -225,6 +226,7 @@ export const initialState: EditorState = {
   precisionTileMode: false,
   slopePreview: undefined,
   showScriptUses: false,
+  prefabId: "",
 };
 
 const toggleScriptEventSelectedId =
@@ -291,6 +293,7 @@ const editorSlice = createSlice({
     setTool: (state, action: PayloadAction<{ tool: Tool }>) => {
       state.tool = action.payload.tool;
       state.pasteMode = false;
+      state.prefabId = "";
       // Reset to 8px brush is current brush not supported
       if (
         state.selectedBrush === BRUSH_SLOPE &&
@@ -871,6 +874,10 @@ const editorSlice = createSlice({
 
     setShowScriptUses: (state, action: PayloadAction<boolean>) => {
       state.showScriptUses = action.payload;
+    },
+
+    setPrefabId: (state, action: PayloadAction<string>) => {
+      state.prefabId = action.payload;
     },
   },
   extraReducers: (builder) =>

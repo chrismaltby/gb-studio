@@ -832,6 +832,7 @@
   "FIELD_TRIGGERS": "Triggers",
   "FIELD_EDIT_PREFAB": "Edit Prefab",
   "FIELD_VIEW_PREFAB_USES": "View Prefab Uses",
+  "FIELD_INSTANTIATE_PREFAB": "Instantiate Prefab",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
