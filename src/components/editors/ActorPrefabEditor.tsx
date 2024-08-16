@@ -12,9 +12,6 @@ import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { WorldEditor } from "./WorldEditor";
 import { NoteField } from "ui/form/NoteField";
 import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
-import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
-import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
-import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -46,8 +43,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   );
 
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
-
-  const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -139,11 +134,6 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                     {l10n("FIELD_ADD_NOTES")}
                   </MenuItem>
                 )}
-                {!showSymbols && (
-                  <MenuItem onClick={() => setShowSymbols(true)}>
-                    {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                  </MenuItem>
-                )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
                 {clipboardFormat === ClipboardTypeActors && (
                   <MenuItem onClick={onPaste}>
@@ -160,14 +150,8 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
         )}
         {!lockScriptEditor && (
           <SidebarColumns>
-            {(showSymbols || showNotes) && (
+            {showNotes && (
               <SidebarColumn>
-                {showSymbols && (
-                  <SymbolEditorWrapper>
-                    <ActorSymbolsEditor id={prefab.id} />
-                    <SpriteSymbolsEditor id={prefab.spriteSheetId} />
-                  </SymbolEditorWrapper>
-                )}
                 {showNotes && (
                   <FormContainer>
                     <FormRow>
