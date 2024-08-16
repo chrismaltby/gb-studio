@@ -476,7 +476,12 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
     {
       role: "window",
       label: l10n("MENU_WINDOW"),
-      submenu: [{ role: "minimize" }],
+      submenu: [
+        {
+          label: l10n("MENU_MINIMIZE"),
+          role: "minimize",
+        }
+      ],
     },
     {
       role: "help",

@@ -1314,6 +1314,7 @@
   "MENU_DELETE": "Delete",
   "MENU_SELECT_ALL": "Select All",
   "MENU_WINDOW": "Window",
+  "MENU_MINIMIZE": "Minimize",
   "MENU_HELP": "Help",
   "MENU_SET_BREAKPOINT": "Set Breakpoint",
   "MENU_DELETE_SONG": "Delete Song",
