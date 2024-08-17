@@ -19,6 +19,7 @@ import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface ActorPrefabEditorScriptsProps {
   prefab: ActorPrefabNormalized;
+  isInstance?: boolean;
 }
 
 interface ScriptHandler {
@@ -82,6 +83,7 @@ const getScriptKey = (
 
 export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   prefab,
+  isInstance,
 }) => {
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
@@ -228,7 +230,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
 
   return (
     <>
-      <StickyTabs>
+      <StickyTabs style={isInstance ? { top: 38 } : undefined}>
         {prefab.collisionGroup ? (
           <TabBar
             value={scriptMode as CollisionTab}
