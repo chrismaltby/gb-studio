@@ -44,23 +44,40 @@ import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { PillButton } from "ui/buttons/PillButton";
 import { Button } from "ui/buttons/Button";
 import { FlexGrow } from "ui/spacing/Spacing";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
 }
 
-const PrefabHeader = styled.div`
+interface PrefabHeaderProps {
+  prefabSet: boolean;
+}
+
+const PrefabHeader = styled.div<PrefabHeaderProps>`
+  ${(props) =>
+    props.prefabSet
+      ? css`
+          background: #03a9f4;
+          color: #fff;
+          position: sticky;
+          z-index: 1;
+          top: 0;
+
+          ${Button} {
+            color: #fff;
+          }
+
+          svg {
+            fill: #fff;
+          }
+        `
+      : ""}
+
   width: 100%;
-  background: #03a9f4;
-  color: #fff;
-  position: sticky;
-  z-index: 1;
-  top: 0;
   padding: 8px 10px;
   box-sizing: border-box;
-
   display: flex;
   align-items: center;
 
@@ -71,12 +88,7 @@ const PrefabHeader = styled.div`
     margin-right: 5px;
   }
 
-  ${Button} {
-    color: #fff;
-  }
-
   svg {
-    fill: #fff;
     max-height: 10px;
   }
 `;
@@ -103,6 +115,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
 
   const [showSymbols, setShowSymbols] = useState(false);
+
+  const [showPrefab, setShowPrefab] = useState(prefab !== undefined);
 
   const dispatch = useAppDispatch();
 
@@ -225,6 +239,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
                   </MenuItem>
                 )}
+                {!showPrefab && (
+                  <MenuItem onClick={() => setShowPrefab(true)}>
+                    {l10n("FIELD_LINK_TO_PREFAB")}
+                  </MenuItem>
+                )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
                 {clipboardFormat === ClipboardTypeActors && (
                   <MenuItem onClick={onPaste}>
@@ -317,56 +336,59 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           </SidebarColumns>
         )}
 
-        {prefab && (
-          <PrefabHeader>
+        {(prefab || showPrefab) && (
+          <PrefabHeader prefabSet={prefab !== undefined}>
             {l10n("SIDEBAR_PREFABS")}
             <CaretRightIcon />
             <PillButton
               variant="blue"
               onClick={() => {
-                dispatch(
-                  editorActions.selectActorPrefab({
-                    actorPrefabId: prefab.id,
-                  })
-                );
+                prefab &&
+                  dispatch(
+                    editorActions.selectActorPrefab({
+                      actorPrefabId: prefab.id,
+                    })
+                  );
               }}
             >
-              {prefab.name}
+              {prefab?.name ?? l10n("FIELD_NONE")}
             </PillButton>
             <FlexGrow />
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={onFetchClipboard}
-            >
-              <MenuItem
-                onClick={() => {
-                  dispatch(
-                    editorActions.selectActorPrefab({
-                      actorPrefabId: prefab.id,
-                    })
-                  );
-                  dispatch(editorActions.setShowScriptUses(false));
-                }}
+            {prefab && (
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+                onMouseDown={onFetchClipboard}
               >
-                {l10n("FIELD_EDIT_PREFAB")}
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  dispatch(
-                    editorActions.selectActorPrefab({
-                      actorPrefabId: prefab.id,
-                    })
-                  );
-                  dispatch(editorActions.setShowScriptUses(true));
-                }}
-              >
-                {l10n("FIELD_VIEW_PREFAB_USES")}
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem>{l10n("FIELD_UNPACK_PREFAB")}</MenuItem>
-            </DropdownButton>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      editorActions.selectActorPrefab({
+                        actorPrefabId: prefab.id,
+                      })
+                    );
+                    dispatch(editorActions.setShowScriptUses(false));
+                  }}
+                >
+                  {l10n("FIELD_EDIT_PREFAB")}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      editorActions.selectActorPrefab({
+                        actorPrefabId: prefab.id,
+                      })
+                    );
+                    dispatch(editorActions.setShowScriptUses(true));
+                  }}
+                >
+                  {l10n("FIELD_VIEW_PREFAB_USES")}
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem>{l10n("FIELD_UNPACK_PREFAB")}</MenuItem>
+              </DropdownButton>
+            )}
           </PrefabHeader>
         )}
 
