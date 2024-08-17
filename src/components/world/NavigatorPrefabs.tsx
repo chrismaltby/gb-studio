@@ -91,9 +91,11 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
     (e) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
+      } else if (e.code === "Escape") {
+        dispatch(editorActions.setTool({ tool: "select" }));
       }
     },
-    [selectedId]
+    [dispatch, selectedId]
   );
 
   const onRenameComplete = useCallback(

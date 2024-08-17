@@ -351,6 +351,13 @@ const editorSlice = createSlice({
 
     selectSidebar: (state, _action: PayloadAction<void>) => {
       state.worldFocus = false;
+      if (
+        state.tool === "actors" ||
+        state.tool === "triggers" ||
+        state.tool === "scene"
+      ) {
+        state.tool = "select";
+      }
     },
 
     sceneHover: (
