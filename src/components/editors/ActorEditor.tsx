@@ -19,18 +19,13 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
   ActorDirection,
   ActorNormalized,
-  CollisionGroup,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
 import { CaretRightIcon, PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
-import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
-import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
-import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
-import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import { NoteField } from "ui/form/NoteField";
 import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
@@ -42,7 +37,6 @@ import { KeysMatching } from "shared/types";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { ActorPrefabSelect } from "components/forms/ActorPrefabSelect";
 import { ActorPrefabEditorScripts } from "components/editors/prefab/ActorPrefabEditorScripts";
 import { ActorPrefabEditorProperties } from "components/editors/prefab/ActorPrefabEditorProperties";
 import { ActorEditorScripts } from "./actor/ActorEditorScripts";
@@ -150,33 +144,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     [onChangeActorProp]
   );
 
-  const onChangeSpriteSheetId = useCallback(
-    (e: string) => onChangeActorProp("spriteSheetId", e),
-    [onChangeActorProp]
-  );
-
   const onChangeDirection = useCallback(
     (e: ActorDirection) => onChangeActorProp("direction", e),
-    [onChangeActorProp]
-  );
-
-  const onChangeActorPrefab = useCallback(
-    (e: string) => onChangeActorProp("prefabId", e),
-    [onChangeActorProp]
-  );
-
-  const onChangeMoveSpeed = useCallback(
-    (e: number) => onChangeActorProp("moveSpeed", e),
-    [onChangeActorProp]
-  );
-
-  const onChangeAnimSpeed = useCallback(
-    (e: number) => onChangeActorProp("animSpeed", e),
-    [onChangeActorProp]
-  );
-
-  const onChangeCollisionGroup = useCallback(
-    (e: CollisionGroup) => onChangeActorProp("collisionGroup", e),
     [onChangeActorProp]
   );
 
@@ -223,10 +192,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   if (!scene || !actor) {
     return <WorldEditor />;
   }
-
-  const showAnimSpeed = true;
-
-  const showCollisionGroup = !actor.isPinned;
 
   const showNotes = actor.notes || notesOpen;
 
