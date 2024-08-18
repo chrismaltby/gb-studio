@@ -42,9 +42,9 @@ import { ActorPrefabEditorProperties } from "components/editors/prefab/ActorPref
 import { ActorEditorScripts } from "./actor/ActorEditorScripts";
 import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { PillButton } from "ui/buttons/PillButton";
-import { Button } from "ui/buttons/Button";
 import { FlexGrow } from "ui/spacing/Spacing";
 import styled, { css } from "styled-components";
+import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 
 interface ActorEditorProps {
   id: string;
@@ -59,23 +59,31 @@ const PrefabHeader = styled.div<PrefabHeaderProps>`
   ${(props) =>
     props.prefabSet
       ? css`
-          background: #03a9f4;
-          color: #fff;
+          background: ${(props) => props.theme.colors.prefab.background};
+          color: ${(props) => props.theme.colors.prefab.text};
           position: sticky;
           z-index: 1;
           top: 0;
 
-          ${Button} {
-            color: #fff;
+          ${PillButton} {
+            background: ${(props) =>
+              props.theme.colors.prefab.button.background};
+            color: ${(props) => props.theme.colors.prefab.button.text};
+            :hover {
+              background: ${(props) =>
+                props.theme.colors.prefab.button.hoverBackground};
+            }
           }
 
-          svg {
-            fill: #fff;
+          &&& svg {
+            fill: ${(props) => props.theme.colors.prefab.button.text};
           }
         `
       : ""}
 
+  font-size: 11px;
   width: 100%;
+  height: 38px;
   padding: 8px 10px;
   box-sizing: border-box;
   display: flex;
@@ -88,8 +96,9 @@ const PrefabHeader = styled.div<PrefabHeaderProps>`
     margin-right: 5px;
   }
 
-  svg {
+  && svg {
     max-height: 10px;
+    fill: ${(props) => props.theme.colors.text};
   }
 `;
 
@@ -160,6 +169,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const onChangeDirection = useCallback(
     (e: ActorDirection) => onChangeActorProp("direction", e),
+    [onChangeActorProp]
+  );
+
+  const onChangePrefabId = useCallback(
+    (e: string) => onChangeActorProp("prefabId", e),
     [onChangeActorProp]
   );
 
@@ -340,19 +354,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           <PrefabHeader prefabSet={prefab !== undefined}>
             {l10n("SIDEBAR_PREFABS")}
             <CaretRightIcon />
-            <PillButton
-              variant="blue"
-              onClick={() => {
-                prefab &&
-                  dispatch(
-                    editorActions.selectActorPrefab({
-                      actorPrefabId: prefab.id,
-                    })
-                  );
-              }}
-            >
-              {prefab?.name ?? l10n("FIELD_NONE")}
-            </PillButton>
+            <ActorPrefabSelectButton
+              name={"prefabId"}
+              value={actor.prefabId}
+              onChange={onChangePrefabId}
+            />
             <FlexGrow />
             {prefab && (
               <DropdownButton

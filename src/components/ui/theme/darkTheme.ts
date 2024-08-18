@@ -142,6 +142,15 @@ const darkTheme: ThemeInterface = {
         border: "#b7babb44",
       },
     },
+    prefab: {
+      background: "#01579b",
+      text: "#ffffff",
+      button: {
+        background: "#0288d1",
+        hoverBackground: "#039be5",
+        text: "#ffffff",
+      },
+    },
   },
   borderRadius: 4,
 };

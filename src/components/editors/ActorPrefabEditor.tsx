@@ -34,6 +34,22 @@ const FlexWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  ${FormHeader} {
+    background: ${(props) => props.theme.colors.prefab.background};
+    color: ${(props) => props.theme.colors.prefab.text};
+    input {
+      color: ${(props) => props.theme.colors.prefab.text};
+
+      ::placeholder {
+        color: ${(props) => props.theme.colors.prefab.text};
+        opacity: 0.5;
+      }
+    }
+    svg {
+      fill: ${(props) => props.theme.colors.prefab.text};
+    }
+  }
 `;
 
 const UsesCollapsedWrapper = styled.div`

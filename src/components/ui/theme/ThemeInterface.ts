@@ -139,6 +139,15 @@ export interface ThemeInterface {
         border: string;
       };
     };
+    prefab: {
+      background: string;
+      text: string;
+      button: {
+        background: string;
+        hoverBackground: string;
+        text: string;
+      };
+    };
   };
   borderRadius: number;
 }

@@ -142,6 +142,15 @@ const lightTheme: ThemeInterface = {
         border: "#3b3a3b66",
       },
     },
+    prefab: {
+      background: "#03a9f4",
+      text: "#ffffff",
+      button: {
+        background: "#0288d1",
+        hoverBackground: "#0277bd",
+        text: "#ffffff",
+      },
+    },
   },
   borderRadius: 4,
 };
