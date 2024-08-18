@@ -97,6 +97,7 @@ import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
+import { omit } from "shared/types";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -1108,6 +1109,74 @@ const moveActor: CaseReducer<
       x: clamp(action.payload.x, 0, newScene.width - 2),
       y: clamp(action.payload.y, 0, newScene.height - 1),
     },
+  });
+};
+
+const unpackActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefab = localActorPrefabSelectors.selectById(state, actor.prefabId);
+  if (!prefab) {
+    return;
+  }
+
+  const duplicateScript = (scriptEventIds: string[]): string[] => {
+    const newIds = scriptEventIds.map(() => uuid());
+    scriptEventIds.forEach((scriptEventId, index) => {
+      const scriptEvent = localScriptEventSelectors.selectById(
+        state,
+        scriptEventId
+      );
+      if (scriptEvent) {
+        const duplicatedChildren: Dictionary<string[]> = {};
+        if (scriptEvent.children) {
+          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+            duplicatedChildren[key] = duplicateScript(childIds || []);
+          }
+        }
+        scriptEventsAdapter.addOne(state.scriptEvents, {
+          ...scriptEvent,
+          id: newIds[index],
+          children: duplicatedChildren,
+        });
+      }
+    });
+
+    return newIds;
+  };
+
+  const patch = {
+    ...omit(
+      prefab,
+      "id",
+      "name",
+      "notes",
+      "script",
+      "startScript",
+      "updateScript",
+      "hit1Script",
+      "hit2Script",
+      "hit3Script"
+    ),
+    prefabId: "",
+    script: duplicateScript(prefab.script),
+    startScript: duplicateScript(prefab.startScript),
+    updateScript: duplicateScript(prefab.updateScript),
+    hit1Script: duplicateScript(prefab.hit1Script),
+    hit2Script: duplicateScript(prefab.hit2Script),
+    hit3Script: duplicateScript(prefab.hit3Script),
+  };
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: patch,
   });
 };
 
@@ -3269,6 +3338,7 @@ const entitiesSlice = createSlice({
 
     editActor,
     setActorSymbol,
+    unpackActorPrefab,
     removeActor,
     removeActorAt,
     moveActor,
@@ -3695,6 +3765,9 @@ const localSceneSelectors = scenesAdapter.getSelectors(
 );
 const localActorPrefabSelectors = actorPrefabsAdapter.getSelectors(
   (state: EntitiesState) => state.actorPrefabs
+);
+const localScriptEventSelectors = scriptEventsAdapter.getSelectors(
+  (state: EntitiesState) => state.scriptEvents
 );
 const localCustomEventSelectors = customEventsAdapter.getSelectors(
   (state: EntitiesState) => state.customEvents

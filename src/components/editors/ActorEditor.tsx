@@ -125,7 +125,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const [showPrefab, setShowPrefab] = useState(prefab !== undefined);
+  const [showPrefab, setShowPrefab] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -392,7 +392,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   {l10n("FIELD_VIEW_PREFAB_USES")}
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem>{l10n("FIELD_UNPACK_PREFAB")}</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      entitiesActions.unpackActorPrefab({
+                        actorId: actor.id,
+                      })
+                    );
+                  }}
+                >
+                  {l10n("FIELD_UNPACK_PREFAB")}
+                </MenuItem>
               </DropdownButton>
             )}
           </PrefabHeader>
