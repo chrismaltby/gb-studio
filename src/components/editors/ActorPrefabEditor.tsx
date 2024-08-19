@@ -11,7 +11,6 @@ import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { WorldEditor } from "./WorldEditor";
 import { NoteField } from "ui/form/NoteField";
-import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -45,6 +44,11 @@ const FlexWrapper = styled.div`
       ::placeholder {
         color: ${(props) => props.theme.colors.prefab.text};
         opacity: 0.5;
+      }
+      :focus {
+        background: ${(props) => props.theme.colors.input.background};
+        color: ${(props) => props.theme.colors.input.text};
+        border: 1px solid ${(props) => props.theme.colors.highlight};
       }
     }
     svg {
