@@ -186,6 +186,8 @@ const APISetup = {
       count: number
     ): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-delete-prefab", name, count),
+    confirmReplacePrefab: (name: string): Promise<number | false> =>
+      ipcRenderer.invoke("dialog:confirm-replace-prefab", name),
     confirmUnpackPrefab: (): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-unpack-prefab"),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>

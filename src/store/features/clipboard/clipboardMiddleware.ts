@@ -43,7 +43,9 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import {
+  actorName,
   customEventName,
+  isActorPrefabEqual,
   isCustomEventEqual,
 } from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
@@ -183,6 +185,67 @@ const generateActorInsertActions = (
       variables
     )
   );
+  return actions;
+};
+
+const generateActorPrefabInsertActions = async (
+  prefab: ActorPrefabNormalized,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  existingActorPrefabs: ActorPrefabNormalized[],
+  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
+): Promise<AnyAction[]> => {
+  const actions: AnyAction[] = [];
+
+  const existingPrefab = existingActorPrefabs.find((e) => e.id === prefab.id);
+  if (
+    existingPrefab &&
+    isActorPrefabEqual(
+      prefab,
+      scriptEventsLookup,
+      existingPrefab,
+      existingScriptEventsLookup
+    )
+  ) {
+    return [];
+  }
+
+  if (existingPrefab) {
+    const existingEventIndex = existingActorPrefabs.indexOf(existingPrefab);
+    const existingName = actorName(existingPrefab, existingEventIndex);
+    const cancel = await API.dialog.confirmReplacePrefab(existingName);
+    if (cancel) {
+      return [];
+    }
+  }
+
+  if (!existingPrefab) {
+    const addActorPrefabAction = entitiesActions.addActorPrefab({
+      actorPrefabId: prefab.id,
+      defaults: prefab,
+    });
+    actions.push(addActorPrefabAction);
+  } else {
+    const addActorPrefabAction = entitiesActions.editActorPrefab({
+      actorPrefabId: prefab.id,
+      changes: {
+        ...prefab,
+        script: [],
+      },
+    });
+    actions.push(addActorPrefabAction);
+  }
+
+  const scriptEventIds = prefab.script;
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      prefab.id,
+      "actorPrefab",
+      "script"
+    )
+  );
+
   return actions;
 };
 
@@ -829,8 +892,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+        for (const prefab of clipboard.data.actorPrefabs) {
+          const actions = await generateActorPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingActorPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
         for (const actor of clipboard.data.actors) {
           const actions = generateActorInsertActions(
             actor,
@@ -868,8 +945,24 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const scriptEventDefs = selectScriptEventDefs(state);
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+
+        for (const prefab of clipboard.data.actorPrefabs) {
+          const actions = await generateActorPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingActorPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
+
         for (const scene of clipboard.data.scenes) {
           const actions = generateSceneInsertActions(
             scene,

@@ -3513,11 +3513,14 @@ const entitiesSlice = createSlice({
 
     addActorPrefab: {
       reducer: addActorPrefab,
-      prepare: (payload?: { defaults?: Partial<ActorPrefabNormalized> }) => {
+      prepare: (payload?: {
+        actorPrefabId?: string;
+        defaults?: Partial<ActorPrefabNormalized>;
+      }) => {
         return {
           payload: {
             ...payload,
-            actorPrefabId: uuid(),
+            actorPrefabId: payload?.actorPrefabId ?? uuid(),
           },
         };
       },

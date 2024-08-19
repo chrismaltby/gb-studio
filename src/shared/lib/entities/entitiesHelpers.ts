@@ -38,6 +38,7 @@ import {
   SpriteSheet,
   ActorPrefab,
   ActorPrefabNormalized,
+  ActorScriptKey,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -59,7 +60,10 @@ import {
   isScriptValueField,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
-import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import {
+  walkActorScriptsKeys,
+  walkNormalizedScript,
+} from "shared/lib/scripts/walk";
 import {
   extractScriptValueActorIds,
   extractScriptValueVariables,
@@ -524,6 +528,53 @@ export const isCustomEventEqual = (
     customEventB.script,
     lookupB
   );
+};
+
+export const isActorPrefabEqual = (
+  prefabA: ActorPrefabNormalized,
+  lookupA: Dictionary<ScriptEventNormalized>,
+  prefabB: ActorPrefabNormalized,
+  lookupB: Dictionary<ScriptEventNormalized>
+) => {
+  type CompareType = Omit<ActorPrefabNormalized, ActorScriptKey | "id"> &
+    Record<ActorScriptKey | "id", undefined>;
+
+  const compareA: CompareType = {
+    ...prefabA,
+    id: undefined,
+    script: undefined,
+    startScript: undefined,
+    updateScript: undefined,
+    hit1Script: undefined,
+    hit2Script: undefined,
+    hit3Script: undefined,
+  };
+  const compareB: CompareType = {
+    ...prefabB,
+    id: undefined,
+    script: undefined,
+    startScript: undefined,
+    updateScript: undefined,
+    hit1Script: undefined,
+    hit2Script: undefined,
+    hit3Script: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  let scriptMatch = true;
+  walkActorScriptsKeys((key) => {
+    if (!scriptMatch) {
+      return;
+    }
+    scriptMatch = isNormalizedScriptEqual(
+      prefabA[key],
+      lookupA,
+      prefabB[key],
+      lookupB
+    );
+  });
+  return scriptMatch;
 };
 
 export const actorName = (actor: NamedEntity, actorIndex: number) => {

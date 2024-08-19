@@ -119,6 +119,7 @@ import {
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
 import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
 import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
+import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -852,6 +853,13 @@ ipcMain.handle(
   "dialog:confirm-delete-prefab",
   async (_event, name: string, count: number) => {
     return confirmDeletePrefab(name, count);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-replace-prefab",
+  async (_event, name: string) => {
+    return confirmReplacePrefab(name);
   }
 );
 

@@ -1466,6 +1466,8 @@
   "DIALOG_DELETE_PREFAB": "Delete Prefab \"{name}\"?",
   "DIALOG_DELETE_PREFAB_USED": "{count} uses of this prefab will be unpacked",
   "DIALOG_DELETE_PREFAB_USED_SINGLAR": "{count} of this prefab will be unpacked",
+  "DIALOG_REPLACE_PREFAB": "Replace Prefab \"{name}\"?",
+  "DIALOG_REPLACE_PREFAB_DESCRIPTION": "The pasted prefab contains a modified version of an existing prefab. Would you like to replace the prefab with the version on your clipboard or keep your existing prefab?",
 
   "// 16": "Settings ----------------------------------------------------",
 
