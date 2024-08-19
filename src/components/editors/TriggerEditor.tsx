@@ -147,6 +147,14 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
     dispatch(clipboardActions.pasteClipboardEntity());
   };
 
+  const convertToPrefab = () => {
+    if (trigger) {
+      dispatch(
+        entitiesActions.convertTriggerToPrefab({ triggerId: trigger.id })
+      );
+    }
+  };
+
   const onRemove = () => {
     if (trigger) {
       dispatch(
@@ -202,6 +210,11 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                 {!showPrefab && (
                   <MenuItem onClick={() => setShowPrefab(true)}>
                     {l10n("FIELD_LINK_TO_PREFAB")}
+                  </MenuItem>
+                )}
+                {!trigger.prefabId && (
+                  <MenuItem onClick={convertToPrefab}>
+                    {l10n("FIELD_CONVERT_TO_PREFAB")}
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>
