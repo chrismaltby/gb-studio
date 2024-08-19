@@ -3,6 +3,7 @@
   "id": "a65cba5e-5d01-4f02-b32c-ed99c9276ad3",
   "_index": 5,
   "symbol": "actor_hidden_stairs",
+  "prefabId": "",
   "name": "Hidden Stairs",
   "x": 11,
   "y": 12,

@@ -3,6 +3,7 @@
   "id": "685ffbff-21f7-4d22-9a61-7cf2c20d8125",
   "_index": 1,
   "symbol": "actor_scientist",
+  "prefabId": "",
   "name": "Scientist",
   "x": 8,
   "y": 12,

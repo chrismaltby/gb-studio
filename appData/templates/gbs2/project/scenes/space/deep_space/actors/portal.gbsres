@@ -3,6 +3,7 @@
   "id": "1959165a-339d-444a-b69b-098086e5ebca",
   "_index": 1,
   "symbol": "actor_portal",
+  "prefabId": "",
   "name": "Portal",
   "x": 14,
   "y": 10,

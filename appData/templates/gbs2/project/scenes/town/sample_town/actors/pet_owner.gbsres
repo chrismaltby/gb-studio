@@ -3,6 +3,7 @@
   "id": "c73c195d-5cc8-4417-bdb0-b0c55c4b6188",
   "_index": 2,
   "symbol": "actor_pet_owner",
+  "prefabId": "",
   "name": "Pet Owner",
   "x": 24,
   "y": 44,

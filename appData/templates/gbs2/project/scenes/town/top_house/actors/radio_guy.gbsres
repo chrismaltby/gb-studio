@@ -3,6 +3,7 @@
   "id": "566c8812-a204-45b5-b93a-c113c10c20de",
   "_index": 0,
   "symbol": "actor_radio_guy",
+  "prefabId": "",
   "name": "Radio Guy",
   "x": 12,
   "y": 5,

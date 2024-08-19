@@ -3,6 +3,7 @@
   "id": "abf9e863-28c0-4c03-bd4f-201ed2a055c2",
   "_index": 0,
   "symbol": "actor_rock",
+  "prefabId": "",
   "name": "Rock",
   "x": 25,
   "y": 14,

@@ -3,6 +3,7 @@
   "id": "025c7320-2eb1-4209-bf74-c1eef183ecc8",
   "_index": 1,
   "symbol": "actor_fire",
+  "prefabId": "",
   "name": "Fire",
   "x": 4,
   "y": 4,

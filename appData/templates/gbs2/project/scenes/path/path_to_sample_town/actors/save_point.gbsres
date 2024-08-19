@@ -3,6 +3,7 @@
   "id": "dee20f46-fcaa-4473-94b1-9817dbd99fd8",
   "_index": 5,
   "symbol": "actor_save_point_0",
+  "prefabId": "8a31cb67-1788-4705-96ad-f0631da09dc7",
   "name": "Save Point",
   "x": 117,
   "y": 13,

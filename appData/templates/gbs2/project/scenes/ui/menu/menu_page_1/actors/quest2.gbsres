@@ -3,6 +3,7 @@
   "id": "044598b7-a634-427d-9c88-e998fabe8d9a",
   "_index": 1,
   "symbol": "actor_quest2",
+  "prefabId": "",
   "name": "Quest2",
   "x": 2,
   "y": 6,

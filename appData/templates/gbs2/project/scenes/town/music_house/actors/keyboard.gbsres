@@ -3,6 +3,7 @@
   "id": "02504caf-8b1c-42b1-986f-bf5014097aa6",
   "_index": 0,
   "symbol": "actor_18",
+  "prefabId": "",
   "name": "Keyboard",
   "x": 5,
   "y": 10,

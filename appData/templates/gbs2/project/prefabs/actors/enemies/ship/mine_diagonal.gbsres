@@ -1,0 +1,278 @@
+{
+  "_resourceType": "actorPrefab",
+  "id": "9ffef1be-e9d3-4121-bc18-b83a844ffa38",
+  "_index": 8,
+  "name": "Enemies/Ship/Mine Diagonal",
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "b4845aec-11e3-475b-8a9a-0a01b920c710",
+  "paletteId": "",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "persistent": false,
+  "collisionGroup": "1",
+  "script": [
+    {
+      "id": "2ab3eea3-eba7-4617-9753-f16aaf2d3b9a",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "2fe3aa9b-1ada-4d85-91f0-b1f4f9dcc910",
+        "__name": "Enemy Ship Destroy"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "145a11f3-a87a-4996-8201-b0327b50b6b2",
+            "command": "EVENT_ACTOR_COLLISIONS_DISABLE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "c45670b5-cc71-49a2-abbb-46393ebccdb6",
+            "command": "EVENT_ACTOR_STOP_UPDATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "f99073ad-7a20-49b2-a11d-7a04bb0f3cf5",
+            "command": "EVENT_SOUND_PLAY_EFFECT",
+            "args": {
+              "type": "crash",
+              "pitch": 4,
+              "frequency": 200,
+              "duration": 0.5,
+              "wait": false
+            },
+            "children": {}
+          },
+          {
+            "id": "ce1ec9b1-5e26-4315-8ac9-b1fe320cb582",
+            "command": "EVENT_ACTOR_SET_SPRITE",
+            "args": {
+              "actorId": "0",
+              "spriteSheetId": "493bdd1e-7e97-4911-b89a-c0677dfdcaaa"
+            },
+            "children": {}
+          },
+          {
+            "id": "3ac7d739-51e7-4ce1-9724-9cdbf25f2945",
+            "command": "EVENT_ACTOR_SET_ANIMATE",
+            "args": {
+              "actorId": "0",
+              "animate": true
+            },
+            "children": {}
+          },
+          {
+            "id": "a3bc931a-27a7-4f30-879e-7542fd830824",
+            "command": "EVENT_WAIT",
+            "args": {
+              "time": 0.5
+            },
+            "children": {}
+          },
+          {
+            "id": "f80a536b-7252-4a32-8d87-8c8dc9c444c7",
+            "command": "EVENT_ACTOR_DEACTIVATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [
+    {
+      "id": "e0baebe5-9b52-454f-a037-93b7c30cee3e",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "8ea9be15-dd40-4465-8143-cf29ea7fe4a0",
+        "__name": "Enemy Ship Movement Diagonal"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "a84a7b1c-42c6-434a-b4df-42c85efd890a",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": -4
+              },
+              "y": {
+                "type": "number",
+                "value": -4
+              },
+              "moveType": "diagonal",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "5fae4826-0806-4998-acfe-7abc4f865ec2",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 4
+              },
+              "y": {
+                "type": "number",
+                "value": 4
+              },
+              "moveType": "diagonal",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "26cd20ce-77f6-440d-be4c-039c6ce96b84",
+            "command": "EVENT_LAUNCH_PROJECTILE",
+            "args": {
+              "spriteSheetId": "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
+              "actorId": "0",
+              "direction": "left",
+              "speed": 1,
+              "collisionGroup": "1",
+              "collisionMask": [
+                "player"
+              ],
+              "animSpeed": 7,
+              "lifeTime": 1,
+              "directionType": "direction",
+              "angleVariable": "0",
+              "angle": 0,
+              "otherActorId": "$self$",
+              "loopAnim": true,
+              "destroyOnHit": true
+            },
+            "children": {}
+          },
+          {
+            "id": "e293d8b0-2c96-4cfb-9f4e-a11b0f4db742",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": -4
+              },
+              "y": {
+                "type": "number",
+                "value": 4
+              },
+              "moveType": "diagonal",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "f5c9b662-ec1b-4a7b-b823-6e3d3f448888",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 4
+              },
+              "y": {
+                "type": "number",
+                "value": -4
+              },
+              "moveType": "diagonal",
+              "useCollisions": false
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "hit1Script": [
+    {
+      "id": "31f9ba45-7597-4473-b7a1-ad374e6b8839",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "2fe3aa9b-1ada-4d85-91f0-b1f4f9dcc910",
+        "__name": "Enemy Ship Destroy"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "75078ec3-c6ff-4849-9feb-17c0c4fed493",
+            "command": "EVENT_ACTOR_COLLISIONS_DISABLE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "81233b41-1a49-4049-aac1-d58e24243ce6",
+            "command": "EVENT_ACTOR_STOP_UPDATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "b921346c-e962-4f03-a764-2f727e39876c",
+            "command": "EVENT_SOUND_PLAY_EFFECT",
+            "args": {
+              "type": "crash",
+              "pitch": 4,
+              "frequency": 200,
+              "duration": 0.5,
+              "wait": false
+            },
+            "children": {}
+          },
+          {
+            "id": "36eef228-b00c-426d-a433-2fde7c79068b",
+            "command": "EVENT_ACTOR_SET_SPRITE",
+            "args": {
+              "actorId": "0",
+              "spriteSheetId": "493bdd1e-7e97-4911-b89a-c0677dfdcaaa"
+            },
+            "children": {}
+          },
+          {
+            "id": "89c07c5a-4136-4f6b-b3c4-707a5ed1a443",
+            "command": "EVENT_ACTOR_SET_ANIMATE",
+            "args": {
+              "actorId": "0",
+              "animate": true
+            },
+            "children": {}
+          },
+          {
+            "id": "99825b11-468d-4479-97af-50148298c2ac",
+            "command": "EVENT_WAIT",
+            "args": {
+              "time": 0.5
+            },
+            "children": {}
+          },
+          {
+            "id": "e37b34b7-65f9-40f0-8ca6-fca0e6cf918b",
+            "command": "EVENT_ACTOR_DEACTIVATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "hit2Script": [],
+  "hit3Script": []
+}

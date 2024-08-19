@@ -3,6 +3,7 @@
   "id": "15d7cf30-df3a-427b-883a-996b605edb40",
   "_index": 2,
   "symbol": "actor_sage",
+  "prefabId": "",
   "name": "Sage",
   "x": 9,
   "y": 7,

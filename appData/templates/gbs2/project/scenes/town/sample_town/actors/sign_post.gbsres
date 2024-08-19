@@ -3,6 +3,7 @@
   "id": "ea191344-25b4-4ffe-9ae8-229c8e784e3a",
   "_index": 6,
   "symbol": "actor_sign_post",
+  "prefabId": "",
   "name": "Sign Post",
   "x": 28,
   "y": 23,

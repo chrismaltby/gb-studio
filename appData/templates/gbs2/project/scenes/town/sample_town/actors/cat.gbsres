@@ -3,6 +3,7 @@
   "id": "076a0612-024a-426a-85fc-3e1054b9f74e",
   "_index": 3,
   "symbol": "actor_cat",
+  "prefabId": "",
   "name": "Cat",
   "x": 4,
   "y": 6,

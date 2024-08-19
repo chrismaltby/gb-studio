@@ -3,6 +3,7 @@
   "id": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
   "_index": 7,
   "symbol": "actor_hider",
+  "prefabId": "",
   "name": "Hider",
   "x": 36,
   "y": 24,

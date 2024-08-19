@@ -3,6 +3,7 @@
   "id": "0950d56c-866c-4d02-bd63-cd3fff4fe2bf",
   "_index": 0,
   "symbol": "actor_pod_door",
+  "prefabId": "",
   "name": "Pod Door",
   "x": 15,
   "y": 9,

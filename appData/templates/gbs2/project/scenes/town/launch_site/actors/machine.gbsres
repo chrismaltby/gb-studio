@@ -3,6 +3,7 @@
   "id": "c0ddfd83-7de9-4e19-8c83-758dbaecb47a",
   "_index": 2,
   "symbol": "actor_machine",
+  "prefabId": "",
   "name": "Machine",
   "x": 4,
   "y": 8,

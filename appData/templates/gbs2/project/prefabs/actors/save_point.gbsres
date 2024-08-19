@@ -1,0 +1,75 @@
+{
+  "_resourceType": "actorPrefab",
+  "id": "8a31cb67-1788-4705-96ad-f0631da09dc7",
+  "_index": 5,
+  "name": "Save Point",
+  "frame": 0,
+  "animate": true,
+  "spriteSheetId": "000a6dde-cb60-436e-b357-30a529daa139",
+  "paletteId": "",
+  "moveSpeed": 1,
+  "animSpeed": 31,
+  "persistent": false,
+  "collisionGroup": "",
+  "script": [
+    {
+      "id": "adca4661-21cc-49b7-9399-9f0c62609d2e",
+      "command": "EVENT_CHOICE",
+      "args": {
+        "variable": "L0",
+        "trueText": "Save Game",
+        "falseText": "Cancel"
+      },
+      "children": {}
+    },
+    {
+      "id": "fcaf9ec5-7807-42a2-8531-28dff953764d",
+      "command": "EVENT_IF",
+      "args": {
+        "variable": "L0",
+        "__collapseElse": true,
+        "condition": {
+          "type": "variable",
+          "value": "L0"
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "c162d6cf-1867-48a9-8791-fb565d9d223d",
+            "command": "EVENT_SAVE_DATA",
+            "args": {
+              "saveSlot": 0
+            },
+            "children": {
+              "true": [
+                {
+                  "id": "30813d9a-6d57-4cf9-9a3f-657279de3be3",
+                  "command": "EVENT_TEXT",
+                  "args": {
+                    "text": "Game progress has\nbeen saved."
+                  },
+                  "children": {}
+                },
+                {
+                  "id": "a1bb5aff-91da-4d6e-95f7-54dc89b588d1",
+                  "command": "EVENT_TEXT",
+                  "args": {
+                    "text": "It is now safe to\nturn off your\nsystem."
+                  },
+                  "children": {}
+                }
+              ]
+            }
+          }
+        ],
+        "false": []
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [],
+  "hit1Script": [],
+  "hit2Script": [],
+  "hit3Script": []
+}
