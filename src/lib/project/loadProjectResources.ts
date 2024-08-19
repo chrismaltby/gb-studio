@@ -19,6 +19,7 @@ import {
   SoundResource,
   SpriteResource,
   TilesetResource,
+  TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
@@ -66,6 +67,7 @@ interface ResourceLookup {
   triggers: ResourceWithPath<TriggerResource>[];
   scenes: ResourceWithPath<CompressedSceneResource>[];
   actorPrefabs: ResourceWithPath<ActorPrefabResource>[];
+  triggerPrefabs: ResourceWithPath<TriggerPrefabResource>[];
   scripts: ResourceWithPath<ScriptResource>[];
   backgrounds: ResourceWithPath<CompressedBackgroundResource>[];
   sprites: ResourceWithPath<SpriteResource>[];
@@ -112,6 +114,7 @@ export const loadProjectResources = async (
     triggers: [],
     scenes: [],
     actorPrefabs: [],
+    triggerPrefabs: [],
     scripts: [],
     backgrounds: [],
     sprites: [],
@@ -164,6 +167,7 @@ export const loadProjectResources = async (
     cast(TriggerResource, resourcesLookup.triggers),
     cast(CompressedSceneResource, resourcesLookup.scenes),
     cast(ActorPrefabResource, resourcesLookup.actorPrefabs),
+    cast(TriggerPrefabResource, resourcesLookup.triggerPrefabs),
     cast(ScriptResource, resourcesLookup.scripts),
     cast(CompressedBackgroundResource, resourcesLookup.backgrounds),
     cast(SpriteResource, resourcesLookup.sprites),
@@ -249,6 +253,7 @@ export const loadProjectResources = async (
   return {
     scenes: sceneResources,
     actorPrefabs: extractDataArray(resourcesLookup.actorPrefabs),
+    triggerPrefabs: extractDataArray(resourcesLookup.triggerPrefabs),
     scripts: extractDataArray(resourcesLookup.scripts),
     sprites: extractDataArray(resourcesLookup.sprites),
     backgrounds: extractDataArray(resourcesLookup.backgrounds),

@@ -5,7 +5,8 @@ export type EntityType =
   | "actor"
   | "trigger"
   | "customEvent"
-  | "actorPrefab";
+  | "actorPrefab"
+  | "triggerPrefab";
 
 export type ScriptEditorCtx = {
   type: ScriptEditorCtxType;

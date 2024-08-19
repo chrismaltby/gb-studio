@@ -5,6 +5,7 @@ import {
   PaletteResource,
   Resource,
   ScriptResource,
+  TriggerPrefabResource,
   TriggerResource,
 } from "shared/lib/resources/types";
 import Path from "path";
@@ -44,6 +45,7 @@ const resourceTypeFolderLookup = {
   actor: "actors",
   trigger: "triggers",
   actorPrefab: "prefabs/actors",
+  triggerPrefab: "prefabs/triggers",
 };
 
 export const getResourceAssetPath = (resource: Resource): string =>
@@ -122,4 +124,12 @@ export const getActorPrefabResourcePath = (actorPrefab: ActorPrefabResource) =>
   Path.join(
     resourceTypeFolderLookup[actorPrefab._resourceType],
     `${entityToFilePath(actorPrefab, "actor")}.gbsres`
+  );
+
+export const getTriggerPrefabResourcePath = (
+  triggerPrefab: TriggerPrefabResource
+) =>
+  Path.join(
+    resourceTypeFolderLookup[triggerPrefab._resourceType],
+    `${entityToFilePath(triggerPrefab, "trigger")}.gbsres`
   );

@@ -70,6 +70,7 @@ import {
   Sound,
   Tileset,
   ActorPrefabNormalized,
+  TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -110,6 +111,7 @@ const actorsAdapter = createEntityAdapter<ActorNormalized>();
 const triggersAdapter = createEntityAdapter<TriggerNormalized>();
 const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
+const triggerPrefabsAdapter = createEntityAdapter<TriggerPrefabNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
@@ -148,6 +150,7 @@ export const initialState: EntitiesState = {
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
   actorPrefabs: actorPrefabsAdapter.getInitialState(),
+  triggerPrefabs: triggerPrefabsAdapter.getInitialState(),
   scriptEvents: scriptEventsAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
@@ -262,6 +265,10 @@ const loadProject: CaseReducer<
   actorPrefabsAdapter.setAll(
     state.actorPrefabs,
     data.entities.actorPrefabs || {}
+  );
+  triggerPrefabsAdapter.setAll(
+    state.triggerPrefabs,
+    data.entities.triggerPrefabs || {}
   );
   scriptEventsAdapter.setAll(
     state.scriptEvents,
@@ -1388,6 +1395,7 @@ const addTrigger: CaseReducer<
 
   const newTrigger: TriggerNormalized = {
     name: "",
+    prefabId: "",
     ...(action.payload.defaults || {}),
     id: action.payload.triggerId,
     x: clamp(action.payload.x, 0, scene.width - width),
@@ -1650,6 +1658,68 @@ const removeActorPrefab: CaseReducer<
   actorPrefabsAdapter.removeOne(
     state.actorPrefabs,
     action.payload.actorPrefabId
+  );
+};
+
+/**************************************************************************
+ * Trigger Prefabs
+ */
+
+const addTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+    defaults?: Partial<TriggerPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const spriteSheetId = first(localSpriteSheetSelectors.selectAll(state))?.id;
+  if (!spriteSheetId) {
+    return;
+  }
+
+  const newTriggerPrefab: TriggerPrefabNormalized = {
+    name: "",
+    ...(action.payload.defaults || {}),
+    script: [],
+    leaveScript: [],
+    id: action.payload.triggerPrefabId,
+  };
+
+  triggerPrefabsAdapter.addOne(state.triggerPrefabs, newTriggerPrefab);
+};
+
+const editTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+    changes: Partial<TriggerPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const triggerPrefab = localTriggerPrefabSelectors.selectById(
+    state,
+    action.payload.triggerPrefabId
+  );
+  const patch = { ...action.payload.changes };
+
+  if (!triggerPrefab) {
+    return;
+  }
+
+  triggerPrefabsAdapter.updateOne(state.triggerPrefabs, {
+    id: action.payload.triggerPrefabId,
+    changes: patch,
+  });
+};
+
+const removeTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+  }>
+> = (state, action) => {
+  triggerPrefabsAdapter.removeOne(
+    state.triggerPrefabs,
+    action.payload.triggerPrefabId
   );
 };
 
@@ -2927,6 +2997,15 @@ export const selectScriptIds = (
     }
     const newScript = (actorPrefab[parentKey as "script"] = []);
     return newScript;
+  } else if (parentType === "triggerPrefab") {
+    const triggerPrefab = state.triggerPrefabs.entities[parentId];
+    if (!triggerPrefab) return;
+    const script = triggerPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (triggerPrefab[parentKey as "script"] = []);
+    return newScript;
   } else {
     assertUnreachable(parentType);
   }
@@ -3530,6 +3609,28 @@ const entitiesSlice = createSlice({
     removeActorPrefab,
 
     /**************************************************************************
+     * Trigger Prefabs
+     */
+
+    addTriggerPrefab: {
+      reducer: addTriggerPrefab,
+      prepare: (payload?: {
+        triggerPrefabId?: string;
+        defaults?: Partial<TriggerPrefabNormalized>;
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            triggerPrefabId: payload?.triggerPrefabId ?? uuid(),
+          },
+        };
+      },
+    },
+
+    editTriggerPrefab,
+    removeTriggerPrefab,
+
+    /**************************************************************************
      * Backgrounds
      */
 
@@ -3903,6 +4004,9 @@ const localSceneSelectors = scenesAdapter.getSelectors(
 const localActorPrefabSelectors = actorPrefabsAdapter.getSelectors(
   (state: EntitiesState) => state.actorPrefabs
 );
+const localTriggerPrefabSelectors = triggerPrefabsAdapter.getSelectors(
+  (state: EntitiesState) => state.triggerPrefabs
+);
 const localScriptEventSelectors = scriptEventsAdapter.getSelectors(
   (state: EntitiesState) => state.scriptEvents
 );
@@ -3943,6 +4047,9 @@ export const sceneSelectors = scenesAdapter.getSelectors(
 );
 export const actorPrefabSelectors = actorPrefabsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.actorPrefabs
+);
+export const triggerPrefabSelectors = triggerPrefabsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.triggerPrefabs
 );
 export const scriptEventSelectors = scriptEventsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scriptEvents

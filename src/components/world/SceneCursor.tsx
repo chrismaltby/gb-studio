@@ -640,6 +640,11 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           y,
           width: 1,
           height: 1,
+          defaults: editorPrefabId
+            ? {
+                prefabId: editorPrefabId,
+              }
+            : undefined,
         })
       );
     }
@@ -647,7 +652,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     data.current.startX = x;
     data.current.startY = y;
     setResize(true);
-  }, [dispatch, pasteMode, sceneId, x, y]);
+  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
 
   const onMouseDownCollisions = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

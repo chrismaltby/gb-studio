@@ -16,6 +16,7 @@ import {
   SoundResource,
   SpriteResource,
   TilesetResource,
+  TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
   WriteFile,
@@ -28,6 +29,7 @@ import {
   getSceneFolderPath,
   getSceneResourcePath,
   getScriptResourcePath,
+  getTriggerPrefabResourcePath,
   getTriggerResourcePath,
 } from "shared/lib/resources/paths";
 import SparkMD5 from "spark-md5";
@@ -170,6 +172,17 @@ export const buildResourceExportBuffer = (
       actorPrefabFilename,
       "actorPrefab",
       actorPrefab
+    );
+  }
+
+  for (const triggerPrefab of projectResources.triggerPrefabs) {
+    const triggerPrefabFilename = getUniquePath(
+      getTriggerPrefabResourcePath(triggerPrefab)
+    );
+    writeResource<TriggerPrefabResource>(
+      triggerPrefabFilename,
+      "triggerPrefab",
+      triggerPrefab
     );
   }
 

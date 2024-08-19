@@ -56,6 +56,7 @@ import {
   SoundResource,
   SpriteResource,
   TilesetResource,
+  TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
@@ -129,6 +130,7 @@ export const dummyTriggerNormalized: TriggerNormalized = {
   id: "",
   name: "",
   symbol: "trigger_0",
+  prefabId: "",
   x: 0,
   y: 0,
   width: 0,
@@ -366,6 +368,7 @@ export const dummyTriggerResource: TriggerResource = {
   id: "trigger1",
   symbol: "symbol",
   name: "Trigger 1",
+  prefabId: "",
   x: 10,
   y: 20,
   width: 30,
@@ -445,6 +448,14 @@ export const dummyActorPrefabResource: ActorPrefabResource = {
   animate: false,
   persistent: false,
   collisionGroup: "",
+};
+
+export const dummyTriggerPrefabResource: TriggerPrefabResource = {
+  script: [],
+  id: "",
+  name: "",
+  _resourceType: "triggerPrefab",
+  leaveScript: [],
 };
 
 export const dummyMusicResource: MusicResource = {
@@ -607,6 +618,7 @@ export const dummyProjectResources: ProjectResources = {
   sprites: [],
   palettes: [],
   actorPrefabs: [],
+  triggerPrefabs: [],
   scripts: [],
   variables: {
     _resourceType: "variables",

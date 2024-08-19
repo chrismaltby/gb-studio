@@ -39,6 +39,9 @@ import {
   ActorPrefab,
   ActorPrefabNormalized,
   ActorScriptKey,
+  TriggerPrefab,
+  TriggerPrefabNormalized,
+  TriggerScriptKey,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -63,6 +66,7 @@ import {
 import {
   walkActorScriptsKeys,
   walkNormalizedScript,
+  walkTriggerScriptsKeys,
 } from "shared/lib/scripts/walk";
 import {
   extractScriptValueActorIds,
@@ -91,6 +95,7 @@ export interface NormalizedEntities {
   emotes: Record<EntityId, Emote>;
   tilesets: Record<EntityId, Tileset>;
   actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
+  triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
@@ -104,6 +109,7 @@ export interface NormalizedResult {
   spriteSheets: EntityId[];
   palettes: EntityId[];
   actorPrefabs: EntityId[];
+  triggerPrefabs: EntityId[];
   scripts: EntityId[];
   music: EntityId[];
   sounds: EntityId[];
@@ -144,6 +150,7 @@ export interface DenormalizedEntities {
     variables: Variable[];
   };
   actorPrefabs: ActorPrefab[];
+  triggerPrefabs: TriggerPrefab[];
 }
 
 const inodeToAssetCache: Dictionary<Asset> = {};
@@ -179,6 +186,10 @@ const actorPrefabSchema = new schema.Entity("actorPrefabs", {
   hit1Script: [scriptEventSchema],
   hit2Script: [scriptEventSchema],
   hit3Script: [scriptEventSchema],
+});
+const triggerPrefabSchema = new schema.Entity("triggerPrefabs", {
+  script: [scriptEventSchema],
+  leaveScript: [scriptEventSchema],
 });
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
@@ -225,6 +236,7 @@ const resourcesSchema = {
   actors: [actorSchema],
   triggers: [triggerSchema],
   actorPrefabs: [actorPrefabSchema],
+  triggerPrefabs: [triggerPrefabSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   sounds: [soundSchema],
@@ -253,6 +265,7 @@ export const denormalizeEntities = (
     actors: state.actors.ids,
     triggers: state.triggers.ids,
     actorPrefabs: state.actorPrefabs.ids,
+    triggerPrefabs: state.triggerPrefabs.ids,
     backgrounds: state.backgrounds.ids,
     sprites: state.spriteSheets.ids,
     palettes: state.palettes.ids,
@@ -273,6 +286,10 @@ export const denormalizeEntities = (
     actorPrefabs: state.actorPrefabs.entities as Record<
       EntityId,
       ActorPrefabNormalized
+    >,
+    triggerPrefabs: state.triggerPrefabs.entities as Record<
+      EntityId,
+      TriggerPrefabNormalized
     >,
     scriptEvents: state.scriptEvents.entities as Record<
       EntityId,
@@ -343,6 +360,9 @@ export const denormalizeEntities = (
     })),
     actorPrefabs: denormalizedEntities.actorPrefabs.map(
       entityToResource("actorPrefab")
+    ),
+    triggerPrefabs: denormalizedEntities.triggerPrefabs.map(
+      entityToResource("triggerPrefab")
     ),
     backgrounds: denormalizedEntities.backgrounds.map(
       entityToResource("background")
@@ -564,6 +584,45 @@ export const isActorPrefabEqual = (
   }
   let scriptMatch = true;
   walkActorScriptsKeys((key) => {
+    if (!scriptMatch) {
+      return;
+    }
+    scriptMatch = isNormalizedScriptEqual(
+      prefabA[key],
+      lookupA,
+      prefabB[key],
+      lookupB
+    );
+  });
+  return scriptMatch;
+};
+
+export const isTriggerPrefabEqual = (
+  prefabA: TriggerPrefabNormalized,
+  lookupA: Dictionary<ScriptEventNormalized>,
+  prefabB: TriggerPrefabNormalized,
+  lookupB: Dictionary<ScriptEventNormalized>
+) => {
+  type CompareType = Omit<TriggerPrefabNormalized, TriggerScriptKey | "id"> &
+    Record<TriggerScriptKey | "id", undefined>;
+
+  const compareA: CompareType = {
+    ...prefabA,
+    id: undefined,
+    script: undefined,
+    leaveScript: undefined,
+  };
+  const compareB: CompareType = {
+    ...prefabB,
+    id: undefined,
+    script: undefined,
+    leaveScript: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  let scriptMatch = true;
+  walkTriggerScriptsKeys((key) => {
     if (!scriptMatch) {
       return;
     }

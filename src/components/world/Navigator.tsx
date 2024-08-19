@@ -79,6 +79,16 @@ export const Navigator = () => {
     }
   };
 
+  const onAddTriggerPrefab = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    dispatch(entitiesActions.addTriggerPrefab());
+    if (Math.floor(splitSizes[1]) <= COLLAPSED_SIZE) {
+      togglePane(1);
+    }
+  };
+
   const [scenesSearchTerm, setScenesSearchTerm] = useState("");
   const [scenesSearchEnabled, setScenesSearchEnabled] = useState(false);
   const showScenesSearch = scenesSearchEnabled && splitSizes[0] > 60;
@@ -182,7 +192,9 @@ export const Navigator = () => {
                 showArrow={false}
               >
                 <MenuItem onClick={onAddActorPrefab}>{l10n("ACTOR")}</MenuItem>
-                <MenuItem>{l10n("TRIGGER")}</MenuItem>
+                <MenuItem onClick={onAddTriggerPrefab}>
+                  {l10n("TRIGGER")}
+                </MenuItem>
               </DropdownButton>
               <FixedSpacer width={5} />
               <Button

@@ -45,7 +45,8 @@ export type ScriptEventParentType =
   | "trigger"
   | "scriptEvent"
   | "customEvent"
-  | "actorPrefab";
+  | "actorPrefab"
+  | "triggerPrefab";
 
 export type ScriptEventArgs = Record<string, unknown>;
 
@@ -144,6 +145,7 @@ export type Trigger = {
   name: string;
   symbol: string;
   notes?: string;
+  prefabId: string;
   x: number;
   y: number;
   width: number;
@@ -156,6 +158,21 @@ export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
   script: string[];
   leaveScript: string[];
 };
+
+export type TriggerFieldsOmittedFromPrefab =
+  | "prefabId"
+  | "x"
+  | "y"
+  | "width"
+  | "height"
+  | "symbol";
+
+export type TriggerPrefab = Omit<Trigger, TriggerFieldsOmittedFromPrefab>;
+
+export type TriggerPrefabNormalized = Omit<
+  TriggerNormalized,
+  TriggerFieldsOmittedFromPrefab
+>;
 
 export type Background = {
   id: string;
@@ -461,6 +478,7 @@ export interface EntitiesState {
   triggers: EntityState<TriggerNormalized>;
   scenes: EntityState<SceneNormalized>;
   actorPrefabs: EntityState<ActorPrefabNormalized>;
+  triggerPrefabs: EntityState<TriggerPrefabNormalized>;
   scriptEvents: EntityState<ScriptEventNormalized>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheetNormalized>;

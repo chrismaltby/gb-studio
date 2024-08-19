@@ -2,7 +2,10 @@ import React, { FC, useCallback, useMemo, useState } from "react";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorPrefabNormalized,
+  TriggerPrefabNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
@@ -13,9 +16,12 @@ import {
   entityParentFolders,
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
-import { actorName } from "shared/lib/entities/entitiesHelpers";
+import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 import { CheckIcon, BlankIcon, InstantiateIcon } from "ui/icons/Icons";
-import { actorPrefabSelectors } from "store/features/entities/entitiesState";
+import {
+  actorPrefabSelectors,
+  triggerPrefabSelectors,
+} from "store/features/entities/entitiesState";
 import { Button } from "ui/buttons/Button";
 import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
@@ -29,10 +35,17 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   searchTerm,
 }) => {
   const allActorPrefabs = useAppSelector(actorPrefabSelectors.selectAll);
+  const allTriggerPrefabs = useAppSelector(triggerPrefabSelectors.selectAll);
+
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
-  const selectedId = editorType === "actorPrefab" ? entityId : "";
-  const actorPrefab = null;
+  const selectedId =
+    editorType === "actorPrefab" || editorType === "triggerPrefab"
+      ? entityId
+      : "";
+  const actorPrefab = useAppSelector((state) =>
+    actorPrefabSelectors.selectById(state, selectedId)
+  );
   const showUses = useAppSelector((state) => state.editor.showScriptUses);
 
   const dispatch = useAppDispatch();
@@ -54,7 +67,11 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
 
   const nestedPrefabItems = useMemo(
     () =>
-      ([] as EntityNavigatorItem<ActorPrefabNormalized>[]).concat(
+      (
+        [] as EntityNavigatorItem<
+          ActorPrefabNormalized | TriggerPrefabNormalized
+        >[]
+      ).concat(
         {
           id: "actors",
           type: "folder",
@@ -76,13 +93,34 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           type: "folder",
           name: l10n("FIELD_TRIGGERS"),
           filename: l10n("FIELD_TRIGGERS"),
-        }
+        },
+        buildEntityNavigatorItems(
+          allTriggerPrefabs.map((triggerPrefab, index) => ({
+            ...triggerPrefab,
+            name: triggerName(triggerPrefab, index),
+          })),
+          openFolders,
+          searchTerm,
+          undefined,
+          1
+        )
       ),
-    [allActorPrefabs, openFolders, searchTerm]
+    [allActorPrefabs, allTriggerPrefabs, openFolders, searchTerm]
   );
 
-  const setSelectedId = (id: string) => {
-    dispatch(editorActions.selectActorPrefab({ actorPrefabId: id }));
+  const setSelectedId = (
+    id: string,
+    item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+  ) => {
+    if (
+      item.entity &&
+      "spriteSheetId" in item.entity &&
+      item.entity?.spriteSheetId !== undefined
+    ) {
+      dispatch(editorActions.selectActorPrefab({ actorPrefabId: id }));
+    } else {
+      dispatch(editorActions.selectTriggerPrefab({ triggerPrefabId: id }));
+    }
   };
 
   const [renameId, setRenameId] = useState("");
@@ -126,7 +164,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
     [dispatch]
   );
 
-  const setInstantiate = useCallback(
+  const setInstantiateActor = useCallback(
     (prefabId: string) => {
       dispatch(editorActions.setTool({ tool: "actors" }));
       dispatch(editorActions.setPrefabId(prefabId));
@@ -134,8 +172,18 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
     [dispatch]
   );
 
+  const setInstantiateTrigger = useCallback(
+    (prefabId: string) => {
+      dispatch(editorActions.setTool({ tool: "triggers" }));
+      dispatch(editorActions.setPrefabId(prefabId));
+    },
+    [dispatch]
+  );
+
   const renderContextMenu = useCallback(
-    (item: EntityNavigatorItem<ActorPrefabNormalized>) => {
+    (
+      item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+    ) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           <MenuItemIcon>
@@ -144,7 +192,10 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           {l10n("FIELD_RENAME")}
         </MenuItem>,
         <MenuDivider key="div-instantiate" />,
-        <MenuItem key="instantiate" onClick={() => setInstantiate(item.id)}>
+        <MenuItem
+          key="instantiate"
+          onClick={() => setInstantiateActor(item.id)}
+        >
           <MenuItemIcon>
             <BlankIcon />
           </MenuItemIcon>
@@ -179,16 +230,22 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         </MenuItem>,
       ];
     },
-    [dispatch, setInstantiate, setShowUses, showUses]
+    [dispatch, setInstantiateActor, setShowUses, showUses]
   );
 
   const renderLabel = useCallback(
-    (item: EntityNavigatorItem<ActorPrefabNormalized>) => {
+    (
+      item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+    ) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
         );
-      } else if (item.entity?.spriteSheetId !== undefined) {
+      } else if (
+        item.entity &&
+        "spriteSheetId" in item.entity &&
+        item.entity?.spriteSheetId !== undefined
+      ) {
         const prefab = item.entity;
         return (
           <FlexRow>
@@ -198,7 +255,24 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
               variant="transparent"
               title={l10n("FIELD_INSTANTIATE_PREFAB")}
               onClick={() => {
-                setInstantiate(prefab.id);
+                setInstantiateActor(prefab.id);
+              }}
+            >
+              <InstantiateIcon />
+            </Button>
+          </FlexRow>
+        );
+      } else if (item.entity) {
+        const prefab = item.entity;
+        return (
+          <FlexRow>
+            <FlexGrow style={{ overflow: "hidden" }}>{item.filename}</FlexGrow>
+            <Button
+              size="small"
+              variant="transparent"
+              title={l10n("FIELD_INSTANTIATE_PREFAB")}
+              onClick={() => {
+                setInstantiateTrigger(prefab.id);
               }}
             >
               <InstantiateIcon />
@@ -208,7 +282,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       }
       return item.filename;
     },
-    [setInstantiate, toggleFolderOpen]
+    [setInstantiateActor, setInstantiateTrigger, toggleFolderOpen]
   );
 
   return (

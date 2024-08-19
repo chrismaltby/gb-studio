@@ -48,7 +48,8 @@ export type EditorSelectionType =
   | "trigger"
   | "customEvent"
   | "variable"
-  | "actorPrefab";
+  | "actorPrefab"
+  | "triggerPrefab";
 
 export const zoomSections = [
   "world",
@@ -396,6 +397,15 @@ const editorSlice = createSlice({
       state.type = "actorPrefab";
       state.scene = "";
       state.entityId = action.payload.actorPrefabId;
+    },
+
+    selectTriggerPrefab: (
+      state,
+      action: PayloadAction<{ triggerPrefabId: string }>
+    ) => {
+      state.type = "triggerPrefab";
+      state.scene = "";
+      state.entityId = action.payload.triggerPrefabId;
     },
 
     selectCustomEvent: (

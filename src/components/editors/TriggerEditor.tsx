@@ -1,13 +1,12 @@
-import React, { useCallback, useMemo, useState } from "react";
-import ScriptEditor from "components/script/ScriptEditor";
+import React, { useCallback, useState } from "react";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,
   sceneSelectors,
+  triggerPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -20,58 +19,30 @@ import {
   FormRow,
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
-import {
-  TriggerNormalized,
-  ScriptEventNormalized,
-} from "shared/lib/entities/entitiesTypes";
+import { TriggerNormalized } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
-import { StickyTabs, TabBar } from "ui/tabs/Tabs";
-import { Button } from "ui/buttons/Button";
-import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import CachedScroll from "ui/util/CachedScroll";
+import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
+import { TriggerEditorScripts } from "./trigger/TriggerEditorScripts";
 
 interface TriggerEditorProps {
   id: string;
   sceneId: string;
 }
 
-interface ScriptHandler {
-  value: ScriptEventNormalized[];
-  onChange: (newValue: ScriptEventNormalized[]) => void;
-}
-
-interface ScriptHandlers {
-  trigger: ScriptHandler;
-  leave: ScriptHandler;
-}
-
-type TriggerScriptKey = "script" | "leaveScript";
-
-type DefaultTab = "trigger" | "leave";
-type PointNClickTab = "trigger";
-
-const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
-  if (tab === "trigger") {
-    return "script";
-  }
-  if (tab === "leave") {
-    return "leaveScript";
-  }
-  return "script";
-};
-
 export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
+  );
+  const prefab = useAppSelector((state) =>
+    triggerPrefabSelectors.selectById(state, trigger?.prefabId ?? "")
   );
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
@@ -84,36 +55,6 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const lastScriptTab = useAppSelector(
     (state) => state.editor.lastScriptTabTrigger
   );
-
-  const scriptTabs: Record<DefaultTab, string> = useMemo(
-    () => ({
-      trigger: l10n("SIDEBAR_ON_ENTER"),
-      leave: l10n("SIDEBAR_ON_LEAVE"),
-    }),
-    []
-  );
-
-  const pointNClickScriptTabs: Record<PointNClickTab, string> = useMemo(
-    () => ({
-      trigger: l10n("SIDEBAR_ON_INTERACT"),
-    }),
-    []
-  );
-
-  const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
-
-  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
-
-  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
-  );
-
-  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
-    setScriptMode(mode);
-    dispatch(editorActions.setScriptTabTrigger(mode));
-  };
-
-  const scriptKey = getScriptKey(scriptMode);
 
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
   const lockScriptEditor = useAppSelector(
@@ -211,59 +152,13 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
     setNotesOpen(true);
   };
 
-  const onToggleLockScriptEditor = useCallback(() => {
-    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
-  }, [dispatch, lockScriptEditor]);
-
   const showNotes = trigger?.notes || notesOpen;
-
-  const lockButton = useMemo(
-    () => (
-      <Button
-        size="small"
-        variant={lockScriptEditor ? "primary" : "transparent"}
-        onClick={onToggleLockScriptEditor}
-        title={
-          lockScriptEditor
-            ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
-            : l10n("FIELD_LOCK_SCRIPT_EDITOR")
-        }
-      >
-        {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
-      </Button>
-    ),
-    [lockScriptEditor, onToggleLockScriptEditor]
-  );
-
-  const scriptButton = useMemo(
-    () =>
-      trigger && (
-        <ScriptEditorDropdownButton
-          value={trigger[scriptKey]}
-          type="trigger"
-          entityId={trigger.id}
-          scriptKey={scriptKey}
-        />
-      ),
-    [scriptKey, trigger]
-  );
-
-  const scriptCtx: ScriptEditorCtx = useMemo(
-    () => ({
-      type: "entity",
-      entityType: "trigger",
-      entityId: id,
-      sceneId,
-      scriptKey,
-    }),
-    [id, sceneId, scriptKey]
-  );
 
   if (!scene || !trigger) {
     return <WorldEditor />;
   }
 
-  const scrollKey = `${trigger.id}_${scriptKey}`;
+  const scrollKey = `${trigger.id}_${lastScriptTab}`;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -378,34 +273,11 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
             </SidebarColumn>
           </SidebarColumns>
         )}
-        <StickyTabs>
-          {scene.type === "POINTNCLICK" ? (
-            <TabBar
-              values={pointNClickScriptTabs}
-              buttons={
-                <>
-                  {lockButton}
-                  {scriptButton}
-                </>
-              }
-            />
-          ) : (
-            <TabBar
-              value={scriptMode}
-              values={scriptTabs}
-              onChange={onChangeScriptMode}
-              buttons={
-                <>
-                  {lockButton}
-                  {scriptButton}
-                </>
-              }
-            />
-          )}
-        </StickyTabs>
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor value={trigger[scriptKey] || []} />
-        </ScriptEditorContext.Provider>
+        {prefab ? (
+          <TriggerPrefabEditorScripts prefab={prefab} isInstance />
+        ) : (
+          <TriggerEditorScripts trigger={trigger} sceneId={sceneId} />
+        )}
       </CachedScroll>
     </Sidebar>
   );

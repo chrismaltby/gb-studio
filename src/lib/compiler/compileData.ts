@@ -1397,6 +1397,7 @@ const compile = async (
   }
 
   const actorPrefabsLookup = keyBy(rawProjectData.actorPrefabs, "id");
+  const triggerPrefabsLookup = keyBy(rawProjectData.triggerPrefabs, "id");
 
   const projectData = {
     ...rawProjectData,
@@ -1412,6 +1413,18 @@ const compile = async (
           ...prefab,
           _resourceType: actor._resourceType,
           id: actor.id,
+        };
+      }),
+      triggers: scene.triggers.map((trigger) => {
+        const prefab = triggerPrefabsLookup[trigger.prefabId];
+        if (!prefab) {
+          return trigger;
+        }
+        return {
+          ...trigger,
+          ...prefab,
+          _resourceType: trigger._resourceType,
+          id: trigger.id,
         };
       }),
     })),

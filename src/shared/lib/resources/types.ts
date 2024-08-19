@@ -124,6 +124,7 @@ export const TriggerResource = Type.Object({
   _index: Type.Number(),
   id: Type.String(),
   symbol: Type.String(),
+  prefabId: Type.String(),
   name: Type.String(),
   x: Type.Number(),
   y: Type.Number(),
@@ -134,6 +135,24 @@ export const TriggerResource = Type.Object({
 });
 
 export type TriggerResource = Static<typeof TriggerResource>;
+
+export const TriggerPrefabResource = Type.Composite([
+  Type.Omit(TriggerResource, [
+    "_resourceType",
+    "_index",
+    "prefabId",
+    "x",
+    "y",
+    "width",
+    "height",
+    "symbol",
+  ]),
+  Type.Object({
+    _resourceType: Type.Literal("triggerPrefab"),
+  }),
+]);
+
+export type TriggerPrefabResource = Static<typeof TriggerPrefabResource>;
 
 export const CompressedSceneResource = Type.Object({
   _resourceType: Type.Literal("scene"),
@@ -486,6 +505,7 @@ export const EntityType = Type.Union([
   Type.Literal("trigger"),
   Type.Literal("customEvent"),
   Type.Literal("actorPrefab"),
+  Type.Literal("triggerPrefab"),
 ]);
 
 export const DebuggerScriptType = Type.Union([
@@ -670,6 +690,7 @@ export type Resource =
 export type CompressedProjectResources = {
   scenes: CompressedSceneResourceWithChildren[];
   actorPrefabs: ActorPrefabResource[];
+  triggerPrefabs: TriggerPrefabResource[];
   scripts: ScriptResource[];
   sprites: SpriteResource[];
   backgrounds: CompressedBackgroundResource[];
