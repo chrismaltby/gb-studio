@@ -36,6 +36,12 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
 }) => {
   const allActorPrefabs = useAppSelector(actorPrefabSelectors.selectAll);
   const allTriggerPrefabs = useAppSelector(triggerPrefabSelectors.selectAll);
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
 
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
@@ -138,7 +144,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
 
   const onRenameComplete = useCallback(
     (name: string) => {
-      if (renameId) {
+      if (renameId && actorPrefabsLookup[renameId]) {
         dispatch(
           entitiesActions.editActorPrefab({
             actorPrefabId: renameId,
@@ -147,10 +153,19 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
             },
           })
         );
+      } else if (renameId && triggerPrefabsLookup[renameId]) {
+        dispatch(
+          entitiesActions.editTriggerPrefab({
+            triggerPrefabId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [actorPrefabsLookup, dispatch, renameId, triggerPrefabsLookup]
   );
 
   const onRenameCancel = useCallback(() => {
@@ -194,7 +209,13 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         <MenuDivider key="div-instantiate" />,
         <MenuItem
           key="instantiate"
-          onClick={() => setInstantiateActor(item.id)}
+          onClick={() => {
+            if (actorPrefabsLookup[item.id]) {
+              setInstantiateActor(item.id);
+            } else if (triggerPrefabsLookup[item.id]) {
+              setInstantiateTrigger(item.id);
+            }
+          }}
         >
           <MenuItemIcon>
             <BlankIcon />
@@ -217,11 +238,19 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         <MenuDivider key="div-delete" />,
         <MenuItem
           key="delete"
-          onClick={() =>
-            dispatch(
-              entitiesActions.removeActorPrefab({ actorPrefabId: item.id })
-            )
-          }
+          onClick={() => {
+            if (actorPrefabsLookup[item.id]) {
+              dispatch(
+                entitiesActions.removeActorPrefab({ actorPrefabId: item.id })
+              );
+            } else if (triggerPrefabsLookup[item.id]) {
+              dispatch(
+                entitiesActions.removeTriggerPrefab({
+                  triggerPrefabId: item.id,
+                })
+              );
+            }
+          }}
         >
           <MenuItemIcon>
             <BlankIcon />
@@ -230,7 +259,15 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         </MenuItem>,
       ];
     },
-    [dispatch, setInstantiateActor, setShowUses, showUses]
+    [
+      actorPrefabsLookup,
+      dispatch,
+      setInstantiateActor,
+      setInstantiateTrigger,
+      setShowUses,
+      showUses,
+      triggerPrefabsLookup,
+    ]
   );
 
   const renderLabel = useCallback(
