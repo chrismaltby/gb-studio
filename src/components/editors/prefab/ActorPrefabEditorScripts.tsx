@@ -222,7 +222,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   const scriptButton = (
     <ScriptEditorDropdownButton
       value={prefab[scriptKey]}
-      type="actor"
+      type="actorPrefab"
       entityId={prefab.id}
       scriptKey={scriptKey}
     />
