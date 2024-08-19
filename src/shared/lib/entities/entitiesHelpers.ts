@@ -481,8 +481,10 @@ export const toVariableNumber = (variable: string) => {
   return variable.replace(/[^0-9]/g, "");
 };
 
+export const localVariableCodes = ["L0", "L1", "L2", "L3", "L4", "L5"];
+
 export const isVariableLocal = (variable: string) => {
-  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
+  return localVariableCodes.indexOf(variable) > -1;
 };
 
 export const isVariableTemp = (variable: string) => {

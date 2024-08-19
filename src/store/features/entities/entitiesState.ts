@@ -87,6 +87,7 @@ import {
   updateCustomEventArgs,
   updateAllCustomEventsArgs,
   normalizeEntityResources,
+  localVariableCodes,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -1178,6 +1179,26 @@ const unpackActorPrefab: CaseReducer<
     id: action.payload.actorId,
     changes: patch,
   });
+
+  // Duplicate prefab local variables
+  for (const code of localVariableCodes) {
+    const prefabLocalId = `${prefab.id}__${code}`;
+    const actorLocalId = `${actor.id}__${code}`;
+    const localVariable = localVariableSelectors.selectById(
+      state,
+      prefabLocalId
+    );
+    if (localVariable) {
+      // Duplicate prefab's local into actor
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: actorLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, actorLocalId);
+    }
+  }
 };
 
 const removeActor: CaseReducer<
@@ -3789,6 +3810,9 @@ const _localSoundSelectors = soundsAdapter.getSelectors(
 );
 const _localTilesetSelectors = tilesetsAdapter.getSelectors(
   (state: EntitiesState) => state.tilesets
+);
+const localVariableSelectors = variablesAdapter.getSelectors(
+  (state: EntitiesState) => state.variables
 );
 
 // Global
