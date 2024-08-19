@@ -836,6 +836,7 @@
   "FIELD_PREFAB": "Prefab",
   "FIELD_PREFAB_NOT_USED": "Prefab hasn't been used in project",
   "FIELD_UNPACK_PREFAB": "Unpack Prefab",
+  "FIELD_UNPACK_PREFAB_DESC": "All properties and scripts from the prefab will no longer be linked",
   "FIELD_LINK_TO_PREFAB": "Link To Prefab",
 
   "// 7": "Asset Viewer ---------------------------------------------",

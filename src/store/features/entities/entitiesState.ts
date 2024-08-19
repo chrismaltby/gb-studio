@@ -1117,6 +1117,7 @@ const unpackActorPrefab: CaseReducer<
   EntitiesState,
   PayloadAction<{
     actorId: string;
+    force?: boolean;
   }>
 > = (state, action) => {
   const actor = localActorSelectors.selectById(state, action.payload.actorId);

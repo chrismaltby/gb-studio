@@ -214,6 +214,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
             store.dispatch(
               entitiesActions.unpackActorPrefab({
                 actorId: usedActor.id,
+                force: true,
               })
             );
           }
@@ -223,6 +224,18 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
 
         return;
       }
+    } else if (entitiesActions.unpackActorPrefab.match(action)) {
+      if (action.payload.force) {
+        return next(action);
+      }
+      // Display confirmation and stop unpack if cancelled
+      API.dialog.confirmUnpackPrefab().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
     } else if (actions.showErrorBox.match(action)) {
       API.dialog.showError(action.payload.title, action.payload.content);
     }

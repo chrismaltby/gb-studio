@@ -118,6 +118,7 @@ import {
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
 import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
+import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -853,6 +854,10 @@ ipcMain.handle(
     return confirmDeletePrefab(name, count);
   }
 );
+
+ipcMain.handle("dialog:confirm-unpack-prefab", async (_event) => {
+  return confirmUnpackPrefab();
+});
 
 ipcMain.handle(
   "dialog:confirm-tracker-unsaved",
