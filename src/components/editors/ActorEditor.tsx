@@ -203,6 +203,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     dispatch(clipboardActions.pasteClipboardEntity());
   };
 
+  const convertToPrefab = () => {
+    if (actor) {
+      dispatch(entitiesActions.convertActorToPrefab({ actorId: actor.id }));
+    }
+  };
+
   const onRemove = () => {
     if (actor) {
       dispatch(entitiesActions.removeActor({ actorId: actor.id, sceneId }));
@@ -256,6 +262,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 {!showPrefab && (
                   <MenuItem onClick={() => setShowPrefab(true)}>
                     {l10n("FIELD_LINK_TO_PREFAB")}
+                  </MenuItem>
+                )}
+                {!actor.prefabId && (
+                  <MenuItem onClick={convertToPrefab}>
+                    {l10n("FIELD_CONVERT_TO_PREFAB")}
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>

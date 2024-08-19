@@ -1202,6 +1202,104 @@ const unpackActorPrefab: CaseReducer<
   }
 };
 
+const convertActorToPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefab = localActorPrefabSelectors.selectById(state, actor.prefabId);
+  // Don't allow converting actor which is already a prefab into a prefab
+  if (prefab) {
+    return;
+  }
+
+  const duplicateScript = (scriptEventIds: string[]): string[] => {
+    const newIds = scriptEventIds.map(() => uuid());
+    scriptEventIds.forEach((scriptEventId, index) => {
+      const scriptEvent = localScriptEventSelectors.selectById(
+        state,
+        scriptEventId
+      );
+      if (scriptEvent) {
+        const duplicatedChildren: Dictionary<string[]> = {};
+        if (scriptEvent.children) {
+          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+            duplicatedChildren[key] = duplicateScript(childIds || []);
+          }
+        }
+        scriptEventsAdapter.addOne(state.scriptEvents, {
+          ...scriptEvent,
+          id: newIds[index],
+          children: duplicatedChildren,
+        });
+      }
+    });
+
+    return newIds;
+  };
+
+  const newActorPrefab: ActorPrefabNormalized = {
+    ...omit(
+      actor,
+      "id",
+      "symbol",
+      "prefabId",
+      "notes",
+      "x",
+      "y",
+      "direction",
+      "isPinned",
+      "script",
+      "startScript",
+      "updateScript",
+      "hit1Script",
+      "hit2Script",
+      "hit3Script"
+    ),
+    script: duplicateScript(actor.script),
+    startScript: duplicateScript(actor.startScript),
+    updateScript: duplicateScript(actor.updateScript),
+    hit1Script: duplicateScript(actor.hit1Script),
+    hit2Script: duplicateScript(actor.hit2Script),
+    hit3Script: duplicateScript(actor.hit3Script),
+    id: uuid(),
+  };
+
+  actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabId: newActorPrefab.id,
+    },
+  });
+
+  // Duplicate local variables
+  for (const code of localVariableCodes) {
+    const actorLocalId = `${actor.id}__${code}`;
+    const prefabLocalId = `${newActorPrefab.id}__${code}`;
+    const localVariable = localVariableSelectors.selectById(
+      state,
+      actorLocalId
+    );
+    if (localVariable) {
+      // Duplicate prefab's local into actor
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: prefabLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, prefabLocalId);
+    }
+  }
+};
+
 const removeActor: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3373,6 +3471,7 @@ const entitiesSlice = createSlice({
     editActor,
     setActorSymbol,
     unpackActorPrefab,
+    convertActorToPrefab,
     removeActor,
     removeActorAt,
     moveActor,

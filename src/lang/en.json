@@ -838,6 +838,7 @@
   "FIELD_UNPACK_PREFAB": "Unpack Prefab",
   "FIELD_UNPACK_PREFAB_DESC": "All properties and scripts from the prefab will no longer be linked",
   "FIELD_LINK_TO_PREFAB": "Link To Prefab",
+  "FIELD_CONVERT_TO_PREFAB": "Convert To Prefab",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
