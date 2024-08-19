@@ -1130,14 +1130,20 @@ test("should convert expression (atan2($L0$, 10)) to script value", () => {
   });
 });
 
-test("should throw error when converting (* 8) to script value", () => {
+test("should return zero when converting (* 8) to script value", () => {
   const input = "* 8";
-  expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "number",
+    value: 0,
+  });
 });
 
-test("should throw error when converting min(5,) to script value", () => {
+test("should return zero when converting min(5,) to script value", () => {
   const input = "min(5,)";
-  expect(() => expressionToScriptValue(input)).toThrow(/Not enough operands/);
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "number",
+    value: 0,
+  });
 });
 
 test("should convert expression (-5) to script value", () => {
@@ -1204,6 +1210,14 @@ test("should convert expression (true || false) to script value", () => {
       type: "number",
       value: 0,
     },
+  });
+});
+
+test("should convert invalid expression to zero script value", () => {
+  const input = "($00$ + 8";
+  expect(expressionToScriptValue(input)).toEqual({
+    type: "number",
+    value: 0,
   });
 });
 
