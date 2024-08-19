@@ -101,14 +101,14 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   const onRenameComplete = useCallback(
     (name: string) => {
       if (renameId) {
-        // dispatch(
-        //   entitiesActions.editCustomEvent({
-        //     customEventId: renameId,
-        //     changes: {
-        //       name,
-        //     },
-        //   })
-        // );
+        dispatch(
+          entitiesActions.editActorPrefab({
+            actorPrefabId: renameId,
+            changes: {
+              name,
+            },
+          })
+        );
       }
       setRenameId("");
     },
@@ -126,6 +126,14 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
     [dispatch]
   );
 
+  const setInstantiate = useCallback(
+    (prefabId: string) => {
+      dispatch(editorActions.setTool({ tool: "actors" }));
+      dispatch(editorActions.setPrefabId(prefabId));
+    },
+    [dispatch]
+  );
+
   const renderContextMenu = useCallback(
     (item: EntityNavigatorItem<ActorPrefabNormalized>) => {
       return [
@@ -134,6 +142,13 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
             <BlankIcon />
           </MenuItemIcon>
           {l10n("FIELD_RENAME")}
+        </MenuItem>,
+        <MenuDivider key="div-instantiate" />,
+        <MenuItem key="instantiate" onClick={() => setInstantiate(item.id)}>
+          <MenuItemIcon>
+            <BlankIcon />
+          </MenuItemIcon>
+          {l10n("FIELD_INSTANTIATE_PREFAB")}
         </MenuItem>,
         <MenuDivider key="div-view-mode" />,
         <MenuItem key="view-editor" onClick={() => setShowUses(false)}>
@@ -151,11 +166,11 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         <MenuDivider key="div-delete" />,
         <MenuItem
           key="delete"
-          //   onClick={() =>
-          //     dispatch(
-          //       entitiesActions.removeCustomEvent({ customEventId: item.id })
-          //     )
-          //   }
+          onClick={() =>
+            dispatch(
+              entitiesActions.removeActorPrefab({ actorPrefabId: item.id })
+            )
+          }
         >
           <MenuItemIcon>
             <BlankIcon />
@@ -164,7 +179,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         </MenuItem>,
       ];
     },
-    [dispatch, setShowUses, showUses]
+    [dispatch, setInstantiate, setShowUses, showUses]
   );
 
   const renderLabel = useCallback(
@@ -183,8 +198,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
               variant="transparent"
               title={l10n("FIELD_INSTANTIATE_PREFAB")}
               onClick={() => {
-                dispatch(editorActions.setTool({ tool: "actors" }));
-                dispatch(editorActions.setPrefabId(prefab.id));
+                setInstantiate(prefab.id);
               }}
             >
               <InstantiateIcon />
@@ -194,7 +208,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       }
       return item.filename;
     },
-    [dispatch, toggleFolderOpen]
+    [setInstantiate, toggleFolderOpen]
   );
 
   return (
