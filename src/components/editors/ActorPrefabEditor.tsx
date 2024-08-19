@@ -81,9 +81,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   );
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!prefab?.notes);
-  const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
-  );
+
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
   );

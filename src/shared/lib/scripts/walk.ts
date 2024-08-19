@@ -17,6 +17,7 @@ import {
   triggerScriptKeys,
   sceneScriptKeys,
   CustomEvent,
+  ActorPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 
 //#region Script Events
@@ -536,7 +537,7 @@ export const walkNormalizedSceneSpecificScripts = (
 };
 
 export const walkNormalizedActorScripts = (
-  actor: ActorNormalized,
+  actor: ActorNormalized | ActorPrefabNormalized,
   lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void

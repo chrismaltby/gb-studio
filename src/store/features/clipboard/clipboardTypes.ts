@@ -9,6 +9,7 @@ import {
   SceneNormalized,
   CustomEventNormalized,
   Variable,
+  ActorPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
@@ -62,6 +63,7 @@ export type ClipboardActors = {
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
   customEvents: CustomEventNormalized[];
+  actorPrefabs: ActorPrefabNormalized[];
 };
 
 export type ClipboardScenes = {
@@ -71,6 +73,7 @@ export type ClipboardScenes = {
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
   customEvents: CustomEventNormalized[];
+  actorPrefabs: ActorPrefabNormalized[];
 };
 
 export type ClipboardScriptValue = {

@@ -13,9 +13,11 @@ import {
   scriptEventSelectors,
   generateScriptEventInsertActions,
   sceneSelectors,
+  actorPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import {
   ActorNormalized,
+  ActorPrefabNormalized,
   CustomEventNormalized,
   Metasprite,
   MetaspriteTile,
@@ -539,10 +541,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorsLookup = actorSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const actors: ActorNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const actorPrefabs: ActorPrefabNormalized[] = [];
+      const actorPrefabsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.actorIds.find((id) => variable.id.startsWith(id));
@@ -573,6 +578,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             { includeCommented: true },
             addEvent
           );
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          if (prefab && !actorPrefabsSeen[prefab.id]) {
+            actorPrefabsSeen[prefab.id] = true;
+            actorPrefabs.push(prefab);
+            walkNormalizedActorScripts(
+              prefab,
+              scriptEventsLookup,
+              { includeCommented: true },
+              addEvent
+            );
+          }
         }
       });
       for (const customEvent of customEvents) {
@@ -591,6 +607,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvents,
           variables,
           scriptEvents,
+          actorPrefabs,
         },
       });
     } else if (actions.copyScenes.match(action)) {
@@ -600,11 +617,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const scenes: SceneNormalized[] = [];
       const actors: ActorNormalized[] = [];
       const triggers: TriggerNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const actorPrefabs: ActorPrefabNormalized[] = [];
+      const actorPrefabsSeen: Record<string, boolean> = {};
       const scriptEvents: ScriptEventNormalized[] = [];
 
       const addEvent = (scriptEvent: ScriptEventNormalized) => {
@@ -640,6 +660,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 { includeCommented: true },
                 addEvent
               );
+              const prefab = actorPrefabsLookup[actor.prefabId];
+              if (prefab && !actorPrefabsSeen[prefab.id]) {
+                actorPrefabsSeen[prefab.id] = true;
+                actorPrefabs.push(prefab);
+                walkNormalizedActorScripts(
+                  prefab,
+                  scriptEventsLookup,
+                  { includeCommented: true },
+                  addEvent
+                );
+              }
             }
           });
           scene.triggers.forEach((triggerId) => {
@@ -685,6 +716,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           variables,
           customEvents,
           scriptEvents,
+          actorPrefabs,
         },
       });
     } else if (actions.pasteScriptEvents.match(action)) {

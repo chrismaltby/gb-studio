@@ -21,7 +21,7 @@ import l10n from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 import { unwrapResult } from "@reduxjs/toolkit";
 import errorActions from "store/features/error/errorActions";
-import { actorName } from "lib/compiler/generateGBVMData";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
