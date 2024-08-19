@@ -895,7 +895,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
-        for (const prefab of clipboard.data.actorPrefabs) {
+        for (const prefab of clipboard.data.actorPrefabs ?? []) {
           const actions = await generateActorPrefabInsertActions(
             prefab,
             scriptEventsLookup,
@@ -949,7 +949,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
 
-        for (const prefab of clipboard.data.actorPrefabs) {
+        for (const prefab of clipboard.data.actorPrefabs ?? []) {
           const actions = await generateActorPrefabInsertActions(
             prefab,
             scriptEventsLookup,

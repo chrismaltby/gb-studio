@@ -63,7 +63,7 @@ export type ClipboardActors = {
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
   customEvents: CustomEventNormalized[];
-  actorPrefabs: ActorPrefabNormalized[];
+  actorPrefabs?: ActorPrefabNormalized[];
 };
 
 export type ClipboardScenes = {
@@ -73,7 +73,7 @@ export type ClipboardScenes = {
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
   customEvents: CustomEventNormalized[];
-  actorPrefabs: ActorPrefabNormalized[];
+  actorPrefabs?: ActorPrefabNormalized[];
 };
 
 export type ClipboardScriptValue = {
