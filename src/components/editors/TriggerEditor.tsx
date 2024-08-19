@@ -31,6 +31,10 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
 import { TriggerEditorScripts } from "./trigger/TriggerEditorScripts";
+import { PrefabHeader } from "ui/form/PrefabHeader";
+import { CaretRightIcon } from "ui/icons/Icons";
+import { FlexGrow } from "ui/spacing/Spacing";
+import { TriggerPrefabSelectButton } from "components/forms/TriggerPrefabSelectButton";
 
 interface TriggerEditorProps {
   id: string;
@@ -62,6 +66,8 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   );
 
   const [showSymbols, setShowSymbols] = useState(false);
+
+  const [showPrefab, setShowPrefab] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -115,6 +121,11 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const onChangeHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("height", castEventToInt(e, 1)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangePrefabId = useCallback(
+    (e: string) => onChangeTriggerProp("prefabId", e),
     [onChangeTriggerProp]
   );
 
@@ -186,6 +197,11 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                 {!showSymbols && (
                   <MenuItem onClick={() => setShowSymbols(true)}>
                     {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                  </MenuItem>
+                )}
+                {!showPrefab && (
+                  <MenuItem onClick={() => setShowPrefab(true)}>
+                    {l10n("FIELD_LINK_TO_PREFAB")}
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>
@@ -273,6 +289,65 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
             </SidebarColumn>
           </SidebarColumns>
         )}
+
+        {(prefab || showPrefab) && (
+          <PrefabHeader prefabSet={prefab !== undefined}>
+            {l10n("SIDEBAR_PREFABS")}
+            <CaretRightIcon />
+            <TriggerPrefabSelectButton
+              name={"prefabId"}
+              value={trigger.prefabId}
+              onChange={onChangePrefabId}
+            />
+            <FlexGrow />
+            {prefab && (
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+                onMouseDown={onFetchClipboard}
+              >
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      editorActions.selectTriggerPrefab({
+                        triggerPrefabId: prefab.id,
+                      })
+                    );
+                    dispatch(editorActions.setShowScriptUses(false));
+                  }}
+                >
+                  {l10n("FIELD_EDIT_PREFAB")}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      editorActions.selectTriggerPrefab({
+                        triggerPrefabId: prefab.id,
+                      })
+                    );
+                    dispatch(editorActions.setShowScriptUses(true));
+                  }}
+                >
+                  {l10n("FIELD_VIEW_PREFAB_USES")}
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    dispatch(
+                      entitiesActions.unpackTriggerPrefab({
+                        triggerId: trigger.id,
+                      })
+                    );
+                  }}
+                >
+                  {l10n("FIELD_UNPACK_PREFAB")}
+                </MenuItem>
+              </DropdownButton>
+            )}
+          </PrefabHeader>
+        )}
+
         {prefab ? (
           <TriggerPrefabEditorScripts prefab={prefab} isInstance />
         ) : (

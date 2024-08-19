@@ -1503,6 +1503,182 @@ const moveTrigger: CaseReducer<
   });
 };
 
+const unpackTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    force?: boolean;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  if (!trigger) {
+    return;
+  }
+  const prefab = localTriggerPrefabSelectors.selectById(
+    state,
+    trigger.prefabId
+  );
+  if (!prefab) {
+    return;
+  }
+
+  const duplicateScript = (scriptEventIds: string[]): string[] => {
+    const newIds = scriptEventIds.map(() => uuid());
+    scriptEventIds.forEach((scriptEventId, index) => {
+      const scriptEvent = localScriptEventSelectors.selectById(
+        state,
+        scriptEventId
+      );
+      if (scriptEvent) {
+        const duplicatedChildren: Dictionary<string[]> = {};
+        if (scriptEvent.children) {
+          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+            duplicatedChildren[key] = duplicateScript(childIds || []);
+          }
+        }
+        scriptEventsAdapter.addOne(state.scriptEvents, {
+          ...scriptEvent,
+          id: newIds[index],
+          children: duplicatedChildren,
+        });
+      }
+    });
+
+    return newIds;
+  };
+
+  const patch = {
+    ...omit(prefab, "id", "name", "notes", "script", "leaveScript"),
+    prefabId: "",
+    script: duplicateScript(prefab.script),
+    leaveScript: duplicateScript(prefab.leaveScript),
+  };
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: patch,
+  });
+
+  // Duplicate prefab local variables
+  for (const code of localVariableCodes) {
+    const prefabLocalId = `${prefab.id}__${code}`;
+    const triggerLocalId = `${trigger.id}__${code}`;
+    const localVariable = localVariableSelectors.selectById(
+      state,
+      prefabLocalId
+    );
+    if (localVariable) {
+      // Duplicate prefab's local into trigger
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: triggerLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, triggerLocalId);
+    }
+  }
+};
+
+const convertTriggerToPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  if (!trigger) {
+    return;
+  }
+  const prefab = localTriggerPrefabSelectors.selectById(
+    state,
+    trigger.prefabId
+  );
+  // Don't allow converting trigger which is already a prefab into a prefab
+  if (prefab) {
+    return;
+  }
+
+  const duplicateScript = (scriptEventIds: string[]): string[] => {
+    const newIds = scriptEventIds.map(() => uuid());
+    scriptEventIds.forEach((scriptEventId, index) => {
+      const scriptEvent = localScriptEventSelectors.selectById(
+        state,
+        scriptEventId
+      );
+      if (scriptEvent) {
+        const duplicatedChildren: Dictionary<string[]> = {};
+        if (scriptEvent.children) {
+          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+            duplicatedChildren[key] = duplicateScript(childIds || []);
+          }
+        }
+        scriptEventsAdapter.addOne(state.scriptEvents, {
+          ...scriptEvent,
+          id: newIds[index],
+          children: duplicatedChildren,
+        });
+      }
+    });
+
+    return newIds;
+  };
+
+  const newTriggerPrefab: TriggerPrefabNormalized = {
+    ...omit(
+      trigger,
+      "id",
+      "symbol",
+      "prefabId",
+      "notes",
+      "x",
+      "y",
+      "width",
+      "height",
+      "script",
+      "leaveScript"
+    ),
+    script: duplicateScript(trigger.script),
+    leaveScript: duplicateScript(trigger.leaveScript),
+    id: uuid(),
+  };
+
+  triggerPrefabsAdapter.addOne(state.triggerPrefabs, newTriggerPrefab);
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabId: newTriggerPrefab.id,
+    },
+  });
+
+  // Duplicate local variables
+  for (const code of localVariableCodes) {
+    const triggerLocalId = `${trigger.id}__${code}`;
+    const prefabLocalId = `${newTriggerPrefab.id}__${code}`;
+    const localVariable = localVariableSelectors.selectById(
+      state,
+      triggerLocalId
+    );
+    if (localVariable) {
+      // Duplicate prefab's local into trigger
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: prefabLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, prefabLocalId);
+    }
+  }
+};
+
 const resizeTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3581,6 +3757,8 @@ const entitiesSlice = createSlice({
 
     editTrigger,
     setTriggerSymbol,
+    unpackTriggerPrefab,
+    convertTriggerToPrefab,
     removeTrigger,
     removeTriggerAt,
     moveTrigger,
