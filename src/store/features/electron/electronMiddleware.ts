@@ -12,6 +12,7 @@ import {
   triggerSelectors,
   scriptEventSelectors,
   actorPrefabSelectors,
+  triggerPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
@@ -21,7 +22,7 @@ import l10n from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 import { unwrapResult } from "@reduxjs/toolkit";
 import errorActions from "store/features/error/errorActions";
-import { actorName } from "shared/lib/entities/entitiesHelpers";
+import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -225,6 +226,62 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         return;
       }
     } else if (entitiesActions.unpackActorPrefab.match(action)) {
+      if (action.payload.force) {
+        return next(action);
+      }
+      // Display confirmation and stop unpack if cancelled
+      API.dialog.confirmUnpackPrefab().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
+    } else if (entitiesActions.removeTriggerPrefab.match(action)) {
+      const state = store.getState();
+      const triggerPrefab = triggerPrefabSelectors.selectById(
+        state,
+        action.payload.triggerPrefabId
+      );
+
+      if (!triggerPrefab) {
+        return;
+      }
+
+      const allPrefabIds = triggerPrefabSelectors.selectIds(state);
+      const prefabIndex = allPrefabIds.indexOf(triggerPrefab.id);
+      const prefabName =
+        triggerPrefab.name || triggerName(triggerPrefab, prefabIndex);
+
+      const triggers = triggerSelectors.selectAll(state);
+      const usedTriggers = triggers.filter(
+        (trigger) => trigger.prefabId === triggerPrefab.id
+      );
+      const usedTotal = usedTriggers.length;
+
+      if (usedTotal > 0) {
+        // Display confirmation and stop delete if cancelled
+        API.dialog.confirmDeletePrefab(prefabName, usedTotal).then((cancel) => {
+          if (cancel) {
+            return;
+          }
+
+          // Unpack any triggers using this prefab
+          for (const usedTrigger of usedTriggers) {
+            store.dispatch(
+              entitiesActions.unpackTriggerPrefab({
+                triggerId: usedTrigger.id,
+                force: true,
+              })
+            );
+          }
+
+          return next(action);
+        });
+
+        return;
+      }
+    } else if (entitiesActions.unpackTriggerPrefab.match(action)) {
       if (action.payload.force) {
         return next(action);
       }
