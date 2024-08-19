@@ -319,8 +319,8 @@ export const denormalizeEntities = (
   const entityToResource =
     <R extends string>(resourceType: R) =>
     <T>(entity: T): T & { _resourceType: R } => ({
-      _resourceType: resourceType,
       ...entity,
+      _resourceType: resourceType,
       inode: undefined,
       _v: undefined,
     });
