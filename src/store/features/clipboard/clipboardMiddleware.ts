@@ -14,6 +14,7 @@ import {
   generateScriptEventInsertActions,
   sceneSelectors,
   actorPrefabSelectors,
+  triggerPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import {
   ActorNormalized,
@@ -25,6 +26,7 @@ import {
   ScriptEventNormalized,
   SpriteAnimation,
   TriggerNormalized,
+  TriggerPrefabNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
@@ -47,6 +49,8 @@ import {
   customEventName,
   isActorPrefabEqual,
   isCustomEventEqual,
+  isTriggerPrefabEqual,
+  triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import {
@@ -286,6 +290,67 @@ const generateTriggerInsertActions = (
       variables
     )
   );
+  return actions;
+};
+
+const generateTriggerPrefabInsertActions = async (
+  prefab: TriggerPrefabNormalized,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  existingTriggerPrefabs: TriggerPrefabNormalized[],
+  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
+): Promise<AnyAction[]> => {
+  const actions: AnyAction[] = [];
+
+  const existingPrefab = existingTriggerPrefabs.find((e) => e.id === prefab.id);
+  if (
+    existingPrefab &&
+    isTriggerPrefabEqual(
+      prefab,
+      scriptEventsLookup,
+      existingPrefab,
+      existingScriptEventsLookup
+    )
+  ) {
+    return [];
+  }
+
+  if (existingPrefab) {
+    const existingEventIndex = existingTriggerPrefabs.indexOf(existingPrefab);
+    const existingName = triggerName(existingPrefab, existingEventIndex);
+    const cancel = await API.dialog.confirmReplacePrefab(existingName);
+    if (cancel) {
+      return [];
+    }
+  }
+
+  if (!existingPrefab) {
+    const addTriggerPrefabAction = entitiesActions.addTriggerPrefab({
+      triggerPrefabId: prefab.id,
+      defaults: prefab,
+    });
+    actions.push(addTriggerPrefabAction);
+  } else {
+    const addTriggerPrefabAction = entitiesActions.editTriggerPrefab({
+      triggerPrefabId: prefab.id,
+      changes: {
+        ...prefab,
+        script: [],
+      },
+    });
+    actions.push(addTriggerPrefabAction);
+  }
+
+  const scriptEventIds = prefab.script;
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      prefab.id,
+      "triggerPrefab",
+      "script"
+    )
+  );
+
   return actions;
 };
 
@@ -543,10 +608,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const triggers: TriggerNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const triggerPrefabs: TriggerPrefabNormalized[] = [];
+      const triggerPrefabsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.triggerIds.find((id) =>
@@ -579,6 +647,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             { includeCommented: true },
             addEvent
           );
+          const prefab = triggerPrefabsLookup[trigger.prefabId];
+          if (prefab && !triggerPrefabsSeen[prefab.id]) {
+            triggerPrefabsSeen[prefab.id] = true;
+            triggerPrefabs.push(prefab);
+            walkNormalizedTriggerScripts(
+              prefab,
+              scriptEventsLookup,
+              { includeCommented: true },
+              addEvent
+            );
+          }
         }
       });
       for (const customEvent of customEvents) {
@@ -597,6 +676,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvents,
           variables,
           scriptEvents,
+          triggerPrefabs,
         },
       });
     } else if (actions.copyActors.match(action)) {
@@ -681,6 +761,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
       const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const scenes: SceneNormalized[] = [];
       const actors: ActorNormalized[] = [];
       const triggers: TriggerNormalized[] = [];
@@ -688,6 +769,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const customEventsSeen: Record<string, boolean> = {};
       const actorPrefabs: ActorPrefabNormalized[] = [];
       const actorPrefabsSeen: Record<string, boolean> = {};
+      const triggerPrefabs: TriggerPrefabNormalized[] = [];
+      const triggerPrefabsSeen: Record<string, boolean> = {};
+
       const scriptEvents: ScriptEventNormalized[] = [];
 
       const addEvent = (scriptEvent: ScriptEventNormalized) => {
@@ -746,6 +830,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 { includeCommented: true },
                 addEvent
               );
+              const prefab = triggerPrefabsLookup[trigger.prefabId];
+              if (prefab && !triggerPrefabsSeen[prefab.id]) {
+                triggerPrefabsSeen[prefab.id] = true;
+                triggerPrefabs.push(prefab);
+                walkNormalizedTriggerScripts(
+                  prefab,
+                  scriptEventsLookup,
+                  { includeCommented: true },
+                  addEvent
+                );
+              }
             }
           });
           walkNormalizedSceneSpecificScripts(
@@ -780,6 +875,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvents,
           scriptEvents,
           actorPrefabs,
+          triggerPrefabs,
         },
       });
     } else if (actions.pasteScriptEvents.match(action)) {
@@ -854,8 +950,23 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingTriggerPrefabs = triggerPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+
+        for (const prefab of clipboard.data.triggerPrefabs ?? []) {
+          const actions = await generateTriggerPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingTriggerPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
         for (const trigger of clipboard.data.triggers) {
           const actions = generateTriggerInsertActions(
             trigger,
@@ -946,6 +1057,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEventDefs = selectScriptEventDefs(state);
         const existingCustomEvents = customEventSelectors.selectAll(state);
         const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
+        const existingTriggerPrefabs = triggerPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
 
@@ -954,6 +1066,20 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             prefab,
             scriptEventsLookup,
             existingActorPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
+
+        for (const prefab of clipboard.data.triggerPrefabs ?? []) {
+          const actions = await generateTriggerPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingTriggerPrefabs,
             existingScriptEventsLookup
           );
           batch(() => {
