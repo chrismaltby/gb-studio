@@ -3,7 +3,7 @@ import { actorPrefabSelectors } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -25,6 +25,7 @@ import {
 } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { ActorPrefabUsesList } from "./prefab/ActorPrefabUsesList";
+import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 
 interface ActorPrefabEditorProps {
   id: string;
@@ -122,20 +123,10 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
     dispatch(editorActions.selectSidebar());
   };
 
-  const onCopy = () => {
-    if (prefab) {
-      dispatch(clipboardActions.copyActors({ actorIds: [prefab.id] }));
-    }
-  };
-
-  const onPaste = () => {
-    dispatch(clipboardActions.pasteClipboardEntity());
-  };
-
   const onRemove = () => {
-    // if (actor) {
-    //   dispatch(entitiesActions.removeActor({ actorId: actor.id, sceneId }));
-    // }
+    if (prefab) {
+      dispatch(entitiesActions.removeActorPrefab({ actorPrefabId: prefab.id }));
+    }
   };
 
   const onFetchClipboard = useCallback(() => {
@@ -180,22 +171,36 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                   menuDirection="right"
                   onMouseDown={onFetchClipboard}
                 >
-                  {!showNotes && (
+                  {!showNotes && !showUses && (
                     <MenuItem onClick={onAddNotes}>
+                      <MenuItemIcon>
+                        <BlankIcon />
+                      </MenuItemIcon>
                       {l10n("FIELD_ADD_NOTES")}
                     </MenuItem>
                   )}
-                  <MenuItem onClick={onCopy}>
-                    {l10n("MENU_COPY_ACTOR")}
+                  {!showUses && <MenuDivider key="div-view-mode" />}
+                  <MenuItem
+                    key="view-editor"
+                    onClick={() => setShowUses(false)}
+                  >
+                    <MenuItemIcon>
+                      {!showUses ? <CheckIcon /> : <BlankIcon />}
+                    </MenuItemIcon>
+                    {l10n("MENU_EDIT_PREFAB")}
                   </MenuItem>
-                  {clipboardFormat === ClipboardTypeActors && (
-                    <MenuItem onClick={onPaste}>
-                      {l10n("MENU_PASTE_ACTOR")}
-                    </MenuItem>
-                  )}
+                  <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
+                    <MenuItemIcon>
+                      {showUses ? <CheckIcon /> : <BlankIcon />}
+                    </MenuItemIcon>
+                    {l10n("FIELD_VIEW_PREFAB_USES")}
+                  </MenuItem>
                   <MenuDivider />
                   <MenuItem onClick={onRemove}>
-                    {l10n("MENU_DELETE_ACTOR")}
+                    <MenuItemIcon>
+                      <BlankIcon />
+                    </MenuItemIcon>
+                    {l10n("MENU_DELETE_PREFAB")}
                   </MenuItem>
                 </DropdownButton>
               </FormHeader>

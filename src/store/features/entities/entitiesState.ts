@@ -1542,6 +1542,18 @@ const editActorPrefab: CaseReducer<
   });
 };
 
+const removeActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorPrefabId: string;
+  }>
+> = (state, action) => {
+  actorPrefabsAdapter.removeOne(
+    state.actorPrefabs,
+    action.payload.actorPrefabId
+  );
+};
+
 /**************************************************************************
  * Backgrounds
  */
@@ -3412,6 +3424,7 @@ const entitiesSlice = createSlice({
     },
 
     editActorPrefab,
+    removeActorPrefab,
 
     /**************************************************************************
      * Backgrounds
