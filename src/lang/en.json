@@ -1461,6 +1461,9 @@
   "DIALOG_MIGRATION_GUIDE": "Open Migration Guide",
   "DIALOG_DELETE_ASSET": "Delete \"{filename}\"?",
   "DIALOG_DELETE_ASSET_DESCRIPTION": "The file \n{filename}\nwill be removed from your file system. This action cannot be undone.",
+  "DIALOG_DELETE_PREFAB": "Delete Prefab \"{name}\"?",
+  "DIALOG_DELETE_PREFAB_USED": "{count} uses of this prefab will be unpacked",
+  "DIALOG_DELETE_PREFAB_USED_SINGLAR": "{count} of this prefab will be unpacked",
 
   "// 16": "Settings ----------------------------------------------------",
 

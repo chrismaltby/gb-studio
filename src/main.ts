@@ -117,6 +117,7 @@ import {
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
+import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -843,6 +844,13 @@ ipcMain.handle(
   "dialog:confirm-replace-custom-event",
   async (_event, name: string) => {
     return confirmReplaceCustomEvent(name);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-delete-prefab",
+  async (_event, name: string, count: number) => {
+    return confirmDeletePrefab(name, count);
   }
 );
 

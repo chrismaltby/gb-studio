@@ -11,6 +11,7 @@ import {
   actorSelectors,
   triggerSelectors,
   scriptEventSelectors,
+  actorPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
@@ -20,6 +21,7 @@ import l10n from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 import { unwrapResult } from "@reduxjs/toolkit";
 import errorActions from "store/features/error/errorActions";
+import { actorName } from "lib/compiler/generateGBVMData";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -176,6 +178,49 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
 
             return next(action);
           });
+        return;
+      }
+    } else if (entitiesActions.removeActorPrefab.match(action)) {
+      const state = store.getState();
+      const actorPrefab = actorPrefabSelectors.selectById(
+        state,
+        action.payload.actorPrefabId
+      );
+
+      if (!actorPrefab) {
+        return;
+      }
+
+      const allPrefabIds = actorPrefabSelectors.selectIds(state);
+      const prefabIndex = allPrefabIds.indexOf(actorPrefab.id);
+      const prefabName =
+        actorPrefab.name || actorName(actorPrefab, prefabIndex);
+
+      const actors = actorSelectors.selectAll(state);
+      const usedActors = actors.filter(
+        (actor) => actor.prefabId === actorPrefab.id
+      );
+      const usedTotal = usedActors.length;
+
+      if (usedTotal > 0) {
+        // Display confirmation and stop delete if cancelled
+        API.dialog.confirmDeletePrefab(prefabName, usedTotal).then((cancel) => {
+          if (cancel) {
+            return;
+          }
+
+          // Unpack any actors using this prefab
+          for (const usedActor of usedActors) {
+            store.dispatch(
+              entitiesActions.unpackActorPrefab({
+                actorId: usedActor.id,
+              })
+            );
+          }
+
+          return next(action);
+        });
+
         return;
       }
     } else if (actions.showErrorBox.match(action)) {
