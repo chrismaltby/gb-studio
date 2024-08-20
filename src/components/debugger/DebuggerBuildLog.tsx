@@ -14,6 +14,7 @@ import {
   getSettings,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
+import DebuggerUsageData from "components/debugger/DebuggerUsageData";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -191,6 +192,8 @@ const DebuggerBuildLog = () => {
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>
+        <FlexGrow />
+        <DebuggerUsageData></DebuggerUsageData>
         <FlexGrow />
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>

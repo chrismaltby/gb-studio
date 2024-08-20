@@ -446,3 +446,7 @@ API.events.debugger.disconnected.subscribe(() => {
 API.events.project.saveProgress.subscribe((_, completed, total) => {
   store.dispatch(projectActions.setSaveWriteProgress({ completed, total }));
 });
+
+API.events.debugger.romusage.subscribe((_, usageData) => {
+  store.dispatch(debuggerActions.setUsageData(usageData));
+});

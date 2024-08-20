@@ -39,6 +39,7 @@ import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
+import type { UsageData } from "lib/compiler/romUsage";
 import type { TilesetAssetData } from "lib/project/loadTilesetData";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
@@ -426,6 +427,10 @@ const APISetup = {
       disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
         "debugger:disconnected"
       ),
+      romusage:
+        createSubscribeAPI<(event: IpcRendererEvent, data: UsageData) => void>(
+          "debugger:romusage"
+        ),
     },
     project: {
       saveProgress: createSubscribeAPI<

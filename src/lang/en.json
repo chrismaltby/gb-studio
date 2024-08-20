@@ -322,7 +322,7 @@
   "FIELD_COLLIDE_WITH_DESC": "The groups of actors that will be checked for collisions. e.g. If it should pass through any actors but the player set this field to just 'Player'.",
   "FIELD_COLLISION_GROUP_N": "Group {n}",
   "FIELD_PLAYER": "Player",
-  "FIELD_ACTOR": "Actor",  
+  "FIELD_ACTOR": "Actor",
   "FIELD_IS_ABOVE": "Is Above",
   "FIELD_IS_BELOW": "Is Below",
   "FIELD_IS_LEFT_OF": "Is Left of",
@@ -766,7 +766,7 @@
   "FIELD_COLOR_MODE_COLOR_ONLY": "Color Only",
   "FIELD_COLOR_MODE_MONO_INFO": "GB, GB Color, Pocket",
   "FIELD_COLOR_MODE_COLOR_MONO_INFO": "GB, GB Color, Pocket",
-  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket",  
+  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket",
   "FIELD_SUPPORTED_PLATFORMS": "Supported Platforms",
   "FIELD_MONOCHROME_ONLY": "Monochrome only",
   "FIELD_SGB_UNAVAILABLE": "Super GB Mode is not supported for 'Color Only' games",
@@ -844,6 +844,10 @@
   "FIELD_APPLY_CHANGES": "Apply Changes",
   "FIELD_REVERT_CHANGES": "Revert Changes",
   "FIELD_PIN_TO_SCREEN": "Pin To Screen",
+  "FIELD_RUN_A_BUILD_USAGE_DESC": "Run a build to calculate ROM usage",
+  "FIELD_CURRENT_ROM_SIZE_TOOLTIP": "Your ROM needs to grow {freeSpace} to fill this size.",
+  "FIELD_NEXT_ROM_SIZE_TOOLTIP": "Your ROM needs to grow {freeSpace} to get to this size.",
+  "FIELD_ROM_USAGE_LABEL": "{totalUsage} of {romSize} used",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1342,7 +1346,7 @@
   "MENU_DELETE_SOUND_EFFECT": "Delete Sound Effect",
   "MENU_DELETE_PALETTE": "Delete Palette",
   "MENU_SPELLING": "Spelling and Grammar",
-  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Check Spelling While Typing",
+  "MENU_CHECK_SPELLING_WHILE_TYPING": "Check Spelling While Typing",
   "MENU_DELETE_PREFAB": "Delete Prefab",
   "MENU_EDIT_PREFAB": "Edit Prefab",
 
@@ -1524,6 +1528,7 @@
   "COMPILER_COMPILING": "Compiling",
   "COMPILER_LINKING": "Linking",
   "COMPILER_PACKING": "Packing Data",
+  "COMPILER_ROMUSAGE": "Calculating ROM usage",
 
   "// 21": "Messages -----------------------------------------------------",
 
