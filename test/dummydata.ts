@@ -136,6 +136,7 @@ export const dummyTriggerNormalized: TriggerNormalized = {
   y: 0,
   width: 0,
   height: 0,
+  prefabScriptOverrides: {},
   script: [],
   leaveScript: [],
 };
@@ -375,6 +376,7 @@ export const dummyTriggerResource: TriggerResource = {
   y: 20,
   width: 30,
   height: 40,
+  prefabScriptOverrides: {},
   script: [],
   leaveScript: [],
 };

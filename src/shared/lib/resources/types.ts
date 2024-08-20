@@ -139,6 +139,7 @@ export const TriggerResource = Type.Object({
   y: Type.Number(),
   width: Type.Number(),
   height: Type.Number(),
+  prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   leaveScript: Type.Array(ScriptEvent),
 });
@@ -155,6 +156,7 @@ export const TriggerPrefabResource = Type.Composite([
     "width",
     "height",
     "symbol",
+    "prefabScriptOverrides",
   ]),
   Type.Object({
     _resourceType: Type.Literal("triggerPrefab"),

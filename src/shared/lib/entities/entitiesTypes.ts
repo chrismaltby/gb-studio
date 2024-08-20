@@ -157,6 +157,7 @@ export type Trigger = {
   y: number;
   width: number;
   height: number;
+  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
   script: ScriptEvent[];
   leaveScript: ScriptEvent[];
 };
@@ -172,7 +173,8 @@ export type TriggerFieldsOmittedFromPrefab =
   | "y"
   | "width"
   | "height"
-  | "symbol";
+  | "symbol"
+  | "prefabScriptOverrides";
 
 export type TriggerPrefab = Omit<Trigger, TriggerFieldsOmittedFromPrefab>;
 

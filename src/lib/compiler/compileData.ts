@@ -121,6 +121,7 @@ import type {
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import {
   mapActorScript,
+  mapTriggerScript,
   walkSceneScripts,
   walkScenesScripts,
 } from "shared/lib/scripts/walk";
@@ -128,6 +129,7 @@ import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import { ProjectResources } from "shared/lib/resources/types";
+import { applyPrefabs } from "./applyPrefabs";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -1399,55 +1401,7 @@ const compile = async (
       "No scenes are included in your project. Add some scenes in the Game World editor and try again."
     );
   }
-
-  const actorPrefabsLookup = keyBy(rawProjectData.actorPrefabs, "id");
-  const triggerPrefabsLookup = keyBy(rawProjectData.triggerPrefabs, "id");
-
-  const projectData = {
-    ...rawProjectData,
-    scenes: rawProjectData.scenes.map((scene) => ({
-      ...scene,
-      actors: scene.actors.map((actor) => {
-        const prefab = actorPrefabsLookup[actor.prefabId];
-        if (!prefab) {
-          return actor;
-        }
-        const applyScriptEventOverrides = (
-          scriptEvent: ScriptEvent
-        ): ScriptEvent => {
-          const override = actor.prefabScriptOverrides[scriptEvent.id];
-          if (!override) {
-            return scriptEvent;
-          }
-          return {
-            ...scriptEvent,
-            args: {
-              ...scriptEvent.args,
-              ...override.args,
-            },
-          };
-        };
-        return {
-          ...actor,
-          ...mapActorScript(prefab, applyScriptEventOverrides),
-          _resourceType: actor._resourceType,
-          id: actor.id,
-        };
-      }),
-      triggers: scene.triggers.map((trigger) => {
-        const prefab = triggerPrefabsLookup[trigger.prefabId];
-        if (!prefab) {
-          return trigger;
-        }
-        return {
-          ...trigger,
-          ...prefab,
-          _resourceType: trigger._resourceType,
-          id: trigger.id,
-        };
-      }),
-    })),
-  };
+  const projectData = applyPrefabs(rawProjectData);
 
   const precompiled = await precompile(
     projectData,

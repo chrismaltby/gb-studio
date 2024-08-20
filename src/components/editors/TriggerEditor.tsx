@@ -179,6 +179,8 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
 
   const scrollKey = `${trigger.id}_${lastScriptTab}`;
 
+  const numOverrides = Object.keys(trigger.prefabScriptOverrides)?.length;
+
   return (
     <Sidebar onClick={selectSidebar}>
       <CachedScroll key={scrollKey} cacheKey={scrollKey}>
@@ -312,6 +314,18 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
               value={trigger.prefabId}
               onChange={onChangePrefabId}
             />
+            {numOverrides > 0 ? (
+              <span style={{ whiteSpace: "nowrap" }}>
+                (+
+                {l10n(
+                  numOverrides === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
+                  { n: numOverrides }
+                )}
+                )
+              </span>
+            ) : (
+              ""
+            )}
             <FlexGrow />
             {prefab && (
               <DropdownButton
@@ -344,6 +358,35 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                 >
                   {l10n("FIELD_VIEW_PREFAB_USES")}
                 </MenuItem>
+                {numOverrides > 0 && <MenuDivider />}
+                {numOverrides > 0 && (
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(
+                        entitiesActions.applyTriggerPrefabScriptEventOverrides({
+                          triggerId: trigger.id,
+                        })
+                      );
+                    }}
+                  >
+                    {l10n("FIELD_APPLY_CHANGES")}
+                  </MenuItem>
+                )}
+                {numOverrides > 0 && (
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(
+                        entitiesActions.revertTriggerPrefabScriptEventOverrides(
+                          {
+                            triggerId: trigger.id,
+                          }
+                        )
+                      );
+                    }}
+                  >
+                    {l10n("FIELD_REVERT_CHANGES")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 <MenuItem
                   onClick={() => {
@@ -362,7 +405,12 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
         )}
 
         {prefab ? (
-          <TriggerPrefabEditorScripts prefab={prefab} isInstance />
+          <TriggerPrefabEditorScripts
+            prefab={prefab}
+            trigger={trigger}
+            sceneId={sceneId}
+            isInstance
+          />
         ) : (
           <TriggerEditorScripts trigger={trigger} sceneId={sceneId} />
         )}

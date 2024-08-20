@@ -3,6 +3,7 @@ import editorActions from "store/features/editor/editorActions";
 import {
   TriggerPrefabNormalized,
   ScriptEventNormalized,
+  TriggerNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
@@ -16,6 +17,8 @@ import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface TriggerPrefabEditorScriptsProps {
   prefab: TriggerPrefabNormalized;
+  trigger?: TriggerNormalized;
+  sceneId?: string;
   isInstance?: boolean;
 }
 
@@ -44,7 +47,7 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
 };
 
 export const TriggerPrefabEditorScripts: FC<TriggerPrefabEditorScriptsProps> =
-  ({ prefab, isInstance }) => {
+  ({ prefab, trigger, sceneId, isInstance }) => {
     const lockScriptEditor = useAppSelector(
       (state) => state.editor.lockScriptEditor
     );
@@ -85,10 +88,11 @@ export const TriggerPrefabEditorScripts: FC<TriggerPrefabEditorScriptsProps> =
         type: "prefab",
         entityType: "triggerPrefab",
         entityId: prefab.id,
-        sceneId: "",
+        sceneId: sceneId ?? "",
         scriptKey,
+        instanceId: trigger?.id,
       }),
-      [prefab.id, scriptKey]
+      [prefab.id, sceneId, scriptKey, trigger?.id]
     );
 
     if (!prefab) {

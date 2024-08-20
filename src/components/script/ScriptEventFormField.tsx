@@ -19,7 +19,10 @@ import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
-import { actorSelectors } from "store/features/entities/entitiesState";
+import {
+  actorSelectors,
+  triggerSelectors,
+} from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormFieldProps {
@@ -98,6 +101,9 @@ const ScriptEventFormField = memo(
       if (context.entityType === "actorPrefab" && context.instanceId) {
         const instance = actorSelectors.selectById(state, context.instanceId);
         return instance?.prefabScriptOverrides?.[scriptEvent.id];
+      } else if (context.entityType === "triggerPrefab" && context.instanceId) {
+        const instance = triggerSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[scriptEvent.id];
       }
     });
 
@@ -112,6 +118,19 @@ const ScriptEventFormField = memo(
           dispatch(
             entitiesActions.editActorPrefabScriptEventOverride({
               actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
               scriptEventId: scriptEvent.id,
               args: {
                 [key]: value,
@@ -144,6 +163,17 @@ const ScriptEventFormField = memo(
                   dispatch(
                     entitiesActions.editActorPrefabScriptEventOverride({
                       actorId: context.instanceId,
+                      scriptEventId: scriptEvent.id,
+                      args: updatedArgs,
+                    })
+                  );
+                } else if (
+                  context.entityType === "triggerPrefab" &&
+                  context.instanceId
+                ) {
+                  dispatch(
+                    entitiesActions.editTriggerPrefabScriptEventOverride({
+                      triggerId: context.instanceId,
                       scriptEventId: scriptEvent.id,
                       args: updatedArgs,
                     })

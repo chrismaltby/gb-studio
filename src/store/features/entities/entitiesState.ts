@@ -1555,6 +1555,7 @@ const addTrigger: CaseReducer<
     x: clamp(action.payload.x, 0, scene.width - width),
     y: clamp(action.payload.y, 0, scene.height - height),
     symbol: genEntitySymbol(state, "trigger_0"),
+    prefabScriptOverrides: {},
     width,
     height,
     script: [],
@@ -1570,7 +1571,20 @@ const editTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{ triggerId: string; changes: Partial<TriggerNormalized> }>
 > = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+
+  if (!trigger) {
+    return;
+  }
   const patch = { ...action.payload.changes };
+
+  // If prefab changes reset overrides
+  if (patch.prefabId && trigger.prefabId !== patch.prefabId) {
+    patch.prefabScriptOverrides = {};
+  }
 
   triggersAdapter.updateOne(state.triggers, {
     id: action.payload.triggerId,
@@ -1850,6 +1864,166 @@ const resizeTrigger: CaseReducer<
       y: Math.min(action.payload.y, action.payload.startY),
       width: Math.abs(action.payload.x - action.payload.startX) + 1,
       height: Math.abs(action.payload.y - action.payload.startY) + 1,
+    },
+  });
+};
+
+const editTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+    args: Record<string, unknown>;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  const scriptEvent = localScriptEventSelectors.selectById(
+    state,
+    action.payload.scriptEventId
+  );
+  if (!trigger || !scriptEvent) {
+    return;
+  }
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  const override = prefabScriptOverrides[scriptEvent.id] ?? {
+    id: scriptEvent.id,
+    args: {},
+  };
+  const argKeys = Object.keys(action.payload.args);
+  for (const key of argKeys) {
+    override.args[key] = action.payload.args[key];
+  }
+  prefabScriptOverrides[scriptEvent.id] = override;
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const revertTriggerPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const revertTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  if (!trigger) {
+    return;
+  }
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const applyTriggerPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  if (!trigger) {
+    return;
+  }
+
+  // Update script events using override data
+  const overrides = Object.values(trigger.prefabScriptOverrides);
+  for (const override of overrides) {
+    const scriptEvent = localScriptEventSelectors.selectById(
+      state,
+      override.id
+    );
+    if (scriptEvent) {
+      scriptEventsAdapter.updateOne(state.scriptEvents, {
+        id: override.id,
+        changes: {
+          args: {
+            ...scriptEvent.args,
+            ...override.args,
+          },
+        },
+      });
+    }
+  }
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const applyTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectors.selectById(
+    state,
+    action.payload.triggerId
+  );
+  if (!trigger) {
+    return;
+  }
+
+  // Update script events using override data
+  const override = trigger.prefabScriptOverrides[action.payload.scriptEventId];
+  const scriptEvent = localScriptEventSelectors.selectById(state, override.id);
+  if (scriptEvent) {
+    scriptEventsAdapter.updateOne(state.scriptEvents, {
+      id: override.id,
+      changes: {
+        args: {
+          ...scriptEvent.args,
+          ...override.args,
+        },
+      },
+    });
+  }
+
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
     },
   });
 };
@@ -3918,6 +4092,11 @@ const entitiesSlice = createSlice({
     setTriggerSymbol,
     unpackTriggerPrefab,
     convertTriggerToPrefab,
+    editTriggerPrefabScriptEventOverride,
+    revertTriggerPrefabScriptEventOverrides,
+    applyTriggerPrefabScriptEventOverrides,
+    revertTriggerPrefabScriptEventOverride,
+    applyTriggerPrefabScriptEventOverride,
     removeTrigger,
     removeTriggerAt,
     moveTrigger,

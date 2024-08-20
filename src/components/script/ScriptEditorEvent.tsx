@@ -16,6 +16,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   actorSelectors,
   scriptEventSelectors,
+  triggerSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import {
@@ -98,6 +99,9 @@ const ScriptEditorEvent = React.memo(
     const overrides = useAppSelector((state) => {
       if (context.entityType === "actorPrefab" && context.instanceId) {
         const instance = actorSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[id];
+      } else if (context.entityType === "triggerPrefab" && context.instanceId) {
+        const instance = triggerSelectors.selectById(state, context.instanceId);
         return instance?.prefabScriptOverrides?.[id];
       }
     });
@@ -308,6 +312,13 @@ const ScriptEditorEvent = React.memo(
             scriptEventId: id,
           })
         );
+      } else if (context.entityType === "triggerPrefab" && context.instanceId) {
+        dispatch(
+          entitiesActions.applyTriggerPrefabScriptEventOverride({
+            triggerId: context.instanceId,
+            scriptEventId: id,
+          })
+        );
       }
     }, [context.entityType, context.instanceId, dispatch, id]);
 
@@ -316,6 +327,13 @@ const ScriptEditorEvent = React.memo(
         dispatch(
           entitiesActions.revertActorPrefabScriptEventOverride({
             actorId: context.instanceId,
+            scriptEventId: id,
+          })
+        );
+      } else if (context.entityType === "triggerPrefab" && context.instanceId) {
+        dispatch(
+          entitiesActions.revertTriggerPrefabScriptEventOverride({
+            triggerId: context.instanceId,
             scriptEventId: id,
           })
         );
@@ -360,7 +378,10 @@ const ScriptEditorEvent = React.memo(
         dispatch,
         editableSymbol,
         hasElse,
+        onApplyOverrides,
         onOpenAddMenu,
+        onRevertOverrides,
+        overrides,
         parentId,
         parentKey,
         parentType,

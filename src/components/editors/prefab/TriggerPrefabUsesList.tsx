@@ -79,10 +79,17 @@ export const TriggerPrefabUsesList: FC<TriggerPrefabUsesListProps> = ({
         const triggerId = scene.triggers[triggerIndex];
         const trigger = triggersLookup[triggerId];
         if (trigger?.prefabId === id) {
+          const numChanges = Object.keys(trigger.prefabScriptOverrides).length;
           sceneUses.push({
             type: "trigger",
             id: trigger.id,
-            name: triggerName(trigger, triggerIndex),
+            name:
+              numChanges === 0
+                ? triggerName(trigger, triggerIndex)
+                : `${triggerName(trigger, triggerIndex)} (+${l10n(
+                    numChanges === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
+                    { n: numChanges }
+                  )})`,
             trigger,
             triggerIndex,
             sceneId: scene.id,
