@@ -79,7 +79,9 @@ export const sceneFixNulls = (
   return newScene;
 };
 
-export const actorFixNulls = (actor: ActorResource): ActorResource => {
+export const actorFixNulls = <T extends ActorResource | ActorPrefabResource>(
+  actor: T
+): T => {
   const newActor = { ...actor };
   walkActorScriptsKeys((key) => {
     newActor[key] = filterEvents(newActor[key], validScriptEvent);
@@ -87,7 +89,11 @@ export const actorFixNulls = (actor: ActorResource): ActorResource => {
   return newActor;
 };
 
-export const triggerFixNulls = (trigger: TriggerResource): TriggerResource => {
+export const triggerFixNulls = <
+  T extends TriggerResource | TriggerPrefabResource
+>(
+  trigger: T
+): T => {
   const newTrigger = { ...trigger };
   walkTriggerScriptsKeys((key) => {
     newTrigger[key] = filterEvents(newTrigger[key], validScriptEvent);
@@ -220,7 +226,7 @@ export const buildResourceExportBuffer = (
     writeResource<ActorPrefabResource>(
       actorPrefabFilename,
       "actorPrefab",
-      actorPrefab
+      actorFixNulls(actorPrefab)
     );
   }
 
@@ -231,7 +237,7 @@ export const buildResourceExportBuffer = (
     writeResource<TriggerPrefabResource>(
       triggerPrefabFilename,
       "triggerPrefab",
-      triggerPrefab
+      triggerFixNulls(triggerPrefab)
     );
   }
 
