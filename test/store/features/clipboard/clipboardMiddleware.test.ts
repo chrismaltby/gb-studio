@@ -31,6 +31,10 @@ test("Should be able to copy actor to clipboard", async () => {
               entities: {},
               ids: [],
             },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
             variables: {
               entities: {},
               ids: [],
@@ -62,6 +66,7 @@ test("Should be able to copy actor to clipboard", async () => {
         customEvents: [],
         variables: [],
         scriptEvents: [],
+        actorPrefabs: [],
       }),
       "utf8"
     )
@@ -104,6 +109,10 @@ test("Should include referenced variables when copying actor", async () => {
               entities: {},
               ids: [],
             },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
           },
         },
       },
@@ -132,6 +141,7 @@ test("Should include referenced variables when copying actor", async () => {
           },
         ],
         scriptEvents: [],
+        actorPrefabs: [],
       }),
       "utf8"
     )

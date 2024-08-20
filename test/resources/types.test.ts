@@ -75,7 +75,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate ActorResource", () => {
-    const validActor = {
+    const validActor: ActorResource = {
       _resourceType: "actor",
       _index: 0,
       id: "actor1",
@@ -93,6 +93,8 @@ describe("TypeBox Schemas", () => {
       isPinned: false,
       persistent: true,
       collisionGroup: "",
+      prefabId: "",
+      prefabScriptOverrides: {},
       script: [],
       startScript: [],
       updateScript: [],
@@ -131,7 +133,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate TriggerResource", () => {
-    const validTrigger = {
+    const validTrigger: TriggerResource = {
       _resourceType: "trigger",
       _index: 0,
       id: "trigger1",
@@ -141,6 +143,8 @@ describe("TypeBox Schemas", () => {
       y: 20,
       width: 30,
       height: 40,
+      prefabId: "",
+      prefabScriptOverrides: {},
       script: [],
       leaveScript: [],
     };

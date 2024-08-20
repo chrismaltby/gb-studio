@@ -181,7 +181,7 @@ describe("save.ts", () => {
     it("should build resource export buffer correctly", () => {
       const buffer = buildResourceExportBuffer(mockProjectResources);
 
-      expect(buffer).toHaveLength(17);
+      expect(buffer).toHaveLength(19);
 
       // Verify one of the encoded resources
       const actorResource = buffer.find((file) =>
