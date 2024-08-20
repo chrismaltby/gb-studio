@@ -1142,31 +1142,6 @@ const unpackActorPrefab: CaseReducer<
     return;
   }
 
-  const duplicateScript = (scriptEventIds: string[]): string[] => {
-    const newIds = scriptEventIds.map(() => uuid());
-    scriptEventIds.forEach((scriptEventId, index) => {
-      const scriptEvent = localScriptEventSelectors.selectById(
-        state,
-        scriptEventId
-      );
-      if (scriptEvent) {
-        const duplicatedChildren: Dictionary<string[]> = {};
-        if (scriptEvent.children) {
-          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
-            duplicatedChildren[key] = duplicateScript(childIds || []);
-          }
-        }
-        scriptEventsAdapter.addOne(state.scriptEvents, {
-          ...scriptEvent,
-          id: newIds[index],
-          children: duplicatedChildren,
-        });
-      }
-    });
-
-    return newIds;
-  };
-
   const patch = {
     ...omit(
       prefab,
@@ -1181,12 +1156,12 @@ const unpackActorPrefab: CaseReducer<
       "hit3Script"
     ),
     prefabId: "",
-    script: duplicateScript(prefab.script),
-    startScript: duplicateScript(prefab.startScript),
-    updateScript: duplicateScript(prefab.updateScript),
-    hit1Script: duplicateScript(prefab.hit1Script),
-    hit2Script: duplicateScript(prefab.hit2Script),
-    hit3Script: duplicateScript(prefab.hit3Script),
+    script: duplicateScript(state, prefab.script),
+    startScript: duplicateScript(state, prefab.startScript),
+    updateScript: duplicateScript(state, prefab.updateScript),
+    hit1Script: duplicateScript(state, prefab.hit1Script),
+    hit2Script: duplicateScript(state, prefab.hit2Script),
+    hit3Script: duplicateScript(state, prefab.hit3Script),
   };
 
   actorsAdapter.updateOne(state.actors, {
@@ -1231,31 +1206,6 @@ const convertActorToPrefab: CaseReducer<
     return;
   }
 
-  const duplicateScript = (scriptEventIds: string[]): string[] => {
-    const newIds = scriptEventIds.map(() => uuid());
-    scriptEventIds.forEach((scriptEventId, index) => {
-      const scriptEvent = localScriptEventSelectors.selectById(
-        state,
-        scriptEventId
-      );
-      if (scriptEvent) {
-        const duplicatedChildren: Dictionary<string[]> = {};
-        if (scriptEvent.children) {
-          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
-            duplicatedChildren[key] = duplicateScript(childIds || []);
-          }
-        }
-        scriptEventsAdapter.addOne(state.scriptEvents, {
-          ...scriptEvent,
-          id: newIds[index],
-          children: duplicatedChildren,
-        });
-      }
-    });
-
-    return newIds;
-  };
-
   const newActorPrefab: ActorPrefabNormalized = {
     ...omit(
       actor,
@@ -1274,12 +1224,12 @@ const convertActorToPrefab: CaseReducer<
       "hit2Script",
       "hit3Script"
     ),
-    script: duplicateScript(actor.script),
-    startScript: duplicateScript(actor.startScript),
-    updateScript: duplicateScript(actor.updateScript),
-    hit1Script: duplicateScript(actor.hit1Script),
-    hit2Script: duplicateScript(actor.hit2Script),
-    hit3Script: duplicateScript(actor.hit3Script),
+    script: duplicateScript(state, actor.script),
+    startScript: duplicateScript(state, actor.startScript),
+    updateScript: duplicateScript(state, actor.updateScript),
+    hit1Script: duplicateScript(state, actor.hit1Script),
+    hit2Script: duplicateScript(state, actor.hit2Script),
+    hit3Script: duplicateScript(state, actor.hit3Script),
     id: uuid(),
   };
 
@@ -1693,36 +1643,11 @@ const unpackTriggerPrefab: CaseReducer<
     return;
   }
 
-  const duplicateScript = (scriptEventIds: string[]): string[] => {
-    const newIds = scriptEventIds.map(() => uuid());
-    scriptEventIds.forEach((scriptEventId, index) => {
-      const scriptEvent = localScriptEventSelectors.selectById(
-        state,
-        scriptEventId
-      );
-      if (scriptEvent) {
-        const duplicatedChildren: Dictionary<string[]> = {};
-        if (scriptEvent.children) {
-          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
-            duplicatedChildren[key] = duplicateScript(childIds || []);
-          }
-        }
-        scriptEventsAdapter.addOne(state.scriptEvents, {
-          ...scriptEvent,
-          id: newIds[index],
-          children: duplicatedChildren,
-        });
-      }
-    });
-
-    return newIds;
-  };
-
   const patch = {
     ...omit(prefab, "id", "name", "notes", "script", "leaveScript"),
     prefabId: "",
-    script: duplicateScript(prefab.script),
-    leaveScript: duplicateScript(prefab.leaveScript),
+    script: duplicateScript(state, prefab.script),
+    leaveScript: duplicateScript(state, prefab.leaveScript),
   };
 
   triggersAdapter.updateOne(state.triggers, {
@@ -1773,31 +1698,6 @@ const convertTriggerToPrefab: CaseReducer<
     return;
   }
 
-  const duplicateScript = (scriptEventIds: string[]): string[] => {
-    const newIds = scriptEventIds.map(() => uuid());
-    scriptEventIds.forEach((scriptEventId, index) => {
-      const scriptEvent = localScriptEventSelectors.selectById(
-        state,
-        scriptEventId
-      );
-      if (scriptEvent) {
-        const duplicatedChildren: Dictionary<string[]> = {};
-        if (scriptEvent.children) {
-          for (const [key, childIds] of Object.entries(scriptEvent.children)) {
-            duplicatedChildren[key] = duplicateScript(childIds || []);
-          }
-        }
-        scriptEventsAdapter.addOne(state.scriptEvents, {
-          ...scriptEvent,
-          id: newIds[index],
-          children: duplicatedChildren,
-        });
-      }
-    });
-
-    return newIds;
-  };
-
   const newTriggerPrefab: TriggerPrefabNormalized = {
     ...omit(
       trigger,
@@ -1812,8 +1712,8 @@ const convertTriggerToPrefab: CaseReducer<
       "script",
       "leaveScript"
     ),
-    script: duplicateScript(trigger.script),
-    leaveScript: duplicateScript(trigger.leaveScript),
+    script: duplicateScript(state, trigger.script),
+    leaveScript: duplicateScript(state, trigger.leaveScript),
     id: uuid(),
   };
 
@@ -4501,6 +4401,37 @@ export const generateScriptEventInsertActions = (
   collectInsertActions(scriptEventIds, entityId, type, key, insertId, before);
 
   return insertActions;
+};
+
+/**************************************************************************
+ * Helpers
+ */
+
+export const duplicateScript = (
+  state: EntitiesState,
+  scriptEventIds: string[]
+): string[] => {
+  const newIds = scriptEventIds.map(() => uuid());
+  scriptEventIds.forEach((scriptEventId, index) => {
+    const scriptEvent = localScriptEventSelectors.selectById(
+      state,
+      scriptEventId
+    );
+    if (scriptEvent) {
+      const duplicatedChildren: Dictionary<string[]> = {};
+      if (scriptEvent.children) {
+        for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+          duplicatedChildren[key] = duplicateScript(state, childIds || []);
+        }
+      }
+      scriptEventsAdapter.addOne(state.scriptEvents, {
+        ...scriptEvent,
+        id: newIds[index],
+        children: duplicatedChildren,
+      });
+    }
+  });
+  return newIds;
 };
 
 /**************************************************************************
