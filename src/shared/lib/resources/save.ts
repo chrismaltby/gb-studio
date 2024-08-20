@@ -34,6 +34,13 @@ import {
 } from "shared/lib/resources/paths";
 import SparkMD5 from "spark-md5";
 import { omit } from "shared/types";
+import {
+  filterEvents,
+  walkActorScriptsKeys,
+  walkSceneScriptsKeys,
+  walkTriggerScriptsKeys,
+} from "shared/lib/scripts/walk";
+import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 
 export const encodeResource = <T extends Record<string, unknown>>(
   resourceType: string,
@@ -56,6 +63,40 @@ export const encodeResource = <T extends Record<string, unknown>>(
     null,
     2
   );
+};
+
+export const validScriptEvent = (scriptEvent: ScriptEvent): boolean => {
+  return !!(scriptEvent && scriptEvent.id);
+};
+
+export const sceneFixNulls = (
+  scene: CompressedSceneResource
+): CompressedSceneResource => {
+  const newScene = { ...scene };
+  walkSceneScriptsKeys((key) => {
+    newScene[key] = filterEvents(newScene[key], validScriptEvent);
+  });
+  return newScene;
+};
+
+export const actorFixNulls = (actor: ActorResource): ActorResource => {
+  const newActor = { ...actor };
+  walkActorScriptsKeys((key) => {
+    newActor[key] = filterEvents(newActor[key], validScriptEvent);
+  });
+  return newActor;
+};
+
+export const triggerFixNulls = (trigger: TriggerResource): TriggerResource => {
+  const newTrigger = { ...trigger };
+  walkTriggerScriptsKeys((key) => {
+    newTrigger[key] = filterEvents(newTrigger[key], validScriptEvent);
+  });
+  return newTrigger;
+};
+
+export const scriptFixNulls = (script: ScriptResource): ScriptResource => {
+  return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
 
 export const buildResourceExportBuffer = (
@@ -113,10 +154,14 @@ export const buildResourceExportBuffer = (
           const actorFilename = getUniquePath(
             getActorResourcePath(sceneFolder, actor)
           );
-          writeResource<ActorResource>(actorFilename, "actor", {
-            ...actor,
-            _index: actorIndex,
-          });
+          writeResource<ActorResource>(
+            actorFilename,
+            "actor",
+            actorFixNulls({
+              ...actor,
+              _index: actorIndex,
+            })
+          );
           actorIndex++;
         }
       }
@@ -129,10 +174,14 @@ export const buildResourceExportBuffer = (
           const triggerFilename = getUniquePath(
             getTriggerResourcePath(sceneFolder, trigger)
           );
-          writeResource<TriggerResource>(triggerFilename, "trigger", {
-            ...trigger,
-            _index: triggerIndex,
-          });
+          writeResource<TriggerResource>(
+            triggerFilename,
+            "trigger",
+            triggerFixNulls({
+              ...trigger,
+              _index: triggerIndex,
+            })
+          );
           triggerIndex++;
         }
       }
@@ -141,7 +190,7 @@ export const buildResourceExportBuffer = (
     writeResource<CompressedSceneResource>(
       sceneFilename,
       "scene",
-      omit(scene, "actors", "triggers")
+      sceneFixNulls(omit(scene, "actors", "triggers"))
     );
   }
 
@@ -188,7 +237,11 @@ export const buildResourceExportBuffer = (
 
   for (const script of projectResources.scripts) {
     const scriptFilename = getUniquePath(getScriptResourcePath(script));
-    writeResource<ScriptResource>(scriptFilename, "script", script);
+    writeResource<ScriptResource>(
+      scriptFilename,
+      "script",
+      scriptFixNulls(script)
+    );
   }
 
   for (const song of projectResources.music) {
