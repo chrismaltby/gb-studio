@@ -6,10 +6,12 @@ import {
 } from "consts";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import {
@@ -19,6 +21,8 @@ import {
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
+  ActorPrefabNormalized,
+  TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
@@ -179,6 +183,8 @@ const getSceneConnections = (
   scenesLookup: Dictionary<SceneNormalized>,
   actorsLookup: Dictionary<ActorNormalized>,
   triggersLookup: Dictionary<TriggerNormalized>,
+  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
+  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
   customEventsLookup: Dictionary<CustomEventNormalized>
 ) => {
   const ifMatches = (
@@ -231,6 +237,7 @@ const getSceneConnections = (
       walkNormalizedActorScripts(
         entity,
         eventsLookup,
+        actorPrefabsLookup,
         {
           customEvents: {
             lookup: customEventsLookup,
@@ -264,6 +271,7 @@ const getSceneConnections = (
       walkNormalizedTriggerScripts(
         entity,
         eventsLookup,
+        triggerPrefabsLookup,
         {
           customEvents: {
             lookup: customEventsLookup,
@@ -486,6 +494,12 @@ const Connections = ({
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
 
   useEffect(() => {
     if (!showConnections) {
@@ -503,6 +517,8 @@ const Connections = ({
             scenesLookup,
             actorsLookup,
             triggersLookup,
+            actorPrefabsLookup,
+            triggerPrefabsLookup,
             customEventsLookup
           )
         )
@@ -518,6 +534,8 @@ const Connections = ({
     scenesLookup,
     customEventsLookup,
     selectedSceneId,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
   ]);
 
   const onDragPlayerStop = useCallback(() => {

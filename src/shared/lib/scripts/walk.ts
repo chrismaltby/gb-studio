@@ -21,6 +21,7 @@ import {
   TriggerPrefabNormalized,
   ActorPrefab,
   TriggerPrefab,
+  ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
 
 //#region Script Events
@@ -431,6 +432,7 @@ type WalkNormalizedOptions =
   | {
       filter?: (ScriptEvent: ScriptEventNormalized) => boolean;
       includeCommented?: boolean;
+      overrides?: Record<string, ScriptEventArgsOverride>;
       customEvents?: {
         lookup: Dictionary<CustomEventNormalized>;
         maxDepth: number;
@@ -445,15 +447,26 @@ export const replaceCustomEventArgs = <
   }
 >(
   scriptEvent: T,
-  customEventArgs: Record<string, unknown> | undefined
+  customEventArgs: Record<string, unknown> | undefined,
+  overrideArgs?: Record<string, unknown> | undefined
 ): T => {
-  if (!customEventArgs) {
+  if (!customEventArgs && !overrideArgs) {
     return scriptEvent;
+  }
+  if (!customEventArgs) {
+    return {
+      ...scriptEvent,
+      args: {
+        ...scriptEvent.args,
+        ...overrideArgs,
+      },
+    };
   }
   return {
     ...scriptEvent,
     args: {
       ...scriptEvent.args,
+      ...overrideArgs,
       actorId:
         customEventArgs[`$actor[${scriptEvent.args?.actorId || 0}]$`] ??
         "$self$",
@@ -479,7 +492,8 @@ export const walkNormalizedScript = (
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
     if (scriptEvent) {
-      if (scriptEvent?.args?.__comment && !options?.includeCommented) {
+      const override = options?.overrides?.[scriptEvent.id];
+      if (scriptEvent.args?.__comment && !options?.includeCommented) {
         // Skip commented events
         continue;
       }
@@ -488,7 +502,11 @@ export const walkNormalizedScript = (
         continue;
       }
       callback(
-        replaceCustomEventArgs(scriptEvent, options?.customEvents?.args)
+        replaceCustomEventArgs(
+          scriptEvent,
+          options?.customEvents?.args,
+          override?.args
+        )
       );
       if (
         scriptEvent.children &&
@@ -564,9 +582,24 @@ export const walkNormalizedSceneSpecificScripts = (
 export const walkNormalizedActorScripts = (
   actor: ActorNormalized | ActorPrefabNormalized,
   lookup: Dictionary<ScriptEventNormalized>,
+  prefabsLookup: Dictionary<ActorPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
+  const prefabId = "prefabId" in actor ? actor.prefabId : "";
+  const prefab = prefabsLookup[prefabId];
+  if (prefab) {
+    const overrides =
+      "prefabScriptOverrides" in actor
+        ? actor.prefabScriptOverrides
+        : undefined;
+    const optionsWithOverrides = overrides
+      ? { ...options, overrides }
+      : options;
+    return walkActorScriptsKeys((key) => {
+      walkNormalizedScript(prefab[key], lookup, optionsWithOverrides, callback);
+    });
+  }
   walkActorScriptsKeys((key) => {
     walkNormalizedScript(actor[key], lookup, options, callback);
   });
@@ -575,9 +608,25 @@ export const walkNormalizedActorScripts = (
 export const walkNormalizedTriggerScripts = (
   trigger: TriggerNormalized | TriggerPrefabNormalized,
   lookup: Dictionary<ScriptEventNormalized>,
+  prefabsLookup: Dictionary<TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
+  const prefabId = "prefabId" in trigger ? trigger.prefabId : "";
+  const prefab = prefabsLookup[prefabId];
+
+  if (prefab) {
+    const overrides =
+      "prefabScriptOverrides" in trigger
+        ? trigger.prefabScriptOverrides
+        : undefined;
+    const optionsWithOverrides = overrides
+      ? { ...options, overrides }
+      : options;
+    return walkTriggerScriptsKeys((key) => {
+      walkNormalizedScript(prefab[key], lookup, optionsWithOverrides, callback);
+    });
+  }
   walkTriggerScriptsKeys((key) => {
     walkNormalizedScript(trigger[key], lookup, options, callback);
   });
@@ -588,6 +637,8 @@ export const walkNormalizedSceneScripts = (
   lookup: Dictionary<ScriptEventNormalized>,
   actorsLookup: Dictionary<ActorNormalized>,
   triggersLookup: Dictionary<TriggerNormalized>,
+  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
+  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -601,16 +652,24 @@ export const walkNormalizedSceneScripts = (
   scene.actors.forEach((actorId) => {
     const actor = actorsLookup[actorId];
     if (actor) {
-      walkNormalizedActorScripts(actor, lookup, options, (e) =>
-        callback(e, actor, undefined)
+      walkNormalizedActorScripts(
+        actor,
+        lookup,
+        actorPrefabsLookup,
+        options,
+        (e) => callback(e, actor, undefined)
       );
     }
   });
   scene.triggers.forEach((triggerId) => {
     const trigger = triggersLookup[triggerId];
     if (trigger) {
-      walkNormalizedTriggerScripts(trigger, lookup, options, (e) =>
-        callback(e, undefined, trigger)
+      walkNormalizedTriggerScripts(
+        trigger,
+        lookup,
+        triggerPrefabsLookup,
+        options,
+        (e) => callback(e, undefined, trigger)
       );
     }
   });
@@ -621,6 +680,8 @@ export const walkNormalizedScenesScripts = (
   lookup: Dictionary<ScriptEventNormalized>,
   actorsLookup: Dictionary<ActorNormalized>,
   triggersLookup: Dictionary<TriggerNormalized>,
+  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
+  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -635,6 +696,8 @@ export const walkNormalizedScenesScripts = (
       lookup,
       actorsLookup,
       triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
       options,
       (e, actor, trigger) => callback(e, scene, actor, trigger)
     );

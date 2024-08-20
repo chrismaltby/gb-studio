@@ -3,9 +3,11 @@ import { useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import DialogueReviewScene from "components/script/DialogueReviewScene";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import {
@@ -47,6 +49,12 @@ const DialoguePage = () => {
   const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
@@ -82,6 +90,7 @@ const DialoguePage = () => {
             walkNormalizedActorScripts(
               actor,
               scriptEventsLookup,
+              actorPrefabsLookup,
               undefined,
               (cmd) => {
                 if (cmd.command === EVENT_TEXT) {
@@ -100,6 +109,7 @@ const DialoguePage = () => {
             walkNormalizedTriggerScripts(
               trigger,
               scriptEventsLookup,
+              triggerPrefabsLookup,
               undefined,
               (cmd) => {
                 if (cmd.command === EVENT_TEXT) {
@@ -128,7 +138,14 @@ const DialoguePage = () => {
         );
         return memo;
       }, [] as DialogueLine[]),
-    [actorsLookup, scenes, scriptEventsLookup, triggersLookup]
+    [
+      actorPrefabsLookup,
+      actorsLookup,
+      scenes,
+      scriptEventsLookup,
+      triggerPrefabsLookup,
+      triggersLookup,
+    ]
   );
 
   const scriptWords = dialogueLines.reduce((memo, dialogueLine) => {

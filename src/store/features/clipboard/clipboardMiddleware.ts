@@ -644,6 +644,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedTriggerScripts(
             trigger,
             scriptEventsLookup,
+            {},
             { includeCommented: true },
             addEvent
           );
@@ -654,6 +655,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             walkNormalizedTriggerScripts(
               prefab,
               scriptEventsLookup,
+              {},
               { includeCommented: true },
               addEvent
             );
@@ -718,6 +720,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedActorScripts(
             actor,
             scriptEventsLookup,
+            {},
             { includeCommented: true },
             addEvent
           );
@@ -728,6 +731,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             walkNormalizedActorScripts(
               prefab,
               scriptEventsLookup,
+              {},
               { includeCommented: true },
               addEvent
             );
@@ -804,6 +808,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedActorScripts(
                 actor,
                 scriptEventsLookup,
+                {},
                 { includeCommented: true },
                 addEvent
               );
@@ -814,6 +819,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 walkNormalizedActorScripts(
                   prefab,
                   scriptEventsLookup,
+                  {},
                   { includeCommented: true },
                   addEvent
                 );
@@ -827,6 +833,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedTriggerScripts(
                 trigger,
                 scriptEventsLookup,
+                {},
                 { includeCommented: true },
                 addEvent
               );
@@ -837,6 +844,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 walkNormalizedTriggerScripts(
                   prefab,
                   scriptEventsLookup,
+                  {},
                   { includeCommented: true },
                   addEvent
                 );

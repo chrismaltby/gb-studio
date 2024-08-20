@@ -1,9 +1,11 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
@@ -77,6 +79,12 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const [showSymbols, setShowSymbols] = useState(false);
 
   const scriptEventDefs = useAppSelector((state) =>
@@ -110,6 +118,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       scenes,
       actorsLookup,
       triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
       scriptEventsLookup,
       scriptEventDefs,
       customEventsLookup,
@@ -123,6 +133,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     scriptEventsLookup,
     scriptEventDefs,
     customEventsLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
   ]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -6,6 +6,8 @@ import {
   actorSelectors,
   triggerSelectors,
   scriptEventSelectors,
+  actorPrefabSelectors,
+  triggerPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import navigationActions from "store/features/navigation/navigationActions";
 import editorActions from "store/features/editor/editorActions";
@@ -96,6 +98,12 @@ const DialogueReviewScene = ({
   const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
@@ -107,10 +115,12 @@ const DialogueReviewScene = ({
     }
     scene.actors.forEach((actorId, actorIndex) => {
       const actor = actorsLookup[actorId];
+      const prefab = actorPrefabsLookup[actor?.prefabId ?? ""];
       actor &&
         walkNormalizedActorScripts(
           actor,
           scriptEventsLookup,
+          actorPrefabsLookup,
           undefined,
           (cmd) => {
             if (cmd.command === EVENT_TEXT) {
@@ -118,6 +128,7 @@ const DialogueReviewScene = ({
                 entityName: actorName(actor, actorIndex),
                 sceneName: sceneName(scene, sceneIndex),
                 line: cmd,
+                overrideActorId: prefab ? actor.id : undefined,
               });
             }
           }
@@ -125,10 +136,12 @@ const DialogueReviewScene = ({
     });
     scene.triggers.forEach((triggerId, triggerIndex) => {
       const trigger = triggersLookup[triggerId];
+      const prefab = triggerPrefabsLookup[trigger?.prefabId ?? ""];
       trigger &&
         walkNormalizedTriggerScripts(
           trigger,
           scriptEventsLookup,
+          triggerPrefabsLookup,
           undefined,
           (cmd) => {
             if (cmd.command === EVENT_TEXT) {
@@ -136,6 +149,7 @@ const DialogueReviewScene = ({
                 entityName: triggerName(trigger, triggerIndex),
                 sceneName: sceneName(scene, sceneIndex),
                 line: cmd,
+                overrideTriggerId: prefab ? trigger.id : undefined,
               });
             }
           }
@@ -156,17 +170,44 @@ const DialogueReviewScene = ({
       }
     );
     return memo;
-  }, [actorsLookup, scene, sceneIndex, scriptEventsLookup, triggersLookup]);
+  }, [
+    actorPrefabsLookup,
+    actorsLookup,
+    scene,
+    sceneIndex,
+    scriptEventsLookup,
+    triggerPrefabsLookup,
+    triggersLookup,
+  ]);
 
-  const onChange = (id: string) => (value: string | string[]) => {
-    dispatch(
-      entitiesActions.editScriptEventArg({
-        scriptEventId: id,
-        key: "text",
-        value,
-      })
-    );
-  };
+  const onChange =
+    (dialogueLine: DialogueLine) => (value: string | string[]) => {
+      if (dialogueLine.overrideActorId) {
+        dispatch(
+          entitiesActions.editActorPrefabScriptEventOverride({
+            actorId: dialogueLine.overrideActorId,
+            scriptEventId: dialogueLine.line.id,
+            args: { text: value },
+          })
+        );
+      } else if (dialogueLine.overrideTriggerId) {
+        dispatch(
+          entitiesActions.editTriggerPrefabScriptEventOverride({
+            triggerId: dialogueLine.overrideTriggerId,
+            scriptEventId: dialogueLine.line.id,
+            args: { text: value },
+          })
+        );
+      } else {
+        dispatch(
+          entitiesActions.editScriptEventArg({
+            scriptEventId: dialogueLine.line.id,
+            key: "text",
+            value,
+          })
+        );
+      }
+    };
 
   const onSearch = useCallback(() => {
     if (!scene) {
@@ -201,7 +242,7 @@ const DialogueReviewScene = ({
             <DialogueReviewLine
               key={dialogueLine.line.id}
               dialogueLine={dialogueLine}
-              onChange={onChange(dialogueLine.line.id)}
+              onChange={onChange(dialogueLine)}
             />
           ))}
         </SceneLines>

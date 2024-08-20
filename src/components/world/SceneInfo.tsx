@@ -12,11 +12,13 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
   spriteSheetSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import styled, { css } from "styled-components";
@@ -101,6 +103,12 @@ const SceneInfo = () => {
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
@@ -152,6 +160,8 @@ const SceneInfo = () => {
         scriptEventsLookup,
         actorsLookup,
         triggersLookup,
+        actorPrefabsLookup,
+        triggerPrefabsLookup,
         {
           customEvents: {
             lookup: customEventsLookup,
@@ -228,7 +238,8 @@ const SceneInfo = () => {
       scene.actors.forEach((actorId) => {
         const actor = actorsLookup[actorId];
         if (actor && !actorsExclusiveLookup[actorId]) {
-          addSprite(actor.spriteSheetId);
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          addSprite(prefab?.spriteSheetId ?? actor.spriteSheetId);
         }
       });
 
@@ -236,14 +247,18 @@ const SceneInfo = () => {
       scene.actors.forEach((actorId) => {
         const actor = actorsLookup[actorId];
         if (actor && actorsExclusiveLookup[actorId]) {
-          const defaultSprite = spriteSheetsLookup[actor.spriteSheetId || ""];
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          const defaultSprite =
+            spriteSheetsLookup[
+              prefab?.spriteSheetId ?? actor.spriteSheetId ?? ""
+            ];
           if (
             !defaultSprite ||
             actorsExclusiveLookup[actorId].numTiles > defaultSprite.numTiles
           ) {
             addSprite(actorsExclusiveLookup[actorId].id, true);
           } else {
-            addSprite(actor.spriteSheetId, true);
+            addSprite(prefab?.spriteSheetId ?? actor.spriteSheetId, true);
           }
         }
       });
@@ -361,6 +376,8 @@ const SceneInfo = () => {
     scriptEventsLookup,
     actorsLookup,
     triggersLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
     customEventsLookup,
     defaultPlayerSprites,
     isCGBOnly,
@@ -378,6 +395,7 @@ const SceneInfo = () => {
     scriptEventsLookup,
     spriteSheetsLookup,
     defaultPlayerSprites,
+    actorPrefabsLookup,
   ]);
 
   if (!scene) {

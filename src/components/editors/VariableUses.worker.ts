@@ -8,10 +8,12 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorNormalized,
+  ActorPrefabNormalized,
   CustomEventNormalized,
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
+  TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
@@ -77,6 +79,10 @@ workerCtx.onmessage = async (evt) => {
   const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
   const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
+  const actorPrefabsLookup: Dictionary<ActorPrefabNormalized> =
+    evt.data.actorPrefabsLookup;
+  const triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized> =
+    evt.data.triggerPrefabsLookup;
   const customEventsLookup: Dictionary<CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
@@ -91,6 +97,8 @@ workerCtx.onmessage = async (evt) => {
     scriptEventsLookup,
     actorsLookup,
     triggersLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
     undefined,
     (scriptEvent, scene, actor, trigger) => {
       if (!scriptEvent.args) {

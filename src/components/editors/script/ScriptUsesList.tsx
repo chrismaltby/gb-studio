@@ -1,9 +1,11 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -60,7 +62,12 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
-
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
@@ -92,6 +99,8 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
       scenes,
       actorsLookup,
       triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
       scriptEventsLookup,
       scriptEventDefs,
       customEventsLookup,
@@ -105,6 +114,8 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
     scriptEventsLookup,
     scriptEventDefs,
     customEventsLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
   ]);
 
   const setSelectedId = (id: string, item: ScriptUse) => {

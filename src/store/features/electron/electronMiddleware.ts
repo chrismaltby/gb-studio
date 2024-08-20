@@ -119,6 +119,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const scenesLookup = sceneSelectors.selectEntities(state);
       const actorsLookup = actorSelectors.selectEntities(state);
       const triggersLookup = triggerSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
 
       const usedSceneIds = [] as string[];
@@ -136,6 +138,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         scriptEventsLookup,
         actorsLookup,
         triggersLookup,
+        actorPrefabsLookup,
+        triggerPrefabsLookup,
         undefined,
         (scriptEvent, scene) => {
           if (
