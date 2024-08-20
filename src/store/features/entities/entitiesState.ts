@@ -71,6 +71,7 @@ import {
   Tileset,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
+  ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -1142,6 +1143,8 @@ const unpackActorPrefab: CaseReducer<
     return;
   }
 
+  const overrides = actor.prefabScriptOverrides;
+
   const patch = {
     ...omit(
       prefab,
@@ -1156,12 +1159,12 @@ const unpackActorPrefab: CaseReducer<
       "hit3Script"
     ),
     prefabId: "",
-    script: duplicateScript(state, prefab.script),
-    startScript: duplicateScript(state, prefab.startScript),
-    updateScript: duplicateScript(state, prefab.updateScript),
-    hit1Script: duplicateScript(state, prefab.hit1Script),
-    hit2Script: duplicateScript(state, prefab.hit2Script),
-    hit3Script: duplicateScript(state, prefab.hit3Script),
+    script: duplicateScript(state, prefab.script, overrides),
+    startScript: duplicateScript(state, prefab.startScript, overrides),
+    updateScript: duplicateScript(state, prefab.updateScript, overrides),
+    hit1Script: duplicateScript(state, prefab.hit1Script, overrides),
+    hit2Script: duplicateScript(state, prefab.hit2Script, overrides),
+    hit3Script: duplicateScript(state, prefab.hit3Script, overrides),
   };
 
   actorsAdapter.updateOne(state.actors, {
@@ -1643,11 +1646,13 @@ const unpackTriggerPrefab: CaseReducer<
     return;
   }
 
+  const overrides = trigger.prefabScriptOverrides;
+
   const patch = {
     ...omit(prefab, "id", "name", "notes", "script", "leaveScript"),
     prefabId: "",
-    script: duplicateScript(state, prefab.script),
-    leaveScript: duplicateScript(state, prefab.leaveScript),
+    script: duplicateScript(state, prefab.script, overrides),
+    leaveScript: duplicateScript(state, prefab.leaveScript, overrides),
   };
 
   triggersAdapter.updateOne(state.triggers, {
@@ -4409,7 +4414,8 @@ export const generateScriptEventInsertActions = (
 
 export const duplicateScript = (
   state: EntitiesState,
-  scriptEventIds: string[]
+  scriptEventIds: string[],
+  overrides?: Record<string, ScriptEventArgsOverride>
 ): string[] => {
   const newIds = scriptEventIds.map(() => uuid());
   scriptEventIds.forEach((scriptEventId, index) => {
@@ -4421,11 +4427,22 @@ export const duplicateScript = (
       const duplicatedChildren: Dictionary<string[]> = {};
       if (scriptEvent.children) {
         for (const [key, childIds] of Object.entries(scriptEvent.children)) {
-          duplicatedChildren[key] = duplicateScript(state, childIds || []);
+          duplicatedChildren[key] = duplicateScript(
+            state,
+            childIds || [],
+            overrides
+          );
         }
       }
+      const override = overrides?.[scriptEvent.id];
       scriptEventsAdapter.addOne(state.scriptEvents, {
         ...scriptEvent,
+        args: override
+          ? {
+              ...scriptEvent.args,
+              ...override.args,
+            }
+          : scriptEvent.args,
         id: newIds[index],
         children: duplicatedChildren,
       });
