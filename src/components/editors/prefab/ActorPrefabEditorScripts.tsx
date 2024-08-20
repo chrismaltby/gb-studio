@@ -2,6 +2,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import {
+  ActorNormalized,
   ActorPrefabNormalized,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -19,6 +20,8 @@ import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface ActorPrefabEditorScriptsProps {
   prefab: ActorPrefabNormalized;
+  actor?: ActorNormalized;
+  sceneId?: string;
   isInstance?: boolean;
 }
 
@@ -83,6 +86,8 @@ const getScriptKey = (
 
 export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   prefab,
+  actor,
+  sceneId,
   isInstance,
 }) => {
   const lockScriptEditor = useAppSelector(
@@ -194,10 +199,11 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
       type: "prefab",
       entityType: "actorPrefab",
       entityId: prefab.id,
-      sceneId: "",
+      sceneId: sceneId ?? "",
       scriptKey,
+      instanceId: actor?.id,
     }),
-    [prefab.id, scriptKey]
+    [actor?.id, prefab.id, sceneId, scriptKey]
   );
 
   if (!prefab) {

@@ -76,10 +76,17 @@ export const ActorPrefabUsesList: FC<ActorPrefabUsesListProps> = ({
         const actorId = scene.actors[actorIndex];
         const actor = actorsLookup[actorId];
         if (actor?.prefabId === id) {
+          const numChanges = Object.keys(actor.prefabScriptOverrides).length;
           sceneUses.push({
             type: "actor",
             id: actor.id,
-            name: actorName(actor, actorIndex),
+            name:
+              numChanges === 0
+                ? actorName(actor, actorIndex)
+                : `${actorName(actor, actorIndex)} (+${l10n(
+                    numChanges === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
+                    { n: numChanges }
+                  )})`,
             actor,
             actorIndex,
             sceneId: scene.id,

@@ -119,7 +119,11 @@ import type {
   SettingsState,
 } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
-import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
+import {
+  mapActorScript,
+  walkSceneScripts,
+  walkScenesScripts,
+} from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
@@ -1408,9 +1412,24 @@ const compile = async (
         if (!prefab) {
           return actor;
         }
+        const applyScriptEventOverrides = (
+          scriptEvent: ScriptEvent
+        ): ScriptEvent => {
+          const override = actor.prefabScriptOverrides[scriptEvent.id];
+          if (!override) {
+            return scriptEvent;
+          }
+          return {
+            ...scriptEvent,
+            args: {
+              ...scriptEvent.args,
+              ...override.args,
+            },
+          };
+        };
         return {
           ...actor,
-          ...prefab,
+          ...mapActorScript(prefab, applyScriptEventOverrides),
           _resourceType: actor._resourceType,
           id: actor.id,
         };

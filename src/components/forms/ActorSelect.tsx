@@ -75,8 +75,11 @@ export const ActorSelect = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(context.entityId);
-  const selfActor = actorsLookup[context.entityId];
+  const sceneActorId = context.instanceId
+    ? context.instanceId
+    : context.entityId;
+  const sceneActorIndex = sceneActorIds?.indexOf(sceneActorId);
+  const sceneActor = actorsLookup[sceneActorId];
   const selfPrefab = actorPrefabsLookup[context.entityId];
   const selfPrefabIndex = actorPrefabIds.indexOf(context.entityId);
 
@@ -100,20 +103,24 @@ export const ActorSelect = ({
           };
         }),
       ]);
-    } else if (context.type === "entity" && sceneActorIds) {
+    } else if (
+      (context.type === "entity" || context.type === "prefab") &&
+      sceneActorIds
+    ) {
       setOptions([
-        ...(context.entityType === "actor" &&
-        selfActor &&
-        selfIndex !== undefined
+        ...((context.entityType === "actor" ||
+          context.entityType === "actorPrefab") &&
+        sceneActor &&
+        sceneActorIndex !== undefined
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
-                  selfActor,
-                  selfIndex
+                  sceneActor,
+                  sceneActorIndex
                 )})`,
                 value: "$self$",
-                spriteSheetId: selfActor.spriteSheetId,
-                direction: selfActor.direction,
+                spriteSheetId: sceneActor.spriteSheetId,
+                direction: sceneActor.direction,
               },
             ]
           : []),
@@ -170,8 +177,8 @@ export const ActorSelect = ({
     customEvent,
     playerSpriteSheetId,
     sceneActorIds,
-    selfActor,
-    selfIndex,
+    sceneActor,
+    sceneActorIndex,
     selfPrefab,
     selfPrefabIndex,
   ]);

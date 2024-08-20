@@ -1,6 +1,9 @@
 import React, { useContext } from "react";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
+import {
+  ScriptEventFieldSchema,
+  ScriptEventNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroupWrapper,
@@ -11,7 +14,7 @@ import { ScriptEditorContext } from "./ScriptEditorContext";
 import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 
 interface ScriptEventFieldsProps {
-  id: string;
+  scriptEvent: ScriptEventNormalized;
   entityId: string;
   nestLevel: number;
   altBg: boolean;
@@ -24,7 +27,7 @@ const genKey = (id: string, key: string, index: number) =>
   `${id}_${key}_${index || 0}`;
 
 const ScriptEventFields = ({
-  id,
+  scriptEvent,
   entityId,
   nestLevel,
   altBg,
@@ -76,7 +79,7 @@ const ScriptEventFields = ({
               return (
                 <ScriptEditorContext.Provider
                   value={ctx}
-                  key={genKey(id, field.key || "", fieldIndex)}
+                  key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
                 >
                   {events}
                 </ScriptEditorContext.Provider>
@@ -89,7 +92,7 @@ const ScriptEventFields = ({
         if (field.type === "group" && field.fields) {
           return (
             <ScriptEventFieldGroupWrapper
-              key={genKey(id, field.key || "", fieldIndex)}
+              key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
               halfWidth={field.width === "50%"}
               wrapItems={field.wrapItems}
               alignBottom={field.alignBottom}
@@ -100,7 +103,7 @@ const ScriptEventFields = ({
               }}
             >
               <ScriptEventFields
-                id={id}
+                scriptEvent={scriptEvent}
                 entityId={entityId}
                 nestLevel={nestLevel}
                 altBg={altBg}
@@ -114,8 +117,8 @@ const ScriptEventFields = ({
 
         return (
           <ScriptEventFormField
-            key={genKey(id, field.key || "", fieldIndex)}
-            scriptEventId={id}
+            key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
+            scriptEvent={scriptEvent}
             field={field}
             entityId={entityId}
             nestLevel={nestLevel}

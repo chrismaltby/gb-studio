@@ -15,6 +15,7 @@ export type ScriptEditorCtx = {
   entityType: EntityType;
   scriptKey: string;
   executingId?: string;
+  instanceId?: string;
 };
 
 export const defaultVariableForContext = (

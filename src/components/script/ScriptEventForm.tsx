@@ -1,20 +1,18 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
-import {
-  customEventSelectors,
-  scriptEventSelectors,
-} from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesState";
 import { Dictionary } from "@reduxjs/toolkit";
 import {
   CustomEventNormalized,
   ScriptEventFieldSchema,
+  ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventFormProps {
-  id: string;
+  scriptEvent: ScriptEventNormalized;
   entityId: string;
   nestLevel: number;
   altBg: boolean;
@@ -79,7 +77,7 @@ const getScriptEventFields = (
 };
 
 const ScriptEventForm = ({
-  id,
+  scriptEvent,
   entityId,
   nestLevel,
   altBg,
@@ -87,9 +85,6 @@ const ScriptEventForm = ({
 }: ScriptEventFormProps) => {
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
-  );
-  const scriptEvent = useAppSelector((state) =>
-    scriptEventSelectors.selectById(state, id)
   );
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
@@ -115,7 +110,7 @@ const ScriptEventForm = ({
 
   return (
     <ScriptEventFields
-      id={id}
+      scriptEvent={scriptEvent}
       entityId={entityId}
       nestLevel={nestLevel}
       altBg={altBg}

@@ -49,6 +49,20 @@ export const FormRow = styled.div<FormRowProps>`
   }
 `;
 
+interface FormFieldInputProps {
+  hasOverride?: boolean;
+}
+
+export const FormFieldInput = styled.div<FormFieldInputProps>`
+  ${(props) =>
+    props.hasOverride
+      ? css`
+          border-radius: 3px;
+          outline: 3px solid ${(props) => props.theme.colors.prefab.background};
+        `
+      : ""}
+`;
+
 export const FormDivider = styled.div`
   margin-bottom: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
@@ -61,6 +75,7 @@ export const FormSpacer = styled.div`
 interface FormFieldWrapperProps {
   readonly variant?: "normal" | "error";
   readonly alignCheckbox?: boolean;
+  readonly hasOverride?: boolean;
 }
 
 const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
@@ -76,6 +91,12 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
     props.alignCheckbox
       ? css`
           padding-bottom: 5px;
+        `
+      : ""}
+      ${(props) =>
+    props.hasOverride
+      ? css`
+          font-weight: bold;
         `
       : ""}
 `;
@@ -94,6 +115,7 @@ export interface FormFieldProps {
   readonly info?: string;
   readonly alignCheckbox?: boolean;
   readonly variant?: "normal" | "error";
+  readonly hasOverride?: boolean;
 }
 
 export const FormField: FC<FormFieldProps> = ({
@@ -103,15 +125,20 @@ export const FormField: FC<FormFieldProps> = ({
   info,
   variant,
   alignCheckbox,
+  hasOverride,
   children,
 }) => (
-  <FormFieldWrapper variant={variant} alignCheckbox={alignCheckbox}>
+  <FormFieldWrapper
+    variant={variant}
+    alignCheckbox={alignCheckbox}
+    hasOverride={hasOverride}
+  >
     {label && (
       <Label htmlFor={name} title={title}>
         {label}
       </Label>
     )}
-    {children}
+    <FormFieldInput hasOverride={hasOverride}>{children}</FormFieldInput>
     {info && <FormFieldInfo>{info}</FormFieldInfo>}
   </FormFieldWrapper>
 );
@@ -171,7 +198,16 @@ export interface ToggleableFormFieldProps {
 
 export const ToggleableFormField: FC<
   ToggleableFormFieldProps & FormFieldProps
-> = ({ enabled, disabledLabel, name, label, info, variant, children }) => {
+> = ({
+  enabled,
+  disabledLabel,
+  name,
+  label,
+  info,
+  variant,
+  hasOverride,
+  children,
+}) => {
   const [isEnabled, setIsEnabled] = useState(enabled);
 
   if (!isEnabled) {
@@ -183,7 +219,13 @@ export const ToggleableFormField: FC<
   }
 
   return (
-    <FormField name={name} label={label} info={info} variant={variant}>
+    <FormField
+      name={name}
+      label={label}
+      info={info}
+      variant={variant}
+      hasOverride={hasOverride}
+    >
       {children}
     </FormField>
   );

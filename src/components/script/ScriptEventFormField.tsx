@@ -1,7 +1,7 @@
-import React, { memo, useCallback } from "react";
-import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import React, { memo, useCallback, useContext } from "react";
 import {
   ScriptEventFieldSchema,
+  ScriptEventNormalized,
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -19,9 +19,11 @@ import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
+import { actorSelectors } from "store/features/entities/entitiesState";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormFieldProps {
-  scriptEventId: string;
+  scriptEvent: ScriptEventNormalized;
   field: ScriptEventFieldSchema;
   nestLevel: number;
   altBg: boolean;
@@ -82,16 +84,22 @@ const InputRow = styled.div`
 
 const ScriptEventFormField = memo(
   ({
-    scriptEventId,
+    scriptEvent,
     field,
     entityId,
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
     const dispatch = useAppDispatch();
-    const scriptEvent = useAppSelector((state) =>
-      scriptEventSelectors.selectById(state, scriptEventId)
-    );
+
+    const context = useContext(ScriptEditorContext);
+
+    const overrides = useAppSelector((state) => {
+      if (context.entityType === "actorPrefab" && context.instanceId) {
+        const instance = actorSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[scriptEvent.id];
+      }
+    });
 
     const args = scriptEvent?.args;
     const value: unknown = field.multiple
@@ -100,13 +108,25 @@ const ScriptEventFormField = memo(
 
     const setArgValue = useCallback(
       (key: string, value: unknown) => {
-        dispatch(
-          entitiesActions.editScriptEventArg({
-            scriptEventId,
-            key,
-            value,
-          })
-        );
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEventArg({
+              scriptEventId: scriptEvent.id,
+              key,
+              value,
+            })
+          );
+        }
         if (scriptEvent && field.key && field.hasPostUpdateFn) {
           API.script
             .scriptEventPostUpdateFn(
@@ -117,19 +137,39 @@ const ScriptEventFormField = memo(
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
-                dispatch(
-                  entitiesActions.editScriptEvent({
-                    scriptEventId,
-                    changes: {
+                if (
+                  context.entityType === "actorPrefab" &&
+                  context.instanceId
+                ) {
+                  dispatch(
+                    entitiesActions.editActorPrefabScriptEventOverride({
+                      actorId: context.instanceId,
+                      scriptEventId: scriptEvent.id,
                       args: updatedArgs,
-                    },
-                  })
-                );
+                    })
+                  );
+                } else {
+                  dispatch(
+                    entitiesActions.editScriptEvent({
+                      scriptEventId: scriptEvent.id,
+                      changes: {
+                        args: updatedArgs,
+                      },
+                    })
+                  );
+                }
               }
             });
         }
       },
-      [dispatch, field, scriptEvent, scriptEventId]
+      [
+        context.entityType,
+        context.instanceId,
+        dispatch,
+        field.hasPostUpdateFn,
+        field.key,
+        scriptEvent,
+      ]
     );
 
     const onChange = useCallback(
@@ -245,7 +285,7 @@ const ScriptEventFormField = memo(
     const inputField =
       field.multiple && Array.isArray(value) ? (
         value.map((_, valueIndex) => {
-          const fieldId = genKey(scriptEventId, field.key || "", valueIndex);
+          const fieldId = genKey(scriptEvent.id, field.key || "", valueIndex);
           return (
             <InputRow key={fieldId}>
               <ScriptEventFormInput
@@ -275,7 +315,7 @@ const ScriptEventFormField = memo(
         })
       ) : (
         <ScriptEventFormInput
-          id={genKey(scriptEventId, field.key || "")}
+          id={genKey(scriptEvent.id, field.key || "")}
           entityId={entityId}
           type={field.type}
           field={field}
@@ -298,10 +338,11 @@ const ScriptEventFormField = memo(
           }}
         >
           <ToggleableFormField
-            name={genKey(scriptEventId, field.key || "")}
+            name={genKey(scriptEvent.id, field.key || "")}
             disabledLabel={field.toggleLabel}
             label={label || ""}
             enabled={!!value}
+            hasOverride={overrides?.args?.[field.key || ""] !== undefined}
           >
             {inputField}
           </ToggleableFormField>
@@ -321,7 +362,7 @@ const ScriptEventFormField = memo(
         }}
       >
         <FormField
-          name={genKey(scriptEventId, field.key || "")}
+          name={genKey(scriptEvent.id, field.key || "")}
           label={
             label &&
             field.type !== "checkbox" &&
@@ -332,6 +373,7 @@ const ScriptEventFormField = memo(
               : ""
           }
           title={field.description}
+          hasOverride={overrides?.args?.[field.key || ""] !== undefined}
         >
           {inputField}
         </FormField>

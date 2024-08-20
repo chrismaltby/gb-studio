@@ -72,6 +72,13 @@ const ScriptEvent = Type.Recursive((This) =>
 );
 type ScriptEvent = Static<typeof ScriptEvent>;
 
+const ScriptEventArgsOverride = Type.Object({
+  id: Type.String(),
+  args: Type.Record(Type.String(), Type.Unknown()),
+});
+
+type ScriptEventArgsOverride = Static<typeof ScriptEventArgsOverride>;
+
 export const ActorResource = Type.Object({
   _resourceType: Type.Literal("actor"),
   _index: Type.Number(),
@@ -91,6 +98,7 @@ export const ActorResource = Type.Object({
   isPinned: Type.Boolean(),
   persistent: Type.Boolean(),
   collisionGroup: CollisionGroup,
+  prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   startScript: Type.Array(ScriptEvent),
   updateScript: Type.Array(ScriptEvent),
@@ -111,6 +119,7 @@ export const ActorPrefabResource = Type.Composite([
     "direction",
     "isPinned",
     "symbol",
+    "prefabScriptOverrides",
   ]),
   Type.Object({
     _resourceType: Type.Literal("actorPrefab"),

@@ -19,6 +19,8 @@ import {
   CustomEvent,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
+  ActorPrefab,
+  TriggerPrefab,
 } from "shared/lib/entities/entitiesTypes";
 
 //#region Script Events
@@ -177,6 +179,28 @@ export const mapScenesScript = (
   return scenes.map((scene) => {
     return mapSceneScript(scene, callback);
   });
+};
+
+export const mapActorScript = <T extends Actor | ActorPrefab>(
+  actor: T,
+  callback: (e: ScriptEvent) => ScriptEvent
+): T => {
+  const newActor = { ...actor };
+  walkActorScriptsKeys((key) => {
+    newActor[key] = mapScript(actor[key], callback);
+  });
+  return newActor;
+};
+
+export const mapTriggerScript = <T extends Trigger | TriggerPrefab>(
+  trigger: T,
+  callback: (e: ScriptEvent) => ScriptEvent
+): T => {
+  const newTrigger = { ...trigger };
+  walkTriggerScriptsKeys((key) => {
+    newTrigger[key] = mapScript(trigger[key], callback);
+  });
+  return newTrigger;
 };
 
 //#endregion Map Script Events

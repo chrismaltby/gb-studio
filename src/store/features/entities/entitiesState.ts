@@ -1014,6 +1014,7 @@ const addActor: CaseReducer<
     isPinned: false,
     persistent: false,
     collisionGroup: "",
+    prefabScriptOverrides: {},
     ...(action.payload.defaults || {}),
     symbol: genEntitySymbol(state, "actor_0"),
     script: [],
@@ -1041,6 +1042,11 @@ const editActor: CaseReducer<
 
   if (!actor) {
     return;
+  }
+
+  // If prefab changes reset overrides
+  if (patch.prefabId && actor.prefabId !== patch.prefabId) {
+    patch.prefabScriptOverrides = {};
   }
 
   actorsAdapter.updateOne(state.actors, {
@@ -1305,6 +1311,154 @@ const convertActorToPrefab: CaseReducer<
       variablesAdapter.removeOne(state.variables, prefabLocalId);
     }
   }
+};
+
+const editActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+    args: Record<string, unknown>;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  const scriptEvent = localScriptEventSelectors.selectById(
+    state,
+    action.payload.scriptEventId
+  );
+  if (!actor || !scriptEvent) {
+    return;
+  }
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  const override = prefabScriptOverrides[scriptEvent.id] ?? {
+    id: scriptEvent.id,
+    args: {},
+  };
+  const argKeys = Object.keys(action.payload.args);
+  for (const key of argKeys) {
+    override.args[key] = action.payload.args[key];
+  }
+  prefabScriptOverrides[scriptEvent.id] = override;
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const revertActorPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const revertActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const applyActorPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+
+  // Update script events using override data
+  const overrides = Object.values(actor.prefabScriptOverrides);
+  for (const override of overrides) {
+    const scriptEvent = localScriptEventSelectors.selectById(
+      state,
+      override.id
+    );
+    if (scriptEvent) {
+      scriptEventsAdapter.updateOne(state.scriptEvents, {
+        id: override.id,
+        changes: {
+          args: {
+            ...scriptEvent.args,
+            ...override.args,
+          },
+        },
+      });
+    }
+  }
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const applyActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+
+  // Update script events using override data
+  const override = actor.prefabScriptOverrides[action.payload.scriptEventId];
+  const scriptEvent = localScriptEventSelectors.selectById(state, override.id);
+  if (scriptEvent) {
+    scriptEventsAdapter.updateOne(state.scriptEvents, {
+      id: override.id,
+      changes: {
+        args: {
+          ...scriptEvent.args,
+          ...override.args,
+        },
+      },
+    });
+  }
+
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
 };
 
 const removeActor: CaseReducer<
@@ -3727,6 +3881,11 @@ const entitiesSlice = createSlice({
     setActorSymbol,
     unpackActorPrefab,
     convertActorToPrefab,
+    editActorPrefabScriptEventOverride,
+    revertActorPrefabScriptEventOverrides,
+    applyActorPrefabScriptEventOverrides,
+    revertActorPrefabScriptEventOverride,
+    applyActorPrefabScriptEventOverride,
     removeActor,
     removeActorAt,
     moveActor,

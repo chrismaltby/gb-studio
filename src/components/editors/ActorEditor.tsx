@@ -121,7 +121,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
 
   const onChangePrefabId = useCallback(
-    (e: string) => onChangeActorProp("prefabId", e),
+    (e: string) => {
+      onChangeActorProp("prefabId", e);
+    },
     [onChangeActorProp]
   );
 
@@ -178,6 +180,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const showNotes = actor.notes || notesOpen;
 
   const scrollKey = `${actor.id}_${lastScriptTab}`;
+
+  const numOverrides = Object.keys(actor.prefabScriptOverrides)?.length;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -318,6 +322,18 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               value={actor.prefabId}
               onChange={onChangePrefabId}
             />
+            {numOverrides > 0 ? (
+              <span style={{ whiteSpace: "nowrap" }}>
+                (+
+                {l10n(
+                  numOverrides === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
+                  { n: numOverrides }
+                )}
+                )
+              </span>
+            ) : (
+              ""
+            )}
             <FlexGrow />
             {prefab && (
               <DropdownButton
@@ -350,6 +366,34 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 >
                   {l10n("FIELD_VIEW_PREFAB_USES")}
                 </MenuItem>
+                {numOverrides > 0 && <MenuDivider />}
+                {numOverrides > 0 && (
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(
+                        entitiesActions.applyActorPrefabScriptEventOverrides({
+                          actorId: actor.id,
+                        })
+                      );
+                    }}
+                  >
+                    {l10n("FIELD_APPLY_CHANGES")}
+                  </MenuItem>
+                )}
+                {numOverrides > 0 && (
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(
+                        entitiesActions.revertActorPrefabScriptEventOverrides({
+                          actorId: actor.id,
+                        })
+                      );
+                    }}
+                  >
+                    {l10n("FIELD_REVERT_CHANGES")}
+                  </MenuItem>
+                )}
+
                 <MenuDivider />
                 <MenuItem
                   onClick={() => {
@@ -378,7 +422,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         )}
 
         {prefab ? (
-          <ActorPrefabEditorScripts prefab={prefab} isInstance />
+          <ActorPrefabEditorScripts
+            prefab={prefab}
+            actor={actor}
+            sceneId={sceneId}
+            isInstance
+          />
         ) : (
           <ActorEditorScripts actor={actor} sceneId={sceneId} />
         )}

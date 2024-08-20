@@ -13,9 +13,13 @@ import {
   useDrop,
 } from "react-dnd";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import {
+  actorSelectors,
+  scriptEventSelectors,
+} from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import {
+  ScriptEventNormalized,
   ScriptEventParentType,
   ScriptEventsRef,
 } from "shared/lib/entities/entitiesTypes";
@@ -91,12 +95,33 @@ const ScriptEditorEvent = React.memo(
     const [insertBefore, setInsertBefore] = useState(false);
     const [showSymbols, setShowSymbols] = useState(false);
 
+    const overrides = useAppSelector((state) => {
+      if (context.entityType === "actorPrefab" && context.instanceId) {
+        const instance = actorSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[id];
+      }
+    });
+
     const clipboardFormat = useAppSelector(
       (state) => state.clipboard.data?.format
     );
-    const scriptEvent = useAppSelector((state) =>
+    const scriptEventData = useAppSelector((state) =>
       scriptEventSelectors.selectById(state, id)
     );
+    const scriptEvent: ScriptEventNormalized | undefined = useMemo(
+      () =>
+        scriptEventData
+          ? {
+              ...scriptEventData,
+              args: {
+                ...scriptEventData.args,
+                ...overrides?.args,
+              },
+            }
+          : undefined,
+      [overrides, scriptEventData]
+    );
+
     const scriptEventDefs = useAppSelector((state) =>
       selectScriptEventDefs(state)
     );
@@ -275,6 +300,28 @@ const ScriptEditorEvent = React.memo(
       setAddOpen(false);
     }, []);
 
+    const onApplyOverrides = useCallback(() => {
+      if (context.entityType === "actorPrefab" && context.instanceId) {
+        dispatch(
+          entitiesActions.applyActorPrefabScriptEventOverride({
+            actorId: context.instanceId,
+            scriptEventId: id,
+          })
+        );
+      }
+    }, [context.entityType, context.instanceId, dispatch, id]);
+
+    const onRevertOverrides = useCallback(() => {
+      if (context.entityType === "actorPrefab" && context.instanceId) {
+        dispatch(
+          entitiesActions.revertActorPrefabScriptEventOverride({
+            actorId: context.instanceId,
+            scriptEventId: id,
+          })
+        );
+      }
+    }, [context.entityType, context.instanceId, dispatch, id]);
+
     const contextMenuItems = useMemo(
       () =>
         scriptEvent
@@ -291,6 +338,7 @@ const ScriptEditorEvent = React.memo(
               breakpointEnabled,
               commented: !!commented,
               hasElse,
+              hasOverride: !!overrides,
               disabledElse: !!disabledElse,
               clipboardFormat,
               onRename: toggleRename,
@@ -298,6 +346,8 @@ const ScriptEditorEvent = React.memo(
                 ? () => setShowSymbols(true)
                 : undefined,
               onInsert: onOpenAddMenu,
+              onApplyOverrides: onApplyOverrides,
+              onRevertOverrides: onRevertOverrides,
             })
           : [],
       [
@@ -524,7 +574,7 @@ const ScriptEditorEvent = React.memo(
                 </ScriptEventSymbolEditorWrapper>
               )}
               <ScriptEventForm
-                id={id}
+                scriptEvent={scriptEvent}
                 entityId={entityId}
                 renderEvents={renderEvents}
                 nestLevel={nestLevel}

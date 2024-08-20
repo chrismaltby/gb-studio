@@ -28,11 +28,14 @@ interface ScriptEventContextMenuProps {
   parentKey: string;
   commented?: boolean;
   hasElse?: boolean;
+  hasOverride: boolean;
   disabledElse?: boolean;
   clipboardFormat?: ClipboardFormat;
   onRename?: () => void;
   onViewSymbols?: () => void;
   onInsert?: (before: boolean) => void;
+  onApplyOverrides: () => void;
+  onRevertOverrides: () => void;
 }
 
 const renderScriptEventContextMenu = ({
@@ -49,10 +52,13 @@ const renderScriptEventContextMenu = ({
   parentKey,
   commented,
   hasElse,
+  hasOverride,
   disabledElse,
   clipboardFormat,
   onViewSymbols,
   onInsert,
+  onApplyOverrides,
+  onRevertOverrides,
 }: ScriptEventContextMenuProps) => {
   const multiSelection = additionalScriptEventIds.length > 1;
   return [
@@ -182,6 +188,18 @@ const renderScriptEventContextMenu = ({
         </MenuItemIcon>
       )}
     </MenuItem>,
+
+    ...(hasOverride
+      ? [
+          <MenuDivider key="div-changes" />,
+          <MenuItem key="changes-apply" onClick={() => onApplyOverrides()}>
+            {l10n("FIELD_APPLY_CHANGES")}
+          </MenuItem>,
+          <MenuItem key="changes-revert" onClick={() => onRevertOverrides()}>
+            {l10n("FIELD_REVERT_CHANGES")}
+          </MenuItem>,
+        ]
+      : []),
 
     ...(onInsert
       ? [

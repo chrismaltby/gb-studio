@@ -62,6 +62,11 @@ export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
   children?: Dictionary<string[]>;
 };
 
+export type ScriptEventArgsOverride = {
+  id: string;
+  args: ScriptEventArgs;
+};
+
 export type ScriptEventsRef = {
   scriptEventId: string;
   parentType: ScriptEventParentType;
@@ -97,6 +102,7 @@ export type Actor = {
   isPinned: boolean;
   persistent: boolean;
   collisionGroup: CollisionGroup;
+  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];
@@ -128,7 +134,8 @@ export type ActorFieldsOmittedFromPrefab =
   | "y"
   | "direction"
   | "isPinned"
-  | "symbol";
+  | "symbol"
+  | "prefabScriptOverrides";
 
 export type ActorPrefab = Omit<Actor, ActorFieldsOmittedFromPrefab>;
 
