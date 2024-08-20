@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { ActorNormalized, UnitType } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorDirection,
+  ActorNormalized,
+  UnitType,
+} from "shared/lib/entities/entitiesTypes";
 import {
   OptGroup,
   Option,
@@ -9,6 +13,7 @@ import {
   SingleValueWithPreview,
 } from "ui/form/Select";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   getSceneActorIds,
@@ -81,12 +86,72 @@ export const PropertySelect = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(context.entityId);
-  const selfActor = actorsLookup[context.entityId];
+  const actorPrefabsLookup = useAppSelector((state) =>
+    actorPrefabSelectors.selectEntities(state)
+  );
+  const actorPrefabIds = useAppSelector((state) =>
+    actorPrefabSelectors.selectIds(state)
+  );
+
+  const sceneActorId = context.instanceId
+    ? context.instanceId
+    : context.entityId;
+  const sceneActorIndex = sceneActorIds?.indexOf(sceneActorId);
+  const sceneActor = actorsLookup[sceneActorId];
+  const selfPrefab = actorPrefabsLookup[context.entityId];
+  const selfPrefabIndex = actorPrefabIds.indexOf(context.entityId);
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
+    const actorToOptions = (actorOption: {
+      label: string;
+      value: string;
+      spriteSheetId?: string;
+    }) => {
+      return {
+        label: actorOption.label,
+        options: [
+          {
+            ...actorOption,
+            label: l10n("FIELD_X_POSITION"),
+            value: `${actorOption.value}:xpos`,
+            menuSpriteSheetId: actorOption.spriteSheetId ?? "",
+          },
+          {
+            ...actorOption,
+            label: l10n("FIELD_Y_POSITION"),
+            value: `${actorOption.value}:ypos`,
+            menuSpriteSheetId: "",
+          },
+          {
+            ...actorOption,
+            label: l10n("FIELD_PX_POSITION"),
+            value: `${actorOption.value}:pxpos`,
+            menuSpriteSheetId: "",
+          },
+          {
+            ...actorOption,
+            label: l10n("FIELD_PY_POSITION"),
+            value: `${actorOption.value}:pypos`,
+            menuSpriteSheetId: "",
+          },
+          {
+            ...actorOption,
+            label: l10n("FIELD_DIRECTION"),
+            value: `${actorOption.value}:direction`,
+            menuSpriteSheetId: "",
+          },
+          {
+            ...actorOption,
+            label: l10n("FIELD_FRAME"),
+            value: `${actorOption.value}:frame`,
+            menuSpriteSheetId: "",
+          },
+        ],
+      };
+    };
+
     if (context.entityType === "customEvent" && customEvent) {
       setOptions(
         [
@@ -100,58 +165,23 @@ export const PropertySelect = ({
               value: actor.id,
             };
           }),
-        ].map((actorOption) => {
-          return {
-            label: actorOption.label,
-            options: [
-              {
-                ...actorOption,
-                label: l10n("FIELD_X_POSITION"),
-                value: `${actorOption.value}:xpos`,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_Y_POSITION"),
-                value: `${actorOption.value}:ypos`,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_PX_POSITION"),
-                value: `${actorOption.value}:pxpos`,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_PY_POSITION"),
-                value: `${actorOption.value}:pypos`,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_DIRECTION"),
-                value: `${actorOption.value}:direction`,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_ANIMATION_FRAME"),
-                value: `${actorOption.value}:frame`,
-              },
-            ],
-          };
-        })
+        ].map(actorToOptions)
       );
     } else if (sceneActorIds) {
       setOptions(
         [
-          ...(context.entityType === "actor" &&
-          selfActor &&
-          selfIndex !== undefined
+          ...((context.entityType === "actor" ||
+            context.entityType === "actorPrefab") &&
+          sceneActor &&
+          sceneActorIndex !== undefined
             ? [
                 {
                   label: `${l10n("FIELD_SELF")} (${actorName(
-                    selfActor,
-                    selfIndex
+                    sceneActor,
+                    sceneActorIndex
                   )})`,
                   value: "$self$",
-                  spriteSheetId: selfActor.spriteSheetId,
+                  spriteSheetId: sceneActor.spriteSheetId,
                 },
               ]
             : []),
@@ -168,49 +198,32 @@ export const PropertySelect = ({
               spriteSheetId: actor.spriteSheetId,
             };
           }),
-        ].map((actorOption) => {
-          return {
-            label: actorOption.label,
-            options: [
-              {
-                ...actorOption,
-                label: l10n("FIELD_X_POSITION"),
-                value: `${actorOption.value}:xpos`,
-                menuSpriteSheetId: actorOption.spriteSheetId,
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_Y_POSITION"),
-                value: `${actorOption.value}:ypos`,
-                menuSpriteSheetId: "",
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_PX_POSITION"),
-                value: `${actorOption.value}:pxpos`,
-                menuSpriteSheetId: "",
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_PY_POSITION"),
-                value: `${actorOption.value}:pypos`,
-                menuSpriteSheetId: "",
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_DIRECTION"),
-                value: `${actorOption.value}:direction`,
-                menuSpriteSheetId: "",
-              },
-              {
-                ...actorOption,
-                label: l10n("FIELD_FRAME"),
-                value: `${actorOption.value}:frame`,
-                menuSpriteSheetId: "",
-              },
-            ],
-          };
-        })
+        ].map(actorToOptions)
+      );
+    } else if (context.type === "prefab") {
+      setOptions(
+        [
+          ...(context.entityType === "actorPrefab" &&
+          selfPrefab &&
+          selfPrefabIndex !== undefined
+            ? [
+                {
+                  label: `${l10n("FIELD_SELF")} (${actorName(
+                    selfPrefab,
+                    selfPrefabIndex
+                  )})`,
+                  value: "$self$",
+                  spriteSheetId: selfPrefab.spriteSheetId,
+                  direction: "down" as ActorDirection,
+                },
+              ]
+            : []),
+          {
+            label: l10n("FIELD_PLAYER"),
+            value: "player",
+            spriteSheetId: playerSpriteSheetId,
+          },
+        ].map(actorToOptions)
       );
     }
   }, [
@@ -219,8 +232,11 @@ export const PropertySelect = ({
     customEvent,
     playerSpriteSheetId,
     sceneActorIds,
-    selfActor,
-    selfIndex,
+    sceneActor,
+    sceneActorIndex,
+    context.type,
+    selfPrefab,
+    selfPrefabIndex,
   ]);
 
   useEffect(() => {
