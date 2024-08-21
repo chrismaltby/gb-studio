@@ -23,17 +23,6 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_READ_DESC"),
     key: "engineFieldKey",
-    postUpdateFn: (newArgs, prevArgs) => {
-      // Reset value if engine field changed
-      if (newArgs.engineFieldKey !== prevArgs.engineFieldKey) {
-        return {
-          engineFieldKey: newArgs.engineFieldKey,
-          value: undefined,
-        };
-      } else {
-        return newArgs;
-      }
-    },
   },
   {
     key: "value",
