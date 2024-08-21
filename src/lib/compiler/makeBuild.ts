@@ -12,6 +12,10 @@ import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
 import { gbspack } from "./gbspack";
 import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
+import psTree from "ps-tree";
+import { promisify } from "util";
+
+const psTreeAsync = promisify(psTree);
 
 type MakeOptions = {
   buildRoot: string;
@@ -24,6 +28,8 @@ type MakeOptions = {
 };
 
 const cpuCount = os.cpus().length;
+const childSet = new Set<ChildProcess>();
+let cancelling = false;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
@@ -34,6 +40,7 @@ const makeBuild = async ({
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: MakeOptions) => {
+  cancelling = false;
   const env = Object.create(process.env);
   const { settings } = data;
   const colorEnabled = settings.colorMode !== "mono";
@@ -108,19 +115,18 @@ const makeBuild = async ({
   };
 
   // Build source files in parallel
-  const childSet = new Set<ChildProcess>();
   const concurrency = cpuCount;
   await Promise.all(
     Array(concurrency)
       .fill(makeCommands.entries())
       .map(async (cursor) => {
         for (const [_, makeCommand] of cursor) {
+          if (cancelling) {
+            throw new Error("BUILD_CANCELLED");
+          }
           try {
             progress(makeCommand.label);
           } catch (e) {
-            for (const child of childSet) {
-              child.kill();
-            }
             throw e;
           }
           const { child, completed } = spawn(
@@ -141,6 +147,10 @@ const makeBuild = async ({
 
   // GBSPack ---
 
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   progress(`${l10n("COMPILER_PACKING")}...`);
   const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
     bankOffset: 1,
@@ -157,6 +167,10 @@ const makeBuild = async ({
   });
 
   // Link ROM ---
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
 
   progress(`${l10n("COMPILER_LINKING")}...`);
   const linkFile = await buildLinkFile(buildRoot, cartSize);
@@ -179,19 +193,44 @@ const makeBuild = async ({
     targetPlatform
   );
 
-  const { completed: linkCompleted } = spawn(linkCommand, linkArgs, options, {
-    onLog: (msg) => progress(msg),
-    onError: (msg) => {
-      if (msg.indexOf("Converted build") > -1) {
-        return;
-      }
-      warnings(msg);
-    },
-  });
+  const { completed: linkCompleted, child } = spawn(
+    linkCommand,
+    linkArgs,
+    options,
+    {
+      onLog: (msg) => progress(msg),
+      onError: (msg) => {
+        if (msg.indexOf("Converted build") > -1) {
+          return;
+        }
+        warnings(msg);
+      },
+    }
+  );
+
+  childSet.add(child);
   await linkCompleted;
+  childSet.delete(child);
 
   // Store /obj in cache
   await cacheObjData(buildRoot, tmpPath, env);
+};
+
+export const cancelBuildCommandsInProgress = async () => {
+  cancelling = true;
+  // Kill all spawned commands and any commands that were spawned by those
+  // e.g lcc spawns sdcc, etc.
+  for (const child of childSet) {
+    const spawnedChildren = await psTreeAsync(child.pid);
+    for (const childChild of spawnedChildren) {
+      try {
+        process.kill(Number(childChild.PID));
+      } catch (e) {}
+    }
+    try {
+      child.kill();
+    } catch (e) {}
+  }
 };
 
 export default makeBuild;

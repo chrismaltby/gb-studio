@@ -152,13 +152,21 @@ export const loadProjectResources = async (
     ) =>
     ({ path, data }: { path: string; data: D }): boolean => {
       if (data._resourceType === schema?.properties?._resourceType?.const) {
-        if (Value.Check(Type.Partial(schema), data)) {
-          arr.push({
-            path,
-            data: data as Partial<Static<T>>,
-          });
-          return true;
+        // Filter out any invalid keys, returning a valid partial resource
+        const keys = Object.keys(data) as (keyof D)[];
+        const newResource: Partial<Static<T>> = {};
+        for (const key of keys) {
+          const keySchema = schema?.properties?.[key] as TSchema;
+          const keyData = data[key] as Static<T>[keyof Static<T>];
+          if (keySchema && Value.Check(keySchema, keyData)) {
+            newResource[key as keyof Static<T>] = keyData;
+          }
         }
+        arr.push({
+          path,
+          data: newResource,
+        });
+        return true;
       }
       return false;
     };
