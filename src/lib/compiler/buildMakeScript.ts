@@ -285,10 +285,11 @@ export const buildLinkFlags = (
   debug = false,
   targetPlatform = "gb"
 ) => {
-  const validName = name
-    .toUpperCase()
-    .replace(/[^A-Z]*/g, "")
-    .substring(0, 15);
+  const validName =
+    name
+      .toUpperCase()
+      .replace(/[^A-Z]*/g, "")
+      .substring(0, 15) || "GBSTUDIO";
   const cart = cartType === "mbc3" ? "0x10" : "0x1E";
   const gameFile = colorOnly ? "game.gbc" : "game.gb";
   return ([] as Array<string>).concat(
