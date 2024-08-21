@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to change compiler optimisation settings in Build Options section on Settings page [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "Set Actor Collision Bounding Box" to modify collision shape
 - Add event "Set Text Sound Effect" to set a sound effect to play as each dialogue text character is displayed
+- When deleting scripts, you are now given the option to also delete all "Call Script" events that reference the script
 
 ### Changed
 

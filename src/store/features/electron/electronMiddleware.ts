@@ -23,6 +23,7 @@ import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 import { unwrapResult } from "@reduxjs/toolkit";
 import errorActions from "store/features/error/errorActions";
 import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
+import type { DeleteScriptConfirmButton } from "lib/electron/dialog/confirmDeleteCustomEvent";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -122,9 +123,20 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const allScriptEvents = scriptEventSelectors.selectAll(state);
 
       const usedSceneIds = [] as string[];
       const usedEventIds = [] as string[];
+
+      const referenceIds: string[] = [];
+      for (const scriptEvent of allScriptEvents) {
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId === action.payload.customEventId
+        ) {
+          referenceIds.push(scriptEvent.id);
+        }
+      }
 
       const sceneName = (sceneId: string) => {
         const scene = scenesLookup[sceneId];
@@ -152,7 +164,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         }
       );
 
-      const usedTotal = usedSceneIds.length;
+      const usedTotal = referenceIds.length;
 
       if (usedTotal > 0) {
         const sceneNames = uniq(
@@ -162,25 +174,21 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         // Display confirmation and stop delete if cancelled
         API.dialog
           .confirmDeleteCustomEvent(customEventName, sceneNames, usedTotal)
-          .then((cancel) => {
-            if (cancel) {
+          .then((button) => {
+            const cancelButton: DeleteScriptConfirmButton.cancel = 2;
+            const deleteReferencesButton: DeleteScriptConfirmButton.deleteReferences = 1;
+            if (button === cancelButton) {
               return;
             }
-
-            // Remove any references to this custom event
-            for (const usedEventId of usedEventIds) {
-              store.dispatch(
-                entitiesActions.editScriptEvent({
-                  scriptEventId: usedEventId,
-                  changes: {
-                    args: {
-                      customEventId: "",
-                    },
-                  },
-                })
-              );
+            if (button === deleteReferencesButton) {
+              return next({
+                ...action,
+                payload: {
+                  ...action.payload,
+                  deleteReferences: true,
+                },
+              });
             }
-
             return next(action);
           });
         return;

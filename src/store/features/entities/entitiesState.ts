@@ -29,6 +29,7 @@ import {
   COLLISION_BOTTOM,
   COLLISION_RIGHT,
   COLLISION_LEFT,
+  EVENT_CALL_CUSTOM_EVENT,
 } from "consts";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
@@ -3309,8 +3310,34 @@ const setCustomEventSymbol: CaseReducer<
 
 const removeCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{ customEventId: string; deleteReferences?: boolean }>
 > = (state, action) => {
+  const allScriptEvents = localScriptEventSelectors.selectAll(state);
+  const referenceIds: string[] = [];
+
+  for (const scriptEvent of allScriptEvents) {
+    if (
+      scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+      scriptEvent.args?.customEventId === action.payload.customEventId
+    ) {
+      referenceIds.push(scriptEvent.id);
+    }
+  }
+
+  if (action.payload.deleteReferences) {
+    scriptEventsAdapter.removeMany(state.scriptEvents, referenceIds);
+  } else {
+    scriptEventsAdapter.updateMany(
+      state.scriptEvents,
+      referenceIds.map((id) => ({
+        id,
+        changes: {
+          args: { customEventId: undefined },
+        },
+      }))
+    );
+  }
+
   customEventsAdapter.removeOne(
     state.customEvents,
     action.payload.customEventId

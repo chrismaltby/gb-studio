@@ -1445,8 +1445,8 @@
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio needs to restart before language changes can take effect",
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Please save your project and restart the application.",
   "DIALOG_DELETE_CUSTOM_EVENT": "Delete Script \"{name}\"?",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} uses of this event will also be removed.\n\nFound in: {sceneNames}",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} use of this event will also be removed.\n\nFound in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} uses of this script will also be removed.\n\nFound in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} use of this script will also be removed.\n\nFound in: {sceneNames}",
   "DIALOG_EJECT_ENGINE": "Eject game engine?",
   "DIALOG_EJECT_ENGINE_DESCRIPTION": "The latest GB Studio engine files will be copied to 'assets/engine'. You can make changes to any of these files and they will replace the default engine during builds.\n\nTo restore the default engine delete 'assets/engine'",
   "DIALOG_EJECT": "Eject",
@@ -1472,6 +1472,7 @@
   "DIALOG_DELETE_PREFAB_USED_SINGLAR": "{count} of this prefab will be unpacked",
   "DIALOG_REPLACE_PREFAB": "Replace Prefab \"{name}\"?",
   "DIALOG_REPLACE_PREFAB_DESCRIPTION": "The pasted prefab contains a modified version of an existing prefab. Would you like to replace the prefab with the version on your clipboard or keep your existing prefab?",
+  "DIALOG_DELETE_SCRIPT_AND_REFERENCES": "Delete Script and References",
 
   "// 16": "Settings ----------------------------------------------------",
 
