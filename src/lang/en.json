@@ -843,6 +843,7 @@
   "FIELD_N_CHANGES": "{n} Changes",
   "FIELD_APPLY_CHANGES": "Apply Changes",
   "FIELD_REVERT_CHANGES": "Revert Changes",
+  "FIELD_PIN_TO_SCREEN": "Pin To Screen",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -292,7 +292,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   >
                     <MenuItem onClick={onToggleField("isPinned")}>
                       <Checkbox id="pin" name="pin" checked={actor.isPinned} />{" "}
-                      Pin to Screen
+                      {l10n("FIELD_PIN_TO_SCREEN")}
                     </MenuItem>
                   </DropdownButton>
                 </FormRow>
