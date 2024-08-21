@@ -160,8 +160,13 @@ const DebuggerBuildLog = () => {
         )}
       </Terminal>
       <ButtonToolbar>
-        {status === "running" ? (
-          <Button onClick={onRun}>{l10n("BUILD_CANCEL")}</Button>
+        {status === "running" || status === "cancelled" ? (
+          <Button
+            onClick={status === "running" ? onRun : undefined}
+            disabled={status === "cancelled"}
+          >
+            {l10n("BUILD_CANCEL")}
+          </Button>
         ) : (
           <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
         )}

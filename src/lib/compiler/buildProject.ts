@@ -25,6 +25,8 @@ type BuildOptions = {
   warnings: (msg: string) => void;
 };
 
+let cancelling = false;
+
 const buildProject = async (
   data: ProjectResources,
   {
@@ -40,6 +42,8 @@ const buildProject = async (
     warnings = (_msg: string) => {},
   }: BuildOptions
 ) => {
+  cancelling = false;
+
   const compiledData = await compile(data, {
     projectRoot,
     engineFields,
@@ -50,6 +54,11 @@ const buildProject = async (
     progress,
     warnings,
   });
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   await ejectBuild({
     projectType: "gb",
     projectRoot,
@@ -62,11 +71,21 @@ const buildProject = async (
     progress,
     warnings,
   });
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   await validateEjectedBuild({
     buildRoot: outputRoot,
     progress,
     warnings,
   });
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   await makeBuild({
     buildRoot: outputRoot,
     tmpPath,
@@ -76,6 +95,11 @@ const buildProject = async (
     progress,
     warnings,
   });
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   if (buildType === "web") {
     const colorOnly = data.settings.colorMode === "color";
     const gameFile = colorOnly ? "game.gbc" : "game.gb";
@@ -125,6 +149,10 @@ const buildProject = async (
     );
   }
   return compiledData;
+};
+
+export const cancelCompileStepsInProgress = () => {
+  cancelling = true;
 };
 
 export default buildProject;

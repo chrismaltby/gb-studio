@@ -35,7 +35,9 @@ import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
-import buildProject from "lib/compiler/buildProject";
+import buildProject, {
+  cancelCompileStepsInProgress,
+} from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
 import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
@@ -117,6 +119,7 @@ import {
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
+import { cancelBuildCommandsInProgress } from "lib/compiler/makeBuild";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -151,7 +154,6 @@ let documentName = "";
 let projectWindowCloseCancelled = false;
 let keepOpen = false;
 let projectPath = "";
-let cancelBuild = false;
 let musicWindowInitialized = false;
 let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
@@ -1222,8 +1224,6 @@ ipcMain.handle("project:get-resource-checksums", async (): Promise<
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectResources, options: BuildOptions) => {
-    cancelBuild = false;
-
     const { exportBuild, buildType, sceneTypes } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
@@ -1246,9 +1246,6 @@ ipcMain.handle(
         tmpPath: getTmp(),
         debugEnabled: debuggerEnabled,
         progress: (message) => {
-          if (cancelBuild) {
-            throw new Error("BUILD_CANCELLED");
-          }
           if (
             message !== "'" &&
             message.indexOf("unknown or unsupported #pragma") === -1
@@ -1257,7 +1254,9 @@ ipcMain.handle(
           }
         },
         warnings: (message) => {
-          buildErr(message);
+          if (message && !message.includes("SIGTERM")) {
+            buildErr(message);
+          }
         },
       });
 
@@ -1325,7 +1324,11 @@ ipcMain.handle(
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
-      } else if (e instanceof Error && e.message === "BUILD_CANCELLED") {
+      } else if (
+        e === null ||
+        typeof e === "number" ||
+        (e instanceof Error && e.message === "BUILD_CANCELLED")
+      ) {
         buildLog(l10n("BUILD_CANCELLED"));
       } else if (e instanceof Error) {
         buildErr(e.toString());
@@ -1336,7 +1339,8 @@ ipcMain.handle(
 );
 
 ipcMain.handle("project:build-cancel", () => {
-  cancelBuild = true;
+  cancelCompileStepsInProgress();
+  cancelBuildCommandsInProgress();
 });
 
 ipcMain.handle("project:engine-eject", () => {
