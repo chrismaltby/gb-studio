@@ -480,7 +480,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
         {
           label: l10n("MENU_MINIMIZE"),
           role: "minimize",
-        }
+        },
       ],
     },
     {
@@ -581,7 +581,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
 
     // Window menu
     template[template.length - 2].submenu = [
-      { role: "minimize" },
+      { label: l10n("MENU_MINIMIZE"), role: "minimize" },
       { role: "zoom" },
       { type: "separator" },
       { role: "front" },
