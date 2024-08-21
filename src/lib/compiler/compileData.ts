@@ -119,12 +119,7 @@ import type {
   SettingsState,
 } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
-import {
-  mapActorScript,
-  mapTriggerScript,
-  walkSceneScripts,
-  walkScenesScripts,
-} from "shared/lib/scripts/walk";
+import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";

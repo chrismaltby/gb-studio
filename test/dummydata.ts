@@ -10,6 +10,11 @@ import {
   Scene,
   Actor,
   Trigger,
+  ActorPrefabNormalized,
+  TriggerPrefabNormalized,
+  Variable,
+  ScriptEventNormalized,
+  ScriptEvent,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -98,6 +103,18 @@ export const dummyCompressedSceneResource: CompressedSceneResourceWithChildren =
     ...dummySceneNormalized,
     collisions: "",
   } as unknown as CompressedSceneResourceWithChildren;
+
+export const dummyScriptEvent: ScriptEvent = {
+  id: "event1",
+  command: "CMD",
+  args: {},
+};
+
+export const dummyScriptEventNormalized: ScriptEventNormalized = {
+  id: "event1",
+  command: "CMD",
+  args: {},
+};
 
 export const dummyActorNormalized: ActorNormalized = {
   id: "dummyActor1",
@@ -454,6 +471,9 @@ export const dummyActorPrefabResource: ActorPrefabResource = {
   collisionGroup: "",
 };
 
+export const dummyActorPrefabNormalized: ActorPrefabNormalized =
+  dummyActorPrefabResource as unknown as ActorPrefabNormalized;
+
 export const dummyTriggerPrefabResource: TriggerPrefabResource = {
   script: [],
   id: "",
@@ -461,6 +481,9 @@ export const dummyTriggerPrefabResource: TriggerPrefabResource = {
   _resourceType: "triggerPrefab",
   leaveScript: [],
 };
+
+export const dummyTriggerPrefabNormalized: TriggerPrefabNormalized =
+  dummyTriggerPrefabResource as unknown as TriggerPrefabNormalized;
 
 export const dummyMusicResource: MusicResource = {
   _resourceType: "music",
@@ -601,6 +624,12 @@ export const dummySettingsResource: SettingsResource = {
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
   variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+};
+
+export const dummyVariable: Variable = {
+  id: "var1",
+  name: "Variable 1",
+  symbol: "symbol",
 };
 
 export const dummyEngineFieldValuesResource: EngineFieldValuesResource = {

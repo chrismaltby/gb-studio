@@ -1,9 +1,11 @@
 import {
+  ActorPrefabResource,
   ActorResource,
   BackgroundResource,
   CompressedSceneResourceWithChildren,
   PaletteResource,
   ScriptResource,
+  TriggerPrefabResource,
   TriggerResource,
 } from "shared/lib/resources/types";
 import {
@@ -17,6 +19,8 @@ import {
   getSceneResourcePaths,
   getPaletteResourcePath,
   getScriptResourcePath,
+  getActorPrefabResourcePath,
+  getTriggerPrefabResourcePath,
 } from "shared/lib/resources/paths";
 
 describe("paths", () => {
@@ -131,5 +135,29 @@ describe("paths", () => {
       _resourceType: "script",
     } as ScriptResource;
     expect(getScriptResourcePath(script)).toEqual("scripts/script1.gbsres");
+  });
+
+  test("getActorPrefabResourcePath should return correct actor prefab resource path", () => {
+    const actorPrefab = {
+      id: "1",
+      name: "ActorPrefab1",
+      _resourceType: "actorPrefab",
+    } as ActorPrefabResource;
+
+    expect(getActorPrefabResourcePath(actorPrefab)).toEqual(
+      "prefabs/actors/actorprefab1.gbsres"
+    );
+  });
+
+  test("getTriggerPrefabResourcePath should return correct trigger prefab resource path", () => {
+    const triggerPrefab = {
+      id: "1",
+      name: "TriggerPrefab1",
+      _resourceType: "triggerPrefab",
+    } as TriggerPrefabResource;
+
+    expect(getTriggerPrefabResourcePath(triggerPrefab)).toEqual(
+      "prefabs/triggers/triggerprefab1.gbsres"
+    );
   });
 });
