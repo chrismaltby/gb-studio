@@ -37,6 +37,7 @@ import { TextField } from "ui/form/TextField";
 import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
+import contributorsExternal from "contributors-external.json";
 import inbuiltPatrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.png";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.png";
@@ -97,8 +98,14 @@ const filteredContributors = contributors.filter((user) => {
 const goldContributors = filteredContributors.filter(
   (user) => user.contributions >= 10
 );
-const silverContributors = filteredContributors
-  .filter((user) => user.contributions < 10)
+const silverContributors = [...contributorsExternal]
+  // eslint-disable-next-line camelcase
+  .map((contributor) => ({
+    ...contributor,
+    // eslint-disable-next-line camelcase
+    html_url: contributor.html_url ?? "",
+  }))
+  .concat(filteredContributors.filter((user) => user.contributions < 10))
   .sort((a, b) => {
     const loginA = a.login.toLowerCase();
     const loginB = b.login.toLowerCase();
@@ -393,15 +400,23 @@ export const Splash = () => {
                 <SplashCreditsContributor
                   key={contributor.id}
                   contributor={contributor}
-                  onClick={() => API.app.openExternal(contributor.html_url)}
+                  onClick={
+                    contributor.html_url
+                      ? () => API.app.openExternal(contributor.html_url)
+                      : undefined
+                  }
                 />
               ))}
               <SplashCreditsGrid>
                 {silverContributors.map((contributor) => (
                   <SplashCreditsContributor
-                    key={contributor.id}
+                    key={contributor.login}
                     contributor={contributor}
-                    onClick={() => API.app.openExternal(contributor.html_url)}
+                    onClick={
+                      contributor.html_url
+                        ? () => API.app.openExternal(contributor.html_url)
+                        : undefined
+                    }
                   />
                 ))}
               </SplashCreditsGrid>

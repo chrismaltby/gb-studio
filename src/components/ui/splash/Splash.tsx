@@ -505,10 +505,15 @@ export const SplashCreditsContributorWrapper = styled.div`
   text-decoration: none;
   margin-bottom: 30px;
 
-  > span:hover {
-    color: #ffff00;
-    cursor: pointer;
-  }
+  ${(props) =>
+    props.onClick
+      ? css`
+          > span:hover {
+            color: #ffff00;
+            cursor: pointer;
+          }
+        `
+      : ""}
 `;
 
 interface SplashCreditsPatronWrapperProps {
@@ -568,9 +573,8 @@ export const SplashCreditsContent = styled.div`
 export interface SplashCreditsContributorProps {
   contributor: {
     login: string;
-    contributions: number;
   };
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const SplashCreditsContributor: FC<SplashCreditsContributorProps> = ({

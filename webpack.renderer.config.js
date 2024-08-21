@@ -80,6 +80,10 @@ module.exports = {
       consts: srcPath("consts.ts"),
       wasm: Path.join(__dirname, "appData/wasm"),
       "contributors.json": Path.join(__dirname, "contributors.json"),
+      "contributors-external.json": Path.join(
+        __dirname,
+        "contributors-external.json"
+      ),
       "patrons.json": Path.join(__dirname, "patrons.json"),
     },
     fallback: {

@@ -25,6 +25,7 @@
       "lang/*": [ "./lang/*" ],
       "wasm/*": ["../appData/wasm/*" ],
       "contributors.json": ["../contributors.json"],
+      "contributors-external.json": ["../contributors-external.json"],
       "patrons.json": ["../patrons.json"]
     }
   },
