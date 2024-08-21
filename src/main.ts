@@ -604,9 +604,7 @@ export const createMusic = async (
   }
 
   musicWindow.setMenu(null);
-  musicWindow.loadURL(
-    `${MUSIC_WINDOW_WEBPACK_ENTRY}#${encodeURIComponent(sfx ?? "")}`
-  );
+  musicWindow.loadURL(MUSIC_WINDOW_WEBPACK_ENTRY);
 
   musicWindow.on("closed", () => {
     musicWindow = null;
@@ -1606,7 +1604,8 @@ ipcMain.handle("sfx:play-wav", async (_event, assetPath: string) => {
   guardAssetWithinProject(filename, projectRoot);
   const sfx = await compileWav(filename, "asm");
   createMusic(sfx, {
-    action: "play-sound",
+    action: "load-sound",
+    sound: sfx,
   });
 });
 
@@ -1618,7 +1617,8 @@ ipcMain.handle("sfx:play-vgm", async (_event, assetPath: string) => {
   guardAssetWithinProject(filename, projectRoot);
   const { output: sfx } = await compileVGM(filename, "asm");
   createMusic(sfx, {
-    action: "play-sound",
+    action: "load-sound",
+    sound: sfx,
   });
 });
 
@@ -1636,7 +1636,8 @@ ipcMain.handle(
       "asm"
     );
     createMusic(sfx, {
-      action: "play-sound",
+      action: "load-sound",
+      sound: sfx,
     });
   }
 );

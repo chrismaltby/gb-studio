@@ -122,6 +122,42 @@ const loadSong = (song: Song) => {
   stop();
 };
 
+const loadSound = (sfx?: string) => {
+  // Load an empty song
+  let songFile = `include "include/hUGE.inc"
+    
+ SECTION "song", ROM0[$1000]
+ 
+ SONG_DESCRIPTOR::
+ db 7  ; tempo
+ dw song_order_cnt
+ dw song_order1, song_order1, song_order1, song_order1
+ dw 0, 0, 0
+ dw 0
+ dw 0
+ 
+ song_order_cnt: db 1
+ song_order1: dw P0
+ 
+ P0:
+  dn ___,0,$B01
+  
+ `;
+  if (sfx) {
+    songFile += `my_sfx:: db ${sfx}`;
+  }
+  storage.update("song.asm", songFile);
+
+  const onCompileDone = (file?: Uint8Array) => {
+    if (!file) return;
+    romFile = file;
+    emulator.init(romFile);
+    playSound();
+  };
+
+  compiler.compile(["-t", "-w"], onCompileDone, console.log);
+};
+
 const play = (song: Song, position?: PlaybackPosition) => {
   console.log("PLAY");
   updateRom(song);
@@ -461,6 +497,7 @@ const reset = () => emulator.init(romFile);
 const player = {
   initPlayer,
   loadSong,
+  loadSound,
   play,
   playSound,
   stop,

@@ -47,6 +47,9 @@ API.events.music.data.subscribe((_event, d) => {
         action: "loaded",
       });
       break;
+    case "load-sound":
+      player.loadSound(d.sound);
+      break;
     case "play":
       if (d.position) {
         position = d.position;
