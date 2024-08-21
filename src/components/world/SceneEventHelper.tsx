@@ -1,8 +1,9 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
   scriptEventSelectors,
+  triggerSelectors,
 } from "store/features/entities/entitiesState";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
@@ -84,9 +85,17 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const entityId = useAppSelector((state) => state.editor.entityId);
 
   const editorActorId = editorType === "actor" ? entityId : undefined;
+  const editorTriggerId = editorType === "trigger" ? entityId : undefined;
 
   const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
+  );
+
+  const editorActor = useAppSelector((state) =>
+    actorSelectors.selectById(state, editorActorId ?? "")
+  );
+  const editorTrigger = useAppSelector((state) =>
+    triggerSelectors.selectById(state, editorTriggerId ?? "")
   );
 
   const eventId = useAppSelector((state) => state.editor.eventId);
@@ -98,22 +107,46 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
   );
 
+  const args = useMemo(() => {
+    if (!event) {
+      return {};
+    }
+    if (
+      editorType === "actor" &&
+      editorActor?.prefabScriptOverrides?.[event.id]
+    ) {
+      return {
+        ...event.args,
+        ...editorActor?.prefabScriptOverrides?.[event.id].args,
+      };
+    }
+    if (
+      editorType === "trigger" &&
+      editorTrigger?.prefabScriptOverrides?.[event.id]
+    ) {
+      return {
+        ...event.args,
+        ...editorTrigger?.prefabScriptOverrides?.[event.id].args,
+      };
+    }
+    return event.args ?? {};
+  }, [
+    editorActor?.prefabScriptOverrides,
+    editorTrigger?.prefabScriptOverrides,
+    editorType,
+    event,
+  ]);
+
   if (!event || !scriptEventDef || !scriptEventDef.helper) {
     return <></>;
   }
 
   if (scriptEventDef.helper.type === "camera") {
     const units = scriptEventDef.helper.units
-      ? argValue(event.args?.[scriptEventDef.helper.units])
+      ? argValue(args[scriptEventDef.helper.units])
       : "tiles";
-    const x = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.x]),
-      0
-    );
-    const y = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.y]),
-      0
-    );
+    const x = ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0);
+    const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
     if (x === undefined && y === undefined) {
       return <div />;
     }
@@ -131,18 +164,12 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
 
   if (scriptEventDef.helper.type === "position") {
     const units = scriptEventDef.helper.units
-      ? argValue(event.args?.[scriptEventDef.helper.units])
+      ? argValue(args[scriptEventDef.helper.units])
       : "tiles";
-    const x = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.x]),
-      0
-    );
-    const y = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.y]),
-      0
-    );
+    const x = ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0);
+    const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
     const tileSize = ensureMaybeString(
-      argValue(event.args?.[scriptEventDef.helper.tileSize ?? ""]),
+      argValue(args[scriptEventDef.helper.tileSize ?? ""]),
       ""
     );
     let tileWidth = 1;
@@ -176,7 +203,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
 
   if (scriptEventDef.helper.type === "distance") {
     const distance = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.distance]),
+      argValue(args[scriptEventDef.helper.distance]),
       0
     );
 
@@ -185,7 +212,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     }
 
     const otherActorId = ensureMaybeString(
-      argValue(event.args?.[scriptEventDef.helper.actorId]),
+      argValue(args[scriptEventDef.helper.actorId]),
       ""
     );
     if (otherActorId === undefined) {
@@ -213,7 +240,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
         // distance formula
         const d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
 
-        switch (event.args?.[scriptEventDef.helper.operator]) {
+        switch (args[scriptEventDef.helper.operator]) {
           case "==":
             if (d === distance) {
               tiles.push({ xpos, ypos });
@@ -266,16 +293,10 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   }
 
   if (scriptEventDef.helper.type === "overlay") {
-    const x = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.x]),
-      0
-    );
-    const y = ensureMaybeNumber(
-      argValue(event.args?.[scriptEventDef.helper.y]),
-      0
-    );
+    const x = ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0);
+    const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
     const color = scriptEventDef.helper.color
-      ? argValue(event.args?.[scriptEventDef.helper.color])
+      ? argValue(args[scriptEventDef.helper.color])
       : "black";
     if (x === undefined && y === undefined) {
       return <div />;
@@ -295,23 +316,15 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
 
   if (scriptEventDef.helper.type === "bounds") {
     const x =
-      ensureMaybeNumber(argValue(event.args?.[scriptEventDef.helper.x]), 0) ??
-      0;
+      ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0) ?? 0;
     const y =
-      ensureMaybeNumber(argValue(event.args?.[scriptEventDef.helper.y]), 0) ??
-      0;
+      ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0) ?? 0;
     const width =
-      ensureMaybeNumber(
-        argValue(event.args?.[scriptEventDef.helper.width]),
-        0
-      ) ?? 8;
+      ensureMaybeNumber(argValue(args[scriptEventDef.helper.width]), 0) ?? 8;
     const height =
-      ensureMaybeNumber(
-        argValue(event.args?.[scriptEventDef.helper.height]),
-        0
-      ) ?? 8;
+      ensureMaybeNumber(argValue(args[scriptEventDef.helper.height]), 0) ?? 8;
     const actorId = ensureMaybeString(
-      argValue(event.args?.[scriptEventDef.helper.actorId ?? ""]),
+      argValue(args[scriptEventDef.helper.actorId ?? ""]),
       ""
     );
 
