@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1505240815",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1513240816",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -105,7 +105,7 @@
   "FIELD_SPRITE_SHEET_PROJECTILE_DESC": "Grafika użyta do renderowania pocisku.",
   "FIELD_PLAYER_SPRITE_SHEET": "Grafika gracza",
   "FIELD_MOVEMENT_TYPE": "Rodzaj ruchu",
-  "FIELD_MOVEMENT_SPEED": "Szybkość ruch",
+  "FIELD_MOVEMENT_SPEED": "Szybkość ruchu",
   "FIELD_ANIMATION_SPEED": "Szybkość animacji",
   "FIELD_ANIMATION_SPEED_DESC": "Ustawienie dla szybkości animacji.",
   "FIELD_DIRECTION": "Kierunek",
@@ -824,6 +824,8 @@
   "FIELD_COMPILER_PRESET": "Preset kompilatora",
   "FIELD_COMPILER_OPTIMISATION": "Optymalizacja ROM-u",
   "FIELD_COMPILER_OPTIONS_WARNING": "Niektóre kombinacje ustawień presetów kompilatora i optymalizacji mogą nie działać razem. Jeśli po zmianie tych ustawień wystąpią problemy z kompilacją, spróbuj przywrócić je do wartości domyślnych.",
+  "FIELD_BOX_WIDTH_DESC": "Szerokość pola",
+  "FIELD_BOX_HEIGHT_DESC": "Wysokość pola",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1187,6 +1189,12 @@
   "EVENT_SCRIPT_LOCK_DESC": "Wstrzymaj inne skrypty i aktualizacje sceny do momentu zakończenia tego skryptu lub odblokowania.",
   "EVENT_SCRIPT_UNLOCK": "Odblokuj skrypt",
   "EVENT_SCRIPT_UNLOCK_DESC": "Jeśli jest zablokowany, odblokuj ten skrypt, aby inne skrypty mogły działać i scena mogła być aktualizowana.",
+  "EVENT_ACTOR_SET_COLLISION_BOX": "Aktor: ustaw pole kolizji",
+  "EVENT_ACTOR_SET_COLLISION_BOX_DESC": "Ustaw pole kolizji aktora na określoną pozycję i rozmiar.",
+  "EVENT_ACTOR_SET_COLLISION_BOX_LABEL": "Ustaw {actor} pole kolizji na {{x},{y},{width},{height}}",
+  "EVENT_TEXT_SET_SOUND_EFFECT": "Tekst: ustaw efekt dźwiękowy",
+  "EVENT_TEXT_SET_SOUND_EFFECT_DESC": "Ustaw efekt dźwiękowy odtwarzany podczas wyświetlania każdego znaku tekstowego.",
+  "EVENT_TEXT_REMOVE_SOUND_EFFECT": "Tekst: usuń efekt dźwiękowy",
   
   "// 10": "Menu -----------------------------------------------------",
 
