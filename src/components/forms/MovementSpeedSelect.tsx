@@ -25,7 +25,10 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
 }) => {
   const [currentValue, setCurrentValue] =
     useState<MovementSpeedOption | undefined>();
-  const [isCustom, setIsCustom] = useState(false);
+  const [{ isCustom, autoFocus }, setIsCustom] = useState({
+    isCustom: false,
+    autoFocus: false,
+  });
 
   const options: MovementSpeedOption[] = useMemo(
     () => [
@@ -54,14 +57,14 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
     );
     setCurrentValue(current);
     if (value === undefined || !current) {
-      setIsCustom(true);
+      setIsCustom({ isCustom: true, autoFocus: false });
     }
   }, [allowNone, options, optionsWithNone, value]);
 
   if (isCustom) {
     return (
       <Input
-        autoFocus
+        autoFocus={autoFocus}
         type="number"
         id={name}
         name={name}
@@ -76,7 +79,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
         onBlur={(e) => {
           if (!e.currentTarget.value) {
             onChange?.(1);
-            setIsCustom(false);
+            setIsCustom({ isCustom: false, autoFocus: false });
           }
         }}
       />
@@ -115,7 +118,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
         if (newValue.value !== undefined) {
           onChange?.(newValue.value);
         } else {
-          setIsCustom(true);
+          setIsCustom({ isCustom: true, autoFocus: true });
         }
       }}
     />
