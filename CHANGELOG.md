@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated French localisation. [@Pomdap](https://github.com/Pomdap)
 - Only the inbuilt scene types that were actually used in your game are now compiled, improving build time if only some scene types were used
 - Improve build cancelling: Stops spawned processes immediately rather than waiting for in progress processes to complete
 - Changing the engine field in a "Store Engine Field In Variable" event no longer resets the variable
