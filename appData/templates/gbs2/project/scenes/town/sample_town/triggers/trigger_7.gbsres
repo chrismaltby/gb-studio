@@ -9,6 +9,7 @@
   "y": 40,
   "width": 2,
   "height": 1,
+  "prefabScriptOverrides": {},
   "script": [
     {
       "command": "EVENT_SWITCH_SCENE",

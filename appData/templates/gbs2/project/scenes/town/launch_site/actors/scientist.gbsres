@@ -17,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "29251383-06c9-45b4-ab62-ac34947a076f",

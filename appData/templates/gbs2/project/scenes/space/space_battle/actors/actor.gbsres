@@ -17,6 +17,7 @@
   "isPinned": true,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [],
   "startScript": [],
   "updateScript": [],

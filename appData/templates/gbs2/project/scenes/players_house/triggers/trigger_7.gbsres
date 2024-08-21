@@ -9,6 +9,7 @@
   "y": 11,
   "width": 4,
   "height": 4,
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "a2549f58-e720-4d4e-bae5-df7e1e610771",

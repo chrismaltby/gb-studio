@@ -9,6 +9,7 @@
   "y": 46,
   "width": 1,
   "height": 4,
+  "prefabScriptOverrides": {},
   "script": [
     {
       "command": "EVENT_IF_COLOR_SUPPORTED",

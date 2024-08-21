@@ -106,7 +106,6 @@
   "previewAsMono": false,
   "openBuildLogOnWarnings": true,
   "generateDebugFilesEnabled": false,
-  "defaultFadeStyle": "white",
-  "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
-  "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
+  "compilerOptimisation": "none",
+  "compilerPreset": 3000
 }
