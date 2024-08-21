@@ -42,6 +42,29 @@ import {
 } from "shared/lib/scripts/walk";
 import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 
+const userSettingKeys: (keyof SettingsResource)[] = [
+  "worldScrollX",
+  "worldScrollY",
+  "zoom",
+  "navigatorSplitSizes",
+  "showNavigator",
+  "showCollisions",
+  "showConnections",
+  "previewAsMono",
+  "showCollisionSlopeTiles",
+  "showCollisionSlopeTiles",
+  "favoriteEvents",
+  "debuggerEnabled",
+  "debuggerScriptType",
+  "debuggerVariablesFilter",
+  "debuggerCollapsedPanes",
+  "debuggerPauseOnScriptChanged",
+  "debuggerPauseOnWatchedVariableChanged",
+  "debuggerBreakpoints",
+  "debuggerWatchedVariables",
+  "openBuildLogOnWarnings",
+];
+
 export const encodeResource = <T extends Record<string, unknown>>(
   resourceType: string,
   data: T
@@ -280,21 +303,31 @@ export const buildResourceExportBuffer = (
     writeResource<FontResource>(fontFilename, "font", font);
   }
 
+  const clearedSettings = userSettingKeys.reduce((acc, key) => {
+    acc[key] = undefined;
+    return acc;
+  }, {} as Partial<SettingsResource>);
+
+  const userSettings = userSettingKeys.reduce(
+    <T extends keyof SettingsResource>(
+      acc: Partial<SettingsResource>,
+      key: T
+    ) => {
+      acc[key] = projectResources.settings[key] as SettingsResource[T];
+      return acc;
+    },
+    {} as Partial<SettingsResource>
+  );
+
   writeResource<Partial<SettingsResource>>(settingsResFilename, "settings", {
     ...projectResources.settings,
-    worldScrollX: undefined,
-    worldScrollY: undefined,
-    zoom: undefined,
+    ...clearedSettings,
   });
 
   writeResource<Partial<SettingsResource>>(
     userSettingsResFilename,
     "settings",
-    {
-      worldScrollX: projectResources.settings.worldScrollX,
-      worldScrollY: projectResources.settings.worldScrollY,
-      zoom: projectResources.settings.zoom,
-    }
+    userSettings
   );
 
   writeResource<VariablesResource>(

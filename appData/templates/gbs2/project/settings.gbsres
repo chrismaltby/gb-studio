@@ -6,9 +6,6 @@
   "startMoveSpeed": 1,
   "startAnimSpeed": 15,
   "startDirection": "right",
-  "showCollisions": true,
-  "showConnections": true,
-  "showCollisionSlopeTiles": false,
   "showCollisionExtraTiles": false,
   "sgbEnabled": false,
   "customHead": "",
@@ -35,13 +32,6 @@
   "defaultSpritePaletteId": "default-sprite",
   "defaultUIPaletteId": "default-ui",
   "playerPaletteId": "",
-  "navigatorSplitSizes": [
-    659,
-    205,
-    30,
-    30
-  ],
-  "showNavigator": true,
   "defaultFontId": "948c169c-8e4b-491c-a5f0-66898bbf45d9",
   "defaultCharacterEncoding": "",
   "defaultPlayerSprites": {
@@ -55,10 +45,6 @@
   "musicDriver": "huge",
   "cartType": "mbc5",
   "batterylessEnabled": false,
-  "favoriteEvents": [
-    "EVENT_TEXT",
-    "EVENT_SWITCH_SCENE"
-  ],
   "customColorsWhite": "E8F8E0",
   "customColorsLight": "B0F088",
   "customColorsDark": "509878",
@@ -95,17 +81,7 @@
   "customControlsSelect": [
     "Shift"
   ],
-  "debuggerEnabled": false,
-  "debuggerScriptType": "editor",
-  "debuggerVariablesFilter": "all",
-  "debuggerCollapsedPanes": [],
-  "debuggerPauseOnScriptChanged": false,
-  "debuggerPauseOnWatchedVariableChanged": false,
-  "debuggerBreakpoints": [],
-  "debuggerWatchedVariables": [],
   "colorMode": "mixed",
-  "previewAsMono": false,
-  "openBuildLogOnWarnings": true,
   "generateDebugFilesEnabled": false,
   "compilerOptimisation": "none",
   "compilerPreset": 3000
