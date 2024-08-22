@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add event "Set Actor Collision Bounding Box" to modify collision shape
 - Add event "Set Text Sound Effect" to set a sound effect to play as each dialogue text character is displayed
 - When deleting scripts, you are now given the option to also delete all "Call Script" events that reference the script
+- Add ROM usage monitor to Build Log showing how much free space is available before the next ROM size increase [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
