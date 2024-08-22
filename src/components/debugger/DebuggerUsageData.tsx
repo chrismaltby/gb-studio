@@ -4,6 +4,11 @@ import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 
+interface DebuggerUsageDataProps {
+  hideLabels?: boolean;
+  forceZoom?: boolean;
+}
+
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -24,6 +29,7 @@ const Total = styled.div`
   border-radius: ${(props) => props.theme.borderRadius}px;
   border: 1px solid ${(props) => props.theme.colors.input.border};
   overflow: hidden;
+  max-width: 150px;
 `;
 
 const Used = styled.div`
@@ -77,7 +83,10 @@ const renderSize = (bytes: number) => {
   }
 };
 
-const DebuggerUsageData = () => {
+const DebuggerUsageData = ({
+  hideLabels,
+  forceZoom,
+}: DebuggerUsageDataProps) => {
   const usageData = useAppSelector((state) => state.debug.usageData);
   const status = useAppSelector((state) => state.console.status);
 
@@ -102,7 +111,8 @@ const DebuggerUsageData = () => {
     setZoom(!zoom);
   };
 
-  const maxSize = sizes[zoom ? romSizeIndex : sizes.length - 1].bytes;
+  const maxSize =
+    sizes[zoom || forceZoom ? romSizeIndex : sizes.length - 1].bytes;
   const usedPercent = (totalUsage * 100) / maxSize;
 
   return (
@@ -115,7 +125,7 @@ const DebuggerUsageData = () => {
         </div>
       ) : (
         <>
-          <div>ROM:</div>
+          {!hideLabels && <div>ROM:</div>}
           <Total onClick={toggleZoom}>
             {sizes.map((s, i) => {
               const byteStep =
@@ -158,12 +168,14 @@ const DebuggerUsageData = () => {
             })}
             <Used style={{ width: `${usedPercent}%` }}></Used>
           </Total>
-          <div>
-            {l10n("FIELD_ROM_USAGE_LABEL", {
-              totalUsage: renderSize(totalUsage),
-              romSize: renderSize(sizes[romSizeIndex].bytes),
-            })}
-          </div>
+          {!hideLabels && (
+            <div>
+              {l10n("FIELD_ROM_USAGE_LABEL", {
+                totalUsage: renderSize(totalUsage),
+                romSize: renderSize(sizes[romSizeIndex].bytes),
+              })}
+            </div>
+          )}
         </>
       )}
     </Wrapper>

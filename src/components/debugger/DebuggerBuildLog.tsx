@@ -4,7 +4,6 @@ import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
-import { FlexGrow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
@@ -16,6 +15,7 @@ import {
 import settingsActions from "store/features/settings/settingsActions";
 import DebuggerUsageData from "components/debugger/DebuggerUsageData";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
+import useDimensions from "react-cool-dimensions";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -56,6 +56,13 @@ const ButtonToolbar = styled.div`
   }
 `;
 
+const UsageWrapper = styled.div`
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
 const DebuggerBuildLog = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -69,6 +76,11 @@ const DebuggerBuildLog = () => {
   const generateDebugFilesEnabled = useAppSelector(
     (state) => getSettings(state).generateDebugFilesEnabled
   );
+
+  const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
+    breakpoints: { SM: 0, MD: 50, LG: 280 },
+    updateOnBreakpointChange: true,
+  });
 
   // Only show the latest 500 lines during build
   // show full output on complete
@@ -196,9 +208,12 @@ const DebuggerBuildLog = () => {
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>
-        <FlexGrow />
-        <DebuggerUsageData></DebuggerUsageData>
-        <FlexGrow />
+        <UsageWrapper ref={observe}>
+          <DebuggerUsageData
+            hideLabels={usageBreakpoint !== "LG"}
+            forceZoom={usageBreakpoint === "SM"}
+          ></DebuggerUsageData>
+        </UsageWrapper>
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>
     </Wrapper>
