@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import {
   actorSelectors,
   sceneSelectors,
@@ -61,7 +61,7 @@ export const ActorPrefabUsesList: FC<ActorPrefabUsesListProps> = ({
   id,
   onClose,
 }) => {
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const scenes = useAppSelector(sceneSelectors.selectAll);
   const actorsLookup = useAppSelector(actorSelectors.selectEntities);
   // const [prefabUses, setPrefabUses] = useState<ActorPrefabUse[]>([]);
@@ -119,7 +119,7 @@ export const ActorPrefabUsesList: FC<ActorPrefabUsesListProps> = ({
   };
 
   return (
-    <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
+    <UsesWrapper ref={observe}>
       <SplitPaneHeader
         collapsed={false}
         onToggle={onClose}

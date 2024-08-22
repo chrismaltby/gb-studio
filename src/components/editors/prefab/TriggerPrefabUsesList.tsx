@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import {
   triggerSelectors,
   sceneSelectors,
@@ -61,7 +61,7 @@ export const TriggerPrefabUsesList: FC<TriggerPrefabUsesListProps> = ({
   id,
   onClose,
 }) => {
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const scenes = useAppSelector(sceneSelectors.selectAll);
   const triggersLookup = useAppSelector(triggerSelectors.selectEntities);
 
@@ -124,7 +124,7 @@ export const TriggerPrefabUsesList: FC<TriggerPrefabUsesListProps> = ({
   };
 
   return (
-    <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
+    <UsesWrapper ref={observe}>
       <SplitPaneHeader
         collapsed={false}
         onToggle={onClose}

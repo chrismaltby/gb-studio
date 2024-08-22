@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -47,7 +47,7 @@ const UseMessage = styled.div`
 
 export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const [fetching, setFetching] = useState(true);
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const [scriptUses, setScriptUses] = useState<ScriptUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -138,7 +138,7 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   };
 
   return (
-    <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
+    <UsesWrapper ref={observe}>
       <SplitPaneHeader
         collapsed={false}
         onToggle={onClose}

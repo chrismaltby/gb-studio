@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -61,7 +61,7 @@ const UseMessage = styled.div`
 
 export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)
   );
@@ -217,10 +217,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
             </>
           )}
         </FormContainer>
-        <UsesWrapper
-          ref={ref as RefObject<HTMLDivElement>}
-          showSymbols={showSymbols}
-        >
+        <UsesWrapper ref={observe} showSymbols={showSymbols}>
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
