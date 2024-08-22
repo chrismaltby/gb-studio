@@ -165,8 +165,9 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate CompressedSceneResource", () => {
-    const validScene = {
+    const validScene: CompressedSceneResource = {
       _resourceType: "scene",
+      _index: 0,
       id: "scene1",
       type: "someType",
       name: "Scene 1",

@@ -32,7 +32,7 @@ import { defaultProjectSettings } from "consts";
 import { readJson } from "lib/helpers/fs/readJson";
 import { Value } from "@sinclair/typebox/value";
 import { TSchema } from "@sinclair/typebox/build/cjs/type/schema";
-import { Type, Static } from "@sinclair/typebox";
+import { Static } from "@sinclair/typebox";
 import { naturalSortPaths, pathToPosix } from "shared/lib/helpers/path";
 
 const globAsync = promisify(glob);
@@ -203,6 +203,7 @@ export const loadProjectResources = async (
     }
   }
 
+  resourcesLookup.scenes.sort(sortByIndex);
   resourcesLookup.actors.sort(sortByIndex);
   resourcesLookup.triggers.sort(sortByIndex);
 

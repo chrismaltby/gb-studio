@@ -172,6 +172,7 @@ export const buildResourceExportBuffer = (
     });
   };
 
+  let sceneIndex = 0;
   for (const scene of projectResources.scenes) {
     const sceneFolder = getUniquePath(getSceneFolderPath(scene));
     const sceneFilename = getUniquePath(getSceneResourcePath(sceneFolder));
@@ -219,8 +220,12 @@ export const buildResourceExportBuffer = (
     writeResource<CompressedSceneResource>(
       sceneFilename,
       "scene",
-      sceneFixNulls(omit(scene, "actors", "triggers"))
+      sceneFixNulls({
+        ...omit(scene, "actors", "triggers"),
+        _index: sceneIndex,
+      })
     );
+    sceneIndex++;
   }
 
   for (const background of projectResources.backgrounds) {

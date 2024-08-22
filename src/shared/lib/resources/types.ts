@@ -167,6 +167,7 @@ export type TriggerPrefabResource = Static<typeof TriggerPrefabResource>;
 
 export const CompressedSceneResource = Type.Object({
   _resourceType: Type.Literal("scene"),
+  _index: Type.Number(),
   id: Type.String(),
   type: Type.String(),
   name: Type.String(),

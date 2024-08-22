@@ -347,7 +347,8 @@ export const denormalizeEntities = (
     });
 
   const denormalizedEntityResources: ProjectEntityResources = {
-    scenes: denormalizedEntities.scenes.map((scene) => ({
+    scenes: denormalizedEntities.scenes.map((scene, sceneIndex) => ({
+      _index: sceneIndex,
       ...entityToResource("scene")(scene),
       actors: scene.actors.map((actor, actorIndex) => ({
         ...entityToResource("actor")(actor),

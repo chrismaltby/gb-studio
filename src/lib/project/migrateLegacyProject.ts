@@ -46,13 +46,17 @@ export const migrateLegacyProject = (
         ...data,
       });
 
-  const encodeScene = (scene: Scene): CompressedSceneResourceWithChildren => {
-    const encodeScene = encodeResource(SceneResource);
+  const encodeScene = (
+    scene: Scene,
+    sceneIndex: number
+  ): CompressedSceneResourceWithChildren => {
+    const encodeSceneResource = encodeResource(SceneResource);
     const encodeActor = encodeResource(ActorResource);
     const encodeTrigger = encodeResource(TriggerResource);
     return compressSceneResource(
-      encodeScene({
+      encodeSceneResource({
         ...scene,
+        _index: sceneIndex,
         actors: scene.actors
           .filter(identity)
           .map((actor, actorIndex) =>
@@ -74,7 +78,10 @@ export const migrateLegacyProject = (
     return compressBackgroundResource(encodeBackground(background));
   };
 
-  const map = <A, B>(arr: A[] | undefined, mapFn: (a: A) => B): B[] => {
+  const map = <A, B>(
+    arr: A[] | undefined,
+    mapFn: (a: A, index: number) => B
+  ): B[] => {
     if (!arr) {
       return [];
     }
