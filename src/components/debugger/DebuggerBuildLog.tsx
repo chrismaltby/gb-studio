@@ -15,6 +15,7 @@ import {
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import DebuggerUsageData from "components/debugger/DebuggerUsageData";
+import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -161,16 +162,19 @@ const DebuggerBuildLog = () => {
         )}
       </Terminal>
       <ButtonToolbar>
-        {status === "running" || status === "cancelled" ? (
-          <Button
-            onClick={status === "running" ? onRun : undefined}
-            disabled={status === "cancelled"}
-          >
-            {l10n("BUILD_CANCEL")}
-          </Button>
-        ) : (
-          <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
-        )}
+        <Button
+          onClick={status !== "cancelled" ? onRun : undefined}
+          disabled={status === "cancelled"}
+        >
+          <ConsistentWidthLabel
+            label={
+              status === "running" || status === "cancelled"
+                ? l10n("BUILD_CANCEL")
+                : l10n("BUILD_RUN")
+            }
+            possibleValues={[l10n("BUILD_CANCEL"), l10n("BUILD_RUN")]}
+          />
+        </Button>
         <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
           <MenuItem onClick={onToggleOpenBuildLogOnWarnings}>
             <MenuItemIcon>
