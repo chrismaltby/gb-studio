@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1540240822",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1545240822",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -322,7 +322,7 @@
   "FIELD_COLLIDE_WITH_DESC": "Grupy aktorów, które będą sprawdzane pod kątem kolizji. np. Jeśli powinien przejść przez jakiegokolwiek aktora, ale nie przez gracza, to zastosuj ustawienie 'Gracz' (tylko gracz).",
   "FIELD_COLLISION_GROUP_N": "Grupa {n}",
   "FIELD_PLAYER": "Gracz",
-  "FIELD_ACTOR": "Aktor", 
+  "FIELD_ACTOR": "Aktor",
   "FIELD_IS_ABOVE": "jest powyżej",
   "FIELD_IS_BELOW": "jest poniżej",
   "FIELD_IS_LEFT_OF": "jest z lewej",
@@ -766,7 +766,7 @@
   "FIELD_COLOR_MODE_COLOR_ONLY": "Tylko kolor",
   "FIELD_COLOR_MODE_MONO_INFO": "GB, GB Color, Pocket",
   "FIELD_COLOR_MODE_COLOR_MONO_INFO": "GB, GB Color, Pocket",
-  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket", 
+  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket",
   "FIELD_SUPPORTED_PLATFORMS": "Obsługiwane platformy",
   "FIELD_MONOCHROME_ONLY": "tylko monochromatyczne",
   "FIELD_SGB_UNAVAILABLE": "Tryb Super GB Mode nie jest obsługiwany dla gier z opcją 'Tylko kolor' ",
@@ -844,6 +844,10 @@
   "FIELD_APPLY_CHANGES": "Zastosuj zmiany",
   "FIELD_REVERT_CHANGES": "Cofnij zmiany",
   "FIELD_PIN_TO_SCREEN": "Przypnij do ekranu",
+  "FIELD_RUN_A_BUILD_USAGE_DESC": "Uruchom kompilację, aby obliczyć użycie ROMu",
+  "FIELD_CURRENT_ROM_SIZE_TOOLTIP": "ROM musi się powiększyć o {freeSpace}, aby osiągnąć ten rozmiar.",
+  "FIELD_NEXT_ROM_SIZE_TOOLTIP": "ROM musi się powiększyć o {freeSpace}, aby osiągnąć następny rozmiar.",
+  "FIELD_ROM_USAGE_LABEL": "Użyto {totalUsage} z {romSize}",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1342,7 +1346,7 @@
   "MENU_DELETE_SOUND_EFFECT": "Usuń dźwięk",
   "MENU_DELETE_PALETTE": "Usuń paletę",
   "MENU_SPELLING": "Pisownia i gramatyka",
-  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Sprawdzaj pisownię w trakcie pisania",
+  "MENU_CHECK_SPELLING_WHILE_TYPING": "Sprawdzaj pisownię w trakcie pisania",
   "MENU_DELETE_PREFAB": "Usuń prefab",
   "MENU_EDIT_PREFAB": "Edytuj prefab",
   
@@ -1524,6 +1528,7 @@
   "COMPILER_COMPILING": "Kompilacja",
   "COMPILER_LINKING": "Łączenie",
   "COMPILER_PACKING": "Pakowanie danych",
+  "COMPILER_ROMUSAGE": "Obliczanie użycia ROMu",
 
   "// 21": "Messages -----------------------------------------------------",
 
