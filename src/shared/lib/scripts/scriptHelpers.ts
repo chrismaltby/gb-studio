@@ -5,8 +5,9 @@ import {
   ScriptEventNormalized,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
-import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 import isEqual from "lodash/isEqual";
+import SparkMD5 from "spark-md5";
 
 export const isEmptyScript = (script: ScriptEvent[]) => {
   if (script.length === 0) {
@@ -34,4 +35,12 @@ export const isNormalizedScriptEqual = (
     scriptBEvents.push({ args, command });
   });
   return isEqual(scriptAEvents, scriptBEvents);
+};
+
+export const generateScriptHash = (script: ScriptEvent[]): string => {
+  const data: unknown[] = [];
+  walkScript(script, undefined, ({ args, command }) => {
+    data.push({ args, command });
+  });
+  return SparkMD5.hash(JSON.stringify(data));
 };

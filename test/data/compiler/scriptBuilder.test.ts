@@ -1345,3 +1345,715 @@ test("Should allow rnd to be used in rpn without script neutral error", () => {
     "        VM_STOP",
   ]);
 });
+
+test("should reuse symbol for input scripts with identical contents", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    scene: {
+      id: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["b"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "d319a055-a2d9-42f9-9c93-0a348dfcae6d",
+                },
+              ],
+            },
+            id: "cc795643-f9eb-45fc-b601-c724403c08bf",
+          },
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["a"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "0ffd4b98-cfc5-4d76-9827-3c39062ab606",
+                },
+              ],
+            },
+            id: "829ff9e2-12aa-458b-a118-f332060685ba",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+  );
+});
+
+test("should reuse symbol for input scripts with identical contents across multiple scenes", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["b"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "event1",
+                },
+              ],
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_TEXT",
+            args: {
+              text: ["Hello World"],
+            },
+          },
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["b"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "event3",
+                },
+              ],
+            },
+            id: "event4",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script2", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(3);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+  );
+});
+
+test("should reuse both script and input symbol when scripts are identical across scenes", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["b"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "event1",
+                },
+              ],
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_SET_INPUT_SCRIPT",
+            args: {
+              input: ["b"],
+              override: true,
+            },
+            children: {
+              true: [
+                {
+                  command: "EVENT_ACTOR_SET_POSITION",
+                  args: {
+                    actorId: "$self$",
+                    x: {
+                      type: "number",
+                      value: 1,
+                    },
+                    y: {
+                      type: "number",
+                      value: 2,
+                    },
+                  },
+                  id: "event3",
+                },
+              ],
+            },
+            id: "event4",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script2", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+  );
+});
+
+test("should insert placeholder symbol for recursive scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_TEXT",
+            args: {
+              text: "Hello World",
+            },
+            id: "event1",
+          },
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  expect(additionalScriptFiles.length).toEqual(1);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_CALL_FAR             ___bank_script`
+  );
+  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+});
+
+test("should reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_IDLE",
+            args: {},
+            id: "event1",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_IDLE",
+            args: {},
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script2", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(1);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
+});
+
+test("should not reused script symbol when scripts are not identical", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_IDLE",
+            args: {},
+            id: "event1",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {},
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_RNG_SEED",
+            args: {},
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script2", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
+  expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
+    `VM_IDLE`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    `VM_RANDOMIZE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_RANDOMIZE`
+  );
+});

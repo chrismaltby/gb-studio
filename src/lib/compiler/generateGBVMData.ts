@@ -84,6 +84,7 @@ interface Entity {
 
 export type PrecompiledScene = Scene & {
   id: string;
+  hash: string;
   name: string;
   symbol: string;
   width: number;
@@ -1149,6 +1150,17 @@ export const compileCursorImageHeader = (_data: Uint8Array) =>
 
 export const compileScriptHeader = (scriptName: string) =>
   toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
+
+export const replaceScriptSymbols = (
+  script: string,
+  replaceSymbols: Dictionary<string>
+) => {
+  let newScript = script;
+  for (const key in replaceSymbols) {
+    newScript = newScript.replaceAll(key, replaceSymbols[key] ?? "");
+  }
+  return newScript;
+};
 
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<{ symbol: string }>,

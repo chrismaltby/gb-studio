@@ -1,4 +1,5 @@
-import { inputDec, textSpeedDec } from "./helpers";
+import SparkMD5 from "spark-md5";
+import { inputDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
 import trimlines from "shared/lib/helpers/trimlines";
 import { is16BitCType } from "shared/lib/engineFields/engineFieldToCType";
@@ -75,6 +76,8 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
+import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
+import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 
 export type ScriptOutput = string[];
 
@@ -166,6 +169,8 @@ export interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  recursiveSymbolMap: Dictionary<string>;
+  additionalScriptsCache: Dictionary<string>;
   debugEnabled: boolean;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
@@ -578,16 +583,18 @@ export const toProjectileHash = ({
   collisionGroup: string;
   collisionMask: string[];
 }) =>
-  JSON.stringify({
-    spriteSheetId,
-    spriteStateId,
-    speed,
-    animSpeed,
-    lifeTime,
-    initialOffset,
-    collisionGroup,
-    collisionMask: [...collisionMask].sort(),
-  });
+  SparkMD5.hash(
+    JSON.stringify({
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      lifeTime,
+      initialOffset,
+      collisionGroup,
+      collisionMask: [...collisionMask].sort(),
+    })
+  );
 
 const MAX_DIALOGUE_LINES = 5;
 const fadeSpeeds = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f];
@@ -656,6 +663,8 @@ class ScriptBuilder {
       debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
+      recursiveSymbolMap: options.recursiveSymbolMap ?? {},
+      additionalScriptsCache: options.additionalScriptsCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || defaultProjectSettings,
@@ -4174,7 +4183,12 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    const { customEvents, compiledCustomEventScriptCache } = this.options;
+    const {
+      customEvents,
+      compiledCustomEventScriptCache,
+      scene,
+      recursiveSymbolMap,
+    } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
     if (!customEvent) {
@@ -4182,7 +4196,14 @@ extern void __mute_mask_${symbol};
       return;
     }
 
-    const cachedResult = compiledCustomEventScriptCache[customEventId];
+    // Check if this script has already been compiled for this scene
+    // If so, is safe to just reuse it
+    // If not it's likely script is the same but need to compile anyway
+    // to handle cases like scene projectiles being in a different order
+    // anything that could cause scripts to be different per scene should
+    // be included when generating scene.hash while precompiling scenes
+    const cacheKey = `${customEventId}-${scene.hash}`;
+    const cachedResult = compiledCustomEventScriptCache[cacheKey];
     if (cachedResult) {
       return cachedResult;
     }
@@ -4378,14 +4399,36 @@ extern void __mute_mask_${symbol};
     );
 
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
-    const symbol = this._getAvailableSymbol(
-      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
-      false
-    );
-    const result = { scriptRef: symbol, argsLen };
-    compiledCustomEventScriptCache[customEventId] = result;
+    // all calls to this script while compilation is still in progress will
+    // use this symbol that gets replaced later
+    const placeholderSymbol = "__PLACEHOLDER|" + cacheKey + "|PLACEHOLDER__";
 
-    this._compileSubScript("custom", script, symbol, { argLookup });
+    const tmpResult = {
+      scriptRef: placeholderSymbol,
+      argsLen,
+    };
+
+    // Cache placeholder symbol to be used by recursive calls
+    compiledCustomEventScriptCache[cacheKey] = tmpResult;
+
+    const symbol = this._compileSubScript(
+      "custom",
+      script,
+      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
+      {
+        argLookup,
+      }
+    );
+
+    const result = {
+      scriptRef: symbol,
+      argsLen,
+    };
+
+    // Replace placeholder symbol with actual one + add to mapping table for
+    // handling find/replace of recursive calls that used placeholder
+    recursiveSymbolMap[placeholderSymbol] = symbol;
+    compiledCustomEventScriptCache[cacheKey] = result;
 
     return result;
   };
@@ -6822,16 +6865,30 @@ extern void __mute_mask_${symbol};
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const symbol = this._getAvailableSymbol(
-      inputSymbol ? inputSymbol : `script_${type}_0`
-    );
-    // Set script context to calculate default value for missing vars
+    const { scene } = this.options;
     let context: ScriptEditorCtxType = this.options.context;
+
+    // Set script context to calculate default value for missing vars
     if (type === "custom") {
       context = "script";
     } else if (context === "script") {
       context = "global";
     }
+
+    // Generate a quick hash of the script for this scene to see if
+    // it's already been compiled - just reuse if possible
+    const preBuildHash = `${generateScriptHash(script)}_${
+      scene.hash
+    }_${context}`;
+
+    if (this.options.additionalScriptsCache[preBuildHash]) {
+      return this.options.additionalScriptsCache[preBuildHash];
+    }
+
+    const symbol = this._getAvailableSymbol(
+      inputSymbol ? inputSymbol : `script_${type}_0`
+    );
+
     const compiledSubScript = compileEntityEvents(
       symbol,
       this.options.maxDepth >= 0 ? script : [],
@@ -6852,10 +6909,25 @@ extern void __mute_mask_${symbol};
         },
       }
     );
+
+    // Check if identical to any already compiled scripts
+    const scriptHash = gbvmScriptChecksum(compiledSubScript);
+
+    // If this script is identical to an already generated script
+    // just reuse the existing symbol rather than writing a duplicate file
+    if (this.options.additionalScriptsCache[scriptHash]) {
+      return this.options.additionalScriptsCache[scriptHash];
+    }
+
     this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
     };
+
+    // Store generate symbols in cache
+    this.options.additionalScriptsCache[scriptHash] = symbol;
+    this.options.additionalScriptsCache[preBuildHash] = symbol;
+
     return symbol;
   };
 

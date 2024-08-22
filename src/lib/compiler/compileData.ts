@@ -1,5 +1,6 @@
 import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
+import SparkMD5 from "spark-md5";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
 import compileEntityEvents from "./compileEntityEvents";
@@ -69,6 +70,7 @@ import {
   compileSceneTypes,
   compileSceneFnPtrs,
   compileStateDefines,
+  replaceScriptSymbols,
 } from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -1133,6 +1135,8 @@ export const precompileScenes = (
       projectiles.splice(MAX_PROJECTILES);
     }
 
+    const hash = SparkMD5.hash(projectiles.map((p) => p.hash).join("-"));
+
     return {
       ...scene,
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
@@ -1162,6 +1166,7 @@ export const precompileScenes = (
       actorsData: [],
       triggersData: [],
       projectiles,
+      hash,
     };
   });
   return scenesData;
@@ -1457,6 +1462,8 @@ const compile = async (
     scriptRef: string;
     argsLen: number;
   }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
   const compiledAssetsCache: Dictionary<string> = {};
 
   const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
@@ -1541,6 +1548,8 @@ const compile = async (
           additionalOutput,
           symbols,
           compiledCustomEventScriptCache,
+          additionalScriptsCache,
+          recursiveSymbolMap,
           compiledAssetsCache,
           branch: false,
           isFunction: false,
@@ -1751,8 +1760,10 @@ const compile = async (
     if (!additional) {
       return;
     }
-
-    output[`${additional.symbol}.s`] = additional.compiledScript;
+    output[`${additional.symbol}.s`] = replaceScriptSymbols(
+      additional.compiledScript,
+      recursiveSymbolMap
+    );
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
 
