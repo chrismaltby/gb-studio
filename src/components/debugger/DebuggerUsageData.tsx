@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
@@ -81,31 +81,28 @@ const DebuggerUsageData = () => {
   const usageData = useAppSelector((state) => state.debug.usageData);
   const status = useAppSelector((state) => state.console.status);
 
-  const [zoom, setZoom] = useState(sizes.length - 1);
+  const [zoom, setZoom] = useState(false);
 
-  let totalUsage = 0;
-  let fullSize = 0;
-  let romSizeIndex = 0;
-  if (usageData) {
-    usageData.banks.forEach((bank) => (totalUsage += Number(bank.used)));
-    usageData.banks.forEach((bank) => (fullSize += Number(bank.size)));
-    for (let i = 0; i < sizes.length; i++) {
-      if (totalUsage <= sizes[i].bytes) {
-        romSizeIndex = i;
-        break;
+  const { totalUsage, romSizeIndex } = useMemo(() => {
+    let totalUsage = 0;
+    let romSizeIndex = 0;
+    if (usageData) {
+      usageData.banks.forEach((bank) => (totalUsage += Number(bank.used)));
+      for (let i = 0; i < sizes.length; i++) {
+        if (totalUsage <= sizes[i].bytes) {
+          romSizeIndex = i;
+          break;
+        }
       }
     }
-  }
+    return { totalUsage, romSizeIndex };
+  }, [usageData]);
 
-  const toggleZoom = (newZoom: number) => {
-    if (zoom === newZoom) {
-      setZoom(sizes.length - 1);
-    } else {
-      setZoom(newZoom);
-    }
+  const toggleZoom = () => {
+    setZoom(!zoom);
   };
 
-  const maxSize = sizes[zoom].bytes;
+  const maxSize = sizes[zoom ? romSizeIndex : sizes.length - 1].bytes;
   const usedPercent = (totalUsage * 100) / maxSize;
 
   return (
@@ -119,7 +116,7 @@ const DebuggerUsageData = () => {
       ) : (
         <>
           <div>ROM:</div>
-          <Total onClick={() => toggleZoom(romSizeIndex)}>
+          <Total onClick={toggleZoom}>
             {sizes.map((s, i) => {
               const byteStep =
                 s.bytes - (sizes[i - 1] ? sizes[i - 1].bytes : 0);
