@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
+import type { UsageData } from "lib/compiler/romUsage";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 
@@ -15,6 +16,7 @@ export interface DebuggerState {
   currentSceneSymbol: string;
   isPaused: boolean;
   isLogOpen: boolean;
+  usageData: UsageData | null;
 }
 
 export const initialState: DebuggerState = {
@@ -29,6 +31,7 @@ export const initialState: DebuggerState = {
   currentSceneSymbol: "",
   isPaused: true,
   isLogOpen: false,
+  usageData: null,
 };
 
 const debuggerSlice = createSlice({
@@ -79,6 +82,9 @@ const debuggerSlice = createSlice({
     },
     setIsLogOpen: (state, action: PayloadAction<boolean>) => {
       state.isLogOpen = action.payload;
+    },
+    setUsageData: (state, action: PayloadAction<UsageData>) => {
+      state.usageData = action.payload;
     },
   },
 });
