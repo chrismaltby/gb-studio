@@ -42,6 +42,7 @@ import {
   TriggerPrefab,
   TriggerPrefabNormalized,
   TriggerScriptKey,
+  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
@@ -64,8 +65,10 @@ import {
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
+  filterEvents,
   walkActorScriptsKeys,
   walkNormalizedScript,
+  walkSceneScriptsKeys,
   walkTriggerScriptsKeys,
 } from "shared/lib/scripts/walk";
 import {
@@ -349,28 +352,30 @@ export const denormalizeEntities = (
   const denormalizedEntityResources: ProjectEntityResources = {
     scenes: denormalizedEntities.scenes.map((scene, sceneIndex) => ({
       _index: sceneIndex,
-      ...entityToResource("scene")(scene),
+      ...entityToResource("scene")(sceneFixNulls(scene)),
       actors: scene.actors.map((actor, actorIndex) => ({
-        ...entityToResource("actor")(actor),
+        ...entityToResource("actor")(actorFixNulls(actor)),
         _index: actorIndex,
       })),
       triggers: scene.triggers.map((trigger, triggerIndex) => ({
-        ...entityToResource("trigger")(trigger),
+        ...entityToResource("trigger")(triggerFixNulls(trigger)),
         _index: triggerIndex,
       })),
     })),
-    actorPrefabs: denormalizedEntities.actorPrefabs.map(
-      entityToResource("actorPrefab")
+    actorPrefabs: denormalizedEntities.actorPrefabs.map((actorPrefab) =>
+      entityToResource("actorPrefab")(actorFixNulls(actorPrefab))
     ),
-    triggerPrefabs: denormalizedEntities.triggerPrefabs.map(
-      entityToResource("triggerPrefab")
+    triggerPrefabs: denormalizedEntities.triggerPrefabs.map((triggerPrefab) =>
+      entityToResource("triggerPrefab")(triggerFixNulls(triggerPrefab))
     ),
     backgrounds: denormalizedEntities.backgrounds.map(
       entityToResource("background")
     ),
     sprites: denormalizedEntities.sprites.map(entityToResource("sprite")),
     music: denormalizedEntities.music.map(entityToResource("music")),
-    scripts: denormalizedEntities.scripts.map(entityToResource("script")),
+    scripts: denormalizedEntities.scripts.map((script) =>
+      entityToResource("script")(scriptFixNulls(script))
+    ),
     palettes: denormalizedEntities.palettes.map(entityToResource("palette")),
     emotes: denormalizedEntities.emotes.map(entityToResource("emote")),
     avatars: denormalizedEntities.avatars.map(entityToResource("avatar")),
@@ -1062,4 +1067,38 @@ export const updateAllCustomEventsArgs = (
   for (const customEvent of customEvents) {
     updateCustomEventArgs(customEvent, scriptEventLookup, scriptEventDefs);
   }
+};
+
+export const validScriptEvent = (scriptEvent: ScriptEvent): boolean => {
+  return !!(scriptEvent && scriptEvent.id);
+};
+
+export const sceneFixNulls = (scene: Scene): Scene => {
+  const newScene = { ...scene };
+  walkSceneScriptsKeys((key) => {
+    newScene[key] = filterEvents(newScene[key], validScriptEvent);
+  });
+  return newScene;
+};
+
+export const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
+  const newActor = { ...actor };
+  walkActorScriptsKeys((key) => {
+    newActor[key] = filterEvents(newActor[key], validScriptEvent);
+  });
+  return newActor;
+};
+
+export const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
+  trigger: T
+): T => {
+  const newTrigger = { ...trigger };
+  walkTriggerScriptsKeys((key) => {
+    newTrigger[key] = filterEvents(newTrigger[key], validScriptEvent);
+  });
+  return newTrigger;
+};
+
+export const scriptFixNulls = (script: CustomEvent): CustomEvent => {
+  return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
