@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1513240816",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1540240822",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -89,7 +89,10 @@
   "SIDEBAR_INSTRUMENT": "Instrument",
   "SIDEBAR_SUBPATTERN": "Podwzór",
   "SIDEBAR_SCRIPT_USES": "Użycie skryptu",
-
+  "SIDEBAR_PREFABS": "Prefaby",
+  "SIDEBAR_PREFAB_USES": "Użycie prefabów",
+  "SIDEBAR_ADD_PREFAB": "Dodaj prefab",
+  
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
   "FIELD_DESCRIPTION": "Opis",
@@ -826,6 +829,21 @@
   "FIELD_COMPILER_OPTIONS_WARNING": "Niektóre kombinacje ustawień presetów kompilatora i optymalizacji mogą nie działać razem. Jeśli po zmianie tych ustawień wystąpią problemy z kompilacją, spróbuj przywrócić je do wartości domyślnych.",
   "FIELD_BOX_WIDTH_DESC": "Szerokość pola",
   "FIELD_BOX_HEIGHT_DESC": "Wysokość pola",
+  "FIELD_TRIGGERS": "Wyzwalacze",
+  "FIELD_EDIT_PREFAB": "Edytuj prefab",
+  "FIELD_VIEW_PREFAB_USES": "Wyswietl użycie prefabu",
+  "FIELD_INSTANTIATE_PREFAB": "Utwórz prefab",
+  "FIELD_PREFAB": "Prefab",
+  "FIELD_PREFAB_NOT_USED": "Prefab nie został użyty w projekcie",
+  "FIELD_UNPACK_PREFAB": "Rozpakuj Prefab",
+  "FIELD_UNPACK_PREFAB_DESC": "Wszystkie właściwości i skrypty prefabu przestaną być połączone",
+  "FIELD_LINK_TO_PREFAB": "Połącz z prefabem",
+  "FIELD_CONVERT_TO_PREFAB": "Konwertuj na prefab",
+  "FIELD_N_CHANGE": "{n} zmiana",
+  "FIELD_N_CHANGES": "{n} zmian",
+  "FIELD_APPLY_CHANGES": "Zastosuj zmiany",
+  "FIELD_REVERT_CHANGES": "Cofnij zmiany",
+  "FIELD_PIN_TO_SCREEN": "Przypnij do ekranu",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1314,6 +1332,7 @@
   "MENU_DELETE": "Usuń",
   "MENU_SELECT_ALL": "Zaznacz wszystko",
   "MENU_WINDOW": "Okno",
+  "MENU_MINIMIZE": "Minimalizuj",
   "MENU_HELP": "Pomoc",
   "MENU_SET_BREAKPOINT": "Ustaw punkt przerwania",
   "MENU_DELETE_SONG": "Usuń melodię",
@@ -1324,6 +1343,8 @@
   "MENU_DELETE_PALETTE": "Usuń paletę",
   "MENU_SPELLING": "Pisownia i gramatyka",
   "MENU_CHECK_SPELLING_WHILE_TYPING" : "Sprawdzaj pisownię w trakcie pisania",
+  "MENU_DELETE_PREFAB": "Usuń prefab",
+  "MENU_EDIT_PREFAB": "Edytuj prefab",
   
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1448,8 +1469,14 @@
   "DIALOG_MIGRATION_GUIDE": "Otwórz przewodnik migracji",
   "DIALOG_DELETE_ASSET": "Usuń \"{filename}\"?",
   "DIALOG_DELETE_ASSET_DESCRIPTION": "Plik \n{filename}\nzostanie usunięty z twojego systemu. Akcja ta jest nieodwracalna.",
-  
-  "// 16": "Settings ----------------------------------------------------",
+  "DIALOG_DELETE_PREFAB": "Usunąć prefab \"{name}\"?",
+  "DIALOG_DELETE_PREFAB_USED": "{count} użyć tego prefabu zostanie rozpakowane",
+  "DIALOG_DELETE_PREFAB_USED_SINGLAR": "{count} tego prefabu zostanie rozpakowane",
+  "DIALOG_REPLACE_PREFAB": "Zastąpić prefab \"{name}\"?",
+  "DIALOG_REPLACE_PREFAB_DESCRIPTION": "Wklejony prefab zawiera zmodyfikowaną wersję istniejącego prefabu. Czy chcesz zastąpić prefab wersją ze schowka, czy zachować aktualny istniejący prefab?",
+  "DIALOG_DELETE_SCRIPT_AND_REFERENCES": "Usuń skrypt i odwołania",
+ 
+ "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
   "SETTINGS_SCENES": ": ilość scen",
