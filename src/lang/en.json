@@ -850,6 +850,7 @@
   "FIELD_ROM_USAGE_LABEL": "{totalUsage} of {romSize} used",
   "FIELD_TIME_SECONDS": "{seconds}s",
   "FIELD_TIME_MINUTES_AND_SECONDS": "{minutes}m {seconds}s",
+  "FIELD_TEXT": "Text",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

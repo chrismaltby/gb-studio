@@ -15,12 +15,31 @@ const autoLabel = (fetchArg, args) => {
 
 const fields = [
   {
+    key: "__section",
+    type: "tabs",
+    defaultValue: "text",
+    variant: "eventSection",
+    values: {
+      text: l10n("FIELD_TEXT"),
+      layout: l10n("FIELD_LAYOUT"),
+    },
+  },
+
+  // Text Section
+
+  {
     key: "text",
     type: "textarea",
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
     multiple: true,
     defaultValue: "",
     flexBasis: "100%",
+    conditions: [
+      {
+        key: "__section",
+        in: ["text", undefined],
+      },
+    ],
   },
   {
     key: "avatarId",
@@ -30,6 +49,202 @@ const fields = [
     description: l10n("FIELD_TEXT_AVATAR_DESC"),
     defaultValue: "",
     optional: true,
+    conditions: [
+      {
+        key: "__section",
+        in: ["text", undefined],
+      },
+    ],
+  },
+
+  // Layout Section
+
+  {
+    type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+    ],
+    fields: [
+      {
+        key: `minHeight`,
+        label: "Min Height",
+        type: "number",
+        min: 1,
+        max: 18,
+        width: "50%",
+        defaultValue: 4,
+      },
+      {
+        key: `maxHeight`,
+        label: "Max Height",
+        type: "number",
+        min: 1,
+        max: 18,
+        width: "50%",
+        defaultValue: 7,
+      },
+    ],
+  },
+  {
+    key: `position`,
+    label: "Position",
+    type: "select",
+    defaultValue: "bottom",
+    options: [
+      ["bottom", "Bottom"],
+      ["top", "Top"],
+    ],
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+    ],
+  },
+  {
+    label:
+      "⚠️ Displaying the dialogue on top won't work in scenes with parallax.",
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "position",
+        eq: "top",
+      },
+    ],
+  },
+  {
+    type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+    ],
+    fields: [
+      {
+        key: `showBorder`,
+        label: "Show Frame",
+        type: "checkbox",
+        defaultValue: "true",
+        width: "50%",
+        conditions: [
+          {
+            key: "__section",
+            in: ["layout"],
+          },
+        ],
+      },
+      {
+        key: `clearPrevious`,
+        label: "Clear Previous Content",
+        type: "checkbox",
+        defaultValue: true,
+        width: "50%",
+        conditions: [
+          {
+            key: "__section",
+            in: ["layout"],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+    ],
+    fields: [
+      {
+        key: `textX`,
+        label: "Text X",
+        type: "number",
+        min: 0,
+        max: 20,
+        defaultValue: 1,
+      },
+      {
+        key: `textY`,
+        label: "Text Y",
+        type: "number",
+        min: 0,
+        max: 18,
+        defaultValue: 1,
+      },
+      {
+        key: `textHeight`,
+        label: "Text Max Height",
+        type: "number",
+        min: 1,
+        max: 18,
+        defaultValue: 3,
+      },
+    ],
+  },
+  {
+    key: `closeWhen`,
+    label: "Close When...",
+    type: "select",
+    defaultValue: "key",
+    options: [
+      ["key", "Button Pressed"],
+      ["text", "Text Finishes"],
+      ["notModal", "Never (Non-Modal)"],
+    ],
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+    ],
+  },
+  {
+    label:
+      '⚠️ Don\'t forget to reset "overlay_cut_scanline" after manually closing a non-modal dialogue displaying on top.',
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "position",
+        eq: "top",
+      },
+      {
+        key: "closeWhen",
+        eq: "notModal",
+      },
+    ],
+  },
+  {
+    key: "closeButton",
+    type: "togglebuttons",
+    options: [
+      ["a", "A"],
+      ["b", "B"],
+      ["any", "Any"],
+    ],
+    allowNone: false,
+    defaultValue: "a",
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "closeWhen",
+        eq: "key",
+      },
+    ],
   },
 ];
 

@@ -14,7 +14,7 @@ import {
   ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
 import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
-import { TabBar } from "ui/tabs/Tabs";
+import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -304,7 +304,7 @@ const ScriptEventFormField = memo(
     if (field.type === "tabs") {
       return (
         <TabBar
-          variant="scriptEvent"
+          variant={(field.variant || "scriptEvent") as TabBarVariant}
           value={String(value || Object.keys(field.values || {})[0])}
           values={field.values || {}}
           onChange={onChange}
