@@ -133,7 +133,7 @@ const ejectBuild = async ({
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
   for (const enginePluginPath of enginePlugins) {
     progress(
-      `Using engine plugin: ${Path.relative(pluginsPath, enginePluginPath)}`
+      `${l10n("COMPILER_USING_ENGINE_PLUGIN")} ${Path.relative(pluginsPath, enginePluginPath)}`
     );
     const pluginName = Path.basename(Path.dirname(enginePluginPath));
     try {
