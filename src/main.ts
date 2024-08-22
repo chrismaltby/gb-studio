@@ -124,6 +124,7 @@ import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
 import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
 import { cancelBuildCommandsInProgress } from "lib/compiler/makeBuild";
 import romUsage from "lib/compiler/romUsage";
+import { msToHumanTime } from "shared/lib/helpers/time";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1290,16 +1291,16 @@ ipcMain.handle(
         shell.openPath(Path.join(projectRoot, "build", buildType));
         buildLog(`-`);
         buildLog(
-          `Success! ${
+          `${l10n("COMPILER_BUILD_SUCCESS")} ${
             buildType === "web"
-              ? `Site is ready at ${Path.normalize(
+              ? `${l10n("COMPILER_SITE_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/web/index.html`
                 )}`
               : buildType === "pocket"
-              ? `ROM is ready at ${Path.normalize(
+              ? `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/pocket/game.pocket`
                 )}`
-              : `ROM is ready at ${Path.normalize(
+              : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/rom/${gameFile}`
                 )}`
           }`
@@ -1317,7 +1318,11 @@ ipcMain.handle(
 
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
-        buildLog(`Success! Starting emulator...`);
+        buildLog(
+          `${l10n("COMPILER_BUILD_SUCCESS")} ${l10n(
+            "COMPILER_STARTING_EMULATOR"
+          )}...`
+        );
         if (debuggerEnabled) {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot
@@ -1351,7 +1356,7 @@ ipcMain.handle(
       }
 
       const buildTime = Date.now() - buildStartTime;
-      buildLog(`Build Time: ${buildTime}ms`);
+      buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
@@ -1474,7 +1479,7 @@ ipcMain.handle(
       }
 
       const buildTime = Date.now() - buildStartTime;
-      buildLog(`Build Time: ${buildTime}ms`);
+      buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
 
       shell.openPath(exportRoot);
     } catch (e) {

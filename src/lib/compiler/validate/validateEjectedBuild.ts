@@ -1,5 +1,6 @@
 import { readFile } from "fs-extra";
 import Path from "path";
+import l10n from "shared/lib/lang/l10n";
 
 type ValidateOptions = {
   buildRoot: string;
@@ -23,7 +24,7 @@ export const validateEjectedBuild = async ({
   const vmHeapSize = parseInt(vmHeapSizeStr ?? "", 10);
   const maxGlobalVars = parseInt(maxGlobalVarsStr ?? "", 10);
 
-  progress(`Validating build files...`);
+  progress(`${l10n("COMPILING_VALIDATING_BUILD_FILES")}...`);
 
   if (isNaN(vmHeapSize) || isNaN(maxGlobalVars)) {
     warnings(

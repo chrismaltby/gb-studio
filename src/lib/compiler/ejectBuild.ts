@@ -60,19 +60,21 @@ const ejectBuild = async ({
   const { settings } = projectData;
   const colorEnabled = settings.colorMode !== "mono";
 
-  progress(`Unlink ${Path.basename(outputRoot)}`);
+  progress(`${l10n("COMPILER_REMOVING_FOLDER")} ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
-  progress("Copy default engine");
+  progress(l10n("COMPILER_COPY_DEFAULT_ENGINE"));
 
   await copy(corePath, outputRoot);
 
   const expectedEngineVersion = await readEngineVersion(expectedEngineMetaPath);
 
   try {
-    progress("Looking for local engine in assets/engine");
+    progress(
+      l10n("COMPILER_LOOKING_FOR_LOCAL_ENGINE", { path: "assets/engine" })
+    );
     await copy(localCorePath, outputRoot);
-    progress("Copy local engine");
+    progress(l10n("COMPILER_COPY_LOCAL_ENGINE"));
 
     const ejectedEngineMetaPath = `${localCorePath}/engine.json`;
     let ejectedEngineVersion;
@@ -100,7 +102,7 @@ const ejectBuild = async ({
       );
     }
   } catch (e) {
-    progress("Local engine not found, using default engine");
+    progress(l10n("COMPILER_LOCAL_ENGINE_NOT_FOUND"));
   }
 
   // Remove unused scene type files
@@ -125,7 +127,9 @@ const ejectBuild = async ({
     }
   }
 
-  progress("Looking for engine plugins in plugins/*/engine");
+  progress(
+    l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" })
+  );
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
   for (const enginePluginPath of enginePlugins) {
     progress(

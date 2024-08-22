@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only the inbuilt scene types that were actually used in your game are now compiled, improving build time if only some scene types were used
 - Improve build cancelling: Stops spawned processes immediately rather than waiting for in progress processes to complete
 - Changing the engine field in a "Store Engine Field In Variable" event no longer resets the variable
+- Build time now shown in seconds when < 60s and minutes+seconds when >= 60s
 
 ### Fixed
 

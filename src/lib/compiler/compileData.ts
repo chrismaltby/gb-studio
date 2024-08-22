@@ -178,22 +178,6 @@ export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
 export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
-export const EVENT_MSG_PRE_VARIABLES = "Preparing variables...";
-export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
-export const EVENT_MSG_PRE_TILESETS = "Preparing tilesets...";
-export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
-export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
-export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
-export const EVENT_MSG_PRE_EMOTES = "Preparing emotes...";
-export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
-export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
-export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
-export const EVENT_MSG_PRE_SOUNDS = "Preparing sounds...";
-export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
-
-export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
-export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
-
 const ensureProjectAsset = async (
   relativePath: string,
   {
@@ -1206,10 +1190,10 @@ const precompile = async (
     scriptEventHandlers,
   });
 
-  progress(EVENT_MSG_PRE_VARIABLES);
+  progress(`${l10n("COMPILER_PREPARING_VARIABLES")}...`);
   const usedVariables = usedAssets.referencedVariables;
 
-  progress(EVENT_MSG_PRE_IMAGES);
+  progress(`${l10n("COMPILER_PREPARING_IMAGES")}...`);
   const {
     usedBackgrounds,
     backgroundLookup,
@@ -1227,7 +1211,7 @@ const precompile = async (
     { warnings }
   );
 
-  progress(EVENT_MSG_PRE_TILESETS);
+  progress(`${l10n("COMPILER_PREPARING_TILESETS")}...`);
   const { usedTilesets } = await precompileTilesets(
     projectData.tilesets,
     projectData.scenes,
@@ -1236,7 +1220,7 @@ const precompile = async (
     { warnings }
   );
 
-  progress(EVENT_MSG_PRE_UI_IMAGES);
+  progress(`${l10n("COMPILER_PREPARING_UI")}...`);
   const { frameTiles, cursorTiles } = await precompileUIImages(
     projectRoot,
     tmpPath,
@@ -1245,7 +1229,7 @@ const precompile = async (
     }
   );
 
-  progress(EVENT_MSG_PRE_SPRITES);
+  progress(`${l10n("COMPILER_PREPARING_SPRITES")}...`);
   const {
     usedSprites,
     usedTilesets: usedSpriteTilesets,
@@ -1260,7 +1244,7 @@ const precompile = async (
     projectRoot
   );
 
-  progress(EVENT_MSG_PRE_AVATARS);
+  progress(`${l10n("COMPILER_PREPARING_AVATARS")}...`);
   const { usedAvatars } = await precompileAvatars(
     projectData.avatars || [],
     projectData.scenes,
@@ -1271,7 +1255,7 @@ const precompile = async (
     }
   );
 
-  progress(EVENT_MSG_PRE_EMOTES);
+  progress(`${l10n("COMPILER_PREPARING_EMOTES")}...`);
   const { usedEmotes } = await precompileEmotes(
     projectData.emotes || [],
     projectData.scenes,
@@ -1282,7 +1266,7 @@ const precompile = async (
     }
   );
 
-  progress(EVENT_MSG_PRE_MUSIC);
+  progress(`${l10n("COMPILER_PREPARING_MUSIC")}...`);
   const { usedMusic } = await precompileMusic(
     projectData.scenes,
     customEventsLookup,
@@ -1290,7 +1274,7 @@ const precompile = async (
     projectData.settings.musicDriver
   );
 
-  progress(EVENT_MSG_PRE_FONTS);
+  progress(`${l10n("COMPILER_PREPARING_FONTS")}...`);
   const { usedFonts } = await precompileFonts(
     usedAssets.referencedFonts,
     projectData.scenes,
@@ -1302,7 +1286,7 @@ const precompile = async (
     }
   );
 
-  progress(EVENT_MSG_PRE_SCENES);
+  progress(`${l10n("COMPILER_PREPARING_SCENES")}...`);
   const sceneData = precompileScenes(
     projectData.scenes,
     customEventsLookup,
@@ -1329,7 +1313,7 @@ const precompile = async (
 
   const usedSounds = usedAssets.referencedSounds;
 
-  progress(EVENT_MSG_PRE_COMPLETE);
+  progress(l10n("COMPILER_PREPARING_COMPLETE"));
 
   return {
     usedVariables,
@@ -1429,7 +1413,8 @@ const compile = async (
     output["border.c"] = await compileSGBImage(sgbPath);
   }
 
-  progress(EVENT_MSG_COMPILING_EVENTS);
+  progress(`${l10n("COMPILING_EVENTS")}...`);
+
   // Hacky small wait to allow console to update before event loop is blocked
   // Can maybe move some of the compilation into workers to prevent this
   await new Promise((resolve) => setTimeout(resolve, 20));
