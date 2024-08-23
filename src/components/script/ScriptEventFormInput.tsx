@@ -358,7 +358,7 @@ const ScriptEventFormInput = ({
         <ToggleButtons
           name={id}
           options={field.options as [string, string][]}
-          value={value as string[]}
+          value={(value ?? field.defaultValue) as string[]}
           allowMultiple={field.allowMultiple as true}
           allowNone={field.allowNone}
           onChange={onChangeField}

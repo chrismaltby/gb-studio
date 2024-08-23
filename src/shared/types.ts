@@ -28,6 +28,10 @@ export const isNumber = (value: unknown): value is number => {
   return typeof value === "number" && !isNaN(value);
 };
 
+export const isBoolean = (value: unknown): value is boolean => {
+  return typeof value === "boolean";
+};
+
 export const isUndefined = (value: unknown): value is undefined => {
   return value === undefined;
 };
@@ -70,6 +74,7 @@ export const ensurePromisedTypeGenerator = <T>(
 export const ensureString = ensureTypeGenerator(isString);
 export const ensureStringArray = ensureTypeGenerator(isStringArray);
 export const ensureNumber = ensureTypeGenerator(isNumber);
+export const ensureBoolean = ensureTypeGenerator(isBoolean);
 
 export const ensurePromisedString = ensurePromisedTypeGenerator(isString);
 export const ensurePromisedNumber = ensurePromisedTypeGenerator(isNumber);

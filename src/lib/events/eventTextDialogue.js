@@ -128,19 +128,6 @@ const fields = [
     ],
     fields: [
       {
-        key: `showBorder`,
-        label: "Show Frame",
-        type: "checkbox",
-        defaultValue: "true",
-        width: "50%",
-        conditions: [
-          {
-            key: "__section",
-            in: ["layout"],
-          },
-        ],
-      },
-      {
         key: `clearPrevious`,
         label: "Clear Previous Content",
         type: "checkbox",
@@ -150,6 +137,23 @@ const fields = [
           {
             key: "__section",
             in: ["layout"],
+          },
+        ],
+      },
+      {
+        key: `showFrame`,
+        label: "Show Frame",
+        type: "checkbox",
+        defaultValue: "true",
+        width: "50%",
+        conditions: [
+          {
+            key: "__section",
+            in: ["layout"],
+          },
+          {
+            key: "clearPrevious",
+            in: [true, undefined],
           },
         ],
       },
@@ -168,7 +172,7 @@ const fields = [
         key: `textX`,
         label: "Text X",
         type: "number",
-        min: 0,
+        min: -20,
         max: 20,
         defaultValue: 1,
       },
@@ -176,7 +180,7 @@ const fields = [
         key: `textY`,
         label: "Text Y",
         type: "number",
-        min: 0,
+        min: -18,
         max: 18,
         defaultValue: 1,
       },
@@ -186,7 +190,7 @@ const fields = [
         type: "number",
         min: 1,
         max: 18,
-        defaultValue: 3,
+        defaultValue: 5,
       },
     ],
   },
@@ -242,7 +246,7 @@ const fields = [
       },
       {
         key: "closeWhen",
-        eq: "key",
+        in: ["key", undefined],
       },
     ],
   },
@@ -250,7 +254,20 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { textDialogue } = helpers;
-  textDialogue(input.text || " ", input.avatarId);
+  textDialogue(
+    input.text || " ",
+    input.avatarId,
+    input.minHeight ?? 4,
+    input.maxHeight ?? 7,
+    input.position ?? "bottom",
+    input.showFrame ?? true,
+    input.clearPrevious ?? true,
+    input.textX ?? 1,
+    input.textY ?? 1,
+    input.textHeight ?? 5,
+    input.closeWhen ?? "key",
+    input.closeButton ?? "a"
+  );
 };
 
 module.exports = {
@@ -261,4 +278,16 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  helper: {
+    type: "text",
+    text: "text",
+    avatarId: "avatarId",
+    minHeight: "minHeight",
+    maxHeight: "maxHeight",
+    showFrame: "showFrame",
+    clearPrevious: "clearPrevious",
+    textX: "textX",
+    textY: "textY",
+    textHeight: "textHeight",
+  },
 };

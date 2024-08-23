@@ -103,6 +103,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
             item || `Item ${i + 1}`,
             x,
             y,
+            Infinity,
             fontsData,
             defaultFontId,
             fonts[0]?.id

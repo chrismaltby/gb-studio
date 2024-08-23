@@ -28,8 +28,6 @@ export const drawFrame = (
   width: number,
   height: number
 ) => {
-  ctx.drawImage(img, 0, 0, 8, 8, 0, 0, 8, 8); // TL
-  ctx.drawImage(img, 16, 0, 8, 8, (width - 1) * 8, 0, 8, 8); // TR
   ctx.drawImage(img, 0, 16, 8, 8, 0, (height - 1) * 8, 8, 8); // BL
   ctx.drawImage(img, 16, 16, 8, 8, (width - 1) * 8, (height - 1) * 8, 8, 8); // BR
   for (let i = 0; i < height - 2; i++) {
@@ -37,12 +35,27 @@ export const drawFrame = (
     ctx.drawImage(img, 16, 8, 8, 8, (width - 1) * 8, (i + 1) * 8, 8, 8); // R
   }
   for (let i = 0; i < width - 2; i++) {
-    ctx.drawImage(img, 8, 0, 8, 8, (i + 1) * 8, 0, 8, 8); // T
     ctx.drawImage(img, 8, 16, 8, 8, (i + 1) * 8, (height - 1) * 8, 8, 8); // B
+    ctx.drawImage(img, 8, 0, 8, 8, (i + 1) * 8, 0, 8, 8); // T
   }
+  ctx.drawImage(img, 0, 0, 8, 8, 0, 0, 8, 8); // TL
+  ctx.drawImage(img, 16, 0, 8, 8, (width - 1) * 8, 0, 8, 8); // TR
   for (let i = 0; i < height - 2; i++) {
     for (let j = 0; j < width - 2; j++) {
       ctx.drawImage(img, 8, 8, 8, 8, (j + 1) * 8, (i + 1) * 8, 8, 8); // C
+    }
+  }
+};
+
+export const drawFill = (
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  width: number,
+  height: number
+) => {
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      ctx.drawImage(img, 8, 8, 8, 8, j * 8, i * 8, 8, 8); // C
     }
   }
 };
@@ -111,6 +124,7 @@ export const drawText = (
   text: string,
   xOffset: number,
   yOffset: number,
+  maxHeight: number,
   fontsData: Record<string, FontData>,
   defaultFontId: string,
   fallbackFontId: string
@@ -132,6 +146,9 @@ export const drawText = (
   const drawCharCode = (char: number) => {
     const lookupX = char % 16;
     const lookupY = Math.floor(char / 16);
+    if (drawY >= maxHeight * 8) {
+      return;
+    }
     ctx.drawImage(
       font.img,
       lookupX * 8,

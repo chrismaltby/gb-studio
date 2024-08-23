@@ -65,7 +65,7 @@ const BoundsMarker = styled.div`
     0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
 
-const argValue = (arg: unknown): unknown => {
+export const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
     if (unionArg.type === "variable" || unionArg.type === "property") {

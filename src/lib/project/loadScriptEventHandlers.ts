@@ -51,6 +51,18 @@ export type ScriptEventHelperDef =
       y: string;
       width: string;
       height: string;
+    }
+  | {
+      type: "text";
+      text: string;
+      avatarId: string;
+      minHeight: string;
+      maxHeight: string;
+      showFrame: string;
+      clearPrevious: string;
+      textX: string;
+      textY: string;
+      textHeight: string;
     };
 
 export type ScriptEventPresetValue = {
