@@ -116,6 +116,9 @@ const fields = [
         key: "position",
         eq: "top",
       },
+      {
+        parallaxEnabled: true,
+      },
     ],
   },
   {

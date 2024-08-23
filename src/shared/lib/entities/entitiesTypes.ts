@@ -518,6 +518,7 @@ export interface ScriptEventFieldCondition {
   in?: unknown[];
   set?: boolean;
   soundType?: unknown;
+  parallaxEnabled?: boolean;
 }
 
 export const distanceUnitTypes = ["tiles", "pixels"] as const;

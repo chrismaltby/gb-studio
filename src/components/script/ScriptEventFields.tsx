@@ -9,7 +9,10 @@ import {
   ScriptEventFieldGroupWrapper,
 } from "ui/scripting/ScriptEvents";
 import { useAppSelector } from "store/hooks";
-import { soundSelectors } from "store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  soundSelectors,
+} from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 
@@ -40,6 +43,10 @@ const ScriptEventFields = ({
   const soundsLookup = useAppSelector((state) =>
     soundSelectors.selectEntities(state)
   );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, context.sceneId)
+  );
+
   return (
     <ScriptEventFieldsWrapper>
       {fields.map((field, fieldIndex) => {
@@ -56,6 +63,8 @@ const ScriptEventFields = ({
             if (condition.soundType) {
               const sound = soundsLookup[keyValue as string];
               return memo && sound?.type === condition.soundType;
+            } else if (condition.parallaxEnabled !== undefined) {
+              return memo && !!scene?.parallax === condition.parallaxEnabled;
             }
             return memo;
           }, true);
