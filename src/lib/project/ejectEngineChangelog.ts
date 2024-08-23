@@ -721,6 +721,13 @@ const changes: EngineChange[] = [
       "src/core/vm_ui_a.s",
     ],
   },
+  {
+    version: "4.1.0-e0",
+    description: createDescription("Fixes", [
+      "Fix issue where modified player flags were not being reset when changing scenes",
+    ]),
+    modifiedFiles: ["src/core/actor.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

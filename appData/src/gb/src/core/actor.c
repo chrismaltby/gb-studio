@@ -69,6 +69,9 @@ void player_init(void) BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
     PLAYER.disabled = FALSE;
+    PLAYER.anim_noloop = FALSE;
+    PLAYER.pinned = FALSE;
+    PLAYER.collision_enabled = TRUE;
 }
 
 void actors_update(void) NONBANKED {
