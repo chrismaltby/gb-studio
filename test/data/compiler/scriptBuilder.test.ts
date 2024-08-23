@@ -2057,3 +2057,190 @@ test("should not reused script symbol when scripts are not identical", async () 
     `VM_RANDOMIZE`
   );
 });
+
+test("should allow pass by reference for recursive scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_TEXT",
+            args: {
+              text: "Hello World $V0$",
+            },
+            id: "event1",
+          },
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "sub",
+                valueA: {
+                  type: "variable",
+                  value: "V0",
+                },
+                valueB: {
+                  type: "number",
+                  value: 1,
+                },
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+    "$variable[0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  expect(additionalScriptFiles.length).toEqual(1);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_PUSH_CONST           VAR_VARIABLE_0 ; Variable V0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+  );
+  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+});
+
+test("should allow pass by value for recursive scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {
+          "0": {
+            id: "0",
+            name: "Actor1",
+          },
+        },
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_TEXT",
+            args: {
+              text: "Hello World $V0$",
+            },
+            id: "event1",
+          },
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "sub",
+                valueA: {
+                  type: "variable",
+                  value: "V0",
+                },
+                valueB: {
+                  type: "number",
+                  value: 1,
+                },
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+    "$variable[0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  expect(additionalScriptFiles.length).toEqual(1);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_PUSH_VALUE           VAR_VARIABLE_0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+  );
+  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+});

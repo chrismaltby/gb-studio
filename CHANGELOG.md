@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue causing broken rom header when project name contained no ascii characters
 - Fix issue where sound effect preview button would sometimes not cause sound effect to play
 - Fix issue where using reusing a script that would launch projectiles across multiple scenes could cause the wrong projectile to be launched
+- Fix issue where passing values from one script to another wouldn't correctly pass by reference
+- Fix issue where using parameters from one script while calling another wouldn't register the parameter in the parent script correctly
 
 ## [4.0.2] - 2024-07-29
 

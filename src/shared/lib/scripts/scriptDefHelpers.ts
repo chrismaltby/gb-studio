@@ -55,10 +55,6 @@ export const isVariableField = (
   args: ScriptEventArgs,
   scriptEventDefs: ScriptEventDefs
 ) => {
-  // Custom event calls
-  if (fieldName.startsWith("$variable[")) {
-    return true;
-  }
   const field = getField(command, fieldName, scriptEventDefs);
   const argValue = args[fieldName];
   return (
@@ -105,6 +101,10 @@ export const isScriptValueField = (
   args: ScriptEventArgs,
   scriptEventDefs: ScriptEventDefs
 ) => {
+  // Custom event calls
+  if (fieldName.startsWith("$variable[")) {
+    return true;
+  }
   const event = scriptEventDefs[cmd];
   if (!event) return false;
   const field = getField(cmd, fieldName, scriptEventDefs);
