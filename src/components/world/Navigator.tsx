@@ -95,7 +95,7 @@ export const Navigator = () => {
 
   const [scriptsSearchTerm, setScriptsSearchTerm] = useState("");
   const [scriptsSearchEnabled, setScriptsSearchEnabled] = useState(false);
-  const showScriptsSearch = scriptsSearchEnabled && splitSizes[1] > 60;
+  const showScriptsSearch = scriptsSearchEnabled && splitSizes[2] > 60;
 
   const [prefabsSearchTerm, setPrefabsSearchTerm] = useState("");
   const [prefabsSearchEnabled, setPrefabsSearchEnabled] = useState(false);
@@ -103,7 +103,7 @@ export const Navigator = () => {
 
   const [variablesSearchTerm, setVariablesSearchTerm] = useState("");
   const [variablesSearchEnabled, setVariablesSearchEnabled] = useState(false);
-  const showVariablesSearch = variablesSearchEnabled && splitSizes[2] > 60;
+  const showVariablesSearch = variablesSearchEnabled && splitSizes[3] > 60;
 
   const toggleScenesSearchEnabled = useCallback(() => {
     if (scenesSearchEnabled) {
