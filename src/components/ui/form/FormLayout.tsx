@@ -73,7 +73,7 @@ export const FormSpacer = styled.div`
 `;
 
 interface FormFieldWrapperProps {
-  readonly variant?: "normal" | "error";
+  readonly variant?: "normal" | "error" | "warning";
   readonly alignCheckbox?: boolean;
   readonly hasOverride?: boolean;
 }
@@ -87,6 +87,17 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
           color: ${props.theme.colors.highlight};
         `
       : ""}
+  ${(props) =>
+    props.variant === "warning"
+      ? css`
+          label {
+            background-color: #ffc107;
+            color: #000;
+            border-radius: 3px;
+            padding: 5px;
+          }
+        `
+      : ""}      
   ${(props) =>
     props.alignCheckbox
       ? css`
@@ -114,7 +125,7 @@ export interface FormFieldProps {
   readonly title?: string;
   readonly info?: string;
   readonly alignCheckbox?: boolean;
-  readonly variant?: "normal" | "error";
+  readonly variant?: "normal" | "error" | "warning";
   readonly hasOverride?: boolean;
 }
 

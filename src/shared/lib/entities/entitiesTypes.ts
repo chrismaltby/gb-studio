@@ -584,6 +584,7 @@ export interface ScriptEventFieldSchema {
   singleLine?: boolean;
   noneLabel?: string;
   variant?: string;
+  labelVariant?: string;
 }
 
 export type EntityKey = keyof EntitiesState;

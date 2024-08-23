@@ -134,6 +134,8 @@ export const EVENT_FADE_IN = "EVENT_FADE_IN";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_GROUP = "EVENT_GROUP";
 
+export const LYC_SYNC_VALUE = 150;
+
 export const defaultProjectSettings: Omit<SettingsResource, "_resourceType"> = {
   startSceneId: "",
   startX: 0,

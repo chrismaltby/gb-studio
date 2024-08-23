@@ -851,6 +851,7 @@
   "FIELD_TIME_SECONDS": "{seconds}s",
   "FIELD_TIME_MINUTES_AND_SECONDS": "{minutes}m {seconds}s",
   "FIELD_TEXT": "Text",
+  "FIELD_DIALOGUE_CLOSE_NONMODAL_LABEL": "Only required if you have opened a dialogue box with no close condition",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1220,6 +1221,8 @@
   "EVENT_TEXT_SET_SOUND_EFFECT": "Set Text Sound Effect",
   "EVENT_TEXT_SET_SOUND_EFFECT_DESC": "Set a sound effect to play as each text character is displayed.",
   "EVENT_TEXT_REMOVE_SOUND_EFFECT": "Remove Text Sound Effect",
+  "EVENT_DIALOGUE_CLOSE_NONMODAL": "Close Non-Modal Dialogue",
+  "EVENT_OVERLAY_SET_DRAW_AREA": "Set Overlay Draw Area",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -32,7 +32,12 @@ import {
   PrecompiledTilesetData,
   PrecompiledBackground,
 } from "./generateGBVMData";
-import { DMG_PALETTE, defaultProjectSettings } from "consts";
+import {
+  DMG_PALETTE,
+  LYC_SYNC_VALUE,
+  TILE_SIZE,
+  defaultProjectSettings,
+} from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -1051,6 +1056,18 @@ class ScriptBuilder {
       this._stackPop(1);
     } else {
       this._setMemInt8(cVariable, variableAlias);
+    }
+  };
+
+  _setMemUInt8ToVariable = (cVariable: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addDependency(cVariable);
+    if (this._isIndirectVariable(variable)) {
+      this._stackPushInd(variableAlias);
+      this._setMemUInt8(cVariable, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setMemUInt8(cVariable, variableAlias);
     }
   };
 
@@ -3542,6 +3559,7 @@ extern void __mute_mask_${symbol};
     closeWhen: "key" | "text" | "notModal" = "key",
     closeButton: "a" | "b" | "any" = "a"
   ) => {
+    const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
     const initialNumLines = input.map(this.textNumLines);
@@ -3554,7 +3572,7 @@ extern void __mute_mask_${symbol};
       )
     );
     const isModal = closeWhen !== "notModal";
-    const renderOnTop = position === "top";
+    const renderOnTop = position === "top" && !scene.parallax;
     const textBoxY = renderOnTop ? 0 : 18 - textBoxHeight;
     const x = decOct(Math.max(1, 1 + textX + (avatarId ? 2 : 0)));
     const y = decOct(Math.max(1, 1 + textY));
@@ -3601,11 +3619,7 @@ extern void __mute_mask_${symbol};
         );
       }
       if (textIndex === 0) {
-        this._overlayMoveTo(
-          0,
-          textBoxY,
-          renderOnTop ? ".OVERLAY_SPEED_INSTANT" : ".OVERLAY_IN_SPEED"
-        );
+        this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
       }
 
       this._overlaySetScroll(
@@ -3814,6 +3828,19 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  textCloseNonModal = (speed = 0) => {
+    this._addComment("Close Non-Modal Dialogue");
+    this._overlayMoveTo(
+      0,
+      18,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
+    this._idle();
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._setConstMemUInt8("overlay_cut_scanline", LYC_SYNC_VALUE);
+    this._addNL();
+  };
+
   overlayShow = (color = "white", x = 0, y = 0) => {
     this._addComment("Overlay Show");
     this._overlayShow(x, y, color === "white" ? 1 : 0);
@@ -3828,8 +3855,36 @@ extern void __mute_mask_${symbol};
 
   overlayMoveTo = (x = 0, y = 18, speed = 0) => {
     this._addComment("Overlay Move To");
-    this._overlayMoveTo(x, y, speed);
+    this._overlayMoveTo(
+      x,
+      y,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    this._addNL();
+  };
+
+  overlaySetDrawArea = (
+    height: ScriptValue,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    this._addComment("Overlay Set Draw Area");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(
+        shiftLeftScriptValueConst(height, units === "tiles" ? 0x3 : 0x0)
+      )
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._setConstMemUInt8("overlay_cut_scanline", rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const heightRef = this._declareLocal("height", 1, true);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(heightRef).stop();
+      this._setMemUInt8ToVariable("overlay_cut_scanline", heightRef);
+    }
     this._addNL();
   };
 

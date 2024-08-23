@@ -58,7 +58,25 @@ const fields = [
   },
 
   // Layout Section
-
+  {
+    key: `position`,
+    label: "Position",
+    type: "select",
+    defaultValue: "bottom",
+    options: [
+      ["bottom", "Bottom"],
+      ["top", "Top"],
+    ],
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        parallaxEnabled: false,
+      },
+    ],
+  },
   {
     type: "group",
     conditions: [
@@ -89,35 +107,37 @@ const fields = [
     ],
   },
   {
-    key: `position`,
-    label: "Position",
-    type: "select",
-    defaultValue: "bottom",
-    options: [
-      ["bottom", "Bottom"],
-      ["top", "Top"],
-    ],
+    type: "group",
     conditions: [
       {
         key: "__section",
         in: ["layout"],
       },
     ],
-  },
-  {
-    label:
-      "⚠️ Displaying the dialogue on top won't work in scenes with parallax.",
-    conditions: [
+    fields: [
       {
-        key: "__section",
-        in: ["layout"],
+        key: `textX`,
+        label: "Text X",
+        type: "number",
+        min: -20,
+        max: 20,
+        defaultValue: 1,
       },
       {
-        key: "position",
-        eq: "top",
+        key: `textY`,
+        label: "Text Y",
+        type: "number",
+        min: -18,
+        max: 18,
+        defaultValue: 1,
       },
       {
-        parallaxEnabled: true,
+        key: `textHeight`,
+        label: "Text Max Height",
+        type: "number",
+        min: 1,
+        max: 18,
+        defaultValue: 5,
       },
     ],
   },
@@ -163,41 +183,6 @@ const fields = [
     ],
   },
   {
-    type: "group",
-    conditions: [
-      {
-        key: "__section",
-        in: ["layout"],
-      },
-    ],
-    fields: [
-      {
-        key: `textX`,
-        label: "Text X",
-        type: "number",
-        min: -20,
-        max: 20,
-        defaultValue: 1,
-      },
-      {
-        key: `textY`,
-        label: "Text Y",
-        type: "number",
-        min: -18,
-        max: 18,
-        defaultValue: 1,
-      },
-      {
-        key: `textHeight`,
-        label: "Text Max Height",
-        type: "number",
-        min: 1,
-        max: 18,
-        defaultValue: 5,
-      },
-    ],
-  },
-  {
     key: `closeWhen`,
     label: "Close When...",
     type: "select",
@@ -216,7 +201,8 @@ const fields = [
   },
   {
     label:
-      '⚠️ Don\'t forget to reset "overlay_cut_scanline" after manually closing a non-modal dialogue displaying on top.',
+      'To close a non-modal dialog positioned at the top of the screen, you can use a "Close Non-Modal Dialogue" event or you will need to manually reset the overlay draw with a "Set Overlay Draw Area" event.',
+    labelVariant: "warning",
     conditions: [
       {
         key: "__section",
@@ -229,6 +215,54 @@ const fields = [
       {
         key: "closeWhen",
         eq: "notModal",
+      },
+      {
+        parallaxEnabled: false,
+      },
+    ],
+  },
+  {
+    type: "group",
+    wrapItems: true,
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "position",
+        eq: "top",
+      },
+      {
+        key: "closeWhen",
+        eq: "notModal",
+      },
+      {
+        parallaxEnabled: false,
+      },
+    ],
+    fields: [
+      {
+        type: "addEventButton",
+        hideLabel: true,
+        label: l10n("EVENT_DIALOGUE_CLOSE_NONMODAL"),
+        defaultValue: {
+          id: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+        },
+        width: "50%",
+      },
+      {
+        type: "addEventButton",
+        hideLabel: true,
+        label: l10n("EVENT_OVERLAY_SET_DRAW_AREA"),
+        defaultValue: {
+          id: "EVENT_OVERLAY_SET_DRAW_AREA",
+          values: {
+            height: { type: "number", value: 18 },
+            units: "tiles",
+          },
+        },
+        width: "50%",
       },
     ],
   },

@@ -7,7 +7,11 @@ import {
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
-import { FormField, ToggleableFormField } from "ui/form/FormLayout";
+import {
+  FormField,
+  FormFieldProps,
+  ToggleableFormField,
+} from "ui/form/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
@@ -35,6 +39,17 @@ interface ScriptEventFormFieldProps {
 
 const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
+
+const isScriptEventInitializationData = (
+  data: unknown
+): data is { id: string; values?: Record<string, unknown> } => {
+  return (
+    !!data &&
+    typeof data === "object" &&
+    "id" in data &&
+    (!("values" in data) || typeof data.values === "object")
+  );
+};
 
 // @TODO This MultiInputButton functionality only seems to be used by eventTextDialogue
 // and likely should become part of DialogueTextarea
@@ -253,6 +268,34 @@ const ScriptEventFormField = memo(
       [field.key, setArgValue, value]
     );
 
+    const onInsertEventAfter = useCallback(() => {
+      const eventData = field.defaultValue;
+      if (!isScriptEventInitializationData(eventData)) {
+        return;
+      }
+      dispatch(
+        entitiesActions.addScriptEvents({
+          entityId: context.entityId,
+          type: context.entityType,
+          key: context.scriptKey,
+          insertId: scriptEvent.id,
+          data: [
+            {
+              command: eventData.id,
+              args: eventData.values,
+            },
+          ],
+        })
+      );
+    }, [
+      context.entityId,
+      context.entityType,
+      context.scriptKey,
+      dispatch,
+      field.defaultValue,
+      scriptEvent.id,
+    ]);
+
     let label = field.label;
     if (typeof label === "string" && label.replace) {
       label = label.replace(
@@ -329,6 +372,7 @@ const ScriptEventFormField = memo(
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
                 onChangeArg={setArgValue}
+                onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
                 {valueIndex !== 0 && (
@@ -354,6 +398,7 @@ const ScriptEventFormField = memo(
           args={scriptEvent?.args || {}}
           onChange={onChange}
           onChangeArg={setArgValue}
+          onInsertEventAfter={onInsertEventAfter}
         />
       );
 
@@ -403,6 +448,7 @@ const ScriptEventFormField = memo(
               : ""
           }
           title={field.description}
+          variant={field.labelVariant as FormFieldProps["variant"]}
           hasOverride={overrides?.args?.[field.key || ""] !== undefined}
         >
           {inputField}
