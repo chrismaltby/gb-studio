@@ -60,12 +60,13 @@ const fields = [
   // Layout Section
   {
     key: `position`,
-    label: "Position",
+    label: l10n("FIELD_POSITION"),
+    description: l10n("FIELD_DIALOGUE_POSITION_DESC"),
     type: "select",
     defaultValue: "bottom",
     options: [
-      ["bottom", "Bottom"],
-      ["top", "Top"],
+      ["bottom", l10n("FIELD_BOTTOM")],
+      ["top", l10n("FIELD_TOP")],
     ],
     conditions: [
       {
@@ -88,7 +89,8 @@ const fields = [
     fields: [
       {
         key: `minHeight`,
-        label: "Min Height",
+        label: l10n("FIELD_MIN_HEIGHT"),
+        description: l10n("FIELD_DIALOGUE_MIN_HEIGHT_DESC"),
         type: "number",
         min: 1,
         max: 18,
@@ -97,7 +99,8 @@ const fields = [
       },
       {
         key: `maxHeight`,
-        label: "Max Height",
+        label: l10n("FIELD_MAX_HEIGHT"),
+        description: l10n("FIELD_DIALOGUE_MAX_HEIGHT_DESC"),
         type: "number",
         min: 1,
         max: 18,
@@ -108,6 +111,7 @@ const fields = [
   },
   {
     type: "group",
+    wrapItems: true,
     conditions: [
       {
         key: "__section",
@@ -117,32 +121,39 @@ const fields = [
     fields: [
       {
         key: `textX`,
-        label: "Text X",
+        label: l10n("FIELD_TEXT_X"),
+        description: l10n("FIELD_TEXT_X_DESC"),
         type: "number",
         min: -20,
         max: 20,
         defaultValue: 1,
+        width: "50%",
       },
       {
         key: `textY`,
-        label: "Text Y",
+        label: l10n("FIELD_TEXT_X"),
+        description: l10n("FIELD_TEXT_X_DESC"),
         type: "number",
         min: -18,
         max: 18,
         defaultValue: 1,
+        width: "50%",
       },
       {
         key: `textHeight`,
-        label: "Text Max Height",
+        label: l10n("FIELD_TEXT_SCROLL_HEIGHT"),
+        description: l10n("FIELD_TEXT_SCROLL_HEIGHT_DESC"),
         type: "number",
         min: 1,
         max: 18,
         defaultValue: 5,
+        width: "50%",
       },
     ],
   },
   {
     type: "group",
+    alignBottom: true,
     conditions: [
       {
         key: "__section",
@@ -152,7 +163,8 @@ const fields = [
     fields: [
       {
         key: `clearPrevious`,
-        label: "Clear Previous Content",
+        label: l10n("FIELD_CLEAR_PREVIOUS"),
+        description: l10n("FIELD_CLEAR_PREVIOUS_DESC"),
         type: "checkbox",
         defaultValue: true,
         width: "50%",
@@ -165,7 +177,8 @@ const fields = [
       },
       {
         key: `showFrame`,
-        label: "Show Frame",
+        label: l10n("FIELD_SHOW_FRAME"),
+        description: l10n("FIELD_SHOW_FRAME_DESC"),
         type: "checkbox",
         defaultValue: "true",
         width: "50%",
@@ -184,13 +197,14 @@ const fields = [
   },
   {
     key: `closeWhen`,
-    label: "Close When...",
+    label: l10n("FIELD_CLOSE_WHEN"),
+    description: l10n("FIELD_CLOSE_WHEN_DESC"),
     type: "select",
     defaultValue: "key",
     options: [
-      ["key", "Button Pressed"],
-      ["text", "Text Finishes"],
-      ["notModal", "Never (Non-Modal)"],
+      ["key", l10n("FIELD_BUTTON_PRESSED")],
+      ["text", l10n("FIELD_TEXT_FINISHED")],
+      ["notModal", l10n("FIELD_NEVER_NONMODAL")],
     ],
     conditions: [
       {
@@ -200,9 +214,9 @@ const fields = [
     ],
   },
   {
-    label:
-      'To close a non-modal dialog positioned at the top of the screen, you can use a "Close Non-Modal Dialogue" event or you will need to manually reset the overlay draw with a "Set Overlay Draw Area" event.',
+    label: l10n("FIELD_NONMODAL_POSITION_TOP_WARNING"),
     labelVariant: "warning",
+    flexBasis: "100%",
     conditions: [
       {
         key: "__section",
@@ -254,12 +268,12 @@ const fields = [
       {
         type: "addEventButton",
         hideLabel: true,
-        label: l10n("EVENT_OVERLAY_SET_DRAW_AREA"),
+        label: l10n("EVENT_OVERLAY_SET_SCANLINE_CUTOFF"),
         defaultValue: {
-          id: "EVENT_OVERLAY_SET_DRAW_AREA",
+          id: "EVENT_OVERLAY_SET_SCANLINE_CUTOFF",
           values: {
-            height: { type: "number", value: 18 },
-            units: "tiles",
+            y: { type: "number", value: 150 },
+            units: "pixels",
           },
         },
         width: "50%",
@@ -269,10 +283,11 @@ const fields = [
   {
     key: "closeButton",
     type: "togglebuttons",
+    alignBottom: true,
     options: [
       ["a", "A"],
       ["b", "B"],
-      ["any", "Any"],
+      ["any", l10n("FIELD_ANY")],
     ],
     allowNone: false,
     defaultValue: "a",
@@ -287,10 +302,72 @@ const fields = [
       },
     ],
   },
+  {
+    key: "closeDelayTime",
+    label: l10n("FIELD_CLOSE_DELAY"),
+    description: l10n("FIELD_CLOSE_DELAY_DESC"),
+    type: "number",
+    min: 0,
+    max: 3600,
+    step: 0.1,
+    defaultValue: 0.5,
+    unitsField: "closeDelayUnits",
+    unitsDefault: "time",
+    unitsAllowed: ["time", "frames"],
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "closeDelayUnits",
+        ne: "frames",
+      },
+      {
+        key: "closeWhen",
+        in: ["text"],
+      },
+    ],
+  },
+  {
+    key: "closeDelayFrames",
+    label: l10n("FIELD_CLOSE_DELAY"),
+    description: l10n("FIELD_CLOSE_DELAY_DESC"),
+    type: "number",
+    min: 0,
+    max: 3600,
+    defaultValue: 30,
+    unitsField: "closeDelayUnits",
+    unitsDefault: "time",
+    unitsAllowed: ["time", "frames"],
+    conditions: [
+      {
+        key: "__section",
+        in: ["layout"],
+      },
+      {
+        key: "closeDelayUnits",
+        eq: "frames",
+      },
+      {
+        key: "closeWhen",
+        in: ["text"],
+      },
+    ],
+  },
 ];
 
 const compile = (input, helpers) => {
   const { textDialogue } = helpers;
+  let closeDelayFrames = 0;
+  if (input.closeDelayUnits === "frames") {
+    closeDelayFrames =
+      typeof input.closeDelayFrames === "number" ? input.closeDelayFrames : 30;
+  } else {
+    const seconds =
+      typeof input.closeDelayTime === "number" ? input.closeDelayTime : 0.5;
+    closeDelayFrames = Math.ceil(seconds * 60);
+  }
   textDialogue(
     input.text || " ",
     input.avatarId,
@@ -303,7 +380,8 @@ const compile = (input, helpers) => {
     input.textY ?? 1,
     input.textHeight ?? 5,
     input.closeWhen ?? "key",
-    input.closeButton ?? "a"
+    input.closeButton ?? "a",
+    closeDelayFrames
   );
 };
 

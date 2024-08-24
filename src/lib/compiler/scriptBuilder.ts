@@ -32,12 +32,7 @@ import {
   PrecompiledTilesetData,
   PrecompiledBackground,
 } from "./generateGBVMData";
-import {
-  DMG_PALETTE,
-  LYC_SYNC_VALUE,
-  TILE_SIZE,
-  defaultProjectSettings,
-} from "consts";
+import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -3557,7 +3552,8 @@ extern void __mute_mask_${symbol};
     textY = 1,
     textHeight = 5,
     closeWhen: "key" | "text" | "notModal" = "key",
-    closeButton: "a" | "b" | "any" = "a"
+    closeButton: "a" | "b" | "any" = "a",
+    closeDelayFrames = 0
   ) => {
     const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
@@ -3649,6 +3645,19 @@ extern void __mute_mask_${symbol};
           }
         }
         this._overlayWait(isModal, waitFlags);
+        if (closeWhen === "text" && closeDelayFrames > 0) {
+          if (closeDelayFrames < 5) {
+            for (let i = 0; i < closeDelayFrames; i++) {
+              this._idle();
+            }
+          } else {
+            const waitArgsRef = this._declareLocal("wait_args", 1, true);
+            const stackPtr = this.stackPtr;
+            this._setConst(waitArgsRef, Math.round(closeDelayFrames));
+            this._invoke("wait_frames", 0, waitArgsRef);
+            this._assertStackNeutral(stackPtr);
+          }
+        }
       }
       if (textIndex === input.length - 1) {
         if (isModal) {
@@ -3864,26 +3873,26 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  overlaySetDrawArea = (
-    height: ScriptValue,
-    units: DistanceUnitType = "tiles"
+  overlaySetScanlineCutoff = (
+    y: ScriptValue,
+    units: DistanceUnitType = "pixels"
   ) => {
-    this._addComment("Overlay Set Draw Area");
+    this._addComment("Overlay Set Scanline Cutoff");
     const [rpnOps, fetchOps] = precompileScriptValue(
       optimiseScriptValue(
-        shiftLeftScriptValueConst(height, units === "tiles" ? 0x3 : 0x0)
+        shiftLeftScriptValueConst(y, units === "tiles" ? 0x3 : 0x0)
       )
     );
     if (rpnOps.length === 1 && rpnOps[0].type === "number") {
       this._setConstMemUInt8("overlay_cut_scanline", rpnOps[0].value);
     } else {
       const localsLookup = this._performFetchOperations(fetchOps);
-      const heightRef = this._declareLocal("height", 1, true);
+      const yRef = this._declareLocal("y", 1, true);
       this._addComment(`-- Calculate value`);
       const rpn = this._rpn();
       this._performValueRPN(rpn, rpnOps, localsLookup);
-      rpn.refSetVariable(heightRef).stop();
-      this._setMemUInt8ToVariable("overlay_cut_scanline", heightRef);
+      rpn.refSetVariable(yRef).stop();
+      this._setMemUInt8ToVariable("overlay_cut_scanline", yRef);
     }
     this._addNL();
   };

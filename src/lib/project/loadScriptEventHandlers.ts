@@ -37,6 +37,12 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       color?: string;
+      units?: string;
+    }
+  | {
+      type: "scanline";
+      y: string;
+      units?: string;
     }
   | {
       type: "distance";
