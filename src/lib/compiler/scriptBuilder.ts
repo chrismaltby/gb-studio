@@ -3615,6 +3615,11 @@ extern void __mute_mask_${symbol};
         );
       }
       if (textIndex === 0) {
+        this._overlayMoveTo(
+          0,
+          renderOnTop ? textBoxHeight : 18,
+          ".OVERLAY_SPEED_INSTANT"
+        );
         this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
       }
 
@@ -3663,8 +3668,8 @@ extern void __mute_mask_${symbol};
         if (isModal) {
           this._overlayMoveTo(
             0,
-            18,
-            renderOnTop ? ".OVERLAY_SPEED_INSTANT" : ".OVERLAY_IN_SPEED"
+            renderOnTop ? textBoxHeight : 18,
+            ".OVERLAY_IN_SPEED"
           );
           this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
         }
@@ -3672,6 +3677,7 @@ extern void __mute_mask_${symbol};
     });
 
     if (isModal && renderOnTop) {
+      this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
       this._idle();
       this._setMemUInt8("overlay_cut_scanline", ".ARG0");
     }
