@@ -131,8 +131,8 @@ const fields = [
       },
       {
         key: `textY`,
-        label: l10n("FIELD_TEXT_X"),
-        description: l10n("FIELD_TEXT_X_DESC"),
+        label: l10n("FIELD_TEXT_Y"),
+        description: l10n("FIELD_TEXT_Y_DESC"),
         type: "number",
         min: -18,
         max: 18,
