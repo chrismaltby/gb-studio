@@ -884,6 +884,7 @@
   "FIELD_ANY": "Any",
   "FIELD_CLOSE_DELAY": "Close Delay",
   "FIELD_CLOSE_DELAY_DESC": "Delay closing for a period of time.",
+  "FIELD_BEHAVIOR": "Behavior",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

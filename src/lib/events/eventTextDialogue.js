@@ -22,7 +22,7 @@ const fields = [
     values: {
       text: l10n("FIELD_TEXT"),
       layout: l10n("FIELD_LAYOUT"),
-      behavior: "Behavior",
+      behavior: l10n("FIELD_BEHAVIOR"),
     },
   },
 
