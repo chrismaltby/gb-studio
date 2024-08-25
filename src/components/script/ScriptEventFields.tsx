@@ -3,6 +3,7 @@ import ScriptEventFormField from "./ScriptEventFormField";
 import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
+  ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
@@ -19,6 +20,9 @@ import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 interface ScriptEventFieldsProps {
   scriptEvent: ScriptEventNormalized;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
   nestLevel: number;
   altBg: boolean;
   renderEvents: (key: string, label: string) => React.ReactNode;
@@ -32,6 +36,9 @@ const genKey = (id: string, key: string, index: number) =>
 const ScriptEventFields = ({
   scriptEvent,
   entityId,
+  parentId,
+  parentKey,
+  parentType,
   nestLevel,
   altBg,
   renderEvents,
@@ -119,6 +126,9 @@ const ScriptEventFields = ({
                 renderEvents={renderEvents}
                 fields={field.fields}
                 value={value}
+                parentId={parentId}
+                parentKey={parentKey}
+                parentType={parentType}
               />
             </ScriptEventFieldGroupWrapper>
           );
@@ -132,6 +142,9 @@ const ScriptEventFields = ({
             entityId={entityId}
             nestLevel={nestLevel}
             altBg={altBg}
+            parentId={parentId}
+            parentKey={parentKey}
+            parentType={parentType}
           />
         );
       })}

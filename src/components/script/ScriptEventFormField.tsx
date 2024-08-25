@@ -2,6 +2,7 @@ import React, { memo, useCallback, useContext } from "react";
 import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
+  ScriptEventParentType,
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -35,6 +36,9 @@ interface ScriptEventFormFieldProps {
   nestLevel: number;
   altBg: boolean;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
 }
 
 const genKey = (id: string, key: string, index?: number) =>
@@ -105,6 +109,9 @@ const ScriptEventFormField = memo(
     scriptEvent,
     field,
     entityId,
+    parentId,
+    parentKey,
+    parentType,
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
@@ -275,9 +282,9 @@ const ScriptEventFormField = memo(
       }
       dispatch(
         entitiesActions.addScriptEvents({
-          entityId: context.entityId,
-          type: context.entityType,
-          key: context.scriptKey,
+          entityId: parentId,
+          type: parentType,
+          key: parentKey,
           insertId: scriptEvent.id,
           data: [
             {
@@ -288,11 +295,11 @@ const ScriptEventFormField = memo(
         })
       );
     }, [
-      context.entityId,
-      context.entityType,
-      context.scriptKey,
       dispatch,
       field.defaultValue,
+      parentId,
+      parentKey,
+      parentType,
       scriptEvent.id,
     ]);
 
