@@ -22,6 +22,7 @@ const fields = [
     values: {
       text: l10n("FIELD_TEXT"),
       layout: l10n("FIELD_LAYOUT"),
+      behavior: "Behavior",
     },
   },
 
@@ -196,6 +197,48 @@ const fields = [
     ],
   },
   {
+    type: "group",
+    alignBottom: true,
+    conditions: [
+      {
+        key: "__section",
+        in: ["behavior"],
+      },
+    ],
+    fields: [
+      {
+        label: l10n("TEXT_SPEED_IN"),
+        description: l10n("TEXT_SPEED_IN_DESC"),
+        key: "speedIn",
+        type: "cameraSpeed",
+        defaultValue: -1,
+        width: "50%",
+        allowDefault: true,
+        conditions: [
+          {
+            key: "__section",
+            in: ["behavior"],
+          },
+        ],
+      },
+      {
+        label: l10n("TEXT_SPEED_OUT"),
+        description: l10n("TEXT_SPEED_OUT_DESC"),
+        key: "speedOut",
+        type: "cameraSpeed",
+        defaultValue: -1,
+        width: "50%",
+        allowDefault: true,
+        conditions: [
+          {
+            key: "__section",
+            in: ["behavior"],
+          },
+        ],
+      },
+    ],
+  },
+  {
     key: `closeWhen`,
     label: l10n("FIELD_CLOSE_WHEN"),
     description: l10n("FIELD_CLOSE_WHEN_DESC"),
@@ -209,7 +252,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["behavior"],
       },
     ],
   },
@@ -220,7 +263,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["layout", "behavior"],
       },
       {
         key: "position",
@@ -241,7 +284,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["layout", "behavior"],
       },
       {
         key: "position",
@@ -294,7 +337,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["behavior"],
       },
       {
         key: "closeWhen",
@@ -317,7 +360,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["behavior"],
       },
       {
         key: "closeDelayUnits",
@@ -343,7 +386,7 @@ const fields = [
     conditions: [
       {
         key: "__section",
-        in: ["layout"],
+        in: ["behavior"],
       },
       {
         key: "closeDelayUnits",
@@ -368,6 +411,15 @@ const compile = (input, helpers) => {
       typeof input.closeDelayTime === "number" ? input.closeDelayTime : 0.5;
     closeDelayFrames = Math.ceil(seconds * 60);
   }
+  const convertSpeed = (value) => {
+    if (value > 0) {
+      return value - 1;
+    }
+    if (value === 0) {
+      return -3;
+    }
+    return -1;
+  };
   textDialogue(
     input.text || " ",
     input.avatarId,
@@ -379,6 +431,8 @@ const compile = (input, helpers) => {
     input.textX ?? 1,
     input.textY ?? 1,
     input.textHeight ?? 5,
+    convertSpeed(input.speedIn),
+    convertSpeed(input.speedOut),
     input.closeWhen ?? "key",
     input.closeButton ?? "a",
     closeDelayFrames

@@ -3551,12 +3551,17 @@ extern void __mute_mask_${symbol};
     textX = 1,
     textY = 1,
     textHeight = 5,
+    speedIn = -1,
+    speedOut = -1,
     closeWhen: "key" | "text" | "notModal" = "key",
     closeButton: "a" | "b" | "any" = "a",
     closeDelayFrames = 0
   ) => {
     const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
+
+    const overlayInSpeed = speedIn === -1 ? ".OVERLAY_IN_SPEED" : speedIn;
+    const overlayOutSpeed = speedOut === -1 ? ".OVERLAY_OUT_SPEED" : speedOut;
 
     const initialNumLines = input.map(this.textNumLines);
     const maxNumLines = Math.max.apply(null, initialNumLines);
@@ -3614,13 +3619,15 @@ extern void __mute_mask_${symbol};
           showFrame
         );
       }
+
+      // Animate first dialogue window of sequence on screen
       if (textIndex === 0) {
         this._overlayMoveTo(
           0,
           renderOnTop ? textBoxHeight : 18,
           ".OVERLAY_SPEED_INSTANT"
         );
-        this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
+        this._overlayMoveTo(0, textBoxY, overlayInSpeed);
       }
 
       this._overlaySetScroll(
@@ -3664,18 +3671,21 @@ extern void __mute_mask_${symbol};
           }
         }
       }
+
+      // Animate final dialogue window of sequence off screen
       if (textIndex === input.length - 1) {
         if (isModal) {
           this._overlayMoveTo(
             0,
             renderOnTop ? textBoxHeight : 18,
-            ".OVERLAY_IN_SPEED"
+            overlayOutSpeed
           );
           this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
         }
       }
     });
 
+    // Reset scanline when rendering on top (as long as it wasn't non-modal)
     if (isModal && renderOnTop) {
       this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
       this._idle();

@@ -592,7 +592,8 @@ const ScriptEventFormInput = ({
         <CameraSpeedSelect
           name={id}
           allowNone
-          value={Number(value ?? 0)}
+          allowDefault={field.allowDefault}
+          value={Number(value ?? field.defaultValue ?? 0)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
