@@ -413,14 +413,17 @@ const fields = [
 
 const userPresetsGroups = [
   {
+    id: "text",
     label: l10n("FIELD_TEXT"),
     fields: ["text"],
   },
   {
+    id: "avatar",
     label: l10n("FIELD_TEXT_AVATAR"),
     fields: ["avatarId"],
   },
   {
+    id: "layout",
     label: l10n("FIELD_LAYOUT"),
     fields: [
       "position",
@@ -435,6 +438,7 @@ const userPresetsGroups = [
     selected: true,
   },
   {
+    id: "behaviour",
     label: l10n("FIELD_BEHAVIOR"),
     fields: [
       "speedIn",

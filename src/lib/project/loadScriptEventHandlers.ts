@@ -81,6 +81,7 @@ export type ScriptEventPresetValue = {
 };
 
 export type UserPresetsGroup = {
+  id: string;
   label: string;
   fields: string[];
   selected?: boolean;

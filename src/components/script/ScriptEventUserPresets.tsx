@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { ScriptEventArgs, ScriptEventPreset } from "shared/lib/resources/types";
@@ -6,8 +6,12 @@ import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Button } from "ui/buttons/Button";
-import { CheckboxField } from "ui/form/CheckboxField";
 import { Select } from "ui/form/Select";
+import { FormField } from "ui/form/FormLayout";
+import { CheckboxField } from "ui/form/CheckboxField";
+import { TextField } from "ui/form/TextField";
+import type { UserPresetsGroup } from "lib/project/loadScriptEventHandlers";
+import { pick } from "lodash";
 
 interface ScriptEventUserPresetsProps {
   scriptEvent: ScriptEventNormalized;
@@ -21,11 +25,32 @@ interface UserPresetOption {
   preset?: ScriptEventPreset;
 }
 
+const argsToStore = (
+  args: ScriptEventArgs | undefined,
+  selectedPresetGroups: string[],
+  userPresetsGroups: UserPresetsGroup[] | undefined
+) => {
+  if (!args || !userPresetsGroups) {
+    return {};
+  }
+  const keysToStore = userPresetsGroups
+    .filter((group) => selectedPresetGroups.includes(group.id))
+    .map((group) => group.fields)
+    .flat();
+  console.log({ keysToStore });
+  return pick(args, keysToStore);
+};
+
 export const ScriptEventUserPresets = ({
   scriptEvent,
   onChange,
 }: ScriptEventUserPresetsProps) => {
   const dispatch = useAppDispatch();
+
+  const [selectedPresetGroups, setSelectedPresetGroups] = useState<string[]>(
+    []
+  );
+  const [presetName, setPresetName] = useState<string>("");
 
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[scriptEvent.command]
@@ -42,6 +67,10 @@ export const ScriptEventUserPresets = ({
       {
         value: "",
         label: l10n("FIELD_NONE"),
+      },
+      {
+        value: "create",
+        label: l10n("FIELD_CREATE_PRESET"),
       },
       ...Object.values(userPresets).map((userPreset) => ({
         value: userPreset.id,
@@ -73,8 +102,18 @@ export const ScriptEventUserPresets = ({
         ...preset?.args,
         _presetId: presetId,
       });
+      if (presetId === "create") {
+        setPresetName(
+          `${l10n("FIELD_PRESET")} ${Object.keys(userPresets).length + 1}`
+        );
+        setSelectedPresetGroups(
+          scriptEventDef?.userPresetsGroups
+            ?.filter((group) => group.selected)
+            .map((group) => group.id) ?? []
+        );
+      }
     },
-    [onChange, scriptEvent.args, userPresets]
+    [onChange, scriptEvent.args, scriptEventDef?.userPresetsGroups, userPresets]
   );
 
   const setAsDefault = useCallback(() => {
@@ -101,25 +140,66 @@ export const ScriptEventUserPresets = ({
         id: scriptEvent.command,
         presetId: value,
         name: "Updated name",
+        groups: [],
         args: scriptEvent.args ?? {},
       })
     );
   }, [dispatch, scriptEvent.args, scriptEvent.command, value]);
 
+  const onChangePresetName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPresetName(e.currentTarget.value);
+    },
+    []
+  );
+  const toggleSelectedPresetGroup = useCallback(
+    (groupId: string) => {
+      setSelectedPresetGroups(
+        selectedPresetGroups.includes(groupId)
+          ? selectedPresetGroups.filter((s) => s !== groupId)
+          : [...selectedPresetGroups, groupId]
+      );
+    },
+    [selectedPresetGroups]
+  );
+
+  const createPreset = useCallback(() => {
+    dispatch(
+      settingsActions.addScriptEventPreset({
+        id: scriptEvent.command,
+        name: presetName,
+        groups: selectedPresetGroups,
+        args: argsToStore(
+          scriptEvent.args,
+          selectedPresetGroups,
+          scriptEventDef?.userPresetsGroups
+        ),
+      })
+    );
+  }, [
+    dispatch,
+    presetName,
+    scriptEvent.args,
+    scriptEvent.command,
+    scriptEventDef?.userPresetsGroups,
+    selectedPresetGroups,
+  ]);
+
   return (
     <div>
-      <Select
-        name={"presetSelect"}
-        value={currentValue}
-        options={options}
-        onChange={(newValue: UserPresetOption) => {
-          setPreset(newValue.value);
-        }}
-      />
-
+      <FormField label="Preset" name={"presetId"}>
+        <Select
+          name={"presetId"}
+          value={currentValue}
+          options={options}
+          onChange={(newValue: UserPresetOption) => {
+            setPreset(newValue.value);
+          }}
+        />
+      </FormField>
       {currentValue.preset && (
         <>
-          <Button onClick={updatePreset}>Update Preset</Button>
+          <Button onClick={updatePreset}>{l10n("FIELD_EDIT_PRESET")}</Button>
           {currentValue.isDefault ? (
             <Button onClick={removeDefault}>Remove Default</Button>
           ) : (
@@ -127,17 +207,31 @@ export const ScriptEventUserPresets = ({
           )}
         </>
       )}
-      {currentValue.preset && !currentValue.isDefault && <></>}
-      <br />
-      {scriptEventDef?.userPresetsGroups?.map(
-        (userPresetsGroup, userPresetsGroupIndex) => (
-          <div key={userPresetsGroupIndex}>
-            <CheckboxField
-              name={`${userPresetsGroupIndex}_store`}
-              label={userPresetsGroup.label}
-            />
-          </div>
-        )
+      {(currentValue.preset || value === "create") && (
+        <>
+          <TextField
+            name={"presetName"}
+            label={l10n("FIELD_NAME")}
+            placeholder={l10n("FIELD_PRESET")}
+            value={presetName}
+            onChange={onChangePresetName}
+          />
+          <br />
+          Include in preset...
+          {scriptEventDef?.userPresetsGroups?.map((userPresetsGroup) => (
+            <div key={userPresetsGroup.id}>
+              <CheckboxField
+                name={`${userPresetsGroup.id}_store`}
+                label={userPresetsGroup.label}
+                onChange={() => toggleSelectedPresetGroup(userPresetsGroup.id)}
+                checked={selectedPresetGroups.includes(userPresetsGroup.id)}
+              />
+            </div>
+          ))}
+          {value === "create" && (
+            <Button onClick={createPreset}>{l10n("FIELD_SAVE")}</Button>
+          )}
+        </>
       )}
     </div>
   );

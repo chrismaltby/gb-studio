@@ -565,6 +565,7 @@ export type BreakpointData = Static<typeof BreakpointData>;
 export const ScriptEventPreset = Type.Object({
   id: Type.String(),
   name: Type.String(),
+  groups: Type.Array(Type.String()),
   args: ScriptEventArgs,
 });
 

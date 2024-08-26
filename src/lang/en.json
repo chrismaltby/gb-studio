@@ -886,7 +886,10 @@
   "FIELD_CLOSE_DELAY_DESC": "Delay closing for a period of time.",
   "FIELD_BEHAVIOR": "Behavior",
   "FIELD_PRESETS": "Presets",
+  "FIELD_PRESET": "Preset",
   "FIELD_PROJECTILE": "Projectile",
+  "FIELD_CREATE_PRESET": "Create Preset",
+  "FIELD_EDIT_PRESET": "Edit Preset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
