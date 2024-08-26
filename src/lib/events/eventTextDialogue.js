@@ -23,6 +23,7 @@ const fields = [
       text: l10n("FIELD_TEXT"),
       layout: l10n("FIELD_LAYOUT"),
       behavior: l10n("FIELD_BEHAVIOR"),
+      presets: l10n("FIELD_PRESETS"),
     },
   },
 
@@ -398,7 +399,55 @@ const fields = [
       },
     ],
   },
+  {
+    type: "presets",
+    conditions: [
+      {
+        key: "__section",
+        in: ["presets"],
+      },
+    ],
+  },
 ];
+
+const userPresetsGroups = [
+  {
+    label: l10n("FIELD_TEXT"),
+    fields: ["text"],
+  },
+  {
+    label: l10n("FIELD_TEXT_AVATAR"),
+    fields: ["avatarId"],
+  },
+  {
+    label: l10n("FIELD_LAYOUT"),
+    fields: [
+      "position",
+      "minHeight",
+      "maxHeight",
+      "textX",
+      "textY",
+      "textHeight",
+      "clearPrevious",
+      "showFrame",
+    ],
+    selected: true,
+  },
+  {
+    label: l10n("FIELD_BEHAVIOR"),
+    fields: [
+      "speedIn",
+      "speedOut",
+      "closeWhen",
+      "closeButton",
+      "closeDelayTime",
+      "closeDelayFrames",
+    ],
+    selected: true,
+  },
+];
+
+const userPresetsIgnore = ["__section"];
 
 const compile = (input, helpers) => {
   const { textDialogue } = helpers;
@@ -447,6 +496,8 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  userPresetsGroups,
+  userPresetsIgnore,
   helper: {
     type: "text",
     text: "text",

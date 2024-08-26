@@ -1,6 +1,6 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { SettingsResource } from "shared/lib/resources/types";
+import { Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -136,7 +136,7 @@ export const EVENT_GROUP = "EVENT_GROUP";
 
 export const LYC_SYNC_VALUE = 150;
 
-export const defaultProjectSettings: Omit<SettingsResource, "_resourceType"> = {
+export const defaultProjectSettings: Settings = {
   startSceneId: "",
   startX: 0,
   startY: 0,
@@ -210,6 +210,8 @@ export const defaultProjectSettings: Omit<SettingsResource, "_resourceType"> = {
   generateDebugFilesEnabled: false,
   compilerOptimisation: "none",
   compilerPreset: 3000,
+  scriptEventPresets: {},
+  scriptEventDefaultPresets: {},
 };
 
 export const defaultPalettes: Palette[] = [

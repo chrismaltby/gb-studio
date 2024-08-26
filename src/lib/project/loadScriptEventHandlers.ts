@@ -80,6 +80,12 @@ export type ScriptEventPresetValue = {
   values: Record<string, unknown>;
 };
 
+export type UserPresetsGroup = {
+  label: string;
+  fields: string[];
+  selected?: boolean;
+};
+
 export interface ScriptEventDef {
   id: string;
   fields: ScriptEventFieldSchema[];
@@ -95,6 +101,8 @@ export interface ScriptEventDef {
   hasAutoLabel: boolean;
   helper?: ScriptEventHelperDef;
   presets?: ScriptEventPresetValue[];
+  userPresetsGroups?: UserPresetsGroup[];
+  userPresetsIgnore?: string[];
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 
@@ -178,6 +186,28 @@ const loadScriptEventHandler = async (
     }
   };
   buildFieldsLookup(handler.fields);
+
+  if (handler.userPresetsGroups) {
+    // If an script event supports user presets
+    // validate that all fields have been accounted for
+    const allFields = Object.keys(handler.fieldsLookup);
+
+    const presetFields = handler.userPresetsGroups
+      .map((group) => group.fields)
+      .flat()
+      .concat(handler.userPresetsIgnore ?? []);
+
+    const missingFields = allFields.filter(
+      (key) => !presetFields.includes(key)
+    );
+
+    if (missingFields.length > 0) {
+      console.error(
+        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`
+      );
+      console.error("Missing fields: " + missingFields.join(", "));
+    }
+  }
 
   return handler;
 };

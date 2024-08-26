@@ -29,6 +29,7 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -134,6 +135,41 @@ const ScriptEventFormField = memo(
       ? ([] as unknown[]).concat([], args?.[field.key || ""])
       : args?.[field.key || ""];
 
+    const setArgsValues = useCallback(
+      (newArgs: Record<string, unknown>) => {
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEvent({
+              scriptEventId: scriptEvent.id,
+              changes: {
+                args: newArgs,
+              },
+            })
+          );
+        }
+      },
+      [context.entityType, context.instanceId, dispatch, scriptEvent]
+    );
+
     const setArgValue = useCallback(
       (key: string, value: unknown) => {
         if (context.entityType === "actorPrefab" && context.instanceId) {
@@ -178,38 +214,7 @@ const ScriptEventFormField = memo(
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
-                if (
-                  context.entityType === "actorPrefab" &&
-                  context.instanceId
-                ) {
-                  dispatch(
-                    entitiesActions.editActorPrefabScriptEventOverride({
-                      actorId: context.instanceId,
-                      scriptEventId: scriptEvent.id,
-                      args: updatedArgs,
-                    })
-                  );
-                } else if (
-                  context.entityType === "triggerPrefab" &&
-                  context.instanceId
-                ) {
-                  dispatch(
-                    entitiesActions.editTriggerPrefabScriptEventOverride({
-                      triggerId: context.instanceId,
-                      scriptEventId: scriptEvent.id,
-                      args: updatedArgs,
-                    })
-                  );
-                } else {
-                  dispatch(
-                    entitiesActions.editScriptEvent({
-                      scriptEventId: scriptEvent.id,
-                      changes: {
-                        args: updatedArgs,
-                      },
-                    })
-                  );
-                }
+                setArgsValues(updatedArgs);
               }
             });
         }
@@ -221,6 +226,7 @@ const ScriptEventFormField = memo(
         field.hasPostUpdateFn,
         field.key,
         scriptEvent,
+        setArgsValues,
       ]
     );
 
@@ -348,6 +354,15 @@ const ScriptEventFormField = memo(
           <FixedSpacer width={5} />
           {label || ""}
         </ScriptEventBranchHeader>
+      );
+    }
+
+    if (field.type === "presets") {
+      return (
+        <ScriptEventUserPresets
+          scriptEvent={scriptEvent}
+          onChange={setArgsValues}
+        />
       );
     }
 

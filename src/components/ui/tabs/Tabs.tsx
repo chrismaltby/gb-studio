@@ -188,6 +188,9 @@ ${(props) =>
           background: ${(props) =>
             props.theme.colors.scripting.form.background};
           overflow: visible;
+          &:focus {
+            z-index: auto;
+          }
         `
       : ""}
 
