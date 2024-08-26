@@ -1,28 +1,32 @@
 import React, { useCallback, useMemo } from "react";
 import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
-import { ScriptEventArgs } from "shared/lib/resources/types";
+import { ScriptEventArgs, ScriptEventPreset } from "shared/lib/resources/types";
 import { getSettings } from "store/features/settings/settingsState";
-import { useAppSelector } from "store/hooks";
+import settingsActions from "store/features/settings/settingsActions";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { Button } from "ui/buttons/Button";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Select } from "ui/form/Select";
 
 interface ScriptEventUserPresetsProps {
   scriptEvent: ScriptEventNormalized;
-  value?: string;
   onChange: (newArgs: ScriptEventArgs) => void;
 }
 
 interface UserPresetOption {
   value: string;
   label: string;
+  isDefault?: boolean;
+  preset?: ScriptEventPreset;
 }
 
 export const ScriptEventUserPresets = ({
   scriptEvent,
-  value,
   onChange,
 }: ScriptEventUserPresetsProps) => {
+  const dispatch = useAppDispatch();
+
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[scriptEvent.command]
   );
@@ -46,11 +50,15 @@ export const ScriptEventUserPresets = ({
             ? ` (${l10n("FIELD_DEFAULT")})`
             : ""
         }`,
+        preset: userPreset,
+        isDefault: userPreset.id === userPresetsDefault,
       })),
     ],
 
     [userPresets, userPresetsDefault]
   );
+
+  const value = String(scriptEvent.args?._presetId ?? "");
 
   const currentValue = useMemo(
     () => options.find((o) => o.value === value) ?? options[0],
@@ -60,15 +68,43 @@ export const ScriptEventUserPresets = ({
   const setPreset = useCallback(
     (presetId: string) => {
       const preset = userPresets[presetId];
-      if (preset) {
-        onChange({
-          ...scriptEvent.args,
-          ...preset.args,
-        });
-      }
+      onChange({
+        ...scriptEvent.args,
+        ...preset?.args,
+        _presetId: presetId,
+      });
     },
     [onChange, scriptEvent.args, userPresets]
   );
+
+  const setAsDefault = useCallback(() => {
+    dispatch(
+      settingsActions.setScriptEventDefaultPreset({
+        id: scriptEvent.command,
+        presetId: value,
+      })
+    );
+  }, [dispatch, scriptEvent.command, value]);
+
+  const removeDefault = useCallback(() => {
+    dispatch(
+      settingsActions.setScriptEventDefaultPreset({
+        id: scriptEvent.command,
+        presetId: "",
+      })
+    );
+  }, [dispatch, scriptEvent.command]);
+
+  const updatePreset = useCallback(() => {
+    dispatch(
+      settingsActions.editScriptEventPreset({
+        id: scriptEvent.command,
+        presetId: value,
+        name: "Updated name",
+        args: scriptEvent.args ?? {},
+      })
+    );
+  }, [dispatch, scriptEvent.args, scriptEvent.command, value]);
 
   return (
     <div>
@@ -80,6 +116,18 @@ export const ScriptEventUserPresets = ({
           setPreset(newValue.value);
         }}
       />
+
+      {currentValue.preset && (
+        <>
+          <Button onClick={updatePreset}>Update Preset</Button>
+          {currentValue.isDefault ? (
+            <Button onClick={removeDefault}>Remove Default</Button>
+          ) : (
+            <Button onClick={setAsDefault}>Set As Default</Button>
+          )}
+        </>
+      )}
+      {currentValue.preset && !currentValue.isDefault && <></>}
       <br />
       {scriptEventDef?.userPresetsGroups?.map(
         (userPresetsGroup, userPresetsGroupIndex) => (

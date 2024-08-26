@@ -61,26 +61,6 @@ const fields = [
 
   // Layout Section
   {
-    key: `position`,
-    label: l10n("FIELD_POSITION"),
-    description: l10n("FIELD_DIALOGUE_POSITION_DESC"),
-    type: "select",
-    defaultValue: "bottom",
-    options: [
-      ["bottom", l10n("FIELD_BOTTOM")],
-      ["top", l10n("FIELD_TOP")],
-    ],
-    conditions: [
-      {
-        key: "__section",
-        in: ["layout"],
-      },
-      {
-        parallaxEnabled: false,
-      },
-    ],
-  },
-  {
     type: "group",
     conditions: [
       {
@@ -150,6 +130,27 @@ const fields = [
         max: 18,
         defaultValue: 5,
         width: "50%",
+      },
+      {
+        key: `position`,
+        label: l10n("FIELD_POSITION"),
+        description: l10n("FIELD_DIALOGUE_POSITION_DESC"),
+        type: "select",
+        defaultValue: "bottom",
+        width: "50%",
+        options: [
+          ["bottom", l10n("FIELD_BOTTOM")],
+          ["top", l10n("FIELD_TOP")],
+        ],
+        conditions: [
+          {
+            key: "__section",
+            in: ["layout"],
+          },
+          {
+            parallaxEnabled: false,
+          },
+        ],
       },
     ],
   },

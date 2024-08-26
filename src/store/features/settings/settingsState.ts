@@ -3,6 +3,7 @@ import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
 import projectActions from "store/features/project/projectActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
+import { ScriptEventArgs } from "shared/lib/resources/types";
 
 export type ColorModeSetting = "mono" | "mixed" | "color";
 export type ShowConnectionsSetting = "all" | "selected" | true | false;
@@ -91,6 +92,33 @@ const settingsSlice = createSlice({
       } else {
         state.debuggerCollapsedPanes.push(action.payload);
       }
+    },
+
+    editScriptEventPreset: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        presetId: string;
+        name: string;
+        args: ScriptEventArgs;
+      }>
+    ) => {
+      if (!state.scriptEventPresets[action.payload.id]) {
+        return;
+      }
+      state.scriptEventPresets[action.payload.id][action.payload.presetId] = {
+        id: action.payload.presetId,
+        name: action.payload.name,
+        args: action.payload.args,
+      };
+    },
+
+    setScriptEventDefaultPreset: (
+      state,
+      action: PayloadAction<{ id: string; presetId: string }>
+    ) => {
+      state.scriptEventDefaultPresets[action.payload.id] =
+        action.payload.presetId;
     },
   },
   extraReducers: (builder) =>
