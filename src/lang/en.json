@@ -890,6 +890,11 @@
   "FIELD_PROJECTILE": "Projectile",
   "FIELD_CREATE_PRESET": "Create Preset",
   "FIELD_EDIT_PRESET": "Edit Preset",
+  "FIELD_DELETE_PRESET": "Delete Preset",
+  "FIELD_SAVE_PRESET": "Save Preset",
+  "FIELD_INCLUDE_IN_PRESET": "Include In Preset",
+  "FIELD_SET_AS_DEFAULT": "Set As Default",
+  "FIELD_REMOVE_AS_DEFAULT": "Remove As Default",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

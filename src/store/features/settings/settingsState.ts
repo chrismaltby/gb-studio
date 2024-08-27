@@ -152,6 +152,21 @@ const settingsSlice = createSlice({
       };
     },
 
+    removeScriptEventPreset: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        presetId: string;
+      }>
+    ) => {
+      if (!state.scriptEventPresets[action.payload.id]) {
+        return;
+      }
+      delete state.scriptEventPresets[action.payload.id][
+        action.payload.presetId
+      ];
+    },
+
     setScriptEventDefaultPreset: (
       state,
       action: PayloadAction<{ id: string; presetId: string }>
