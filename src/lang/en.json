@@ -1555,7 +1555,7 @@
   "COMPILER_LOOKING_FOR_LOCAL_ENGINE": "Looking for local engine in {path}",
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Local engine not found, using default engine",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Looking for engine plugins in {path}",
-  "COMPILER_USING_ENGINE_PLUGIN": "Using engine plugin:",
+  "COMPILER_USING_ENGINE_PLUGIN": "Using engine plugin: {path}",
 
   "// 21": "Messages -----------------------------------------------------",
 

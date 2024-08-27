@@ -1523,7 +1523,7 @@
   "COMPILER_LOOKING_FOR_LOCAL_ENGINE": "ローカルエンジンの検索中（{path}）",
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "ローカルエンジン検索結果なし。デフォルトエンジンを使用。",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "エンジンプラグインの検索中（{path}）",
-  "COMPILER_USING_ENGINE_PLUGIN": "エンジンプラグインを使用:",
+  "COMPILER_USING_ENGINE_PLUGIN": "エンジンプラグインを使用: {path}",
   "// 21": "Messages -----------------------------------------------------",
   "MESSAGE_NO_SONGS_FOUND": "ミュージックがありません",
   "MESSAGE_ADD_UGE_FILES": "プロジェクトの「assets/music」フォルダに .uge ファイルを追加、または「+」ボタンから新規ミュージックを作成してください。",
