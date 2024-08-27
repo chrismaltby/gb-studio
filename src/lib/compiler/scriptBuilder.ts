@@ -4367,11 +4367,10 @@ extern void __mute_mask_${symbol};
             if (isScriptValue(argValue)) {
               e.args[arg] = mapScriptValueLeafNodes(argValue, (val) => {
                 if (val.type === "variable") {
-                  const scriptArg = argLookup["variable"].get(val.value);
-                  if (scriptArg?.indirect) {
+                  if (isVariableCustomEvent(val.value)) {
                     return {
-                      type: "indirect",
-                      value: scriptArg.symbol,
+                      ...val,
+                      value: getArg("variable", val.value),
                     };
                   }
                 } else if (val.type === "property") {

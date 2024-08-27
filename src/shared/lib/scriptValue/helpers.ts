@@ -11,6 +11,9 @@ import {
   ValueOperatorType,
   ValueUnaryOperatorType,
   isValueUnaryOperatorType,
+  RPNOperation,
+  RPNUnaryOperation,
+  ScriptValueAtom,
 } from "./types";
 import { OperatorSymbol } from "shared/lib/rpn/types";
 
@@ -387,10 +390,18 @@ export const someInScriptValue = (
   return false;
 };
 
-export const mapScriptValueLeafNodes = (
+export type MappedScriptValue<T> =
+  | T
+  | (Omit<RPNUnaryOperation, "value"> & { value: MappedScriptValue<T> })
+  | (Omit<RPNOperation, "valueA" | "valueB"> & {
+      valueA: MappedScriptValue<T>;
+      valueB: MappedScriptValue<T>;
+    });
+
+export const mapScriptValueLeafNodes = <T>(
   input: ScriptValue,
-  fn: (val: ScriptValue) => ScriptValue
-): ScriptValue => {
+  fn: (val: ScriptValueAtom) => T
+): MappedScriptValue<T> => {
   if (isValueOperation(input)) {
     const mappedA = input.valueA && mapScriptValueLeafNodes(input.valueA, fn);
     const mappedB = input.valueB && mapScriptValueLeafNodes(input.valueB, fn);
