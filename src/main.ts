@@ -125,6 +125,8 @@ import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
 import { cancelBuildCommandsInProgress } from "lib/compiler/makeBuild";
 import romUsage from "lib/compiler/romUsage";
 import { msToHumanTime } from "shared/lib/helpers/time";
+import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
+import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -867,6 +869,14 @@ ipcMain.handle(
 
 ipcMain.handle("dialog:confirm-unpack-prefab", async (_event) => {
   return confirmUnpackPrefab();
+});
+
+ipcMain.handle("dialog:confirm-delete-preset", async (_event, name: string) => {
+  return confirmDeletePreset(name);
+});
+
+ipcMain.handle("dialog:confirm-apply-preset", async () => {
+  return confirmApplyPreset();
 });
 
 ipcMain.handle(

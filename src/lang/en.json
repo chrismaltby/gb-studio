@@ -1530,6 +1530,10 @@
   "DIALOG_REPLACE_PREFAB": "Replace Prefab \"{name}\"?",
   "DIALOG_REPLACE_PREFAB_DESCRIPTION": "The pasted prefab contains a modified version of an existing prefab. Would you like to replace the prefab with the version on your clipboard or keep your existing prefab?",
   "DIALOG_DELETE_SCRIPT_AND_REFERENCES": "Delete Script and References",
+  "DIALOG_DELETE_PRESET": "Delete Preset \"{name}\"?",
+  "DIALOG_DELETE_PRESET_DESCRIPTION": "Any uses of this preset will become unlinked.",
+  "DIALOG_APPLY_PRESET": "Apply Preset Changes?",
+  "DIALOG_APPLY_PRESET_DESCRIPTION": "Modifying this preset will cause all uses of the preset to also be updated.",
 
   "// 16": "Settings ----------------------------------------------------",
 
