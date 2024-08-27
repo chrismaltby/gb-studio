@@ -103,6 +103,7 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
+import { isEqual } from "lodash";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -3826,8 +3827,9 @@ const applyScriptEventPresetChanges: CaseReducer<
     const mergedArgs = { ...storedArgs };
     Object.keys(mergedArgs).forEach((key) => {
       if (
-        !mergedArgs[key] ||
-        mergedArgs[key] === action.payload.previousArgs[key]
+        (!mergedArgs[key] ||
+          isEqual(mergedArgs[key], action.payload.previousArgs[key])) &&
+        action.payload.args[key]
       ) {
         mergedArgs[key] = action.payload.args[key];
       }
