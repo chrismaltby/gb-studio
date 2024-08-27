@@ -120,7 +120,7 @@ const settingsSlice = createSlice({
         }>
       ) => {
         if (!state.scriptEventPresets[action.payload.id]) {
-          return;
+          state.scriptEventPresets[action.payload.id] = {};
         }
         state.scriptEventPresets[action.payload.id][action.payload.presetId] = {
           id: action.payload.presetId,

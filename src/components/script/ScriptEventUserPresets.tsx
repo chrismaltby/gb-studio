@@ -77,7 +77,7 @@ export const ScriptEventUserPresets = ({
     (state) => state.scriptEventDefs.lookup[scriptEvent.command]
   );
   const userPresets = useAppSelector(
-    (state) => getSettings(state).scriptEventPresets[scriptEvent.command]
+    (state) => getSettings(state).scriptEventPresets[scriptEvent.command] ?? {}
   );
   const userPresetsDefault = useAppSelector(
     (state) => getSettings(state).scriptEventDefaultPresets[scriptEvent.command]
@@ -108,7 +108,7 @@ export const ScriptEventUserPresets = ({
     [userPresets, userPresetsDefault]
   );
 
-  const value = String(scriptEvent.args?._presetId ?? "");
+  const value = String(scriptEvent.args?.__presetId ?? "");
 
   const currentValue = useMemo(
     () => options.find((o) => o.value === value) ?? options[0],
@@ -133,7 +133,7 @@ export const ScriptEventUserPresets = ({
         onChange({
           ...scriptEvent.args,
           ...preset?.args,
-          _presetId: presetId,
+          __presetId: presetId,
         });
       }
     },
@@ -204,7 +204,7 @@ export const ScriptEventUserPresets = ({
       });
       onChange({
         ...scriptEvent.args,
-        _presetId: addAction.payload.presetId,
+        __presetId: addAction.payload.presetId,
       });
       dispatch(addAction);
     }

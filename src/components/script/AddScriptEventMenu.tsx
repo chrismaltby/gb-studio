@@ -713,7 +713,7 @@ const AddScriptEventMenu = ({
               defaultArgs: {
                 ...defaultArgs,
                 ...userDefaults,
-                _presetId: defaultPresetId,
+                __presetId: defaultPresetId,
                 text: defaultArgs?.text ?? userDefaults?.text,
               },
             }),
