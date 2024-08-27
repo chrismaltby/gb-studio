@@ -15,6 +15,7 @@ import {
   FontData,
 } from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
+import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 
 interface DialoguePreviewProps {
   text: string;
@@ -150,13 +151,14 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       if (ctx) {
         const textLines = textNumNewlines(text);
         const tileWidth = 20;
-        const tileHeight = Math.max(
+        const tileHeight = calculateTextBoxHeight({
+          textLines,
+          textY,
+          textHeight,
           minHeight,
-          Math.min(
-            maxHeight,
-            Math.min(textLines, textHeight) + (showFrame ? 2 : 0)
-          )
-        );
+          maxHeight,
+          showFrame,
+        });
         canvas.width = tileWidth * 8;
         canvas.height = tileHeight * 8;
         if (showFrame) {

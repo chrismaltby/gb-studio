@@ -78,6 +78,7 @@ import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
 import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
+import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 
 export type ScriptOutput = string[];
 
@@ -3565,13 +3566,15 @@ extern void __mute_mask_${symbol};
 
     const initialNumLines = input.map(this.textNumLines);
     const maxNumLines = Math.max.apply(null, initialNumLines);
-    const textBoxHeight = Math.max(
+    const textBoxHeight = calculateTextBoxHeight({
+      textLines: maxNumLines,
+      textY,
+      textHeight,
       minHeight,
-      Math.min(
-        maxHeight,
-        Math.min(maxNumLines, textHeight) + (showFrame ? 2 : 0)
-      )
-    );
+      maxHeight,
+      showFrame,
+    });
+
     const isModal = closeWhen !== "notModal";
     const renderOnTop = position === "top" && !scene.parallax;
     const textBoxY = renderOnTop ? 0 : 18 - textBoxHeight;
