@@ -2126,7 +2126,7 @@ test("should allow pass by reference for recursive scripts", async () => {
   } as unknown as ScriptBuilderOptions);
   sb.callScript("script1", {
     "$actor[0]$": "actorS0A0",
-    "$variable[0]$": "0",
+    "$variable[V0]$": "0",
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
@@ -2219,7 +2219,7 @@ test("should allow pass by value for recursive scripts", async () => {
   } as unknown as ScriptBuilderOptions);
   sb.callScript("script1", {
     "$actor[0]$": "actorS0A0",
-    "$variable[0]$": "0",
+    "$variable[V0]$": "0",
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
@@ -2243,4 +2243,668 @@ test("should allow pass by value for recursive scripts", async () => {
     `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
   );
   expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+});
+
+test("should allow pass by reference between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           VAR_VARIABLE_0 ; Variable V0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read indirect value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Write indirect value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Pass indirect value address
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
+});
+
+test("should allow pass by reference to pass by value between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_CONST           VAR_VARIABLE_0 ; Variable V0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Write value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Pass variable value
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_VALUE_IND       .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
+});
+
+test("should allow pass by value to pass by reference between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_VALUE           VAR_VARIABLE_0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read indirect value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Write indirect value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Pass indirect value address
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_REFERENCE       .SCRIPT_ARG_0_VARIABLE ; Variable V0`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
+});
+
+test("should allow pass by value between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": "0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        VM_PUSH_VALUE           VAR_VARIABLE_0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Write value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Pass indirect value address
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_VALUE           .SCRIPT_ARG_0_VARIABLE`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
+});
+
+test("should allow pass by reference of script value between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: true,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    },
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    5",
+    "            .R_OPERATOR .ADD",
+    "            .R_REF_SET  .LOCAL_TMP0_ARG",
+    "            .R_STOP",
+    "        VM_PUSH_REFERENCE       .LOCAL_TMP0_ARG ; Variable V0",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read indirect value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Write indirect value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+  );
+
+  // Pass indirect value address
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
+});
+
+test("should allow pass by value of script value between multiple scripts", async () => {
+  const output: string[] = [];
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const recursiveSymbolMap: Dictionary<string> = {};
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    recursiveSymbolMap,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents: [
+      {
+        id: "script1",
+        name: "Script 1",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_1",
+        script: [
+          {
+            command: "EVENT_INC_VALUE",
+            args: {
+              variable: "V0",
+            },
+            id: "event1",
+          },
+        ],
+      },
+      {
+        id: "script2",
+        name: "Script 2",
+        description: "",
+        variables: {
+          V0: {
+            id: "V0",
+            name: "Variable A",
+            passByReference: false,
+          },
+        },
+        actors: {},
+        symbol: "script_2",
+        script: [
+          {
+            command: "EVENT_CALL_CUSTOM_EVENT",
+            args: {
+              customEventId: "script1",
+              "$variable[V0]$": {
+                type: "variable",
+                value: "V0",
+              },
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ],
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script2", {
+    "$variable[V0]$": {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "number",
+        value: 5,
+      },
+    },
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+
+  expect(output).toEqual([
+    "        ; Call Script: Script 2",
+    "        ; -- Calculate value",
+    "        VM_RPN",
+    "            .R_REF      VAR_VARIABLE_0",
+    "            .R_INT16    5",
+    "            .R_OPERATOR .ADD",
+    "            .R_REF_SET  .LOCAL_TMP0_ARG",
+    "            .R_STOP",
+    "        VM_PUSH_VALUE           .LOCAL_TMP0_ARG",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
+    "",
+  ]);
+
+  // Read value from arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Write value back to arg
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+  );
+
+  // Pass indirect value address
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    [
+      `        ; Call Script: Script 1`,
+      `        VM_PUSH_VALUE           .SCRIPT_ARG_0_VARIABLE`,
+      `        VM_CALL_FAR             ___bank_script_1, _script_1`,
+    ].join("\n")
+  );
 });

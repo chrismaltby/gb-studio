@@ -4120,7 +4120,7 @@ extern void __mute_mask_${symbol};
                 this._stackPush(variableAlias);
               } else {
                 // Arg union value is variable id
-                this._stackPushConst(
+                this._stackPushReference(
                   variableAlias,
                   `Variable ${variableArg.id}`
                 );
