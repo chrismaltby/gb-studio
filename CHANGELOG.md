@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve build cancelling: Stops spawned processes immediately rather than waiting for in progress processes to complete
 - Changing the engine field in a "Store Engine Field In Variable" event no longer resets the variable
 - Build time now shown in seconds when < 60s and minutes+seconds when >= 60s
+- Update Scene Pop events to allow setting Fade Speed as "Instant" [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
 

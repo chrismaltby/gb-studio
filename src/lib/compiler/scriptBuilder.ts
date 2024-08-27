@@ -4572,8 +4572,13 @@ extern void __mute_mask_${symbol};
 
   scenePopState = (fadeSpeed = 2) => {
     this._addComment("Pop Scene State");
-    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(true);
+    if (fadeSpeed > 0) {
+      this._setConstMemInt8(
+        "fade_frames_per_step",
+        fadeSpeeds[fadeSpeed] ?? 0x3
+      );
+      this._fadeOut(true);
+    }
     this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
     this._scenePop();
     this._addNL();
@@ -4581,8 +4586,14 @@ extern void __mute_mask_${symbol};
 
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
-    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(true);
+    this._addComment("" + fadeSpeed);
+    if (fadeSpeed > 0) {
+      this._setConstMemInt8(
+        "fade_frames_per_step",
+        fadeSpeeds[fadeSpeed] ?? 0x3
+      );
+      this._fadeOut(true);
+    }
     this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
     this._scenePopAll();
     this._addNL();
