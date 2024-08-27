@@ -493,6 +493,12 @@ const AddScriptEventMenu = ({
     (state) => state.project.present.settings.favoriteEvents
   );
   const [favoritesCache, setFavoritesCache] = useState<string[]>([]);
+  const scriptEventPresets = useAppSelector(
+    (state) => state.project.present.settings.scriptEventPresets
+  );
+  const scriptEventDefaultPresets = useAppSelector(
+    (state) => state.project.present.settings.scriptEventDefaultPresets
+  );
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
   const [renderCategoryIndex, setRenderedCategoryIndex] = useState(-1);
@@ -685,6 +691,9 @@ const AddScriptEventMenu = ({
 
   const onAdd = useCallback(
     (newEvent: ScriptEventDef, defaultArgs?: Record<string, unknown>) => {
+      const defaultPresetId = scriptEventDefaultPresets[newEvent.id];
+      const userDefaults =
+        scriptEventPresets[newEvent.id]?.[defaultPresetId]?.args;
       dispatch(
         entitiesActions.addScriptEvents({
           entityId: parentId,
@@ -701,7 +710,12 @@ const AddScriptEventMenu = ({
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
               defaultTilesetId: String(lastTilesetId),
-              defaultArgs,
+              defaultArgs: {
+                ...defaultArgs,
+                ...userDefaults,
+                _presetId: defaultPresetId,
+                text: defaultArgs?.text ?? userDefaults?.text,
+              },
             }),
           ],
         })
@@ -709,19 +723,21 @@ const AddScriptEventMenu = ({
       onBlur?.();
     },
     [
-      before,
-      context,
+      scriptEventDefaultPresets,
+      scriptEventPresets,
       dispatch,
+      parentId,
+      parentType,
+      parentKey,
       insertId,
-      lastEmoteId,
-      lastTilesetId,
+      before,
+      context.type,
       lastMusicId,
       lastSceneId,
       lastSpriteId,
+      lastEmoteId,
+      lastTilesetId,
       onBlur,
-      parentId,
-      parentKey,
-      parentType,
     ]
   );
 
