@@ -3825,11 +3825,11 @@ const applyScriptEventPresetChanges: CaseReducer<
 
   const mergeArgs = (storedArgs?: ScriptEventArgs) => {
     const mergedArgs = { ...storedArgs };
-    Object.keys(mergedArgs).forEach((key) => {
+    Object.keys({ ...mergedArgs, ...action.payload.args }).forEach((key) => {
       if (
         (!mergedArgs[key] ||
           isEqual(mergedArgs[key], action.payload.previousArgs[key])) &&
-        action.payload.args[key]
+        action.payload.args[key] !== undefined
       ) {
         mergedArgs[key] = action.payload.args[key];
       }

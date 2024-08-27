@@ -129,6 +129,9 @@ const instanciateScriptEvent = (
   const args = cloneDeep(
     fields.reduce(
       (memo, field) => {
+        if (!field.key) {
+          return memo;
+        }
         let replaceValue = null;
         let defaultValue = field.defaultValue;
 
