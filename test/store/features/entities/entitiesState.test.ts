@@ -4434,7 +4434,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "scriptEvent1",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset1",
         name: "Updated Preset",
         groups: ["group1"],
@@ -4471,7 +4471,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "scriptEvent1",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset2", // Different preset ID
         name: "Updated Preset",
         groups: ["group1"],
@@ -4510,7 +4510,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "actor1",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset1",
         name: "Updated Preset",
         groups: ["group1"],
@@ -4550,7 +4550,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "trigger1",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset1",
         name: "Updated Preset",
         groups: ["group1"],
@@ -4586,7 +4586,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "scriptEvent1",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset1",
         name: "Updated Preset",
         groups: ["group1"],
@@ -4622,7 +4622,7 @@ describe("Script Event Presets", () => {
       };
 
       const action = entitiesActions.applyScriptEventPresetChanges({
-        id: "nonexistent",
+        id: "EVENT_SOME_COMMAND",
         presetId: "preset1",
         name: "Updated Preset",
         groups: ["group1"],

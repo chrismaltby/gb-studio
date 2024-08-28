@@ -12,7 +12,23 @@ test("Should be able to display text", () => {
       textDialogue: mockTextDialogue,
     }
   );
-  expect(mockTextDialogue).toBeCalledWith("Hello World", "1");
+  expect(mockTextDialogue).toBeCalledWith(
+    "Hello World",
+    "1",
+    4,
+    7,
+    "bottom",
+    true,
+    true,
+    1,
+    1,
+    5,
+    -1,
+    -1,
+    "key",
+    "a",
+    30
+  );
 });
 
 test("Should be able to display multiple text boxes", () => {
@@ -30,6 +46,19 @@ test("Should be able to display multiple text boxes", () => {
   expect(mockTextDialogue.mock.calls.length).toBe(1);
   expect(mockTextDialogue).toBeCalledWith(
     ["Hello World", "Goodbye World"],
-    "1"
+    "1",
+    4,
+    7,
+    "bottom",
+    true,
+    true,
+    1,
+    1,
+    5,
+    -1,
+    -1,
+    "key",
+    "a",
+    30
   );
 });

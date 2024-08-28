@@ -3584,7 +3584,8 @@ extern void __mute_mask_${symbol};
     const textBoxY = renderOnTop ? 0 : 18 - textBoxHeight;
     const x = decOct(Math.max(1, 1 + textX + (avatarId ? 2 : 0)));
     const y = decOct(Math.max(1, 1 + textY));
-    const textPosSequence = `\\003\\${x}\\${y}`;
+    const textPosSequence =
+      textX !== 1 || textY !== 1 ? `\\003\\${x}\\${y}` : "";
 
     this._addComment("Text Dialogue");
 
