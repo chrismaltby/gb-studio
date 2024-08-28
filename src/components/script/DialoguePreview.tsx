@@ -21,22 +21,26 @@ interface DialoguePreviewProps {
   text: string;
   avatarId?: string;
   showFrame?: boolean;
+  showFill?: boolean;
   textX?: number;
   textY?: number;
   textHeight?: number;
   minHeight?: number;
   maxHeight?: number;
+  scale?: number;
 }
 
 export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
   showFrame = true,
+  showFill = true,
   textX = 1,
   textY = 1,
   textHeight = 3,
   minHeight = 4,
   maxHeight = 7,
+  scale = 1,
 }) => {
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
   const avatarAsset = useAppSelector((state) =>
@@ -163,7 +167,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         canvas.height = tileHeight * 8;
         if (showFrame) {
           drawFrame(ctx, frameImage, tileWidth, tileHeight);
-        } else {
+        } else if (showFill) {
           drawFill(ctx, frameImage, tileWidth, tileHeight);
         }
         if (avatarId) {
@@ -210,6 +214,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     maxHeight,
     minHeight,
     textHeight,
+    showFill,
   ]);
 
   // Keep track of component's mounted state to allow detecting if component still mounted when
@@ -227,10 +232,8 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       width={160}
       height={48}
       style={{
-        width: 240,
+        width: 160 * scale,
         imageRendering: "pixelated",
-        boxShadow: "5px 5px 10px 0px rgba(0,0,0,0.5)",
-        borderRadius: 4,
         opacity: drawn ? 1 : 0,
       }}
     />

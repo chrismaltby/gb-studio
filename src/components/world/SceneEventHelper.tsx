@@ -13,6 +13,7 @@ import {
   ensureNumber,
   ensureString,
 } from "shared/types";
+import { DialoguePreview } from "components/script/DialoguePreview";
 
 const TILE_SIZE = 8;
 
@@ -130,6 +131,15 @@ const BoundsMarker = styled.div`
   background: rgba(255, 193, 7, 0.58);
   box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset,
     0 0 1000px 1000px rgba(0, 0, 0, 0.6);
+`;
+
+const PosOffset = styled.div`
+  position: absolute;
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 `;
 
 export const argValue = (arg: unknown): unknown => {
@@ -449,6 +459,45 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
           }}
         />
       </EventHelperWrapper>
+    );
+  }
+
+  if (scriptEventDef?.helper?.type === "textdraw") {
+    const text = ensureString(argValue(args[scriptEventDef.helper.text]), "");
+    const location = ensureString(
+      argValue(args[scriptEventDef.helper.location]),
+      "background"
+    );
+    const x = ensureNumber(
+      argValue(args[scriptEventDef.helper.x]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.x]?.defaultValue,
+      0
+    );
+    const y = ensureNumber(
+      argValue(args[scriptEventDef.helper.y]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.y]?.defaultValue,
+      0
+    );
+    if (location !== "background") {
+      return <div />;
+    }
+    return (
+      <PosOffset
+        style={{
+          left: x * TILE_SIZE,
+          top: y * TILE_SIZE,
+        }}
+      >
+        <DialoguePreview
+          text={text}
+          textX={0}
+          textY={0}
+          showFrame={false}
+          showFill={false}
+          minHeight={0}
+          maxHeight={18}
+        />
+      </PosOffset>
     );
   }
 

@@ -6,6 +6,7 @@ import { DialoguePreview } from "./DialoguePreview";
 import { MenuPreview } from "./MenuPreview";
 import { ensureBoolean, ensureNumber, ensureString } from "shared/types";
 import { argValue } from "components/world/SceneEventHelper";
+import styled from "styled-components";
 
 interface ScriptEditorEventHelperProps {
   event: ScriptEventNormalized;
@@ -18,6 +19,13 @@ const toString = (input: unknown): string => {
 const toInt = (input: unknown): number => {
   return typeof input === "number" ? input : 0;
 };
+
+const PreviewWrapper = styled.div`
+  > * {
+    border-radius: 4px;
+    box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+`;
 
 export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
   event,
@@ -77,11 +85,25 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     );
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
-        {Array.isArray(text) ? (
-          text.map((text: string, index) => (
+        <PreviewWrapper>
+          {Array.isArray(text) ? (
+            text.map((text: string, index) => (
+              <DialoguePreview
+                key={index}
+                text={text}
+                avatarId={avatarId}
+                showFrame={clearPrevious && showFrame}
+                textX={textX}
+                textY={textY}
+                textHeight={textHeight}
+                minHeight={minHeight}
+                maxHeight={maxHeight}
+                scale={1.5}
+              />
+            ))
+          ) : (
             <DialoguePreview
-              key={index}
-              text={text}
+              text={toString(text)}
               avatarId={avatarId}
               showFrame={clearPrevious && showFrame}
               textX={textX}
@@ -89,20 +111,43 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
               textHeight={textHeight}
               minHeight={minHeight}
               maxHeight={maxHeight}
+              scale={1.5}
             />
-          ))
-        ) : (
+          )}
+        </PreviewWrapper>
+      </RelativePortal>
+    );
+  }
+
+  if (scriptEventDef?.helper?.type === "textdraw") {
+    const text = ensureString(argValue(args[scriptEventDef.helper.text]), "");
+    const location = ensureString(
+      argValue(args[scriptEventDef.helper.location]),
+      "background"
+    );
+    const x = ensureNumber(
+      argValue(args[scriptEventDef.helper.x]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.x]?.defaultValue,
+      0
+    );
+    const y = ensureNumber(
+      argValue(args[scriptEventDef.helper.y]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.y]?.defaultValue,
+      0
+    );
+    return (
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+        <PreviewWrapper>
           <DialoguePreview
-            text={toString(text)}
-            avatarId={avatarId}
-            showFrame={clearPrevious && showFrame}
-            textX={textX}
-            textY={textY}
-            textHeight={textHeight}
-            minHeight={minHeight}
-            maxHeight={maxHeight}
+            text={text}
+            textX={location === "overlay" ? x : 0}
+            textY={location === "overlay" ? y : 0}
+            showFrame={false}
+            minHeight={location === "overlay" ? 4 : 0}
+            maxHeight={18}
+            scale={1.5}
           />
-        )}
+        </PreviewWrapper>
       </RelativePortal>
     );
   }

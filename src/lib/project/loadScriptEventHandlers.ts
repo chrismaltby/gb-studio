@@ -69,6 +69,13 @@ export type ScriptEventHelperDef =
       textX: string;
       textY: string;
       textHeight: string;
+    }
+  | {
+      type: "textdraw";
+      text: string;
+      x: string;
+      y: string;
+      location: string;
     };
 
 export type ScriptEventPresetValue = {

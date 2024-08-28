@@ -1866,6 +1866,10 @@ class ScriptBuilder {
     this._addCmd("VM_DISPLAY_TEXT");
   };
 
+  _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
+    this._addCmd("VM_SWITCH_TEXT_LAYER", layer);
+  };
+
   _choice = (
     variable: ScriptBuilderStackVariable,
     options: ScriptBuilderChoiceFlag[],
@@ -3696,6 +3700,45 @@ extern void __mute_mask_${symbol};
     }
 
     if (renderOnTop) {
+      this._stackPop(1);
+    }
+
+    this._addNL();
+  };
+
+  textDraw = (
+    inputText = " ",
+    x = 0,
+    y = 0,
+    location: "background" | "overlay" = "background"
+  ) => {
+    const { settings } = this.options;
+    const isColor = settings.colorMode !== "mono";
+    const drawX = decOct(1 + x);
+    const drawY = decOct(1 + y);
+
+    this._addComment("Draw Text");
+
+    if (isColor) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_priority");
+      this._setConstMemUInt8("overlay_priority", 0);
+    }
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_BKG");
+    }
+
+    this._loadStructuredText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
+    this._displayText();
+    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    if (isColor) {
+      this._setMemUInt8("overlay_priority", ".ARG0");
       this._stackPop(1);
     }
 

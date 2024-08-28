@@ -895,6 +895,9 @@
   "FIELD_INCLUDE_IN_PRESET": "Include In Preset",
   "FIELD_SET_AS_DEFAULT": "Set As Default",
   "FIELD_REMOVE_AS_DEFAULT": "Remove As Default",
+  "FIELD_LOCATION": "Location",
+  "FIELD_TEXT_DRAW_LOCATION_DESC": "The location where text should be drawn.",
+  "FIELD_OVERLAY": "Overlay",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1268,6 +1271,9 @@
   "EVENT_DIALOGUE_CLOSE_NONMODAL_DESC": "Close any dialogue box or overlay currently on screen and reset the overlay scanline cutoff value.",
   "EVENT_OVERLAY_SET_SCANLINE_CUTOFF": "Set Overlay Scanline Cutoff",
   "EVENT_OVERLAY_SET_SCANLINE_CUTOFF_DESC": "Set a cutoff y position where the overlay window will stop being drawn. Allows drawing an overlay at the top of the screen.",
+  "EVENT_TEXT_DRAW": "Draw Text",
+  "EVENT_TEXT_DRAW_LABEL": "Draw \"{text}\"",
+  "EVENT_TEXT_DRAW_DESC": "Write some text to a specified positon on either the scene's background or the overlay.",
 
   "// 10": "Menu -----------------------------------------------------",
 
