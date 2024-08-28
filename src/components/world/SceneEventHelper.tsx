@@ -6,8 +6,14 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
-import styled from "styled-components";
-import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
+import styled, { keyframes } from "styled-components";
+import {
+  ensureMaybeNumber,
+  ensureMaybeString,
+  ensureNumber,
+  ensureString,
+} from "shared/types";
+import { DialoguePreview } from "components/script/DialoguePreview";
 
 const TILE_SIZE = 8;
 
@@ -27,7 +33,15 @@ const CameraPos = styled.div`
   position: absolute;
   width: 160px;
   height: 144px;
-  outline: 10px solid red;
+  outline: 4px solid red;
+  box-shadow: 0 0 1000px 1000px rgba(0, 0, 0, 0.6);
+`;
+
+const ScreenMarker = styled.div`
+  position: absolute;
+  width: 160px;
+  height: 144px;
+  box-shadow: 0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
 
 interface PosMarkerProps {
@@ -53,9 +67,63 @@ const DistanceMarker = styled.div`
 
 const OverlayPos = styled.div`
   position: absolute;
-  width: 256px;
+  width: 160px;
   height: 256px;
   background: blue;
+`;
+
+export const scanlineAnim = keyframes`
+  0% {
+      left: 0;
+      opacity: 0;
+  }
+  70% {
+    left: 0;
+    opacity: 0;
+  }
+  75% {
+    left: 0;
+    opacity: 1;
+  }
+  98% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;    
+  }
+`;
+
+const ScanlinePos = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 160px;
+  height: 144px;
+  maxheight: 144px;
+  background: #e0f8cf;
+  ::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(116, 216, 58, 0.8);
+    box-shadow: 0px 0px 2px rgba(148, 239, 218, 0.9),
+      0px 0px 10px rgba(0, 249, 106, 0.8);
+  }
+  ::after {
+    content: "";
+    position: absolute;
+    left: 100%;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0px 0px 2px 2px rgba(220, 255, 254, 0.3);
+    animation: ${scanlineAnim} 3s infinite linear forwards;
+  }
 `;
 
 const BoundsMarker = styled.div`
@@ -65,7 +133,16 @@ const BoundsMarker = styled.div`
     0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
 
-const argValue = (arg: unknown): unknown => {
+const PosOffset = styled.div`
+  position: absolute;
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+`;
+
+export const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
     if (unionArg.type === "variable" || unionArg.type === "property") {
@@ -295,6 +372,9 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   if (scriptEventDef.helper.type === "overlay") {
     const x = ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0);
     const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
+    const units = scriptEventDef.helper.units
+      ? argValue(args[scriptEventDef.helper.units])
+      : "tiles";
     const color = scriptEventDef.helper.color
       ? argValue(args[scriptEventDef.helper.color])
       : "black";
@@ -305,9 +385,34 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
       <EventHelperWrapper>
         <OverlayPos
           style={{
-            left: (x || 0) * TILE_SIZE,
-            top: (y || 0) * TILE_SIZE,
+            left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
+            top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             background: color === "white" ? "#e0f8cf" : "#081820",
+          }}
+        />
+      </EventHelperWrapper>
+    );
+  }
+
+  if (scriptEventDef.helper.type === "scanline") {
+    const y = ensureNumber(argValue(args[scriptEventDef.helper.y]), 0);
+    const units = ensureString(
+      scriptEventDef.helper.units
+        ? argValue(args[scriptEventDef.helper.units])
+        : undefined,
+      "pixels"
+    );
+    console.log({ args, units });
+    if (y === undefined) {
+      return <div />;
+    }
+
+    return (
+      <EventHelperWrapper>
+        <ScreenMarker />
+        <ScanlinePos
+          style={{
+            height: y * (units === "pixels" ? 1 : TILE_SIZE) + 1,
           }}
         />
       </EventHelperWrapper>
@@ -354,6 +459,45 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
           }}
         />
       </EventHelperWrapper>
+    );
+  }
+
+  if (scriptEventDef?.helper?.type === "textdraw") {
+    const text = ensureString(argValue(args[scriptEventDef.helper.text]), "");
+    const location = ensureString(
+      argValue(args[scriptEventDef.helper.location]),
+      "background"
+    );
+    const x = ensureNumber(
+      argValue(args[scriptEventDef.helper.x]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.x]?.defaultValue,
+      0
+    );
+    const y = ensureNumber(
+      argValue(args[scriptEventDef.helper.y]) ??
+        scriptEventDef.fieldsLookup[scriptEventDef.helper.y]?.defaultValue,
+      0
+    );
+    if (location !== "background") {
+      return <div />;
+    }
+    return (
+      <PosOffset
+        style={{
+          left: x * TILE_SIZE,
+          top: y * TILE_SIZE,
+        }}
+      >
+        <DialoguePreview
+          text={text}
+          textX={0}
+          textY={0}
+          showFrame={false}
+          showFill={false}
+          minHeight={0}
+          maxHeight={18}
+        />
+      </PosOffset>
     );
   }
 

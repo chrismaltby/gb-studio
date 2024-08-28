@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add ability to create reusable actor and trigger "prefabs"
+- Add ability to set reusable "preset" values on "Display Dialogue" and "Launch Projectile" events
+- Add "Draw Text" event allowing drawing text directly to background or overlay (based on "Display Background Text" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Set Overlay Scanline Cutoff" event allowing you to show overlays at the top of the screen
+- Add "Close Non-Modal Dialogue" event, required if using "Close When" -> "Never" option in updated "Display Dialogue" event.
 - Tilesets asset folder added to all sample projects [@pau-tomas](https://github.com/pau-tomas)
 - Add `_stackPushVariable(variable)` and `_isIndirectVariable(variable)` helpers for use in plugins
 - Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project
@@ -33,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changing the engine field in a "Store Engine Field In Variable" event no longer resets the variable
 - Build time now shown in seconds when < 60s and minutes+seconds when >= 60s
 - Update Scene Pop events to allow setting Fade Speed as "Instant" [@pau-tomas](https://github.com/pau-tomas)
+- "Launch Projectile" event fields organised into multiple tabs
+- Update "Display Dialogue" event to include tabs with additional layout and behavior options (based on "Display Advanced Dialogue" plugin by [@pau-tomas](https://github.com/pau-tomas))
 
 ### Fixed
 

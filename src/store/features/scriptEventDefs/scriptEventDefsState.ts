@@ -16,7 +16,7 @@ export const initialState: ScriptEventsState = {
 };
 
 // Script Events Defs can optionally include a number of preset values
-// this function creates a lookup containing all the script event defs 
+// this function creates a lookup containing all the script event defs
 // and also an entry for every one of their presets. Allowing components like
 // AddScriptEventMenu to require very little about the concept of presets
 const buildPresets = (lookup: ScriptEventDefs): ScriptEventDefs => {

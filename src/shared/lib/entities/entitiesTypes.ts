@@ -518,6 +518,7 @@ export interface ScriptEventFieldCondition {
   in?: unknown[];
   set?: boolean;
   soundType?: unknown;
+  parallaxEnabled?: boolean;
 }
 
 export const distanceUnitTypes = ["tiles", "pixels"] as const;
@@ -563,6 +564,7 @@ export interface ScriptEventFieldSchema {
   options?: [unknown, string][];
   optional?: boolean;
   allowNone?: boolean;
+  allowDefault?: boolean;
   allowMultiple?: boolean;
   paletteType?: "background" | "ui" | "emote" | "sprite";
   paletteIndex?: number;
@@ -582,6 +584,8 @@ export interface ScriptEventFieldSchema {
   hasPostUpdateFn?: boolean;
   singleLine?: boolean;
   noneLabel?: string;
+  variant?: string;
+  labelVariant?: string;
 }
 
 export type EntityKey = keyof EntitiesState;

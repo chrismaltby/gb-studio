@@ -630,6 +630,8 @@ describe("TypeBox Schemas", () => {
       generateDebugFilesEnabled: false,
       compilerOptimisation: "none",
       compilerPreset: 3000,
+      scriptEventPresets: {},
+      scriptEventDefaultPresets: {},
     };
     const invalidSettings = {
       _resourceType: "settings",

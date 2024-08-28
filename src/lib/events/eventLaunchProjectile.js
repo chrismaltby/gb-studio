@@ -8,7 +8,25 @@ const subGroups = {
 
 const fields = [
   {
+    key: "__section",
+    type: "tabs",
+    defaultValue: "projectile",
+    variant: "eventSection",
+    values: {
+      projectile: l10n("FIELD_PROJECTILE"),
+      source: l10n("FIELD_SOURCE"),
+      presets: l10n("FIELD_PRESETS"),
+    },
+  },
+
+  {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["projectile", undefined],
+      },
+    ],
     fields: [
       {
         key: "spriteSheetId",
@@ -32,9 +50,21 @@ const fields = [
     label: l10n("FIELD_SOURCE"),
     description: l10n("FIELD_ACTOR_PROJECTILE_SOURCE_DESC"),
     defaultValue: "$self$",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source"],
+      },
+    ],
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source"],
+      },
+    ],
     fields: [
       {
         key: "x",
@@ -60,6 +90,12 @@ const fields = [
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source"],
+      },
+    ],
     fields: [
       {
         label: l10n("FIELD_LAUNCH_AT"),
@@ -153,9 +189,21 @@ const fields = [
     max: 256,
     width: "50%",
     defaultValue: 0,
+    conditions: [
+      {
+        key: "__section",
+        in: ["source"],
+      },
+    ],
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["projectile", undefined],
+      },
+    ],
     fields: [
       {
         key: "speed",
@@ -186,10 +234,22 @@ const fields = [
     step: 0.1,
     width: "50%",
     defaultValue: 1,
+    conditions: [
+      {
+        key: "__section",
+        in: ["projectile", undefined],
+      },
+    ],
   },
   {
     type: "group",
     alignBottom: true,
+    conditions: [
+      {
+        key: "__section",
+        in: ["projectile", undefined],
+      },
+    ],
     fields: [
       {
         key: "loopAnim",
@@ -209,6 +269,12 @@ const fields = [
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["projectile", undefined],
+      },
+    ],
     fields: [
       {
         key: "collisionGroup",
@@ -230,7 +296,57 @@ const fields = [
       },
     ],
   },
+  {
+    type: "presets",
+    conditions: [
+      {
+        key: "__section",
+        in: ["presets"],
+      },
+    ],
+  },
 ];
+
+const userPresetsGroups = [
+  {
+    id: "projectile",
+    label: l10n("FIELD_PROJECTILE"),
+    fields: [
+      "spriteSheetId",
+      "spriteStateId",
+      "speed",
+      "animSpeed",
+      "lifeTime",
+      "loopAnim",
+      "destroyOnHit",
+      "collisionGroup",
+      "collisionMask",
+    ],
+    selected: true,
+  },
+  {
+    id: "source",
+    label: l10n("FIELD_SOURCE"),
+    fields: ["actorId", "x", "y"],
+    selected: true,
+  },
+  {
+    id: "direction",
+    label: l10n("FIELD_DIRECTION"),
+    fields: [
+      "directionType",
+      "otherActorId",
+      "direction",
+      "angle",
+      "angleVariable",
+      "targetActorId",
+      "initialOffset",
+    ],
+    selected: true,
+  },
+];
+
+const userPresetsIgnore = ["__section"];
 
 const compile = (input, helpers) => {
   const {
@@ -333,5 +449,7 @@ module.exports = {
   subGroups,
   fields,
   compile,
+  userPresetsGroups,
+  userPresetsIgnore,
   waitUntilAfterInitFade: true,
 };

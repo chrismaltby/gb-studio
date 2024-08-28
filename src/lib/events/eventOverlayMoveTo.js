@@ -37,7 +37,7 @@ const fields = [
     label: l10n("FIELD_SPEED"),
     description: l10n("FIELD_SPEED_DESC"),
     type: "cameraSpeed",
-    defaultValue: "0",
+    defaultValue: 0,
   },
 ];
 

@@ -37,6 +37,12 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       color?: string;
+      units?: string;
+    }
+  | {
+      type: "scanline";
+      y: string;
+      units?: string;
     }
   | {
       type: "distance";
@@ -51,6 +57,25 @@ export type ScriptEventHelperDef =
       y: string;
       width: string;
       height: string;
+    }
+  | {
+      type: "text";
+      text: string;
+      avatarId: string;
+      minHeight: string;
+      maxHeight: string;
+      showFrame: string;
+      clearPrevious: string;
+      textX: string;
+      textY: string;
+      textHeight: string;
+    }
+  | {
+      type: "textdraw";
+      text: string;
+      x: string;
+      y: string;
+      location: string;
     };
 
 export type ScriptEventPresetValue = {
@@ -60,6 +85,13 @@ export type ScriptEventPresetValue = {
   groups?: string[] | string;
   subGroups?: Record<string, string>;
   values: Record<string, unknown>;
+};
+
+export type UserPresetsGroup = {
+  id: string;
+  label: string;
+  fields: string[];
+  selected?: boolean;
 };
 
 export interface ScriptEventDef {
@@ -77,6 +109,8 @@ export interface ScriptEventDef {
   hasAutoLabel: boolean;
   helper?: ScriptEventHelperDef;
   presets?: ScriptEventPresetValue[];
+  userPresetsGroups?: UserPresetsGroup[];
+  userPresetsIgnore?: string[];
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 
@@ -160,6 +194,28 @@ const loadScriptEventHandler = async (
     }
   };
   buildFieldsLookup(handler.fields);
+
+  if (handler.userPresetsGroups) {
+    // If an script event supports user presets
+    // validate that all fields have been accounted for
+    const allFields = Object.keys(handler.fieldsLookup);
+
+    const presetFields = handler.userPresetsGroups
+      .map((group) => group.fields)
+      .flat()
+      .concat(handler.userPresetsIgnore ?? []);
+
+    const missingFields = allFields.filter(
+      (key) => !presetFields.includes(key)
+    );
+
+    if (missingFields.length > 0) {
+      console.error(
+        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`
+      );
+      console.error("Missing fields: " + missingFields.join(", "));
+    }
+  }
 
   return handler;
 };

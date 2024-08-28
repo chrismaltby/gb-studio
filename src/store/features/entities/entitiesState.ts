@@ -73,6 +73,7 @@ import {
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ScriptEventArgsOverride,
+  ScriptEventArgs,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -102,6 +103,7 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
+import { isEqual } from "lodash";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -3806,6 +3808,118 @@ const ungroupScriptEvent: CaseReducer<
   );
 };
 
+const applyScriptEventPresetChanges: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    id: string;
+    presetId: string;
+    name: string;
+    groups: string[];
+    args: ScriptEventArgs;
+    previousArgs: ScriptEventArgs;
+  }>
+> = (state, action) => {
+  const scriptEvents = localScriptEventSelectors.selectAll(state);
+  const actors = localActorSelectors.selectAll(state);
+  const triggers = localTriggerSelectors.selectAll(state);
+
+  const mergeArgs = (storedArgs?: ScriptEventArgs) => {
+    const mergedArgs = { ...storedArgs };
+    Object.keys({ ...mergedArgs, ...action.payload.args }).forEach((key) => {
+      if (
+        (!mergedArgs[key] ||
+          isEqual(mergedArgs[key], action.payload.previousArgs[key])) &&
+        action.payload.args[key] !== undefined
+      ) {
+        mergedArgs[key] = action.payload.args[key];
+      }
+    });
+    return mergedArgs;
+  };
+
+  const scriptEventUpdates = scriptEvents
+    .filter(
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
+    )
+    .map((scriptEvent) => ({
+      id: scriptEvent.id,
+      changes: {
+        args: mergeArgs(scriptEvent.args),
+      },
+    }));
+
+  scriptEventsAdapter.updateMany(state.scriptEvents, scriptEventUpdates);
+
+  // Apply preset to any uses in actor prefab overrides
+  actors.forEach((actor) => {
+    Object.values(actor.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = mergeArgs(override.args);
+      }
+    });
+  });
+
+  // Apply preset to any uses in trigger prefab overrides
+  triggers.forEach((trigger) => {
+    Object.values(trigger.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = mergeArgs(override.args);
+      }
+    });
+  });
+};
+
+const removeScriptEventPresetReferences: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    id: string;
+    presetId: string;
+  }>
+> = (state, action) => {
+  const scriptEvents = localScriptEventSelectors.selectAll(state);
+  const actors = localActorSelectors.selectAll(state);
+  const triggers = localTriggerSelectors.selectAll(state);
+
+  const stripPresetId = (storedArgs?: ScriptEventArgs) => {
+    return { ...storedArgs, __presetId: undefined };
+  };
+
+  const scriptEventUpdates = scriptEvents
+    .filter(
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
+    )
+    .map((scriptEvent) => ({
+      id: scriptEvent.id,
+      changes: {
+        args: stripPresetId(scriptEvent.args),
+      },
+    }));
+
+  scriptEventsAdapter.updateMany(state.scriptEvents, scriptEventUpdates);
+
+  // Remove presetId from any uses in actor prefab overrides
+  actors.forEach((actor) => {
+    Object.values(actor.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
+      }
+    });
+  });
+
+  // Remove presetId from any uses in trigger prefab overrides
+  triggers.forEach((trigger) => {
+    Object.values(trigger.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
+      }
+    });
+  });
+};
+
 const removeScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -4287,6 +4401,8 @@ const entitiesSlice = createSlice({
     setScriptEventSymbol,
     groupScriptEvents,
     ungroupScriptEvent,
+    applyScriptEventPresetChanges,
+    removeScriptEventPresetReferences,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,

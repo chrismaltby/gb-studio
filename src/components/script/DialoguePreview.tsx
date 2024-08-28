@@ -2,22 +2,45 @@ import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { textNumLines } from "shared/lib/helpers/trimlines";
+import { textNumNewlines } from "shared/lib/helpers/trimlines";
 import {
   avatarSelectors,
   fontSelectors,
 } from "store/features/entities/entitiesState";
-import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
+import {
+  loadFont,
+  drawFrame,
+  drawFill,
+  drawText,
+  FontData,
+} from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
+import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 
 interface DialoguePreviewProps {
   text: string;
   avatarId?: string;
+  showFrame?: boolean;
+  showFill?: boolean;
+  textX?: number;
+  textY?: number;
+  textHeight?: number;
+  minHeight?: number;
+  maxHeight?: number;
+  scale?: number;
 }
 
 export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
+  showFrame = true,
+  showFill = true,
+  textX = 1,
+  textY = 1,
+  textHeight = 3,
+  minHeight = 4,
+  maxHeight = 7,
+  scale = 1,
 }) => {
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
   const avatarAsset = useAppSelector((state) =>
@@ -130,18 +153,48 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       // eslint-disable-next-line no-self-assign
       canvas.width = canvas.width;
       if (ctx) {
+        const textLines = textNumNewlines(text);
         const tileWidth = 20;
-        const tileHeight = textNumLines(text) + 2;
+        const tileHeight = calculateTextBoxHeight({
+          textLines,
+          textY,
+          textHeight,
+          minHeight,
+          maxHeight,
+          showFrame,
+        });
         canvas.width = tileWidth * 8;
         canvas.height = tileHeight * 8;
-        drawFrame(ctx, frameImage, tileWidth, tileHeight);
+        if (showFrame) {
+          drawFrame(ctx, frameImage, tileWidth, tileHeight);
+        } else if (showFill) {
+          drawFill(ctx, frameImage, tileWidth, tileHeight);
+        }
         if (avatarId) {
-          drawText(ctx, text, 24, 8, fontsData, defaultFontId, fonts[0]?.id);
           if (avatarImage) {
             ctx.drawImage(avatarImage, 8, 8);
           }
+          drawText(
+            ctx,
+            text,
+            Math.max(0, 16 + 8 * textX),
+            Math.max(0, 8 * textY),
+            textHeight,
+            fontsData,
+            defaultFontId,
+            fonts[0]?.id
+          );
         } else {
-          drawText(ctx, text, 8, 8, fontsData, defaultFontId, fonts[0]?.id);
+          drawText(
+            ctx,
+            text,
+            Math.max(0, 8 * textX),
+            Math.max(0, 8 * textY),
+            textHeight,
+            fontsData,
+            defaultFontId,
+            fonts[0]?.id
+          );
         }
       }
       setDrawn(true);
@@ -155,6 +208,13 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     fontsData,
     defaultFontId,
     fonts,
+    showFrame,
+    textX,
+    textY,
+    maxHeight,
+    minHeight,
+    textHeight,
+    showFill,
   ]);
 
   // Keep track of component's mounted state to allow detecting if component still mounted when
@@ -172,10 +232,8 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       width={160}
       height={48}
       style={{
-        width: 240,
+        width: 160 * scale,
         imageRendering: "pixelated",
-        boxShadow: "5px 5px 10px 0px rgba(0,0,0,0.5)",
-        borderRadius: 4,
         opacity: drawn ? 1 : 0,
       }}
     />

@@ -2,19 +2,24 @@ import React, { memo, useCallback, useContext } from "react";
 import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
+  ScriptEventParentType,
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
-import { FormField, ToggleableFormField } from "ui/form/FormLayout";
+import {
+  FormField,
+  FormFieldProps,
+  ToggleableFormField,
+} from "ui/form/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
   ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
 import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
-import { TabBar } from "ui/tabs/Tabs";
+import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -24,6 +29,7 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -31,10 +37,24 @@ interface ScriptEventFormFieldProps {
   nestLevel: number;
   altBg: boolean;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
 }
 
 const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
+
+const isScriptEventInitializationData = (
+  data: unknown
+): data is { id: string; values?: Record<string, unknown> } => {
+  return (
+    !!data &&
+    typeof data === "object" &&
+    "id" in data &&
+    (!("values" in data) || typeof data.values === "object")
+  );
+};
 
 // @TODO This MultiInputButton functionality only seems to be used by eventTextDialogue
 // and likely should become part of DialogueTextarea
@@ -90,6 +110,9 @@ const ScriptEventFormField = memo(
     scriptEvent,
     field,
     entityId,
+    parentId,
+    parentKey,
+    parentType,
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
@@ -111,6 +134,41 @@ const ScriptEventFormField = memo(
     const value: unknown = field.multiple
       ? ([] as unknown[]).concat([], args?.[field.key || ""])
       : args?.[field.key || ""];
+
+    const setArgsValues = useCallback(
+      (newArgs: Record<string, unknown>) => {
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEvent({
+              scriptEventId: scriptEvent.id,
+              changes: {
+                args: newArgs,
+              },
+            })
+          );
+        }
+      },
+      [context.entityType, context.instanceId, dispatch, scriptEvent]
+    );
 
     const setArgValue = useCallback(
       (key: string, value: unknown) => {
@@ -156,38 +214,7 @@ const ScriptEventFormField = memo(
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
-                if (
-                  context.entityType === "actorPrefab" &&
-                  context.instanceId
-                ) {
-                  dispatch(
-                    entitiesActions.editActorPrefabScriptEventOverride({
-                      actorId: context.instanceId,
-                      scriptEventId: scriptEvent.id,
-                      args: updatedArgs,
-                    })
-                  );
-                } else if (
-                  context.entityType === "triggerPrefab" &&
-                  context.instanceId
-                ) {
-                  dispatch(
-                    entitiesActions.editTriggerPrefabScriptEventOverride({
-                      triggerId: context.instanceId,
-                      scriptEventId: scriptEvent.id,
-                      args: updatedArgs,
-                    })
-                  );
-                } else {
-                  dispatch(
-                    entitiesActions.editScriptEvent({
-                      scriptEventId: scriptEvent.id,
-                      changes: {
-                        args: updatedArgs,
-                      },
-                    })
-                  );
-                }
+                setArgsValues(updatedArgs);
               }
             });
         }
@@ -199,6 +226,7 @@ const ScriptEventFormField = memo(
         field.hasPostUpdateFn,
         field.key,
         scriptEvent,
+        setArgsValues,
       ]
     );
 
@@ -253,6 +281,34 @@ const ScriptEventFormField = memo(
       [field.key, setArgValue, value]
     );
 
+    const onInsertEventAfter = useCallback(() => {
+      const eventData = field.defaultValue;
+      if (!isScriptEventInitializationData(eventData)) {
+        return;
+      }
+      dispatch(
+        entitiesActions.addScriptEvents({
+          entityId: parentId,
+          type: parentType,
+          key: parentKey,
+          insertId: scriptEvent.id,
+          data: [
+            {
+              command: eventData.id,
+              args: eventData.values,
+            },
+          ],
+        })
+      );
+    }, [
+      dispatch,
+      field.defaultValue,
+      parentId,
+      parentKey,
+      parentType,
+      scriptEvent.id,
+    ]);
+
     let label = field.label;
     if (typeof label === "string" && label.replace) {
       label = label.replace(
@@ -301,10 +357,19 @@ const ScriptEventFormField = memo(
       );
     }
 
+    if (field.type === "presets") {
+      return (
+        <ScriptEventUserPresets
+          scriptEvent={scriptEvent}
+          onChange={setArgsValues}
+        />
+      );
+    }
+
     if (field.type === "tabs") {
       return (
         <TabBar
-          variant="scriptEvent"
+          variant={(field.variant || "scriptEvent") as TabBarVariant}
           value={String(value || Object.keys(field.values || {})[0])}
           values={field.values || {}}
           onChange={onChange}
@@ -329,6 +394,7 @@ const ScriptEventFormField = memo(
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
                 onChangeArg={setArgValue}
+                onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
                 {valueIndex !== 0 && (
@@ -354,6 +420,7 @@ const ScriptEventFormField = memo(
           args={scriptEvent?.args || {}}
           onChange={onChange}
           onChangeArg={setArgValue}
+          onInsertEventAfter={onInsertEventAfter}
         />
       );
 
@@ -403,6 +470,7 @@ const ScriptEventFormField = memo(
               : ""
           }
           title={field.description}
+          variant={field.labelVariant as FormFieldProps["variant"]}
           hasOverride={overrides?.args?.[field.key || ""] !== undefined}
         >
           {inputField}

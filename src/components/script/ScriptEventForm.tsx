@@ -6,6 +6,7 @@ import {
   CustomEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventNormalized,
+  ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
@@ -14,6 +15,9 @@ import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEven
 interface ScriptEventFormProps {
   scriptEvent: ScriptEventNormalized;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
   nestLevel: number;
   altBg: boolean;
   renderEvents: (key: string, label: string) => React.ReactNode;
@@ -79,6 +83,9 @@ const getScriptEventFields = (
 const ScriptEventForm = ({
   scriptEvent,
   entityId,
+  parentId,
+  parentKey,
+  parentType,
   nestLevel,
   altBg,
   renderEvents,
@@ -112,6 +119,9 @@ const ScriptEventForm = ({
     <ScriptEventFields
       scriptEvent={scriptEvent}
       entityId={entityId}
+      parentId={parentId}
+      parentKey={parentKey}
+      parentType={parentType}
       nestLevel={nestLevel}
       altBg={altBg}
       renderEvents={renderEvents}

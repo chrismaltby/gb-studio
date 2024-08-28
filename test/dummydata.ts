@@ -351,6 +351,8 @@ export const dummyProjectData: ProjectData = {
     generateDebugFilesEnabled: false,
     compilerOptimisation: "none",
     compilerPreset: 3000,
+    scriptEventPresets: {},
+    scriptEventDefaultPresets: {},
   },
 };
 
@@ -619,6 +621,8 @@ export const dummySettingsResource: SettingsResource = {
   generateDebugFilesEnabled: false,
   compilerOptimisation: "none",
   compilerPreset: 3000,
+  scriptEventPresets: {},
+  scriptEventDefaultPresets: {},
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -724,6 +728,8 @@ export const dummyProjectResources: ProjectResources = {
     generateDebugFilesEnabled: false,
     compilerOptimisation: "none",
     compilerPreset: 3000,
+    scriptEventPresets: {},
+    scriptEventDefaultPresets: {},
   },
 };
 

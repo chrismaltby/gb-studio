@@ -191,6 +191,10 @@ const APISetup = {
       ipcRenderer.invoke("dialog:confirm-replace-prefab", name),
     confirmUnpackPrefab: (): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-unpack-prefab"),
+    confirmDeletePreset: (name: string): Promise<number | false> =>
+      ipcRenderer.invoke("dialog:confirm-delete-preset", name),
+    confirmApplyPreset: (): Promise<number | false> =>
+      ipcRenderer.invoke("dialog:confirm-apply-preset"),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
       ipcRenderer.invoke("dialog:confirm-tracker-unsaved", name),
     migrateWarning: (path: string) =>

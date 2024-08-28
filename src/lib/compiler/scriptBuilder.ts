@@ -32,7 +32,7 @@ import {
   PrecompiledTilesetData,
   PrecompiledBackground,
 } from "./generateGBVMData";
-import { DMG_PALETTE, defaultProjectSettings } from "consts";
+import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -78,6 +78,7 @@ import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
 import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
+import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 
 export type ScriptOutput = string[];
 
@@ -596,7 +597,6 @@ export const toProjectileHash = ({
     })
   );
 
-const MAX_DIALOGUE_LINES = 5;
 const fadeSpeeds = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f];
 
 const scriptValueToSubpixels = (
@@ -1033,6 +1033,11 @@ class ScriptBuilder {
     this._addCmd("VM_SET_INT8", `_${cVariable}`, addr);
   };
 
+  _setMemUInt8 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_UINT8", `_${cVariable}`, addr);
+  };
+
   _setMemInt16 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_INT16", `_${cVariable}`, addr);
@@ -1047,6 +1052,18 @@ class ScriptBuilder {
       this._stackPop(1);
     } else {
       this._setMemInt8(cVariable, variableAlias);
+    }
+  };
+
+  _setMemUInt8ToVariable = (cVariable: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addDependency(cVariable);
+    if (this._isIndirectVariable(variable)) {
+      this._stackPushInd(variableAlias);
+      this._setMemUInt8(cVariable, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setMemUInt8(cVariable, variableAlias);
     }
   };
 
@@ -1065,6 +1082,14 @@ class ScriptBuilder {
   _setConstMemInt8 = (cVariable: string, value: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
+  };
+
+  _setConstMemUInt8 = (
+    cVariable: string,
+    value: ScriptBuilderStackVariable
+  ) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
   };
 
   _setConstMemInt16 = (
@@ -1841,6 +1866,10 @@ class ScriptBuilder {
     this._addCmd("VM_DISPLAY_TEXT");
   };
 
+  _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
+    this._addCmd("VM_SWITCH_TEXT_LAYER", layer);
+  };
+
   _choice = (
     variable: ScriptBuilderStackVariable,
     options: ScriptBuilderChoiceFlag[],
@@ -1860,7 +1889,7 @@ class ScriptBuilder {
     this._addCmd("    .MENUITEM", x, y, left, right, up, down);
   };
 
-  _overlayShow = (x: number, y: number, color: number) => {
+  _overlayShow = (x: number, y: number, color: number | string) => {
     this._addCmd("VM_OVERLAY_SHOW", x, y, color, 0);
   };
 
@@ -1904,6 +1933,16 @@ class ScriptBuilder {
       modal ? ".UI_MODAL" : ".UI_NONMODAL",
       buildOverlayWaitCondition(waitFlags)
     );
+  };
+
+  _overlaySetScroll = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: string
+  ) => {
+    this._addCmd("VM_OVERLAY_SET_SCROLL", x, y, width, height, color);
   };
 
   _inputWait = (mask: number) => {
@@ -3506,15 +3545,56 @@ extern void __mute_mask_${symbol};
     return (input.match(/(\n|\r|\x0a|\x0d|\\012|\\015)/g)?.length ?? 0) + 1;
   };
 
-  textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
+  textDialogue = (
+    inputText: string | string[] = " ",
+    avatarId?: string,
+    minHeight = 4,
+    maxHeight = 7,
+    position: "bottom" | "top" = "bottom",
+    showFrame = true,
+    clearPrevious = true,
+    textX = 1,
+    textY = 1,
+    textHeight = 5,
+    speedIn = -1,
+    speedOut = -1,
+    closeWhen: "key" | "text" | "notModal" = "key",
+    closeButton: "a" | "b" | "any" = "a",
+    closeDelayFrames = 0
+  ) => {
+    const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
+    const overlayInSpeed = speedIn === -1 ? ".OVERLAY_IN_SPEED" : speedIn;
+    const overlayOutSpeed = speedOut === -1 ? ".OVERLAY_OUT_SPEED" : speedOut;
+
     const initialNumLines = input.map(this.textNumLines);
-    const maxNumLines = Math.max(2, Math.max.apply(null, initialNumLines));
-    const textBoxHeight = Math.min(maxNumLines, MAX_DIALOGUE_LINES) + 2;
-    const textBoxY = 18 - textBoxHeight;
+    const maxNumLines = Math.max.apply(null, initialNumLines);
+    const textBoxHeight = calculateTextBoxHeight({
+      textLines: maxNumLines,
+      textY,
+      textHeight,
+      minHeight,
+      maxHeight,
+      showFrame,
+    });
+
+    const isModal = closeWhen !== "notModal";
+    const renderOnTop = position === "top" && !scene.parallax;
+    const textBoxY = renderOnTop ? 0 : 18 - textBoxHeight;
+    const x = decOct(Math.max(1, 1 + textX + (avatarId ? 2 : 0)));
+    const y = decOct(Math.max(1, 1 + textY));
+    const textPosSequence =
+      textX !== 1 || textY !== 1 ? `\\003\\${x}\\${y}` : "";
 
     this._addComment("Text Dialogue");
+
+    if (renderOnTop) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_cut_scanline");
+      this._setConstMemUInt8("overlay_cut_scanline", textBoxHeight * 8 - 1);
+    }
+
     input.forEach((text, textIndex) => {
       let avatarIndex = undefined;
       if (avatarId) {
@@ -3525,22 +3605,144 @@ extern void __mute_mask_${symbol};
         }
       }
 
-      this._loadStructuredText(text, avatarIndex, MAX_DIALOGUE_LINES);
-      this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
-      if (textIndex === 0) {
-        this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
+      let endDelaySequence = "";
+      if (closeWhen === "text") {
+        endDelaySequence = `\\001\\${decOct(8)}\\001\\${decOct(6)}`;
+      } else if (textIndex !== input.length - 1) {
+        endDelaySequence = `\\001\\${decOct(7)}`;
       }
+
+      this._loadStructuredText(
+        `${textPosSequence}${text}${endDelaySequence}`,
+        avatarIndex,
+        textHeight
+      );
+      if (clearPrevious) {
+        this._overlayClear(
+          0,
+          0,
+          20,
+          textBoxHeight,
+          ".UI_COLOR_WHITE",
+          showFrame
+        );
+      }
+
+      // Animate first dialogue window of sequence on screen
+      if (textIndex === 0) {
+        this._overlayMoveTo(
+          0,
+          renderOnTop ? textBoxHeight : 18,
+          ".OVERLAY_SPEED_INSTANT"
+        );
+        this._overlayMoveTo(0, textBoxY, overlayInSpeed);
+      }
+
+      this._overlaySetScroll(
+        textX + (avatarId ? 3 : 0),
+        textY,
+        (showFrame ? 19 : 20) - (avatarId ? 3 : 0) - textX,
+        textHeight,
+        ".UI_COLOR_WHITE"
+      );
+
       this._displayText();
-      this._overlayWait(true, [
-        ".UI_WAIT_WINDOW",
-        ".UI_WAIT_TEXT",
-        ".UI_WAIT_BTN_A",
-      ]);
+
+      if (isModal) {
+        const waitFlags: ScriptBuilderOverlayWaitFlag[] = [
+          ".UI_WAIT_WINDOW",
+          ".UI_WAIT_TEXT",
+        ];
+        if (closeWhen === "key") {
+          if (closeButton === "a") {
+            waitFlags.push(".UI_WAIT_BTN_A");
+          }
+          if (closeButton === "b") {
+            waitFlags.push(".UI_WAIT_BTN_B");
+          }
+          if (closeButton === "any") {
+            waitFlags.push(".UI_WAIT_BTN_ANY");
+          }
+        }
+        this._overlayWait(isModal, waitFlags);
+        if (closeWhen === "text" && closeDelayFrames > 0) {
+          if (closeDelayFrames < 5) {
+            for (let i = 0; i < closeDelayFrames; i++) {
+              this._idle();
+            }
+          } else {
+            const waitArgsRef = this._declareLocal("wait_args", 1, true);
+            const stackPtr = this.stackPtr;
+            this._setConst(waitArgsRef, Math.round(closeDelayFrames));
+            this._invoke("wait_frames", 0, waitArgsRef);
+            this._assertStackNeutral(stackPtr);
+          }
+        }
+      }
+
+      // Animate final dialogue window of sequence off screen
       if (textIndex === input.length - 1) {
-        this._overlayMoveTo(0, 18, ".OVERLAY_OUT_SPEED");
-        this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+        if (isModal) {
+          this._overlayMoveTo(
+            0,
+            renderOnTop ? textBoxHeight : 18,
+            overlayOutSpeed
+          );
+          this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+        }
       }
     });
+
+    // Reset scanline when rendering on top (as long as it wasn't non-modal)
+    if (isModal && renderOnTop) {
+      this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
+      this._idle();
+      this._setMemUInt8("overlay_cut_scanline", ".ARG0");
+    }
+
+    if (renderOnTop) {
+      this._stackPop(1);
+    }
+
+    this._addNL();
+  };
+
+  textDraw = (
+    inputText = " ",
+    x = 0,
+    y = 0,
+    location: "background" | "overlay" = "background"
+  ) => {
+    const { settings } = this.options;
+    const isColor = settings.colorMode !== "mono";
+    const drawX = decOct(1 + x);
+    const drawY = decOct(1 + y);
+
+    this._addComment("Draw Text");
+
+    if (isColor) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_priority");
+      this._setConstMemUInt8("overlay_priority", 0);
+    }
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_BKG");
+    }
+
+    this._loadStructuredText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
+    this._displayText();
+    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    if (isColor) {
+      this._setMemUInt8("overlay_priority", ".ARG0");
+      this._stackPop(1);
+    }
+
     this._addNL();
   };
 
@@ -3698,6 +3900,19 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  textCloseNonModal = (speed = 0) => {
+    this._addComment("Close Non-Modal Dialogue");
+    this._overlayMoveTo(
+      0,
+      18,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
+    this._idle();
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._setConstMemUInt8("overlay_cut_scanline", LYC_SYNC_VALUE);
+    this._addNL();
+  };
+
   overlayShow = (color = "white", x = 0, y = 0) => {
     this._addComment("Overlay Show");
     this._overlayShow(x, y, color === "white" ? 1 : 0);
@@ -3712,8 +3927,36 @@ extern void __mute_mask_${symbol};
 
   overlayMoveTo = (x = 0, y = 18, speed = 0) => {
     this._addComment("Overlay Move To");
-    this._overlayMoveTo(x, y, speed);
+    this._overlayMoveTo(
+      x,
+      y,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    this._addNL();
+  };
+
+  overlaySetScanlineCutoff = (
+    y: ScriptValue,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    this._addComment("Overlay Set Scanline Cutoff");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(
+        shiftLeftScriptValueConst(y, units === "tiles" ? 0x3 : 0x0)
+      )
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._setConstMemUInt8("overlay_cut_scanline", rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const yRef = this._declareLocal("y", 1, true);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(yRef).stop();
+      this._setMemUInt8ToVariable("overlay_cut_scanline", yRef);
+    }
     this._addNL();
   };
 

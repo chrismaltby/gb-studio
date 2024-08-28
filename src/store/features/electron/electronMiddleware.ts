@@ -305,6 +305,32 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         return next(action);
       });
       return;
+    } else if (settingsActions.removeScriptEventPreset.match(action)) {
+      const state = store.getState();
+
+      const scriptEventPreset =
+        state.project.present.settings.scriptEventPresets[action.payload.id]?.[
+          action.payload.presetId
+        ];
+      if (scriptEventPreset) {
+        API.dialog
+          .confirmDeletePreset(scriptEventPreset.name)
+          .then((cancel) => {
+            if (cancel) {
+              return;
+            }
+            return next(action);
+          });
+        return;
+      }
+    } else if (settingsActions.editScriptEventPreset.match(action)) {
+      API.dialog.confirmApplyPreset().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
     } else if (actions.showErrorBox.match(action)) {
       API.dialog.showError(action.payload.title, action.payload.content);
     }

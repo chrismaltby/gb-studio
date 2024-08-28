@@ -1,27 +1,33 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+export type TabBarVariant =
+  | "normal"
+  | "secondary"
+  | "eventSection"
+  | "scriptEvent";
+
 interface TabBarProps<T extends string> {
   value?: T;
   values: Record<T, string>;
   onChange?: (newValue: T) => void;
   buttons?: ReactNode;
-  variant?: "normal" | "secondary" | "scriptEvent";
+  variant?: TabBarVariant;
   overflowActiveTab?: boolean;
 }
 
 interface WrapperProps {
-  variant?: "normal" | "secondary" | "scriptEvent";
+  variant?: TabBarVariant;
 }
 
 interface TabsProps {
   overflowActiveTab?: boolean;
-  variant?: "normal" | "secondary" | "scriptEvent";
+  variant?: TabBarVariant;
 }
 
 interface TabProps {
   selected: boolean;
-  variant?: "normal" | "secondary" | "scriptEvent";
+  variant?: TabBarVariant;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -41,6 +47,21 @@ const Wrapper = styled.div<WrapperProps>`
     props.variant === "secondary"
       ? css`
           background-color: ${(props) => props.theme.colors.input.background};
+        `
+      : ""}
+
+  ${(props) =>
+    props.variant === "eventSection"
+      ? css`
+          height: 25px;
+          max-width: none;
+          margin-left: -5px;
+          margin-right: -5px;
+          padding: 0px;
+          margin-top: -5px;
+          margin-bottom: 5px;
+          flex-basis: 100%;
+          background: ${(props) => props.theme.colors.sidebar.background};
         `
       : ""}
 
@@ -73,6 +94,13 @@ const Tabs = styled.div<TabsProps>`
     props.overflowActiveTab
       ? css`
           height: 37px;
+        `
+      : ""}
+
+  ${(props) =>
+    props.variant === "eventSection"
+      ? css`
+          height: 26px;
         `
       : ""}
 
@@ -151,6 +179,18 @@ ${(props) =>
       ? css`
           padding-right: 5px;
           height: 36px;
+        `
+      : ""}
+
+      ${(props) =>
+    props.selected && props.variant === "eventSection"
+      ? css`
+          background: ${(props) =>
+            props.theme.colors.scripting.form.background};
+          overflow: visible;
+          &:focus {
+            z-index: auto;
+          }
         `
       : ""}
 

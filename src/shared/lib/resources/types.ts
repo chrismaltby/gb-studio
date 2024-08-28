@@ -1,5 +1,7 @@
 import { Type, Static } from "@sinclair/typebox";
 
+export type ExtractResource<T> = Omit<T, "_resourceType">;
+
 export const ActorDirection = Type.Union(
   [
     Type.Literal("up"),
@@ -56,12 +58,16 @@ const MetadataResource = Type.Object({
 
 export type MetadataResource = Static<typeof MetadataResource>;
 
+export const ScriptEventArgs = Type.Record(Type.String(), Type.Unknown());
+
+export type ScriptEventArgs = Static<typeof ScriptEventArgs>;
+
 const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
     symbol: Type.Optional(Type.String()), // Include symbol property to match TypeScript
-    args: Type.Optional(Type.Record(Type.String(), Type.Unknown())), // Matches ScriptEventArgs
+    args: Type.Optional(ScriptEventArgs), // Matches ScriptEventArgs
     children: Type.Optional(
       Type.Record(
         Type.String(),
@@ -556,6 +562,15 @@ export const BreakpointData = Type.Object({
 
 export type BreakpointData = Static<typeof BreakpointData>;
 
+export const ScriptEventPreset = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  groups: Type.Array(Type.String()),
+  args: ScriptEventArgs,
+});
+
+export type ScriptEventPreset = Static<typeof ScriptEventPreset>;
+
 export const SettingsResource = Type.Object({
   _resourceType: Type.Literal("settings"),
   startSceneId: Type.String(),
@@ -631,9 +646,16 @@ export const SettingsResource = Type.Object({
   generateDebugFilesEnabled: Type.Boolean(),
   compilerOptimisation: CompilerOptimisation,
   compilerPreset: Type.Number({ default: 3000 }),
+  scriptEventPresets: Type.Record(
+    Type.String(),
+    Type.Record(Type.String(), ScriptEventPreset)
+  ),
+  scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
+
+export type Settings = ExtractResource<SettingsResource>;
 
 export const VariableData = Type.Object({
   id: Type.String(),

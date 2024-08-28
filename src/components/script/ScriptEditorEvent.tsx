@@ -600,6 +600,9 @@ const ScriptEditorEvent = React.memo(
                 renderEvents={renderEvents}
                 nestLevel={nestLevel}
                 altBg={index % 2 === 0}
+                parentId={parentId}
+                parentKey={parentKey}
+                parentType={parentType}
               />
             </ScriptEventFormWrapper>
           )}

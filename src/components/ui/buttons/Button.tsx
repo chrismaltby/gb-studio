@@ -186,3 +186,14 @@ Button.propTypes = {
   variant: PropTypes.oneOf(["normal", "primary", "transparent"]),
   size: PropTypes.oneOf(["small", "medium", "large"]),
 };
+
+export const ButtonPrefixIcon = styled.div`
+  svg {
+    height: 12px;
+    width: 12px;
+    max-width: 12px;
+    max-height: 12px;
+    margin-left: -5px;
+    margin-bottom: -2px;
+  }
+`;

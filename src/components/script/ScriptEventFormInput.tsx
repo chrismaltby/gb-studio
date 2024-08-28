@@ -41,7 +41,7 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
-import { Button } from "ui/buttons/Button";
+import { Button, ButtonPrefixIcon } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
@@ -50,7 +50,7 @@ import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
-import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
+import { BlankIcon, CheckIcon, ConnectIcon, PlusIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { ScriptEditorContext } from "./ScriptEditorContext";
@@ -79,6 +79,7 @@ interface ScriptEventFormInputProps {
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
   onChangeArg: (key: string, newValue: unknown) => void;
+  onInsertEventAfter: () => void;
 }
 
 const ConnectButton = styled.div`
@@ -111,6 +112,7 @@ const ScriptEventFormInput = ({
   defaultValue,
   onChange,
   onChangeArg,
+  onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useAppSelector(
@@ -358,7 +360,7 @@ const ScriptEventFormInput = ({
         <ToggleButtons
           name={id}
           options={field.options as [string, string][]}
-          value={value as string[]}
+          value={(value ?? field.defaultValue) as string[]}
           allowMultiple={field.allowMultiple as true}
           allowNone={field.allowNone}
           onChange={onChangeField}
@@ -590,7 +592,8 @@ const ScriptEventFormInput = ({
         <CameraSpeedSelect
           name={id}
           allowNone
-          value={Number(value ?? 0)}
+          allowDefault={field.allowDefault}
+          value={Number(value ?? field.defaultValue ?? 0)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -812,6 +815,15 @@ const ScriptEventFormInput = ({
         />
       );
     }
+  } else if (type === "addEventButton") {
+    return (
+      <Button style={{ width: "100%" }} onClick={onInsertEventAfter}>
+        <ButtonPrefixIcon>
+          <PlusIcon />
+        </ButtonPrefixIcon>
+        {field.label}
+      </Button>
+    );
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
       field.defaultType) as string;
@@ -839,6 +851,7 @@ const ScriptEventFormInput = ({
             args={args}
             onChange={onChangeUnionField}
             onChangeArg={onChangeArg}
+            onInsertEventAfter={onInsertEventAfter}
           />
         </div>
         <ConnectButton>
