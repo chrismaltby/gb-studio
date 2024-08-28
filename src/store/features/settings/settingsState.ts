@@ -141,7 +141,10 @@ const settingsSlice = createSlice({
         args: ScriptEventArgs;
       }>
     ) => {
-      if (!state.scriptEventPresets[action.payload.id]) {
+      if (
+        !state.scriptEventPresets[action.payload.id] ||
+        !state.scriptEventPresets[action.payload.id][action.payload.presetId]
+      ) {
         return;
       }
       state.scriptEventPresets[action.payload.id][action.payload.presetId] = {
@@ -162,17 +165,37 @@ const settingsSlice = createSlice({
       if (!state.scriptEventPresets[action.payload.id]) {
         return;
       }
+      // If the preset to be deleted is currently set as the default, then unset default
+      if (
+        state.scriptEventDefaultPresets[action.payload.id] ===
+        action.payload.presetId
+      ) {
+        delete state.scriptEventDefaultPresets[action.payload.id];
+      }
+
+      // Delete preset
       delete state.scriptEventPresets[action.payload.id][
         action.payload.presetId
       ];
+
+      // If there are no more presets under this event type, remove the event type
+      if (
+        Object.keys(state.scriptEventPresets[action.payload.id]).length === 0
+      ) {
+        delete state.scriptEventPresets[action.payload.id];
+      }
     },
 
     setScriptEventDefaultPreset: (
       state,
       action: PayloadAction<{ id: string; presetId: string }>
     ) => {
-      state.scriptEventDefaultPresets[action.payload.id] =
-        action.payload.presetId;
+      if (action.payload.presetId.length > 0) {
+        state.scriptEventDefaultPresets[action.payload.id] =
+          action.payload.presetId;
+      } else {
+        delete state.scriptEventDefaultPresets[action.payload.id];
+      }
     },
   },
   extraReducers: (builder) =>

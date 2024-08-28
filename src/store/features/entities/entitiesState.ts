@@ -3839,7 +3839,9 @@ const applyScriptEventPresetChanges: CaseReducer<
 
   const scriptEventUpdates = scriptEvents
     .filter(
-      (scriptEvent) => scriptEvent.args?.__presetId === action.payload.presetId
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
     )
     .map((scriptEvent) => ({
       id: scriptEvent.id,
@@ -3864,6 +3866,55 @@ const applyScriptEventPresetChanges: CaseReducer<
     Object.values(trigger.prefabScriptOverrides).forEach((override) => {
       if (override.args?.__presetId === action.payload.presetId) {
         override.args = mergeArgs(override.args);
+      }
+    });
+  });
+};
+
+const removeScriptEventPresetReferences: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    id: string;
+    presetId: string;
+  }>
+> = (state, action) => {
+  const scriptEvents = localScriptEventSelectors.selectAll(state);
+  const actors = localActorSelectors.selectAll(state);
+  const triggers = localTriggerSelectors.selectAll(state);
+
+  const stripPresetId = (storedArgs?: ScriptEventArgs) => {
+    return { ...storedArgs, __presetId: undefined };
+  };
+
+  const scriptEventUpdates = scriptEvents
+    .filter(
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
+    )
+    .map((scriptEvent) => ({
+      id: scriptEvent.id,
+      changes: {
+        args: stripPresetId(scriptEvent.args),
+      },
+    }));
+
+  scriptEventsAdapter.updateMany(state.scriptEvents, scriptEventUpdates);
+
+  // Remove presetId from any uses in actor prefab overrides
+  actors.forEach((actor) => {
+    Object.values(actor.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
+      }
+    });
+  });
+
+  // Remove presetId from any uses in trigger prefab overrides
+  triggers.forEach((trigger) => {
+    Object.values(trigger.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
       }
     });
   });
@@ -4351,6 +4402,7 @@ const entitiesSlice = createSlice({
     groupScriptEvents,
     ungroupScriptEvent,
     applyScriptEventPresetChanges,
+    removeScriptEventPresetReferences,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,

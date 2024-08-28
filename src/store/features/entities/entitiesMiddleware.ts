@@ -30,8 +30,7 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       }
 
       return;
-    }
-    if (settingsActions.editScriptEventPreset.match(action)) {
+    } else if (settingsActions.editScriptEventPreset.match(action)) {
       // Fetch values of preset from before change
       // to modify any unchanged uses of the preset
       const state = store.getState();
@@ -43,6 +42,14 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         entitiesActions.applyScriptEventPresetChanges({
           ...action.payload,
           previousArgs,
+        })
+      );
+    } else if (settingsActions.removeScriptEventPreset.match(action)) {
+      // Fetch values of preset from before change
+      // to modify any unchanged uses of the preset
+      store.dispatch(
+        entitiesActions.removeScriptEventPresetReferences({
+          ...action.payload,
         })
       );
     }
