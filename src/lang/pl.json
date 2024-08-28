@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1571240822",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1572240828",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1555,6 +1555,7 @@
   "COMPILER_LOOKING_FOR_LOCAL_ENGINE": "Wyszukiwanie lokalnego silnika w {path}",
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Lokalny silnik nie znaleziony, używanie domyślnego silnika",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Wyszukiwanie wtyczek silnika w {path}",
+  "COMPILER_USING_ENGINE_PLUGIN": "Używanie wtyczki silnika: {path}",
   
   "// 21": "Messages -----------------------------------------------------",
 
