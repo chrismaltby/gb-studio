@@ -1138,7 +1138,11 @@ export const precompileScenes = (
     // Scene hash must be different for any property that could cause
     // called scripts to be generated with different content
     const hash = SparkMD5.hash(
-      projectiles.map((p) => p.hash).join("-") + !scene.parallax
+      projectiles.map((p) => p.hash).join("-") +
+        "_" +
+        !scene.parallax +
+        "_" +
+        scene.type
     );
 
     return {

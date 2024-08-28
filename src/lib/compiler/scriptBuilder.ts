@@ -3310,15 +3310,18 @@ extern void __mute_mask_${symbol};
   };
 
   playerBounce = (height: "low" | "medium" | "high") => {
-    this._addComment("Player Bounce");
-    let value = -0x4000;
-    if (height === "low") {
-      value = -0x2000;
-    } else if (height === "high") {
-      value = -0x6000;
+    const { scene } = this.options;
+    if (scene.type === "PLATFORM") {
+      this._addComment("Player Bounce");
+      let value = -0x4000;
+      if (height === "low") {
+        value = -0x2000;
+      } else if (height === "high") {
+        value = -0x6000;
+      }
+      this._setConstMemInt16("pl_vel_y", value);
+      this._addNL();
     }
-    this._setConstMemInt16("pl_vel_y", value);
-    this._addNL();
   };
 
   actorInvoke = () => {
