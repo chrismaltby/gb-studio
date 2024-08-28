@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Draw Text" event allowing drawing text directly to background or overlay (based on "Display Background Text" plugin by [@pau-tomas](https://github.com/pau-tomas))
 - Add "Set Overlay Scanline Cutoff" event allowing you to show overlays at the top of the screen
 - Add "Close Non-Modal Dialogue" event, required if using "Close When" -> "Never" option in updated "Display Dialogue" event.
+- Add "Mute Channel" event allowing control over which music channels are active or muted (based on "Mute Channel" plugin by [@pau-tomas](https://github.com/pau-tomas))
 - Tilesets asset folder added to all sample projects [@pau-tomas](https://github.com/pau-tomas)
 - Add `_stackPushVariable(variable)` and `_isIndirectVariable(variable)` helpers for use in plugins
 - Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project

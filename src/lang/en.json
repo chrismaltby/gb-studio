@@ -898,6 +898,8 @@
   "FIELD_LOCATION": "Location",
   "FIELD_TEXT_DRAW_LOCATION_DESC": "The location where text should be drawn.",
   "FIELD_OVERLAY": "Overlay",
+  "FIELD_ACTIVE_CHANNELS": "Active Channels",
+  "FIELD_ACTIVE_CHANNELS_DESC": "The channels that will produce sound. Any unselected channels will be muted.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1274,6 +1276,8 @@
   "EVENT_TEXT_DRAW": "Draw Text",
   "EVENT_TEXT_DRAW_LABEL": "Draw \"{text}\"",
   "EVENT_TEXT_DRAW_DESC": "Write some text to a specified positon on either the scene's background or the overlay.",
+  "EVENT_MUTE_CHANNEL": "Mute Channel",
+  "EVENT_MUTE_CHANNEL_DESC": "Set which audio channels are active and which are muted.",
 
   "// 10": "Menu -----------------------------------------------------",
 

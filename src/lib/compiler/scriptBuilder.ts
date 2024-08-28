@@ -349,6 +349,16 @@ const unionFlags = (flags: string[], defaultValue = "0") => {
   return `^/(${flags.join(" | ")})/`;
 };
 
+const andFlags = (flags: string[], defaultValue = "0") => {
+  if (flags.length === 0) {
+    return defaultValue;
+  }
+  if (flags.length === 1) {
+    return flags[0];
+  }
+  return `^/(${flags.join(" & ")})/`;
+};
+
 const toASMVar = (symbol: string) => {
   return symbol.toUpperCase().replace(/[^A-Z0-9]/g, "_");
 };
@@ -5731,6 +5741,27 @@ extern void __mute_mask_${symbol};
   musicStop = () => {
     this._addComment(`Music Stop`);
     this._musicStop();
+    this._addNL();
+  };
+
+  musicSetMuteMask = (
+    duty1Active: boolean,
+    duty2Active: boolean,
+    waveActive: boolean,
+    noiseActive: boolean
+  ) => {
+    this._addComment(`Mute Channel`);
+    this._addCmd(
+      "VM_MUSIC_MUTE",
+      andFlags(
+        (["0x0F"] as string[]).concat(
+          duty1Active ? "0x0E" : [],
+          duty2Active ? "0x0D" : [],
+          waveActive ? "0x0B" : [],
+          noiseActive ? "0x07" : []
+        )
+      )
+    );
     this._addNL();
   };
 
