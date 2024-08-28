@@ -2222,7 +2222,7 @@ extern void __mute_mask_${symbol};
     addr: ScriptBuilderStackVariable,
     symbol: string,
     tileIndex: ScriptBuilderStackVariable,
-    numTiles: number
+    numTiles: number | string
   ) => {
     this._addCmd(
       "VM_REPLACE_TILE",
@@ -3970,6 +3970,26 @@ extern void __mute_mask_${symbol};
       rpn.refSetVariable(yRef).stop();
       this._setMemUInt8ToVariable("overlay_cut_scanline", yRef);
     }
+    this._addNL();
+  };
+
+  dialogueFrameSetTiles = (tilesetId: string) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId);
+
+    if (tileset && (tileset.imageWidth !== 24 || tileset.imageHeight !== 24)) {
+      throw new Error(
+        `The selected tileset is ${tileset.imageWidth}x${tileset.imageHeight}px. Please select a 24x24 tileset.`
+      );
+    }
+
+    const symbol = tileset?.symbol ?? "tileset_default_frame";
+
+    this._addComment(`Set dialogue frame`);
+    this._stackPushConst(0);
+    this._stackPushConst(".FRAME_TILE_ID");
+    this._replaceTile(".ARG0", symbol, ".ARG1", ".FRAME_LENGTH");
+    this._stackPop(2);
     this._addNL();
   };
 

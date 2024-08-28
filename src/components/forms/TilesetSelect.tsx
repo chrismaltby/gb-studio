@@ -28,6 +28,10 @@ interface TilesetSelectProps extends SelectCommonProps {
   units?: UnitType;
   optional?: boolean;
   optionalLabel?: string;
+  filters?: {
+    width?: number;
+    height?: number;
+  };
 }
 
 interface TilesetOption extends Option {
@@ -61,6 +65,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   units,
   optional,
   optionalLabel,
+  filters,
   ...selectProps
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
@@ -69,13 +74,26 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
-    const plugins = uniq(tilesets.map((s) => s.plugin || "")).sort();
+    const filteredTilesets = filters
+      ? tilesets.filter((tileset) => {
+          if (filters.width && tileset.imageWidth !== filters.width) {
+            return false;
+          }
+          if (filters.height && tileset.imageHeight !== filters.height) {
+            return false;
+          }
+          return true;
+        })
+      : tilesets;
+    const plugins = uniq(filteredTilesets.map((s) => s.plugin || "")).sort();
     const options = plugins.reduce(
       (memo, plugin) => {
         buildOptions(
           memo,
           plugin,
-          tilesets.filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+          filteredTilesets.filter((s) =>
+            plugin ? s.plugin === plugin : !s.plugin
+          )
         );
         return memo;
       },

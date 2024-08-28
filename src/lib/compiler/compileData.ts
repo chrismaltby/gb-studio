@@ -1414,6 +1414,10 @@ const compile = async (
 
   // Add UI data
   output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
+  output["tileset_default_frame.c"] = compileTileset({
+    symbol: "tileset_default_frame",
+    data: precompiled.frameTiles,
+  });
   output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
   output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
   output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);

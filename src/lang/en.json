@@ -900,6 +900,8 @@
   "FIELD_OVERLAY": "Overlay",
   "FIELD_ACTIVE_CHANNELS": "Active Channels",
   "FIELD_ACTIVE_CHANNELS_DESC": "The channels that will produce sound. Any unselected channels will be muted.",
+  "FIELD_SET_FRAME_IMAGE_DESC": "The tileset to use as a dialogue frame.",
+  "FIELD_SET_FRAME_IMAGE_INFO": "Must be a tileset of size 24px x 24px",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1278,6 +1280,8 @@
   "EVENT_TEXT_DRAW_DESC": "Write some text to a specified positon on either the scene's background or the overlay.",
   "EVENT_MUTE_CHANNEL": "Mute Channel",
   "EVENT_MUTE_CHANNEL_DESC": "Set which audio channels are active and which are muted.",
+  "EVENT_SET_DIALOGUE_FRAME": "Set Dialogue Frame",
+  "EVENT_SET_DIALOGUE_FRAME_DESC": "Set a tileset to replace the dialogue frame image.",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -669,12 +669,15 @@ const ScriptEventFormInput = ({
       <OffscreenSkeletonInput>
         <TilesetSelect
           name={id}
+          optional={field.optional}
+          optionalLabel={field.optionalLabel}
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
           units={
             (args[field.unitsField || ""] || field.unitsDefault) as UnitType
           }
+          filters={field.filters}
         />
       </OffscreenSkeletonInput>
     );

@@ -8,6 +8,7 @@ import type {
   Palette,
   Scene,
   SceneParallaxLayer,
+  TilesetData,
   Trigger,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
@@ -59,13 +60,13 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
-export interface PrecompiledTilesetData {
+export type PrecompiledTilesetData = TilesetData & {
   id: string;
   symbol: string;
   data: number[] | Uint8Array;
   width: number;
   height: number;
-}
+};
 
 export interface PrecompiledTileData {
   symbol: string;

@@ -563,6 +563,7 @@ export interface ScriptEventFieldSchema {
   step?: number;
   options?: [unknown, string][];
   optional?: boolean;
+  optionalLabel?: string;
   allowNone?: boolean;
   allowDefault?: boolean;
   allowMultiple?: boolean;
@@ -586,6 +587,7 @@ export interface ScriptEventFieldSchema {
   noneLabel?: string;
   variant?: string;
   labelVariant?: string;
+  filters?: Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;
