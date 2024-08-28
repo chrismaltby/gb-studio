@@ -2878,12 +2878,12 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHR")
       .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(units === "tiles" ? 0x7 : 0x4)
+      .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
 
@@ -6339,11 +6339,11 @@ extern void __mute_mask_${symbol};
     this._addComment(`If Actor At Position`);
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
+      optimiseScriptValue(valueX),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
+      optimiseScriptValue(valueY),
       "y"
     );
 
@@ -6361,11 +6361,19 @@ extern void __mute_mask_${symbol};
 
     // X Value EQ
     rpn.ref(this._localRef(actorRef, 1));
+    // Convert to chosen units
+    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.operator(".SHR");
+    // Get value to compare X with
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
     rpn.operator(".EQ");
 
     // Y Value EQ
     rpn.ref(this._localRef(actorRef, 2));
+    // Convert to chosen units
+    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.operator(".SHR");
+    // Get value to compare Y with
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.operator(".EQ");
 
