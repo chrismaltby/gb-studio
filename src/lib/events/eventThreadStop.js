@@ -13,7 +13,7 @@ const fields = [
     label: l10n("FIELD_THREAD_HANDLE_VARIABLE"),
     description: l10n("FIELD_READ_THREAD_HANDLE_VARIABLE_DESC"),
     type: "variable",
-    defaultValue: "LAST_VARIABLE",
+    defaultValue: "T0",
   },
 ];
 
