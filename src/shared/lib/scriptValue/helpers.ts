@@ -613,3 +613,25 @@ export const addScriptValueToScriptValue = (
     valueB: valueB,
   };
 };
+
+export const clampScriptValueConst = (
+  value: ScriptValue,
+  min: number,
+  max: number
+): ScriptValue => {
+  return {
+    type: "max",
+    valueA: {
+      type: "number",
+      value: min,
+    },
+    valueB: {
+      type: "min",
+      valueA: {
+        type: "number",
+        value: max,
+      },
+      valueB: value,
+    },
+  };
+};

@@ -73,6 +73,7 @@ import {
   addScriptValueConst,
   addScriptValueToScriptValue,
   shiftLeftScriptValueConst,
+  clampScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -121,6 +122,12 @@ type ScriptBuilderSimpleVariable = string | number;
 type ScriptBuilderVariable =
   | ScriptBuilderSimpleVariable
   | ScriptBuilderFunctionArg;
+
+type CameraProperty =
+  | "camera_deadzone_x"
+  | "camera_deadzone_y"
+  | "camera_offset_x"
+  | "camera_offset_y";
 
 interface ScriptBuilderFunctionArgLookup {
   actor: Map<string, ScriptBuilderFunctionArg>;
@@ -1086,6 +1093,50 @@ class ScriptBuilder {
       this._stackPop(1);
     } else {
       this._setMemInt16(cVariable, variableAlias);
+    }
+  };
+
+  _setMemToScriptValue = (
+    cVariable: string,
+    cType: "BYTE" | "UBYTE" | "WORD" | "UWORD",
+    value: ScriptValue
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      // Was single number - set using const
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setConstMemInt16(cVariable, rpnOps[0].value);
+      } else if (cType === "UBYTE") {
+        this._setConstMemUInt8(cVariable, rpnOps[0].value);
+      } else {
+        this._setConstMemInt8(cVariable, rpnOps[0].value);
+      }
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      // Was single variable
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setMemInt16ToVariable(cVariable, rpnOps[0].value);
+      } else if (cType === "UBYTE") {
+        this._setMemUInt8ToVariable(cVariable, rpnOps[0].value);
+      } else {
+        this._setMemInt8ToVariable(cVariable, rpnOps[0].value);
+      }
+    } else {
+      // Was RPN instructions
+      const memSetValueRef = this._declareLocal("mem_set_value", 1, true);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(memSetValueRef).stop();
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setMemInt16ToVariable(cVariable, memSetValueRef);
+      } else if (cType === "UBYTE") {
+        this._setMemUInt8ToVariable(cVariable, memSetValueRef);
+      } else {
+        this._setMemInt8ToVariable(cVariable, memSetValueRef);
+      }
     }
   };
 
@@ -4281,6 +4332,23 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOps, localsLookup);
     rpn.refSet(this._localRef(cameraShakeArgsRef, 2)).stop();
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
+    this._addNL();
+  };
+
+  cameraSetPropertyToScriptValue = (
+    property: CameraProperty = "camera_deadzone_x",
+    value: ScriptValue
+  ) => {
+    this._addComment(`Camera Set Property ${property}`);
+    if (property === "camera_deadzone_x" || property === "camera_deadzone_y") {
+      this._setMemToScriptValue(
+        property,
+        "BYTE",
+        clampScriptValueConst(value, 0, 40)
+      );
+    } else {
+      this._setMemToScriptValue(property, "BYTE", value);
+    }
     this._addNL();
   };
 

@@ -913,6 +913,11 @@
   "FIELD_ERROR": "Error",
   "FIELD_SUCCESS_DESC": "The script to run on success.",
   "FIELD_ERROR_DESC": "The script to run on error.",
+  "FIELD_CAMERA_PROPERTY_SET_DESC": "The camera property to update.",
+  "FIELD_CAMERA_DEADZONE_X": "Camera Deadzone X",
+  "FIELD_CAMERA_DEADZONE_Y": "Camera Deadzone Y",
+  "FIELD_CAMERA_OFFSET_X": "Camera Offset X",
+  "FIELD_CAMERA_OFFSET_Y": "Camera Offset Y",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1296,6 +1301,9 @@
   "EVENT_SET_DIALOGUE_FRAME_DESC": "Set a tileset to replace the dialogue frame image.",
   "EVENT_PRINT": "Print Using GB Printer",
   "EVENT_PRINT_DESC": "Send an image to a GB Printer for printing. A GB Printer device must be connected.",
+  "EVENT_CAMERA_PROPERTY_SET": "Set Camera Property",
+  "EVENT_CAMERA_PROPERTY_SET_DESC": "Update a property of the game camera.",
+  "EVENT_GENERIC_SET_LABEL": "Set {field} To {value}",
 
   "// 10": "Menu -----------------------------------------------------",
 
