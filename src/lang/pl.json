@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1653240829",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1661240829",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -913,6 +913,11 @@
   "FIELD_ERROR": "Błąd",
   "FIELD_SUCCESS_DESC": "Skrypt do uruchomienia w przypadku powodzenia.",
   "FIELD_ERROR_DESC": "Skrypt do uruchomienia w przypadku błędu.",
+  "FIELD_CAMERA_PROPERTY_SET_DESC": "Właściwości kamery do zaktualizowania.",
+  "FIELD_CAMERA_DEADZONE_X": "Martwy punkt X kamery",
+  "FIELD_CAMERA_DEADZONE_Y": "Martwy punkt Y kamery",
+  "FIELD_CAMERA_OFFSET_X": "Przesunięcie kamery X",
+  "FIELD_CAMERA_OFFSET_Y": "Przesunięcie kamery Y",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1296,6 +1301,9 @@
   "EVENT_SET_DIALOGUE_FRAME_DESC": "Ustaw zestaw tafli do zastąpienia obrazu ramki dialogowej.",
   "EVENT_PRINT": "Drukuj przy użyciu drukarki GB",
   "EVENT_PRINT_DESC": "Wyślij obraz do drukarki GB w celu wydrukowania. Urządzenie drukarki GB musi być podłączone.",
+  "EVENT_CAMERA_PROPERTY_SET": "Ustaw właściwości kamery",
+  "EVENT_CAMERA_PROPERTY_SET_DESC": "Zaktualizuj właściwości kamery w grze.",
+  "EVENT_GENERIC_SET_LABEL": "Ustaw {field} na {value}",
   
   "// 10": "Menu -----------------------------------------------------",
 
