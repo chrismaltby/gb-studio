@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When deleting scripts, you are now given the option to also delete all "Call Script" events that reference the script
 - Add ROM usage monitor to Build Log showing how much free space is available before the next ROM size increase [@pau-tomas](https://github.com/pau-tomas)
 - Add "Print Using GB Printer" event to send either the current Background or Overlay to a connected GB Printer. Game must be run on real hardware with a printer connected for this feature to work (based on "Print Screen Background" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Set Camera Property" event for changing camera deadzone and offset values
 
 ### Changed
 
