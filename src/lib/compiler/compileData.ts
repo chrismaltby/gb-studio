@@ -1146,6 +1146,8 @@ export const precompileScenes = (
         "_" +
         scene.paletteIds +
         "_" +
+        scene.spritePaletteIds +
+        "_" +
         background.autoPalettes
     );
 

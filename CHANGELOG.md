@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update Scene Pop events to allow setting Fade Speed as "Instant" [@pau-tomas](https://github.com/pau-tomas)
 - "Launch Projectile" event fields organised into multiple tabs
 - Update "Display Dialogue" event to include tabs with additional layout and behavior options (based on "Display Advanced Dialogue" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Update "Set Sprite Palettes" event to allow restoring default palettes
 
 ### Fixed
 

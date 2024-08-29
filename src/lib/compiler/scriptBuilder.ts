@@ -6120,7 +6120,7 @@ extern void __mute_mask_${symbol};
   };
 
   paletteSetSprite = (paletteIds: string[]) => {
-    const { palettes, settings } = this.options;
+    const { palettes, scene, settings } = this.options;
 
     let mask = 0;
     const writePalettes: Palette[] = [];
@@ -6130,8 +6130,15 @@ extern void __mute_mask_${symbol};
       if (paletteId === "keep") {
         continue;
       }
+      let palette = getPalette(palettes, paletteId, defaultPaletteId);
+      if (paletteId === "restore") {
+        // Restore from manual palette
+        const scenePaletteId =
+          scene.spritePaletteIds[i] ?? settings.defaultSpritePaletteIds[i];
+        palette = getPalette(palettes, scenePaletteId, defaultPaletteId);
+      }
       mask += 1 << i;
-      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
+      writePalettes.push(palette);
     }
 
     if (mask === 0) {

@@ -13,6 +13,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 0,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette1",
@@ -21,6 +22,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 1,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette2",
@@ -29,6 +31,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 2,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette3",
@@ -37,6 +40,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 3,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette4",
@@ -45,6 +49,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 4,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette5",
@@ -53,6 +58,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 5,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette6",
@@ -61,6 +67,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 6,
     canKeep: true,
+    canRestore: true,
   },
   {
     key: "palette7",
@@ -69,6 +76,7 @@ const fields = [
     paletteType: "sprite",
     paletteIndex: 7,
     canKeep: true,
+    canRestore: true,
   },
 ];
 

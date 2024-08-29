@@ -453,6 +453,7 @@ const ScriptEventFormInput = ({
               defaultSpritePaletteIds[field.paletteIndex || 0] || ""
             }
             canKeep={field.canKeep}
+            canRestore={field.canRestore}
             keepLabel={l10n("FIELD_DONT_MODIFY")}
             type="sprite"
           />
