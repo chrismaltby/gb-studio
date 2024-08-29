@@ -924,6 +924,11 @@
   "FIELD_SPLIT_IN": "Split In",
   "FIELD_SPLIT_OUT": "Split Out",
   "FIELD_DURATION_ACTOR_EFFECT_DESC": "The length of time to play the actor effect.",
+  "FIELD_THREAD_HANDLE_VARIABLE": "Thread Handle",
+  "FIELD_SET_THREAD_HANDLE_VARIABLE_DESC": "As the thread starts a handle will be stored in this variable. You can use this handle to stop the thread later.",
+  "FIELD_READ_THREAD_HANDLE_VARIABLE_DESC": "The handle for the thread you want to stop.",
+  "FIELD_RUN_IN_BACKGROUND": "Run In Background",
+  "FIELD_RUN_IN_BACKGROUND_DESC": "The script to run in the background thread.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -958,6 +963,7 @@
   "EVENT_GROUP_DIALOGUE": "Dialogue & Menus",
   "EVENT_GROUP_TIMER": "Timer",
   "EVENT_GROUP_PRINTER": "Printer",
+  "EVENT_GROUP_THREADS": "Threads",
   "EVENT_SWITCH_SCENE": "Change Scene",
   "EVENT_SWITCH_SCENE_DESC": "Transition to a new scene with player at a specified position and direction. A connection line will be drawn between the source of the event and the destination scene with an icon appearing at the destination position. It's possible to drag this icon around and between scenes to modify the event.",
   "EVENT_WAIT": "Wait",
@@ -1312,6 +1318,10 @@
   "EVENT_GENERIC_SET_LABEL": "Set {field} To {value}",
   "EVENT_ACTOR_EFFECTS": "Actor Effects",
   "EVENT_ACTOR_EFFECTS_DESC": "Play an actor effect animation on a selected actor.",
+  "EVENT_THREAD_START": "Thread Start",
+  "EVENT_THREAD_START_DESC": "Run a script in another thread.",
+  "EVENT_THREAD_STOP": "Stop Thread",
+  "EVENT_THREAD_STOP_DESC": "Stop a thread based on the selected thread handle.",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -2091,6 +2091,48 @@ class ScriptBuilder {
     this._addCmd("VM_TIMER_RESET", context);
   };
 
+  _threadStart = (symbol: string, handleAddr: string, numArgs: number) => {
+    this._addCmd(
+      "VM_BEGINTHREAD",
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      handleAddr,
+      numArgs
+    );
+  };
+
+  _threadStartWithVariableHandle = (
+    symbol: string,
+    handleVariable: ScriptBuilderVariable,
+    numArgs: number
+  ) => {
+    const handleVariableAlias = this.getVariableAlias(handleVariable);
+    if (this._isIndirectVariable(handleVariable)) {
+      const valueTmpRef = this._declareLocal("value_tmp", 1, true);
+      this._threadStart(symbol, valueTmpRef, numArgs);
+      this._setInd(handleVariableAlias, valueTmpRef);
+    } else {
+      this._threadStart(symbol, handleVariableAlias, numArgs);
+    }
+  };
+
+  _threadTerminate = (handleAddr: string) => {
+    this._addCmd("VM_TERMINATE", handleAddr);
+  };
+
+  _threadTerminateWithVariableHandle = (
+    handleVariable: ScriptBuilderVariable
+  ) => {
+    const handleVariableAlias = this.getVariableAlias(handleVariable);
+    if (this._isIndirectVariable(handleVariable)) {
+      this._stackPushInd(handleVariableAlias);
+      this._threadTerminate(".ARG0");
+      this._stackPop(1);
+    } else {
+      this._threadTerminate(handleVariableAlias);
+    }
+  };
+
   _savePeek = (
     successDest: ScriptBuilderStackVariable,
     dest: ScriptBuilderStackVariable,
@@ -4562,6 +4604,23 @@ extern void __mute_mask_${symbol};
   timerDisable = (timer = 1) => {
     this._addComment(`Timer Disable`);
     this._timerStop(timer);
+  };
+
+  // --------------------------------------------------------------------------
+  // Threads
+
+  threadStart = (handleVariable: string, script: ScriptEvent[]) => {
+    this._addComment(`Thread Start`);
+    const scriptRef = this._compileSubScript("thread", script);
+    this._vmUnlock();
+    this._threadStartWithVariableHandle(scriptRef, handleVariable, 0);
+    this._addNL();
+  };
+
+  threadTerminate = (handleVariable: string) => {
+    this._addComment(`Thread Stop`);
+    this._threadTerminateWithVariableHandle(handleVariable);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -7510,7 +7569,7 @@ extern void __mute_mask_${symbol};
   };
 
   _compileSubScript = (
-    type: "input" | "timer" | "music" | "custom",
+    type: "input" | "timer" | "music" | "thread" | "custom",
     script: ScriptEvent[],
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
