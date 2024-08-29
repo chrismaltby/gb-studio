@@ -918,6 +918,12 @@
   "FIELD_CAMERA_DEADZONE_Y": "Camera Deadzone Y",
   "FIELD_CAMERA_OFFSET_X": "Camera Offset X",
   "FIELD_CAMERA_OFFSET_Y": "Camera Offset Y",
+  "FIELD_ACTOR_EFFECT_DESC": "The actor effect to play.",
+  "FIELD_ACTOR_EFFECT_ACTOR_DESC": "The actor to be animated.",
+  "FIELD_FLICKER": "Flicker",
+  "FIELD_SPLIT_IN": "Split In",
+  "FIELD_SPLIT_OUT": "Split Out",
+  "FIELD_DURATION_ACTOR_EFFECT_DESC": "The length of time to play the actor effect.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1304,6 +1310,8 @@
   "EVENT_CAMERA_PROPERTY_SET": "Set Camera Property",
   "EVENT_CAMERA_PROPERTY_SET_DESC": "Update a property of the game camera.",
   "EVENT_GENERIC_SET_LABEL": "Set {field} To {value}",
+  "EVENT_ACTOR_EFFECTS": "Actor Effects",
+  "EVENT_ACTOR_EFFECTS_DESC": "Play an actor effect animation on a selected actor.",
 
   "// 10": "Menu -----------------------------------------------------",
 

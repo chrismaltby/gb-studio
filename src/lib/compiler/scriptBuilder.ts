@@ -1332,6 +1332,16 @@ class ScriptBuilder {
     this._addCmd("VM_JUMP", `${_label}$`);
   };
 
+  // Loops while variable is not zero
+  _loop = (
+    counterAddr: ScriptBuilderStackVariable,
+    label: string,
+    popNum: number
+  ) => {
+    const _label = toValidLabel(label);
+    this._addCmd("VM_LOOP", counterAddr, `${_label}$`, popNum);
+  };
+
   _randomize = () => {
     this._addCmd("VM_RANDOMIZE");
   };
@@ -3417,6 +3427,141 @@ extern void __mute_mask_${symbol};
       this._addComment("Invoke Actor Interact Script");
       this._callFar(`${actor.symbol}_interact`, 0);
     }
+  };
+
+  actorFXSplitIn = (
+    actorId: string,
+    distance: number,
+    speed: number,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    const pixelDistance = distance * (units === "tiles" ? 8 : 1);
+    const steps = Math.floor(pixelDistance / speed);
+    const subpixelDistance = pixelDistance * 16;
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const actorFinalXRef = this._declareLocal("final_x", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Split In");
+    this.actorSetById(actorId);
+    this._actorActivate(actorRef);
+    this._setConst(loopVarRef, steps);
+    this._actorGetPosition(actorRef);
+    this._set(actorFinalXRef, this._localRef(actorRef, 1));
+
+    this._label(loopLabel);
+
+    // Position to right
+    this._rpn()
+      .ref(actorFinalXRef)
+      .ref(loopVarRef)
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    // Position to left
+    this._rpn()
+      .ref(actorFinalXRef)
+      .ref(loopVarRef)
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".SUB")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    this._loop(loopVarRef, loopLabel, 0);
+  };
+
+  actorFXSplitOut = (
+    actorId: string,
+    distance: number,
+    speed: number,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    const pixelDistance = distance * (units === "tiles" ? 8 : 1);
+    const steps = Math.floor(pixelDistance / speed);
+    const subpixelDistance = pixelDistance * 16;
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const actorFinalXRef = this._declareLocal("final_x", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Split Out");
+    this.actorSetById(actorId);
+    this._setConst(loopVarRef, steps);
+    this._actorGetPosition(actorRef);
+    this._set(actorFinalXRef, this._localRef(actorRef, 1));
+
+    this._label(loopLabel);
+
+    // Position to right
+    this._rpn()
+      .ref(actorFinalXRef)
+      .int16(steps)
+      .ref(loopVarRef)
+      .operator(".SUB")
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    // Position to left
+    this._rpn()
+      .ref(actorFinalXRef)
+      .int16(steps)
+      .ref(loopVarRef)
+      .operator(".SUB")
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".SUB")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    this._loop(loopVarRef, loopLabel, 0);
+
+    // Position at end
+    this._rpn().ref(actorFinalXRef).refSet(this._localRef(actorRef, 1)).stop();
+    this._actorSetPosition(actorRef);
+
+    this._actorDeactivate(actorRef);
+  };
+
+  actorFXFlicker = (actorId: string, frames: number) => {
+    if (frames === 0) {
+      return;
+    }
+    const steps = Math.ceil(frames / 4);
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Flicker");
+    this.actorSetById(actorId);
+    this._setConst(loopVarRef, steps);
+
+    this._label(loopLabel);
+    this._actorSetHidden(actorRef, true);
+    this._idle();
+    this._idle();
+    this._actorSetHidden(actorRef, false);
+    this._idle();
+    this._idle();
+    this._loop(loopVarRef, loopLabel, 0);
   };
 
   // --------------------------------------------------------------------------
