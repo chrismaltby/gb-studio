@@ -58,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using parameters from one script while calling another wouldn't register the parameter in the parent script correctly
 - Fix issue where modified player flags were not being reset when changing scenes
 - Fix issue where "If Actor At Position" wasn't rounding to chosen units before comparing causing condition to fail when between tiles
+- Fix issue where resetting palettes back to defaults from a script used in multiple scenes may not load the correct palettes
 
 ## [4.0.2] - 2024-07-29
 

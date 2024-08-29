@@ -1142,7 +1142,11 @@ export const precompileScenes = (
         "_" +
         !scene.parallax +
         "_" +
-        scene.type
+        scene.type +
+        "_" +
+        scene.paletteIds +
+        "_" +
+        background.autoPalettes
     );
 
     return {
