@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1639240829",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1653240829",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -902,6 +902,17 @@
   "FIELD_ACTIVE_CHANNELS_DESC": "Kanały, które będą generować dźwięk. Każdy NIEZAZNACZONY kanał będzie wyciszony.",
   "FIELD_SET_FRAME_IMAGE_DESC": "Zestaw tafli do użycia jako ramka dialogowa.",
   "FIELD_SET_FRAME_IMAGE_INFO": "Musi być to tileset o rozmiarze 24px x 24px",
+  "FIELD_PRINT_SOURCE": "Źródło druku",
+  "FIELD_PRINT_SOURCE_DESC": " Lokalizacja danych obrazu do wydruku.",
+  "FIELD_PRINT_Y_DESC": "Linia, od której rozpocząć drukowanie.",
+  "FIELD_PRINT_HEIGHT_DESC": "Liczba linii do wydrukowania.",
+  "FIELD_MARGIN": "Margines",
+  "FIELD_PRINT_MARGIN_DESC": "Liczba pustych linii, które należy zostawić po wydrukowaniu.",
+  "FIELD_IF_PRINT_SUCCESSFUL": "Jeśli drukowanie zakończy się pomyślnie",
+  "FIELD_SUCCESS": "Powodzenie",
+  "FIELD_ERROR": "Błąd",
+  "FIELD_SUCCESS_DESC": "Skrypt do uruchomienia w przypadku powodzenia.",
+  "FIELD_ERROR_DESC": "Skrypt do uruchomienia w przypadku błędu.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -935,6 +946,7 @@
   "EVENT_GROUP_MUSIC": "Muzyka i dźwięk",
   "EVENT_GROUP_DIALOGUE": "Tekst i menu",
   "EVENT_GROUP_TIMER": "Stoper",
+  "EVENT_GROUP_PRINTER": "Drukarka",
   "EVENT_SWITCH_SCENE": "Scena: zmień scenę (teleport)",
   "EVENT_SWITCH_SCENE_DESC": "Przejście do nowej sceny z graczem w określonej pozycji i kierunku. Pomiędzy źródłem zdarzenia a sceną docelową zostanie narysowana linia połączenia z ikoną pojawiającą się w miejscu docelowym. Możliwe jest przeciąganie tej ikony dookoła i pomiędzy scenami, aby zmodyfikować wydarzenie.",
   "EVENT_WAIT": "Czekaj",
@@ -1282,6 +1294,8 @@
   "EVENT_MUTE_CHANNEL_DESC": "Ustaw, które kanały audio są aktywne, a które wyciszone.",
   "EVENT_SET_DIALOGUE_FRAME": "Ustaw ramkę dialogową",
   "EVENT_SET_DIALOGUE_FRAME_DESC": "Ustaw zestaw tafli do zastąpienia obrazu ramki dialogowej.",
+  "EVENT_PRINT": "Drukuj przy użyciu drukarki GB",
+  "EVENT_PRINT_DESC": "Wyślij obraz do drukarki GB w celu wydrukowania. Urządzenie drukarki GB musi być podłączone.",
   
   "// 10": "Menu -----------------------------------------------------",
 
