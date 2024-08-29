@@ -728,6 +728,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/actor.c"],
   },
+  {
+    version: "4.1.0-e1",
+    description: createDescription("Fixes", [
+      "Fix issue where timers were not suspending when executing modal dialogues and menus",
+    ]),
+    modifiedFiles: ["src/core/vm.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
