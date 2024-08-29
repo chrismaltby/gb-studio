@@ -1242,6 +1242,27 @@ class ScriptBuilder {
     }
   };
 
+  _printerDetect = (statusAddr: string, timeout: number) => {
+    this._addCmd("VM_PRINTER_DETECT", statusAddr, timeout);
+  };
+
+  _printOverlay = (
+    statusAddr: string,
+    startLine: number,
+    height: number,
+    margin: number
+  ) => {
+    // Height must be a multiple of two
+    const roundUpToNearest2 = (num: number) => Math.ceil(num / 2) * 2;
+    this._addCmd(
+      "VM_PRINT_OVERLAY",
+      statusAddr,
+      startLine,
+      roundUpToNearest2(height),
+      margin
+    );
+  };
+
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(
       `.dw ${data.map((d) => this._rawOffsetStackAddr(d)).join(", ")}`
@@ -1955,6 +1976,10 @@ class ScriptBuilder {
     this._addCmd("VM_OVERLAY_SET_SCROLL", x, y, width, height, color);
   };
 
+  _overlaySetSubmapEx = (addr: string) => {
+    this._addCmd("VM_OVERLAY_SET_SUBMAP_EX", addr);
+  };
+
   _inputWait = (mask: number) => {
     this._addCmd("VM_INPUT_WAIT", mask);
   };
@@ -2266,8 +2291,8 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  _callNative = (symbol: string) => {
-    this._addCmd("VM_CALL_NATIVE", `b_${symbol}`, `_${symbol}`);
+  _callNative = (symbol: string, bank?: number) => {
+    this._addCmd("VM_CALL_NATIVE", bank ? bank : `b_${symbol}`, `_${symbol}`);
   };
 
   _returnFar = () => {
@@ -3991,6 +4016,39 @@ extern void __mute_mask_${symbol};
     this._replaceTile(".ARG0", symbol, ".ARG1", ".FRAME_LENGTH");
     this._stackPop(2);
     this._addNL();
+  };
+
+  overlayCopyFromBackground = () => {
+    this._addComment("Copy Background To Overlay");
+
+    const scrollXRef = this._declareLocal("scroll_x", 1, true);
+    const scrollYRef = this._declareLocal("scroll_y", 1, true);
+
+    this._getMemInt16(scrollXRef, "scroll_x");
+    this._getMemInt16(scrollYRef, "scroll_y");
+
+    this._rpn()
+      .int8(0) // overlay x
+      .int8(0) // overlay y
+      .int8(20) // copy width
+      .int8(18) // copy height
+      // scene_x
+      .int8(0) // min x
+      .ref(scrollXRef)
+      .int8(3) // shift right by 3 (div by 8)
+      .operator(".SHR")
+      .operator(".MAX")
+      // scene_y
+      .int8(0) // min y
+      .ref(scrollYRef)
+      .int8(3) // shift right by 3 (div by 8)
+      .operator(".SHR")
+      .operator(".MAX")
+      .stop();
+
+    this._overlaySetSubmapEx(".ARG5");
+
+    this._stackPop(6);
   };
 
   // --------------------------------------------------------------------------
@@ -6242,6 +6300,63 @@ extern void __mute_mask_${symbol};
     packetSize: number
   ) => {
     this._sioExchangeVariables(sendVariable, receiveVariable, packetSize);
+  };
+
+  // --------------------------------------------------------------------------
+  // GB Printer
+
+  printOverlay = (
+    startLine: number,
+    height: number,
+    margin: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const isCGBRef = this._declareLocal("is_cgb", 1, true);
+    const printStatusRef = this._declareLocal("print_status", 1, true);
+    const timeout = 30;
+
+    const colorNotSupportedLabelA = this.getNextLabel();
+    const colorNotSupportedLabelB = this.getNextLabel();
+    const printFailedLabel = this.getNextLabel();
+    const printSuccessLabel = this.getNextLabel();
+    const printCleanupLabel = this.getNextLabel();
+
+    this._addComment("Print Overlay");
+
+    // If using CGB slow CPU before connecting to printer
+    this._getMemUInt8(isCGBRef, "_is_CGB");
+    this._ifConst(".NE", isCGBRef, 1, colorNotSupportedLabelA, 0);
+    this._callNative("cpu_slow", 1);
+    this._label(colorNotSupportedLabelA);
+
+    // Detect if printer was found
+    this._printerDetect(printStatusRef, timeout);
+    this._rpn().ref(printStatusRef).int8(0xf0).operator(".B_AND").stop();
+    this._ifConst(".NE", ".ARG0", 0, printFailedLabel, 1);
+
+    // Print overlay
+    this._printOverlay(printStatusRef, startLine, height, margin);
+    this._rpn().ref(printStatusRef).int8(0xf0).operator(".B_AND").stop();
+    this._ifConst(".EQ", ".ARG0", 0, printSuccessLabel, 1);
+
+    // Error path
+    this._label(printFailedLabel);
+    this._compilePath(falsePath);
+    this._jump(printCleanupLabel);
+
+    // Success
+    this._label(printSuccessLabel);
+    this._compilePath(truePath);
+
+    // If using CGB set CPU back to fast
+    this._label(printCleanupLabel);
+    this._getMemUInt8(isCGBRef, "_is_CGB");
+    this._ifConst(".NE", isCGBRef, 1, colorNotSupportedLabelB, 0);
+    this._callNative("cpu_fast", 1);
+    this._label(colorNotSupportedLabelB);
+
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
