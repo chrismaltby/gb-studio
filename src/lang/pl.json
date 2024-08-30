@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1661240829",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1679240830",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -918,6 +918,17 @@
   "FIELD_CAMERA_DEADZONE_Y": "Martwy punkt Y kamery",
   "FIELD_CAMERA_OFFSET_X": "Przesunięcie kamery X",
   "FIELD_CAMERA_OFFSET_Y": "Przesunięcie kamery Y",
+  "FIELD_ACTOR_EFFECT_DESC": "Efekt aktora do odtworzenia.",
+  "FIELD_ACTOR_EFFECT_ACTOR_DESC": "Aktor do animacji.",
+  "FIELD_FLICKER": "Migotanie",
+  "FIELD_SPLIT_IN": "Podziel w",
+  "FIELD_SPLIT_OUT": "Podziel na zewnątrz",
+  "FIELD_DURATION_ACTOR_EFFECT_DESC": "Czas trwania efektu aktora.",
+  "FIELD_THREAD_HANDLE_VARIABLE": "Uchwyt wątku",
+  "FIELD_SET_THREAD_HANDLE_VARIABLE_DESC": "Podczas uruchamiania wątku uchwyt zostanie zapisany w tej zmiennej. Możesz użyć tego uchwytu, aby później zatrzymać wątek.",
+  "FIELD_READ_THREAD_HANDLE_VARIABLE_DESC": "Uchwyt wątku, który chcesz zatrzymać.",
+  "FIELD_RUN_IN_BACKGROUND": "Uruchom w tle",
+  "FIELD_RUN_IN_BACKGROUND_DESC": "Skrypt do uruchomienia w tle.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -952,6 +963,7 @@
   "EVENT_GROUP_DIALOGUE": "Tekst i menu",
   "EVENT_GROUP_TIMER": "Stoper",
   "EVENT_GROUP_PRINTER": "Drukarka",
+  "EVENT_GROUP_THREADS": "Wątki",
   "EVENT_SWITCH_SCENE": "Scena: zmień scenę (teleport)",
   "EVENT_SWITCH_SCENE_DESC": "Przejście do nowej sceny z graczem w określonej pozycji i kierunku. Pomiędzy źródłem zdarzenia a sceną docelową zostanie narysowana linia połączenia z ikoną pojawiającą się w miejscu docelowym. Możliwe jest przeciąganie tej ikony dookoła i pomiędzy scenami, aby zmodyfikować wydarzenie.",
   "EVENT_WAIT": "Czekaj",
@@ -1304,6 +1316,12 @@
   "EVENT_CAMERA_PROPERTY_SET": "Ustaw właściwości kamery",
   "EVENT_CAMERA_PROPERTY_SET_DESC": "Zaktualizuj właściwości kamery w grze.",
   "EVENT_GENERIC_SET_LABEL": "Ustaw {field} na {value}",
+  "EVENT_ACTOR_EFFECTS": "Aktor: efekty aktora",
+  "EVENT_ACTOR_EFFECTS_DESC": "Odtwórz animację efektu aktora na wybranym aktorze.",
+  "EVENT_THREAD_START": "Rozpocznij wątek",
+  "EVENT_THREAD_START_DESC": "Uruchom skrypt w innym wątku.",
+  "EVENT_THREAD_STOP": "Zatrzymaj wątek",
+  "EVENT_THREAD_STOP_DESC": "Zatrzymaj wątek na podstawie wybranego uchwytu wątku.",
   
   "// 10": "Menu -----------------------------------------------------",
 
