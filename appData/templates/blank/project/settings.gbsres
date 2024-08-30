@@ -84,5 +84,7 @@
   "colorMode": "mono",
   "generateDebugFilesEnabled": false,
   "compilerOptimisation": "none",
-  "compilerPreset": 3000
+  "compilerPreset": 3000,
+  "scriptEventPresets": {},
+  "scriptEventDefaultPresets": {}
 }

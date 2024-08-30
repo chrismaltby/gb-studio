@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "c22cad6f-1191-4623-911d-1ec9a7b52fe6",
+  "_index": 6,
   "type": "POINTNCLICK",
   "name": "Player's House",
   "symbol": "scene_player_s_house",

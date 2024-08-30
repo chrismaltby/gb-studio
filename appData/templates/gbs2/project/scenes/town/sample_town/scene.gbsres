@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "94c18861-b352-4f49-a64d-52f2e3415077",
+  "_index": 11,
   "type": "TOPDOWN",
   "name": "town/Sample Town",
   "symbol": "scene_sample_town",

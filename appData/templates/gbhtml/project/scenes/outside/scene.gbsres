@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "94c18861-b352-4f49-a64d-52f2e3415077",
+  "_index": 4,
   "type": "TOPDOWN",
   "name": "Outside",
   "symbol": "scene_outside",

@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "a15eed10-615c-488a-b972-b4b37ccfc14e",
+  "_index": 1,
   "type": "PLATFORM",
   "name": "caves/Deeper Underground",
   "symbol": "scene_deeper_underground",
