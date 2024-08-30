@@ -183,7 +183,7 @@ Button.defaultProps = {
 };
 
 Button.propTypes = {
-  variant: PropTypes.oneOf(["normal", "primary", "transparent"]),
+  variant: PropTypes.oneOf(["normal", "primary", "transparent", "underlined"]),
   size: PropTypes.oneOf(["small", "medium", "large"]),
 };
 
