@@ -83,6 +83,14 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       }
 
       dispatch(consoleActions.completeConsole());
+    } else if (consoleActions.stdErr.match(action)) {
+      const state = store.getState();
+      const dispatch = store.dispatch.bind(store);
+      if (state.project.present.settings.openBuildLogOnWarnings) {
+        dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+        dispatch(navigationActions.setSection("world"));
+        dispatch(debuggerActions.setIsLogOpen(true));
+      }
     }
 
     return next(action);
