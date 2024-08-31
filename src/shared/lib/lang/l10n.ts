@@ -28,7 +28,7 @@ export const replaceParams = (string: string, params: L10NParams) => {
   let outputString = string;
   Object.keys(params).forEach((param) => {
     const pattern = new RegExp(`{${param}}`, "g");
-    const paramValue = String(params[param] || "");
+    const paramValue = String(params[param] ?? "");
     outputString = outputString.replace(pattern, paramValue);
   });
   return outputString;
