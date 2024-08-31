@@ -27,7 +27,7 @@ const fields = [
     key: "true",
     description: l10n("FIELD_ON_CALL_DESC"),
     type: "events",
-    allowedContexts: ["global", "entity"],
+    allowedContexts: ["global", "entity", "prefab"],
   },
 ];
 

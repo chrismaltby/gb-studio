@@ -37,7 +37,7 @@ const fields = [
     label: l10n("FIELD_ON_PRESS"),
     description: l10n("FIELD_ON_PRESS_DESC"),
     type: "events",
-    allowedContexts: ["global", "entity"],
+    allowedContexts: ["global", "entity", "prefab"],
     conditions: [
       {
         key: "__scriptTabs",

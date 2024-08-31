@@ -7574,7 +7574,7 @@ extern void __mute_mask_${symbol};
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const { scene } = this.options;
+    const { scene, entityType, entity } = this.options;
     let context: ScriptEditorCtxType = this.options.context;
 
     // Set script context to calculate default value for missing vars
@@ -7588,7 +7588,7 @@ extern void __mute_mask_${symbol};
     // it's already been compiled - just reuse if possible
     const preBuildHash = `${generateScriptHash(script)}_${
       scene.hash
-    }_${context}`;
+    }_${context}_${entityType}_${entity?.id ?? ""}`;
 
     if (this.options.additionalScriptsCache[preBuildHash]) {
       return this.options.additionalScriptsCache[preBuildHash];
