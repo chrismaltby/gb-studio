@@ -108,7 +108,10 @@ export const useScriptEventTitle = (
               l10n("FIELD_PLAYER")
             ).replace(/ /g, "");
           }
-          if (value === "$self$" && entityType === "actor") {
+          if (
+            value === "$self$" &&
+            (entityType === "actor" || entityType === "actorPrefab")
+          ) {
             return l10n("FIELD_SELF");
           } else if (value === "$self$" || value === "player") {
             return l10n("FIELD_PLAYER");
@@ -118,6 +121,8 @@ export const useScriptEventTitle = (
               / /g,
               ""
             );
+          } else if (entityType === "actorPrefab") {
+            return l10n("FIELD_SELF");
           } else {
             return l10n("FIELD_PLAYER");
           }
