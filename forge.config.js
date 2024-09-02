@@ -22,11 +22,19 @@ module.exports = async () => {
       new MakerAppImage({}),
       {
         name: "@electron-forge/maker-deb",
-        config: {},
+        config: {
+          options: {
+            icon: 'src/assets/app/icon/app_icon.png'
+          }
+        },
       },
       {
         name: "@electron-forge/maker-rpm",
-        config: {},
+        config: {
+          options: {
+            icon: 'src/assets/app/icon/app_icon.png'
+          }
+        },
       },
     ],
     packagerConfig: {
