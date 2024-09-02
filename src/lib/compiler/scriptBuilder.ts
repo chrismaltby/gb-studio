@@ -1791,6 +1791,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
   };
 
+  _actorStartUpdate = (addr: string) => {
+    this._addCmd("VM_ACTOR_BEGIN_UPDATE", addr);
+  };
+
   _actorTerminateUpdate = (addr: string) => {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
   };
@@ -3442,8 +3446,7 @@ extern void __mute_mask_${symbol};
   actorStartUpdate = () => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Start Update Script");
-    this._actorDeactivate(actorRef);
-    this._actorActivate(actorRef);
+    this._actorStartUpdate(actorRef);
     this._addNL();
   };
 
