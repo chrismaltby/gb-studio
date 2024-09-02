@@ -231,25 +231,43 @@ workerCtx.onmessage = async (evt) => {
         }
 
         for (const arg in scriptEvent.args) {
+          const argValue = scriptEvent.args[arg];
+
           if (
-            !isVariableField(
+            isScriptValueField(
               scriptEvent.command,
               arg,
               scriptEvent.args,
               scriptEventDefs
             )
           ) {
-            continue;
+            if (
+              !isScriptValue(argValue) ||
+              !variableInScriptValue(variableId, argValue)
+            ) {
+              continue;
+            }
           }
+          // If field was a variable check if it matches this variable
+          else if (
+            isVariableField(
+              scriptEvent.command,
+              arg,
+              scriptEvent.args,
+              scriptEventDefs
+            )
+          ) {
+            const isVariableId =
+              argValue === variableId ||
+              (isUnionValue(argValue) &&
+                argValue.type === "variable" &&
+                argValue.value === variableId);
 
-          const argValue = scriptEvent.args[arg];
-          const isVariableId =
-            argValue === variableId ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === variableId);
-
-          if (!isVariableId) {
+            if (!isVariableId) {
+              continue;
+            }
+          } else {
+            // Field was not a script value or a variable so can be ignored
             continue;
           }
 
