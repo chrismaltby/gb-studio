@@ -7597,7 +7597,10 @@ extern void __mute_mask_${symbol};
       scene.hash
     }_${context}_${entityType}_${entity?.id ?? ""}`;
 
-    if (this.options.additionalScriptsCache[preBuildHash]) {
+    if (
+      this.options.additionalScriptsCache[preBuildHash] &&
+      type !== "custom"
+    ) {
       return this.options.additionalScriptsCache[preBuildHash];
     }
 
@@ -7631,7 +7634,7 @@ extern void __mute_mask_${symbol};
 
     // If this script is identical to an already generated script
     // just reuse the existing symbol rather than writing a duplicate file
-    if (this.options.additionalScriptsCache[scriptHash]) {
+    if (this.options.additionalScriptsCache[scriptHash] && type !== "custom") {
       return this.options.additionalScriptsCache[scriptHash];
     }
 

@@ -1631,7 +1631,7 @@ test("should reuse symbol for input scripts with identical contents across multi
   );
 });
 
-test("should reuse both script and input symbol when scripts are identical across scenes", async () => {
+test("should reuse input symbol but NOT script symbol when scripts are identical across scenes", async () => {
   const output: string[] = [];
   const output2: string[] = [];
   const symbols: Dictionary<string> = {};
@@ -1763,7 +1763,7 @@ test("should reuse both script and input symbol when scripts are identical acros
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
-  expect(additionalScriptFiles.length).toEqual(2);
+  expect(additionalScriptFiles.length).toEqual(3);
   expect(output).toEqual([
     "        ; Call Script: Script 1",
     "        VM_PUSH_CONST           1 ; Actor 0",
@@ -1773,13 +1773,19 @@ test("should reuse both script and input symbol when scripts are identical acros
   expect(output2).toEqual([
     "        ; Call Script: Script 2",
     "        VM_PUSH_CONST           1 ; Actor 0",
-    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
     `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(
+    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
     `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
   );
 });
@@ -1855,7 +1861,7 @@ test("should insert placeholder symbol for recursive scripts", async () => {
   expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
 });
 
-test("should reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
+test("should NOT reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
   const output: string[] = [];
   const output2: string[] = [];
   const symbols: Dictionary<string> = {};
@@ -1943,7 +1949,7 @@ test("should reuse script symbol even if scene hashes are different as long as s
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
-  expect(additionalScriptFiles.length).toEqual(1);
+  expect(additionalScriptFiles.length).toEqual(2);
   expect(output).toEqual([
     "        ; Call Script: Script 1",
     "        VM_PUSH_CONST           1 ; Actor 0",
@@ -1953,10 +1959,11 @@ test("should reuse script symbol even if scene hashes are different as long as s
   expect(output2).toEqual([
     "        ; Call Script: Script 2",
     "        VM_PUSH_CONST           1 ; Actor 0",
-    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "        VM_CALL_FAR             ___bank_script_2, _script_2",
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
+  expect(additionalScripts["script_2"]?.compiledScript).toContain(`VM_IDLE`);
 });
 
 test("should not reused script symbol when scripts are not identical", async () => {
@@ -2923,7 +2930,7 @@ test("should allow pass by value of script value between multiple scripts", asyn
   );
 });
 
-describe.only("_getAvailableSymbol", () => {
+describe("_getAvailableSymbol", () => {
   test("should return symbol if available", async () => {
     const output: string[] = [];
     const scriptEventHandlers = await getTestScriptHandlers();
@@ -2956,5 +2963,122 @@ describe.only("_getAvailableSymbol", () => {
     expect(symbolC).toEqual("script_0_2");
     expect(symbolD).toEqual("script_1");
     expect(symbolE).toEqual("script_1_0");
+  });
+});
+
+describe("_compileSubScript", () => {
+  test("should compile subscript", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {} as unknown as PrecompiledScene,
+      symbols: {},
+    });
+    const symbol = sb._compileSubScript(
+      "input",
+      [
+        {
+          id: "event1",
+          command: "EVENT_IDLE",
+        },
+      ],
+      "script_input_0",
+      sb.options
+    );
+    expect(symbol).toEqual("script_input_0");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("script_input_0::");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("VM_IDLE");
+  });
+
+  test("should resuse symbol for identical subscript", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {} as unknown as PrecompiledScene,
+      symbols: {},
+    });
+    const symbolA = sb._compileSubScript(
+      "input",
+      [
+        {
+          id: "event1",
+          command: "EVENT_IDLE",
+        },
+      ],
+      "script_input_0",
+      sb.options
+    );
+    const symbolB = sb._compileSubScript(
+      "input",
+      [
+        {
+          id: "event1",
+          command: "EVENT_IDLE",
+        },
+      ],
+      "script_input_1",
+      sb.options
+    );
+    expect(symbolA).toEqual("script_input_0");
+    expect(symbolB).toEqual("script_input_0");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("script_input_0::");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("VM_IDLE");
+    expect(sb.options.additionalScripts["script_input_1"]).toBeFalsy();
+  });
+
+  test("should not resuse symbol for identical custom script", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {} as unknown as PrecompiledScene,
+      symbols: {},
+    });
+    const symbolA = sb._compileSubScript(
+      "custom",
+      [
+        {
+          id: "event1",
+          command: "EVENT_IDLE",
+        },
+      ],
+      "script_input_0",
+      sb.options
+    );
+    const symbolB = sb._compileSubScript(
+      "custom",
+      [
+        {
+          id: "event1",
+          command: "EVENT_IDLE",
+        },
+      ],
+      "script_input_1",
+      sb.options
+    );
+    expect(symbolA).toEqual("script_input_0");
+    expect(symbolB).toEqual("script_input_1");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("script_input_0::");
+    expect(
+      sb.options.additionalScripts["script_input_0"]?.compiledScript
+    ).toContain("VM_IDLE");
+    expect(
+      sb.options.additionalScripts["script_input_1"]?.compiledScript
+    ).toContain("script_input_1::");
+    expect(
+      sb.options.additionalScripts["script_input_1"]?.compiledScript
+    ).toContain("VM_IDLE");
   });
 });
