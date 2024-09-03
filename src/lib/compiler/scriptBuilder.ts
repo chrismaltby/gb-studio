@@ -7554,8 +7554,12 @@ extern void __mute_mask_${symbol};
       return name;
     }
     let counter = 0;
+    let newName = name;
     while (true) {
-      const newName = `${name.replace(/_[0-9]+$/, "")}_${counter}`;
+      newName =
+        counter === 0
+          ? `${newName}_0`
+          : `${newName.replace(/_[0-9]+$/, "")}_${counter}`;
       if (!symbols[newName]) {
         if (register) {
           symbols[newName] = newName;

@@ -2922,3 +2922,39 @@ test("should allow pass by value of script value between multiple scripts", asyn
     ].join("\n")
   );
 });
+
+describe.only("_getAvailableSymbol", () => {
+  test("should return symbol if available", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {} as unknown as PrecompiledScene,
+      symbols: {},
+    });
+    const symbol = sb._getAvailableSymbol("script_0");
+    expect(symbol).toEqual("script_0");
+  });
+
+  test("should return incremented symbol if suggested symbol was already taken", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {} as unknown as PrecompiledScene,
+      // eslint-disable-next-line camelcase
+      symbols: { script_0: "script_0" },
+    });
+    const symbolA = sb._getAvailableSymbol("script_0");
+    const symbolB = sb._getAvailableSymbol("script_0");
+    const symbolC = sb._getAvailableSymbol("script_0");
+    const symbolD = sb._getAvailableSymbol("script_1");
+    const symbolE = sb._getAvailableSymbol("script_1");
+
+    expect(symbolA).toEqual("script_0_0");
+    expect(symbolB).toEqual("script_0_1");
+    expect(symbolC).toEqual("script_0_2");
+    expect(symbolD).toEqual("script_1");
+    expect(symbolE).toEqual("script_1_0");
+  });
+});
