@@ -13,6 +13,7 @@ import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
 import entitiesMiddleware from "./features/entities/entitiesMiddleware";
 import settingsMiddleware from "./features/settings/settingsMiddleware";
+import consoleMiddleware from "./features/console/consoleMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -36,6 +37,7 @@ const store = configureStore({
     musicMiddleware,
     soundFxMiddleware,
     assetsMiddleware,
+    consoleMiddleware,
     undoMiddleware,
     clipboardMiddleware,
     trackerDocumentMiddleware,

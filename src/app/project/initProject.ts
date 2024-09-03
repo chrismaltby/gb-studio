@@ -163,11 +163,11 @@ store.subscribe(() => {
 });
 
 API.project.onBuildLog((_event, message) => {
-  store.dispatch(consoleActions.stdOut(message));
+  store.dispatch(consoleActions.stdOut({ text: message }));
 });
 
 API.project.onBuildError((_event, message) => {
-  store.dispatch(consoleActions.stdErr(message));
+  store.dispatch(consoleActions.stdErr({ text: message }));
 });
 
 // Watch Sprites

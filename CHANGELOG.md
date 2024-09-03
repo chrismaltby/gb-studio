@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update build log so the scripts that are too large to fit in GB memory will display a link to edit the script which needs reducing.
+
 ### Fixed
 
 - Fix issue where custom script gbvm symbols would not always match the ones you defined

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import consoleActions from "store/features/console/consoleActions";
@@ -16,6 +16,8 @@ import settingsActions from "store/features/settings/settingsActions";
 import DebuggerUsageData from "components/debugger/DebuggerUsageData";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 import useDimensions from "react-cool-dimensions";
+import editorActions from "store/features/editor/editorActions";
+import { ConsoleLink } from "store/features/console/consoleState";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -62,6 +64,75 @@ const UsageWrapper = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+interface LogLineProps {
+  type: "log" | "warn";
+}
+
+const LogLine = styled.div<LogLineProps>`
+  color: white;
+  ${(props) =>
+    props.type === "warn"
+      ? css`
+          color: orange;
+        `
+      : ""};
+`;
+
+const LogLink = styled.a`
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
+interface BuildLogLineProps {
+  text: string;
+  link?: ConsoleLink;
+  type: "log" | "warn";
+}
+
+const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
+  const dispatch = useAppDispatch();
+  return (
+    <LogLine type={type}>
+      {text}{" "}
+      {link && (
+        <LogLink
+          onClick={() => {
+            if (link.type === "customEvent") {
+              dispatch(
+                editorActions.selectCustomEvent({
+                  customEventId: link.entityId,
+                })
+              );
+            } else if (link.type === "actor") {
+              dispatch(
+                editorActions.selectActor({
+                  actorId: link.entityId,
+                  sceneId: link.sceneId,
+                })
+              );
+            } else if (link.type === "trigger") {
+              dispatch(
+                editorActions.selectTrigger({
+                  triggerId: link.entityId,
+                  sceneId: link.sceneId,
+                })
+              );
+            } else if (link.type === "scene") {
+              dispatch(
+                editorActions.selectScene({
+                  sceneId: link.sceneId,
+                })
+              );
+            }
+          }}
+        >
+          {link.linkText}
+        </LogLink>
+      )}
+    </LogLine>
+  );
+};
 
 const DebuggerBuildLog = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -149,13 +220,12 @@ const DebuggerBuildLog = () => {
     <Wrapper>
       <Terminal ref={scrollRef}>
         {outputLines.map((out, index) => (
-          <div
-            // eslint-disable-next-line react/no-array-index-key
+          <BuildLogLine
             key={index}
-            style={{ color: out.type === "err" ? "orange" : "white" }}
-          >
-            {out.text}
-          </div>
+            text={out.text}
+            type={out.type === "err" ? "warn" : "log"}
+            link={out.link}
+          />
         ))}
         {status === "cancelled" && (
           <div style={{ color: "orange" }}>{l10n("BUILD_CANCELLING")}...</div>
@@ -165,10 +235,12 @@ const DebuggerBuildLog = () => {
             <br />
             Warnings:
             {warnings.map((out, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index} style={{ color: "orange" }}>
-                - {out.text}
-              </div>
+              <BuildLogLine
+                key={index}
+                type="warn"
+                text={out.text}
+                link={out.link}
+              />
             ))}
           </div>
         )}

@@ -1,15 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { EditorSelectionType } from "store/features/editor/editorState";
 
 type ConsoleStatus = "idle" | "running" | "complete" | "cancelled";
+
+export interface ConsoleLink {
+  linkText: string;
+  type: EditorSelectionType;
+  entityId: string;
+  sceneId: string;
+}
 
 interface ConsoleLine {
   type: "out" | "err";
   text: string;
+  link?: ConsoleLink;
 }
 
 interface ConsoleErrorLine {
   type: "err";
   text: string;
+  link?: ConsoleLink;
 }
 
 export interface ConsoleState {
@@ -48,20 +58,26 @@ const consoleSlice = createSlice({
         state.status = "cancelled";
       }
     },
-    stdOut: (state, action: PayloadAction<string>) => {
+    stdOut: (
+      state,
+      action: PayloadAction<{ text: string; link?: ConsoleLink }>
+    ) => {
       if (action.payload) {
         const line: ConsoleLine = {
           type: "out",
-          text: action.payload,
+          ...action.payload,
         };
         state.output.push(line);
       }
     },
-    stdErr: (state, action: PayloadAction<string>) => {
+    stdErr: (
+      state,
+      action: PayloadAction<{ text: string; link?: ConsoleLink }>
+    ) => {
       if (action.payload) {
         const line: ConsoleErrorLine = {
           type: "err",
-          text: action.payload,
+          ...action.payload,
         };
         state.output.push(line);
         state.warnings.push(line);
