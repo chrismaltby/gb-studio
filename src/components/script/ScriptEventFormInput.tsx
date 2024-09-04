@@ -514,6 +514,7 @@ const ScriptEventFormInput = ({
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}
+          showIcon
         />
       </OffscreenSkeletonInput>
     );

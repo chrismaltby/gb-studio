@@ -65,7 +65,7 @@ export const lexText = (inputText: string): Token[] => {
     ) {
       const variableMatch = inputText
         .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -89,7 +89,7 @@ export const lexText = (inputText: string): Token[] => {
     ) {
       const variableMatch = inputText
         .substring(i + 3)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         tokens.push({
           type: "variable",
@@ -114,7 +114,7 @@ export const lexText = (inputText: string): Token[] => {
     ) {
       const variableMatch = inputText
         .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -138,7 +138,7 @@ export const lexText = (inputText: string): Token[] => {
     ) {
       const variableMatch = inputText
         .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -162,7 +162,7 @@ export const lexText = (inputText: string): Token[] => {
     ) {
       const variableMatch = inputText
         .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -182,7 +182,7 @@ export const lexText = (inputText: string): Token[] => {
     if (inputText[i] === "$") {
       const variableMatch = inputText
         .substring(i)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-9]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({
@@ -201,7 +201,7 @@ export const lexText = (inputText: string): Token[] => {
     if (inputText[i] === "#") {
       const variableMatch = inputText
         .substring(i)
-        .match(/^(#L[0-9]#|#T[0-1]#|#V[0-9]#|#[0-9]+#)/)?.[0];
+        .match(/^(#L[0-9]#|#T[0-9]#|#V[0-9]#|#[0-9]+#)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({

@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
+import groupBy from "lodash/groupBy";
 import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
@@ -19,6 +20,7 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
+import { VariableMapData } from "./compileData";
 
 export interface PrecompiledBackground {
   id: string;
@@ -1163,25 +1165,83 @@ export const replaceScriptSymbols = (
   return newScript;
 };
 
+const extractGlobalAndTemporaryVariables = (
+  variableAliasLookup: Dictionary<VariableMapData>
+) => {
+  const variables = Object.values(variableAliasLookup) as VariableMapData[];
+  const globals = variables
+    .filter((v) => !v.isLocalTemp)
+    .map((v, addr) => ({ symbol: v.symbol, addr }));
+  const tempStartAddr = globals.length;
+  const localTemp = variables.filter((v) => v.isLocalTemp);
+  const temp = Object.values(groupBy(localTemp, "sceneId"))
+    .map((localTempVariables) => {
+      return localTempVariables.map((v, addr) => ({
+        symbol: v.symbol,
+        addr: addr + tempStartAddr,
+      }));
+    })
+    .flat();
+
+  const maxTemp =
+    temp.length > 0
+      ? Math.max(...temp.map((item) => item.addr)) - tempStartAddr + 1
+      : 0;
+
+  const maxVars =
+    Math.max(-1, ...[...globals, ...temp].map((item) => item.addr)) + 1;
+
+  return { globals, temp, tempStartAddr, maxTemp, maxVars };
+};
+
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<{ symbol: string }>,
+  variableAliasLookup: Dictionary<VariableMapData>,
   stateReferences: string[]
 ) => {
-  const variables = Object.values(variableAliasLookup).map(
-    (v) => v?.symbol
-  ) as string[];
+  const { globals, temp, maxVars, tempStartAddr, maxTemp } =
+    extractGlobalAndTemporaryVariables(variableAliasLookup);
   return (
-    variables
-      .map((string, stringIndex) => {
-        return `${string} = ${stringIndex}\n`;
+    globals
+      .map((variable) => {
+        return `${variable.symbol} = ${variable.addr}\n`;
       })
       .join("") +
-    `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    temp
+      .map((variable) => {
+        return `${variable.symbol} = ${variable.addr}\n`;
+      })
+      .join("") +
+    `TEMP_START_ADDR = ${tempStartAddr}\n` +
+    `MAX_TEMP_VARS = ${maxTemp}\n` +
+    `MAX_GLOBAL_VARS = ${maxVars}\n` +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
       .join("")
+  );
+};
+
+export const compileGameGlobalsHeader = (
+  variableAliasLookup: Dictionary<VariableMapData>
+) => {
+  const { globals, temp, maxVars } =
+    extractGlobalAndTemporaryVariables(variableAliasLookup);
+  return (
+    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
+    globals
+      .map((variable) => {
+        return `#define ${variable.symbol} ${variable.addr}\n`;
+      })
+      .join("") +
+    temp
+      .map((variable) => {
+        return `#define ${variable.symbol} ${variable.addr}\n`;
+      })
+      .join("") +
+    `#define MAX_GLOBAL_VARS ${maxVars}\n` +
+    `\n` +
+    `#endif\n`
   );
 };
 

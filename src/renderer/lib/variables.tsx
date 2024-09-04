@@ -14,6 +14,7 @@ import {
   localVariableName,
   tempVariableCode,
   tempVariableName,
+  localTempVariableName,
 } from "shared/lib/variables/variableNames";
 
 const arrayNStrings = (n: number) =>
@@ -21,7 +22,7 @@ const arrayNStrings = (n: number) =>
 
 export const allVariables = arrayNStrings(512);
 export const localVariables = arrayNStrings(6);
-export const tempVariables = arrayNStrings(2);
+export const tempVariables = arrayNStrings(6);
 export const customEventVariables = arrayNStrings(10);
 
 type VariablesLookup = { [name: string]: Variable | undefined };
@@ -70,6 +71,12 @@ export const namedCustomEventVariables = (
       name: customEventVariableName(variable, customEvent),
       group: l10n("SIDEBAR_PARAMETERS"),
     })),
+    tempVariables.map((variable) => ({
+      id: tempVariableCode(variable),
+      code: tempVariableCode(variable),
+      name: tempVariableName(variable),
+      group: l10n("FIELD_TEMPORARY"),
+    })),
     allVariables.map((variable) => ({
       id: variable,
       code: globalVariableCode(variable),
@@ -93,7 +100,9 @@ export const namedEntityVariables = (
     tempVariables.map((variable) => ({
       id: tempVariableCode(variable),
       code: tempVariableCode(variable),
-      name: tempVariableName(variable),
+      name: entityId
+        ? localTempVariableName(variable, entityId, variablesLookup)
+        : tempVariableName(variable),
       group: l10n("FIELD_TEMPORARY"),
     })),
     allVariables.map((variable) => ({
@@ -109,6 +118,12 @@ export const namedGlobalVariables = (
   variablesLookup: VariablesLookup
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
+    tempVariables.map((variable) => ({
+      id: tempVariableCode(variable),
+      code: tempVariableCode(variable),
+      name: tempVariableName(variable),
+      group: l10n("FIELD_TEMPORARY"),
+    })),
     allVariables.map((variable) => ({
       id: variable,
       code: globalVariableCode(variable),

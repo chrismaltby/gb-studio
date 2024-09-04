@@ -71,6 +71,7 @@ import {
   compileSceneFnPtrs,
   compileStateDefines,
   replaceScriptSymbols,
+  compileGameGlobalsHeader,
 } from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -150,6 +151,7 @@ export type VariableMapData = {
   name: string;
   symbol: string;
   isLocal: boolean;
+  isLocalTemp: boolean;
   entityType: EntityType;
   entityId: string;
   sceneId: string;
@@ -1453,6 +1455,7 @@ const compile = async (
           id: variable.id,
           name: variable.name,
           isLocal: false,
+          isLocalTemp: false,
           entityType: "scene",
           entityId: "",
           sceneId: "",
@@ -1641,6 +1644,11 @@ const compile = async (
           } else if (autoFadeId !== "MANUAL") {
             initScript.push(fadeEvent);
           }
+
+          initScript.unshift({
+            id: "clear_local_temp",
+            command: "INTERNAL_RESET_LOCAL_TEMP",
+          });
         }
 
         // Compile scene start script
@@ -1994,17 +2002,7 @@ const compile = async (
     precompiled.stateReferences
   );
 
-  output["game_globals.h"] =
-    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
-    Object.values(variableAliasLookup)
-      .map((v) => v?.symbol)
-      .map((string, stringIndex) => {
-        return `#define ${string} ${stringIndex}\n`;
-      })
-      .join("") +
-    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
-    `\n` +
-    `#endif\n`;
+  output["game_globals.h"] = compileGameGlobalsHeader(variableAliasLookup);
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
 

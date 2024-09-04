@@ -518,7 +518,7 @@ export const isVariableLocal = (variable: string) => {
 };
 
 export const isVariableTemp = (variable: string) => {
-  return ["T0", "T1"].indexOf(variable) > -1;
+  return ["T0", "T1", "T2", "T3", "T4", "T5"].indexOf(variable) > -1;
 };
 
 export const isVariableCustomEvent = (variable: string) => {

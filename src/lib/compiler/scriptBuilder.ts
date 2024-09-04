@@ -326,12 +326,15 @@ const getPalette = (
 
 export const getVariableId = (
   variable: string,
+  context: ScriptEditorCtxType,
   entity?: ScriptBuilderEntity
 ) => {
-  if (isVariableLocal(variable)) {
-    if (entity) {
-      return `${entity.id}__${variable}`;
-    }
+  if (
+    entity &&
+    (context === "entity" || context === "prefab") &&
+    (isVariableLocal(variable) || isVariableTemp(variable))
+  ) {
+    return `${entity.id}__${variable}`;
   } else if (isVariableTemp(variable)) {
     return variable;
   }
@@ -879,7 +882,7 @@ class ScriptBuilder {
     return expression
       .replace(/\s+/g, "")
       .replace(/\n/g, "")
-      .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
+      .replace(/(\$L[0-9]\$|\$T[0-9]\$|\$[0-9]+\$)/g, (symbol) => {
         return this.getVariableAlias(symbol.replace(/\$/g, ""));
       });
   };
@@ -5274,16 +5277,24 @@ extern void __mute_mask_${symbol};
       scene,
     } = this.options;
 
-    const id = getVariableId(variable, entity);
+    const context = this.options.context;
+
+    const id = getVariableId(variable, context, entity);
 
     const namedVariable = variablesLookup[id || "0"];
-    if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
+    if (
+      namedVariable &&
+      namedVariable.symbol &&
+      !isVariableLocal(variable) &&
+      !(entity && isVariableTemp(variable))
+    ) {
       const symbol = namedVariable.symbol.toUpperCase();
       variableAliasLookup[id] = {
         symbol,
         name: namedVariable.name,
         id: namedVariable.id,
         isLocal: false,
+        isLocalTemp: false,
         entityType: "scene",
         entityId: "",
         sceneId: "",
@@ -5299,6 +5310,9 @@ extern void __mute_mask_${symbol};
 
     let name = "";
     const isLocal = isVariableLocal(variable);
+    const isLocalTemp =
+      isVariableTemp(variable) && !!entity && context !== "script";
+
     if (entity && isLocal) {
       const num = toVariableNumber(variable);
       const localName = localVariableName(num, entity.id, variablesLookup);
@@ -5308,6 +5322,16 @@ extern void __mute_mask_${symbol};
         name = `S${sceneIndex}A${entityIndex}_${localName}`;
       } else if (entityType === "trigger") {
         name = `S${sceneIndex}T${entityIndex}_${localName}`;
+      }
+    } else if (entity && isLocalTemp) {
+      const num = toVariableNumber(variable);
+      const localName = localVariableName(num, entity.id, variablesLookup);
+      if (entityType === "scene") {
+        name = `TMP_S${sceneIndex}_${localName}`;
+      } else if (entityType === "actor") {
+        name = `TMP_S${sceneIndex}A${entityIndex}_${localName}`;
+      } else if (entityType === "trigger") {
+        name = `TMP_S${sceneIndex}T${entityIndex}_${localName}`;
       }
     } else if (isVariableTemp(variable)) {
       const num = toVariableNumber(variable);
@@ -5334,6 +5358,7 @@ extern void __mute_mask_${symbol};
       id,
       name,
       isLocal,
+      isLocalTemp,
       entityType,
       entityId: entity?.id ?? "",
       sceneId: scene?.id ?? "",
@@ -5683,6 +5708,12 @@ extern void __mute_mask_${symbol};
   variablesReset = () => {
     this._addComment("Variables Reset");
     this._memSet(0, 0, "MAX_GLOBAL_VARS");
+  };
+
+  resetLocalTempVariables = () => {
+    this._addComment("Reset local tmp vars");
+    this._memSet("TEMP_START_ADDR", 0, "MAX_TEMP_VARS");
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------

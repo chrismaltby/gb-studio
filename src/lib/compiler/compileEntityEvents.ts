@@ -111,6 +111,8 @@ const compileEntityEvents = (
           args?.value as number,
           subInput[i]?.children?.true
         );
+      } else if (command === "INTERNAL_RESET_LOCAL_TEMP") {
+        scriptBuilder.resetLocalTempVariables();
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(

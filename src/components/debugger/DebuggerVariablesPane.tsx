@@ -222,7 +222,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
 
   const onSelectVariable = useCallback(
     (variableData: VariableMapData) => {
-      if (!variableData.isLocal) {
+      if (!variableData.isLocal && !variableData.isLocalTemp) {
         dispatch(
           editorActions.selectVariable({
             variableId: variableData.id,

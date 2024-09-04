@@ -53,6 +53,17 @@ export const localVariableCode = (variable: string) => {
   return `L${variable}`;
 };
 
+export const localTempVariableName = (
+  variable: string,
+  entityId: string,
+  variablesLookup: VariablesLookup
+) => {
+  return (
+    variablesLookup[`${entityId}__T${variable}`]?.name ||
+    `Local Temp ${variable}`
+  );
+};
+
 /******************************************************************************
  * Temp Variables
  */

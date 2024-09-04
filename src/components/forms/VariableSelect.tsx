@@ -4,6 +4,7 @@ import {
   Option,
   OptGroup,
   SelectCommonProps,
+  SingleValueWithPreview,
 } from "ui/form/Select";
 import styled from "styled-components";
 import {
@@ -15,7 +16,7 @@ import {
   NamedVariable,
   namedVariablesByContext,
 } from "renderer/lib/variables";
-import { CheckIcon, PencilIcon } from "ui/icons/Icons";
+import { CheckIcon, PencilIcon, VariableIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "shared/lib/lang/l10n";
@@ -31,6 +32,7 @@ interface VariableSelectProps extends SelectCommonProps {
   value?: string;
   entityId: string;
   allowRename?: boolean;
+  showIcon?: boolean;
   onChange: (newValue: string) => void;
   units?: UnitType;
   unitsAllowed?: UnitType[];
@@ -134,6 +136,27 @@ export const VariableToken = styled.span`
   color: ${(props) => props.theme.colors.input.background};
 `;
 
+export const IconWrapper = styled.div`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: ${(props) => props.theme.borderRadius}px;
+  background: ${(props) => props.theme.colors.sidebar.background};
+  color: ${(props) => props.theme.colors.button.text};
+  width: 100%;
+  height: 100%;
+
+  svg {
+    height: 10px;
+    width: 10px;
+    max-width: 10px;
+    max-height: 10px;
+    margin: 0 -6px;
+    min-width: 17px;
+    fill: ${(props) => props.theme.colors.button.text};
+  }
+`;
+
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
   onChange,
@@ -142,6 +165,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   units,
   unitsAllowed,
   onChangeUnits,
+  showIcon,
   ...selectProps
 }) => {
   const context = useContext(ScriptEditorContext);
@@ -161,9 +185,10 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const dispatch = useAppDispatch();
 
   const valueIsLocal = value && value.startsWith("L");
-  const valueIsTemp = value && value.startsWith("T");
-  const canRename =
-    allowRename && !valueIsTemp && context.entityType !== "customEvent";
+  const valueIsLocalTemp =
+    value && value.startsWith("T") && context.entityType !== "customEvent";
+
+  const canRename = allowRename && context.entityType !== "customEvent";
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -194,7 +219,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     if (currentVariable) {
       setCurrentValue({
         value: currentVariable.id,
-        label: `$${currentVariable.name}`,
+        label: `${currentVariable.name}`,
       });
     }
   }, [currentVariable]);
@@ -225,7 +250,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const onRenameFinish = () => {
     if (renameId) {
-      if (valueIsLocal) {
+      if (valueIsLocal || valueIsLocalTemp) {
         dispatch(
           entitiesActions.renameVariable({
             variableId: `${entityId}__${renameId}`,
@@ -278,6 +303,21 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           onChange={(newValue: Option) => {
             onChange(newValue.value);
           }}
+          components={
+            showIcon && {
+              SingleValue: ({ data }: { data: Option }) => (
+                <SingleValueWithPreview
+                  preview={
+                    <IconWrapper>
+                      <VariableIcon />
+                    </IconWrapper>
+                  }
+                >
+                  {data.label}
+                </SingleValueWithPreview>
+              ),
+            }
+          }
           {...selectProps}
         />
       )}
