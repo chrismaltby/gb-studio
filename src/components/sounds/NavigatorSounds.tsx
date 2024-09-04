@@ -101,7 +101,7 @@ export const NavigatorSounds = ({
             dispatch(projectActions.removeSoundAsset({ soundId: item.id }))
           }
         >
-          {l10n("MENU_DELETE_SONG")}
+          {l10n("MENU_DELETE_SOUND_EFFECT")}
         </MenuItem>,
       ];
     },
