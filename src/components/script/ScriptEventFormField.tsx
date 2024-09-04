@@ -313,7 +313,7 @@ const ScriptEventFormField = memo(
     if (typeof label === "string" && label.replace) {
       label = label.replace(
         /\$\$([^$]*)\$\$/g,
-        (match, key) => (args?.[key] || "") as string
+        (_match, key) => (args?.[key] ?? "") as string
       );
     }
 

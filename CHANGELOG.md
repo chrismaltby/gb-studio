@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where identical custom scripts would share the same gbvm symbol
 - Fix wording on sound effect context menu. Now says "Delete Sound Effect" rather than "Delete Song"
 - Fix variable uses list to include variables referenced in text and expressions
+- Fix label in Switch event for branch when value is "0"
 
 ## [4.1.0] - 2024-09-02
 
