@@ -1,4 +1,5 @@
 import { Dictionary } from "@reduxjs/toolkit";
+import { lexText } from "shared/lib/compiler/lexText";
 import {
   actorName,
   customEventName,
@@ -16,6 +17,7 @@ import {
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
+import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,
@@ -92,6 +94,70 @@ workerCtx.onmessage = async (evt) => {
   const uses: VariableUse[] = [];
   const useLookup: Dictionary<boolean> = {};
 
+  const isVariableInArg = (
+    scriptEvent: ScriptEventNormalized,
+    arg: string
+  ): boolean => {
+    const args = scriptEvent.args;
+    if (!args) {
+      return false;
+    }
+    const argValue = args[arg];
+    const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup?.[arg];
+    if (!field) {
+      return false;
+    }
+    // If field was a script value extract used variables in value
+    // and check if any match this variable
+    if (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)) {
+      if (
+        isScriptValue(argValue) &&
+        variableInScriptValue(variableId, argValue)
+      ) {
+        return true;
+      }
+    }
+    // If field was a variable check if it matches this variable
+    else if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
+      const isVariableId =
+        argValue === variableId ||
+        (isUnionValue(argValue) &&
+          argValue.type === "variable" &&
+          argValue.value === variableId);
+
+      if (isVariableId) {
+        return true;
+      }
+    } else if (field.type === "text" || field.type === "textarea") {
+      const allText = String(
+        Array.isArray(argValue) ? argValue.join("|") : argValue
+      );
+      const textTokens = lexText(allText);
+      if (
+        textTokens.some(
+          (token) =>
+            token.type === "variable" &&
+            token.variableId.replace(/^0+/, "") === variableId
+        )
+      ) {
+        return true;
+      }
+    } else if (field.type === "matharea" && typeof argValue === "string") {
+      const expressionTokens = tokenizer(argValue);
+      if (
+        expressionTokens.some(
+          (token) =>
+            token.type === "VAR" &&
+            token.symbol.replace(/\$/g, "").replace(/^0/g, "") === variableId
+        )
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   walkNormalizedScenesScripts(
     scenes,
     scriptEventsLookup,
@@ -121,45 +187,7 @@ workerCtx.onmessage = async (evt) => {
       }
 
       for (const arg in scriptEvent.args) {
-        const argValue = scriptEvent.args[arg];
-
-        // If field was a script value extract used variables in value
-        // and check if any match this variable
-        if (
-          isScriptValueField(
-            scriptEvent.command,
-            arg,
-            scriptEvent.args,
-            scriptEventDefs
-          )
-        ) {
-          if (
-            !isScriptValue(argValue) ||
-            !variableInScriptValue(variableId, argValue)
-          ) {
-            continue;
-          }
-        }
-        // If field was a variable check if it matches this variable
-        else if (
-          isVariableField(
-            scriptEvent.command,
-            arg,
-            scriptEvent.args,
-            scriptEventDefs
-          )
-        ) {
-          const isVariableId =
-            argValue === variableId ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === variableId);
-
-          if (!isVariableId) {
-            continue;
-          }
-        } else {
-          // Field was not a script value or a variable so can be ignored
+        if (!isVariableInArg(scriptEvent, arg)) {
           continue;
         }
 
@@ -231,43 +259,7 @@ workerCtx.onmessage = async (evt) => {
         }
 
         for (const arg in scriptEvent.args) {
-          const argValue = scriptEvent.args[arg];
-
-          if (
-            isScriptValueField(
-              scriptEvent.command,
-              arg,
-              scriptEvent.args,
-              scriptEventDefs
-            )
-          ) {
-            if (
-              !isScriptValue(argValue) ||
-              !variableInScriptValue(variableId, argValue)
-            ) {
-              continue;
-            }
-          }
-          // If field was a variable check if it matches this variable
-          else if (
-            isVariableField(
-              scriptEvent.command,
-              arg,
-              scriptEvent.args,
-              scriptEventDefs
-            )
-          ) {
-            const isVariableId =
-              argValue === variableId ||
-              (isUnionValue(argValue) &&
-                argValue.type === "variable" &&
-                argValue.value === variableId);
-
-            if (!isVariableId) {
-              continue;
-            }
-          } else {
-            // Field was not a script value or a variable so can be ignored
+          if (!isVariableInArg(scriptEvent, arg)) {
             continue;
           }
 
