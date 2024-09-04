@@ -320,7 +320,7 @@ actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) BANKED {
 }
 
 actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) BANKED {
-    upoint16_t offset;
+    point16_t offset;
     offset.x = PLAYER.pos.x;
     offset.y = PLAYER.pos.y;
     point_translate_dir_word(&offset, PLAYER.dir, grid_size << 4);
@@ -346,7 +346,7 @@ actor_t *actor_overlapping_player(UBYTE inc_noclip) BANKED {
     return NULL;
 }
 
-actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED {
+actor_t *actor_overlapping_bb(bounding_box_t *bb, point16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED {
     actor_t *actor = &PLAYER;
 
     while (actor) {

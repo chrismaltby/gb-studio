@@ -149,7 +149,7 @@ void projectiles_render(void) NONBANKED {
     SWITCH_ROM(_save_bank);
 }
 
-void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle, UBYTE flags) BANKED {
+void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle, UBYTE flags) BANKED {
     projectile_t *projectile = projectiles_inactive_head;
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));

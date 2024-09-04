@@ -95,17 +95,17 @@ extern const int8_t sine_wave[256];
 extern const point8_t dir_lookup[4];
 extern const uint8_t dir_angle_lookup[4];
 
-inline void point_translate_dir(upoint16_t *point, direction_e dir, uint8_t speed) {
+inline void point_translate_dir(point16_t *point, direction_e dir, uint8_t speed) {
     point->x += (int16_t)(dir_lookup[dir].x * speed);
     point->y += (int16_t)(dir_lookup[dir].y * speed);
 }
 
-inline void point_translate_dir_word(upoint16_t *point, direction_e dir, uint16_t speed) {
+inline void point_translate_dir_word(point16_t *point, direction_e dir, uint16_t speed) {
     point->x += (int16_t)(dir_lookup[dir].x * speed);
     point->y += (int16_t)(dir_lookup[dir].y * speed);
 }
 
-inline void point_translate_angle(upoint16_t *point, uint8_t angle, uint8_t speed) {
+inline void point_translate_angle(point16_t *point, uint8_t angle, uint8_t speed) {
     point->x += ((SIN(angle) * (speed)) >> 7);
     point->y -= ((COS(angle) * (speed)) >> 7);
 }

@@ -30,7 +30,7 @@ extern UBYTE image_tile_height;
  * @param point Pointer to position to look for within bounding box
  * @return Point is within bounding box
  */
-inline UBYTE bb_contains(bounding_box_t *bb, upoint16_t *offset, upoint16_t *point) {
+inline UBYTE bb_contains(bounding_box_t *bb, point16_t *offset, point16_t *point) {
     if ((point->x < (offset->x >> 4) + bb->left) || 
         (point->x > (offset->x >> 4) + bb->right)) return FALSE;
     if ((point->y < (offset->y >> 4) + bb->top) || 
@@ -47,7 +47,7 @@ inline UBYTE bb_contains(bounding_box_t *bb, upoint16_t *offset, upoint16_t *poi
  * @param offset_b Pointer to position offset for bounding box B
  * @return Positioned bounding boxes intersect
  */
-inline UBYTE bb_intersects(bounding_box_t *bb_a, upoint16_t *offset_a, bounding_box_t *bb_b, upoint16_t *offset_b) {
+inline UBYTE bb_intersects(bounding_box_t *bb_a, point16_t *offset_a, bounding_box_t *bb_b, point16_t *offset_b) {
     if (((offset_b->x >> 4) + bb_b->left   > (offset_a->x >> 4) + bb_a->right) ||
         ((offset_b->x >> 4) + bb_b->right  < (offset_a->x >> 4) + bb_a->left)) return FALSE;
     if (((offset_b->y >> 4) + bb_b->top    > (offset_a->y >> 4) + bb_a->bottom) ||

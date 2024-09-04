@@ -86,7 +86,7 @@ void shmup_update(void) BANKED {
 
     // Move player from input
     if (player_moving) {
-        upoint16_t new_pos;
+        point16_t new_pos;
         new_pos.x = PLAYER.pos.x;
         new_pos.y = PLAYER.pos.y;
         point_translate_dir(&new_pos, PLAYER.dir, PLAYER.move_speed);

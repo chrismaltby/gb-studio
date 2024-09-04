@@ -735,6 +735,26 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/vm.c"],
   },
+  {
+    version: "4.2.0-e1",
+    description: createDescription("Fixes", [
+      "Store actor coordinates as signed values preventing overflow when attempting to move an actor offscreen to the top or left",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/collision.h",
+      "include/gbs_types.h",
+      "include/math.h",
+      "include/projectiles.h",
+      "include/trigger.h",
+      "src/core/actor.c",
+      "src/core/projectiles.c",
+      "src/core/trigger.c",
+      "src/core/vm_projectiles.c",
+      "src/states/adventure.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
