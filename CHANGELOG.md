@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update build log so the scripts that are too large to fit in GB memory will display a link to edit the script which needs reducing.
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
 
 ### Fixed
 
