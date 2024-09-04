@@ -88,7 +88,6 @@ const makeBuild = async ({
     env.RUMBLE_ENABLE = 0x08;
   }
 
-  env.GBDK_COMPILER_OPTIMISATION = settings.compilerOptimisation;
   env.GBDK_COMPILER_PRESET = settings.compilerPreset;
 
   // Populate /obj with cached data
@@ -104,7 +103,6 @@ const makeBuild = async ({
     platform: process.platform,
     targetPlatform,
     cartType: settings.cartType,
-    compilerOptimisation: settings.compilerOptimisation,
     compilerPreset: settings.compilerPreset,
   });
 

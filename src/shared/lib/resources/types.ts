@@ -14,13 +14,6 @@ export const ActorDirection = Type.Union(
 
 export type ActorDirection = Static<typeof ActorDirection>;
 
-export const CompilerOptimisation = Type.Union(
-  [Type.Literal("none"), Type.Literal("speed"), Type.Literal("size")],
-  { default: "none" }
-);
-
-export type CompilerOptimisation = Static<typeof CompilerOptimisation>;
-
 export const SceneParallaxLayer = Type.Object({
   height: Type.Number(),
   speed: Type.Number(),
@@ -644,7 +637,6 @@ export const SettingsResource = Type.Object({
   previewAsMono: Type.Boolean(),
   openBuildLogOnWarnings: Type.Boolean(),
   generateDebugFilesEnabled: Type.Boolean(),
-  compilerOptimisation: CompilerOptimisation,
   compilerPreset: Type.Number({ default: 3000 }),
   scriptEventPresets: Type.Record(
     Type.String(),

@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix variable uses list to include variables referenced in text and expressions
 - Fix label in Switch event for branch when value is "0"
 
+### Removed
+
+- Removed "Optimise ROM For" setting as it would cause issues when changed from default value
+
 ## [4.1.0] - 2024-09-02
 
 ### Added

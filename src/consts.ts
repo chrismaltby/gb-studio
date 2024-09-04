@@ -208,7 +208,6 @@ export const defaultProjectSettings: Settings = {
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
-  compilerOptimisation: "none",
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},

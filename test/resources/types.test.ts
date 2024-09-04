@@ -628,7 +628,6 @@ describe("TypeBox Schemas", () => {
       previewAsMono: false,
       openBuildLogOnWarnings: true,
       generateDebugFilesEnabled: false,
-      compilerOptimisation: "none",
       compilerPreset: 3000,
       scriptEventPresets: {},
       scriptEventDefaultPresets: {},
