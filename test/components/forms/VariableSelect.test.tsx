@@ -41,7 +41,7 @@ test("Should use default variable name with not renamed", () => {
     store,
     {}
   );
-  expect(screen.getByText("$Variable 0")).toBeInTheDocument();
+  expect(screen.getByText("Variable 0")).toBeInTheDocument();
 });
 
 test("Should use default custom event variable name with not renamed", () => {
@@ -96,7 +96,7 @@ test("Should use default custom event variable name with not renamed", () => {
     store,
     {}
   );
-  expect(screen.getByText("$Variable A")).toBeInTheDocument();
+  expect(screen.getByText("Variable A")).toBeInTheDocument();
 });
 
 test("Should use renamed variable", () => {
@@ -136,7 +136,7 @@ test("Should use renamed variable", () => {
     store,
     {}
   );
-  expect(screen.getByText("$My Variable Name")).toBeInTheDocument();
+  expect(screen.getByText("My Variable Name")).toBeInTheDocument();
 });
 
 test("Should use renamed variable for custom event", () => {
@@ -196,7 +196,7 @@ test("Should use renamed variable for custom event", () => {
     store,
     {}
   );
-  expect(screen.getByText("$My Custom Event Variable")).toBeInTheDocument();
+  expect(screen.getByText("My Custom Event Variable")).toBeInTheDocument();
 });
 
 test("Should be able to rename variable", async () => {
