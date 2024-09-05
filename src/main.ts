@@ -1657,15 +1657,20 @@ ipcMain.handle(
 
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    const { output: sfx } = await compileFXHammerSingle(
-      filename,
-      effectIndex,
-      "asm"
-    );
-    createMusic(sfx, {
-      action: "load-sound",
-      sound: sfx,
-    });
+
+    try {
+      const { output: sfx } = await compileFXHammerSingle(
+        filename,
+        effectIndex,
+        "asm"
+      );
+      createMusic(sfx, {
+        action: "load-sound",
+        sound: sfx,
+      });
+    } catch (e) {
+      console.error("Unable to play FX Hammer SFX", filename, effectIndex);
+    }
   }
 );
 

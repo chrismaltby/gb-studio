@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix overflow of actor position that can occur when using "Move Relative" event near scene edges
+- Fix issue causing crash when trying to preview an FX Hammer effect index that doesn't exist
 
 ## [4.1.1] - 2024-09-04
 
