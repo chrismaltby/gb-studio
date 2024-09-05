@@ -238,8 +238,13 @@ export const loadProjectResources = async (
       };
     });
 
-  const variablesResource: VariablesResource = resourcesLookup.variables[0]
-    ?.data ?? { _resourceType: "variables", variables: [] };
+  const variablesResource: VariablesResource =
+    resourcesLookup.variables[0]?.data ??
+    ({
+      _resourceType: "variables",
+      variables: [],
+      constants: [],
+    } as VariablesResource);
 
   const engineFieldValuesResource: EngineFieldValuesResource =
     (resourcesLookup.engineFieldValues ?? [])[0]?.data ?? {

@@ -19,6 +19,7 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
+import { Constant } from "shared/lib/resources/types";
 
 export interface PrecompiledBackground {
   id: string;
@@ -1165,6 +1166,7 @@ export const replaceScriptSymbols = (
 
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<{ symbol: string }>,
+  constants: Constant[],
   stateReferences: string[]
 ) => {
   const variables = Object.values(variableAliasLookup).map(
@@ -1177,6 +1179,12 @@ export const compileGameGlobalsInclude = (
       })
       .join("") +
     `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `${constant.symbol.toLocaleUpperCase()} = ${constant.value}\n`;
+      })
+      .join("") +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;

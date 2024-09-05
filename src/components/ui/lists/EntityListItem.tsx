@@ -18,6 +18,7 @@ import {
   SoundIcon,
   FolderFilledIcon,
   SceneIcon,
+  ConstantIcon,
 } from "ui/icons/Icons";
 import { ContextMenu } from "ui/menu/ContextMenu";
 
@@ -40,6 +41,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
     | "actor"
     | "trigger"
     | "variable"
+    | "constant"
     | "sprite"
     | "animation"
     | "state"
@@ -232,6 +234,11 @@ export const EntityListItem = <T extends EntityListItemData>({
       {type === "variable" && (
         <EntityIcon>
           <VariableIcon />
+        </EntityIcon>
+      )}
+      {type === "constant" && (
+        <EntityIcon>
+          <ConstantIcon />
         </EntityIcon>
       )}
       {type === "sprite" && (

@@ -175,7 +175,7 @@ export const defaultProjectSettings: Settings = {
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
   playerPaletteId: "",
-  navigatorSplitSizes: [400, 30, 30, 30],
+  navigatorSplitSizes: [400, 30, 30, 30, 30],
   showNavigator: true,
   defaultFontId: "",
   defaultCharacterEncoding: "",

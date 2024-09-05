@@ -5,6 +5,7 @@ export const valueAtomTypes = [
   "direction",
   "variable",
   "indirect",
+  "constant",
   "property",
   "expression",
   "true",
@@ -108,6 +109,10 @@ export type ScriptValueAtom =
       value: string;
     }
   | {
+      type: "constant";
+      value: string;
+    }
+  | {
       type: "direction";
       value: string;
     }
@@ -163,6 +168,12 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   }
   if (
     scriptValue.type === "variable" &&
+    typeof scriptValue.value === "string"
+  ) {
+    return true;
+  }
+  if (
+    scriptValue.type === "constant" &&
     typeof scriptValue.value === "string"
   ) {
     return true;
@@ -270,6 +281,10 @@ export type PrecompiledValueRPNOperation =
   | {
       type: "number";
       value: number;
+    }
+  | {
+      type: "constant";
+      value: string;
     }
   | {
       type: "variable";

@@ -257,6 +257,11 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
           type: "number",
           value: operation.value,
         });
+      } else if (operation.type === "CONST") {
+        stack.push({
+          type: "constant",
+          value: operation.symbol,
+        });
       } else if (operation.type === "OP") {
         const scriptValueOperator = mapOperator(operation.operator);
         if (isValueUnaryOperatorType(scriptValueOperator)) {
@@ -472,6 +477,24 @@ export const variableInScriptValue = (
   });
 };
 
+export const constantInScriptValue = (
+  constantId: string,
+  input: ScriptValue
+): boolean => {
+  return someInScriptValue(input, (val) => {
+    if (val.type === "constant" && val.value === constantId) {
+      return true;
+    } else if (val.type === "expression") {
+      const text = val.value;
+      if (text && typeof text === "string") {
+        const expressionValue = expressionToScriptValue(text);
+        return constantInScriptValue(constantId, expressionValue);
+      }
+    }
+    return false;
+  });
+};
+
 export const precompileScriptValue = (
   input: ScriptValue,
   localsLabel = "",
@@ -524,6 +547,8 @@ export const precompileScriptValue = (
     rpnOperations.push({ type: "number", value: 1 });
   } else if (input.type === "false") {
     rpnOperations.push({ type: "number", value: 0 });
+  } else if (input.type === "constant") {
+    rpnOperations.push({ type: "constant", value: input.value });
   } else {
     rpnOperations.push(input);
   }

@@ -25,6 +25,7 @@ import {
   BlankIcon,
   CheckIcon,
   CompassIcon,
+  ConstantIcon,
   CrossIcon,
   DivideIcon,
   ExpressionIcon,
@@ -69,6 +70,8 @@ import { ClipboardTypeScriptValue } from "store/features/clipboard/clipboardType
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { copy, paste } from "store/features/clipboard/clipboardHelpers";
+import { constantSelectors } from "store/features/entities/entitiesState";
+import { ConstantSelect } from "./ConstantSelect";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;
@@ -91,6 +94,7 @@ const iconLookup: Record<
   direction: <CompassIcon />,
   variable: <VariableIcon />,
   indirect: <VariableIcon />,
+  constant: <ConstantIcon />,
   expression: <ExpressionIcon />,
   property: <ActorIcon />,
   true: <TrueIcon />,
@@ -134,6 +138,7 @@ const l10nKeyLookup: Record<
   direction: "FIELD_DIRECTION",
   variable: "FIELD_VARIABLE",
   indirect: "FIELD_VARIABLE",
+  constant: "FIELD_CONSTANT",
   expression: "FIELD_EXPRESSION",
   property: "FIELD_PROPERTY",
   true: "FIELD_TRUE",
@@ -399,6 +404,9 @@ const ValueSelect = ({
   const dispatch = useAppDispatch();
   const context = useContext(ScriptEditorContext);
   const editorType = useSelector((state: RootState) => state.editor.type);
+  const defaultConstant = useAppSelector(
+    (state) => constantSelectors.selectAll(state)[0]
+  );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -457,6 +465,13 @@ const ValueSelect = ({
       value: defaultVariable,
     });
   }, [context.type, onChange]);
+
+  const setConstant = useCallback(() => {
+    onChange({
+      type: "constant",
+      value: defaultConstant?.id ?? "",
+    });
+  }, [defaultConstant, onChange]);
 
   const setProperty = useCallback(() => {
     onChange({
@@ -536,6 +551,8 @@ const ValueSelect = ({
         setNumber();
       } else if (e.key === "$") {
         setVariable();
+      } else if (e.key === "c") {
+        setConstant();
       } else if (e.key === "p") {
         setProperty();
       } else if (e.key === "e") {
@@ -585,6 +602,7 @@ const ValueSelect = ({
       } else {
         return false;
       }
+      e.stopPropagation();
       return true;
     },
     [
@@ -595,6 +613,7 @@ const ValueSelect = ({
       setProperty,
       setValueFunction,
       setVariable,
+      setConstant,
     ]
   );
 
@@ -731,13 +750,19 @@ const ValueSelect = ({
               {l10n("FIELD_NUMBER")}
               <MenuAccelerator accelerator="n" />
             </MenuItem>,
-
             <MenuItem key="variable" onClick={setVariable}>
               <MenuItemIcon>
                 {value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
               </MenuItemIcon>
               {l10n("FIELD_VARIABLE")}
               <MenuAccelerator accelerator="$" />
+            </MenuItem>,
+            <MenuItem key="constant" onClick={setConstant}>
+              <MenuItemIcon>
+                {value.type === "constant" ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {l10n("FIELD_CONSTANT")}
+              <MenuAccelerator accelerator="c" />
             </MenuItem>,
             <MenuItem key="property" onClick={setProperty}>
               <MenuItemIcon>
@@ -812,6 +837,7 @@ const ValueSelect = ({
       mathMenu,
       onCopyValue,
       onPasteValue,
+      setConstant,
       setDirection,
       setExpression,
       setNumber,
@@ -1046,6 +1072,25 @@ const ValueSelect = ({
               onChange={(newValue) => {
                 onChange({
                   type: "variable",
+                  value: newValue,
+                });
+              }}
+            />
+          </InputGroup>
+        </ValueWrapper>
+      );
+    } else if (value.type === "constant") {
+      return (
+        <ValueWrapper ref={previewRef} isOver={isOver}>
+          <InputGroup ref={dropRef}>
+            <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+            <ConstantSelect
+              name={name}
+              value={value.value}
+              allowRename
+              onChange={(newValue) => {
+                onChange({
+                  type: "constant",
                   value: newValue,
                 });
               }}

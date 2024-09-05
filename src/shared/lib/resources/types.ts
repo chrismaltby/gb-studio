@@ -659,9 +659,21 @@ export const VariableData = Type.Object({
 
 export type VariableData = Static<typeof VariableData>;
 
+export const ConstantData = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  symbol: Type.String(),
+  value: Type.Number(),
+});
+
+export type ConstantData = Static<typeof ConstantData>;
+
+export type Constant = ExtractResource<ConstantData>;
+
 export const VariablesResource = Type.Object({
   _resourceType: Type.Literal("variables"),
   variables: Type.Array(VariableData),
+  constants: Type.Array(ConstantData),
 });
 
 export type VariablesResource = Static<typeof VariablesResource>;

@@ -104,6 +104,7 @@ import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import { isEqual } from "lodash";
+import { Constant } from "shared/lib/resources/types";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -147,6 +148,7 @@ const emotesAdapter = createEntityAdapter<Emote>({
   sortComparer: sortByFilename,
 });
 const variablesAdapter = createEntityAdapter<Variable>();
+const constantsAdapter = createEntityAdapter<Constant>();
 const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
 export const initialState: EntitiesState = {
@@ -171,6 +173,7 @@ export const initialState: EntitiesState = {
   emotes: emotesAdapter.getInitialState(),
   tilesets: tilesetsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
+  constants: constantsAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
@@ -302,6 +305,7 @@ const loadProject: CaseReducer<
   tilesetsAdapter.setAll(state.tilesets, data.entities.tilesets || {});
   customEventsAdapter.setAll(state.customEvents, data.entities.scripts || {});
   variablesAdapter.setAll(state.variables, data.entities.variables || {});
+  constantsAdapter.setAll(state.constants, data.entities.constants || {});
   engineFieldValuesAdapter.setAll(
     state.engineFieldValues,
     data.entities.engineFieldValues || {}
@@ -3217,6 +3221,87 @@ const renameVariableFlags: CaseReducer<
 };
 
 /**************************************************************************
+ * Constants
+ */
+
+const addConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+  }>
+> = (state, action) => {
+  const newConstant: Constant = {
+    id: action.payload.constantId,
+    name: "",
+    symbol: genEntitySymbol(state, `const_0`),
+    value: 0,
+  };
+
+  constantsAdapter.addOne(state.constants, newConstant);
+};
+
+const editConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+    changes: Partial<Constant>;
+  }>
+> = (state, action) => {
+  const constant = localConstantSelectors.selectById(
+    state,
+    action.payload.constantId
+  );
+
+  if (!constant) {
+    return;
+  }
+
+  const patch = {
+    ...action.payload.changes,
+    symbol: action.payload.changes.name
+      ? genEntitySymbol(state, `const_${action.payload.changes.name ?? "0"}`)
+      : constant.symbol,
+  };
+
+  constantsAdapter.updateOne(state.constants, {
+    id: action.payload.constantId,
+    changes: patch,
+  });
+};
+
+const renameConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ constantId: string; name: string }>
+> = (state, action) => {
+  const constant = localConstantSelectors.selectById(
+    state,
+    action.payload.constantId
+  );
+  const patch = {
+    name: action.payload.name,
+    symbol: genEntitySymbol(state, `const_${action.payload.name ?? "0"}`),
+  };
+
+  if (!constant) {
+    return;
+  }
+
+  constantsAdapter.updateOne(state.constants, {
+    id: action.payload.constantId,
+    changes: patch,
+  });
+};
+
+const removeConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+  }>
+> = (state, action) => {
+  constantsAdapter.removeOne(state.constants, action.payload.constantId);
+};
+
+/**************************************************************************
  * Palettes
  */
 
@@ -4316,6 +4401,25 @@ const entitiesSlice = createSlice({
     renameVariableFlags,
 
     /**************************************************************************
+     * Constants
+     */
+
+    addConstant: {
+      reducer: addConstant,
+      prepare: () => {
+        return {
+          payload: {
+            constantId: uuid(),
+          },
+        };
+      },
+    },
+
+    editConstant,
+    renameConstant,
+    removeConstant,
+
+    /**************************************************************************
      * Palettes
      */
 
@@ -4641,6 +4745,9 @@ const _localTilesetSelectors = tilesetsAdapter.getSelectors(
 const localVariableSelectors = variablesAdapter.getSelectors(
   (state: EntitiesState) => state.variables
 );
+const localConstantSelectors = constantsAdapter.getSelectors(
+  (state: EntitiesState) => state.constants
+);
 
 // Global
 export const actorSelectors = actorsAdapter.getSelectors(
@@ -4705,6 +4812,9 @@ export const tilesetSelectors = tilesetsAdapter.getSelectors(
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables
+);
+export const constantSelectors = constantsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.constants
 );
 export const engineFieldValueSelectors = engineFieldValuesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.engineFieldValues

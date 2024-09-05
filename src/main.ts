@@ -127,6 +127,7 @@ import romUsage from "lib/compiler/romUsage";
 import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
+import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -899,6 +900,13 @@ ipcMain.handle("dialog:confirm-delete-preset", async (_event, name: string) => {
 ipcMain.handle("dialog:confirm-apply-preset", async () => {
   return confirmApplyPreset();
 });
+
+ipcMain.handle(
+  "dialog:confirm-delete-constant",
+  async (_event, name: string, usesNames: string[]) => {
+    return confirmDeleteConstant(name, usesNames);
+  }
+);
 
 ipcMain.handle(
   "dialog:confirm-tracker-unsaved",

@@ -392,6 +392,7 @@ test("should compile simple project into files object", async () => {
     emotes: [],
     variables: {
       variables: [],
+      constants: [],
     },
     engineFieldValues: {
       engineFieldValues: [],

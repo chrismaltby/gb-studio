@@ -288,6 +288,7 @@ export const dummyProjectData: ProjectData = {
   palettes: [],
   customEvents: [],
   variables: [],
+  constants: [],
   music: [],
   fonts: [],
   avatars: [],
@@ -626,6 +627,7 @@ export const dummySettingsResource: SettingsResource = {
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
   variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+  constants: [],
 };
 
 export const dummyVariable: Variable = {
@@ -658,6 +660,7 @@ export const dummyProjectResources: ProjectResources = {
   variables: {
     _resourceType: "variables",
     variables: [],
+    constants: [],
   },
   music: [],
   fonts: [],

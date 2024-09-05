@@ -27,6 +27,7 @@ const darkTheme: ThemeInterface = {
       operator: "#90caf9",
       code: "#ffffff",
       function: "#ffffff",
+      constant: "#90caf9",
     },
     toolbar: {
       background: "linear-gradient(to bottom, #3e4142 0%, #282a2a 100%)",

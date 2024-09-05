@@ -1463,6 +1463,8 @@ const compile = async (
     {} as Record<string, VariableMapData>
   );
 
+  const constantsLookup = keyBy(projectData.variables.constants, "id");
+
   // Add event data
   const additionalScripts: Dictionary<{
     symbol: string;
@@ -1553,6 +1555,7 @@ const compile = async (
           settings: projectData.settings,
           variablesLookup,
           variableAliasLookup,
+          constantsLookup,
           entityType,
           entityIndex,
           entityScriptKey: scriptKey,
@@ -1991,6 +1994,7 @@ const compile = async (
 
   output["game_globals.i"] = compileGameGlobalsInclude(
     variableAliasLookup,
+    projectData.variables.constants,
     precompiled.stateReferences
   );
 

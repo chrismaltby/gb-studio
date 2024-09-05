@@ -77,7 +77,7 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { ProjectEntityResources } from "shared/lib/resources/types";
+import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
 
 export interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -101,6 +101,7 @@ export interface NormalizedEntities {
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
+  constants: Record<EntityId, Constant>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
@@ -121,6 +122,7 @@ export interface NormalizedResult {
   emotes: EntityId[];
   tilesets: EntityId[];
   variables: EntityId[];
+  constants: EntityId[];
   variableResources: EntityId[];
   engineFieldValues: EntityId[];
 }
@@ -150,6 +152,7 @@ export interface DenormalizedEntities {
   tilesets: Tileset[];
   triggers: Trigger[];
   variables: {
+    constants: Constant[];
     variables: Variable[];
   };
   actorPrefabs: ActorPrefab[];
@@ -211,8 +214,10 @@ const spritesSchema = new schema.Entity("sprites", {
   states: [spriteStatesSchema],
 });
 const variablesSchema = new schema.Entity("variables");
+const constantsSchema = new schema.Entity("constants");
 const variablesResourceSchema = new schema.Entity("variableResources", {
   variables: [variablesSchema],
+  constants: [constantsSchema],
 });
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
@@ -324,8 +329,14 @@ export const denormalizeEntities = (
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
     tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
-    variableResources: { variables: { variables: state.variables.ids } },
+    variableResources: {
+      variables: {
+        variables: state.variables.ids,
+        constants: state.constants.ids,
+      },
+    },
     variables: state.variables.entities as Record<EntityId, Variable>,
+    constants: state.constants.entities as Record<EntityId, Constant>,
     engineFieldValueResources: {
       engineFieldValues: { engineFieldValues: state.engineFieldValues.ids },
     },
@@ -661,6 +672,12 @@ export const customEventName = (
   return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
 };
 
+export const constantName = (constant: NamedEntity, constantIndex: number) => {
+  return (constant.name || defaultLocalisedConstantName(constantIndex))
+    .toLocaleUpperCase()
+    .replace(/\s/g, "_");
+};
+
 export const paletteName = (palette: Palette, paletteIndex: number) => {
   // If we have a default name for a palette, use the localized version
   if (palette.defaultName) {
@@ -700,6 +717,8 @@ export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
 export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+export const defaultLocalisedConstantName = (constantIndex: number) =>
+  `${l10n("CONSTANT")} ${constantIndex + 1}`;
 export const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
@@ -720,6 +739,7 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.tilesets),
     ...extractEntitySymbols(state.fonts),
     ...extractEntitySymbols(state.variables),
+    ...extractEntitySymbols(state.constants),
     ...extractEntitySymbols(state.customEvents),
     ...extractEntitySymbols(state.music),
     ...extractEntitySymbols(state.sounds),
@@ -758,6 +778,7 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.tilesets, symbols);
   ensureEntitySymbolsUnique(state.fonts, symbols);
   ensureEntitySymbolsUnique(state.variables, symbols);
+  ensureEntitySymbolsUnique(state.constants, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
   ensureEntitySymbolsUnique(state.sounds, symbols);

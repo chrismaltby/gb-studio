@@ -1,13 +1,16 @@
-import React, { useState, useEffect, FC, useContext } from "react";
+import React, { useState, useEffect, FC, useContext, useMemo } from "react";
 import PropTypes from "prop-types";
 import { useAppSelector } from "store/hooks";
-import { MathTextarea } from "ui/form/MathTextarea";
+import { MathTextarea, NamedConstant } from "ui/form/MathTextarea";
 import {
+  constantSelectors,
   customEventSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { Constant } from "shared/lib/resources/types";
+import { constantName } from "shared/lib/entities/entitiesHelpers";
 
 interface ScriptEventFormMathAreaProps {
   id?: string;
@@ -16,6 +19,13 @@ interface ScriptEventFormMathAreaProps {
   entityId: string;
   onChange: (newValue: string) => void;
 }
+
+export const namedConstants = (constants: Constant[]): NamedConstant[] => {
+  return constants.map((constant, constantIndex) => ({
+    id: constant.id,
+    name: constantName(constant, constantIndex),
+  }));
+};
 
 const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
   id,
@@ -32,6 +42,9 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
+  const allConstants = useAppSelector(constantSelectors.selectAll);
+
+  const constants = useMemo(() => namedConstants(allConstants), [allConstants]);
 
   useEffect(() => {
     setVariables(
@@ -46,6 +59,7 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
       value={value || ""}
       onChange={onChange}
       variables={variables}
+      constants={constants}
       placeholder={placeholder}
     />
   );

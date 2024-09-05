@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { Input } from "./Input";
+import { NumberInput } from "./NumberInput";
 import { Label } from "./Label";
 
 export interface NumberFieldProps
@@ -28,7 +28,7 @@ export const NumberField: FC<NumberFieldProps> = ({
 }) => (
   <Wrapper>
     {label && <Label htmlFor={name}>{label}</Label>}
-    <Input
+    <NumberInput
       type="number"
       id={name}
       name={name}

@@ -11,10 +11,12 @@ import {
   sceneSelectors,
   spriteSheetSelectors,
   emoteSelectors,
+  constantSelectors,
 } from "store/features/entities/entitiesState";
 import keyBy from "lodash/keyBy";
 import {
   actorName,
+  constantName,
   customEventName,
   sceneName,
 } from "shared/lib/entities/entitiesHelpers";
@@ -86,6 +88,12 @@ export const useScriptEventTitle = (
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
+  const constantsLookup = useAppSelector((state) =>
+    constantSelectors.selectEntities(state)
+  );
+  const constants = useAppSelector((state) =>
+    constantSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -134,6 +142,16 @@ export const useScriptEventTitle = (
             namedVariablesLookup[id]?.name.replace(/ /g, "") ?? String(value)
           }`;
         };
+        const constantNameForId = (value: unknown) => {
+          const constant = constantsLookup[value as string];
+          if (constant) {
+            return constantName(constant, constants.indexOf(constant)).replace(
+              / /g,
+              ""
+            );
+          }
+          return "0";
+        };
         const sceneNameForId = (value: unknown) => {
           const scene = scenesLookup[value as string];
           if (scene) {
@@ -174,6 +192,7 @@ export const useScriptEventTitle = (
                 {
                   actorNameForId,
                   variableNameForId,
+                  constantNameForId,
                   sceneNameForId,
                   spriteNameForId,
                   emoteNameForId,
@@ -210,6 +229,8 @@ export const useScriptEventTitle = (
     context,
     scriptEventDefs,
     isVisible,
+    constantsLookup,
+    constants,
   ]);
 
   return String(labelName || autoName || eventName);

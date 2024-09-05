@@ -25,6 +25,7 @@ export interface ThemeInterface {
       code: string;
       function: string;
       operator: string;
+      constant: string;
     };
     toolbar: {
       background: string;

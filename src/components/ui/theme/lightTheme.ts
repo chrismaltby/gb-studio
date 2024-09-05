@@ -27,6 +27,7 @@ const lightTheme: ThemeInterface = {
       operator: "#90caf9",
       code: "#aaaaaa",
       function: "#aaaaaa",
+      constant: "#90caf9",
     },
     toolbar: {
       background: "linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%)",

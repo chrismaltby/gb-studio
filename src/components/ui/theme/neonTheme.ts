@@ -27,6 +27,7 @@ const neonTheme: ThemeInterface = {
       operator: "#90caf9",
       code: "#90caf9",
       function: "#ffd54f",
+      constant: "#90caf9",
     },
     toolbar: {
       background: "linear-gradient(to bottom, #630d86 0%, #271738 100%)",

@@ -722,10 +722,12 @@ describe("TypeBox Schemas", () => {
     const validVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+      constants: [],
     };
     const invalidVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1" }],
+      constants: [],
     };
 
     expect(() => Value.Decode(VariablesResource, validVariables)).not.toThrow();

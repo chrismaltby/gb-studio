@@ -52,7 +52,7 @@ import { lexText } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
@@ -145,6 +145,7 @@ export interface ScriptBuilderOptions {
   entityScriptKey: string;
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<VariableMapData>;
+  constantsLookup: Dictionary<Constant>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -287,6 +288,7 @@ type RPNHandler = {
   refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
   int8: (value: number | string) => RPNHandler;
   int16: (value: number | string) => RPNHandler;
+  intConstant: (value: string) => RPNHandler;
   operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
   stop: () => void;
 };
@@ -657,6 +659,7 @@ class ScriptBuilder {
       entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
+      constantsLookup: options.constantsLookup || {},
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
@@ -858,6 +861,10 @@ class ScriptBuilder {
         } else if (token.type === "OP") {
           const op = toScriptOperator(token.operator);
           rpn = rpn.operator(op);
+        } else if (token.type === "CONST") {
+          rpn = rpn.intConstant(token.symbol);
+        } else {
+          assertUnreachable(token);
         }
         token = rpnTokens.shift();
       }
@@ -881,6 +888,9 @@ class ScriptBuilder {
       .replace(/\n/g, "")
       .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
         return this.getVariableAlias(symbol.replace(/\$/g, ""));
+      })
+      .replace(/@([a-z0-9-]{36})@/g, (symbol) => {
+        return this.getConstantSymbol(symbol.replace(/@/g, ""));
       });
   };
 
@@ -1426,6 +1436,12 @@ class ScriptBuilder {
         stack.push(0);
         return rpn;
       },
+      intConstant: (value: string) => {
+        const symbol = this.getConstantSymbol(value);
+        rpnCmd(".R_INT16", symbol);
+        stack.push(0);
+        return rpn;
+      },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
         if (!rpnUnaryOperators.includes(op)) {
@@ -1575,6 +1591,10 @@ class ScriptBuilder {
       switch (rpnOp.type) {
         case "number": {
           rpn.int16(rpnOp.value ?? 0);
+          break;
+        }
+        case "constant": {
+          rpn.intConstant(rpnOp.value);
           break;
         }
         case "variable": {
@@ -5340,6 +5360,15 @@ extern void __mute_mask_${symbol};
     };
 
     return newAlias;
+  };
+
+  getConstantSymbol = (id: string): string => {
+    const { constantsLookup } = this.options;
+    const constant = constantsLookup[id];
+    if (!constant) {
+      return "0";
+    }
+    return constant.symbol.toLocaleUpperCase();
   };
 
   variableInc = (variable: ScriptBuilderVariable) => {

@@ -10,6 +10,7 @@
   "SCENE": "Scene",
   "PROJECT": "Project",
   "CUSTOM_EVENT": "Script",
+  "CONSTANT": "Constant",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Game World",
@@ -92,6 +93,9 @@
   "SIDEBAR_PREFABS": "Prefabs",
   "SIDEBAR_PREFAB_USES": "Prefab Uses",
   "SIDEBAR_ADD_PREFAB": "Add Prefab",
+  "SIDEBAR_CONSTANTS": "Constants",
+  "SIDEBAR_ADD_CONSTANT": "Add Constant",
+  "SIDEBAR_CONSTANT_USES": "Constant Uses",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
@@ -380,6 +384,7 @@
   "FIELD_16BIT_CALCULATION": "Value is calculated using two 8-bit variables",
   "FIELD_OFFSET": "Offset",
   "FIELD_VARIABLE_NOT_USED": "Variable hasn't been used in project",
+  "FIELD_CONSTANT_NOT_USED": "Constant hasn't been used in project",
   "FIELD_NONE": "None",
   "FIELD_DIMENSIONS": "Dimensions",
   "FIELD_SPRITE": "Sprite",
@@ -929,6 +934,7 @@
   "FIELD_READ_THREAD_HANDLE_VARIABLE_DESC": "The handle for the thread you want to stop.",
   "FIELD_RUN_IN_BACKGROUND": "Run In Background",
   "FIELD_RUN_IN_BACKGROUND_DESC": "The script to run in the background thread.",
+  "FIELD_CONSTANT": "Constant",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1454,6 +1460,7 @@
   "MENU_CHECK_SPELLING_WHILE_TYPING": "Check Spelling While Typing",
   "MENU_DELETE_PREFAB": "Delete Prefab",
   "MENU_EDIT_PREFAB": "Edit Prefab",
+  "MENU_DELETE_CONSTANT": "Delete Constant",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1589,6 +1596,9 @@
   "DIALOG_DELETE_PRESET_DESCRIPTION": "Any uses of this preset will become unlinked.",
   "DIALOG_APPLY_PRESET": "Apply Preset Changes?",
   "DIALOG_APPLY_PRESET_DESCRIPTION": "Modifying this preset will cause all uses of the preset to also be updated.",
+  "DIALOG_DELETE_CONSTANT": "Delete Constant \"{name}\"?",
+  "DIALOG_DELETE_CONSTANT_USED": "{count} uses of this constant will be set to '0'.\n\nFound in: {foundReferences}",
+  "DIALOG_DELETE_CONSTANT_USED_SINGLAR": "{count} use of this constant will be set to '0'.\n\nFound in: {foundReferences}",
 
   "// 16": "Settings ----------------------------------------------------",
 

@@ -4,6 +4,7 @@ import { ScriptValue } from "shared/lib/scriptValue/types";
 describe("scriptValueToString", () => {
   const options = {
     variableNameForId: (value: string) => `var_${value}`,
+    constantNameForId: (value: string) => `const_${value}`,
     actorNameForId: (value: string) => `actor_${value}`,
     propertyNameForId: (value: string) => `prop_${value}`,
     directionForValue: (value: string) => `dir_${value}`,

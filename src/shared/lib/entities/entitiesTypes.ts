@@ -1,5 +1,5 @@
 import type { EntityState, Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
@@ -480,6 +480,7 @@ export type ProjectEntitiesData = {
   emotes: EmoteData[];
   tilesets: TilesetData[];
   variables: Variable[];
+  constants: Constant[];
   engineFieldValues: EngineFieldValue[];
 };
 
@@ -505,6 +506,7 @@ export interface EntitiesState {
   emotes: EntityState<Emote>;
   tilesets: EntityState<Tileset>;
   variables: EntityState<Variable>;
+  constants: EntityState<Constant>;
   engineFieldValues: EntityState<EngineFieldValue>;
 }
 

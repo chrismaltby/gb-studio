@@ -1,5 +1,10 @@
+export const SIGNED_16BIT_MAX = 32767;
+export const SIGNED_16BIT_MIN = -32768;
+
 export const wrap8Bit = (val: number) => (256 + (val % 256)) % 256;
 export const wrap16Bit = (val: number) => (65536 + (val % 65536)) % 65536;
+export const clampSigned16Bit = (val: number) =>
+  Math.max(SIGNED_16BIT_MIN, Math.min(SIGNED_16BIT_MAX, val));
 export const wrap32Bit = (val: number) =>
   (4294967296 + (val % 4294967296)) % 4294967296;
 

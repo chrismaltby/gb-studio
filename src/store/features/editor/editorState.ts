@@ -48,6 +48,7 @@ export type EditorSelectionType =
   | "trigger"
   | "customEvent"
   | "variable"
+  | "constant"
   | "actorPrefab"
   | "triggerPrefab";
 
@@ -203,7 +204,7 @@ export const initialState: EditorState = {
   navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
   clipboardVariables: [],
-  navigatorSplitSizes: [400, 30, 30, 30],
+  navigatorSplitSizes: [400, 30, 30, 30, 30],
   navigatorSplitSizesManuallyEdited: false,
   focusSceneId: "",
   selectedSpriteSheetId: "",
@@ -422,6 +423,12 @@ const editorSlice = createSlice({
       state.type = "variable";
       state.scene = "";
       state.entityId = action.payload.variableId;
+    },
+
+    selectConstant: (state, action: PayloadAction<{ constantId: string }>) => {
+      state.type = "constant";
+      state.scene = "";
+      state.entityId = action.payload.constantId;
     },
 
     selectActor: (
@@ -963,6 +970,11 @@ const editorSlice = createSlice({
           state.scene = "";
           state.entityId = action.payload.triggerPrefabId;
         }
+      })
+      .addCase(entitiesActions.addConstant, (state, action) => {
+        state.type = "constant";
+        state.scene = "";
+        state.entityId = action.payload.constantId;
       })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
