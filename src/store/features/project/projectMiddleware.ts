@@ -22,6 +22,8 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         return;
       }
 
+      await API.app.showProjectWindow();
+
       actions.loadProject(action.payload)(store.dispatch, store.getState, {});
     } else if (actions.addFileToProject.match(action)) {
       const filename = action.payload;

@@ -124,6 +124,7 @@ const APISetup = {
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
     setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
     getPatrons: (): Promise<Patrons> => ipcRenderer.invoke("app:get-patrons"),
+    showProjectWindow: () => ipcRenderer.invoke("app:show-project-window"),
   },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>

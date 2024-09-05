@@ -288,9 +288,6 @@ export const createProjectWindow = async () => {
   projectWindow.webContents.on("did-finish-load", () => {
     refreshSpellCheck();
     sendToProjectWindow("open-project", projectPath);
-    setTimeout(() => {
-      projectWindow?.show();
-    }, 40);
   });
 
   projectWindow.on("enter-full-screen", () => {
@@ -709,6 +706,10 @@ app.on("activate", () => {
   if (splashWindow === null && projectWindow === null) {
     createSplash();
   }
+});
+
+ipcMain.handle("app:show-project-window", () => {
+  projectWindow?.show();
 });
 
 ipcMain.handle("project:open", async (_event, arg) => {
