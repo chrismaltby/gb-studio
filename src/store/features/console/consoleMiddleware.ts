@@ -13,110 +13,96 @@ import {
   sceneSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
+import { ConsoleLink } from "./consoleState";
+
+const getLinkToSymbol = (
+  symbol: string,
+  state: RootState
+): ConsoleLink | undefined => {
+  const allCustomScripts = customEventSelectors.selectAll(state);
+  const allActors = actorSelectors.selectAll(state);
+  const allTriggers = triggerSelectors.selectAll(state);
+  const allScenes = sceneSelectors.selectAll(state);
+
+  const customScript = allCustomScripts.find((s) => s.symbol === symbol);
+  if (customScript) {
+    // Matched symbol to a custom script
+    return {
+      linkText: customEventName(
+        customScript,
+        allCustomScripts.indexOf(customScript)
+      ),
+      type: "customEvent",
+      entityId: customScript.id,
+      sceneId: "",
+    };
+  }
+  const actor = allActors.find((a) => {
+    return symbol.startsWith(`${a.symbol}_`);
+  });
+  if (actor) {
+    const scene = allScenes.find((s) => s?.actors.includes(actor.id));
+    if (scene) {
+      // Matched symbol to an actor
+      return {
+        linkText: actorName(actor, scene.actors.indexOf(actor.id)),
+        type: "actor",
+        entityId: actor.id,
+        sceneId: scene.id,
+      };
+    }
+  }
+
+  const trigger = allTriggers.find((t) => {
+    return symbol.startsWith(`${t.symbol}_`);
+  });
+  if (trigger) {
+    const scene = allScenes.find((s) => s?.triggers.includes(trigger.id));
+    if (scene) {
+      // Matched symbol to a trigger
+      return {
+        linkText: triggerName(trigger, scene.triggers.indexOf(trigger.id)),
+        type: "trigger",
+        entityId: trigger.id,
+        sceneId: scene.id,
+      };
+    }
+  }
+
+  const scene = allScenes.find((s) => {
+    return symbol.startsWith(`${s.symbol}_`);
+  });
+
+  if (scene) {
+    // Matched symbol to a scene
+    return {
+      linkText: sceneName(scene, allScenes.indexOf(scene)),
+      type: "scene",
+      entityId: scene.id,
+      sceneId: scene.id,
+    };
+  }
+
+  return undefined;
+};
 
 const consoleMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (consoleActions.stdErr.match(action)) {
       if (action.payload.text.includes("Object files too large")) {
         const state = store.getState();
-        const allCustomScripts = customEventSelectors.selectAll(state);
-        const allActors = actorSelectors.selectAll(state);
-        const allTriggers = triggerSelectors.selectAll(state);
-        const allScenes = sceneSelectors.selectAll(state);
         const textLines = action.payload.text.split("\n");
         const tooLargeSymbols = textLines
           .slice(1)
           .map((line) => line.trim().slice(0, -2));
         for (const symbol of tooLargeSymbols) {
-          const customScript = allCustomScripts.find(
-            (s) => s.symbol === symbol
-          );
-          if (customScript) {
-            // Matched symbol to a custom script
+          const link = getLinkToSymbol(symbol, state);
+          if (link) {
             next({
               ...action,
               payload: {
                 text: `Object file too large: ${symbol}.o`,
-                link: {
-                  linkText: customEventName(
-                    customScript,
-                    allCustomScripts.indexOf(customScript)
-                  ),
-                  type: "customEvent",
-                  entityId: customScript.id,
-                  sceneId: "",
-                },
-              },
-            });
-            continue;
-          }
-          const actor = allActors.find((a) => {
-            return symbol.startsWith(`${a.symbol}_`);
-          });
-          if (actor) {
-            const scene = allScenes.find((s) => s?.actors.includes(actor.id));
-            if (scene) {
-              // Matched symbol to an actor
-              next({
-                ...action,
-                payload: {
-                  text: `Object file too large: ${symbol}.o`,
-                  link: {
-                    linkText: actorName(actor, scene.actors.indexOf(actor.id)),
-                    type: "actor",
-                    entityId: actor.id,
-                    sceneId: scene.id,
-                  },
-                },
-              });
-              continue;
-            }
-          }
-
-          const trigger = allTriggers.find((t) => {
-            return symbol.startsWith(`${t.symbol}_`);
-          });
-          if (trigger) {
-            const scene = allScenes.find((s) =>
-              s?.triggers.includes(trigger.id)
-            );
-            if (scene) {
-              // Matched symbol to an trigger
-              next({
-                ...action,
-                payload: {
-                  text: `Object file too large: ${symbol}.o`,
-                  link: {
-                    linkText: triggerName(
-                      trigger,
-                      scene.triggers.indexOf(trigger.id)
-                    ),
-                    type: "trigger",
-                    entityId: trigger.id,
-                    sceneId: scene.id,
-                  },
-                },
-              });
-              continue;
-            }
-          }
-
-          const scene = allScenes.find((s) => {
-            return symbol.startsWith(`${s.symbol}_`);
-          });
-
-          if (scene) {
-            // Matched symbol to an trigger
-            next({
-              ...action,
-              payload: {
-                text: `Object file too large: ${symbol}.o`,
-                link: {
-                  linkText: sceneName(scene, allScenes.indexOf(scene)),
-                  type: "scene",
-                  entityId: scene.id,
-                  sceneId: scene.id,
-                },
+                link,
               },
             });
             continue;
@@ -132,6 +118,40 @@ const consoleMiddleware: Middleware<Dispatch, RootState> =
         }
 
         return;
+      } else if (action.payload.text.includes("referenced by module")) {
+        const symbol = action.payload.text.match(
+          /referenced by module '([^']*)'/
+        )?.[1];
+        if (symbol) {
+          const state = store.getState();
+          const link = getLinkToSymbol(symbol, state);
+          if (link) {
+            return next({
+              ...action,
+              payload: {
+                text: action.payload.text,
+                link,
+              },
+            });
+          }
+        }
+      } else if (action.payload.text.includes("removing")) {
+        const symbol = action.payload.text.match(
+          /removing .*[\\/]([^\\/]*).o/
+        )?.[1];
+        if (symbol) {
+          const state = store.getState();
+          const link = getLinkToSymbol(symbol, state);
+          if (link) {
+            return next({
+              ...action,
+              payload: {
+                text: action.payload.text,
+                link,
+              },
+            });
+          }
+        }
       }
     }
     return next(action);

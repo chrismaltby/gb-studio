@@ -80,7 +80,6 @@ const LogLine = styled.div<LogLineProps>`
 `;
 
 const LogLink = styled.a`
-  text-decoration: underline;
   cursor: pointer;
 `;
 
@@ -127,7 +126,7 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
             }
           }}
         >
-          {link.linkText}
+          ➡️ <u>{link.linkText}</u>
         </LogLink>
       )}
     </LogLine>

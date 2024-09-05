@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update build log so the scripts with GBVM errors will display a link to edit the script which needs fixing.
+
 ### Fixed
 
 - Fix overflow of actor position that can occur when using "Move Relative" event near scene edges
