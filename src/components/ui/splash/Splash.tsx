@@ -1,7 +1,9 @@
 import React, { useLayoutEffect, useRef, useState, FC } from "react";
+import l10n from "shared/lib/lang/l10n";
 import styled, { css, keyframes } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import projectIcon from "ui/icons/gbsproj.png";
+import { CloseIcon } from "ui/icons/Icons";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
@@ -641,9 +643,42 @@ export interface SplashProjectProps {
     dir: string;
   };
   onClick: () => void;
+  onRemove: () => void;
 }
 
+export const SplashProjectRemoveButton = styled.div`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease-in-out;
+  transition-delay: 0.2s;
+  background: ${(props) => props.theme.colors.input.background};
+  border: 0;
+  border-radius: 4px;
+  width: 25px;
+  height: 25px;
+
+  svg {
+    fill: ${(props) => props.theme.colors.text};
+    width: 10px;
+    height: 10px;
+    max-width: 10px;
+    max-height: 10px;
+  }
+
+  :hover {
+    cursor: pointer;
+    svg {
+      fill: ${(props) => props.theme.colors.highlight};
+    }
+  }
+`;
+
 export const SplashProjectWrapper = styled.button`
+  position: relative;
   display: flex;
   text-align: left;
   background: ${(props) => props.theme.colors.input.background};
@@ -659,8 +694,15 @@ export const SplashProjectWrapper = styled.button`
     margin-right: 10px;
   }
 
+  ${SplashProjectRemoveButton} {
+    opacity: 0;
+  }
+
   :hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
+    ${SplashProjectRemoveButton} {
+      opacity: 1;
+    }
   }
 
   :active {
@@ -712,12 +754,30 @@ export const SplashLoading = styled.form`
   justify-content: center;
 `;
 
-export const SplashProject: FC<SplashProjectProps> = ({ project, onClick }) => (
+export const SplashProject: FC<SplashProjectProps> = ({
+  project,
+  onClick,
+  onRemove,
+}) => (
   <SplashProjectWrapper onClick={onClick}>
     <img src={projectIcon} alt="" />
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
       <SplashProjectPath>{project.dir}</SplashProjectPath>
     </SplashProjectDetails>
+    <SplashProjectRemoveButton
+      title={l10n("SPLASH_REMOVE_FROM_RECENT")}
+      onClick={
+        onRemove
+          ? (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }
+          : undefined
+      }
+    >
+      <CloseIcon />
+    </SplashProjectRemoveButton>
   </SplashProjectWrapper>
 );

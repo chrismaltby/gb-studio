@@ -253,6 +253,11 @@ export const Splash = () => {
     API.project.clearRecentProjects();
   };
 
+  const removeRecent = (path: string) => {
+    API.project.removeRecentProject(path);
+    setRecentProjects(recentProjects.filter((p) => p.path !== path));
+  };
+
   useEffect(() => {
     if (
       section !== undefined &&
@@ -369,6 +374,7 @@ export const Splash = () => {
                 key={index}
                 project={project}
                 onClick={onOpenRecent(project.path)}
+                onRemove={() => removeRecent(project.path)}
               />
             ))}
 

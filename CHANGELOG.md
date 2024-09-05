@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add ability to remove a single project from the recent files list by clicking "X" button that appears on hover
+
 ### Changed
 
 - Update build log so the scripts with GBVM errors will display a link to edit the script which needs fixing.

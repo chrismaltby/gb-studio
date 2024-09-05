@@ -739,6 +739,22 @@ ipcMain.handle("clear-recent-projects", async (_event) => {
   app.clearRecentDocuments();
 });
 
+ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
+  const recentProjects = settings.get("recentProjects");
+  const newRecents = isStringArray(recentProjects)
+    ? recentProjects.filter((path) => path !== removePath)
+    : [];
+  settings.set("recentProjects", newRecents);
+  // Rebuild OS level recent projects
+  app.clearRecentDocuments();
+  newRecents
+    .slice(0)
+    .reverse()
+    .forEach((path) => {
+      app.addRecentDocument(path);
+    });
+});
+
 ipcMain.handle("open-help", async (_event, helpPage) => {
   if (!isString(helpPage)) throw new Error("Invalid URL");
   openHelp(helpPage);

@@ -1515,6 +1515,7 @@
   "SPLASH_CREATE": "Create Project",
   "SPLASH_CREATING": "Creating",
   "SPLASH_CLEAR_RECENT": "Clear Recent",
+  "SPLASH_REMOVE_FROM_RECENT": "Remove From Recent List",
   "SPLASH_NO_RECENT_PROJECTS": "No projects have been opened recently.",
   "SPLASH_CREDITS": "Credits",
   "SPLASH_CONTRIBUTORS": "Contributors",

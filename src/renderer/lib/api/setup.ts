@@ -203,6 +203,8 @@ const APISetup = {
   project: {
     getRecentProjects: (): Promise<RecentProjectData[]> =>
       ipcRenderer.invoke("get-recent-projects"),
+    removeRecentProject: (path: string) =>
+      ipcRenderer.invoke("remove-recent-project", path),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
     openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
     openProject: (projectPath: string) =>
