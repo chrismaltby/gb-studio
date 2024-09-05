@@ -4,6 +4,7 @@ import uuidv4 from "uuid/v4";
 import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
+import { readFXHammerNumEffects } from "lib/compiler/sounds/compileFXHammer";
 
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);
@@ -17,6 +18,7 @@ export interface SoundAssetData {
   filename: string;
   plugin?: string;
   type: SoundAssetType;
+  numEffects?: number;
   inode: string;
   _v: number;
 }
@@ -42,6 +44,9 @@ const loadSoundData =
     const fileStat = await statAsync(filename, { bigint: true });
     const inode = fileStat.ino.toString();
     const type = toVGMType(filename);
+    const numEffects = await (type === "fxhammer"
+      ? readFXHammerNumEffects(filename)
+      : undefined);
 
     return {
       id: uuidv4(),
@@ -51,6 +56,7 @@ const loadSoundData =
       filename: file,
       type,
       inode,
+      numEffects,
       _v: Date.now(),
     };
   };

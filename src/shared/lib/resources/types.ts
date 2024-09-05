@@ -431,6 +431,7 @@ export const SoundResource = Type.Object({
   filename: Type.String(),
   plugin: Type.Optional(Type.String()),
   type: SoundType,
+  numEffects: Type.Optional(Type.Number()),
 });
 
 export type SoundResource = Static<typeof SoundResource>;

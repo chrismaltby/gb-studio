@@ -6183,10 +6183,15 @@ extern void __mute_mask_${symbol};
     const { sounds } = this.options;
     const sound = sounds.find((s) => s.id === soundId);
     if (sound) {
+      const maxEffect = (sound.numEffects ?? 0) - 1;
+      const effectIndex =
+        sound.type === "fxhammer"
+          ? Math.max(0, Math.min(maxEffect, effect ?? 0))
+          : 0;
       this._soundPlay(
         `${sound.symbol}${
           sound.type === "fxhammer"
-            ? "_" + String(effect ?? 0).padStart(2, "0")
+            ? "_" + String(effectIndex).padStart(2, "0")
             : ""
         }`,
         toASMSoundPriority(priority)

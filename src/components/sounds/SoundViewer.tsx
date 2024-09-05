@@ -5,10 +5,10 @@ import soundfxActions from "store/features/soundfx/soundfxActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { FormContainer } from "ui/form/FormLayout";
-import { Input } from "ui/form/Input";
 import { Label } from "ui/form/Label";
 import { PlayIcon } from "ui/icons/Icons";
 import { useAppDispatch } from "store/hooks";
+import { NumberInput } from "ui/form/NumberInput";
 
 interface SoundViewerProps {
   file: Sound;
@@ -53,18 +53,27 @@ export const SoundViewer = ({ file }: SoundViewerProps) => {
       </Button>
       {file.name}
 
-      {file.type === "fxhammer" ? (
+      {file.type === "fxhammer" && file.numEffects && file.numEffects > 0 ? (
         <SettingsWrapper>
           <FormContainer>
             <Label htmlFor="effectIndex">{l10n("FIELD_EFFECT_INDEX")}</Label>
-            <Input
+            <NumberInput
               name="effectIndex"
               type="number"
               min={0}
-              max={60}
+              max={file.numEffects - 1}
               value={effectIndex ?? 0}
-              onChange={(e) => setEffectIndex(parseInt(e.target.value))}
-            ></Input>
+              onChange={(e) => {
+                if (file.numEffects && file.numEffects > 0) {
+                  setEffectIndex(
+                    Math.max(
+                      0,
+                      Math.min(file.numEffects - 1, parseInt(e.target.value))
+                    )
+                  );
+                }
+              }}
+            ></NumberInput>
           </FormContainer>
         </SettingsWrapper>
       ) : (

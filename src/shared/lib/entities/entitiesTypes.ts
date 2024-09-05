@@ -269,6 +269,7 @@ export type Sound = {
   filename: string;
   plugin?: string;
   type: "wav" | "vgm" | "fxhammer";
+  numEffects?: number;
   inode: string;
   _v: number;
 };
