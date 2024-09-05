@@ -182,8 +182,11 @@ export const Splash = () => {
     API.project.openProjectPicker();
   };
 
-  const onOpenRecent = (projectPath: string) => () => {
-    API.project.openProject(projectPath);
+  const onOpenRecent = (projectPath: string) => async () => {
+    const success = await API.project.openProject(projectPath);
+    if (!success) {
+      setRecentProjects((await API.project.getRecentProjects()).reverse());
+    }
   };
 
   const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {

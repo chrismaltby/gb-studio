@@ -714,7 +714,7 @@ ipcMain.handle("app:show-project-window", () => {
 
 ipcMain.handle("project:open", async (_event, arg) => {
   const { projectPath } = arg;
-  openProject(projectPath);
+  return openProject(projectPath);
 });
 
 ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
@@ -735,12 +735,7 @@ ipcMain.handle("get-recent-projects", async (): Promise<
   });
 });
 
-ipcMain.handle("clear-recent-projects", async (_event) => {
-  settings.set("recentProjects", []);
-  app.clearRecentDocuments();
-});
-
-ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
+const removeRecentProject = (removePath: string) => {
   const recentProjects = settings.get("recentProjects");
   const newRecents = isStringArray(recentProjects)
     ? recentProjects.filter((path) => path !== removePath)
@@ -754,6 +749,15 @@ ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
     .forEach((path) => {
       app.addRecentDocument(path);
     });
+};
+
+ipcMain.handle("clear-recent-projects", async (_event) => {
+  settings.set("recentProjects", []);
+  app.clearRecentDocuments();
+});
+
+ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
+  removeRecentProject(removePath);
 });
 
 ipcMain.handle("open-help", async (_event, helpPage) => {
@@ -1950,14 +1954,15 @@ const switchProject = async () => {
   keepOpen = false;
 };
 
-const openProject = async (newProjectPath: string) => {
+const openProject = async (newProjectPath: string): Promise<boolean> => {
   const ext = Path.extname(newProjectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
       l10n("ERROR_OPEN_GBSPROJ_FILE")
     );
-    return;
+    removeRecentProject(newProjectPath);
+    return false;
   }
 
   try {
@@ -1967,7 +1972,8 @@ const openProject = async (newProjectPath: string) => {
       l10n("ERROR_MISSING_PROJECT"),
       l10n("ERROR_MOVED_OR_DELETED")
     );
-    return;
+    removeRecentProject(newProjectPath);
+    return false;
   }
 
   projectPath = newProjectPath;
@@ -1988,6 +1994,7 @@ const openProject = async (newProjectPath: string) => {
   }
 
   keepOpen = false;
+  return true;
 };
 
 const addRecentProject = (projectPath: string) => {

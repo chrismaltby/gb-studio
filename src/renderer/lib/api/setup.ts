@@ -208,7 +208,7 @@ const APISetup = {
       ipcRenderer.invoke("remove-recent-project", path),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
     openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
-    openProject: (projectPath: string) =>
+    openProject: (projectPath: string): Promise<boolean> =>
       ipcRenderer.invoke("project:open", { projectPath }),
     getResourceChecksums: (): Promise<Record<string, string>> =>
       ipcRenderer.invoke("project:get-resource-checksums"),
