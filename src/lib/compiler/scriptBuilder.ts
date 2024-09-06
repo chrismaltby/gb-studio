@@ -1995,8 +1995,8 @@ class ScriptBuilder {
     width: number,
     height: number,
     color: ScriptBuilderUIColor,
-    autoScroll: boolean,
-    drawFrame: boolean
+    drawFrame: boolean,
+    autoScroll = true
   ) => {
     this._addCmd(
       "VM_OVERLAY_CLEAR",
@@ -3900,8 +3900,8 @@ extern void __mute_mask_${symbol};
           20,
           textBoxHeight,
           ".UI_COLOR_WHITE",
-          false,
-          showFrame
+          showFrame,
+          false
         );
       }
 
@@ -3917,7 +3917,7 @@ extern void __mute_mask_${symbol};
         this._overlaySetScroll(
           textX + (avatarId ? 2 : 0),
           textY,
-          (showFrame ? 19 : 20) - (avatarId ? 3 : 0) - textX,
+          (showFrame ? 19 : 20) - (avatarId ? 2 : 0) - textX,
           textHeight,
           ".UI_COLOR_WHITE"
         );
