@@ -65,6 +65,10 @@ const UseMessage = styled.div`
   font-size: 11px;
 `;
 
+const EditableConstantName = styled(EditableText)`
+  text-transform: uppercase;
+`;
+
 export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
   const { observe, height } = useDimensions();
@@ -74,6 +78,7 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   const constantIndex = useAppSelector((state) =>
     constantSelectors.selectIds(state).indexOf(id)
   );
+  const [name, setName] = useState(constant?.name ?? "");
   const [constantUses, setConstantUses] = useState<ConstantUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -120,6 +125,12 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   }, [onWorkerComplete]);
 
   useEffect(() => {
+    if (constant) {
+      setName(constant.name);
+    }
+  }, [constant]);
+
+  useEffect(() => {
     setFetching(true);
     worker.postMessage({
       id,
@@ -148,10 +159,16 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     const editValue = e.currentTarget.value;
+    setName(editValue);
+  };
+
+  const onRenameFinished = () => {
+    const validName = name.toLocaleUpperCase().replace(/\s/g, "_");
+    setName(validName);
     dispatch(
       entitiesActions.renameConstant({
         constantId: id,
-        name: editValue.toLocaleUpperCase().replace(/\s/g, "_"),
+        name: validName,
       })
     );
   };
@@ -207,13 +224,14 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   return (
     <Sidebar onClick={selectSidebar}>
       <FormHeader>
-        <EditableText
+        <EditableConstantName
           name="name"
           placeholder={defaultLocalisedConstantName(constantIndex)
             .toLocaleUpperCase()
             .replace(/\s/g, "_")}
-          value={constant?.name.toLocaleUpperCase().replace(/\s/g, "_") || ""}
+          value={name || ""}
           onChange={onRename}
+          onBlur={onRenameFinished}
         />
         <DropdownButton
           size="small"
