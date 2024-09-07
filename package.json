@@ -26,6 +26,8 @@
     "missing-translations": "node src/lang/list_missing.js",
     "make:cli": "webpack --config webpack.cli.config.js",
     "start:cli": "env NO_TYPE_CHECKING=1 npm run make:cli && node out/cli/gb-studio-cli",
+    "start:cli:profile": "env NO_TYPE_CHECKING=1 npm run make:cli && time node --prof out/cli/gb-studio-cli",
+    "flamegraph": "node --prof-process --preprocess -j isolate*.log | flamebearer",
     "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start",
     "dead-code": "knip",
     "repl": "ts-node",

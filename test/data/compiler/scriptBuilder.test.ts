@@ -3,7 +3,10 @@ import { PrecompiledScene } from "../../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
 } from "../../../src/lib/compiler/scriptBuilder";
-import { ScriptEvent } from "../../../src/shared/lib/entities/entitiesTypes";
+import {
+  CustomEvent,
+  ScriptEvent,
+} from "../../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
   dummyPrecompiledBackground,
@@ -1459,10 +1462,13 @@ test("should reuse symbol for input scripts with identical contents", async () =
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+    `___bank_script_input, _script_input`
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+    `___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `___bank_script_input_1, _script_input_1`
   );
 });
 
@@ -1618,16 +1624,22 @@ test("should reuse symbol for input scripts with identical contents across multi
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+    `___bank_script_input, _script_input`
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+    `___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
+    `___bank_script_input_1, _script_input_1`
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+    `___bank_script_input, _script_input`
   );
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+    `___bank_script_input_0, _script_input_0`
+  );
+  expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
+    `___bank_script_input_1, _script_input_1`
   );
 });
 
@@ -1777,16 +1789,16 @@ test("should reuse input symbol but NOT script symbol when scripts are identical
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+    `___bank_script_input, _script_input`
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+    `___bank_script_input_0, _script_input_0`
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_0, _script_input_0`
+    `___bank_script_input, _script_input`
   );
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `VM_CONTEXT_PREPARE      3, ___bank_script_input_1, _script_input_1`
+    `___bank_script_input_0, _script_input_0`
   );
 });
 
@@ -1844,7 +1856,8 @@ test("should insert placeholder symbol for recursive scripts", async () => {
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
-  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  const placeholder = Object.keys(recursiveSymbolMap)[0];
+  expect(placeholder).toContain("PLACEHOLDER");
   expect(additionalScriptFiles.length).toEqual(1);
   expect(output).toEqual([
     "        ; Call Script: Script 1",
@@ -1853,12 +1866,12 @@ test("should insert placeholder symbol for recursive scripts", async () => {
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
     `VM_CALL_FAR             ___bank_script`
   );
-  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
 
 test("should NOT reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
@@ -1964,6 +1977,206 @@ test("should NOT reuse script symbol even if scene hashes are different as long 
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
   expect(additionalScripts["script_2"]?.compiledScript).toContain(`VM_IDLE`);
+});
+
+test("should reuse script symbol even if scene hashes are different when the same script is being called and the output is identical", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const customEvents: CustomEvent[] = [
+    {
+      id: "script1",
+      name: "Script 1",
+      description: "",
+      variables: {},
+      actors: {
+        "0": {
+          id: "0",
+          name: "Actor1",
+        },
+      },
+      symbol: "script_1",
+      script: [
+        {
+          command: "EVENT_IDLE",
+          args: {},
+          id: "event1",
+        },
+      ],
+    },
+  ];
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents,
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents,
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(1);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
+});
+
+test("should NOT reuse script symbol even if scene hashes are different causing the same script to be compiled with different output", async () => {
+  const output: string[] = [];
+  const output2: string[] = [];
+  const symbols: Dictionary<string> = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalScriptsCache: Dictionary<string> = {};
+
+  const customEvents: CustomEvent[] = [
+    {
+      id: "script1",
+      name: "Script 1",
+      description: "",
+      variables: {},
+      actors: {
+        "0": {
+          id: "0",
+          name: "Actor1",
+        },
+      },
+      symbol: "script_1",
+      script: [
+        {
+          command: "EVENT_PALETTE_SET_BACKGROUND",
+          args: {
+            palette0: "restore",
+          },
+          id: "event1",
+        },
+      ],
+    },
+  ];
+
+  const palettes = [
+    {
+      id: "palette1",
+      colors: ["F30000", "C80000", "110000", "D20000"],
+    },
+    {
+      id: "palette2",
+      colors: ["00F300", "00B800", "000011", "00D800"],
+    },
+  ];
+
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const sb = new ScriptBuilder(output, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    palettes,
+    scene: {
+      id: "scene1",
+      hash: "scene1",
+      background: { autoPalettes: false },
+      paletteIds: ["palette1"],
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents,
+  } as unknown as ScriptBuilderOptions);
+
+  const sb2 = new ScriptBuilder(output2, {
+    scriptEventHandlers,
+    additionalScripts,
+    additionalScriptsCache,
+    symbols,
+    palettes,
+    scene: {
+      id: "scene2",
+      hash: "scene2",
+      background: { autoPalettes: false },
+      paletteIds: ["palette2"],
+      actors: [{ ...dummyActorNormalized, id: "actorS0A0" }],
+    } as unknown as PrecompiledScene,
+    customEvents,
+  } as unknown as ScriptBuilderOptions);
+
+  sb.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  sb2.callScript("script1", {
+    "$actor[0]$": "actorS0A0",
+  });
+
+  const additionalScriptFiles = Object.keys(additionalScripts);
+  expect(additionalScriptFiles.length).toEqual(2);
+  expect(output).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1, _script_1",
+    "",
+  ]);
+  expect(output2).toEqual([
+    "        ; Call Script: Script 1",
+    "        VM_PUSH_CONST           1 ; Actor 0",
+    "        VM_CALL_FAR             ___bank_script_1_0, _script_1_0",
+    "",
+  ]);
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `VM_LOAD_PALETTE`
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    `30, 0, 1, 25, 0, 1, 2, 0, 1, 26, 0, 1`
+  );
+  expect(additionalScripts["script_1_0"]?.compiledScript).toContain(
+    `VM_LOAD_PALETTE`
+  );
+  expect(additionalScripts["script_1_0"]?.compiledScript).toContain(
+    `0, 30, 1, 0, 23, 1, 0, 0, 2, 0, 27, 1`
+  );
 });
 
 test("should not reused script symbol when scripts are not identical", async () => {
@@ -2151,7 +2364,8 @@ test("should allow pass by reference for recursive scripts", async () => {
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
-  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  const placeholder = Object.keys(recursiveSymbolMap)[0];
+
   expect(additionalScriptFiles.length).toEqual(1);
   expect(output).toEqual([
     "        ; Call Script: Script 1",
@@ -2167,9 +2381,9 @@ test("should allow pass by reference for recursive scripts", async () => {
     `.R_REF      .SCRIPT_ARG_0_VARIABLE`
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
   );
-  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
 
 test("should allow pass by value for recursive scripts", async () => {
@@ -2244,7 +2458,7 @@ test("should allow pass by value for recursive scripts", async () => {
   });
 
   const additionalScriptFiles = Object.keys(additionalScripts);
-  const expectedPlaceholder = "__PLACEHOLDER|script1-scene1|PLACEHOLDER__";
+  const placeholder = Object.keys(recursiveSymbolMap)[0];
   expect(additionalScriptFiles.length).toEqual(1);
   expect(output).toEqual([
     "        ; Call Script: Script 1",
@@ -2261,9 +2475,9 @@ test("should allow pass by value for recursive scripts", async () => {
     `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${expectedPlaceholder}, _${expectedPlaceholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
   );
-  expect(recursiveSymbolMap[expectedPlaceholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
 
 test("should allow pass by reference between multiple scripts", async () => {

@@ -1,107 +1,69 @@
 import fs from "fs-extra";
-import compile from "./compileData";
-import ejectBuild from "./ejectBuild";
-import makeBuild from "./makeBuild";
 import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
-import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 import { ProjectResources } from "shared/lib/resources/types";
+import { buildRunner } from "./buildRunner";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
   projectRoot: string;
   tmpPath: string;
   engineFields: EngineFieldSchema[];
-  scriptEventHandlers: ScriptEventHandlers;
   sceneTypes: SceneTypeSchema[];
   outputRoot: string;
+  make?: boolean;
   debugEnabled?: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
 
 let cancelling = false;
+let cancelFunction: (() => void) | undefined;
 
 const buildProject = async (
-  data: ProjectResources,
+  project: ProjectResources,
   {
     buildType = "rom",
     projectRoot = "/tmp",
     tmpPath = "/tmp",
     engineFields = [],
-    scriptEventHandlers,
     sceneTypes = [],
     outputRoot = "/tmp/testing",
     debugEnabled = false,
+    make = true,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: BuildOptions
 ) => {
   cancelling = false;
 
-  const compiledData = await compile(data, {
-    projectRoot,
-    engineFields,
-    scriptEventHandlers,
-    sceneTypes,
-    tmpPath,
-    debugEnabled,
-    progress,
-    warnings,
-  });
-
-  if (cancelling) {
-    throw new Error("BUILD_CANCELLED");
-  }
-
-  await ejectBuild({
-    projectType: "gb",
-    projectRoot,
-    tmpPath,
-    projectData: data,
-    engineFields,
-    sceneTypes,
-    outputRoot,
-    compiledData,
-    progress,
-    warnings,
-  });
-
-  if (cancelling) {
-    throw new Error("BUILD_CANCELLED");
-  }
-
-  await validateEjectedBuild({
-    buildRoot: outputRoot,
-    progress,
-    warnings,
-  });
-
-  if (cancelling) {
-    throw new Error("BUILD_CANCELLED");
-  }
-
-  await makeBuild({
-    buildRoot: outputRoot,
-    tmpPath,
+  const { result, kill } = buildRunner({
+    project,
     buildType,
-    data,
-    debug: data.settings.generateDebugFilesEnabled,
+    projectRoot,
+    engineFields,
+    sceneTypes,
+    tmpPath,
+    outputRoot,
+    debugEnabled,
+    make,
     progress,
     warnings,
   });
+
+  cancelFunction = kill;
+  const compiledData = await result;
 
   if (cancelling) {
     throw new Error("BUILD_CANCELLED");
   }
 
   if (buildType === "web") {
-    const colorOnly = data.settings.colorMode === "color";
+    const colorOnly = project.settings.colorMode === "color";
     const gameFile = colorOnly ? "game.gbc" : "game.gb";
     await copy(binjgbRoot, `${outputRoot}/build/web`);
     await copy(
@@ -109,22 +71,22 @@ const buildProject = async (
       `${outputRoot}/build/web/rom/${gameFile}`
     );
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
-    const projectName = sanitize(data.metadata.name);
-    const author = sanitize(data.metadata.author);
+    const projectName = sanitize(project.metadata.name);
+    const author = sanitize(project.metadata.author);
     const colorsHead =
-      data.settings.colorMode !== "mono"
-        ? `<style type="text/css"> body { background-color:#${data.settings.customColorsBlack}; }</style>`
+      project.settings.colorMode !== "mono"
+        ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
         : "";
-    const customHead = data.settings.customHead || "";
+    const customHead = project.settings.customHead || "";
     const customControls = JSON.stringify({
-      up: data.settings.customControlsUp,
-      down: data.settings.customControlsDown,
-      left: data.settings.customControlsLeft,
-      right: data.settings.customControlsRight,
-      a: data.settings.customControlsA,
-      b: data.settings.customControlsB,
-      start: data.settings.customControlsStart,
-      select: data.settings.customControlsSelect,
+      up: project.settings.customControlsUp,
+      down: project.settings.customControlsDown,
+      left: project.settings.customControlsLeft,
+      right: project.settings.customControlsRight,
+      a: project.settings.customControlsA,
+      b: project.settings.customControlsB,
+      start: project.settings.customControlsStart,
+      select: project.settings.customControlsSelect,
     });
     const html = (
       await fs.readFile(`${outputRoot}/build/web/index.html`, "utf8")
@@ -153,6 +115,9 @@ const buildProject = async (
 
 export const cancelCompileStepsInProgress = () => {
   cancelling = true;
+  if (cancelFunction) {
+    cancelFunction();
+  }
 };
 
 export default buildProject;

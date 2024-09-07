@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update build log so the scripts with GBVM errors will display a link to edit the script which needs fixing.
 - When trying to open a project that has been deleted it will be removed from the recent projects list
+- Build process now runs in a Worker thread, meaning long builds will no longer cause the UI to become unresponsive
 
 ### Fixed
 

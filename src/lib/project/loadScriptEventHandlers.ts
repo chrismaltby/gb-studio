@@ -135,6 +135,7 @@ export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
+  console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
   sandbox: {},
   compiler: (code: string) => {
     // Convert es6 style modules to commonjs

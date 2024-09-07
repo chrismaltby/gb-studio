@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import l10n from "shared/lib/lang/l10n";
 import type { EditorSelectionType } from "store/features/editor/editorState";
 
 type ConsoleStatus = "idle" | "running" | "complete" | "cancelled";
@@ -62,7 +63,13 @@ const consoleSlice = createSlice({
       state,
       action: PayloadAction<{ text: string; link?: ConsoleLink }>
     ) => {
-      if (action.payload) {
+      if (
+        action.payload &&
+        // When cancelling only allow cancelled message to be output
+        // to clear backlog of progress messages
+        (state.status !== "cancelled" ||
+          action.payload.text === l10n("BUILD_CANCELLED"))
+      ) {
         const line: ConsoleLine = {
           type: "out",
           ...action.payload,

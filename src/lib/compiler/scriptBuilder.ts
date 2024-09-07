@@ -5004,10 +5004,14 @@ extern void __mute_mask_${symbol};
       }
     );
 
+    const inputSymbol = customEvent.symbol
+      ? customEvent.symbol
+      : `script_custom_0`;
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
     // all calls to this script while compilation is still in progress will
     // use this symbol that gets replaced later
-    const placeholderSymbol = "__PLACEHOLDER|" + cacheKey + "|PLACEHOLDER__";
+    const placeholderSymbol =
+      "__PLACEHOLDER|" + inputSymbol + this._contextHash() + "|PLACEHOLDER__";
 
     const tmpResult = {
       scriptRef: placeholderSymbol,
@@ -5017,14 +5021,9 @@ extern void __mute_mask_${symbol};
     // Cache placeholder symbol to be used by recursive calls
     compiledCustomEventScriptCache[cacheKey] = tmpResult;
 
-    const symbol = this._compileSubScript(
-      "custom",
-      script,
-      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
-      {
-        argLookup,
-      }
-    );
+    const symbol = this._compileSubScript("custom", script, inputSymbol, {
+      argLookup,
+    });
 
     const result = {
       scriptRef: symbol,
@@ -7578,13 +7577,17 @@ extern void __mute_mask_${symbol};
     delete symbols[symbol];
   };
 
+  _contextHash = () => {
+    const { scene, entityType, entity, context } = this.options;
+    return `${scene.hash}_${context}_${entityType}_${entity?.id ?? ""}`;
+  };
+
   _compileSubScript = (
     type: "input" | "timer" | "music" | "thread" | "custom",
     script: ScriptEvent[],
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const { scene, entityType, entity } = this.options;
     let context: ScriptEditorCtxType = this.options.context;
 
     // Set script context to calculate default value for missing vars
@@ -7596,19 +7599,16 @@ extern void __mute_mask_${symbol};
 
     // Generate a quick hash of the script for this scene to see if
     // it's already been compiled - just reuse if possible
-    const preBuildHash = `${generateScriptHash(script)}_${
-      scene.hash
-    }_${context}_${entityType}_${entity?.id ?? ""}`;
+    const preBuildHash = `${generateScriptHash(
+      script
+    )}_${this._contextHash()}_${type === "custom" ? inputSymbol : ""}`;
 
-    if (
-      this.options.additionalScriptsCache[preBuildHash] &&
-      type !== "custom"
-    ) {
+    if (this.options.additionalScriptsCache[preBuildHash]) {
       return this.options.additionalScriptsCache[preBuildHash];
     }
 
     const symbol = this._getAvailableSymbol(
-      inputSymbol ? inputSymbol : `script_${type}_0`
+      inputSymbol ? inputSymbol : `script_${type}`
     );
 
     const compiledSubScript = compileEntityEvents(
@@ -7633,11 +7633,15 @@ extern void __mute_mask_${symbol};
     );
 
     // Check if identical to any already compiled scripts
-    const scriptHash = gbvmScriptChecksum(compiledSubScript);
+    const scriptHash = `${gbvmScriptChecksum(
+      inputSymbol
+        ? compiledSubScript.replaceAll(inputSymbol, "SCRIPT")
+        : compiledSubScript
+    )}_${type === "custom" ? inputSymbol : ""}`;
 
     // If this script is identical to an already generated script
     // just reuse the existing symbol rather than writing a duplicate file
-    if (this.options.additionalScriptsCache[scriptHash] && type !== "custom") {
+    if (this.options.additionalScriptsCache[scriptHash]) {
       return this.options.additionalScriptsCache[scriptHash];
     }
 

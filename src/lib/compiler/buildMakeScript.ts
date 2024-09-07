@@ -18,97 +18,6 @@ type BuildOptions = {
   compilerPreset: number;
 };
 
-const buildMakeScript = async (
-  buildRoot: string,
-  {
-    colorEnabled,
-    sgb,
-    musicDriver,
-    debug,
-    platform,
-    batteryless,
-    targetPlatform,
-    cartType,
-  }: BuildOptions
-) => {
-  const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
-  const objFiles = [];
-
-  const CC =
-    platform === "win32"
-      ? `..\\_gbstools\\gbdk\\bin\\lcc`
-      : `../_gbstools/gbdk/bin/lcc`;
-  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -c`;
-
-  if (colorEnabled) {
-    CFLAGS += " -DCGB";
-  }
-
-  if (sgb) {
-    CFLAGS += " -DSGB";
-  }
-
-  if (musicDriver === "huge") {
-    CFLAGS += " -DHUGE_TRACKER";
-  } else {
-    CFLAGS += " -DGBT_PLAYER";
-  }
-
-  if (batteryless) {
-    CFLAGS += " -DBATTERYLESS";
-  }
-
-  const rumbleBit = cartType === "mbc3" ? "0x20u" : "0x08u";
-  CFLAGS += `-DRUMBLE_ENABLE=${rumbleBit}`;
-
-  if (debug) {
-    CFLAGS += " -Wf--debug -Wl-y";
-  }
-
-  if (targetPlatform === "pocket") {
-    CFLAGS += " -msm83:ap";
-  }
-
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
-
-  const addCommand = (label: string, cmd: string) => {
-    if (platform === "win32") {
-      cmds.push(`@echo ${label}`);
-      cmds.push(`@${cmd}`);
-    } else {
-      cmds.push(`echo "${label}"`);
-      cmds.push(cmd);
-    }
-  };
-
-  for (const file of buildFiles) {
-    if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
-      continue;
-    }
-    if (musicDriver !== "huge" && file.indexOf("HUGE_TRACKER") !== -1) {
-      continue;
-    }
-
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.o`;
-
-    if (!(await pathExists(objFile))) {
-      addCommand(
-        `${l10n("COMPILER_COMPILING")}: ${Path.relative(buildRoot, file)}`,
-        `${CC} ${CFLAGS} -c -o ${Path.relative(
-          buildRoot,
-          objFile
-        )} ${Path.relative(buildRoot, file)}`
-      );
-    }
-    objFiles.push(objFile);
-  }
-
-  return cmds.join("\n");
-};
-
 export const getBuildCommands = async (
   buildRoot: string,
   {
@@ -351,5 +260,3 @@ export const buildMakeDotBuildFile = ({
       .join(" ")
   );
 };
-
-export default buildMakeScript;

@@ -18,3 +18,7 @@ test/projects/*/build
 
 # IDEs
 .idea/
+
+# Performance   
+isolate*-v8.log
+flamegraph.html

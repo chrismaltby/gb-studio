@@ -48,8 +48,6 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import compileData from "lib/compiler/compileData";
-import ejectBuild from "lib/compiler/ejectBuild";
 import type {
   Background,
   SpriteSheetData,
@@ -122,7 +120,6 @@ import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums"
 import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
 import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
 import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
-import { cancelBuildCommandsInProgress } from "lib/compiler/makeBuild";
 import romUsage from "lib/compiler/romUsage";
 import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
@@ -1307,7 +1304,6 @@ ipcMain.handle(
         projectRoot,
         sceneTypes,
         outputRoot,
-        scriptEventHandlers,
         tmpPath: getTmp(),
         debugEnabled: debuggerEnabled,
         progress,
@@ -1407,7 +1403,6 @@ ipcMain.handle(
 
 ipcMain.handle("project:build-cancel", () => {
   cancelCompileStepsInProgress();
-  cancelBuildCommandsInProgress();
 });
 
 ipcMain.handle("project:engine-eject", () => {
@@ -1467,29 +1462,15 @@ ipcMain.handle(
         buildErr(message);
       };
 
-      const tmpPath = getTmp();
-
-      // Compile project data
-      const compiledData = await compileData(project, {
+      await buildProject(project, {
         projectRoot,
-        engineFields,
-        sceneTypes,
-        scriptEventHandlers,
-        tmpPath,
-        progress,
-        warnings,
-      });
-
-      // Export compiled data to a folder
-      await ejectBuild({
-        projectType: "gb",
-        projectRoot,
-        tmpPath,
-        projectData: project,
-        engineFields,
         sceneTypes,
         outputRoot,
-        compiledData,
+        tmpPath: getTmp(),
+        buildType: "rom",
+        engineFields,
+        debugEnabled: false,
+        make: false,
         progress,
         warnings,
       });

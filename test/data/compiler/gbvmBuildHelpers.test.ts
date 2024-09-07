@@ -1,3 +1,5 @@
+import path from "path";
+import { readFile } from "fs-extra";
 import {
   anonymizeGBVMScript,
   gbvmScriptChecksum,
@@ -121,6 +123,48 @@ _scene_1_init::
     const output = anonymizeGBVMScript(input);
     expect(output).toContain("scene_2_init");
     expect(output).not.toContain("scene_1_init");
+  });
+
+  it("should give equal output for functionally identical scripts", async () => {
+    const input1 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_input_953.s"
+      ),
+      "utf8"
+    );
+    const input2 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_input_954.s"
+      ),
+      "utf8"
+    );
+
+    const output1 = anonymizeGBVMScript(input1);
+    const output2 = anonymizeGBVMScript(input2);
+    expect(output1).toEqual(output2);
+  });
+
+  it("should give equal output for functionally more identical scripts", async () => {
+    const input1 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_timer_40.s"
+      ),
+      "utf8"
+    );
+    const input2 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_timer_54.s"
+      ),
+      "utf8"
+    );
+
+    const output1 = anonymizeGBVMScript(input1);
+    const output2 = anonymizeGBVMScript(input2);
+    expect(output1).toEqual(output2);
   });
 });
 

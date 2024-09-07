@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import os from "os";
+import Path from "path";
 import {
   buildLinkFile,
   buildLinkFlags,
@@ -41,7 +42,7 @@ const makeBuild = async ({
   warnings = (_msg) => {},
 }: MakeOptions) => {
   cancelling = false;
-  const env = Object.create(process.env);
+  const env = { ...process.env };
   const { settings } = data;
   const colorEnabled = settings.colorMode !== "mono";
   const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
@@ -55,7 +56,11 @@ const makeBuild = async ({
     "utf8"
   );
 
-  env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
+  env.PATH = [
+    Path.join(buildToolsPath, "gbdk", "bin"),
+    env.PATH ?? env.Path,
+  ].join(Path.delimiter);
+
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
   env.TARGET_PLATFORM = targetPlatform;
@@ -64,18 +69,18 @@ const makeBuild = async ({
   env.TMP = tmpPath;
   env.TEMP = tmpPath;
   if (colorEnabled) {
-    env.COLOR = true;
+    env.COLOR = "true";
   }
   if (sgbEnabled) {
-    env.SGB = true;
+    env.SGB = "true";
   }
   if (batterylessEnabled) {
-    env.BATTERYLESS = true;
+    env.BATTERYLESS = "true";
   }
   env.COLOR_MODE = settings.colorMode;
   env.MUSIC_DRIVER = settings.musicDriver;
   if (debug) {
-    env.DEBUG = true;
+    env.DEBUG = "true";
   }
   if (settings.musicDriver === "huge") {
     env.MUSIC_DRIVER = "HUGE_TRACKER";
@@ -83,12 +88,12 @@ const makeBuild = async ({
     env.MUSIC_DRIVER = "GBT_PLAYER";
   }
   if (settings.cartType === "mbc3") {
-    env.RUMBLE_ENABLE = 0x20;
+    env.RUMBLE_ENABLE = "0x20";
   } else {
-    env.RUMBLE_ENABLE = 0x08;
+    env.RUMBLE_ENABLE = "0x08";
   }
 
-  env.GBDK_COMPILER_PRESET = settings.compilerPreset;
+  env.GBDK_COMPILER_PRESET = String(settings.compilerPreset);
 
   // Populate /obj with cached data
   await fetchCachedObjData(buildRoot, tmpPath, env);
