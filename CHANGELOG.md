@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue causing crash when trying to preview an FX Hammer effect index that doesn't exist
 - Fix issue building game when playing FX Hammer sound effect that doesn't exist (overflowed values will clamp to available range)
 - Fix issue where migrate project confirmation dialog would appear behind project window on Linux
+- Fix issue where "Display Dialogue" event would inconsistently pause between each dialogue in a multi dialogue sequence
+- Fix issue where text scroll would not scroll first character of each line of text when using avatars
 
 ## [4.1.1] - 2024-09-04
 

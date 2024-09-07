@@ -1995,7 +1995,8 @@ class ScriptBuilder {
     width: number,
     height: number,
     color: ScriptBuilderUIColor,
-    drawFrame: boolean
+    drawFrame: boolean,
+    autoScroll = true
   ) => {
     this._addCmd(
       "VM_OVERLAY_CLEAR",
@@ -2004,7 +2005,10 @@ class ScriptBuilder {
       width,
       height,
       color,
-      unionFlags([".UI_AUTO_SCROLL"].concat(drawFrame ? ".UI_DRAW_FRAME" : []))
+      unionFlags([
+        ...(autoScroll ? [".UI_AUTO_SCROLL"] : []),
+        ...(drawFrame ? [".UI_DRAW_FRAME"] : []),
+      ])
     );
   };
 
@@ -3884,15 +3888,8 @@ extern void __mute_mask_${symbol};
         }
       }
 
-      let endDelaySequence = "";
-      if (closeWhen === "text") {
-        endDelaySequence = `\\001\\${decOct(8)}\\001\\${decOct(6)}`;
-      } else if (textIndex !== input.length - 1) {
-        endDelaySequence = `\\001\\${decOct(7)}`;
-      }
-
       this._loadStructuredText(
-        `${textPosSequence}${text}${endDelaySequence}`,
+        `${textPosSequence}${text}`,
         avatarIndex,
         textHeight
       );
@@ -3903,7 +3900,8 @@ extern void __mute_mask_${symbol};
           20,
           textBoxHeight,
           ".UI_COLOR_WHITE",
-          showFrame
+          showFrame,
+          false
         );
       }
 
@@ -3915,15 +3913,15 @@ extern void __mute_mask_${symbol};
           ".OVERLAY_SPEED_INSTANT"
         );
         this._overlayMoveTo(0, textBoxY, overlayInSpeed);
-      }
 
-      this._overlaySetScroll(
-        textX + (avatarId ? 3 : 0),
-        textY,
-        (showFrame ? 19 : 20) - (avatarId ? 3 : 0) - textX,
-        textHeight,
-        ".UI_COLOR_WHITE"
-      );
+        this._overlaySetScroll(
+          textX + (avatarId ? 2 : 0),
+          textY,
+          (showFrame ? 19 : 20) - (avatarId ? 2 : 0) - textX,
+          textHeight,
+          ".UI_COLOR_WHITE"
+        );
+      }
 
       this._displayText();
 
@@ -4061,7 +4059,7 @@ extern void __mute_mask_${symbol};
     }
 
     this._loadStructuredText(choiceText);
-    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
@@ -4123,7 +4121,7 @@ extern void __mute_mask_${symbol};
     }
 
     this._loadStructuredText(menuText);
-    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true, true);
     if (layout === "menu") {
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
