@@ -1,4 +1,5 @@
 import l10n from "shared/lib/lang/l10n";
+import Path from "path";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import type {
   BackgroundData,
@@ -47,17 +48,34 @@ export const getBackgroundInfo = async (
 
   let tilesetLength = precalculatedTilesetLength;
   let tilesets: number[] = [];
-  if (!tilesetLength) {
-    const filename = assetFilename(projectPath, "backgrounds", background);
-    const tileData = await readFileToTilesDataArray(filename);
-    const tileDataWithCommon = await mergeCommonTiles(
-      tileData,
-      commonTileset,
-      projectPath
-    );
-    const tilesetLookup = toTileLookup(tileDataWithCommon);
-    tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
-    tilesetLength = Object.keys(tilesetLookup).length;
+
+  try {
+    if (!tilesetLength) {
+      const filename = assetFilename(projectPath, "backgrounds", background);
+      const tileData = await readFileToTilesDataArray(filename);
+      const tileDataWithCommon = await mergeCommonTiles(
+        tileData,
+        commonTileset,
+        projectPath
+      );
+      const tilesetLookup = toTileLookup(tileDataWithCommon);
+      tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
+      tilesetLength = Object.keys(tilesetLookup).length;
+    }
+  } catch (e) {
+    warnings.push(String(e));
+    return {
+      warnings: [
+        l10n("WARNING_BACKGROUND_IS_NOT_A_VALID_PNG", {
+          filename: Path.relative(
+            projectPath,
+            assetFilename(projectPath, "backgrounds", background)
+          ),
+        }),
+      ],
+      numTiles: 0,
+      lookup: [],
+    };
   }
 
   if (background.imageWidth < 160 || background.imageHeight < 144) {
