@@ -19,7 +19,7 @@ export const PrefabHeader = styled.div<PrefabHeaderProps>`
             background: ${(props) =>
               props.theme.colors.prefab.button.background};
             color: ${(props) => props.theme.colors.prefab.button.text};
-            :hover {
+            &:hover {
               background: ${(props) =>
                 props.theme.colors.prefab.button.hoverBackground};
             }

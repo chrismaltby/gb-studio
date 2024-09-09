@@ -68,7 +68,7 @@ const Wrapper = styled.span<WrapperProps>`
 `;
 
 const Field = styled.span<{ active?: boolean; selected?: boolean }>`
-  :hover {
+  &:hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
   margin: 0;

@@ -19,6 +19,9 @@ export const NoiseMacroEditorForm = ({
     if (!canvas) {
       return;
     }
+    if (!themeContext) {
+      return;
+    }
 
     const drawWidth = canvas.width - 10;
     const drawHeight = canvas.height - 10;

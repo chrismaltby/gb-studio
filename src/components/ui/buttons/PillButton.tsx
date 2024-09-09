@@ -12,7 +12,7 @@ export const PillButton = styled.button<PillButtonProps>`
   padding: 3px 10px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 
@@ -29,10 +29,10 @@ const primaryStyles = css`
     fill: #fff;
   }
 
-  :active {
+  &:active {
     opacity: 0.8;
   }
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
@@ -47,10 +47,10 @@ const blueStyles = css`
     fill: #fff;
   }
 
-  :active {
+  &:active {
     opacity: 0.8;
   }
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 2px #fff, 0 0 0px 4px #1976d2;
   }
 `;

@@ -44,7 +44,7 @@ export const LabelButton = styled.button.attrs<LabelButtonProps>((props) => ({
   background-color: transparent;
   opacity: 0.9;
 
-  :hover {
+  &:hover {
     opacity: 1;
     transform: scale(1.25);
   }

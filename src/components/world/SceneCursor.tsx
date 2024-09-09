@@ -55,7 +55,7 @@ const Wrapper = styled.div<WrapperProps>`
   background: rgba(140, 150, 156, 0.4);
   -webkit-transform: translate3d(0, 0, 0);
 
-  ::after {
+  &:after {
     content: "";
     position: absolute;
     top: -8px;

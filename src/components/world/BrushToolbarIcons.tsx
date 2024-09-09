@@ -87,7 +87,7 @@ export const BrushToolbarTileRightIcon = styled.div`
 export const BrushToolbarLadderTileIcon = styled.div`
   ${brushToolbarCollisionTileStyles}
 
-  ::before {
+  &:before {
     content: "";
     display: block;
     width: 10px;
@@ -98,7 +98,7 @@ export const BrushToolbarLadderTileIcon = styled.div`
     border-right: 4px solid green;
   }
 
-  ::after {
+  &:after {
     position: absolute;
     content: "";
     display: block;

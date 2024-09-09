@@ -403,7 +403,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       setModalColorIndex(-1);
     }
   }, [selectedTool]);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const startReplacePalette = (paletteIndex: number) => () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -570,7 +570,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               active={paletteIndex === selectedPalette}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
-              })} (${paletteIndex + 1}) - ${paletteName(palettes[paletteIndex], -1)}`}
+              })} (${paletteIndex + 1}) - ${paletteName(
+                palettes[paletteIndex],
+                -1
+              )}`}
             >
               <PaletteBlock
                 colors={palettes[paletteIndex]?.colors ?? []}

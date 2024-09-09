@@ -119,7 +119,7 @@ const useNestedMenu = (
   }, [isOpen]);
 
   // Clear submenu timer on unmount
-  const closeTimer = useRef<number>();
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
     return () => {
       if (closeTimer.current) {

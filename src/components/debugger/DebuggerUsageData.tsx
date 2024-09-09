@@ -49,7 +49,7 @@ const SizeStep = styled.div`
   border-right: 1px solid ${(props) => props.theme.colors.input.border};
   transition: width 0.3s ease-in-out;
 
-  :hover {
+  &:hover {
     background-color: #191919;
   }
 `;

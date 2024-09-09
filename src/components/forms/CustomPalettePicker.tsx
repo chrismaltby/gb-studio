@@ -90,7 +90,7 @@ const ColorButton = styled.button<ColorButtonProps>`
     color: ${(props) => props.theme.colors.text};
   }
 
-  :hover {
+  &:hover {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.input.border};
   }
 
@@ -98,7 +98,7 @@ const ColorButton = styled.button<ColorButtonProps>`
     props.selected
       ? css`
           &,
-          :hover {
+          &:hover {
             box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
           }
         `

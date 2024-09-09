@@ -104,8 +104,8 @@ const Wrapper = styled.div<WrapperProps>`
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 
-  :hover,
-  :hover ${SceneName} {
+  &:hover,
+  &:hover ${SceneName} {
     background-color: ${(props) => props.theme.colors.sidebar.background};
   }
 

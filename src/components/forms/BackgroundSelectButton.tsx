@@ -77,11 +77,11 @@ const Button = styled.button`
   width: 100%;
   text-align: left;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus,
+  &:focus,
   &&&:focus:not(.focus-visible) {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
@@ -155,7 +155,7 @@ export const Pill = styled.span`
   margin-left: 3px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -169,7 +169,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );

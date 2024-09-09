@@ -64,7 +64,7 @@ const LayerRow = styled.div`
     margin-right: 0px;
   }
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.sidebar.well.hoverBackground};
     ${LayerIndex} {
       background: ${(props) => props.theme.colors.sidebar.well.background};

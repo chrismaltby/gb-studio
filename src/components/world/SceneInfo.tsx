@@ -66,7 +66,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
   margin: 0 3px;
   white-space: nowrap;
 
-  :hover {
+  &:hover {
     background-color: rgba(128, 128, 128, 0.2);
   }
 
@@ -75,7 +75,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       ? css`
           background: rgb(243, 168, 30);
           color: #fff;
-          :hover {
+          &:hover {
             background: rgb(243, 168, 30);
             opacity: 0.7;
           }
@@ -87,7 +87,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       ? css`
           background: rgb(243, 0, 0);
           color: #fff;
-          :hover {
+          &:hover {
             background: rgb(243, 0, 0);
             opacity: 0.7;
           }

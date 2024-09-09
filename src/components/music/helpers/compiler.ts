@@ -36,7 +36,7 @@ type EmscriptenModule = {
 
 let busy = false;
 let repeat = false;
-let startDelayTimer: number;
+let startDelayTimer: ReturnType<typeof setTimeout>;
 
 let doneCallback: CompileDoneCallback;
 let logCallback: CompileLogCallback | null;

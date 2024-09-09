@@ -133,7 +133,7 @@ const Tab = styled.button<TabProps>`
     to(rgba(0, 0, 0, 0))
   );
 
-  :hover {
+  &:hover {
     overflow: visible;
     -webkit-mask-image: none;
   }

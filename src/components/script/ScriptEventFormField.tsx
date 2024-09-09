@@ -75,7 +75,7 @@ const MultiInputButton = styled.button`
     height: 8px;
   }
 
-  :hover {
+  &:hover {
     opacity: 1;
   }
 
@@ -96,11 +96,11 @@ const InputRow = styled.div`
   position: relative;
   margin-bottom: 3px;
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 
-  :hover ${MultiInputButton} {
+  &:hover ${MultiInputButton} {
     opacity: 1;
   }
 `;

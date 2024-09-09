@@ -95,7 +95,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeTriggerProp("notes", e.currentTarget.value),
     [onChangeTriggerProp]
   );

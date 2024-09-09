@@ -277,7 +277,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const themeContext = useContext(ThemeContext);
 
   const themePianoIcon =
-    themeContext.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
+    themeContext?.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
 
   return (
     <>

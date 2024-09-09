@@ -229,7 +229,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     }, [isOpen]);
 
     // Clear submenu timer on unmount
-    const closeTimer = useRef<number>();
+    const closeTimer = useRef<ReturnType<typeof setTimeout>>();
     useEffect(() => {
       return () => {
         if (closeTimer.current) {
@@ -516,8 +516,10 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     const onButtonClick = useCallback(
       (_e: React.MouseEvent) => {
         clickedOpen.current = !isOpen;
-        setIsOpen(!isOpen);
-        setParentMenuIndex(-1);
+        requestAnimationFrame(() => {
+          setIsOpen(!isOpen);
+          setParentMenuIndex(-1);
+        });
       },
       [isOpen, setIsOpen]
     );

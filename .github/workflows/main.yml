@@ -20,11 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "21.6.2"
-          cache: "yarn"
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install Dependencies
         run: |
-          yarn --ignore-engines
+          yarn
 
       - name: Test
         run: |
@@ -60,7 +62,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "21.6.2"
-          cache: "yarn"
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup codesign certificate
         if: (matrix.name == 'mac') || (matrix.name == 'mac-intel')
@@ -77,7 +81,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          yarn --ignore-engines
+          yarn
 
       - name: Update credits
         env:

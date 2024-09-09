@@ -61,7 +61,6 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
       data-id={item.id}
     >
       <ListItem
-        tabIndex={-1}
         data-selected={data.selectedId === item.id}
         data-highlighted={data.highlightIds?.includes(item.id)}
       >
@@ -169,8 +168,10 @@ export const FlatList = <T extends FlatListItem>({
   };
 
   const setFocus = (id: string) => {
+    console.log("SET FOCUS", id);
     if (ref.current) {
       const el = ref.current.querySelector('[data-id="' + id + '"]');
+      console.log("SET FOCUS ON EL", el);
       if (el) {
         (el as HTMLDivElement).focus();
       }

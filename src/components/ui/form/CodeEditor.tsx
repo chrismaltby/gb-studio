@@ -32,16 +32,16 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus {
+  &:focus {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
-  :disabled {
+  &:disabled {
     opacity: 0.5;
   }
 

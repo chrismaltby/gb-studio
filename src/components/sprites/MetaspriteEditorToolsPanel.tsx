@@ -32,7 +32,7 @@ const MetaspriteEditorToolsPanel = ({
   metaspriteId,
 }: MetaspriteEditorToolsPanelProps) => {
   const dispatch = useAppDispatch();
-  const intervalRef = useRef<number>();
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   const play = useAppSelector((state) => state.editor.playSpriteAnimation);
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
@@ -85,7 +85,9 @@ const MetaspriteEditorToolsPanel = ({
       intervalRef.current = id;
     }
     return () => {
-      clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [play, dispatch, frames, metaspriteId]);
 

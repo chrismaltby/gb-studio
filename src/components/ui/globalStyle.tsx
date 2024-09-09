@@ -1,6 +1,7 @@
 import "focus-visible";
 import { createGlobalStyle } from "styled-components";
 import pixelFont from "assets/fonts/PublicPixel.woff2";
+import React from "react";
 
 // Load font for use in Canvas elements
 new FontFace("Public Pixel", `url("${pixelFont}")`).load().then((font) => {
@@ -261,5 +262,20 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${(props) => props.theme.colors.menu.activeBackground};
   }
 `;
+
+const AllowScrollGlobalStyle = createGlobalStyle`
+  body {
+    overflow: scroll;
+  }
+`;
+
+export const StorybookGlobalStyles = () => {
+  return (
+    <>
+      <GlobalStyle />
+      <AllowScrollGlobalStyle />
+    </>
+  );
+};
 
 export default GlobalStyle;

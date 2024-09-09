@@ -305,7 +305,7 @@ const SpritesPage = () => {
         style={{
           transition: "opacity 0.3s ease-in-out",
           width: Math.max(200, leftPaneWidth),
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           overflow: "hidden",
           position: "relative",
         }}
@@ -334,8 +334,8 @@ const SpritesPage = () => {
           flex: "1 1 0",
           minWidth: 0,
           overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
+          background: themeContext?.colors.document.background,
+          color: themeContext?.colors.text,
           height: windowHeight - 38,
           position: "relative",
           display: "flex",
@@ -434,7 +434,7 @@ const SpritesPage = () => {
       <div
         style={{
           width: rightPaneWidth,
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           height: "100%",
           overflow: "hidden",
           position: "relative",

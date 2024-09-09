@@ -118,7 +118,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   );
 
   const onChangeDescription = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeCustomEventProp("description", e.currentTarget.value),
     [onChangeCustomEventProp]
   );

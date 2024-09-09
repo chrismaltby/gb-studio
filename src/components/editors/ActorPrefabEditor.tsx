@@ -45,7 +45,7 @@ const FlexWrapper = styled.div`
         color: ${(props) => props.theme.colors.prefab.text};
         opacity: 0.5;
       }
-      :focus {
+      &:focus {
         background: ${(props) => props.theme.colors.input.background};
         color: ${(props) => props.theme.colors.input.text};
         border: 1px solid ${(props) => props.theme.colors.highlight};
@@ -116,7 +116,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorPrefabProp("notes", e.currentTarget.value),
     [onChangeActorPrefabProp]
   );

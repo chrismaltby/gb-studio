@@ -93,11 +93,11 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     line-height: 16px;
     padding: 5px;
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.input.hoverBackground};
     }
 
-    :focus {
+    &:focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
@@ -111,7 +111,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.variable};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.variable};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -124,7 +124,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.character};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.character};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -137,7 +137,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -150,7 +150,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -163,7 +163,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }

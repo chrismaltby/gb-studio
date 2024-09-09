@@ -43,11 +43,11 @@ const ZoomInnerButton = styled.button<ZoomInnerButtonProps>`
   border: 0;
   flex-shrink: 0;
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.button.nestedActiveBackground};
   }
 
-  :after {
+  &:after {
     content: "";
     position: absolute;
     left: -4px;
@@ -88,7 +88,7 @@ const ZoomLabel = styled.button<ZoomLabelProps>`
   color: ${(props) => props.theme.colors.button.text};
   padding: 0px 5px;
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.button.activeBackground};
   }
 

@@ -54,7 +54,7 @@ const InputWrapper = styled.div<InputWrapperProps>`
 
   cursor: text;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
@@ -68,7 +68,7 @@ const InputWrapper = styled.div<InputWrapperProps>`
       transition: box-shadow 0.2s cubic-bezier(0.175, 0.885, 0.71, 2.65);
     `}
 
-  :disabled {
+  &:disabled {
     opacity: 0.5;
   }
 

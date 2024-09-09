@@ -98,7 +98,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorProp("notes", e.currentTarget.value),
     [onChangeActorProp]
   );

@@ -68,7 +68,7 @@ export const SplashLogo = styled.div`
     width: 100%;
   }
 
-  :hover {
+  &:hover {
     transform: scale(1.05);
   }
 `;
@@ -85,7 +85,7 @@ export const SplashEasterEggButton = styled.button`
   -webkit-app-region: no-drag;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     background: radial-gradient(
       circle,
       rgba(251, 63, 139, 0.2) 0%,
@@ -93,7 +93,7 @@ export const SplashEasterEggButton = styled.button`
     );
   }
 
-  :active {
+  &:active {
     background: radial-gradient(
       circle,
       rgba(251, 63, 139, 0.6) 0%,
@@ -141,11 +141,11 @@ export const SplashTab = styled.button<SplashTabProps>`
   border: 0;
   -webkit-app-region: no-drag;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
 
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
 
@@ -156,11 +156,11 @@ const SplashTabSelectedStyles = css`
   background: ${(props) => props.theme.colors.highlight};
   color: #fff;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.highlight};
     color: #fff;
   }
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.highlight};
     color: #fff;
   }
@@ -220,7 +220,7 @@ export const SplashTemplateButton = styled.input.attrs({
   padding: 0;
   border-radius: ${(props) => props.theme.borderRadius}px;
   -webkit-appearance: none;
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
 `;
@@ -669,7 +669,7 @@ export const SplashProjectRemoveButton = styled.div`
     max-height: 10px;
   }
 
-  :hover {
+  &:hover {
     cursor: pointer;
     svg {
       fill: ${(props) => props.theme.colors.highlight};
@@ -698,23 +698,23 @@ export const SplashProjectWrapper = styled.button`
     opacity: 0;
   }
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
     ${SplashProjectRemoveButton} {
       opacity: 1;
     }
   }
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
-  :focus {
+  &:focus {
     background: transparent;
     box-shadow: inset 0 0 0px 2px #c92c61;
   }
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 `;

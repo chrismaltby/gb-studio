@@ -90,7 +90,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   width: 8px;
   height: 16px;
 
-  :hover::after {
+  &:hover:after {
     content: "";
     position: absolute;
     top: 0;
@@ -104,7 +104,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   ${(props) =>
     props.selected
       ? css`
-          &&::after {
+          &&:after {
             content: "";
             position: absolute;
             top: 0;

@@ -102,7 +102,7 @@ const ScanlinePos = styled.div`
   height: 144px;
   maxheight: 144px;
   background: #e0f8cf;
-  ::before {
+  &:before {
     content: "";
     position: absolute;
     left: 0;
@@ -113,7 +113,7 @@ const ScanlinePos = styled.div`
     box-shadow: 0px 0px 2px rgba(148, 239, 218, 0.9),
       0px 0px 10px rgba(0, 249, 106, 0.8);
   }
-  ::after {
+  &:after {
     content: "";
     position: absolute;
     left: 100%;

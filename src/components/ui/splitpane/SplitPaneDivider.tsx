@@ -8,7 +8,7 @@ export const SplitPaneHorizontalDivider = styled.div`
   position: relative;
   z-index: 1;
 
-  :before {
+  &:before {
     content: "";
     display: block;
     position: absolute;
@@ -18,7 +18,7 @@ export const SplitPaneHorizontalDivider = styled.div`
     height: 100%;
   }
 
-  :after {
+  &:after {
     content: "";
     display: block;
     position: absolute;
@@ -32,7 +32,7 @@ export const SplitPaneHorizontalDivider = styled.div`
     transition: all 0.3s ease-in-out;
   }
 
-  :hover:after {
+  &:hover:after {
     transform: scale(1, 1);
   }
 `;
@@ -45,7 +45,7 @@ export const SplitPaneVerticalDivider = styled.div`
   position: relative;
   z-index: 1;
 
-  :before {
+  &:before {
     content: "";
     display: block;
     position: absolute;
@@ -55,7 +55,7 @@ export const SplitPaneVerticalDivider = styled.div`
     width: 100%;
   }
 
-  :after {
+  &:after {
     content: "";
     display: block;
     position: absolute;
@@ -69,7 +69,7 @@ export const SplitPaneVerticalDivider = styled.div`
     transition: all 0.3s ease-in-out;
   }
 
-  :hover:after {
+  &:hover:after {
     transform: scale(1, 1);
   }
 `;

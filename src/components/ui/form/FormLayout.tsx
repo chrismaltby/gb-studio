@@ -194,10 +194,10 @@ export const FormLink = styled.div`
   margin-top: -5px;
   margin-bottom: -5px;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.1);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.2);
   }
 `;

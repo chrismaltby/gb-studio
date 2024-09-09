@@ -50,7 +50,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
 
     const ctx = canvas.getContext("2d");
 
-    const defaultColor = themeContext.colors.highlight;
+    const defaultColor = themeContext?.colors.highlight ?? "black";
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;

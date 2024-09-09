@@ -189,7 +189,7 @@ const SelectMenuInput = styled(IMEUnstyledInput)`
   box-sizing: border-box;
   width: 100%;
   height: 28px;
-  :focus {
+  &:focus {
     border: 2px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
     box-shadow: none;

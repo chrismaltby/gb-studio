@@ -15,11 +15,11 @@ export const Textarea = styled.textarea<TextareaProps>`
   width: 100%;
   resize: none;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus {
+  &:focus {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
   }

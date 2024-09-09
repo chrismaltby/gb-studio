@@ -276,7 +276,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSceneProp("notes", e.currentTarget.value),
     [onChangeSceneProp]
   );

@@ -93,7 +93,7 @@ const WorldView = () => {
 
   const scrollContentsRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
-  const blockWheelZoom = useRef<number>();
+  const blockWheelZoom = useRef<ReturnType<typeof setTimeout>>();
 
   const [dragMode, setDragMode] = useState(false);
   const [hoverState, setHoverState] = useState<{ x: number; y: number }>();
@@ -262,7 +262,9 @@ const WorldView = () => {
         }
       } else {
         // Don't allow mousewheel zoom while scrolling
-        clearTimeout(blockWheelZoom.current);
+        if (blockWheelZoom.current) {
+          clearTimeout(blockWheelZoom.current);
+        }
         blockWheelZoom.current = setTimeout(() => {
           blockWheelZoom.current = undefined;
         }, 60);

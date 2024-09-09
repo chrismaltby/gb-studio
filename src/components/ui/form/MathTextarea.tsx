@@ -202,11 +202,11 @@ export const MathTextareaWrapper = styled.div`
     font-family: monospace;
     padding: 5px;
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.input.hoverBackground};
     }
 
-    :focus {
+    &:focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
@@ -220,7 +220,7 @@ export const MathTextareaWrapper = styled.div`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.variable};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.variable};
       color: ${(props) => props.theme.colors.input.background};
     }

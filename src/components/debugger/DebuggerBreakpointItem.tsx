@@ -37,7 +37,7 @@ const Wrapper = styled.div`
     }
   }
 
-  :hover ${Button} {
+  &:hover ${Button} {
     svg {
       opacity: 1;
       width: 10px;

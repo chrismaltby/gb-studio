@@ -45,7 +45,7 @@ export const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.collapsible
       ? css`
-          :active {
+          &:active {
             background-color: ${(props) =>
               props.theme.colors.input.hoverBackground};
           }

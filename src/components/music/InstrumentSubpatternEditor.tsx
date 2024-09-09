@@ -72,10 +72,10 @@ const SubpatternRow = styled.div`
   border-width: 0 0 0 1px;
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
-  :first-child {
+  &:first-child {
     border-width: 1px 0 0 1px;
   }
-  :last-child {
+  &:last-child {
     border-width: 0 0 1px 1px;
   }
 `;
@@ -129,7 +129,7 @@ const SubpatternRowGroup = styled.span<SubpatternRowGroupProps>`
 `;
 
 const Field = styled.span<{ active?: boolean; selected?: boolean }>`
-  :hover {
+  &:hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
   margin: 0;

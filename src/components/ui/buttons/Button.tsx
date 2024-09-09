@@ -82,7 +82,7 @@ const normalStyles = css<ButtonProps>`
         `
       : ""}
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.button.activeBackground};
   }
 `;
@@ -96,10 +96,10 @@ const primaryStyles = css`
     fill: #fff;
   }
 
-  :active {
+  &:active {
     opacity: 0.8;
   }
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
@@ -113,10 +113,10 @@ const transparentStyles = css<ButtonProps>`
   ${(props) =>
     !props.disabled
       ? css`
-          :hover {
+          &:hover {
             background: rgba(128, 128, 128, 0.1);
           }
-          :active {
+          &:active {
             background: rgba(128, 128, 128, 0.2);
           }
         `
@@ -126,10 +126,10 @@ const transparentStyles = css<ButtonProps>`
     props.active
       ? css`
           background: rgba(128, 128, 128, 0.3);
-          :hover {
+          &:hover {
             background: rgba(128, 128, 128, 0.3);
           }
-          :active {
+          &:active {
             background: rgba(128, 128, 128, 0.2);
           }
         `
@@ -143,7 +143,7 @@ const underlinedStyles = css<ButtonProps>`
   position: relative;
   overflow: visible;
 
-  :after {
+  &:after {
     content: "";
     border-bottom: 2px solid ${(props) => props.theme.colors.highlight};
     width: 100%;
@@ -154,10 +154,10 @@ const underlinedStyles = css<ButtonProps>`
   ${(props) =>
     !props.disabled
       ? css`
-          :hover {
+          &:hover {
             background: rgba(128, 128, 128, 0.1);
           }
-          :active {
+          &:active {
             background: rgba(128, 128, 128, 0.2);
           }
         `
@@ -167,10 +167,10 @@ const underlinedStyles = css<ButtonProps>`
     props.active
       ? css`
           background: rgba(128, 128, 128, 0.3);
-          :hover {
+          &:hover {
             background: rgba(128, 128, 128, 0.3);
           }
-          :active {
+          &:active {
             background: rgba(128, 128, 128, 0.2);
           }
         `

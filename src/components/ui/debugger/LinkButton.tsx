@@ -17,7 +17,7 @@ export const LinkButton = styled.button`
   overflow: hidden;
   line-height: 11px;
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.highlight};
   }
 `;

@@ -79,13 +79,13 @@ const VariableRenameButton = styled.button`
     opacity: 1;
   }
 
-  :focus {
+  &:focus {
     opacity: 1;
   }
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
 
@@ -114,10 +114,10 @@ const VariableRenameCompleteButton = styled.button`
   background: transparent;
   border-color: transparent;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
   svg {

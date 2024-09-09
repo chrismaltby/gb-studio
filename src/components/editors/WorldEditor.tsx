@@ -83,7 +83,7 @@ export const WorldEditor: FC = () => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeMetadataProp("notes", e.currentTarget.value),
     [onChangeMetadataProp]
   );

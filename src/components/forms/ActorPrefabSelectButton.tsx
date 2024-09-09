@@ -53,7 +53,7 @@ export const ActorPrefabSelectButton: FC<ActorPrefabSelectButtonProps> = ({
   onChange,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const prefab = useAppSelector((state) =>
     actorPrefabSelectors.selectById(state, value || "")
   );

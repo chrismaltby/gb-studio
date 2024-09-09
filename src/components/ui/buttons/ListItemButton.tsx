@@ -11,7 +11,7 @@ export const ListItemButton = styled.button`
   padding: 0;
   background-color: transparent;
 
-  :hover {
+  &:hover {
     background-color: #ccc;
     border-radius: 4px;
   }

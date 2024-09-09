@@ -38,10 +38,10 @@ export const ScriptEventRenameInputCompleteButton = styled.button`
   background: transparent;
   border-color: transparent;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
   svg {

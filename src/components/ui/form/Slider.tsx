@@ -68,8 +68,8 @@ export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
               background: getTrackBackground({
                 values: [value],
                 colors: [
-                  themeContext.colors.highlight,
-                  themeContext.colors.input.border,
+                  themeContext?.colors.highlight ?? "black",
+                  themeContext?.colors.input.border ?? "white",
                 ],
                 min,
                 max,

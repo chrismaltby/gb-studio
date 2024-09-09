@@ -58,7 +58,7 @@ const AddSequenceButton = styled.button`
   svg {
     fill: ${(props) => props.theme.colors.button.text};
   }
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.button.nestedActiveBackground};
   }
 `;

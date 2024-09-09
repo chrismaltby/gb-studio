@@ -32,6 +32,9 @@ export const InstrumentVolumeEditor = ({
     if (!canvas) {
       return;
     }
+    if (!themeContext) {
+      return;
+    }
 
     const drawWidth = canvas.width - 10;
     const drawHeight = canvas.height - 10;
@@ -104,7 +107,7 @@ export const InstrumentVolumeEditor = ({
       }
       ctx.stroke();
     }
-  }, [initialVolume, length, themeContext.colors.highlight, volumeSweepChange]);
+  }, [initialVolume, length, themeContext, volumeSweepChange]);
 
   return (
     <>

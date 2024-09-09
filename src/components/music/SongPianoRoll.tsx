@@ -77,7 +77,7 @@ const blackKeyStyle = css`
 `;
 
 const highlightStyle = css`
-  :after {
+  &:after {
     content: "";
     position: absolute;
     top: 0px;
@@ -106,7 +106,7 @@ const PianoKey = styled.div<PianoKeyProps>`
   box-shadow: rgba(0, 0, 0, 0.1) -2px 0px 2px 0px inset;
   ${(props) => (props.color === "black" ? blackKeyStyle : "")}
   ${(props) => (props.highlight ? highlightStyle : "")}
-  :hover {
+  &:hover {
     ${highlightStyle};
   }
 `;
@@ -118,7 +118,7 @@ const SongGrid = styled.div`
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
   position: relative;
-  :focus {
+  &:focus {
     z-index: 1;
   }
 `;
