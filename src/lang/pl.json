@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1680240907",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1681240910",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1482,7 +1482,8 @@
   "WARNING_ENGINE_PLUGIN_OUT_OF_DATE": "Wtyczka \"{pluginName}\" została stworzona dla starszej wersji GB Studio i może nie działać poprawnie. Wtyczka korzysta z silnika w wersji \"{pluginEngineVersion}\" natomiast GB Studio używa silnika w wersji \"{expectedEngineVersion}\".",
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Wtyczka \"{pluginName}\" bazuje na nieznanej wersji silnika i może nie działać poprawnie. Autorzy wtyczki mogą naprawić ten problem, sprawdzając, czy plik `engine/engine.json`  istnieje w folderze wtyczki i zawiera przynajmniej wpis `{\"version\": \"{expectedEngineVersion}\"}`.",
   "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Tło zawiera zbyt wiele unikalnych 4-kolorowych palet ({paletteLength} gdzie limit wynosi {maxPaletteLength}) co oznacza, że tło może zostać nie wyświetlone poprawnie. Rozważ ograniczenie ilości użytych kolorów na tym obrazie.",
-  
+  "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "Tło \"{filename}\" nie jest prawidłowym plikiem PNG.",
+	
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
