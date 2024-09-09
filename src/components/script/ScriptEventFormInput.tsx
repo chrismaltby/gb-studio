@@ -41,7 +41,7 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
-import { Button, ButtonPrefixIcon } from "ui/buttons/Button";
+import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
@@ -66,6 +66,7 @@ import ValueSelect from "components/forms/ValueSelect";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
+import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -83,7 +84,7 @@ interface ScriptEventFormInputProps {
 }
 
 const ConnectButton = styled.div`
-  ${Button} {
+  ${StyledButton} {
     min-width: 15px;
     padding: 0;
     height: 28px;

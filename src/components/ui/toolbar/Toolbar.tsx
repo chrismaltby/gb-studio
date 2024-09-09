@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 
 export interface ToolbarProps {
   readonly children?: ReactNode;
@@ -42,7 +42,7 @@ export const Toolbar = styled.div<ToolbarProps>`
     -webkit-app-region: no-drag;
   }
 
-  ${Button} {
+  ${StyledButton} {
     -webkit-app-region: no-drag;
     border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
     border-top: 1px solid

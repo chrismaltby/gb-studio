@@ -17,7 +17,8 @@ import styled, { css } from "styled-components";
 import { PinDirection, RelativePortal } from "ui/layout/RelativePortal";
 import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
-import { Button, ButtonProps } from "./Button";
+import { ButtonProps } from "./Button";
+import { StyledButton } from "./style";
 import useWindowFocus from "ui/hooks/use-window-focus";
 
 export interface DropdownButtonProps {
@@ -108,7 +109,7 @@ export const InlineDropdownWrapper = styled.div`
   pointer-events: all;
   margin: -6px 3px;
 
-  ${Button} {
+  ${StyledButton} {
     opacity: 0.5;
     padding: 1px;
     min-width: 0;
@@ -599,12 +600,12 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     return (
       <DropdownButtonWrapper>
         {openUpwards && menu}
-        <Button
+        <StyledButton
           id={id}
           title={title}
-          size={size}
-          variant={variant}
-          active={active}
+          $size={size}
+          $variant={variant}
+          $active={active}
           onKeyDown={onButtonKeyDown}
           onClick={onButtonClick}
           tabIndex={0}
@@ -629,7 +630,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
               <CaretDownIcon />
             </ArrowWrapper>
           )}
-        </Button>
+        </StyledButton>
         {!openUpwards && menu}
       </DropdownButtonWrapper>
     );

@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 import { TriangleIcon } from "ui/icons/Icons";
 
 interface SplitPaneHeaderProps {
@@ -67,7 +67,7 @@ export const Wrapper = styled.div<WrapperProps>`
     flex-grow: 1;
   }
 
-  ${Button} {
+  ${StyledButton} {
     padding: 4px;
     min-width: 18px;
   }

@@ -41,6 +41,7 @@ import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { StyledButton } from "ui/buttons/style";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -400,7 +401,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
     fill: ${(props) => props.theme.colors.text};
   }
 
-  ${Button} {
+  ${StyledButton} {
     height: 18px;
     padding: 0;
     margin: -10px -5px;
@@ -420,7 +421,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
             opacity: 0.3;
           }
 
-          ${Button}:active {
+          ${StyledButton}:active {
             transform: scale(1.5);
             svg {
               opacity: 1;

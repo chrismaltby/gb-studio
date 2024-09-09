@@ -80,6 +80,7 @@ import {
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
+import { StyledButton } from "ui/buttons/style";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -143,7 +144,7 @@ const PaletteModal = styled.div`
   background: ${(props) => props.theme.colors.menu.background};
   z-index: 1001;
   min-width: 200px;
-  ${Button} {
+  ${StyledButton} {
     margin-top: 5px;
   }
 `;

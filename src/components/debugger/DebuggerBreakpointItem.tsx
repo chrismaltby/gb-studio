@@ -8,6 +8,7 @@ import { BreakpointData } from "store/features/settings/settingsState";
 import DebuggerScriptCtxBreadcrumb from "components/debugger/DebuggerScriptCtxBreadcrumb";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 import { BreakpointIcon, CloseIcon } from "ui/icons/Icons";
 import useHover from "ui/hooks/use-hover";
 
@@ -26,7 +27,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
 
-  ${Button} {
+  ${StyledButton} {
     margin-right: 3px;
     svg {
       width: 15px;
@@ -37,7 +38,7 @@ const Wrapper = styled.div`
     }
   }
 
-  &:hover ${Button} {
+  &:hover ${StyledButton} {
     svg {
       opacity: 1;
       width: 10px;

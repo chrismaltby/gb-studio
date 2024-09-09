@@ -19,6 +19,7 @@ import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { StyledButton } from "ui/buttons/style";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -36,7 +37,7 @@ const Wrapper = styled.div<WrapperProps>`
   display: flex;
   padding: 10px;
 
-  ${Button} {
+  ${StyledButton} {
     width: 100%;
     max-width: 480px;
 

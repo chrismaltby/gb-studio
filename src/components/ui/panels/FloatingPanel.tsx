@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
-import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 
 interface FloatingPanelProps {
   vertical?: boolean;
@@ -14,7 +14,7 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
   border-radius: 4px;
   padding: 0 4px;
 
-  ${Button} {
+  ${StyledButton} {
     width: 36px;
     height: 36px;
     border-radius: 0;
@@ -25,7 +25,7 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
       max-width: 20px;
       max-height: 20px;
     }
-    & ~ ${Button} {
+    & ~ ${StyledButton} {
       margin-left: 1px;
     }
   }
@@ -35,8 +35,8 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
       ? css`
           flex-direction: column;
           padding: 4px 0;
-          ${Button} {
-            & ~ ${Button} {
+          ${StyledButton} {
+            & ~ ${StyledButton} {
               margin-left: 0px;
               margin-bottom: 1px;
             }

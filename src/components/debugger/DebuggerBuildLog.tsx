@@ -18,6 +18,7 @@ import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
+import { StyledButton } from "ui/buttons/style";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -48,7 +49,7 @@ const ButtonToolbar = styled.div`
   align-items: center;
   padding: 10px;
 
-  ${Button} {
+  ${StyledButton} {
     height: 24px;
     line-height: 24px;
   }

@@ -6,6 +6,7 @@ import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { StyledButton } from "ui/buttons/style";
 
 interface UnitSelectLabelButtonProps {
   value?: UnitType;
@@ -18,7 +19,7 @@ const Units = styled.div`
   pointer-events: all;
   margin: -6px 3px;
 
-  ${Button} {
+  ${StyledButton} {
     opacity: 0.5;
     padding: 1px;
     min-width: 0;

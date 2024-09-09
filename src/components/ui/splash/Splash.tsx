@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled, { css, keyframes } from "styled-components";
 import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 import projectIcon from "ui/icons/gbsproj.png";
 import { CloseIcon } from "ui/icons/Icons";
 
@@ -459,12 +460,12 @@ export const SplashCreditsCloseButton = styled.div`
     height: 100%;
   }
 
-  ${Button} {
+  ${StyledButton} {
     padding: 0 5px;
     margin: 0;
   }
 
-  ${Button} svg {
+  ${StyledButton} svg {
     fill: #fff;
     width: 16px;
     max-width: none;

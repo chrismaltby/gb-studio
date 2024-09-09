@@ -5,6 +5,7 @@ import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
 import { StarIcon } from "ui/icons/Icons";
@@ -107,7 +108,7 @@ const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
     fill: ${(props) => props.theme.colors.text};
   }
 
-  ${Button} {
+  ${StyledButton} {
     margin-right: -5px;
     transition: all 0.1s ease-out;
     height: 16px;
@@ -129,7 +130,7 @@ const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
             opacity: 0.3;
           }
 
-          ${Button}:active {
+          ${StyledButton}:active {
             transform: scale(1.5);
             svg {
               opacity: 1;

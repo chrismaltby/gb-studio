@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react";
-import { Input } from "ui/form/Input";
+import { StyledInput } from "ui/form/style";
 import { useIMEIsComposing } from "ui/hooks/use-ime-is-composing";
 
 export const IMEInput = forwardRef<
@@ -28,7 +28,7 @@ export const IMEInput = forwardRef<
     [isComposing, onKeyDown]
   );
 
-  return <Input ref={inputRef} onKeyDown={onKeyDownInner} {...rest} />;
+  return <StyledInput ref={inputRef} onKeyDown={onKeyDownInner} {...rest} />;
 });
 
 export const IMEUnstyledInput = forwardRef<

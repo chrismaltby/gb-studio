@@ -2,7 +2,7 @@ import React from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { ChannelSelectField } from "./ChannelSelectField";
-import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 
 interface SongEditorRightToolsPanelProps {
   channelStatus: boolean[];
@@ -23,7 +23,7 @@ const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.size === "small"
       ? css`
-          ${ChannelSelectGroup} ${Button} {
+          ${ChannelSelectGroup} ${StyledButton} {
             min-width: 10px;
           }
         `
