@@ -1497,6 +1497,7 @@
   "SPLASH_CREATE": "作成",
   "SPLASH_CREATING": "作成中",
   "SPLASH_CLEAR_RECENT": "履歴の削除",
+  "SPLASH_REMOVE_FROM_RECENT": "最近の履歴から削除",
   "SPLASH_NO_RECENT_PROJECTS": "最近使ったプロジェクトはありません",
   "SPLASH_CREDITS": "クレジット",
   "SPLASH_CONTRIBUTORS": "貢献者",
