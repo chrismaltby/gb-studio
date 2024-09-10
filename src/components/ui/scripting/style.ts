@@ -313,3 +313,11 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
 `;
 
 // #endregion ScriptEventBranchHeader
+
+// #region ScriptEventFormWrapper
+
+export const StyledScriptEventFormWrapper = styled.div`
+  position: relative;
+`;
+
+// #endregion ScriptEventForm

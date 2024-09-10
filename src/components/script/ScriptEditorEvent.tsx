@@ -549,12 +549,7 @@ const ScriptEditorEvent = React.memo(
             </ScriptEventHeader>
           </div>
           {isOpen && !commented && (
-            <ScriptEventFormWrapper
-              conditional={isConditional}
-              nestLevel={nestLevel}
-              altBg={index % 2 === 0}
-              data-handler-id={handlerId}
-            >
+            <ScriptEventFormWrapper data-handler-id={handlerId}>
               <ScriptEditorEventHelper event={scriptEvent} />
               {showSymbols && (
                 <ScriptEventSymbolEditorWrapper>

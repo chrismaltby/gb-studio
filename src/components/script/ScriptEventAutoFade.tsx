@@ -100,7 +100,7 @@ export const ScriptEventAutoFade = () => {
         {l10n("EVENT_FADE_IN")} ({l10n("FIELD_AUTOMATIC")})
       </ScriptEventHeader>
       {isOpen && (
-        <ScriptEventFormWrapper conditional={false} nestLevel={0} altBg={false}>
+        <ScriptEventFormWrapper>
           <ScriptEventFieldsWrapper>
             <ScriptEventField>
               <OffscreenSkeletonInput>

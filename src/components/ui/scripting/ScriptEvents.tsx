@@ -4,6 +4,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
   StyledScriptEventBranchHeader,
+  StyledScriptEventFormWrapper,
   StyledScriptEventHeader,
   StyledScriptEventHeaderBreakpointIndicator,
   StyledScriptEventHeaderCaret,
@@ -123,7 +124,7 @@ interface ScriptEventBranchHeaderProps {
 }
 
 export const ScriptEventBranchHeader = ({
-  nestLevel,
+  nestLevel = 0,
   isOpen,
   altBg,
   children,
@@ -146,14 +147,14 @@ export const ScriptEventBranchHeader = ({
 };
 
 interface ScriptEventFormWrapperProps {
-  conditional: boolean;
-  nestLevel: number;
-  altBg?: boolean;
+  children?: ReactNode;
 }
 
-export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
-  position: relative;
-`;
+export const ScriptEventFormWrapper = ({
+  children,
+}: ScriptEventFormWrapperProps) => (
+  <StyledScriptEventFormWrapper children={children} />
+);
 
 export const ScriptEventFields = styled.div`
   display: flex;
