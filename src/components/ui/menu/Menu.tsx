@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import API from "renderer/lib/api";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
+import { StyledMenuAccelerator } from "ui/menu/style";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 export interface MenuProps {
@@ -118,30 +118,9 @@ export interface MenuAcceleratorProps {
   accelerator: string;
 }
 
-export const acceleratorForPlatform = (accelerator: string) => {
-  if (API.platform === "darwin") {
-    return accelerator
-      .replace(/CommandOrControl\+/g, "⌘")
-      .replace(/Shift\+/g, "⇧")
-      .replace(/Alt\+/g, "⌥");
-  }
-  return accelerator
-    .replace(/CommandOrControl\+/g, "Ctrl+")
-    .replace(/Shift\+/g, "Shift+")
-    .replace(/Alt\+/g, "Alt+");
-};
-
-export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>(
-  (props) => ({
-    children: acceleratorForPlatform(props.accelerator),
-  })
-)<MenuAcceleratorProps>`
-  flex-grow: 1;
-  font-size: 0.8em;
-  text-align: right;
-  margin-left: 20px;
-  color: ${(props) => props.theme.colors.secondaryText};
-`;
+export const MenuAccelerator = ({ accelerator }: MenuAcceleratorProps) => (
+  <StyledMenuAccelerator $accelerator={accelerator} />
+);
 
 export const MenuOverlay = styled.div`
   position: fixed;

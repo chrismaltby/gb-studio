@@ -32,12 +32,12 @@ import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprit
 import { walkNormalizedSceneScripts } from "shared/lib/scripts/walk";
 
 interface SceneInfoWrapperProps {
-  loaded: boolean;
+  $loaded: boolean;
 }
 
 interface SceneInfoButtonProps {
-  warning?: boolean;
-  error?: boolean;
+  $warning?: boolean;
+  $error?: boolean;
 }
 
 const MAX_LOGO_SPRITE_TILES = 12;
@@ -52,7 +52,7 @@ const SceneInfoWrapper = styled.div<SceneInfoWrapperProps>`
   font-size: 10px;
 
   ${(props) =>
-    props.loaded
+    props.$loaded
       ? css`
           opacity: 1;
         `
@@ -71,7 +71,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
   }
 
   ${(props) =>
-    props.warning
+    props.$warning
       ? css`
           background: rgb(243, 168, 30);
           color: #fff;
@@ -83,7 +83,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       : ""}
 
   ${(props) =>
-    props.error
+    props.$error
       ? css`
           background: rgb(243, 0, 0);
           color: #fff;
@@ -421,7 +421,7 @@ const SceneInfo = () => {
       : MAX_LOGO_SPRITE_TILES;
 
   return (
-    <SceneInfoWrapper loaded={loaded}>
+    <SceneInfoWrapper $loaded={loaded}>
       <TooltipWrapper
         tooltip={
           <>
@@ -440,7 +440,7 @@ const SceneInfo = () => {
           </>
         }
       >
-        <SceneInfoButton warning={actorWarning} error={actorError}>
+        <SceneInfoButton $warning={actorWarning} $error={actorError}>
           A: {actorCount}/{maxActors}
         </SceneInfoButton>
       </TooltipWrapper>
@@ -463,8 +463,8 @@ const SceneInfo = () => {
         }
       >
         <SceneInfoButton
-          warning={tileCount === maxSpriteTiles}
-          error={tileCount > maxSpriteTiles}
+          $warning={tileCount === maxSpriteTiles}
+          $error={tileCount > maxSpriteTiles}
         >
           S: {tileCount}/{maxSpriteTiles}
         </SceneInfoButton>
@@ -491,8 +491,8 @@ const SceneInfo = () => {
         }
       >
         <SceneInfoButton
-          warning={maxTriggers > 0 && triggerCount === maxTriggers}
-          error={triggerCount > maxTriggers}
+          $warning={maxTriggers > 0 && triggerCount === maxTriggers}
+          $error={triggerCount > maxTriggers}
         >
           T: {triggerCount}/{maxTriggers}
         </SceneInfoButton>

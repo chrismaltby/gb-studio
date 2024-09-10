@@ -128,26 +128,26 @@ const SubpatternRowGroup = styled.span<SubpatternRowGroupProps>`
       : ""}
 `;
 
-const Field = styled.span<{ active?: boolean; selected?: boolean }>`
+const Field = styled.span<{ $active?: boolean; $selected?: boolean }>`
   &:hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
   margin: 0;
   padding: 0 4px;
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           background-color: rgba(255, 0, 0, 0.2);
         `
       : ""}
   ${(props) =>
-    props.active
+    props.$active
       ? css`
           background-color: white;
         `
       : ""}
   ${(props) =>
-    props.active && props.selected
+    props.$active && props.$selected
       ? css`
           box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
         `
@@ -922,9 +922,9 @@ export const InstrumentSubpatternEditor = ({
               >
                 <NoteField
                   ref={activeField === fieldCount ? activeFieldRef : null}
-                  active={activeField === fieldCount}
+                  $active={activeField === fieldCount}
                   data-subpattern_fieldid={fieldCount}
-                  selected={
+                  $selected={
                     renderSelectedTrackerFields.indexOf(fieldCount) > -1
                   }
                 >
@@ -932,9 +932,9 @@ export const InstrumentSubpatternEditor = ({
                 </NoteField>
                 <JumpField
                   ref={activeField === fieldCount + 1 ? activeFieldRef : null}
-                  active={activeField === fieldCount + 1}
+                  $active={activeField === fieldCount + 1}
                   data-subpattern_fieldid={fieldCount + 1}
-                  selected={
+                  $selected={
                     renderSelectedTrackerFields.indexOf(fieldCount + 1) > -1
                   }
                 >
@@ -942,9 +942,9 @@ export const InstrumentSubpatternEditor = ({
                 </JumpField>
                 <EffectCodeField
                   ref={activeField === fieldCount + 2 ? activeFieldRef : null}
-                  active={activeField === fieldCount + 2}
+                  $active={activeField === fieldCount + 2}
                   data-subpattern_fieldid={fieldCount + 2}
-                  selected={
+                  $selected={
                     renderSelectedTrackerFields.indexOf(fieldCount + 2) > -1
                   }
                 >
@@ -952,9 +952,9 @@ export const InstrumentSubpatternEditor = ({
                 </EffectCodeField>
                 <EffectParamField
                   ref={activeField === fieldCount + 3 ? activeFieldRef : null}
-                  active={activeField === fieldCount + 3}
+                  $active={activeField === fieldCount + 3}
                   data-subpattern_fieldid={fieldCount + 3}
-                  selected={
+                  $selected={
                     renderSelectedTrackerFields.indexOf(fieldCount + 3) > -1
                   }
                 >

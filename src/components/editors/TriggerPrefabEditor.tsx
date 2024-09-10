@@ -16,10 +16,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { FlexGrow } from "ui/spacing/Spacing";
-import {
-  SplitPaneHeader,
-  Wrapper as SplitPaneHeaderWrapper,
-} from "ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { TriggerPrefabUsesList } from "./prefab/TriggerPrefabUsesList";
 import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
@@ -62,10 +59,6 @@ const UsesCollapsedWrapper = styled.div`
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${SplitPaneHeaderWrapper} {
-    border-bottom: 0;
-  }
 `;
 
 export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
@@ -243,6 +236,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
                 <SplitPaneHeader
                   collapsed={true}
                   onToggle={() => setShowUses(true)}
+                  borderBottom={false}
                 >
                   {l10n("SIDEBAR_PREFAB_USES")}
                 </SplitPaneHeader>

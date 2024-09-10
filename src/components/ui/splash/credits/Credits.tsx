@@ -119,8 +119,6 @@ const CreditsBackground = () => {
           ctx.strokeStyle = lineGrad;
           ctx.lineWidth = 2;
 
-          console.log(-(numVerticalLines * 0.5));
-
           // Vertical lines to horizon
           for (let i = -(numVerticalLines * 0.5); i < numVerticalLines; i++) {
             ctx.beginPath();

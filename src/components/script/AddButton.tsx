@@ -30,7 +30,7 @@ interface AddButtonProps {
 }
 
 interface WrapperProps {
-  conditional?: boolean;
+  $conditional?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -52,7 +52,7 @@ const Wrapper = styled.div<WrapperProps>`
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 
   ${(props) =>
-    props.conditional
+    props.$conditional
       ? css`
           border-top: 0;
 
@@ -198,7 +198,7 @@ const AddButton = ({
           </RelativePortal>
         </>
       )}
-      <Wrapper conditional={conditional ?? false}>
+      <Wrapper $conditional={conditional ?? false}>
         <Button onClick={pasteMode ? onPaste : onOpen}>
           {pasteMode ? <CloneIcon /> : <PlusIcon />}
           {pasteMode ? l10n("MENU_PASTE_EVENT") : l10n("SIDEBAR_ADD_EVENT")}

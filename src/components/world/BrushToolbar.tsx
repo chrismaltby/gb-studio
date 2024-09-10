@@ -57,7 +57,7 @@ import { Brush } from "store/features/editor/editorState";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import styled, { css } from "styled-components";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
@@ -116,20 +116,20 @@ function useHiglightPalette() {
 }
 
 interface BrushToolbarWrapperProps {
-  visible: boolean;
+  $visible: boolean;
 }
 
 const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
   position: absolute;
   left: 56px;
-  top: ${(props) => (props.visible ? "10px" : "-45px")};
+  top: ${(props) => (props.$visible ? "10px" : "-45px")};
   transition: top 0.2s ease-in-out;
   z-index: 10;
   flex-wrap: wrap;
   margin-right: 20px;
 
   ${(props) =>
-    !props.visible
+    !props.$visible
       ? css`
           flex-wrap: nowrap;
         `
@@ -516,7 +516,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   return (
     <>
-      <BrushToolbarWrapper visible={visible}>
+      <BrushToolbarWrapper $visible={visible}>
         <Button
           variant="transparent"
           onClick={() => setBrush(BRUSH_8PX)}

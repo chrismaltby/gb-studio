@@ -388,8 +388,8 @@ const MenuItemCaret = styled.div`
 `;
 
 interface MenuItemFavoriteProps {
-  visible: boolean;
-  isFavorite: boolean;
+  $visible: boolean;
+  $isFavorite: boolean;
 }
 
 const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
@@ -409,13 +409,13 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
   }
 
   ${(props) =>
-    props.visible
+    props.$visible
       ? css`
           opacity: 1;
         `
       : ""}
   ${(props) =>
-    !props.isFavorite
+    !props.$isFavorite
       ? css`
           svg {
             opacity: 0.3;
@@ -943,13 +943,13 @@ const AddScriptEventMenu = ({
                       <FlexGrow />
                       {!option.defaultArgs && (
                         <MenuItemFavorite
-                          visible={
+                          $visible={
                             (selectedCategoryIndex === -1 &&
                               selectedIndex === optionIndex) ||
                             selectedCategoryIndex === optionIndex ||
                             ("isFavorite" in option && option.isFavorite)
                           }
-                          isFavorite={option.isFavorite}
+                          $isFavorite={option.isFavorite}
                         >
                           <Button
                             size="small"
@@ -992,11 +992,11 @@ const AddScriptEventMenu = ({
                       {childOption.label}
                       <FlexGrow />
                       <MenuItemFavorite
-                        visible={
+                        $visible={
                           selectedIndex === childOptionIndex ||
                           childOption.isFavorite
                         }
-                        isFavorite={childOption.isFavorite}
+                        $isFavorite={childOption.isFavorite}
                       >
                         <Button
                           size="small"

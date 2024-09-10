@@ -11,7 +11,7 @@ import {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { SubMenuWrapper } from "ui/buttons/DropdownButton";
+import { StyledDropdownSubMenu } from "ui/buttons/style";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -332,7 +332,7 @@ const useNestedMenu = (
                 </MenuItemCaret>
               )}
               {itemIndex === parentMenuIndex && child.props.subMenu && (
-                <SubMenuWrapper menuDirection={menuDirection}>
+                <StyledDropdownSubMenu $menuDirection={menuDirection}>
                   <RelativePortal
                     pin={"parent-edge"}
                     parentWidth={menuWidth - 15}
@@ -343,7 +343,7 @@ const useNestedMenu = (
                       {subMenuChildrenWithProps}
                     </Menu>
                   </RelativePortal>
-                </SubMenuWrapper>
+                </StyledDropdownSubMenu>
               )}
             </>
           ),

@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react";
 
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { ThemeProvider } from "styled-components";
 import { withThemeFromJSXProvider } from "@storybook/addon-themes";
 
 /* TODO: update import for your custom theme configurations */
@@ -11,12 +11,14 @@ import darkTheme from "../src/components/ui/theme/darkTheme";
 import { StorybookGlobalStyles } from "../src/components/ui/globalStyle";
 
 // L10n
-import en from "lang/en.json";
-import { setL10NData } from "shared/lib/lang/l10n";
+import en from "../src/lang/en.json";
+import { setL10NData } from "../src/shared/lib/lang/l10n";
+import type { WindowWithAPI } from "../src/renderer/lib/api";
+import type RendererAPI from "../src/renderer/lib/api/setup";
 
-(window as any).API = {
+(window as unknown as WindowWithAPI).API = {
   platform: "darwin",
-};
+} as typeof RendererAPI;
 setL10NData(en);
 
 const preview: Preview = {

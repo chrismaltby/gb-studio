@@ -67,7 +67,7 @@ const ColorValueFormItem = styled.div`
 `;
 
 interface ColorButtonProps {
-  selected?: boolean;
+  $selected?: boolean;
 }
 
 const ColorButton = styled.button<ColorButtonProps>`
@@ -95,7 +95,7 @@ const ColorButton = styled.button<ColorButtonProps>`
   }
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           &,
           &:hover {
@@ -578,7 +578,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         {colorIndexes.map((index) => (
           <ColorButton
             key={index}
-            selected={selectedColor === index}
+            $selected={selectedColor === index}
             className="focus-visible"
             onClick={() => onColorSelect(index)}
             style={{

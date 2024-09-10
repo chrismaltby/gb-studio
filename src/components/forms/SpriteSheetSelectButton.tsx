@@ -27,7 +27,7 @@ interface SpriteSheetSelectProps {
 }
 
 interface WrapperProps {
-  includeInfo?: boolean;
+  $includeInfo?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -36,7 +36,7 @@ const Wrapper = styled.div<WrapperProps>`
   min-width: 0;
   width: 60px;
   ${(props) =>
-    props.includeInfo
+    props.$includeInfo
       ? css`
           width: 100%;
         `
@@ -225,7 +225,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   };
 
   return (
-    <Wrapper includeInfo={includeInfo}>
+    <Wrapper $includeInfo={includeInfo}>
       <Button
         id={name}
         ref={buttonRef}

@@ -95,8 +95,8 @@ const Content = styled.div`
 `;
 
 interface MenuItemFavoriteProps {
-  visible: boolean;
-  isFavorite: boolean;
+  $visible: boolean;
+  $isFavorite: boolean;
 }
 
 const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
@@ -118,13 +118,13 @@ const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
   }
 
   ${(props) =>
-    props.isFavorite
+    props.$isFavorite
       ? css`
           opacity: 1;
         `
       : ""}
   ${(props) =>
-    !props.isFavorite
+    !props.$isFavorite
       ? css`
           svg {
             opacity: 0.3;
@@ -354,8 +354,8 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                   />
                 </InputWrapper>
                 <VariableRowFavorite
-                  visible={false}
-                  isFavorite={variableData.isFavorite}
+                  $visible={false}
+                  $isFavorite={variableData.isFavorite}
                 >
                   <Button
                     size="small"

@@ -1,55 +1,20 @@
+import React from "react";
 import styled, { css } from "styled-components";
-import { IMEUnstyledInput } from "ui/form/IMEInput";
+import {
+  StyledScriptEventPlaceholder,
+  StyledScriptEventRenameInput,
+  StyledScriptEventRenameInputCompleteButton,
+} from "ui/scripting/style";
 
-export const ScriptEventPlaceholder = styled.div`
-  background: ${(props) => props.theme.colors.scripting.placeholder.background};
-  height: 25px;
-`;
+export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
-export const ScriptEventRenameInput = styled(IMEUnstyledInput)`
-  background: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
-  font-size: 11px;
-  flex-grow: 1;
-  border: 0;
-  border-radius: 4px;
-  padding: 5px;
-  margin-left: -5px;
-  font-weight: bold;
-  margin-right: -18px;
-`;
+export const ScriptEventRenameInput = (
+  props: React.InputHTMLAttributes<HTMLInputElement>
+) => <StyledScriptEventRenameInput {...props} />;
 
-export const ScriptEventRenameInputCompleteButton = styled.button`
-  z-index: 10000;
-  position: relative;
-  top: 0px;
-  left: -4px;
-  width: 21px;
-  height: 21px;
-  border: 0;
-  border-radius: ${(props) => Math.max(0, props.theme.borderRadius - 1)}px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  line-height: 10px;
-  font-size: 12px;
-  font-weight: bold;
-  background: transparent;
-  border-color: transparent;
-
-  &:hover {
-    background: rgba(128, 128, 128, 0.3);
-  }
-  &:active {
-    background: rgba(128, 128, 128, 0.4);
-  }
-  svg {
-    width: 12px;
-    height: 12px;
-    fill: ${(props) => props.theme.colors.input.text};
-  }
-`;
+export const ScriptEventRenameInputCompleteButton = (
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>
+) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
 export const ScriptEventHeaderTitle = styled.div`
   display: flex;
@@ -309,21 +274,21 @@ export const ScriptEventFields = styled.div`
 `;
 
 interface ScriptEventFieldProps {
-  halfWidth?: boolean;
-  inline?: boolean;
-  alignBottom?: boolean;
+  $halfWidth?: boolean;
+  $inline?: boolean;
+  $alignBottom?: boolean;
 }
 
 export const ScriptEventField = styled.div<ScriptEventFieldProps>`
   ${(props) =>
-    props.halfWidth
+    props.$halfWidth
       ? css`
           flex-basis: 100px;
         `
       : ""}
 
   ${(props) =>
-    props.inline
+    props.$inline
       ? css`
           flex-basis: 0;
           flex-grow: 0;
@@ -332,7 +297,7 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
       : ""}
 
   ${(props) =>
-    props.alignBottom
+    props.$alignBottom
       ? css`
           align-self: flex-end;
         `
@@ -465,20 +430,20 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
 `;
 
 interface ScriptEventFieldGroupProps {
-  halfWidth?: boolean;
-  wrapItems?: boolean;
-  alignBottom?: boolean;
+  $halfWidth?: boolean;
+  $wrapItems?: boolean;
+  $alignBottom?: boolean;
 }
 
 export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProps>`
   ${(props) =>
-    props.halfWidth
+    props.$halfWidth
       ? css`
           flex-basis: 100px;
         `
       : ""}
   ${(props) =>
-    props.alignBottom
+    props.$alignBottom
       ? css`
           align-self: flex-end;
         `
@@ -486,7 +451,7 @@ export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProp
   & > div {
     margin: -10px;
     ${(props) =>
-      !props.wrapItems
+      !props.$wrapItems
         ? css`
             flex-wrap: nowrap;
           `

@@ -109,9 +109,9 @@ const ScriptEventFields = ({
           return (
             <ScriptEventFieldGroupWrapper
               key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
-              halfWidth={field.width === "50%"}
-              wrapItems={field.wrapItems}
-              alignBottom={field.alignBottom}
+              $halfWidth={field.width === "50%"}
+              $wrapItems={field.wrapItems}
+              $alignBottom={field.alignBottom}
               style={{
                 flexBasis: field.flexBasis,
                 flexGrow: field.flexGrow,

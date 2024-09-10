@@ -427,7 +427,7 @@ const ScriptEventFormField = memo(
     if (field.toggleLabel) {
       return (
         <ScriptEventField
-          halfWidth={field.width === "50%"}
+          $halfWidth={field.width === "50%"}
           style={{
             flexBasis: field.flexBasis,
             flexGrow: field.flexGrow,
@@ -449,9 +449,9 @@ const ScriptEventFormField = memo(
 
     return (
       <ScriptEventField
-        halfWidth={field.width === "50%"}
-        inline={field.inline}
-        alignBottom={field.alignBottom || field.type === "checkbox"}
+        $halfWidth={field.width === "50%"}
+        $inline={field.inline}
+        $alignBottom={field.alignBottom || field.type === "checkbox"}
         style={{
           flexBasis: field.flexBasis,
           flexGrow: field.flexGrow,

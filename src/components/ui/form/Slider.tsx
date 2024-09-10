@@ -29,7 +29,7 @@ const RangeTrack = styled.div`
 `;
 
 interface RangeThumbProps {
-  isDragged: boolean;
+  $isDragged: boolean;
 }
 
 const RangeThumb = styled.div<RangeThumbProps>`
@@ -39,7 +39,7 @@ const RangeThumb = styled.div<RangeThumbProps>`
   background: ${(props) => props.theme.colors.button.background};
   border: 1px solid ${(props) => props.theme.colors.input.border};
   ${(props) =>
-    props.isDragged
+    props.$isDragged
       ? css`
           background: ${(props) => props.theme.colors.highlight};
           border: 1px solid ${(props) => props.theme.colors.highlight};
@@ -81,7 +81,7 @@ export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
         </RangeInner>
       )}
       renderThumb={({ props, isDragged }) => (
-        <RangeThumb {...props} isDragged={isDragged} style={props.style} />
+        <RangeThumb {...props} $isDragged={isDragged} style={props.style} />
       )}
     />
   );

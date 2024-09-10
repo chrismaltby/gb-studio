@@ -43,8 +43,8 @@ interface SceneCursorProps {
 }
 
 interface WrapperProps {
-  tool: Tool;
-  size: "8px" | "16px";
+  $tool: Tool;
+  $size: "8px" | "16px";
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -66,7 +66,7 @@ const Wrapper = styled.div<WrapperProps>`
   }
 
   ${(props) =>
-    props.size === "16px"
+    props.$size === "16px"
       ? css`
           width: 16px;
           height: 16px;
@@ -74,7 +74,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "actors"
+    props.$tool === "actors"
       ? css`
           width: 16px;
           background-color: rgba(247, 45, 220, 0.5);
@@ -85,7 +85,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "triggers"
+    props.$tool === "triggers"
       ? css`
           background-color: rgba(255, 120, 0, 0.5);
           outline: 1px solid rgba(255, 120, 0, 1);
@@ -95,7 +95,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "eraser"
+    props.$tool === "eraser"
       ? css`
           background-color: rgba(255, 0, 0, 0.8);
           outline: 1px solid rgba(255, 0, 0, 1);
@@ -105,7 +105,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "collisions"
+    props.$tool === "collisions"
       ? css`
           background-color: rgba(250, 40, 40, 0.6);
           outline: 1px solid rgba(250, 40, 40, 0.8);
@@ -114,7 +114,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "colors"
+    props.$tool === "colors"
       ? css`
           background-color: transparent;
           pointer-events: all;
@@ -1067,8 +1067,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   return (
     <Wrapper
       ref={cursorRef}
-      tool={tool}
-      size={
+      $tool={tool}
+      $size={
         (tool === TOOL_COLORS ||
           tool === TOOL_COLLISIONS ||
           tool === TOOL_ERASER) &&

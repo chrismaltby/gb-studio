@@ -18,7 +18,7 @@ const Wrapper = styled.div`
 `;
 
 interface ContainerProps {
-  hide?: boolean;
+  $hide?: boolean;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -36,7 +36,7 @@ const Container = styled.div<ContainerProps>`
   opacity: 1;
 
   ${(props) =>
-    props.hide
+    props.$hide
       ? css`
           opacity: 0;
         `
@@ -110,7 +110,7 @@ const WorldStatusBar = () => {
           </PillButton>
         </Container>
       )}
-      <Container hide={!hoverSceneName}>
+      <Container $hide={!hoverSceneName}>
         <Text>
           {hoverLabel.sceneName}
           {" : "}

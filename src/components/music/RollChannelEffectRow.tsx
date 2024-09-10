@@ -54,20 +54,20 @@ const Wrapper = styled.div<WrapperProps>`
 `;
 
 interface NoteProps {
-  size: number;
-  isSelected?: boolean;
+  $size: number;
+  $isSelected?: boolean;
 }
 
 const Note = styled.div<NoteProps>`
   position: absolute;
-  height: ${(props) => `${props.size - 1}px`};
+  height: ${(props) => `${props.$size - 1}px`};
   border: 1px solid black;
   text-align: center;
   line-height: 1.1em;
   pointer-events: none;
   box-shadow: ${(props) =>
-    props.isSelected ? `0 0 0px 2px ${props.theme.colors.highlight}` : ""};
-  z-index: ${(props) => (props.isSelected ? 1 : 0)};
+    props.$isSelected ? `0 0 0px 2px ${props.theme.colors.highlight}` : ""};
+  z-index: ${(props) => (props.$isSelected ? 1 : 0)};
   background-color: ${(props) => props.theme.colors.button.activeBackground};
 `;
 
@@ -167,8 +167,8 @@ export const RollChannelEffectRowFwd = ({
               data-type="note"
               data-column={columnIdx}
               key={`fx_${columnIdx}_${channelId}`}
-              size={cellSize}
-              isSelected={isSelected}
+              $size={cellSize}
+              $isSelected={isSelected}
               style={{
                 left: `${columnIdx * cellSize}px`,
                 width: cellSize,

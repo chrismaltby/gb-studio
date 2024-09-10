@@ -34,10 +34,7 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ScriptUsesList } from "components/editors/script/ScriptUsesList";
-import {
-  SplitPaneHeader,
-  Wrapper as SplitPaneHeaderWrapper,
-} from "ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 
 const customEventName = (
@@ -61,10 +58,6 @@ const UsesCollapsedWrapper = styled.div`
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${SplitPaneHeaderWrapper} {
-    border-bottom: 0;
-  }
 `;
 
 const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
@@ -504,6 +497,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                 <SplitPaneHeader
                   collapsed={true}
                   onToggle={() => setShowUses(true)}
+                  borderBottom={false}
                 >
                   {l10n("SIDEBAR_SCRIPT_USES")}
                 </SplitPaneHeader>

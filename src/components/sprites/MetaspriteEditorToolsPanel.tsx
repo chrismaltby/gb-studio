@@ -9,7 +9,7 @@ import {
   GridIcon,
   PauseIcon,
 } from "ui/icons/Icons";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";

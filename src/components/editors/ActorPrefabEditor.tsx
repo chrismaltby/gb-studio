@@ -18,10 +18,7 @@ import CachedScroll from "ui/util/CachedScroll";
 import { ActorPrefabEditorProperties } from "./prefab/ActorPrefabEditorProperties";
 import { ActorPrefabEditorScripts } from "./prefab/ActorPrefabEditorScripts";
 import { FlexGrow } from "ui/spacing/Spacing";
-import {
-  SplitPaneHeader,
-  Wrapper as SplitPaneHeaderWrapper,
-} from "ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { ActorPrefabUsesList } from "./prefab/ActorPrefabUsesList";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
@@ -63,10 +60,6 @@ const UsesCollapsedWrapper = styled.div`
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${SplitPaneHeaderWrapper} {
-    border-bottom: 0;
-  }
 `;
 
 export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
@@ -243,6 +236,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                 <SplitPaneHeader
                   collapsed={true}
                   onToggle={() => setShowUses(true)}
+                  borderBottom={false}
                 >
                   {l10n("SIDEBAR_PREFAB_USES")}
                 </SplitPaneHeader>

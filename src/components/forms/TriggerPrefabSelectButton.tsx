@@ -9,6 +9,7 @@ import { PillButton } from "ui/buttons/PillButton";
 import { CaretDownIcon } from "ui/icons/Icons";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import { TriggerPrefabSelect } from "./TriggerPrefabSelect";
+import { StyledPillButton } from "ui/buttons/style";
 
 interface TriggerPrefabSelectButtonProps {
   name: string;
@@ -24,7 +25,7 @@ const Wrapper = styled.div`
     min-width: 0;
   }
 
-  ${PillButton} {
+  ${StyledPillButton} {
     display: flex;
     align-items: center;
     span {

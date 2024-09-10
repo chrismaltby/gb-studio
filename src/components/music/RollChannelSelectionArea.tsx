@@ -10,10 +10,10 @@ interface RollChannelSelectionAreaProps {
 }
 
 interface WrapperProps {
-  rows: number;
-  cols: number;
-  size: number;
-  canSelect: boolean;
+  $rows: number;
+  $cols: number;
+  $size: number;
+  $canSelect: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -21,9 +21,9 @@ const Wrapper = styled.div<WrapperProps>`
   top: 0;
 
   ${(props) => css`
-    margin: 0 ${2 * props.size}px ${2 * props.size}px 10px;
-    width: ${props.cols * props.size}px;
-    height: ${props.rows * props.size}px;
+    margin: 0 ${2 * props.$size}px ${2 * props.$size}px 10px;
+    width: ${props.$cols * props.$size}px;
+    height: ${props.$rows * props.$size}px;
   `}
 `;
 
@@ -36,10 +36,10 @@ export const RollChannelSelectionAreaFwd = React.forwardRef<
   return (
     <Wrapper
       ref={ref}
-      rows={12 * 6}
-      cols={64}
-      size={cellSize}
-      canSelect={tool === "selection"}
+      $rows={12 * 6}
+      $cols={64}
+      $size={cellSize}
+      $canSelect={tool === "selection"}
     >
       {tool === "selection" && selectionRect && (
         <Selection

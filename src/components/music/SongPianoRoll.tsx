@@ -36,9 +36,9 @@ interface SongPianoRollProps {
 }
 
 interface PianoKeyProps {
-  color: "white" | "black";
-  tall?: boolean;
-  highlight?: boolean;
+  $color: "white" | "black";
+  $tall?: boolean;
+  $highlight?: boolean;
 }
 
 interface SongGridHeaderProps {
@@ -99,13 +99,13 @@ const PianoKey = styled.div<PianoKeyProps>`
   font-size: 10px;
   padding-right: 5px;
   position: relative;
-  height: ${(props) => (props.tall ? 2 : 1.5) * CELL_SIZE}px;
+  height: ${(props) => (props.$tall ? 2 : 1.5) * CELL_SIZE}px;
   width: 100%;
   background: white;
   border-bottom: 1px solid #cfd8dc;
   box-shadow: rgba(0, 0, 0, 0.1) -2px 0px 2px 0px inset;
-  ${(props) => (props.color === "black" ? blackKeyStyle : "")}
-  ${(props) => (props.highlight ? highlightStyle : "")}
+  ${(props) => (props.$color === "black" ? blackKeyStyle : "")}
+  ${(props) => (props.$highlight ? highlightStyle : "")}
   &:hover {
     ${highlightStyle};
   }
@@ -140,7 +140,7 @@ const RollPlaybackTracker = styled.div`
   top: 0;
   bottom: 0;
   left: ${30 + 10 + 1 - 10}px;
-  &::before {
+  &:before {
     content: "";
     position: absolute;
     top: 2px;
@@ -1061,55 +1061,55 @@ export const SongPianoRoll = ({
                 .map((_, i) => (
                   <React.Fragment key={`pianokey_${i}`}>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - i * 12}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - i * 12}
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
                     >
                       C{8 - i}
                     </PianoKey>

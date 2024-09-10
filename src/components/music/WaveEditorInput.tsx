@@ -30,7 +30,7 @@ const validKeys = [
 ];
 
 interface InputWrapperProps {
-  focus?: boolean;
+  $focus?: boolean;
 }
 const InputWrapper = styled.div<InputWrapperProps>`
   position: relative;
@@ -59,7 +59,7 @@ const InputWrapper = styled.div<InputWrapperProps>`
   }
 
   ${(props) =>
-    props.focus &&
+    props.$focus &&
     css`
       outline: none;
       border: 1px solid ${(props) => props.theme.colors.highlight} !important;
@@ -84,7 +84,7 @@ const InputWrapper = styled.div<InputWrapperProps>`
 `;
 
 interface InputCellProps {
-  active: boolean;
+  $active: boolean;
 }
 const InputCell = styled.span<InputCellProps>`
   display: flex;
@@ -93,7 +93,7 @@ const InputCell = styled.span<InputCellProps>`
   height: 28px;
   box-sizing: border-box;
 
-  color: ${(props) => (props.active ? props.theme.colors.highlight : "")};
+  color: ${(props) => (props.$active ? props.theme.colors.highlight : "")};
 `;
 
 export const WaveEditorInput = ({
@@ -217,12 +217,12 @@ export const WaveEditorInput = ({
   }, []);
 
   return (
-    <InputWrapper tabIndex={-1} focus={hasFocus}>
+    <InputWrapper tabIndex={-1} $focus={hasFocus}>
       {wave &&
         wave.map((w, i) => {
           return (
             <InputCell
-              active={hasFocus && i === editPosition}
+              $active={hasFocus && i === editPosition}
               onClick={() => {
                 setEditPosition(i);
                 handleFocus();

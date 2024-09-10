@@ -13,12 +13,18 @@ import React, {
   useRef,
   useState,
 } from "react";
-import styled, { css } from "styled-components";
 import { PinDirection, RelativePortal } from "ui/layout/RelativePortal";
 import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
 import { ButtonProps } from "./Button";
-import { StyledButton } from "./style";
+import {
+  StyledButton,
+  StyledDropdownArrow,
+  StyledDropdownButton,
+  StyledDropdownMenu,
+  StyledDropdownSubMenu,
+  StyledInlineDropdownWrapper,
+} from "./style";
 import useWindowFocus from "ui/hooks/use-window-focus";
 
 export interface DropdownButtonProps {
@@ -37,102 +43,18 @@ export interface DropdownButtonProps {
   ) => void;
 }
 
-interface MenuWrapperProps {
-  readonly menuDirection?: "left" | "right";
-}
-
-export const MenuWrapper = styled.div<MenuWrapperProps>`
-  position: absolute;
-  margin-top: 2px;
-  z-index: 10001;
-  left: 0;
-
-  ${(props) =>
-    props.menuDirection === "right"
-      ? css`
-          left: auto;
-          right: 0;
-        `
-      : ""}
-`;
-
-export const SubMenuWrapper = styled.div<MenuWrapperProps>`
-  position: absolute;
-  margin-top: 2px;
-  z-index: 10001;
-  background: blue;
-  height: 10px;
-  right: 0;
-
-  ${(props) =>
-    props.menuDirection === "right"
-      ? css`
-          left: auto;
-          right: 0;
-        `
-      : ""}
-`;
-
-export const DropdownButtonWrapper = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  [aria-expanded="false"] + ${MenuWrapper} {
-    display: none;
-  }
-`;
-
-interface ArrowWrapperProps {
-  openUpwards?: boolean;
-}
-
-export const ArrowWrapper = styled.div<ArrowWrapperProps>`
-  margin-right: -5px;
-  margin-top: -1px;
-  min-width: 8px;
-  &:not(:first-child) {
-    padding-left: 5px;
-  }
-  &&&& > svg {
-    height: 8px;
-
-    ${(props) =>
-      props.openUpwards
-        ? css`
-            transform: rotate(180deg);
-          `
-        : ""}
-  }
-`;
-
-export const InlineDropdownWrapper = styled.div`
-  display: inline-flex;
-  pointer-events: all;
-  margin: -6px 3px;
-
-  ${StyledButton} {
-    opacity: 0.5;
-    padding: 1px;
-    min-width: 0;
-    height: 18px;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-`;
-
 const emptyArr: React.ReactNode[] = [];
 
 export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
   ({
     id,
     size,
-    variant,
+    variant = "normal",
     label,
     title,
     children,
-    showArrow,
-    menuDirection,
+    showArrow = true,
+    menuDirection = "left",
     openUpwards,
     offsetX,
     offsetY,
@@ -444,7 +366,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
                   </MenuItemCaret>
                 )}
                 {itemIndex === parentMenuIndex && child.props.subMenu && (
-                  <SubMenuWrapper menuDirection={menuDirection}>
+                  <StyledDropdownSubMenu $menuDirection={menuDirection}>
                     <RelativePortal
                       pin={"parent-edge"}
                       parentWidth={menuWidth - 15}
@@ -455,7 +377,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
                         {subMenuChildrenWithProps}
                       </Menu>
                     </RelativePortal>
-                  </SubMenuWrapper>
+                  </StyledDropdownSubMenu>
                 )}
               </>
             ),
@@ -575,7 +497,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     const menu = useMemo(() => {
       return (
         isOpen && (
-          <MenuWrapper menuDirection={menuDirection}>
+          <StyledDropdownMenu $menuDirection={menuDirection}>
             <RelativePortal
               pin={menuPinDirection}
               offsetX={offsetX}
@@ -585,7 +507,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
                 {childrenWithProps}
               </Menu>
             </RelativePortal>
-          </MenuWrapper>
+          </StyledDropdownMenu>
         )
       );
     }, [
@@ -598,7 +520,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     ]);
 
     return (
-      <DropdownButtonWrapper>
+      <StyledDropdownButton>
         {openUpwards && menu}
         <StyledButton
           id={id}
@@ -626,18 +548,23 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         >
           {label}
           {showArrow && (
-            <ArrowWrapper openUpwards={openUpwards}>
+            <StyledDropdownArrow $openUpwards={openUpwards}>
               <CaretDownIcon />
-            </ArrowWrapper>
+            </StyledDropdownArrow>
           )}
         </StyledButton>
         {!openUpwards && menu}
-      </DropdownButtonWrapper>
+      </StyledDropdownButton>
     );
   }
 );
 
-DropdownButton.defaultProps = {
-  showArrow: true,
-  menuDirection: "left",
-};
+interface InlineDropdownWrapperProps {
+  children: ReactNode;
+}
+
+export const InlineDropdownWrapper = ({
+  children,
+}: InlineDropdownWrapperProps) => (
+  <StyledInlineDropdownWrapper children={children} />
+);

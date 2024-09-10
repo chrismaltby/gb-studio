@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { PillButton } from "ui/buttons/PillButton";
+import { StyledPillButton } from "ui/buttons/style";
 
 interface PrefabHeaderProps {
   prefabSet: boolean;
@@ -15,7 +15,7 @@ export const PrefabHeader = styled.div<PrefabHeaderProps>`
           z-index: 1;
           top: 0;
 
-          ${PillButton} {
+          ${StyledPillButton} {
             background: ${(props) =>
               props.theme.colors.prefab.button.background};
             color: ${(props) => props.theme.colors.prefab.button.text};
@@ -39,7 +39,7 @@ export const PrefabHeader = styled.div<PrefabHeaderProps>`
   display: flex;
   align-items: center;
 
-  ${PillButton} {
+  ${StyledPillButton} {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
