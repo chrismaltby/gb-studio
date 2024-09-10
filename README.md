@@ -1,6 +1,6 @@
 # GB Studio
 
-[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop)
+[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop) [![Storybook](https://img.shields.io/badge/Storybook-FF4785?logo=storybook&logoColor=white)](https://chrismaltby.github.io/gb-studio/storybook) [![Code Coverage](https://img.shields.io/badge/Coverage-blue?logo=jest&logoColor=white)](https://chrismaltby.github.io/gb-studio/coverage)
 
 Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
