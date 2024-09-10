@@ -7,7 +7,7 @@ import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { Button } from "ui/buttons/Button";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch } from "store/hooks";

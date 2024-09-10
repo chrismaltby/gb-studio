@@ -65,7 +65,7 @@ import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor"
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";

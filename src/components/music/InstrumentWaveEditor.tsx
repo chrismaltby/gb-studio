@@ -7,7 +7,7 @@ import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
 import { Button } from "ui/buttons/Button";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import { useAppDispatch } from "store/hooks";
 
