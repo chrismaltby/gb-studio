@@ -6,7 +6,7 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
+import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
 import {
   FormField,
@@ -16,9 +16,8 @@ import {
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
-  ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
-import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
+import { FlexBreak } from "ui/spacing/Spacing";
 import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
@@ -342,16 +341,11 @@ const ScriptEventFormField = memo(
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
-          conditional={true}
-          onClick={() => onChange(!value)}
+          onToggle={() => onChange(!value)}
           nestLevel={nestLevel}
           altBg={altBg}
-          open={!value}
+          isOpen={!value}
         >
-          <ScriptEventHeaderCaret open={!value}>
-            <ArrowIcon />
-          </ScriptEventHeaderCaret>
-          <FixedSpacer width={5} />
           {label || ""}
         </ScriptEventBranchHeader>
       );

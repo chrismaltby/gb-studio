@@ -1,10 +1,19 @@
-import React from "react";
+import React, { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
+  StyledScriptEventBranchHeader,
+  StyledScriptEventHeader,
+  StyledScriptEventHeaderBreakpointIndicator,
+  StyledScriptEventHeaderCaret,
+  StyledScriptEventHeaderTitle,
   StyledScriptEventPlaceholder,
   StyledScriptEventRenameInput,
   StyledScriptEventRenameInputCompleteButton,
+  StyledScriptEventWarning,
 } from "ui/scripting/style";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
@@ -16,237 +25,125 @@ export const ScriptEventRenameInputCompleteButton = (
   props: React.ButtonHTMLAttributes<HTMLButtonElement>
 ) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
-export const ScriptEventHeaderTitle = styled.div`
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-  height: 25px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-`;
-
-export const ScriptEventHeaderBreakpointIndicator = styled.div`
-  display: flex;
-  svg {
-    fill: ${(props) => props.theme.colors.highlight};
-    max-width: 15px;
-    max-height: 15px;
-  }
-`;
-
-interface ScriptEventHeaderCaretProps {
-  open?: boolean;
-}
-
-export const ScriptEventHeaderCaret = styled.div<ScriptEventHeaderCaretProps>`
-  svg {
-    fill: ${(props) => props.theme.colors.scripting.header.text};
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
-  }
-`;
-
 interface ScriptEventHeaderProps {
-  conditional: boolean;
   nestLevel: number;
-  comment?: boolean;
+  isConditional?: boolean;
+  isComment?: boolean;
   isSelected?: boolean;
   isExecuting?: boolean;
-  child?: boolean;
+  isMoveable?: boolean;
+  isOpen: boolean;
+  isBreakpoint?: boolean;
   altBg?: boolean;
+  breakpointTitle?: string;
+  children?: ReactNode;
+  menuItems?: ReactNode;
+  onOpenMenu?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
-  scroll-margin-top: 32px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 0px 10px;
-  padding-right: 10px;
-  padding-left: 10px;
-  height: 25px;
-  background: linear-gradient(
-    0deg,
-    ${(props) => props.theme.colors.scripting.header.backgroundAlt},
-    ${(props) => props.theme.colors.scripting.header.background}
-  );
-
-  color: ${(props) => props.theme.colors.scripting.header.text};
-  line-height: 12px;
-  cursor: move;
-
-  &:hover:before {
-    content: "⋮";
-    position: absolute;
-    left: 3px;
-    top: 6px;
+export const ScriptEventHeader = forwardRef<
+  HTMLDivElement,
+  ScriptEventHeaderProps
+>(
+  (
+    {
+      isConditional,
+      nestLevel,
+      isComment,
+      isSelected,
+      isExecuting,
+      isMoveable = true,
+      isOpen,
+      altBg,
+      isBreakpoint,
+      breakpointTitle,
+      menuItems,
+      onOpenMenu,
+      onToggle,
+      onContextMenu,
+      children,
+    },
+    outerRef
+  ) => {
+    return (
+      <StyledScriptEventHeader
+        ref={outerRef}
+        $nestLevel={nestLevel}
+        $isConditional={isConditional}
+        $isComment={isComment}
+        $altBg={altBg}
+        $isMoveable={isMoveable}
+        $isSelected={isSelected}
+        $isExecuting={isExecuting}
+      >
+        <StyledScriptEventHeaderTitle
+          onClick={onToggle}
+          onContextMenu={onContextMenu}
+        >
+          {!isComment ? (
+            <StyledScriptEventHeaderCaret $isOpen={isOpen && !isComment}>
+              <ArrowIcon />
+            </StyledScriptEventHeaderCaret>
+          ) : (
+            <StyledScriptEventHeaderCaret>
+              <CommentIcon />
+            </StyledScriptEventHeaderCaret>
+          )}
+          <FixedSpacer width={5} />
+          {children}
+        </StyledScriptEventHeaderTitle>
+        {isBreakpoint && breakpointTitle && (
+          <StyledScriptEventHeaderBreakpointIndicator title={breakpointTitle}>
+            <BreakpointIcon />
+          </StyledScriptEventHeaderBreakpointIndicator>
+        )}
+        {menuItems && (
+          <DropdownButton
+            size="small"
+            variant="transparent"
+            menuDirection="right"
+            onMouseDown={onOpenMenu}
+          >
+            {menuItems}
+          </DropdownButton>
+        )}
+      </StyledScriptEventHeader>
+    );
   }
-
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest1BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest1Background}
-          );
-        `
-      : ""}
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest2BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest2Background}
-          );
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest3BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest3Background}
-          );
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest4BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest4Background}
-          );
-        `
-      : ""}
-
-
-  ${(props) =>
-    props.comment
-      ? css`
-          &&& {
-            background: linear-gradient(
-              0deg,
-              ${(props) =>
-                props.theme.colors.scripting.header.commentBackgroundAlt},
-              ${(props) =>
-                props.theme.colors.scripting.header.commentBackground}
-            );
-          }
-        `
-      : ""}
-
-  ${(props) =>
-    props.isSelected
-      ? css`
-          &&& {
-            background: ${(props) => props.theme.colors.highlight};
-            color: ${(props) => props.theme.colors.highlightText};
-
-            svg {
-              fill: ${(props) => props.theme.colors.highlightText};
-            }
-          }
-        `
-      : ""}
-
-  ${(props) =>
-    props.isExecuting
-      ? css`
-          &&& {
-            background: ${(props) => props.theme.colors.highlight};
-            color: ${(props) => props.theme.colors.highlightText};
-
-            svg {
-              fill: ${(props) => props.theme.colors.highlightText};
-            }
-          }
-        `
-      : ""}
-    
-  ${(props) =>
-    props.child
-      ? css`
-          padding-left: 0;
-        `
-      : ""}
-`;
+);
 
 interface ScriptEventBranchHeaderProps {
-  conditional: boolean;
   nestLevel: number;
-  comment?: boolean;
-  child?: boolean;
-  altBg?: boolean;
-  open?: boolean;
+  isOpen: boolean;
+  altBg: boolean;
+  children?: ReactNode;
+  onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 0px 10px;
-  padding-right: 5px;
-  padding-left: 8px;
-  margin: -15px;
-
-  && {
-    margin-right: -5px;
-    margin-left: -5px;
-    flex-basis: 100%;
-    max-width: 100%;
-  }
-
-  height: 25px;
-  color: ${(props) => props.theme.colors.scripting.header.text};
-  line-height: 12px;
-
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest1Background};
-        `
-      : ""}
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest2Background};
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest3Background};
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest4Background};
-        `
-      : ""}
-
-
-  ${(props) =>
-    !props.open
-      ? css`
-          && {
-            margin-bottom: -5px;
-          }
-        `
-      : ""}
-`;
+export const ScriptEventBranchHeader = ({
+  nestLevel,
+  isOpen,
+  altBg,
+  children,
+  onToggle,
+}: ScriptEventBranchHeaderProps) => {
+  return (
+    <StyledScriptEventBranchHeader
+      onClick={onToggle}
+      $nestLevel={nestLevel}
+      $altBg={altBg}
+      $isOpen={isOpen}
+    >
+      <StyledScriptEventHeaderCaret $isOpen={isOpen}>
+        <ArrowIcon />
+      </StyledScriptEventHeaderCaret>
+      <FixedSpacer width={5} />
+      {children}
+    </StyledScriptEventBranchHeader>
+  );
+};
 
 interface ScriptEventFormWrapperProps {
   conditional: boolean;
@@ -459,9 +356,10 @@ export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProp
   }
 `;
 
-export const ScriptEventWarning = styled.div`
-  background: #ffc107;
-  color: #000;
-  padding: 10px;
-  font-size: 11px;
-`;
+interface ScriptEventWarningProps {
+  children?: ReactNode;
+}
+
+export const ScriptEventWarning = ({ children }: ScriptEventWarningProps) => (
+  <StyledScriptEventWarning children={children} />
+);

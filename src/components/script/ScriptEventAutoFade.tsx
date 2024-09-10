@@ -1,19 +1,15 @@
 import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect";
-import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
-import { ArrowIcon } from "ui/icons/Icons";
 import {
   ScriptEventWrapper,
   ScriptEventHeader,
-  ScriptEventHeaderCaret,
   ScriptEventFormWrapper,
   ScriptEventField,
   ScriptEventFields as ScriptEventFieldsWrapper,
-  ScriptEventHeaderTitle,
   ScriptEventWarning,
 } from "ui/scripting/ScriptEvents";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
@@ -89,32 +85,19 @@ export const ScriptEventAutoFade = () => {
     <ScriptEventWrapper conditional={false} nestLevel={0}>
       <ScriptEventHeader
         ref={headerRef}
-        conditional={false}
-        comment={false}
         nestLevel={0}
         altBg={false}
+        isOpen={isOpen}
         isExecuting={isExecuting}
-        style={{
-          cursor: "not-allowed",
-        }}
-      >
-        <ScriptEventHeaderTitle onClick={toggleOpen}>
-          <ScriptEventHeaderCaret open={isOpen}>
-            <ArrowIcon />
-          </ScriptEventHeaderCaret>
-          <FixedSpacer width={5} />
-          {l10n("EVENT_FADE_IN")} ({l10n("FIELD_AUTOMATIC")})
-        </ScriptEventHeaderTitle>
-
-        <DropdownButton
-          size="small"
-          variant="transparent"
-          menuDirection="right"
-        >
+        isMoveable={false}
+        menuItems={
           <MenuItem onClick={onDisable}>
             {l10n("FIELD_DISABLE_AUTOMATIC_FADE_IN")}
           </MenuItem>
-        </DropdownButton>
+        }
+        onToggle={toggleOpen}
+      >
+        {l10n("EVENT_FADE_IN")} ({l10n("FIELD_AUTOMATIC")})
       </ScriptEventHeader>
       {isOpen && (
         <ScriptEventFormWrapper conditional={false} nestLevel={0} altBg={false}>
