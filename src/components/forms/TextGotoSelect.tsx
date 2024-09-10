@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useCallback } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
-import { FormField, FormRow } from "ui/form/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { NumberInput } from "ui/form/NumberInput";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 

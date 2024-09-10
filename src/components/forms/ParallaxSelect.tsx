@@ -3,7 +3,7 @@ import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { SceneParallaxLayer } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
 import editorActions from "store/features/editor/editorActions";

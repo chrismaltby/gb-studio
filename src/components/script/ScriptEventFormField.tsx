@@ -12,7 +12,7 @@ import {
   FormField,
   FormFieldProps,
   ToggleableFormField,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,

@@ -2,7 +2,7 @@ import React, { FC, useCallback, useState } from "react";
 import { triggerPrefabSelectors } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
+import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";
 import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";

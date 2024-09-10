@@ -23,7 +23,7 @@ import {
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import logoFile from "ui/icons/GBStudioLogo.png";
-import { FormField, FormRow } from "ui/form/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";

@@ -68,7 +68,6 @@ const AddButton = ({
   parentType,
   parentId,
   parentKey,
-  nestLevel,
   conditional,
 }: AddButtonProps) => {
   const dispatch = useAppDispatch();
@@ -177,8 +176,6 @@ const AddButton = ({
     <ScriptEventWrapper
       ref={dropRef}
       data-handler-id={handlerId}
-      conditional={conditional ?? false}
-      nestLevel={nestLevel ?? 0}
       style={{
         background: "transparent",
         flexBasis: "100%",

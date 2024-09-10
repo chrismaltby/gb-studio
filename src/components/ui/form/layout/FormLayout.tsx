@@ -1,6 +1,7 @@
 import React, { FC, useState } from "react";
 import styled, { css } from "styled-components";
-import { Label } from "./Label";
+import { Label } from "ui/form/Label";
+import { StyledFormFieldInput } from "ui/form/layout/style";
 
 export const FormContainer = styled.div``;
 
@@ -47,20 +48,6 @@ export const FormRow = styled.div<FormRowProps>`
   & > *:last-child {
     margin-right: 0px;
   }
-`;
-
-interface FormFieldInputProps {
-  hasOverride?: boolean;
-}
-
-export const FormFieldInput = styled.div<FormFieldInputProps>`
-  ${(props) =>
-    props.hasOverride
-      ? css`
-          border-radius: 3px;
-          outline: 3px solid ${(props) => props.theme.colors.prefab.background};
-        `
-      : ""}
 `;
 
 export const FormDivider = styled.div`
@@ -149,7 +136,9 @@ export const FormField: FC<FormFieldProps> = ({
         {label}
       </Label>
     )}
-    <FormFieldInput hasOverride={hasOverride}>{children}</FormFieldInput>
+    <StyledFormFieldInput $hasOverride={hasOverride}>
+      {children}
+    </StyledFormFieldInput>
     {info && <FormFieldInfo>{info}</FormFieldInfo>}
   </FormFieldWrapper>
 );

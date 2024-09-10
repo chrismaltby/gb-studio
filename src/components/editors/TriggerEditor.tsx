@@ -17,7 +17,7 @@ import {
   FormDivider,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { TriggerNormalized } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";

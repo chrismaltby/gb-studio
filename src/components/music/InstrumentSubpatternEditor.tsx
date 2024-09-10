@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { CheckboxField } from "ui/form/CheckboxField";
-import { FormRow } from "ui/form/FormLayout";
+import { FormRow } from "ui/form/layout/FormLayout";
 import { renderEffect, renderEffectParam } from "./helpers";
 import {
   NO_CHANGE_ON_PASTE,

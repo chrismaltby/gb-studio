@@ -82,7 +82,7 @@ export const ScriptEventAutoFade = () => {
   }
 
   return (
-    <ScriptEventWrapper conditional={false} nestLevel={0}>
+    <ScriptEventWrapper>
       <ScriptEventHeader
         ref={headerRef}
         nestLevel={0}

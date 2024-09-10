@@ -320,4 +320,32 @@ export const StyledScriptEventFormWrapper = styled.div`
   position: relative;
 `;
 
-// #endregion ScriptEventForm
+// #endregion ScriptEventFormWrapper
+
+// #region ScriptEventFields
+
+export const StyledScriptEventFields = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 5px;
+
+  & > * {
+    flex-grow: 1;
+    flex-grow: 1;
+    flex-basis: 300px;
+    margin: 5px;
+    max-width: calc(100% - 10px);
+  }
+`;
+
+// #endregion ScriptEventFields
+
+// #region ScriptEventWrapper
+
+export const StyledScriptEventWrapper = styled.div`
+  background-color: ${(props) => props.theme.colors.scripting.form.background};
+  color: ${(props) => props.theme.colors.text};
+`;
+
+// #endregion ScriptEventWrapper

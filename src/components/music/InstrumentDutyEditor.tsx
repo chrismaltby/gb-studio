@@ -1,7 +1,7 @@
 import React from "react";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { DutyInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
-import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
+import { FormDivider, FormField, FormRow } from "ui/form/layout/FormLayout";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";

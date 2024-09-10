@@ -11,7 +11,11 @@ import {
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+} from "ui/form/layout/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";

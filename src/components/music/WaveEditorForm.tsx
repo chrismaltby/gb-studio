@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { FormRow, FormField } from "ui/form/FormLayout";
+import { FormRow, FormField } from "ui/form/layout/FormLayout";
 import { ThemeContext } from "styled-components";
 import { WaveEditorInput } from "components/music/WaveEditorInput";
 

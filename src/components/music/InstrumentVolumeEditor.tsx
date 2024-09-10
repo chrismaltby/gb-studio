@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { ThemeContext } from "styled-components";
-import { FormRow } from "ui/form/FormLayout";
+import { FormRow } from "ui/form/layout/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 
 type EditableInstrument = {

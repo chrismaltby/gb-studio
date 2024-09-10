@@ -38,7 +38,7 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";

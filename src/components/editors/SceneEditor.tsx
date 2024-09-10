@@ -18,7 +18,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
   ActorDirection,

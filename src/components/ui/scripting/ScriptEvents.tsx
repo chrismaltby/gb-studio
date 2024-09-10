@@ -4,6 +4,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
   StyledScriptEventBranchHeader,
+  StyledScriptEventFields,
   StyledScriptEventFormWrapper,
   StyledScriptEventHeader,
   StyledScriptEventHeaderBreakpointIndicator,
@@ -13,6 +14,7 @@ import {
   StyledScriptEventRenameInput,
   StyledScriptEventRenameInputCompleteButton,
   StyledScriptEventWarning,
+  StyledScriptEventWrapper,
 } from "ui/scripting/style";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
@@ -156,20 +158,13 @@ export const ScriptEventFormWrapper = ({
   <StyledScriptEventFormWrapper children={children} />
 );
 
-export const ScriptEventFields = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  padding: 5px;
+interface ScriptEventFieldsProps {
+  children?: ReactNode;
+}
 
-  & > * {
-    flex-grow: 1;
-    flex-grow: 1;
-    flex-basis: 300px;
-    margin: 5px;
-    max-width: calc(100% - 10px);
-  }
-`;
+export const ScriptEventFields = ({ children }: ScriptEventFieldsProps) => (
+  <StyledScriptEventFields children={children} />
+);
 
 interface ScriptEventFieldProps {
   $halfWidth?: boolean;
@@ -316,16 +311,12 @@ export const ScriptEditorChildrenLabel = styled.span<ScriptEditorChildrenLabelPr
       : ""}
 `;
 
-interface ScriptEventWrapperProps {
-  conditional: boolean;
-  nestLevel: number;
-  altBg?: boolean;
-}
-
-export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
-  background-color: ${(props) => props.theme.colors.scripting.form.background};
-  color: ${(props) => props.theme.colors.text};
-`;
+export const ScriptEventWrapper = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ children }, outerRef) => (
+  <StyledScriptEventWrapper ref={outerRef} children={children} />
+));
 
 interface ScriptEventFieldGroupProps {
   $halfWidth?: boolean;

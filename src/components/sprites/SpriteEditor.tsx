@@ -9,7 +9,7 @@ import {
   FormHeader,
   FormRow,
   FormSectionTitle,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";

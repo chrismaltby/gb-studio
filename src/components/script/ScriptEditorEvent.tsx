@@ -475,9 +475,6 @@ const ScriptEditorEvent = React.memo(
       <ScriptEventWrapper
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        conditional={isConditional}
-        nestLevel={nestLevel}
-        altBg={index % 2 === 0}
         style={{
           height: isDragging ? 0 : "auto",
           display: isDragging ? "none" : "block",

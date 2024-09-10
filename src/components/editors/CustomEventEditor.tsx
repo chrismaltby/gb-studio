@@ -14,7 +14,7 @@ import {
   FormHeader,
   FormRow,
   FormSectionTitle,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";

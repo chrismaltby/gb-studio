@@ -2,7 +2,7 @@ import React from "react";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
-import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
+import { FormDivider, FormField, FormRow } from "ui/form/layout/FormLayout";
 import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
