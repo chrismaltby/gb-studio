@@ -1,20 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
-import FocusLock, { AutoFocusInside } from "react-focus-lock";
+import FocusLock from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
   SplashAppTitle,
   SplashContent,
   SplashCreateButton,
-  SplashCredits,
-  SplashCreditsBackground,
-  SplashCreditsCloseButton,
-  SplashCreditsContent,
-  SplashCreditsContributor,
-  SplashCreditsGrid,
-  SplashCreditsPatron,
-  SplashCreditsSubHeading,
-  SplashCreditsTitle,
   SplashEasterEggButton,
   SplashForm,
   SplashInfoMessage,
@@ -27,14 +18,14 @@ import {
   SplashSidebar,
   SplashTab,
   SplashTemplateSelect,
-  SplashWrapper,
+  SplashWindow,
 } from "ui/splash/Splash";
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import logoFile from "ui/icons/GBStudioLogo.png";
 import { FormField, FormRow } from "ui/form/FormLayout";
 import { TextField } from "ui/form/TextField";
-import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
+import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
 import contributorsExternal from "contributors-external.json";
@@ -48,6 +39,13 @@ import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
 import type { RecentProjectData } from "renderer/lib/api/setup";
 import type { Patrons } from "scripts/fetchPatrons";
+import {
+  Credits,
+  CreditsPerson,
+  CreditsGrid,
+  CreditsSubHeading,
+  CreditsTitle,
+} from "ui/splash/credits/Credits";
 
 declare const DOCS_URL: string;
 
@@ -275,7 +273,7 @@ export const Splash = () => {
   return (
     <ThemeProvider>
       <GlobalStyle />
-      <SplashWrapper focus={windowFocus}>
+      <SplashWindow focus={windowFocus}>
         <SplashSidebar>
           <SplashLogo>
             <img src={logoFile} alt="GB Studio" />
@@ -394,79 +392,62 @@ export const Splash = () => {
             )}
           </SplashScroll>
         )}
-      </SplashWrapper>
+      </SplashWindow>
 
       {openCredits && (
         <FocusLock>
-          <SplashCredits>
-            <SplashCreditsBackground />
-            <SplashCreditsContent>
-              <SplashCreditsTitle>GB Studio</SplashCreditsTitle>
-              <SplashCreditsSubHeading>
-                {l10n("SPLASH_CONTRIBUTORS")}
-              </SplashCreditsSubHeading>
-              {goldContributors.map((contributor) => (
-                <SplashCreditsContributor
-                  key={contributor.id}
-                  contributor={contributor}
+          <Credits onClose={() => setOpenCredits(false)}>
+            <CreditsTitle>GB Studio</CreditsTitle>
+            <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
+            {goldContributors.map((contributor) => (
+              <CreditsPerson
+                key={contributor.id}
+                onClick={
+                  contributor.html_url
+                    ? () => API.app.openExternal(contributor.html_url)
+                    : undefined
+                }
+              >
+                {contributor.login}
+              </CreditsPerson>
+            ))}
+            <CreditsGrid>
+              {silverContributors.map((contributor) => (
+                <CreditsPerson
+                  key={contributor.login}
                   onClick={
                     contributor.html_url
                       ? () => API.app.openExternal(contributor.html_url)
                       : undefined
                   }
-                />
-              ))}
-              <SplashCreditsGrid>
-                {silverContributors.map((contributor) => (
-                  <SplashCreditsContributor
-                    key={contributor.login}
-                    contributor={contributor}
-                    onClick={
-                      contributor.html_url
-                        ? () => API.app.openExternal(contributor.html_url)
-                        : undefined
-                    }
-                  />
-                ))}
-              </SplashCreditsGrid>
-              <SplashCreditsSubHeading>Patrons</SplashCreditsSubHeading>
-              <SplashCreditsGrid>
-                {(patrons.goldTier || []).map((patron) => (
-                  <SplashCreditsPatron
-                    key={patron.id}
-                    name={patron.attributes.full_name}
-                    gold
-                  />
-                ))}
-              </SplashCreditsGrid>
-              <SplashCreditsGrid>
-                {(patrons.silverTier || []).map((patron) => (
-                  <SplashCreditsPatron
-                    key={patron.id}
-                    name={patron.attributes.full_name}
-                  />
-                ))}
-              </SplashCreditsGrid>
-              <SplashCreditsGrid>
-                {(patrons.pastPatrons || []).map((patron) => (
-                  <SplashCreditsPatron
-                    key={patron.id}
-                    name={patron.attributes.full_name}
-                  />
-                ))}
-              </SplashCreditsGrid>
-            </SplashCreditsContent>
-            <SplashCreditsCloseButton>
-              <AutoFocusInside>
-                <Button
-                  variant="transparent"
-                  onClick={() => setOpenCredits(false)}
                 >
-                  <CloseIcon />
-                </Button>
-              </AutoFocusInside>
-            </SplashCreditsCloseButton>
-          </SplashCredits>
+                  {contributor.login}
+                </CreditsPerson>
+              ))}
+            </CreditsGrid>
+            <CreditsSubHeading>Patrons</CreditsSubHeading>
+            <CreditsGrid>
+              {(patrons.goldTier || []).map((patron) => (
+                <CreditsPerson key={patron.id} gold>
+                  {patron.attributes.full_name}
+                </CreditsPerson>
+              ))}
+            </CreditsGrid>
+            <CreditsGrid>
+              {(patrons.silverTier || []).map((patron) => (
+                <CreditsPerson key={patron.id}>
+                  {patron.attributes.full_name}
+                </CreditsPerson>
+              ))}
+            </CreditsGrid>
+            <CreditsGrid>
+              {(patrons.pastPatrons || []).map((patron) => (
+                <CreditsPerson key={patron.id}>
+                  {patron.attributes.full_name}
+                </CreditsPerson>
+              ))}
+            </CreditsGrid>
+          </Credits>
         </FocusLock>
       )}
     </ThemeProvider>
