@@ -769,6 +769,7 @@ const addScene: CaseReducer<
     name: defaultLocalisedSceneName(scenesTotal),
     backgroundId,
     tilesetId: "",
+	allocationStrat: 0,
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
     type: "TOPDOWN",

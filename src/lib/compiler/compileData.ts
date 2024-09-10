@@ -131,12 +131,12 @@ import { applyPrefabs } from "./applyPrefabs";
 type CompiledTilemapData = {
   symbol: string;
   data: number[] | Uint8Array;
-  is360: boolean;
+  is360: boolean;  
 };
 
 type CompiledTilesetData = {
   symbol: string;
-  data: number[] | Uint8Array;
+  data: number[] | Uint8Array;  
 };
 
 export type SceneMapData = {
@@ -279,11 +279,20 @@ export const precompileBackgrounds = async (
       )
     )
     .map((background) => background.id);
+	
+  const allocationStratLookup = scenes.reduce((memo, scene) => {
+  	if (!scene.backgroundId || !scene.allocationStrat){
+		return memo;
+	}
+	memo[scene.backgroundId] = scene.allocationStrat;
+    return memo;  
+  }, {} as Record<string, number>);
 
   const backgroundsData = await compileImages(
     usedBackgrounds,
     commonTilesetsLookup,
     generate360Ids,
+	allocationStratLookup,
     colorMode,
     projectRoot,
     {
@@ -306,7 +315,7 @@ export const precompileBackgrounds = async (
         tileset1Index = usedTilesets.length;
         usedTilesets.push({
           symbol: `${background.symbol}_tileset`,
-          data: background.vramData[0],
+          data: background.vramData[0],		  
         });
       }
 
@@ -335,7 +344,7 @@ export const precompileBackgrounds = async (
         usedTilemapAttrs.push({
           symbol: `${background.symbol}_tilemap_attr`,
           data: background.attr,
-          is360: generate360Ids.includes(background.id),
+          is360: generate360Ids.includes(background.id),		  
         });
       }
 
@@ -345,6 +354,7 @@ export const precompileBackgrounds = async (
         cgbTileset: usedTilesets[tileset2Index],
         tilemap: usedTilemaps[tilemapIndex],
         tilemapAttr: usedTilemapAttrs[tilemapAttrIndex],
+		allocationStrat: (generate360Ids.includes(background.id))? 3: (allocationStratLookup[background.id] ?? 0),
       };
     }
   );

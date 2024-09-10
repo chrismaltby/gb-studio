@@ -58,6 +58,7 @@ test("Should trigger call to check background assets", async () => {
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+	allocationStrat: 0,
   });
 
   middleware(store)(next)(action);
@@ -70,6 +71,7 @@ test("Should trigger call to check background assets", async () => {
       id: "bg1",
       numTiles: 10,
       is360: false,
+	  allocationStrat: 0,
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
@@ -96,6 +98,7 @@ test("Should not trigger call to check background assets if already cached asset
             id: "bg1",
             assets: ["Warning 2"],
             is360: false,
+			allocationStrat: 0,
             isCGBOnly: false,
             timestamp: 100,
           },
@@ -131,6 +134,7 @@ test("Should not trigger call to check background assets if already cached asset
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+	allocationStrat: 0,
   });
 
   middleware(store)(next)(action);
@@ -193,6 +197,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+	allocationStrat: 0,
   });
 
   middleware(store)(next)(action);
@@ -205,6 +210,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
       id: "bg1",
       numTiles: 10,
       is360: false,
+	  allocationStrat: 0,
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],

@@ -16,8 +16,6 @@
 #include "data/spritesheet_none.h"
 #include "data/data_bootstrap.h"
 
-#define ALLOC_BKG_TILES_TOWARDS_SPR
-
 #define EMOTE_SPRITE_SIZE       4
 
 far_ptr_t current_scene;
@@ -55,7 +53,7 @@ void load_init(void) BANKED {
     scene_stack_ptr = scene_stack;
 }
 
-void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) BANKED {
+void load_bkg_tileset(const tileset_t* tiles, UBYTE bank, UBYTE allocation_strat) BANKED {
     if ((!bank) || (!tiles)) return;
 
     UWORD n_tiles = ReadBankedUWORD(&(tiles->n_tiles), bank);
@@ -70,26 +68,22 @@ void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) BANKED {
     n_tiles -= 128; data += 128 * 16;
 
     // load second background chunk
-    if (n_tiles < 128) {
-        if (n_tiles < 65) {
-            #ifdef ALLOC_BKG_TILES_TOWARDS_SPR
-                // new allocation style, align to 192-th tile
-                if ((UBYTE)n_tiles) SetBankedBkgData(192 - n_tiles, n_tiles, data, bank);
-            #else
-                // old allocation style, align to 128-th tile
-                if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, bank);
-            #endif
-        } else {
-            // if greater than 64 allow overflow into UI, align to 128-th tile
-            if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, bank);
-        }
-        return;
-    }
-    SetBankedBkgData(128, 128, data, bank);
-    n_tiles -= 128; data += 128 * 16;
-
-    // if more than 256 - then it's a 360-tile logo, load rest to sprite area
-    if ((UBYTE)n_tiles) SetBankedSpriteData(0, n_tiles, data, bank);
+    if (n_tiles <= 128) {
+        // allocation_strat bit1 : if not set, reverse allocation toward sprites (sprite priorisation)
+		// allocation_strat bit2: if not set, align to reserved ui tile offset
+        if (allocation_strat & 1){
+			if ((UBYTE)n_tiles) SetBankedBkgData(128, ((allocation_strat >> 1) & 1)? n_tiles: MIN(n_tiles, 64), data, bank);
+		} else {	
+            if ((UBYTE)n_tiles) SetBankedBkgData((((allocation_strat >> 1) & 1) ? 256: 192) - n_tiles, n_tiles, data, bank);
+		}
+    } 
+	else 
+	{
+		// if more than 256 - then it's a 360-tile logo, load rest to sprite area
+		SetBankedBkgData(128, 128, data, bank);
+		n_tiles -= 128; data += 128 * 16;
+		SetBankedSpriteData(0, n_tiles, data, bank);
+	}
 }
 
 void load_background(const background_t* background, UBYTE bank) BANKED {
@@ -109,11 +103,11 @@ void load_background(const background_t* background, UBYTE bank) BANKED {
     image_height = image_tile_height * 8;
     scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
 
-    load_bkg_tileset(bkg.tileset.ptr, bkg.tileset.bank);
+    load_bkg_tileset(bkg.tileset.ptr, bkg.tileset.bank, bkg.allocation_strat);
 #ifdef CGB
     if ((_is_CGB) && (bkg.cgb_tileset.ptr)) {
         VBK_REG = 1;
-        load_bkg_tileset(bkg.cgb_tileset.ptr, bkg.cgb_tileset.bank);
+        load_bkg_tileset(bkg.cgb_tileset.ptr, bkg.cgb_tileset.bank, bkg.allocation_strat);
         VBK_REG = 0;
     }
 #endif

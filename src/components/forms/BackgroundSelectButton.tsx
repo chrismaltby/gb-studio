@@ -12,7 +12,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB, UI_TILE_LENGTH } from "consts";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { FlexGrow } from "ui/spacing/Spacing";
 
@@ -21,6 +21,7 @@ interface BackgroundSelectProps {
   value?: string;
   is360: boolean;
   tilesetId: string;
+  allocationStrat: number;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
 }
@@ -166,6 +167,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   onChange,
   is360,
   tilesetId,
+  allocationStrat,
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -193,10 +195,11 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           backgroundId: value,
           tilesetId,
           is360,
+		  allocationStrat,
         })
       );
     }
-  }, [dispatch, value, is360, tilesetId]);
+  }, [dispatch, value, is360, tilesetId, allocationStrat]);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -308,8 +311,8 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
               </SpriteInfoRow>
               <SpriteInfoRow
                 error={
-                  (numTiles > MAX_BACKGROUND_TILES_CGB ||
-                    (!isCGBOnly && numTiles > MAX_BACKGROUND_TILES)) &&
+                  (numTiles > (MAX_BACKGROUND_TILES_CGB - (((allocationStrat >> 1) & 1)? 0: (UI_TILE_LENGTH * 2))) ||
+                    (!isCGBOnly && numTiles > (MAX_BACKGROUND_TILES - (((allocationStrat >> 1) & 1)? 0: (UI_TILE_LENGTH))))) &&
                   !is360
                 }
               >

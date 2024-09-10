@@ -26,7 +26,8 @@ import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
-const TILE_BANK_SIZE = 192;
+const TILE_BANK_SIZE = 256;
+const TILE_UI_OFFSET = 192;
 
 type PrecompiledBackgroundData = BackgroundData & {
   commonTilesetId?: string;
@@ -136,6 +137,7 @@ const compileImage = async (
   img: BackgroundData,
   commonTileset: TilesetData | undefined,
   is360: boolean,
+  allocationStrat: number,
   colorMode: ColorModeSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
@@ -228,6 +230,7 @@ const compileImage = async (
     img,
     undefined,
     false,
+	allocationStrat,
     cgbOnly,
     projectPath,
     uniqueTiles.length
@@ -257,15 +260,23 @@ const compileImage = async (
         img
       );
       // Reallocate tilemap based on strategy
-      if (tileIndex < TILE_FIRST_CHUNK_SIZE) {
-        tilemap[index] = tileIndex;
-      } else {
-        // tile index > 128 is allocated with an unused tile offset
-        // to allow as much tiles as possible for sprite data
-        const bankSize = vramData[inVRAM2 ? 1 : 0].length / 16;
-        const offset = Math.max(TILE_BANK_SIZE - bankSize, 0);
-        tilemap[index] = tileIndex + offset;
-      }
+	  // first bit of allocationStrat specify if reverse the tile order past 128 toward sprite tiles (sprite tile priority) (default true)
+	  const reverseTile = ((allocationStrat) & 1)? false: true;
+	   // second bit of allocationStrat specify if we reserve the default ui tiles (default 192)
+	  const reservedOffset = ((allocationStrat >> 1) & 1)? TILE_BANK_SIZE: TILE_UI_OFFSET;
+	  if (reverseTile){
+		if (tileIndex < TILE_FIRST_CHUNK_SIZE) {
+			tilemap[index] = tileIndex;
+		} else {
+			// tile index > 128 is allocated with an unused tile offset
+			// to allow as much tiles as possible for sprite data
+			const bankSize = vramData[inVRAM2 ? 1 : 0].length / 16;
+			const offset = Math.max(reservedOffset - bankSize, 0);
+			tilemap[index] = tileIndex + offset;
+		}
+	  } else {
+		tilemap[index] = tileIndex;
+	  }
       if (inVRAM2) {
         return attr | FLAG_VRAM_BANK_1;
       }
@@ -290,6 +301,7 @@ const compileImages = async (
   imgs: BackgroundData[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
   generate360Ids: string[],
+  allocationStratLookup: Record<string, number>,
   colorMode: ColorModeSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
@@ -305,6 +317,7 @@ const compileImages = async (
               img,
               undefined,
               generate360Ids.includes(img.id),
+			  allocationStratLookup[img.id] ?? 0,
               colorMode,
               projectPath,
               { warnings }
@@ -315,6 +328,7 @@ const compileImages = async (
                 img,
                 commonTileset,
                 generate360Ids.includes(img.id),
+				allocationStratLookup[img.id] ?? 0,
                 colorMode,
                 projectPath,
                 { warnings }

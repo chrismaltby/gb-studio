@@ -244,6 +244,7 @@ const APISetup = {
       background: Background,
       tileset: Tileset | undefined,
       is360: boolean,
+	  allocationStrat: number,
       cgbOnly: boolean
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
@@ -251,6 +252,7 @@ const APISetup = {
         background,
         tileset,
         is360,
+		allocationStrat,
         cgbOnly
       ),
     addFile: (filename: string): Promise<void> =>

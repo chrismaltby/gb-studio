@@ -30,6 +30,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
           !cachedWarnings ||
           cachedWarnings.timestamp < background._v ||
           cachedWarnings.is360 !== action.payload.is360 ||
+		  cachedWarnings.allocationStrat !== action.payload.allocationStrat || 
           cachedWarnings.isCGBOnly !== isCGBOnly ||
           cachedWarnings.tilesetId !== tilesetId
         ) {
@@ -38,6 +39,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
               background,
               tileset,
               action.payload.is360,
+			  action.payload.allocationStrat,
               isCGBOnly
             )
             .then((info) => {
@@ -45,6 +47,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
                 actions.setBackgroundAssetInfo({
                   id: action.payload.backgroundId,
                   is360: action.payload.is360,
+				  allocationStrat: action.payload.allocationStrat,
                   tilesetId,
                   warnings: info.warnings,
                   numTiles: info.numTiles,
