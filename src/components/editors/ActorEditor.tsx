@@ -12,7 +12,7 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/layout/FormLayout";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -22,8 +22,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import { Checkbox } from "ui/form/Checkbox";
-import { CaretRightIcon, PinIcon } from "ui/icons/Icons";
+import { CaretRightIcon, CheckIcon, PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { WorldEditor } from "./WorldEditor";
 import { NoteField } from "ui/form/NoteField";
@@ -291,7 +290,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     }}
                   >
                     <MenuItem onClick={onToggleField("isPinned")}>
-                      <Checkbox id="pin" name="pin" checked={actor.isPinned} />{" "}
+                      {actor.isPinned && (
+                        <MenuItemIcon>
+                          <CheckIcon />
+                        </MenuItemIcon>
+                      )}
                       {l10n("FIELD_PIN_TO_SCREEN")}
                     </MenuItem>
                   </DropdownButton>

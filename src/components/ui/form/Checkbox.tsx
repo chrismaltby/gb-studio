@@ -6,6 +6,7 @@ export interface CheckboxProps {
   readonly id: string;
   readonly name: string;
   readonly checked?: boolean;
+  readonly readOnly?: boolean;
   readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
