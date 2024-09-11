@@ -369,6 +369,8 @@ type ValueSelectInputOverride = {
     }
 );
 
+const noop = () => {};
+
 interface ValueSelectProps {
   name: string;
   entityId: string;
@@ -1099,7 +1101,11 @@ const ValueSelect = ({
         <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-            <Input value={l10n("FIELD_TRUE")} onKeyDown={onKeyDown} />
+            <Input
+              value={l10n("FIELD_TRUE")}
+              onChange={noop}
+              onKeyDown={onKeyDown}
+            />
           </InputGroup>
         </ValueWrapper>
       );
@@ -1108,7 +1114,11 @@ const ValueSelect = ({
         <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-            <Input value={l10n("FIELD_FALSE")} onKeyDown={onKeyDown} />
+            <Input
+              value={l10n("FIELD_FALSE")}
+              onChange={noop}
+              onKeyDown={onKeyDown}
+            />
           </InputGroup>
         </ValueWrapper>
       );
