@@ -38,12 +38,7 @@ import {
   TrueIcon,
   VariableIcon,
 } from "ui/icons/Icons";
-import {
-  MenuAccelerator,
-  MenuDivider,
-  MenuItem,
-  MenuItemIcon,
-} from "ui/menu/Menu";
+import { MenuAccelerator, MenuDivider, MenuItem } from "ui/menu/Menu";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import ScriptEventFormMathArea from "components/script/ScriptEventFormMatharea";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
@@ -606,10 +601,8 @@ const ValueSelect = ({
         <MenuItem
           key={menuItem.value}
           onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           {menuItem.label}
           {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
         </MenuItem>
@@ -619,19 +612,18 @@ const ValueSelect = ({
         <MenuItem
           key={menuItem.value}
           onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           {menuItem.label}
           {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
         </MenuItem>
       )),
       <MenuDivider key="div2" />,
-      <MenuItem key="rnd" onClick={() => setValueFunction("rnd")}>
-        <MenuItemIcon>
-          {value.type === "rnd" ? <CheckIcon /> : <BlankIcon />}
-        </MenuItemIcon>
+      <MenuItem
+        key="rnd"
+        onClick={() => setValueFunction("rnd")}
+        icon={value.type === "rnd" ? <CheckIcon /> : <BlankIcon />}
+      >
         {l10n("FIELD_RANDOM")}
         <MenuAccelerator accelerator="r" />
       </MenuItem>,
@@ -648,10 +640,8 @@ const ValueSelect = ({
             type: "true",
           });
         }}
+        icon={value.type === "true" ? <CheckIcon /> : <BlankIcon />}
       >
-        <MenuItemIcon>
-          {value.type === "true" ? <CheckIcon /> : <BlankIcon />}
-        </MenuItemIcon>
         {l10n("FIELD_TRUE")}
         <MenuAccelerator accelerator="t" />
       </MenuItem>,
@@ -662,10 +652,8 @@ const ValueSelect = ({
             type: "false",
           });
         }}
+        icon={value.type === "false" ? <CheckIcon /> : <BlankIcon />}
       >
-        <MenuItemIcon>
-          {value.type === "false" ? <CheckIcon /> : <BlankIcon />}
-        </MenuItemIcon>
         {l10n("FIELD_FALSE")}
         <MenuAccelerator accelerator="f" />
       </MenuItem>,
@@ -674,10 +662,8 @@ const ValueSelect = ({
         <MenuItem
           key={menuItem.value}
           onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           {menuItem.label}
           {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
         </MenuItem>
@@ -692,10 +678,8 @@ const ValueSelect = ({
         <MenuItem
           key={menuItem.value}
           onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           {menuItem.label}
           {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
         </MenuItem>
@@ -710,10 +694,8 @@ const ValueSelect = ({
         <MenuItem
           key={menuItem.value}
           onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           {menuItem.label}
           {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
         </MenuItem>
@@ -726,81 +708,72 @@ const ValueSelect = ({
     () => [
       ...(!isValueFn
         ? [
-            <MenuItem key="number" onClick={setNumber}>
-              <MenuItemIcon>
-                {value.type === "number" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key="number"
+              onClick={setNumber}
+              icon={value.type === "number" ? <CheckIcon /> : <BlankIcon />}
+            >
               {l10n("FIELD_NUMBER")}
               <MenuAccelerator accelerator="n" />
             </MenuItem>,
 
-            <MenuItem key="variable" onClick={setVariable}>
-              <MenuItemIcon>
-                {value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key="variable"
+              onClick={setVariable}
+              icon={value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
+            >
               {l10n("FIELD_VARIABLE")}
               <MenuAccelerator accelerator="$" />
             </MenuItem>,
-            <MenuItem key="property" onClick={setProperty}>
-              <MenuItemIcon>
-                {value.type === "property" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key="property"
+              onClick={setProperty}
+              icon={value.type === "property" ? <CheckIcon /> : <BlankIcon />}
+            >
               {l10n("FIELD_PROPERTY")}
               <MenuAccelerator accelerator="p" />
             </MenuItem>,
-            <MenuItem key="expression" onClick={setExpression}>
-              <MenuItemIcon>
-                {value.type === "expression" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key="expression"
+              onClick={setExpression}
+              icon={value.type === "expression" ? <CheckIcon /> : <BlankIcon />}
+            >
               {l10n("FIELD_EXPRESSION")}
               <MenuAccelerator accelerator="e" />
             </MenuItem>,
-            <MenuItem key="direction" onClick={setDirection}>
-              <MenuItemIcon>
-                {value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key="direction"
+              onClick={setDirection}
+              icon={value.type === "direction" ? <CheckIcon /> : <BlankIcon />}
+            >
               {l10n("FIELD_DIRECTION")}
               <MenuAccelerator accelerator="d" />
             </MenuItem>,
             <MenuDivider key="divider1" />,
           ]
         : []),
-      <MenuItem key="mathMenu" subMenu={mathMenu}>
-        <MenuItemIcon>
-          <BlankIcon />
-        </MenuItemIcon>
+      <MenuItem key="mathMenu" subMenu={mathMenu} icon={<BlankIcon />}>
         {l10n("EVENT_GROUP_MATH")}
       </MenuItem>,
-      <MenuItem key="booleanMenu" subMenu={booleanMenu}>
-        <MenuItemIcon>
-          <BlankIcon />
-        </MenuItemIcon>
+      <MenuItem key="booleanMenu" subMenu={booleanMenu} icon={<BlankIcon />}>
         {l10n("FIELD_BOOLEAN")}
       </MenuItem>,
-      <MenuItem key="comparisonMenu" subMenu={comparisonMenu}>
-        <MenuItemIcon>
-          <BlankIcon />
-        </MenuItemIcon>
+      <MenuItem
+        key="comparisonMenu"
+        subMenu={comparisonMenu}
+        icon={<BlankIcon />}
+      >
         {l10n("FIELD_COMPARISON")}
       </MenuItem>,
-      <MenuItem key="bitwiseMenu" subMenu={bitwiseMenu}>
-        <MenuItemIcon>
-          <BlankIcon />
-        </MenuItemIcon>
+      <MenuItem key="bitwiseMenu" subMenu={bitwiseMenu} icon={<BlankIcon />}>
         {l10n("FIELD_BITWISE")}
       </MenuItem>,
       <MenuDivider key="divider2" />,
-      <MenuItem key="copy" onClick={onCopyValue}>
-        <MenuItemIcon>
-          <BlankIcon />
-        </MenuItemIcon>
+      <MenuItem key="copy" onClick={onCopyValue} icon={<BlankIcon />}>
         {l10n("FIELD_COPY_VALUE")}
       </MenuItem>,
       clipboardFormat === ClipboardTypeScriptValue && (
-        <MenuItem key="paste" onClick={onPasteValue}>
-          <MenuItemIcon>
-            <BlankIcon />
-          </MenuItemIcon>
+        <MenuItem key="paste" onClick={onPasteValue} icon={<BlankIcon />}>
           {l10n("FIELD_PASTE_VALUE")}
         </MenuItem>
       ),
@@ -897,10 +870,8 @@ const ValueSelect = ({
                 onChange(value.value);
                 focus();
               }}
+              icon={<BlankIcon />}
             >
-              <MenuItemIcon>
-                <BlankIcon />
-              </MenuItemIcon>
               {l10n("FIELD_REMOVE")}
             </MenuItem>
           ) : null}
@@ -910,10 +881,8 @@ const ValueSelect = ({
                 onChange(value.valueA);
                 focus();
               }}
+              icon={<BlankIcon />}
             >
-              <MenuItemIcon>
-                <BlankIcon />
-              </MenuItemIcon>
               {l10n("FIELD_REMOVE")}
             </MenuItem>
           ) : null}

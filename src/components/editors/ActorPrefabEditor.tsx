@@ -3,7 +3,7 @@ import { actorPrefabSelectors } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -146,10 +146,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                   onMouseDown={onFetchClipboard}
                 >
                   {!showNotes && !showUses && (
-                    <MenuItem onClick={onAddNotes}>
-                      <MenuItemIcon>
-                        <BlankIcon />
-                      </MenuItemIcon>
+                    <MenuItem onClick={onAddNotes} icon={<BlankIcon />}>
                       {l10n("FIELD_ADD_NOTES")}
                     </MenuItem>
                   )}
@@ -157,23 +154,19 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                   <MenuItem
                     key="view-editor"
                     onClick={() => setShowUses(false)}
+                    icon={!showUses ? <CheckIcon /> : <BlankIcon />}
                   >
-                    <MenuItemIcon>
-                      {!showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
                     {l10n("MENU_EDIT_PREFAB")}
                   </MenuItem>
-                  <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
-                    <MenuItemIcon>
-                      {showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
+                  <MenuItem
+                    key="view-uses"
+                    onClick={() => setShowUses(true)}
+                    icon={showUses ? <CheckIcon /> : <BlankIcon />}
+                  >
                     {l10n("FIELD_VIEW_PREFAB_USES")}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={onRemove}>
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
+                  <MenuItem onClick={onRemove} icon={<BlankIcon />}>
                     {l10n("MENU_DELETE_PREFAB")}
                   </MenuItem>
                 </DropdownButton>

@@ -26,7 +26,7 @@ import {
   SceneParallaxLayer,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   DropdownButton,
   InlineDropdownWrapper,
@@ -758,24 +758,28 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                                 : "FIELD_MANUAL"
                             )}
                           >
-                            <MenuItem onClick={() => onChangeAutoColor(true)}>
-                              <MenuItemIcon>
-                                {background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(true)}
+                              icon={
+                                background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_AUTOMATIC")}
                             </MenuItem>
-                            <MenuItem onClick={() => onChangeAutoColor(false)}>
-                              <MenuItemIcon>
-                                {!background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(false)}
+                              icon={
+                                !background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_MANUAL")}
                             </MenuItem>
                           </DropdownButton>

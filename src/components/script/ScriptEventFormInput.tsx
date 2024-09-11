@@ -51,7 +51,7 @@ import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon, PlusIcon } from "ui/icons/Icons";
-import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
@@ -345,10 +345,11 @@ const ScriptEventFormInput = ({
           }
         >
           {(field.options || []).map(([type, label]) => (
-            <MenuItem key={String(type)} onClick={() => onChangeField(type)}>
-              <MenuItemIcon>
-                {type === value ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key={String(type)}
+              onClick={() => onChangeField(type)}
+              icon={type === value ? <CheckIcon /> : <BlankIcon />}
+            >
               {label}
             </MenuItem>
           ))}
@@ -870,10 +871,11 @@ const ScriptEventFormInput = ({
             }
           >
             {(field.types || []).map((type) => (
-              <MenuItem key={type} onClick={() => onChangeUnionType(type)}>
-                <MenuItemIcon>
-                  {type === currentType ? <CheckIcon /> : <BlankIcon />}
-                </MenuItemIcon>
+              <MenuItem
+                key={type}
+                onClick={() => onChangeUnionType(type)}
+                icon={type === currentType ? <CheckIcon /> : <BlankIcon />}
+              >
                 {type}
               </MenuItem>
             ))}

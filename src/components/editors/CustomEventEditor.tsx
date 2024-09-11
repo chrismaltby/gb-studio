@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "store/features/entities/entitiesState";
@@ -275,10 +275,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                   menuDirection="right"
                 >
                   {!showSymbols && !showUses && (
-                    <MenuItem onClick={() => setShowSymbols(true)}>
-                      <MenuItemIcon>
-                        <BlankIcon />
-                      </MenuItemIcon>
+                    <MenuItem
+                      onClick={() => setShowSymbols(true)}
+                      icon={<BlankIcon />}
+                    >
                       {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
                     </MenuItem>
                   )}
@@ -286,23 +286,19 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                   <MenuItem
                     key="view-editor"
                     onClick={() => setShowUses(false)}
+                    icon={!showUses ? <CheckIcon /> : <BlankIcon />}
                   >
-                    <MenuItemIcon>
-                      {!showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
                     {l10n("MENU_EDIT_CUSTOM_EVENT")}
                   </MenuItem>
-                  <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
-                    <MenuItemIcon>
-                      {showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
+                  <MenuItem
+                    key="view-uses"
+                    onClick={() => setShowUses(true)}
+                    icon={showUses ? <CheckIcon /> : <BlankIcon />}
+                  >
                     {l10n("FIELD_VIEW_SCRIPT_USES")}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={onRemove}>
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
+                  <MenuItem onClick={onRemove} icon={<BlankIcon />}>
                     {l10n("MENU_DELETE_CUSTOM_EVENT")}
                   </MenuItem>
                 </DropdownButton>

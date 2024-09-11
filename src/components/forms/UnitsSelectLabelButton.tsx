@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
-import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
 import { StyledButton } from "ui/buttons/style";
 
 interface UnitSelectLabelButtonProps {
@@ -72,10 +72,11 @@ export const UnitSelectLabelButton = ({
           variant="transparent"
         >
           {allValues.map((item) => (
-            <MenuItem key={item} onClick={() => onChange?.(item)}>
-              <MenuItemIcon>
-                {value === item ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key={item}
+              onClick={() => onChange?.(item)}
+              icon={value === item ? <CheckIcon /> : <BlankIcon />}
+            >
               {unitTypeNames[item]}
             </MenuItem>
           ))}

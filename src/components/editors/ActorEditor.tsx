@@ -12,7 +12,7 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/layout/FormLayout";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -289,12 +289,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       minWidth: 28,
                     }}
                   >
-                    <MenuItem onClick={onToggleField("isPinned")}>
-                      {actor.isPinned && (
-                        <MenuItemIcon>
-                          <CheckIcon />
-                        </MenuItemIcon>
-                      )}
+                    <MenuItem
+                      onClick={onToggleField("isPinned")}
+                      icon={actor.isPinned ? <CheckIcon /> : undefined}
+                    >
                       {l10n("FIELD_PIN_TO_SCREEN")}
                     </MenuItem>
                   </DropdownButton>

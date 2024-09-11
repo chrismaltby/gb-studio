@@ -4,8 +4,11 @@ import { CaretRightIcon } from "ui/icons/Icons";
 import {
   StyledMenu,
   StyledMenuAccelerator,
+  StyledMenuDivider,
+  StyledMenuGroup,
   StyledMenuItem,
   StyledMenuItemCaret,
+  StyledMenuItemIcon,
 } from "ui/menu/style";
 
 export const Menu = forwardRef<
@@ -21,47 +24,38 @@ export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
   readonly subMenu?: React.ReactElement[];
+  readonly icon?: ReactNode;
   readonly children?: ReactNode;
 }
 
-export const MenuItem = ({ selected, subMenu: _, ...props }: MenuItemProps) => (
-  <StyledMenuItem $selected={selected} {...props} />
+export const MenuItem = ({
+  selected,
+  subMenu: _,
+  children,
+  icon,
+  ...props
+}: MenuItemProps) => (
+  <StyledMenuItem $selected={selected} {...props}>
+    {icon && <StyledMenuItemIcon>{icon}</StyledMenuItemIcon>}
+    {children}
+  </StyledMenuItem>
 );
 
-export const MenuItemIcon = styled.div<MenuItemProps>`
-  width: 15px;
-  height: 15px;
-  display: flex;
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  svg {
-    width: 12px;
-    height: 12px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-  &:nth-child(1) {
-    margin-left: -5px;
-    margin-right: 5px;
-  }
-  &:last-child:not(:first-child) {
-    margin-left: 5px;
-    margin-right: 0px;
-  }
-`;
+export interface MenuItemIconProps {
+  readonly children?: ReactNode;
+}
 
-export const MenuGroup = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  opacity: 0.8;
+export const MenuItemIcon = ({ children }: MenuItemIconProps) => (
+  <StyledMenuItemIcon children={children} />
+);
 
-  ${StyledMenuItem} + & {
-    margin-top: 10px;
-  }
-`;
+interface MenuGroupProps {
+  children?: ReactNode;
+}
+
+export const MenuGroup = ({ children }: MenuGroupProps) => (
+  <StyledMenuGroup children={children} />
+);
 
 export const MenuSection = styled.div`
   display: flex;
@@ -71,9 +65,7 @@ export const MenuSection = styled.div`
   white-space: nowrap;
 `;
 
-export const MenuDivider = styled.div`
-  border-bottom: 1px solid ${(props) => props.theme.colors.menu.divider};
-`;
+export const MenuDivider = () => <StyledMenuDivider />;
 
 export interface MenuAcceleratorProps {
   accelerator: string;

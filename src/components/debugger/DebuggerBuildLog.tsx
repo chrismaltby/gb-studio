@@ -6,7 +6,7 @@ import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 import {
   SettingsState,
@@ -260,23 +260,20 @@ const DebuggerBuildLog = () => {
           />
         </Button>
         <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
-          <MenuItem onClick={onToggleOpenBuildLogOnWarnings}>
-            <MenuItemIcon>
-              {openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleOpenBuildLogOnWarnings}
+            icon={openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
           </MenuItem>
-          <MenuItem onClick={onToggleGenerateDebugFilesEnabled}>
-            <MenuItemIcon>
-              {generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleGenerateDebugFilesEnabled}
+            icon={generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
           <MenuDivider />
-          <MenuItem onClick={onDeleteCache}>
-            <MenuItemIcon>
-              <BlankIcon />
-            </MenuItemIcon>
+          <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>

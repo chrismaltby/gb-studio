@@ -104,4 +104,51 @@ export const StyledMenuItem = styled.div<StyledMenuItemProps>`
       : ""}
 `;
 
+export const StyledMenuItemIcon = styled.div`
+  width: 15px;
+  height: 15px;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  svg {
+    width: 12px;
+    height: 12px;
+    fill: ${(props) => props.theme.colors.text};
+  }
+  &:nth-child(1) {
+    margin-left: -5px;
+    margin-right: 5px;
+  }
+  &:last-child:not(:first-child) {
+    margin-left: 5px;
+    margin-right: 0px;
+  }
+`;
+
 // #endregion MenuItem
+
+// #region MenuGroup
+
+export const StyledMenuGroup = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.8;
+
+  ${StyledMenuItem} + & {
+    margin-top: 10px;
+  }
+`;
+
+// #endregion MenuGroup
+
+// #region MenuDivider
+
+export const StyledMenuDivider = styled.div`
+  border-bottom: 1px solid ${(props) => props.theme.colors.menu.divider};
+`;
+
+// #region MenuDivider
