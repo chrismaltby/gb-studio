@@ -110,7 +110,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
     );
 
     setOptions(options);
-  }, [tilesets, optional, optionalLabel]);
+  }, [tilesets, optional, optionalLabel, filters]);
 
   useEffect(() => {
     setCurrentTileset(tilesets.find((v) => v.id === value));

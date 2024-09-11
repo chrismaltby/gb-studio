@@ -74,13 +74,10 @@ const meta: Meta<typeof AppToolbar> = {
 export default meta;
 type Story = StoryObj<typeof AppToolbar>;
 
-(window as any).API = { platform: "darwin" };
-
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
   decorators: [
     (story) => {
-      (window as any).API = { platform: "darwin" };
       return <Mockstore>{story()}</Mockstore>;
     },
   ],
