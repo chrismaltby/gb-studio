@@ -6,7 +6,7 @@ import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 import {
   SettingsState,
@@ -18,6 +18,7 @@ import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
+import { StyledButton } from "ui/buttons/style";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -48,7 +49,7 @@ const ButtonToolbar = styled.div`
   align-items: center;
   padding: 10px;
 
-  ${Button} {
+  ${StyledButton} {
     height: 24px;
     line-height: 24px;
   }
@@ -66,13 +67,13 @@ const UsageWrapper = styled.div`
 `;
 
 interface LogLineProps {
-  type: "log" | "warn";
+  $type: "log" | "warn";
 }
 
 const LogLine = styled.div<LogLineProps>`
   color: white;
   ${(props) =>
-    props.type === "warn"
+    props.$type === "warn"
       ? css`
           color: orange;
         `
@@ -92,7 +93,7 @@ interface BuildLogLineProps {
 const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
   const dispatch = useAppDispatch();
   return (
-    <LogLine type={type}>
+    <LogLine $type={type}>
       {text}{" "}
       {link && (
         <LogLink
@@ -259,23 +260,20 @@ const DebuggerBuildLog = () => {
           />
         </Button>
         <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
-          <MenuItem onClick={onToggleOpenBuildLogOnWarnings}>
-            <MenuItemIcon>
-              {openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleOpenBuildLogOnWarnings}
+            icon={openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
           </MenuItem>
-          <MenuItem onClick={onToggleGenerateDebugFilesEnabled}>
-            <MenuItemIcon>
-              {generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleGenerateDebugFilesEnabled}
+            icon={generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
           <MenuDivider />
-          <MenuItem onClick={onDeleteCache}>
-            <MenuItemIcon>
-              <BlankIcon />
-            </MenuItemIcon>
+          <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>

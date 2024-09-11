@@ -4,7 +4,7 @@ import { Sound } from "shared/lib/entities/entitiesTypes";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { FormContainer } from "ui/form/FormLayout";
+import { FormContainer } from "ui/form/layout/FormLayout";
 import { Label } from "ui/form/Label";
 import { PlayIcon } from "ui/icons/Icons";
 import { useAppDispatch } from "store/hooks";

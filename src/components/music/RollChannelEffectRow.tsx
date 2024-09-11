@@ -13,10 +13,10 @@ interface RollChannelProps {
 }
 
 interface WrapperProps {
-  rows: number;
-  cols: number;
-  size: number;
-  active?: boolean;
+  $rows: number;
+  $cols: number;
+  $size: number;
+  $active?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -25,9 +25,9 @@ const Wrapper = styled.div<WrapperProps>`
   left: ${30 + 10 + 1}px;
 
   ${(props) => css`
-    top: ${props.size / 2}px;
-    width: ${props.cols * props.size}px;
-    height: ${props.size - 1}px;
+    top: ${props.$size / 2}px;
+    width: ${props.$cols * props.$size}px;
+    height: ${props.$size - 1}px;
 
     border-top: 1px solid #808080;
     border-bottom: 1px solid #808080;
@@ -46,28 +46,30 @@ const Wrapper = styled.div<WrapperProps>`
       ${props.theme.colors.tracker.rollCell.border} 2px,
       transparent 1px
     );
-  background-size: ${props.size}px ${props.size}px,
-    ${props.size}px ${props.size}px, ${props.size * 8}px ${props.size * 12}px;
+  background-size: ${props.$size}px ${props.$size}px,
+    ${props.$size}px ${props.$size}px, ${props.$size * 8}px ${
+    props.$size * 12
+  }px;
   }
 
   `}
 `;
 
 interface NoteProps {
-  size: number;
-  isSelected?: boolean;
+  $size: number;
+  $isSelected?: boolean;
 }
 
 const Note = styled.div<NoteProps>`
   position: absolute;
-  height: ${(props) => `${props.size - 1}px`};
+  height: ${(props) => `${props.$size - 1}px`};
   border: 1px solid black;
   text-align: center;
   line-height: 1.1em;
   pointer-events: none;
   box-shadow: ${(props) =>
-    props.isSelected ? `0 0 0px 2px ${props.theme.colors.highlight}` : ""};
-  z-index: ${(props) => (props.isSelected ? 1 : 0)};
+    props.$isSelected ? `0 0 0px 2px ${props.theme.colors.highlight}` : ""};
+  z-index: ${(props) => (props.$isSelected ? 1 : 0)};
   background-color: ${(props) => props.theme.colors.button.activeBackground};
 `;
 
@@ -151,9 +153,9 @@ export const RollChannelEffectRowFwd = ({
 
   return (
     <Wrapper
-      rows={12 * 6}
-      cols={64}
-      size={cellSize}
+      $rows={12 * 6}
+      $cols={64}
+      $size={cellSize}
       onMouseDown={(e) => {
         handleMouseDown(e.nativeEvent);
       }}
@@ -167,8 +169,8 @@ export const RollChannelEffectRowFwd = ({
               data-type="note"
               data-column={columnIdx}
               key={`fx_${columnIdx}_${channelId}`}
-              size={cellSize}
-              isSelected={isSelected}
+              $size={cellSize}
+              $isSelected={isSelected}
               style={{
                 left: `${columnIdx * cellSize}px`,
                 width: cellSize,

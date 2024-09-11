@@ -13,7 +13,7 @@ import {
   StopIcon,
   PlayStartIcon,
 } from "ui/icons/Icons";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import { Music } from "shared/lib/entities/entitiesTypes";
@@ -277,7 +277,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const themeContext = useContext(ThemeContext);
 
   const themePianoIcon =
-    themeContext.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
+    themeContext?.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
 
   return (
     <>

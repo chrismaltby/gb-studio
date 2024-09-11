@@ -5,7 +5,8 @@ import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
-import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
+import { StyledButton } from "ui/buttons/style";
 
 interface UnitsSelectButtonInputOverlayProps {
   parentValue?: string;
@@ -27,7 +28,7 @@ const UnitsWrapper = styled.div`
 `;
 
 interface HiddenValueProps {
-  offset: number;
+  $offset: number;
 }
 
 const HiddenValue = styled.div<HiddenValueProps>`
@@ -38,14 +39,14 @@ const HiddenValue = styled.div<HiddenValueProps>`
   padding-right: 5px;
   box-sizing: border-box;
   pointer-events: none;
-  margin-right: ${(props) => props.offset}px;
+  margin-right: ${(props) => props.$offset}px;
 `;
 
 const Units = styled.div`
   background: ${(props) => props.theme.colors.input.background};
   pointer-events: all;
 
-  ${Button} {
+  ${StyledButton} {
     opacity: 0.5;
     padding: 1px;
     min-width: 0;
@@ -91,7 +92,7 @@ export const UnitsSelectButtonInputOverlay = ({
   const currentValue = value && unitTypeButtonNames[value];
   return (
     <UnitsWrapper>
-      <HiddenValue offset={parentValueOffset}>{parentValue}</HiddenValue>
+      <HiddenValue $offset={parentValueOffset}>{parentValue}</HiddenValue>
       <Units>
         {allowedValues ? (
           <DropdownButton
@@ -101,10 +102,11 @@ export const UnitsSelectButtonInputOverlay = ({
             variant="transparent"
           >
             {allValues.map((item) => (
-              <MenuItem key={item} onClick={() => onChange?.(item)}>
-                <MenuItemIcon>
-                  {value === item ? <CheckIcon /> : <BlankIcon />}
-                </MenuItemIcon>
+              <MenuItem
+                key={item}
+                onClick={() => onChange?.(item)}
+                icon={value === item ? <CheckIcon /> : <BlankIcon />}
+              >
                 {unitTypeNames[item]}
               </MenuItem>
             ))}

@@ -18,7 +18,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
   ActorDirection,
@@ -26,7 +26,7 @@ import {
   SceneParallaxLayer,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   DropdownButton,
   InlineDropdownWrapper,
@@ -65,7 +65,7 @@ import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor"
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -276,7 +276,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSceneProp("notes", e.currentTarget.value),
     [onChangeSceneProp]
   );
@@ -758,24 +758,28 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                                 : "FIELD_MANUAL"
                             )}
                           >
-                            <MenuItem onClick={() => onChangeAutoColor(true)}>
-                              <MenuItemIcon>
-                                {background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(true)}
+                              icon={
+                                background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_AUTOMATIC")}
                             </MenuItem>
-                            <MenuItem onClick={() => onChangeAutoColor(false)}>
-                              <MenuItemIcon>
-                                {!background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(false)}
+                              icon={
+                                !background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_MANUAL")}
                             </MenuItem>
                           </DropdownButton>

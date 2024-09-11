@@ -19,6 +19,7 @@ import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { StyledButton } from "ui/buttons/style";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -29,14 +30,14 @@ interface AddButtonProps {
 }
 
 interface WrapperProps {
-  conditional?: boolean;
+  $conditional?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
   display: flex;
   padding: 10px;
 
-  ${Button} {
+  ${StyledButton} {
     width: 100%;
     max-width: 480px;
 
@@ -51,7 +52,7 @@ const Wrapper = styled.div<WrapperProps>`
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 
   ${(props) =>
-    props.conditional
+    props.$conditional
       ? css`
           border-top: 0;
 
@@ -67,7 +68,6 @@ const AddButton = ({
   parentType,
   parentId,
   parentKey,
-  nestLevel,
   conditional,
 }: AddButtonProps) => {
   const dispatch = useAppDispatch();
@@ -176,8 +176,6 @@ const AddButton = ({
     <ScriptEventWrapper
       ref={dropRef}
       data-handler-id={handlerId}
-      conditional={conditional ?? false}
-      nestLevel={nestLevel ?? 0}
       style={{
         background: "transparent",
         flexBasis: "100%",
@@ -197,7 +195,7 @@ const AddButton = ({
           </RelativePortal>
         </>
       )}
-      <Wrapper conditional={conditional ?? false}>
+      <Wrapper $conditional={conditional ?? false}>
         <Button onClick={pasteMode ? onPaste : onOpen}>
           {pasteMode ? <CloneIcon /> : <PlusIcon />}
           {pasteMode ? l10n("MENU_PASTE_EVENT") : l10n("SIDEBAR_ADD_EVENT")}

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Input } from "./Input";
+import { StyledInput as StyledInputDefault } from "./style";
 
 export interface CoordinateInputProps {
   coordinate: "x" | "y" | "w" | "h";
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(StyledInputDefault)`
   padding-left: 32px;
 `;
 

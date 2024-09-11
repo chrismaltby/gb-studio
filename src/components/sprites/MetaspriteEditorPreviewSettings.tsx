@@ -41,7 +41,7 @@ const Pill = styled.button`
   padding: 3px 10px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -52,7 +52,7 @@ const Info = styled.div`
   margin-left: -5px;
   border-radius: 16px;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -72,7 +72,7 @@ const MetaspriteEditorPreviewSettings = ({
   const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);

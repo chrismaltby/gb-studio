@@ -18,20 +18,38 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "21.6.2"
-          cache: "yarn"
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install Dependencies
         run: |
-          yarn --ignore-engines
+          yarn
+
+      - name: Create dist directory
+        run: |
+          mkdir ./dist
 
       - name: Generate Coverage
         run: |
           yarn coverage
 
+      - name: Move coverage into dist
+        run: |
+          mv ./coverage/lcov-report ./dist/coverage
+
+      - name: Generate Storybook
+        run: |
+          yarn build-storybook
+
+      - name: Move storybook into dist
+        run: |
+          mv ./storybook-static ./dist/storybook
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./coverage/lcov-report"
+          path: "./dist"
 
   deploy-coverage:
     runs-on: ubuntu-latest

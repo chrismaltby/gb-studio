@@ -20,10 +20,10 @@ const colorAnimation = keyframes`
   }
 `;
 
-const Wrapper = styled.span<{ animate: boolean }>`
+const Wrapper = styled.span<{ $animate: boolean }>`
   {
   ${(props) =>
-    props.animate
+    props.$animate
       ? css`
           background-image: linear-gradient(
             100deg,
@@ -51,7 +51,7 @@ export const ColorAnimationText: FC = (props) => {
     <Wrapper
       onClick={() => setAnimate(!animate)}
       onAnimationEnd={() => setAnimate(false)}
-      animate={animate}
+      $animate={animate}
     >
       {props.children}
     </Wrapper>

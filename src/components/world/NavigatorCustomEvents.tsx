@@ -7,7 +7,7 @@ import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   EntityNavigatorItem,
   buildEntityNavigatorItems,
@@ -113,23 +113,26 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   const renderContextMenu = useCallback(
     (item: EntityNavigatorItem<CustomEventNormalized>) => {
       return [
-        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-          <MenuItemIcon>
-            <BlankIcon />
-          </MenuItemIcon>
+        <MenuItem
+          key="rename"
+          onClick={() => setRenameId(item.id)}
+          icon={<BlankIcon />}
+        >
           {l10n("FIELD_RENAME")}
         </MenuItem>,
         <MenuDivider key="div-view-mode" />,
-        <MenuItem key="view-editor" onClick={() => setShowUses(false)}>
-          <MenuItemIcon>
-            {!showUses ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
+        <MenuItem
+          key="view-editor"
+          onClick={() => setShowUses(false)}
+          icon={!showUses ? <CheckIcon /> : <BlankIcon />}
+        >
           {l10n("MENU_EDIT_CUSTOM_EVENT")}
         </MenuItem>,
-        <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
-          <MenuItemIcon>
-            {showUses ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
+        <MenuItem
+          key="view-uses"
+          onClick={() => setShowUses(true)}
+          icon={showUses ? <CheckIcon /> : <BlankIcon />}
+        >
           {l10n("FIELD_VIEW_SCRIPT_USES")}
         </MenuItem>,
         <MenuDivider key="div-delete" />,
@@ -140,10 +143,8 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
               entitiesActions.removeCustomEvent({ customEventId: item.id })
             )
           }
+          icon={<BlankIcon />}
         >
-          <MenuItemIcon>
-            <BlankIcon />
-          </MenuItemIcon>
           {l10n("MENU_DELETE_CUSTOM_EVENT")}
         </MenuItem>,
       ];

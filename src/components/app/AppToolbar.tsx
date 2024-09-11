@@ -17,7 +17,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import buildGameActions, {
   BuildType,
 } from "store/features/buildGame/buildGameActions";
-import { Toolbar, ToolbarText } from "ui/toolbar/Toolbar";
+import { Toolbar, ToolbarTitle } from "ui/toolbar/Toolbar";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuAccelerator, MenuItem } from "ui/menu/Menu";
 import { ZoomButton } from "ui/buttons/ZoomButton";
@@ -249,7 +249,7 @@ const AppToolbar: FC = () => {
         />
       )}
       <FlexGrow />
-      {showTitle && <ToolbarText>{appTitle}</ToolbarText>}
+      {showTitle && <ToolbarTitle>{appTitle}</ToolbarTitle>}
       <FlexGrow />
       {showSearch && (
         <SearchInput

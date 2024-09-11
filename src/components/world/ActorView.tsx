@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
@@ -22,8 +22,8 @@ interface ActorViewProps {
 }
 
 interface WrapperProps {
-  selected?: boolean;
-  halfWidth: boolean;
+  $selected?: boolean;
+  $halfWidth: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -34,7 +34,7 @@ const Wrapper = styled.div<WrapperProps>`
   -webkit-transform: translate3d(0, 0, 0);
 
   ${(props) =>
-    props.halfWidth
+    props.$halfWidth
       ? css`
           width: 8px;
         `
@@ -43,7 +43,7 @@ const Wrapper = styled.div<WrapperProps>`
         `}
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           background-color: rgba(247, 45, 220, 0.8);
           outline: 1px solid rgba(140, 0, 177, 1);
@@ -172,8 +172,8 @@ const ActorView = memo(
       <>
         {selected && actor.isPinned && <PinScreenPreview />}
         <Wrapper
-          selected={selected}
-          halfWidth={sprite?.canvasWidth === 8}
+          $selected={selected}
+          $halfWidth={sprite?.canvasWidth === 8}
           onMouseDown={onMouseDown}
           onContextMenu={onContextMenu}
           style={{

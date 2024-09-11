@@ -57,7 +57,7 @@ import { Brush } from "store/features/editor/editorState";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import styled, { css } from "styled-components";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
@@ -80,6 +80,7 @@ import {
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
+import { StyledButton } from "ui/buttons/style";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -115,20 +116,20 @@ function useHiglightPalette() {
 }
 
 interface BrushToolbarWrapperProps {
-  visible: boolean;
+  $visible: boolean;
 }
 
 const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
   position: absolute;
   left: 56px;
-  top: ${(props) => (props.visible ? "10px" : "-45px")};
+  top: ${(props) => (props.$visible ? "10px" : "-45px")};
   transition: top 0.2s ease-in-out;
   z-index: 10;
   flex-wrap: wrap;
   margin-right: 20px;
 
   ${(props) =>
-    !props.visible
+    !props.$visible
       ? css`
           flex-wrap: nowrap;
         `
@@ -143,7 +144,7 @@ const PaletteModal = styled.div`
   background: ${(props) => props.theme.colors.menu.background};
   z-index: 1001;
   min-width: 200px;
-  ${Button} {
+  ${StyledButton} {
     margin-top: 5px;
   }
 `;
@@ -255,49 +256,49 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         key: "spare_08",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
         flag: 0x80,
-        icon: <BrushToolbarExtraTileIcon value="8" />,
+        icon: <BrushToolbarExtraTileIcon $value="8" />,
       },
       {
         key: "spare_09",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
         flag: 0x90,
-        icon: <BrushToolbarExtraTileIcon value="9" />,
+        icon: <BrushToolbarExtraTileIcon $value="9" />,
       },
       {
         key: "spare_10",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
         flag: 0xa0,
-        icon: <BrushToolbarExtraTileIcon value="10" />,
+        icon: <BrushToolbarExtraTileIcon $value="10" />,
       },
       {
         key: "spare_11",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
         flag: 0xb0,
-        icon: <BrushToolbarExtraTileIcon value="11" />,
+        icon: <BrushToolbarExtraTileIcon $value="11" />,
       },
       {
         key: "spare_12",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
         flag: 0xc0,
-        icon: <BrushToolbarExtraTileIcon value="12" />,
+        icon: <BrushToolbarExtraTileIcon $value="12" />,
       },
       {
         key: "spare_13",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
         flag: 0xd0,
-        icon: <BrushToolbarExtraTileIcon value="13" />,
+        icon: <BrushToolbarExtraTileIcon $value="13" />,
       },
       {
         key: "spare_14",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
         flag: 0xe0,
-        icon: <BrushToolbarExtraTileIcon value="14" />,
+        icon: <BrushToolbarExtraTileIcon $value="14" />,
       },
       {
         key: "spare_15",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
         flag: 0xf0,
-        icon: <BrushToolbarExtraTileIcon value="15" />,
+        icon: <BrushToolbarExtraTileIcon $value="15" />,
       },
     ],
     []
@@ -403,7 +404,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       setModalColorIndex(-1);
     }
   }, [selectedTool]);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const startReplacePalette = (paletteIndex: number) => () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -515,7 +516,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   return (
     <>
-      <BrushToolbarWrapper visible={visible}>
+      <BrushToolbarWrapper $visible={visible}>
         <Button
           variant="transparent"
           onClick={() => setBrush(BRUSH_8PX)}
@@ -570,7 +571,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               active={paletteIndex === selectedPalette}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
-              })} (${paletteIndex + 1}) - ${paletteName(palettes[paletteIndex], -1)}`}
+              })} (${paletteIndex + 1}) - ${paletteName(
+                palettes[paletteIndex],
+                -1
+              )}`}
             >
               <PaletteBlock
                 colors={palettes[paletteIndex]?.colors ?? []}

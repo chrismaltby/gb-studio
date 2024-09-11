@@ -36,11 +36,11 @@ interface MetaspriteEditorProps {
 }
 
 export interface MetaspriteDraggableTileProps {
-  selected?: boolean;
+  $selected?: boolean;
 }
 
 interface ScrollWrapperProps {
-  hidden?: boolean;
+  $hidden?: boolean;
 }
 
 type BlurableDOMElement = {
@@ -57,7 +57,7 @@ const ScrollWrapper = styled.div<ScrollWrapperProps>`
   bottom: 0;
 
   ${(props) =>
-    props.hidden
+    props.$hidden
       ? css`
           display: none;
         `
@@ -90,7 +90,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   width: 8px;
   height: 16px;
 
-  :hover::after {
+  &:hover:after {
     content: "";
     position: absolute;
     top: 0;
@@ -102,9 +102,9 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   }
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
-          &&::after {
+          &&:after {
             content: "";
             position: absolute;
             top: 0;
@@ -820,7 +820,7 @@ const MetaspriteEditor = ({
                   top: -metaspriteTile.y - 16,
                   pointerEvents: newTiles ? "none" : "auto",
                 }}
-                selected={selectedTileIds.includes(metaspriteTile.id)}
+                $selected={selectedTileIds.includes(metaspriteTile.id)}
                 onMouseDown={onDragStart(metaspriteTile.id)}
                 onContextMenu={onContextMenu}
               >

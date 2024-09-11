@@ -14,8 +14,8 @@ import styled, { css } from "styled-components";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 
 interface CardWrapperProps {
-  selected: boolean;
-  isDragging?: boolean;
+  $selected: boolean;
+  $isDragging?: boolean;
 }
 
 const ItemType = "frame";
@@ -33,13 +33,13 @@ export const CardWrapper = styled.div<CardWrapperProps>`
   position: relative;
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
         `
       : ""}
   ${(props) =>
-    props.isDragging
+    props.$isDragging
       ? css`
           opacity: 0;
         `
@@ -159,7 +159,7 @@ class Card extends React.Component<CardProps> {
       connectDragSource(
         connectDropTarget(
           <div onClick={() => onSelect(id)}>
-            <CardWrapper selected={selected} isDragging={isDragging}>
+            <CardWrapper $selected={selected} $isDragging={isDragging}>
               <MetaspriteCanvas
                 metaspriteId={id}
                 spriteSheetId={spriteSheetId}

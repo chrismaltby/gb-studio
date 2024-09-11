@@ -90,7 +90,7 @@ interface ConnectionMarkerProps {
 type ConnectionMarkerType = "destination" | "player-start";
 
 interface ConnectionMarkerSVGProps {
-  type: ConnectionMarkerType;
+  $type: ConnectionMarkerType;
 }
 
 type DestinationMarkerProps = {
@@ -306,7 +306,7 @@ const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
   pointer-events: all;
 
   ${(props) =>
-    props.type === "player-start"
+    props.$type === "player-start"
       ? css`
           rect {
             fill: rgb(255, 87, 34);
@@ -320,7 +320,7 @@ const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
       : ""}
 
   ${(props) =>
-    props.type === "destination"
+    props.$type === "destination"
       ? css`
           rect {
             fill: rgb(0, 188, 212);
@@ -342,7 +342,7 @@ const ConnectionMarker = ({
   type,
 }: ConnectionMarkerProps) => {
   return (
-    <ConnectionMarkerSVG type={type} onMouseDown={onMouseDown}>
+    <ConnectionMarkerSVG $type={type} onMouseDown={onMouseDown}>
       <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon

@@ -58,10 +58,8 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
           onClick={() => {
             onChange?.(movementType);
           }}
+          icon={value === movementType ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value === movementType ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           <FlexGrow>{movementTypeNamesLookup[movementType]}</FlexGrow>
           <MenuSpacer />
           <MenuItemIcon>{movementTypeIconsLookup[movementType]}</MenuItemIcon>

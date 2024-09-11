@@ -56,13 +56,13 @@ const StateRenameButton = styled.button`
     opacity: 1;
   }
 
-  :focus {
+  &:focus {
     opacity: 1;
   }
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
 
@@ -91,10 +91,10 @@ const StateRenameCompleteButton = styled.button`
   background: transparent;
   border-color: transparent;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
   svg {
@@ -186,8 +186,6 @@ const AnimationStateSelect = ({
     });
   }, [allowDefault, value]);
 
-  const Select = canRename ? CreatableSelect : DefaultSelect;
-
   return (
     <Wrapper>
       {renameVisible ? (
@@ -200,8 +198,17 @@ const AnimationStateSelect = ({
           onBlur={onRenameFinish}
           autoFocus
         />
+      ) : canRename ? (
+        <CreatableSelect
+          name={name}
+          value={currentValue}
+          onChange={(e: Option) => {
+            onChange?.(e.value);
+          }}
+          options={options}
+        />
       ) : (
-        <Select
+        <DefaultSelect
           name={name}
           value={currentValue}
           onChange={(e: Option) => {

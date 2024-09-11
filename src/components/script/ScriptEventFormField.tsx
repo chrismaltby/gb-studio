@@ -6,19 +6,18 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
+import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
 import {
   FormField,
   FormFieldProps,
   ToggleableFormField,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
-  ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
-import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
+import { FlexBreak } from "ui/spacing/Spacing";
 import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
@@ -75,7 +74,7 @@ const MultiInputButton = styled.button`
     height: 8px;
   }
 
-  :hover {
+  &:hover {
     opacity: 1;
   }
 
@@ -96,11 +95,11 @@ const InputRow = styled.div`
   position: relative;
   margin-bottom: 3px;
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 
-  :hover ${MultiInputButton} {
+  &:hover ${MultiInputButton} {
     opacity: 1;
   }
 `;
@@ -342,16 +341,11 @@ const ScriptEventFormField = memo(
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
-          conditional={true}
-          onClick={() => onChange(!value)}
+          onToggle={() => onChange(!value)}
           nestLevel={nestLevel}
           altBg={altBg}
-          open={!value}
+          isOpen={!value}
         >
-          <ScriptEventHeaderCaret open={!value}>
-            <ArrowIcon />
-          </ScriptEventHeaderCaret>
-          <FixedSpacer width={5} />
           {label || ""}
         </ScriptEventBranchHeader>
       );
@@ -428,11 +422,9 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{
-            flexBasis: field.flexBasis,
-            flexGrow: field.flexGrow,
-            minWidth: field.minWidth,
-          }}
+          flexBasis={field.flexBasis}
+          flexGrow={field.flexGrow}
+          minWidth={field.minWidth}
         >
           <ToggleableFormField
             name={genKey(scriptEvent.id, field.key || "")}
@@ -450,13 +442,11 @@ const ScriptEventFormField = memo(
     return (
       <ScriptEventField
         halfWidth={field.width === "50%"}
-        inline={field.inline}
         alignBottom={field.alignBottom || field.type === "checkbox"}
-        style={{
-          flexBasis: field.flexBasis,
-          flexGrow: field.flexGrow,
-          minWidth: field.minWidth,
-        }}
+        inline={field.inline}
+        flexBasis={field.flexBasis}
+        flexGrow={field.flexGrow}
+        minWidth={field.minWidth}
       >
         <FormField
           name={genKey(scriptEvent.id, field.key || "")}

@@ -31,11 +31,7 @@ interface DebuggerScriptPaneProps {
   collapsible?: boolean;
 }
 
-interface TabWrapperProps {
-  collapsible?: boolean;
-}
-
-const TabWrapper = styled.div<TabWrapperProps>`
+const TabWrapper = styled.div`
   height: 32px;
   border-left: 1px solid ${(props) => props.theme.colors.input.border};
   overflow: hidden;
@@ -91,7 +87,7 @@ const ScriptPath = styled.div`
 `;
 
 interface ScrollWrapperProps {
-  scrollable?: boolean;
+  $scrollable?: boolean;
 }
 
 const ScrollWrapper = styled.div<ScrollWrapperProps>`
@@ -100,7 +96,7 @@ const ScrollWrapper = styled.div<ScrollWrapperProps>`
   flex-grow: 1;
 
   ${(props) =>
-    props.scrollable
+    props.$scrollable
       ? css`
           overflow: auto;
           max-height: 100%;
@@ -337,7 +333,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
             </ScriptPath>
           )}
           <ScriptWrapper>
-            <ScrollWrapper scrollable={!collapsible}>
+            <ScrollWrapper $scrollable={!collapsible}>
               {viewScriptType === "editor" && scriptCtx ? (
                 <ScriptEditorContext.Provider value={scriptCtx}>
                   <ScriptEditor

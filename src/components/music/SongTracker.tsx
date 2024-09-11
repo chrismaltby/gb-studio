@@ -875,7 +875,7 @@ export const SongTracker = ({
               playbackState[0] === sequenceId && playbackState[1] === i;
             const isSelected = selectedTrackerRows?.indexOf(i) !== -1;
             return (
-              <span ref={isPlaying ? playingRowRef : null}>
+              <span ref={isPlaying ? playingRowRef : null} key={`__${i}`}>
                 <SongRow
                   id={`__${i}`}
                   n={i}

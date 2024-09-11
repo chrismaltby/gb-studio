@@ -56,10 +56,8 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
           onClick={() => {
             onChange?.(priority);
           }}
+          icon={value === priority ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value === priority ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           <FlexGrow>{priorityNamesLookup[priority]}</FlexGrow>
           <MenuSpacer />
           <MenuItemIcon>{priorityIconsLookup[priority]}</MenuItemIcon>

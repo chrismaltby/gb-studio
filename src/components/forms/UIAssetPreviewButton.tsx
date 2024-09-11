@@ -18,7 +18,7 @@ const UIAssetPreviewButton = styled.button`
   display: block;
   padding: 0;
 
-  :hover:after {
+  &:hover:after {
     content: "";
     display: block;
     width: 128px;

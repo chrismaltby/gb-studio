@@ -32,7 +32,7 @@ const AppContent = styled.div`
 const App = () => {
   const dispatch = useAppDispatch();
   const [draggingOver, setDraggingOver] = useState(false);
-  const dragLeaveTimer = useRef<number>();
+  const dragLeaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const section = useAppSelector((state) => state.navigation.section);
   const error = useAppSelector((state) => state.error);
   const loaded = useAppSelector((state) => state.document.loaded);
@@ -47,7 +47,9 @@ const App = () => {
 
       e.preventDefault();
       e.stopPropagation();
-      clearTimeout(dragLeaveTimer.current);
+      if (dragLeaveTimer.current) {
+        clearTimeout(dragLeaveTimer.current);
+      }
       if (!draggingOver) {
         setDraggingOver(true);
       }
@@ -58,7 +60,9 @@ const App = () => {
   const onDragLeave = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    clearTimeout(dragLeaveTimer.current);
+    if (dragLeaveTimer.current) {
+      clearTimeout(dragLeaveTimer.current);
+    }
     dragLeaveTimer.current = setTimeout(() => {
       setDraggingOver(false);
     }, 100);

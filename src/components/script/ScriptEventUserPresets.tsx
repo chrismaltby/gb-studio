@@ -7,7 +7,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Button } from "ui/buttons/Button";
 import { Select } from "ui/form/Select";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { TextField } from "ui/form/TextField";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";

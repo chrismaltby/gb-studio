@@ -20,8 +20,8 @@ interface SequenceEditorProps {
 }
 
 interface SequenceItemProps {
-  active: boolean;
-  selected: boolean;
+  $active: boolean;
+  $selected: boolean;
 }
 
 const Wrapper = styled.div`
@@ -41,7 +41,7 @@ const SequenceItem = styled.div<SequenceItemProps>`
   min-width: 50px;
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
         `
@@ -58,7 +58,7 @@ const AddSequenceButton = styled.button`
   svg {
     fill: ${(props) => props.theme.colors.button.text};
   }
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.button.nestedActiveBackground};
   }
 `;
@@ -201,8 +201,8 @@ export const SequenceEditorFwd = ({
           <SequenceItem
             key={i}
             onClick={() => setSequenceId(i)}
-            selected={i === sequenceId}
-            active={playingSequence === i}
+            $selected={i === sequenceId}
+            $active={playingSequence === i}
           >
             <div style={{ padding: "0 0 2px 2px" }}>{i + 1}:</div>
             <Select

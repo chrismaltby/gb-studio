@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="GB Studio Storybook" />
+
+# GB Studio Storybook
+
+Component library for UI of [GB Studio](https://www.gbstudio.dev/) with the following aims:
+
+- Simplify the front end code.
+- Improve keyboard accessibility.
+- Separate Redux store from pure view components.
+- Improve UI consistency.
+- Improve UI documentation.
+
+Components are built using [Styled Components](https://styled-components.com/) with light mode and dark mode supplied as themes.
+
+## UI
+
+Components in the UI section come from `components/ui`. These components should follow these rules:
+
+- Should have no access to Redux store.
+- Should not hard code text or use localised content.
+- Should not include any files outside of `components/ui`.
+- Should localise use of styled-components to be within `style.ts` files.
+- The `style.ts` files are not intended to be used outside of `components/ui` so you should provide wrapper components where needed.
+- Don't expose [transient props](https://styled-components.com/docs/api#transient-props) in wrapper components.  
+  ```
+  // e.g. wrapper <Label /> converts `gold` to the tranient prop `$gold`
+  const Label = ({gold, children}) => <StyledLabel $gold={gold} children={children} />
+  ```
+
+## App
+
+Components in App section can access the Redux store. Components will need to
+be provided with a mock store containing the data and actions required.

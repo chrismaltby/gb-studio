@@ -1,56 +1,19 @@
-import styled, { css } from "styled-components";
+import React, { ReactNode } from "react";
+import StyledAlert, { StyledAlertItem } from "ui/alerts/style";
 
 interface AlertProps {
   variant: "warning" | "info";
+  children?: ReactNode;
 }
 
-export const AlertItem = styled.div`
-  padding: 5px 0px;
-`;
+interface AlertItemProps {
+  children?: ReactNode;
+}
 
-const Alert = styled.div<AlertProps>`
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 12px;
+export const AlertItem = ({ children }: AlertItemProps) => (
+  <StyledAlertItem children={children} />
+);
 
-  ${AlertItem}:first-child,
-  > p:first-child {
-    padding-top: 0;
-    margin-top: 0;
-  }
-
-  ${AlertItem}:last-child,
-  > p:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
-    margin-bottom: 0;
-  }
-
-  ${(props) =>
-    props.variant === "warning"
-      ? css`
-          background-color: #ffc107;
-          color: #000;
-
-          ${AlertItem} {
-            border-bottom: 1px solid #ffa000;
-            padding: 5px 0px;
-          }
-        `
-      : ""}
-
-  ${(props) =>
-    props.variant === "info"
-      ? css`
-          background-color: #03a9f4;
-          color: #000;
-
-          ${AlertItem} {
-            border-bottom: 1px solid #0088c7;
-            padding: 5px 0px;
-          }
-        `
-      : ""}
-`;
-
-export default Alert;
+export const Alert = ({ children, variant }: AlertProps) => (
+  <StyledAlert $variant={variant} children={children} />
+);

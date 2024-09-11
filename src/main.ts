@@ -267,7 +267,7 @@ export const createProjectWindow = async () => {
       contextIsolation: true,
       nodeIntegration: false,
       nodeIntegrationInWorker: false,
-      webSecurity: process.env.NODE_ENV !== "development",
+      webSecurity: true,
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -555,7 +555,7 @@ export const createPlay = async (
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
-        webSecurity: process.env.NODE_ENV !== "development",
+        webSecurity: true,
         preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
@@ -594,7 +594,7 @@ export const createMusic = async (
         contextIsolation: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
-        webSecurity: process.env.NODE_ENV !== "development",
+        webSecurity: true,
         devTools: isDevMode,
         preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },

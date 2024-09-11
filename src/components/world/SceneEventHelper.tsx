@@ -45,14 +45,14 @@ const ScreenMarker = styled.div`
 `;
 
 interface PosMarkerProps {
-  tileWidth: number;
-  tileHeight: number;
+  $tileWidth: number;
+  $tileHeight: number;
 }
 
 const PosMarker = styled.div<PosMarkerProps>`
   position: absolute;
-  width: ${(props) => props.tileWidth * 8}px;
-  height: ${(props) => props.tileHeight * 8}px;
+  width: ${(props) => props.$tileWidth * 8}px;
+  height: ${(props) => props.$tileHeight * 8}px;
   outline: 3px solid red;
   box-shadow: 0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
@@ -102,7 +102,7 @@ const ScanlinePos = styled.div`
   height: 144px;
   maxheight: 144px;
   background: #e0f8cf;
-  ::before {
+  &:before {
     content: "";
     position: absolute;
     left: 0;
@@ -113,7 +113,7 @@ const ScanlinePos = styled.div`
     box-shadow: 0px 0px 2px rgba(148, 239, 218, 0.9),
       0px 0px 10px rgba(0, 249, 106, 0.8);
   }
-  ::after {
+  &:after {
     content: "";
     position: absolute;
     left: 100%;
@@ -267,8 +267,8 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     return (
       <EventHelperWrapper>
         <PosMarker
-          tileWidth={tileWidth}
-          tileHeight={tileHeight}
+          $tileWidth={tileWidth}
+          $tileHeight={tileHeight}
           style={{
             left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),

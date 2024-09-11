@@ -1,30 +1,22 @@
 import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import l10n from "shared/lib/lang/l10n";
-import styled, { css, keyframes } from "styled-components";
+import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import projectIcon from "ui/icons/gbsproj.png";
 import { CloseIcon } from "ui/icons/Icons";
+import { StyledSplashTab, StyledSplashWindow } from "ui/splash/style";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
 
-export interface SplashWrapperProps {
+export interface SplashWindowProps {
   focus: boolean;
+  children: React.ReactNode;
 }
 
-export const SplashWrapper = styled.div<SplashWrapperProps>`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  height: 100%;
-  ${(props) =>
-    props.focus === false
-      ? css`
-          opacity: 0.75;
-          -webkit-filter: grayscale(100%);
-        `
-      : ""}
-`;
+export const SplashWindow = ({ focus, children }: SplashWindowProps) => {
+  return <StyledSplashWindow $focus={focus} children={children} />;
+};
 
 export const SplashSidebar = styled.div`
   display: flex;
@@ -68,7 +60,7 @@ export const SplashLogo = styled.div`
     width: 100%;
   }
 
-  :hover {
+  &:hover {
     transform: scale(1.05);
   }
 `;
@@ -85,7 +77,7 @@ export const SplashEasterEggButton = styled.button`
   -webkit-app-region: no-drag;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     background: radial-gradient(
       circle,
       rgba(251, 63, 139, 0.2) 0%,
@@ -93,7 +85,7 @@ export const SplashEasterEggButton = styled.button`
     );
   }
 
-  :active {
+  &:active {
     background: radial-gradient(
       circle,
       rgba(251, 63, 139, 0.6) 0%,
@@ -128,43 +120,13 @@ export const SplashAppTitle = () => {
   );
 };
 
-interface SplashTabProps {
+interface SplashTabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
-export const SplashTab = styled.button<SplashTabProps>`
-  font-size: 13px;
-  padding: 8px 20px;
-  text-align: left;
-  color: ${(props) => props.theme.colors.text};
-  background: transparent;
-  border: 0;
-  -webkit-app-region: no-drag;
-
-  :hover {
-    background: rgba(128, 128, 128, 0.3);
-  }
-
-  :active {
-    background: rgba(128, 128, 128, 0.4);
-  }
-
-  ${(props) => (props.selected ? SplashTabSelectedStyles : "")}
-`;
-
-const SplashTabSelectedStyles = css`
-  background: ${(props) => props.theme.colors.highlight};
-  color: #fff;
-
-  :hover {
-    background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
-  }
-  :active {
-    background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
-  }
-`;
+export const SplashTab = ({ selected, ...props }: SplashTabProps) => (
+  <StyledSplashTab $selected={selected} {...props} />
+);
 
 export const SplashOpenButton = styled(Button).attrs(() => ({
   variant: "transparent",
@@ -220,7 +182,7 @@ export const SplashTemplateButton = styled.input.attrs({
   padding: 0;
   border-radius: ${(props) => props.theme.borderRadius}px;
   -webkit-appearance: none;
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
 `;
@@ -334,274 +296,6 @@ export const SplashCreateButton = styled.div`
   padding: 0px 10px;
 `;
 
-const SplashCreditsFadeAnimation = keyframes`
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-`;
-
-export const SplashCredits = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: none;
-  animation: ${SplashCreditsFadeAnimation} 1s linear;
-  animation-fill-mode: forwards;
-  -webkit-app-region: drag;
-`;
-
-export const SplashCreditsBackground = () => {
-  const ref = useRef<HTMLCanvasElement>(null);
-
-  useLayoutEffect(() => {
-    if (ref.current) {
-      const c = ref.current;
-      const ctx = c.getContext("2d");
-      let time = 0;
-
-      const render = () => {
-        const width = 640;
-        const height = 430;
-        if (ref.current && ctx) {
-          // Create gradient
-          const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-          bgGrad.addColorStop(0, "#221e6a");
-          bgGrad.addColorStop(0.25, "#bb205a");
-          bgGrad.addColorStop(0.5, "#ce1e32");
-          bgGrad.addColorStop(0.75, "#bb205a");
-          bgGrad.addColorStop(1, "#221e6a");
-
-          // Fill with gradient
-          ctx.fillStyle = bgGrad;
-          ctx.fillRect(0, 0, width, height);
-
-          const lineGrad = ctx.createLinearGradient(0, 0, 0, height);
-          lineGrad.addColorStop(0, "#e79c58");
-          lineGrad.addColorStop(0.25, "#e5731b");
-          lineGrad.addColorStop(0.4, "#ce1e32");
-          lineGrad.addColorStop(0.5, "#ce1e32");
-          lineGrad.addColorStop(0.6, "#ce1e32");
-          lineGrad.addColorStop(0.75, "#e5731b");
-          lineGrad.addColorStop(1, "#e79c58");
-
-          ctx.strokeStyle = lineGrad;
-          ctx.lineWidth = 2;
-
-          for (let i = -8; i < 16; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i * 80, 0);
-            ctx.lineTo(width * 0.5, height * 0.5);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(i * 80, height);
-            ctx.lineTo(width * 0.5, height * 0.5);
-            ctx.stroke();
-          }
-
-          for (let i = 0; i < 15; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, height * 0.5 - (height * 0.5) / (-time + i * 0.5));
-            ctx.lineTo(
-              width,
-              height * 0.5 - (height * 0.5) / (-time + i * 0.5)
-            );
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(0, height * 0.5 + (height * 0.5) / (-time + i * 0.5));
-            ctx.lineTo(
-              width,
-              height * 0.5 + (height * 0.5) / (-time + i * 0.5)
-            );
-            ctx.stroke();
-          }
-
-          if (time > 0.5) {
-            time = 0;
-          }
-
-          time += 0.005;
-
-          requestAnimationFrame(render);
-        }
-      };
-
-      render();
-    }
-  }, [ref]);
-
-  return <canvas ref={ref} width={640} height={430}></canvas>;
-};
-
-const SplashCreditsAnimation = keyframes`
-  from {
-    transform: translateY(0px);
-  }
-
-  to {
-    transform: translateY(-200%);
-  }
-`;
-
-export const SplashCreditsCloseButton = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  & > * {
-    height: 100%;
-  }
-
-  ${Button} {
-    padding: 0 5px;
-    margin: 0;
-  }
-
-  ${Button} svg {
-    fill: #fff;
-    width: 16px;
-    max-width: none;
-  }
-`;
-
-export const SplashCreditsTitle = styled.div`
-  display: block;
-  color: #fff;
-  font-size: 40px;
-  font-weight: bold;
-  text-decoration: none;
-  margin-bottom: 80px;
-`;
-
-export const SplashCreditsSubHeading = styled.div`
-  display: block;
-  color: #fff;
-  font-size: 30px;
-  font-weight: bold;
-  text-decoration: none;
-  margin-top: 80px;
-  margin-bottom: 60px;
-`;
-
-export const SplashCreditsGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-
-  & > * {
-    width: 30%;
-  }
-`;
-
-export const SplashCreditsContributorWrapper = styled.div`
-  display: block;
-  color: #fff;
-  font-size: 20px;
-  text-decoration: none;
-  margin-bottom: 30px;
-
-  ${(props) =>
-    props.onClick
-      ? css`
-          > span:hover {
-            color: #ffff00;
-            cursor: pointer;
-          }
-        `
-      : ""}
-`;
-
-interface SplashCreditsPatronWrapperProps {
-  gold?: boolean;
-}
-
-const SplashCreditsGoldPatronAnimation = keyframes`
-  0%   {background-position: 0px 0px}
-  40%  {background-position: 0px 0px}
-  60%  {background-position: 200px 0px}
-  100% {background-position: 200px 0px}
-`;
-
-export const SplashCreditsPatronWrapper = styled.div<SplashCreditsPatronWrapperProps>`
-  display: block;
-  color: #fff;
-  font-size: 20px;
-  text-decoration: none;
-  margin-bottom: 30px;
-
-  ${(props) =>
-    props.gold
-      ? css`
-          font-weight: bold;
-          background: linear-gradient(
-            to right,
-            #ffc107 0px,
-            #fff 2px,
-            #fff 6px,
-            #ffeb3b 8px,
-            #ffd08b 200px
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          filter: drop-shadow(0px 1px 1px #333);
-          animation: ${SplashCreditsGoldPatronAnimation} 2s linear infinite;
-        `
-      : ""}
-`;
-
-export const SplashCreditsContent = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  animation: ${SplashCreditsAnimation} 60s linear infinite;
-
-  &:has(${SplashCreditsContributorWrapper} > span:hover),
-  &:has(${SplashCreditsPatronWrapper} > span:hover) {
-    animation-play-state: paused;
-  }
-`;
-
-export interface SplashCreditsContributorProps {
-  contributor: {
-    login: string;
-  };
-  onClick?: () => void;
-}
-
-export const SplashCreditsContributor: FC<SplashCreditsContributorProps> = ({
-  contributor,
-  onClick,
-}) => (
-  <SplashCreditsContributorWrapper onClick={onClick}>
-    <span>{contributor.login}</span>
-  </SplashCreditsContributorWrapper>
-);
-
-export interface SplashCreditsPatronProps {
-  name: string;
-  gold?: boolean;
-}
-
-export const SplashCreditsPatron: FC<SplashCreditsPatronProps> = ({
-  name,
-  gold,
-}) => (
-  <SplashCreditsPatronWrapper gold={gold}>
-    <span>{name}</span>
-  </SplashCreditsPatronWrapper>
-);
-
 export const SplashScroll = styled.div`
   width: 100%;
   height: 100%;
@@ -669,7 +363,7 @@ export const SplashProjectRemoveButton = styled.div`
     max-height: 10px;
   }
 
-  :hover {
+  &:hover {
     cursor: pointer;
     svg {
       fill: ${(props) => props.theme.colors.highlight};
@@ -698,23 +392,23 @@ export const SplashProjectWrapper = styled.button`
     opacity: 0;
   }
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
     ${SplashProjectRemoveButton} {
       opacity: 1;
     }
   }
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
-  :focus {
+  &:focus {
     background: transparent;
     box-shadow: inset 0 0 0px 2px #c92c61;
   }
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 `;

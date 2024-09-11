@@ -1,11 +1,12 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { MenuItem } from "ui/menu/Menu";
+import { StyledMenuItem } from "ui/menu/style";
 
 export interface CheckboxProps {
   readonly id: string;
   readonly name: string;
   readonly checked?: boolean;
+  readonly readOnly?: boolean;
   readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -38,7 +39,7 @@ const StyledCheckbox = styled.div`
     transition: box-shadow 0.2s cubic-bezier(0.175, 0.885, 0.71, 2.65);
   }
 
-  ${MenuItem} & {
+  ${StyledMenuItem} & {
     width: 14px;
     height: 14px;
   }
@@ -49,7 +50,7 @@ const CheckboxContainer = styled.div`
   display: inline-block;
   top: 1px;
 
-  ${MenuItem} > & {
+  ${StyledMenuItem} > & {
     margin-left: -5px;
     margin-right: 5px;
     margin-bottom: -2px;

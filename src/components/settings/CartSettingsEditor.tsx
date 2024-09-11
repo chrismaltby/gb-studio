@@ -9,7 +9,7 @@ import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { CartType } from "store/features/settings/settingsState";
 import { Checkbox } from "ui/form/Checkbox";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import Alert from "ui/alerts/Alert";
+import { Alert } from "ui/alerts/Alert";
 
 export interface CartSettingsEditorProps {
   searchTerm?: string;
@@ -98,11 +98,13 @@ const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
             onChange={onToggleBatteryless}
           />
           {batterylessEnabled && (
-            <Alert variant="warning" style={{ marginTop: 3 }}>
-              <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_1")}</p>
-              <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_2")}</p>
-              <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_3")}</p>
-            </Alert>
+            <div style={{ marginTop: 3 }}>
+              <Alert variant="warning">
+                <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_1")}</p>
+                <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_2")}</p>
+                <p>{l10n("FIELD_CART_BATTERYLESS_MORE_INFO_3")}</p>
+              </Alert>
+            </div>
           )}
         </SettingRowInput>
       </SearchableSettingRow>

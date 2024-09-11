@@ -9,6 +9,7 @@ import { PillButton } from "ui/buttons/PillButton";
 import { CaretDownIcon } from "ui/icons/Icons";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import { TriggerPrefabSelect } from "./TriggerPrefabSelect";
+import { StyledPillButton } from "ui/buttons/style";
 
 interface TriggerPrefabSelectButtonProps {
   name: string;
@@ -24,7 +25,7 @@ const Wrapper = styled.div`
     min-width: 0;
   }
 
-  ${PillButton} {
+  ${StyledPillButton} {
     display: flex;
     align-items: center;
     span {
@@ -53,7 +54,7 @@ export const TriggerPrefabSelectButton: FC<TriggerPrefabSelectButtonProps> = ({
   onChange,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const prefab = useAppSelector((state) =>
     triggerPrefabSelectors.selectById(state, value || "")
   );

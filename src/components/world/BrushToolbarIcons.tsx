@@ -12,9 +12,7 @@ export const brushToolbarCollisionTileStyles = css`
 }`;
 
 export const BrushToolbarTileSolidIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     background-color: rgb(250, 40, 40);
@@ -22,12 +20,11 @@ export const BrushToolbarTileSolidIcon = styled.div`
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.3);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileTopIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     background-color: rgb(40, 40, 255);
@@ -36,12 +33,11 @@ export const BrushToolbarTileTopIcon = styled.div`
     border-top-right-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.3);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileBottomIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     background-color: rgb(255, 255, 40);
@@ -51,12 +47,11 @@ export const BrushToolbarTileBottomIcon = styled.div`
     margin-top: 10px;
     border: 1px solid rgba(0, 0, 0, 0.3);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileLeftIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     background-color: rgb(255, 40, 255);
@@ -66,15 +61,15 @@ export const BrushToolbarTileLeftIcon = styled.div`
     border-bottom-left-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.3);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileRightIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     background-color: rgb(40, 255, 255);
+    background-color: orange;
     width: 10px;
     height: 20px;
     border-top-right-radius: 4px;
@@ -82,12 +77,11 @@ export const BrushToolbarTileRightIcon = styled.div`
     margin-left: 10px;
     border: 1px solid rgba(0, 0, 0, 0.3);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarLadderTileIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     display: block;
     width: 10px;
@@ -97,8 +91,7 @@ export const BrushToolbarLadderTileIcon = styled.div`
     border-left: 4px solid green;
     border-right: 4px solid green;
   }
-
-  ::after {
+  &:after {
     position: absolute;
     content: "";
     display: block;
@@ -109,12 +102,11 @@ export const BrushToolbarLadderTileIcon = styled.div`
     border-top: 4px solid green;
     border-bottom: 4px solid green;
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope45RightIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -122,12 +114,11 @@ export const BrushToolbarTileSlope45RightIcon = styled.div`
     background-color: blue;
     clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope45LeftIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -135,12 +126,11 @@ export const BrushToolbarTileSlope45LeftIcon = styled.div`
     background-color: blue;
     clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope22RightBottomIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -148,12 +138,11 @@ export const BrushToolbarTileSlope22RightBottomIcon = styled.div`
     background-color: green;
     clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope22RightTopIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -161,12 +150,11 @@ export const BrushToolbarTileSlope22RightTopIcon = styled.div`
     background-color: green;
     clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope22LeftBottomIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -174,12 +162,11 @@ export const BrushToolbarTileSlope22LeftBottomIcon = styled.div`
     background-color: green;
     clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope22LeftTopIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -187,12 +174,11 @@ export const BrushToolbarTileSlope22LeftTopIcon = styled.div`
     background-color: green;
     clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope67RightBottomIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -200,12 +186,11 @@ export const BrushToolbarTileSlope67RightBottomIcon = styled.div`
     background-color: fuchsia;
     clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope67RightTopIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -213,12 +198,11 @@ export const BrushToolbarTileSlope67RightTopIcon = styled.div`
     background-color: fuchsia;
     clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope67LeftBottomIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -226,12 +210,11 @@ export const BrushToolbarTileSlope67LeftBottomIcon = styled.div`
     background-color: cyan;
     clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
+  &:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -239,17 +222,16 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
     background-color: cyan;
     clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
   }
+  ${brushToolbarCollisionTileStyles};
 `;
 
 interface BrushToolbarExtraTileIconProps {
-  value: string;
+  $value: string;
 }
 
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
-  ${brushToolbarCollisionTileStyles}
-
-  ::before {
-    content: "${(props) => COLLISIONS_EXTRA_SYMBOLS[+props.value - 8]}";
+  &:before {
+    content: "${(props) => COLLISIONS_EXTRA_SYMBOLS[+props.$value - 8]}";
     display: flex;
     width: 22px;
     height: 22px;
@@ -258,4 +240,5 @@ export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconPro
     justify-content: center;
     font: 16px "Public Pixel";
   }
+  ${brushToolbarCollisionTileStyles};
 `;

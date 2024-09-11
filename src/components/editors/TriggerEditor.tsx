@@ -17,7 +17,7 @@ import {
   FormDivider,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { TriggerNormalized } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
@@ -31,7 +31,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
 import { TriggerEditorScripts } from "./trigger/TriggerEditorScripts";
-import { PrefabHeader } from "ui/form/PrefabHeader";
+import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { TriggerPrefabSelectButton } from "components/forms/TriggerPrefabSelectButton";
@@ -95,7 +95,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeTriggerProp("notes", e.currentTarget.value),
     [onChangeTriggerProp]
   );

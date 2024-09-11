@@ -90,9 +90,9 @@ const SceneContent = styled.div`
 `;
 
 interface WrapperProps {
-  selected?: boolean;
-  multiSelected?: boolean;
-  filtered?: boolean;
+  $selected?: boolean;
+  $multiSelected?: boolean;
+  $filtered?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -104,13 +104,13 @@ const Wrapper = styled.div<WrapperProps>`
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 
-  :hover,
-  :hover ${SceneName} {
+  &:hover,
+  &:hover ${SceneName} {
     background-color: ${(props) => props.theme.colors.sidebar.background};
   }
 
   ${(props) =>
-    props.multiSelected
+    props.$multiSelected
       ? css`
           z-index: 10;
           background-color: ${(props) => props.theme.colors.sidebar.background};
@@ -136,7 +136,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           z-index: 10;
           background-color: ${(props) => props.theme.colors.sidebar.background};
@@ -162,7 +162,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.filtered
+    props.$filtered
       ? css`
           &:after {
             content: "";
@@ -182,7 +182,7 @@ const Wrapper = styled.div<WrapperProps>`
 `;
 
 interface SceneOverlayProps {
-  noPointerEvents?: boolean;
+  $noPointerEvents?: boolean;
 }
 
 const SceneOverlay = styled.div<SceneOverlayProps>`
@@ -193,7 +193,7 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
   height: 100%;
   overflow: hidden;
   ${(props) =>
-    props.noPointerEvents
+    props.$noPointerEvents
       ? css`
           pointer-events: none;
         `
@@ -625,9 +625,9 @@ const SceneView = memo(
 
     return (
       <Wrapper
-        selected={selected}
-        multiSelected={multiSelected}
-        filtered={sceneFiltered}
+        $selected={selected}
+        $multiSelected={multiSelected}
+        $filtered={sceneFiltered}
         style={{
           left: scene.x,
           top: scene.y,
@@ -787,7 +787,7 @@ const SceneView = memo(
               />
             ))}
           {selected && (
-            <SceneOverlay noPointerEvents>
+            <SceneOverlay $noPointerEvents>
               <SceneEventHelper scene={scene} />
             </SceneOverlay>
           )}
