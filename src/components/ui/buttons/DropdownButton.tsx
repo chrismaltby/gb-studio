@@ -14,7 +14,7 @@ import React, {
   useState,
 } from "react";
 import { PinDirection, RelativePortal } from "ui/layout/RelativePortal";
-import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
+import { CaretDownIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
 import { ButtonProps } from "./Button";
 import {
@@ -360,11 +360,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
             children: (
               <>
                 {child.props.children}
-                {child.props.subMenu && (
-                  <MenuItemCaret>
-                    <CaretRightIcon />
-                  </MenuItemCaret>
-                )}
+                {child.props.subMenu && <MenuItemCaret />}
                 {itemIndex === parentMenuIndex && child.props.subMenu && (
                   <StyledDropdownSubMenu $menuDirection={menuDirection}>
                     <RelativePortal

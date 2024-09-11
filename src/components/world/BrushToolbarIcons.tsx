@@ -226,12 +226,12 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
 `;
 
 interface BrushToolbarExtraTileIconProps {
-  value: string;
+  $value: string;
 }
 
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
   &:before {
-    content: "${(props) => COLLISIONS_EXTRA_SYMBOLS[+props.value - 8]}";
+    content: "${(props) => COLLISIONS_EXTRA_SYMBOLS[+props.$value - 8]}";
     display: flex;
     width: 22px;
     height: 22px;

@@ -13,7 +13,6 @@ import {
 } from "react";
 import { StyledDropdownSubMenu } from "ui/buttons/style";
 import useWindowFocus from "ui/hooks/use-window-focus";
-import { CaretRightIcon } from "ui/icons/Icons";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
 
@@ -326,11 +325,7 @@ const useNestedMenu = (
           children: (
             <>
               {child.props.children}
-              {child.props.subMenu && (
-                <MenuItemCaret>
-                  <CaretRightIcon />
-                </MenuItemCaret>
-              )}
+              {child.props.subMenu && <MenuItemCaret />}
               {itemIndex === parentMenuIndex && child.props.subMenu && (
                 <StyledDropdownSubMenu $menuDirection={menuDirection}>
                   <RelativePortal

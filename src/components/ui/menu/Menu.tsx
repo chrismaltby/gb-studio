@@ -1,71 +1,32 @@
-import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
-import { StyledMenuAccelerator } from "ui/menu/style";
-import { ThemeInterface } from "ui/theme/ThemeInterface";
+import React, { forwardRef, ReactNode } from "react";
+import styled from "styled-components";
+import { CaretRightIcon } from "ui/icons/Icons";
+import {
+  StyledMenu,
+  StyledMenuAccelerator,
+  StyledMenuItem,
+  StyledMenuItemCaret,
+} from "ui/menu/style";
 
-export interface MenuProps {
-  readonly children?: ReactNode;
-  readonly theme?: ThemeInterface;
-}
+export const Menu = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>((props, outerRef) => <StyledMenu ref={outerRef} {...props} />);
 
-export const Menu = styled.div<MenuProps>`
-  display: flex;
-  flex-direction: column;
-  border-radius: ${(props) => props.theme.borderRadius}px;
-  width: max-content;
-  min-width: 100px;
-  user-select: none;
-  box-shadow: ${(props) => props.theme.colors.menu.boxShadow};
-  background: ${(props) => props.theme.colors.menu.background};
-  color: ${(props) => props.theme.colors.text};
-  font-size: ${(props) => props.theme.typography.menuFontSize};
-  padding: 4px 0;
-  font-weight: normal;
-  line-height: 15px;
-`;
-
-export interface MenuItemProps {
+export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly "data-index"?: number;
-  readonly focus?: boolean;
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
   readonly subMenu?: React.ReactElement[];
+  readonly children?: ReactNode;
 }
 
-export const MenuItem = styled.div<MenuItemProps>`
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: ${(props) => props.theme.typography.menuFontSize};
-  white-space: nowrap;
-
-  &:hover,
-  &:focus {
-    background: ${(props) => props.theme.colors.menu.hoverBackground};
-    outline: none;
-    box-shadow: none;
-  }
-
-  &:active {
-    background: ${(props) => props.theme.colors.menu.activeBackground};
-  }
-
-  ${Menu}:hover &:focus&:not(:hover) {
-    background: ${(props) => props.theme.colors.menu.activeBackground};
-  }
-
-  ${(props) =>
-    props.selected
-      ? css`
-          background: ${(props) => props.theme.colors.menu.hoverBackground};
-          outline: none;
-          box-shadow: none;
-        `
-      : ""}
-`;
+export const MenuItem = ({ selected, subMenu: _, ...props }: MenuItemProps) => (
+  <StyledMenuItem $selected={selected} {...props} />
+);
 
 export const MenuItemIcon = styled.div<MenuItemProps>`
   width: 15px;
@@ -97,7 +58,7 @@ export const MenuGroup = styled.div`
   text-transform: uppercase;
   opacity: 0.8;
 
-  ${MenuItem} + & {
+  ${StyledMenuItem} + & {
     margin-top: 10px;
   }
 `;
@@ -131,14 +92,8 @@ export const MenuOverlay = styled.div`
   z-index: 1000;
 `;
 
-export const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  margin-left: 5px;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-`;
+export const MenuItemCaret = () => (
+  <StyledMenuItemCaret>
+    <CaretRightIcon />
+  </StyledMenuItemCaret>
+);

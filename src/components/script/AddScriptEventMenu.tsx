@@ -10,7 +10,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
-import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
+import { Menu, MenuGroup, MenuItem, MenuItemCaret } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
@@ -42,6 +42,7 @@ import { isScriptValue } from "shared/lib/scriptValue/types";
 import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
+import { StyledMenu, StyledMenuItem } from "ui/menu/style";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -247,7 +248,7 @@ const eventToOption =
 const SelectMenu = styled.div`
   width: 300px;
 
-  ${Menu} {
+  ${StyledMenu} {
     width: 100%;
     height: 450px;
     min-height: 300px;
@@ -376,17 +377,6 @@ const SelectMenuOptions = styled.div`
   flex-shrink: 0;
 `;
 
-const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-`;
-
 interface MenuItemFavoriteProps {
   $visible: boolean;
   $isFavorite: boolean;
@@ -429,7 +419,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
           }
         `
       : ""}      
-  ${MenuItem}:hover > & {
+  ${StyledMenuItem}:hover > & {
     opacity: 1;
   }
 `;
@@ -935,9 +925,7 @@ const AddScriptEventMenu = ({
                   )}
 
                   {"options" in option ? (
-                    <MenuItemCaret>
-                      <CaretRightIcon />
-                    </MenuItemCaret>
+                    <MenuItemCaret />
                   ) : (
                     <>
                       <FlexGrow />

@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { OptGroup } from "ui/form/Select";
 import styled, { css } from "styled-components";
-import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
+import { Menu, MenuGroup, MenuItem, MenuItemCaret } from "ui/menu/Menu";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { useAppSelector } from "store/hooks";
@@ -46,6 +46,7 @@ import { allVariables } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { StyledMenu } from "ui/menu/style";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -164,7 +165,7 @@ const customEventToOption = (
 const SelectMenu = styled.div`
   width: 300px;
 
-  ${Menu} {
+  ${StyledMenu} {
     width: 100%;
     height: 450px;
     min-height: 300px;
@@ -291,17 +292,6 @@ const SelectMenuOptions = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 0;
-`;
-
-const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
 `;
 
 const collator = new Intl.Collator(undefined, {
@@ -634,9 +624,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
                 >
                   {option.label}
                   {"options" in option ? (
-                    <MenuItemCaret>
-                      <CaretRightIcon />
-                    </MenuItemCaret>
+                    <MenuItemCaret />
                   ) : (
                     <>
                       <FlexGrow />
