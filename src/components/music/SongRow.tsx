@@ -145,7 +145,12 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
         </Wrapper>
         {row.map((cell, channelId) => {
           const ret = (
-            <Wrapper $isPlaying={isPlaying} $isActive={isActive} $n={n}>
+            <Wrapper
+              $isPlaying={isPlaying}
+              $isActive={isActive}
+              $n={n}
+              key={`_${channelId}`}
+            >
               <NoteField
                 id={`cell_${n}_${channelId}_note`}
                 $active={activeField === fieldCount}
