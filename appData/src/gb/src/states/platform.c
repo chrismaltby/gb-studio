@@ -96,7 +96,7 @@ void platform_init(void) BANKED {
     if (IS_LADDER(tile_at(tile_x, tile_y - 1))) {
         // Snap to ladder
         UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;
-        PLAYER.pos.x = (((tile_x << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
+        PLAYER.pos.x = (((tile_x << 3) + 3 - (PLAYER.bounds.left + p_half_width)) << 4);
         actor_set_anim(&PLAYER, ANIM_CLIMB);
         actor_stop_anim(&PLAYER);
         on_ladder = TRUE;
@@ -126,8 +126,11 @@ void platform_update(void) BANKED {
         pl_vel_y = 0;
         if (INPUT_UP) {
             // Climb laddder
-            if (IS_LADDER(tile_at(tile_x_mid, tile_y))) {
+            if( IS_LADDER( tile_at( tile_x_mid, ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3 ) ) ) {  //Grab with bottom edge
                 pl_vel_y = -plat_climb_vel;
+            }
+            else {
+                on_ladder = FALSE; //go back to standing when leaving the top of a ladder
             }
         } else if (INPUT_DOWN) {
             // Descend ladder
@@ -197,10 +200,10 @@ void platform_update(void) BANKED {
         // Vertical Movement
         if (INPUT_UP) {
             // Grab upwards ladder
-            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top) >> 3);
+            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3); //was top, use feet instead
             col = tile_at(tile_x_mid, tile_y);
             if (IS_LADDER(col)) {
-                PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
+                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width) ) << 4);
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
@@ -209,7 +212,7 @@ void platform_update(void) BANKED {
             tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
             col = tile_at(tile_x_mid, tile_y);
             if (IS_LADDER(col)) {
-                PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
+                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width) ) << 4);
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
@@ -409,7 +412,8 @@ void platform_update(void) BANKED {
             tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
             tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
             while (tile_start != tile_end) {
-                if (tile_at(tile_start, tile_y) & COLLISION_TOP) {
+                // only snap to the top of a platform if feet are above the line
+                if (tile_at(tile_start, tile_y) & COLLISION_TOP && ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) < (tile_y << 3) ) {
                     new_y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
                     grounded = TRUE;
                     pl_vel_y = 0;
