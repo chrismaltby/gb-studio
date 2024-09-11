@@ -194,6 +194,7 @@ export const StyledFormSectionTitle = styled.div<StyledFormSectionTitleProps>`
   padding: 0px 10px;
   width: 100%;
   height: 30px;
+  box-sizing: border-box;
   margin-bottom: 10px;
   background-color: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
