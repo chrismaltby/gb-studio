@@ -1,110 +1,51 @@
-import React, { FC, useState } from "react";
-import styled, { css } from "styled-components";
+import React, { FC, ReactNode, useState } from "react";
 import { Label } from "ui/form/Label";
-import { StyledFormFieldInput } from "ui/form/layout/style";
+import {
+  StyledFormContainer,
+  StyledFormDivider,
+  StyledFormField,
+  StyledFormFieldInfo,
+  StyledFormFieldInput,
+  StyledFormHeader,
+  StyledFormLink,
+  StyledFormRow,
+  StyledFormSectionTitle,
+} from "ui/form/layout/style";
 
-export const FormContainer = styled.div``;
-
-export const FormHeader = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 4px 10px 4px 4px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-  height: 38px;
-  box-sizing: border-box;
-
-  & > * {
-    margin-right: 10px;
-  }
-
-  & > *:last-child {
-    margin-right: 0px;
-  }
-`;
-
-export interface FormRowProps {
-  readonly size?: "medium" | "large";
+interface FormContainerProps {
+  children: ReactNode;
 }
 
-export const FormRow = styled.div<FormRowProps>`
-  display: flex;
-  padding: 0 10px;
-  width: 100%;
-  box-sizing: border-box;
+export const FormContainer = ({ children }: FormContainerProps) => (
+  <StyledFormContainer children={children} />
+);
 
-  & > * {
-    ${(props) =>
-      props.size === "large"
-        ? css`
-            margin-right: 20px;
-            margin-bottom: 20px;
-          `
-        : css`
-            margin-right: 10px;
-            margin-bottom: 10px;
-          `}
-  }
-
-  & > *:last-child {
-    margin-right: 0px;
-  }
-`;
-
-export const FormDivider = styled.div`
-  margin-bottom: 10px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
-`;
-
-export const FormSpacer = styled.div`
-  width: 100%;
-`;
-
-interface FormFieldWrapperProps {
-  readonly variant?: "normal" | "error" | "warning";
-  readonly alignCheckbox?: boolean;
-  readonly hasOverride?: boolean;
+interface FormHeaderProps {
+  variant?: "normal" | "prefab";
+  children: ReactNode;
 }
 
-const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
-  width: 100%;
-  min-width: 0;
-  ${(props) =>
-    props.variant === "error"
-      ? css`
-          color: ${props.theme.colors.highlight};
-        `
-      : ""}
-  ${(props) =>
-    props.variant === "warning"
-      ? css`
-          label {
-            background-color: #ffc107;
-            color: #000;
-            border-radius: 3px;
-            padding: 5px;
-          }
-        `
-      : ""}      
-  ${(props) =>
-    props.alignCheckbox
-      ? css`
-          padding-bottom: 5px;
-        `
-      : ""}
-      ${(props) =>
-    props.hasOverride
-      ? css`
-          font-weight: bold;
-        `
-      : ""}
-`;
+export const FormHeader = ({ children, variant }: FormHeaderProps) => (
+  <StyledFormHeader $variant={variant} children={children} />
+);
 
-export const FormFieldInfo = styled.div`
-  opacity: 0.5;
-  display: block;
-  font-size: 11px;
-  margin-top: 5px;
-`;
+interface FormRowProps {
+  children: ReactNode;
+}
+
+export const FormRow = ({ children }: FormRowProps) => (
+  <StyledFormRow children={children} />
+);
+
+export const FormDivider = () => <StyledFormDivider />;
+
+interface FormFieldInfoProps {
+  children: ReactNode;
+}
+
+export const FormFieldInfo = ({ children }: FormFieldInfoProps) => (
+  <StyledFormFieldInfo children={children} />
+);
 
 export interface FormFieldProps {
   readonly name: string;
@@ -126,10 +67,10 @@ export const FormField: FC<FormFieldProps> = ({
   hasOverride,
   children,
 }) => (
-  <FormFieldWrapper
-    variant={variant}
-    alignCheckbox={alignCheckbox}
-    hasOverride={hasOverride}
+  <StyledFormField
+    $variant={variant}
+    $alignCheckbox={alignCheckbox}
+    $hasOverride={hasOverride}
   >
     {label && (
       <Label htmlFor={name} title={title}>
@@ -139,57 +80,27 @@ export const FormField: FC<FormFieldProps> = ({
     <StyledFormFieldInput $hasOverride={hasOverride}>
       {children}
     </StyledFormFieldInput>
-    {info && <FormFieldInfo>{info}</FormFieldInfo>}
-  </FormFieldWrapper>
+    {info && <StyledFormFieldInfo>{info}</StyledFormFieldInfo>}
+  </StyledFormField>
 );
 
 export interface FormSectionTitleProps {
   readonly noTopBorder?: boolean;
+  readonly noMarginBottom?: boolean;
+  children: ReactNode;
 }
 
-export const FormSectionTitle = styled.div<FormSectionTitleProps>`
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 0px 10px;
-  height: 30px;
-  margin-bottom: 10px;
-  background-color: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
-  border-top: 1px solid ${(props) => props.theme.colors.input.border};
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-
-  > span {
-    flex-grow: 1;
-  }
-
-  ${(props) =>
-    props.noTopBorder
-      ? css`
-          border-top: 0;
-        `
-      : ""}
-`;
-
-export const FormLink = styled.div`
-  font-size: 11px;
-  text-decoration: underline;
-  border-radius: 4px;
-  padding: 5px;
-  margin-left: -5px;
-  margin-right: -5px;
-  margin-top: -5px;
-  margin-bottom: -5px;
-
-  &:hover {
-    background: rgba(128, 128, 128, 0.1);
-  }
-  &:active {
-    background: rgba(128, 128, 128, 0.2);
-  }
-`;
+export const FormSectionTitle = ({
+  noTopBorder,
+  noMarginBottom,
+  children,
+}: FormSectionTitleProps) => (
+  <StyledFormSectionTitle
+    $noTopBorder={noTopBorder}
+    $noMarginBottom={noMarginBottom}
+    children={children}
+  />
+);
 
 export interface ToggleableFormFieldProps {
   readonly enabled: boolean;
@@ -213,7 +124,9 @@ export const ToggleableFormField: FC<
   if (!isEnabled) {
     return (
       <div>
-        <FormLink onClick={() => setIsEnabled(true)}>{disabledLabel}</FormLink>
+        <StyledFormLink onClick={() => setIsEnabled(true)}>
+          {disabledLabel}
+        </StyledFormLink>
       </div>
     );
   }

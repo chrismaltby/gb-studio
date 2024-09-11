@@ -340,9 +340,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                     <>
                       {customEventVariables.length > 0 &&
                         customEventActors.length > 0 && (
-                          <FormSectionTitle
-                            style={{ width: "100%", marginBottom: 0 }}
-                          >
+                          <FormSectionTitle noMarginBottom>
                             {l10n("SIDEBAR_PARAMETERS")}
                           </FormSectionTitle>
                         )}
@@ -350,7 +348,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                       {customEventVariables.length > 0 && (
                         <SidebarColumn>
                           {customEventActors.length === 0 && (
-                            <FormSectionTitle style={{ marginTop: -11 }}>
+                            <FormSectionTitle>
                               {l10n("SIDEBAR_PARAMETERS")}
                             </FormSectionTitle>
                           )}
@@ -442,7 +440,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                       {customEventActors.length > 0 && (
                         <SidebarColumn>
                           {customEventVariables.length === 0 && (
-                            <FormSectionTitle style={{ marginTop: -11 }}>
+                            <FormSectionTitle>
                               {l10n("SIDEBAR_PARAMETERS")}
                             </FormSectionTitle>
                           )}

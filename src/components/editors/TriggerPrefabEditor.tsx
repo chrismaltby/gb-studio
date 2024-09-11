@@ -30,27 +30,6 @@ const FlexWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  ${FormHeader} {
-    background: ${(props) => props.theme.colors.prefab.background};
-    color: ${(props) => props.theme.colors.prefab.text};
-    input {
-      color: ${(props) => props.theme.colors.prefab.text};
-
-      ::placeholder {
-        color: ${(props) => props.theme.colors.prefab.text};
-        opacity: 0.5;
-      }
-      &:focus {
-        background: ${(props) => props.theme.colors.input.background};
-        color: ${(props) => props.theme.colors.input.text};
-        border: 1px solid ${(props) => props.theme.colors.highlight};
-      }
-    }
-    svg {
-      fill: ${(props) => props.theme.colors.prefab.text};
-    }
-  }
 `;
 
 const UsesCollapsedWrapper = styled.div`
@@ -154,7 +133,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
         <FlexWrapper>
           {!lockScriptEditor && (
             <FormContainer>
-              <FormHeader>
+              <FormHeader variant="prefab">
                 <EditableText
                   name="name"
                   placeholder={triggerName(prefab, index)}
