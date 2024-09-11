@@ -42,11 +42,11 @@ interface PianoKeyProps {
 }
 
 interface SongGridHeaderProps {
-  cols: number;
+  $cols: number;
 }
 
 interface SongGridFooterProps {
-  cols: number;
+  $cols: number;
 }
 
 const Piano = styled.div`
@@ -160,7 +160,7 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
   padding-left: ${30 + 10 + 1}px;
   z-index: 10;
   ${(props) => css`
-    width: ${props.cols * CELL_SIZE}px;
+    width: ${props.$cols * CELL_SIZE}px;
     height: ${CELL_SIZE}px;
     background-color: ${props.theme.colors.document.background};
     background-image: linear-gradient(
@@ -186,7 +186,7 @@ const SongGridFooter = styled.div<SongGridFooterProps>`
   z-index: 5;
   ${(props) => css`
     margin-top: ${CELL_SIZE / 2}px;
-    width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
+    width: calc(${props.$cols * CELL_SIZE}px + ${30 + 10 + 1}px);
     height: ${2 * CELL_SIZE}px;
     border-right: 2px solid #808080;
     background-color: ${props.theme.colors.sidebar.background};
@@ -1026,7 +1026,7 @@ export const SongPianoRoll = ({
             zIndex: 1,
           }}
         >
-          <SongGridHeader cols={64}>
+          <SongGridHeader $cols={64}>
             <div
               style={{ height: "100%" }}
               onMouseDown={(e) => {
@@ -1155,7 +1155,7 @@ export const SongPianoRoll = ({
               />
             </SongGrid>
           </div>
-          <SongGridFooter cols={64}>
+          <SongGridFooter $cols={64}>
             <FooterIcon>
               <WandIcon />
             </FooterIcon>

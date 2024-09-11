@@ -67,13 +67,13 @@ const UsageWrapper = styled.div`
 `;
 
 interface LogLineProps {
-  type: "log" | "warn";
+  $type: "log" | "warn";
 }
 
 const LogLine = styled.div<LogLineProps>`
   color: white;
   ${(props) =>
-    props.type === "warn"
+    props.$type === "warn"
       ? css`
           color: orange;
         `
@@ -93,7 +93,7 @@ interface BuildLogLineProps {
 const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
   const dispatch = useAppDispatch();
   return (
-    <LogLine type={type}>
+    <LogLine $type={type}>
       {text}{" "}
       {link && (
         <LogLink

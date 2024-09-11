@@ -13,10 +13,10 @@ interface RollChannelProps {
 }
 
 interface WrapperProps {
-  rows: number;
-  cols: number;
-  size: number;
-  active?: boolean;
+  $rows: number;
+  $cols: number;
+  $size: number;
+  $active?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -25,9 +25,9 @@ const Wrapper = styled.div<WrapperProps>`
   left: ${30 + 10 + 1}px;
 
   ${(props) => css`
-    top: ${props.size / 2}px;
-    width: ${props.cols * props.size}px;
-    height: ${props.size - 1}px;
+    top: ${props.$size / 2}px;
+    width: ${props.$cols * props.$size}px;
+    height: ${props.$size - 1}px;
 
     border-top: 1px solid #808080;
     border-bottom: 1px solid #808080;
@@ -46,8 +46,10 @@ const Wrapper = styled.div<WrapperProps>`
       ${props.theme.colors.tracker.rollCell.border} 2px,
       transparent 1px
     );
-  background-size: ${props.size}px ${props.size}px,
-    ${props.size}px ${props.size}px, ${props.size * 8}px ${props.size * 12}px;
+  background-size: ${props.$size}px ${props.$size}px,
+    ${props.$size}px ${props.$size}px, ${props.$size * 8}px ${
+    props.$size * 12
+  }px;
   }
 
   `}
@@ -151,9 +153,9 @@ export const RollChannelEffectRowFwd = ({
 
   return (
     <Wrapper
-      rows={12 * 6}
-      cols={64}
-      size={cellSize}
+      $rows={12 * 6}
+      $cols={64}
+      $size={cellSize}
       onMouseDown={(e) => {
         handleMouseDown(e.nativeEvent);
       }}

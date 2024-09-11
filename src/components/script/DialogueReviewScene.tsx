@@ -60,7 +60,7 @@ const SceneHeader = styled.div`
   }
 `;
 
-const SceneHeaderArrow = styled.div<{ open: boolean }>`
+const SceneHeaderArrow = styled.div<{ $isOpen: boolean }>`
   svg {
     position: relative;
     left: -20px;
@@ -69,7 +69,7 @@ const SceneHeaderArrow = styled.div<{ open: boolean }>`
     margin-right: 10px;
   }
   ${(props) =>
-    props.open
+    props.$isOpen
       ? css`
           svg {
             transform: rotate(90deg);
@@ -227,7 +227,7 @@ const DialogueReviewScene = ({
   return (
     <Wrapper>
       <SceneHeader>
-        <SceneHeaderArrow open={open}>
+        <SceneHeaderArrow $isOpen={open}>
           <ArrowIcon />
         </SceneHeaderArrow>
         <h2 onClick={onToggle}>{sceneName(scene, sceneIndex)}</h2>

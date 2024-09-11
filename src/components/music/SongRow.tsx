@@ -20,10 +20,10 @@ interface SongRowProps {
 }
 
 interface WrapperProps {
-  n: number;
-  isActive: boolean;
-  isPlaying: boolean;
-  size?: "normal" | "small";
+  $n: number;
+  $isActive: boolean;
+  $isPlaying: boolean;
+  $size?: "normal" | "small";
 }
 
 const Wrapper = styled.span<WrapperProps>`
@@ -39,7 +39,7 @@ const Wrapper = styled.span<WrapperProps>`
   padding: 4px 8px;
   height: 20px;
   ${(props) =>
-    props.size === "small"
+    props.$size === "small"
       ? css`
           width: 30px;
         `
@@ -48,19 +48,19 @@ const Wrapper = styled.span<WrapperProps>`
         `}
   background-color: ${(props) => props.theme.colors.tracker.background};
   ${(props) =>
-    props.n % 8 === 0
+    props.$n % 8 === 0
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isActive
+    props.$isActive
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isPlaying
+    props.$isPlaying
       ? css`
           background-color: ${props.theme.colors.highlight};
         `
@@ -135,17 +135,17 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
     return (
       <div>
         <Wrapper
-          isPlaying={isPlaying}
-          isActive={isActive}
-          n={n}
-          size="small"
+          $isPlaying={isPlaying}
+          $isActive={isActive}
+          $n={n}
+          $size="small"
           data-row={n}
         >
           <HeaderField id={`cell_${n}`}>{renderCounter(n)}</HeaderField>
         </Wrapper>
         {row.map((cell, channelId) => {
           const ret = (
-            <Wrapper isPlaying={isPlaying} isActive={isActive} n={n}>
+            <Wrapper $isPlaying={isPlaying} $isActive={isActive} $n={n}>
               <NoteField
                 id={`cell_${n}_${channelId}_note`}
                 $active={activeField === fieldCount}

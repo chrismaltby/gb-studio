@@ -300,7 +300,7 @@ const SelectMenuBackButton = styled.button`
 `;
 
 interface SelectMenuHeaderProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
@@ -332,7 +332,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
   }
 
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           ${SelectMenuTitle}:nth-child(1) {
             transform: translateX(-80px);
@@ -350,7 +350,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
 `;
 
 interface SelectMenuOptionsWrapperProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
@@ -361,7 +361,7 @@ const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
   flex-grow: 1;
   transition: transform 0.2s ease-in-out;
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           transform: translateX(-50%);
         `
@@ -877,7 +877,7 @@ const AddScriptEventMenu = ({
     <SelectMenu>
       <Menu style={{ height: menuHeight }}>
         <SelectMenuHeader
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
           <SelectMenuTitle>{l10n("SIDEBAR_ADD_EVENT")}</SelectMenuTitle>
@@ -899,7 +899,7 @@ const AddScriptEventMenu = ({
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (

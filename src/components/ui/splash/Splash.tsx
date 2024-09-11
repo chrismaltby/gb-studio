@@ -1,10 +1,10 @@
 import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import l10n from "shared/lib/lang/l10n";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import projectIcon from "ui/icons/gbsproj.png";
 import { CloseIcon } from "ui/icons/Icons";
-import { StyledSplashWindow } from "ui/splash/style";
+import { StyledSplashTab, StyledSplashWindow } from "ui/splash/style";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
@@ -120,43 +120,13 @@ export const SplashAppTitle = () => {
   );
 };
 
-interface SplashTabProps {
+interface SplashTabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
-export const SplashTab = styled.button<SplashTabProps>`
-  font-size: 13px;
-  padding: 8px 20px;
-  text-align: left;
-  color: ${(props) => props.theme.colors.text};
-  background: transparent;
-  border: 0;
-  -webkit-app-region: no-drag;
-
-  &:hover {
-    background: rgba(128, 128, 128, 0.3);
-  }
-
-  &:active {
-    background: rgba(128, 128, 128, 0.4);
-  }
-
-  ${(props) => (props.selected ? SplashTabSelectedStyles : "")}
-`;
-
-const SplashTabSelectedStyles = css`
-  background: ${(props) => props.theme.colors.highlight};
-  color: #fff;
-
-  &:hover {
-    background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
-  }
-  &:active {
-    background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
-  }
-`;
+export const SplashTab = ({ selected, ...props }: SplashTabProps) => (
+  <StyledSplashTab $selected={selected} {...props} />
+);
 
 export const SplashOpenButton = styled(Button).attrs(() => ({
   variant: "transparent",

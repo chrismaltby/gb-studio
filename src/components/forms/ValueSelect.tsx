@@ -310,8 +310,8 @@ const ValueWrapper = styled.div<ValueWrapperProps>`
 const DropWrapper = styled.div``;
 
 interface BracketsWrapperProps {
-  isFunction?: boolean;
-  isOver?: boolean;
+  $isFunction?: boolean;
+  $isOver?: boolean;
 }
 
 const BracketsWrapper = styled.div<BracketsWrapperProps>`
@@ -322,7 +322,7 @@ const BracketsWrapper = styled.div<BracketsWrapperProps>`
   flex-grow: 1;
 
   ${(props) =>
-    !props.isFunction
+    !props.$isFunction
       ? css`
           padding: 0px 5px;
 
@@ -341,7 +341,7 @@ const BracketsWrapper = styled.div<BracketsWrapperProps>`
     background: ${(props) => props.theme.colors.brackets.hoverBackground};
   }
 
-  ${(props) => (props.isOver ? dropTargetStyle : "")}
+  ${(props) => (props.$isOver ? dropTargetStyle : "")}
 `;
 
 const Wrapper = styled.div`
@@ -1124,7 +1124,7 @@ const ValueSelect = ({
       );
     } else if (isUnaryOperation(value)) {
       return (
-        <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
+        <BracketsWrapper ref={previewRef} $isOver={isOver} $isFunction>
           <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
           <BracketsWrapper>
             <ValueSelect
@@ -1145,7 +1145,7 @@ const ValueSelect = ({
     } else if (isValueOperation(value)) {
       if (isInfix(value.type)) {
         return (
-          <BracketsWrapper ref={previewRef} isOver={isOver}>
+          <BracketsWrapper ref={previewRef} $isOver={isOver}>
             <ValueSelect
               name={`${name}_valueA`}
               entityId={entityId}
@@ -1175,7 +1175,7 @@ const ValueSelect = ({
         );
       } else {
         return (
-          <BracketsWrapper ref={previewRef} isOver={isOver} isFunction>
+          <BracketsWrapper ref={previewRef} $isOver={isOver} $isFunction>
             <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
             <BracketsWrapper>
               <ValueSelect

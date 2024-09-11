@@ -28,7 +28,7 @@ const UnitsWrapper = styled.div`
 `;
 
 interface HiddenValueProps {
-  offset: number;
+  $offset: number;
 }
 
 const HiddenValue = styled.div<HiddenValueProps>`
@@ -39,7 +39,7 @@ const HiddenValue = styled.div<HiddenValueProps>`
   padding-right: 5px;
   box-sizing: border-box;
   pointer-events: none;
-  margin-right: ${(props) => props.offset}px;
+  margin-right: ${(props) => props.$offset}px;
 `;
 
 const Units = styled.div`
@@ -92,7 +92,7 @@ export const UnitsSelectButtonInputOverlay = ({
   const currentValue = value && unitTypeButtonNames[value];
   return (
     <UnitsWrapper>
-      <HiddenValue offset={parentValueOffset}>{parentValue}</HiddenValue>
+      <HiddenValue $offset={parentValueOffset}>{parentValue}</HiddenValue>
       <Units>
         {allowedValues ? (
           <DropdownButton

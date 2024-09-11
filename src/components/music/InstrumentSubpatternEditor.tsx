@@ -81,10 +81,10 @@ const SubpatternRow = styled.div`
 `;
 
 interface SubpatternRowGroupProps {
-  n: number;
-  isActive: boolean;
-  isPlaying: boolean;
-  size?: "normal" | "small";
+  $n: number;
+  $isActive: boolean;
+  $isPlaying: boolean;
+  $size?: "normal" | "small";
 }
 
 const SubpatternRowGroup = styled.span<SubpatternRowGroupProps>`
@@ -100,7 +100,7 @@ const SubpatternRowGroup = styled.span<SubpatternRowGroupProps>`
   padding: 4px 8px;
   height: 20px;
   ${(props) =>
-    props.size === "small"
+    props.$size === "small"
       ? css`
           width: 30px;
         `
@@ -109,19 +109,19 @@ const SubpatternRowGroup = styled.span<SubpatternRowGroupProps>`
         `}
   background-color: ${(props) => props.theme.colors.tracker.background};
   ${(props) =>
-    props.n % 8 === 0
+    props.$n % 8 === 0
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isActive
+    props.$isActive
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isPlaying
+    props.$isPlaying
       ? css`
           background-color: ${props.theme.colors.highlight};
         `
@@ -908,17 +908,17 @@ export const InstrumentSubpatternEditor = ({
           return (
             <SubpatternRow key={`subpattern_${i}`}>
               <SubpatternRowGroup
-                n={i}
-                size="small"
-                isActive={false}
-                isPlaying={false}
+                $n={i}
+                $size="small"
+                $isActive={false}
+                $isPlaying={false}
               >
                 <Field>{renderCounter(i)}</Field>
               </SubpatternRowGroup>
               <SubpatternRowGroup
-                n={i}
-                isActive={isActiveRow}
-                isPlaying={false}
+                $n={i}
+                $isActive={isActiveRow}
+                $isPlaying={false}
               >
                 <NoteField
                   ref={activeField === fieldCount ? activeFieldRef : null}
