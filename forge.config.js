@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
-
 const rendererConfig = require("./webpack.renderer.config.js");
+
+const rendererPreloadConfig = {
+  ...rendererConfig,
+  plugins: [],
+};
 
 module.exports = async () => {
   const { MakerAppImage } = await import("@reforged/maker-appimage");
@@ -77,10 +82,7 @@ module.exports = async () => {
                 js: "./src/app/project/ProjectRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
-                  config: {
-                    ...rendererConfig,
-                    plugins: [],
-                  },
+                  config: rendererPreloadConfig,
                 },
                 name: "main_window",
                 additionalChunks: [
@@ -95,10 +97,7 @@ module.exports = async () => {
                 js: "./src/app/splash/SplashRoot.tsx",
                 preload: {
                   js: "./src/app/splash/preload.ts",
-                  config: {
-                    ...rendererConfig,
-                    plugins: [],
-                  },
+                  config: rendererPreloadConfig,
                 },
                 name: "splash_window",
                 additionalChunks: [
@@ -112,10 +111,7 @@ module.exports = async () => {
                 js: "./src/app/preferences/PreferencesRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
-                  config: {
-                    ...rendererConfig,
-                    plugins: [],
-                  },
+                  config: rendererPreloadConfig,
                 },
                 name: "preferences_window",
                 additionalChunks: [
@@ -129,10 +125,7 @@ module.exports = async () => {
                 js: "./src/app/music/MusicRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
-                  config: {
-                    ...rendererConfig,
-                    plugins: [],
-                  },
+                  config: rendererPreloadConfig,
                 },
                 name: "music_window",
                 additionalChunks: [
@@ -145,6 +138,7 @@ module.exports = async () => {
                 name: "game_window",
                 preload: {
                   js: "./src/app/game/preload.ts",
+                  config: rendererPreloadConfig,
                 },
               },
             ],
