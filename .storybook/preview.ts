@@ -6,6 +6,8 @@ import { withThemeFromJSXProvider } from "@storybook/addon-themes";
 /* TODO: update import for your custom theme configurations */
 import lightTheme from "../src/components/ui/theme/lightTheme";
 import darkTheme from "../src/components/ui/theme/darkTheme";
+import lightWindowsTheme from "../src/components/ui/theme/lightThemeWin";
+import darkWindowsTheme from "../src/components/ui/theme/darkThemeWin";
 
 /* TODO: replace with your own global styles, or remove */
 import { StorybookGlobalStyles } from "../src/components/ui/globalStyle";
@@ -36,6 +38,8 @@ const preview: Preview = {
       themes: {
         light: lightTheme,
         dark: darkTheme,
+        lightWindows: lightWindowsTheme,
+        darkWindows: darkWindowsTheme,
       },
       defaultTheme: "light",
       Provider: ThemeProvider,
