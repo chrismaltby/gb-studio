@@ -43,7 +43,7 @@ import { ActorEditorScripts } from "./actor/ActorEditorScripts";
 import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
-import { PrefabHeader } from "ui/form/PrefabHeader";
+import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 
 interface ActorEditorProps {
   id: string;

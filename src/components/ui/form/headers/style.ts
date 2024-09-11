@@ -1,13 +1,13 @@
 import styled, { css } from "styled-components";
 import { StyledPillButton } from "ui/buttons/style";
 
-interface PrefabHeaderProps {
-  prefabSet: boolean;
+interface StyledPrefabHeaderProps {
+  $prefabSet: boolean;
 }
 
-export const PrefabHeader = styled.div<PrefabHeaderProps>`
+export const StyledPrefabHeader = styled.div<StyledPrefabHeaderProps>`
   ${(props) =>
-    props.prefabSet
+    props.$prefabSet
       ? css`
           background: ${(props) => props.theme.colors.prefab.background};
           color: ${(props) => props.theme.colors.prefab.text};

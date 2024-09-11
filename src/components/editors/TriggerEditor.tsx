@@ -31,7 +31,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
 import { TriggerEditorScripts } from "./trigger/TriggerEditorScripts";
-import { PrefabHeader } from "ui/form/PrefabHeader";
+import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { TriggerPrefabSelectButton } from "components/forms/TriggerPrefabSelectButton";
