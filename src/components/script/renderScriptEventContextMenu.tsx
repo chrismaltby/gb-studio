@@ -158,6 +158,7 @@ const renderScriptEventContextMenu = ({
     ...(hasElse
       ? [
           <MenuItem
+            key="toggle-else"
             onClick={() => {
               dispatch(
                 entitiesActions.toggleScriptEventDisableElse({ scriptEventId })
@@ -172,6 +173,7 @@ const renderScriptEventContextMenu = ({
       : []),
 
     <MenuItem
+      key="set-breakpoint"
       onClick={() => {
         dispatch(
           settingsActions.toggleBreakpoint({
@@ -234,6 +236,7 @@ const renderScriptEventContextMenu = ({
       ? [
           <MenuDivider key="div-paste" />,
           <MenuItem
+            key="paste-values"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEventValues({
@@ -245,6 +248,7 @@ const renderScriptEventContextMenu = ({
             {l10n("MENU_PASTE_VALUES")}
           </MenuItem>,
           <MenuItem
+            key="paste-before"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEvents({
@@ -260,6 +264,7 @@ const renderScriptEventContextMenu = ({
             {l10n("MENU_PASTE_EVENT_BEFORE")}
           </MenuItem>,
           <MenuItem
+            key="paste-after"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEvents({
