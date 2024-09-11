@@ -273,7 +273,7 @@ const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
 ];
 
 interface ValueWrapperProps {
-  isOver: boolean;
+  $isOver: boolean;
 }
 
 const OperatorWrapper = styled.div`
@@ -304,7 +304,7 @@ const ValueWrapper = styled.div<ValueWrapperProps>`
   align-items: center;
   min-width: 98px;
   flex-basis: 130px;
-  ${(props) => (props.isOver ? dropTargetStyle : "")}
+  ${(props) => (props.$isOver ? dropTargetStyle : "")}
 `;
 
 const DropWrapper = styled.div``;
@@ -923,7 +923,7 @@ const ValueSelect = ({
   const input = useMemo(() => {
     if (value.type === "number") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             {((innerValue && !inputOverride?.topLevelOnly) ||
@@ -1017,7 +1017,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "direction") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <DirectionPicker
@@ -1035,7 +1035,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "variable") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <VariableSelect
@@ -1055,7 +1055,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "property") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <PropertySelect
@@ -1076,7 +1076,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "expression") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <ScriptEventFormMathArea
@@ -1096,7 +1096,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "true") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <Input value={l10n("FIELD_TRUE")} onKeyDown={onKeyDown} />
@@ -1105,7 +1105,7 @@ const ValueSelect = ({
       );
     } else if (value.type === "false") {
       return (
-        <ValueWrapper ref={previewRef} isOver={isOver}>
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <Input value={l10n("FIELD_FALSE")} onKeyDown={onKeyDown} />

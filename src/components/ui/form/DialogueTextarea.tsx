@@ -29,7 +29,7 @@ const speedRegex = /!(S[0-5]+)!/g;
 const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
 
 interface DialogueTextareaWrapperProps {
-  singleLine?: boolean;
+  $singleLine?: boolean;
 }
 
 type ExtendedSuggestionDataItem = SuggestionDataItem & {
@@ -54,7 +54,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     padding: 5px;
     line-height: 16px;
-    ${(props) => (!props.singleLine ? `min-height: 38px;` : "")}
+    ${(props) => (!props.$singleLine ? `min-height: 38px;` : "")}
   }
 
   .MentionsInput__highlighter {
@@ -377,7 +377,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   );
 
   return (
-    <DialogueTextareaWrapper singleLine={singleLine}>
+    <DialogueTextareaWrapper $singleLine={singleLine}>
       {editMode && (
         <RelativePortal
           offsetX={editMode.x}
