@@ -1,9 +1,15 @@
 import React, { forwardRef, ReactNode } from "react";
-import styled, { css } from "styled-components";
 import { DropdownButton } from "ui/buttons/DropdownButton";
+import useResizeObserver from "ui/hooks/use-resize-observer";
 import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
+  StyledScriptEditorChildren,
+  StyledScriptEditorChildrenBorder,
+  StyledScriptEditorChildrenLabel,
+  StyledScriptEditorChildrenWrapper,
   StyledScriptEventBranchHeader,
+  StyledScriptEventField,
+  StyledScriptEventFieldGroup,
   StyledScriptEventFields,
   StyledScriptEventFormWrapper,
   StyledScriptEventHeader,
@@ -167,149 +173,79 @@ export const ScriptEventFields = ({ children }: ScriptEventFieldsProps) => (
 );
 
 interface ScriptEventFieldProps {
-  $halfWidth?: boolean;
-  $inline?: boolean;
-  $alignBottom?: boolean;
+  halfWidth?: boolean;
+  inline?: boolean;
+  alignBottom?: boolean;
+  flexGrow?: number;
+  flexBasis?: string | number;
+  minWidth?: string | number;
+  children?: ReactNode;
 }
 
-export const ScriptEventField = styled.div<ScriptEventFieldProps>`
-  ${(props) =>
-    props.$halfWidth
-      ? css`
-          flex-basis: 100px;
-        `
-      : ""}
-
-  ${(props) =>
-    props.$inline
-      ? css`
-          flex-basis: 0;
-          flex-grow: 0;
-          margin-left: -2px;
-        `
-      : ""}
-
-  ${(props) =>
-    props.$alignBottom
-      ? css`
-          align-self: flex-end;
-        `
-      : ""}
-  }
-
-`;
+export const ScriptEventField = ({
+  halfWidth,
+  inline,
+  alignBottom,
+  flexGrow,
+  flexBasis,
+  minWidth,
+  children,
+}: ScriptEventFieldProps) => (
+  <StyledScriptEventField
+    $halfWidth={halfWidth}
+    $inline={inline}
+    $alignBottom={alignBottom}
+    style={{
+      flexBasis: flexBasis,
+      flexGrow: flexGrow,
+      minWidth: minWidth,
+    }}
+    children={children}
+  />
+);
 
 interface ScriptEditorChildrenProps {
   nestLevel: number;
+  title: string;
+  label: string;
+  shortLabel: string;
+  children: ReactNode;
 }
 
-export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 100%;
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-`;
-
-interface ScriptEditorChildrenBorderProps {
-  nestLevel: number;
-}
-
-export const ScriptEditorChildrenBorder = styled.div<ScriptEditorChildrenBorderProps>`
-  border-left: 2px solid #ccc;
-  width: 10px;
-  border-radius: 10px;
-  flex-shrink: 0;
-
-  ${(props) =>
-    props.nestLevel % 4 === 0
-      ? css`
-          border-color: ${props.theme.colors.scripting.children.nest1Border};
-        `
-      : ""}
-  ${(props) =>
-    props.nestLevel % 4 === 1
-      ? css`
-          border-color: ${props.theme.colors.scripting.children.nest2Border};
-        `
-      : ""}
-  ${(props) =>
-    props.nestLevel % 4 === 2
-      ? css`
-          border-color: ${props.theme.colors.scripting.children.nest3Border};
-        `
-      : ""}
-  ${(props) =>
-    props.nestLevel % 4 === 3
-      ? css`
-          border-color: ${props.theme.colors.scripting.children.nest4Border};
-        `
-      : ""}
-`;
-
-export const ScriptEditorChildrenWrapper = styled.div`
-  flex-grow: 1;
-  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  border-right: 0px;
-  min-width: 0;
-  align-self: flex-start;
-`;
-
-interface ScriptEditorChildrenLabelProps {
-  nestLevel: number;
-}
-
-export const ScriptEditorChildrenLabel = styled.span<ScriptEditorChildrenLabelProps>`
-  display: inline-block;
-  position: sticky;
-  top: 35px;
-  left: 0px;
-  padding: 10px 0px;
-  font-size: 8px;
-  text-transform: uppercase;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg) translate(50%, 0);
-
-  > span {
-    display: inline-block;
-    background: ${(props) => props.theme.colors.scripting.form.background};
-    padding: 5px 0px;
-    position: relative;
-    left: -1px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  ${(props) =>
-    props.nestLevel % 4 === 0
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest1Text};
-        `
-      : ""}
-  ${(props) =>
-    props.nestLevel % 4 === 1
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest2Text};
-        `
-      : ""}
-           ${(props) =>
-    props.nestLevel % 4 === 2
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest3Text};
-        `
-      : ""}
-               ${(props) =>
-    props.nestLevel % 4 === 3
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest4Text};
-        `
-      : ""}
-`;
+export const ScriptEditorChildren = forwardRef<
+  HTMLDivElement,
+  ScriptEditorChildrenProps
+>(({ nestLevel, title, label, shortLabel, children }, outerRef) => {
+  const [ref, size] = useResizeObserver<HTMLDivElement>();
+  const showLabel = size.height !== undefined;
+  const showFullLabel = size.height && size.height > 200;
+  const labelText = showFullLabel ? label : shortLabel;
+  const labelMaxHeight = Math.max(80, size.height ? size.height : 0);
+  return (
+    <StyledScriptEditorChildren ref={outerRef}>
+      <StyledScriptEditorChildrenBorder
+        title={title}
+        $nestLevel={nestLevel}
+        style={{ maxHeight: labelMaxHeight }}
+      >
+        {label && (
+          <StyledScriptEditorChildrenLabel $nestLevel={nestLevel}>
+            <span
+              style={{
+                maxHeight: labelMaxHeight - 30,
+              }}
+            >
+              {showLabel && labelText}
+            </span>
+          </StyledScriptEditorChildrenLabel>
+        )}
+      </StyledScriptEditorChildrenBorder>
+      <StyledScriptEditorChildrenWrapper ref={ref}>
+        {children}
+      </StyledScriptEditorChildrenWrapper>
+    </StyledScriptEditorChildren>
+  );
+});
 
 export const ScriptEventWrapper = forwardRef<
   HTMLDivElement,
@@ -317,34 +253,36 @@ export const ScriptEventWrapper = forwardRef<
 >((props, outerRef) => <StyledScriptEventWrapper ref={outerRef} {...props} />);
 
 interface ScriptEventFieldGroupProps {
-  $halfWidth?: boolean;
-  $wrapItems?: boolean;
-  $alignBottom?: boolean;
+  halfWidth?: boolean;
+  wrapItems?: boolean;
+  alignBottom?: boolean;
+  flexGrow?: number;
+  flexBasis?: string | number;
+  minWidth?: string | number;
+  children?: ReactNode;
 }
 
-export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProps>`
-  ${(props) =>
-    props.$halfWidth
-      ? css`
-          flex-basis: 100px;
-        `
-      : ""}
-  ${(props) =>
-    props.$alignBottom
-      ? css`
-          align-self: flex-end;
-        `
-      : ""}      
-  & > div {
-    margin: -10px;
-    ${(props) =>
-      !props.$wrapItems
-        ? css`
-            flex-wrap: nowrap;
-          `
-        : ""}
-  }
-`;
+export const ScriptEventFieldGroup = ({
+  halfWidth,
+  wrapItems,
+  alignBottom,
+  flexGrow,
+  flexBasis,
+  minWidth,
+  children,
+}: ScriptEventFieldGroupProps) => (
+  <StyledScriptEventFieldGroup
+    $halfWidth={halfWidth}
+    $wrapItems={wrapItems}
+    $alignBottom={alignBottom}
+    style={{
+      flexGrow: flexGrow,
+      flexBasis: flexBasis,
+      minWidth: minWidth,
+    }}
+    children={children}
+  />
+);
 
 interface ScriptEventWarningProps {
   children?: ReactNode;

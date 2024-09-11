@@ -7,7 +7,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
-  ScriptEventFieldGroupWrapper,
+  ScriptEventFieldGroup,
 } from "ui/scripting/ScriptEvents";
 import { useAppSelector } from "store/hooks";
 import {
@@ -107,16 +107,14 @@ const ScriptEventFields = ({
 
         if (field.type === "group" && field.fields) {
           return (
-            <ScriptEventFieldGroupWrapper
+            <ScriptEventFieldGroup
               key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
-              $halfWidth={field.width === "50%"}
-              $wrapItems={field.wrapItems}
-              $alignBottom={field.alignBottom}
-              style={{
-                flexBasis: field.flexBasis,
-                flexGrow: field.flexGrow,
-                minWidth: field.minWidth,
-              }}
+              halfWidth={field.width === "50%"}
+              wrapItems={field.wrapItems}
+              alignBottom={field.alignBottom}
+              flexGrow={field.flexGrow}
+              flexBasis={field.flexBasis}
+              minWidth={field.minWidth}
             >
               <ScriptEventFields
                 scriptEvent={scriptEvent}
@@ -130,7 +128,7 @@ const ScriptEventFields = ({
                 parentKey={parentKey}
                 parentType={parentType}
               />
-            </ScriptEventFieldGroupWrapper>
+            </ScriptEventFieldGroup>
           );
         }
 
