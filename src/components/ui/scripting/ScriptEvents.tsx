@@ -314,9 +314,7 @@ export const ScriptEditorChildrenLabel = styled.span<ScriptEditorChildrenLabelPr
 export const ScriptEventWrapper = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ children }, outerRef) => (
-  <StyledScriptEventWrapper ref={outerRef} children={children} />
-));
+>((props, outerRef) => <StyledScriptEventWrapper ref={outerRef} {...props} />);
 
 interface ScriptEventFieldGroupProps {
   $halfWidth?: boolean;
