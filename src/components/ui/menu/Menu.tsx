@@ -30,7 +30,7 @@ export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const MenuItem = ({
   selected,
-  subMenu: _,
+  subMenu,
   children,
   icon,
   ...props
@@ -38,6 +38,7 @@ export const MenuItem = ({
   <StyledMenuItem $selected={selected} {...props}>
     {icon && <StyledMenuItemIcon>{icon}</StyledMenuItemIcon>}
     {children}
+    {subMenu && <MenuItemCaret />}
   </StyledMenuItem>
 );
 
