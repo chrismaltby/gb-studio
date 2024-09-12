@@ -533,7 +533,7 @@ const editorSlice = createSlice({
         return Math.min(
           800,
           action.payload.delta !== undefined
-            ? oldZoom + -action.payload.delta
+            ? oldZoom + action.payload.delta
             : zoomIn(oldZoom)
         );
       };

@@ -31,6 +31,8 @@ import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 
+const MOUSE_ZOOM_SPEED = 0.5;
+
 const Wrapper = styled.div`
   position: absolute;
   left: 0px;
@@ -253,13 +255,20 @@ const WorldView = () => {
     (e: WheelEvent) => {
       if (e.ctrlKey && !blockWheelZoom.current) {
         e.preventDefault();
-        if (e.deltaY > 0) {
+        const absDeltaY = Math.abs(e.deltaY);
+        if (e.deltaY < 0) {
           dispatch(
-            editorActions.zoomIn({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomIn({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         } else {
           dispatch(
-            editorActions.zoomOut({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomOut({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         }
       } else {
@@ -622,7 +631,7 @@ const WorldView = () => {
   //#region Event Listeners
 
   useEffect(() => {
-    window.addEventListener("wheel", onMouseWheel);
+    window.addEventListener("wheel", onMouseWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("copy", onCopy);
