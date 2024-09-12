@@ -22,7 +22,6 @@ import { Button } from "ui/buttons/Button";
 import { BlankIcon, CheckIcon, LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { CustomEventSymbolsEditor } from "components/forms/symbols/CustomEventSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { Checkbox } from "ui/form/Checkbox";
 import { NoteField } from "ui/form/NoteField";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { Input } from "ui/form/Input";
@@ -402,12 +401,14 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                             false
                                           )
                                         }
+                                        icon={
+                                          !variable.passByReference ? (
+                                            <CheckIcon />
+                                          ) : (
+                                            <BlankIcon />
+                                          )
+                                        }
                                       >
-                                        <Checkbox
-                                          id="byVal"
-                                          name="byVal"
-                                          checked={!variable.passByReference}
-                                        />
                                         {l10n("FIELD_PASS_BY_VALUE")}
                                       </MenuItem>
                                       <MenuItem
@@ -417,12 +418,14 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                             true
                                           )
                                         }
+                                        icon={
+                                          variable.passByReference ? (
+                                            <CheckIcon />
+                                          ) : (
+                                            <BlankIcon />
+                                          )
+                                        }
                                       >
-                                        <Checkbox
-                                          id="byRef"
-                                          name="byRef"
-                                          checked={variable.passByReference}
-                                        />
                                         {l10n("FIELD_PASS_BY_REFERENCE")}
                                       </MenuItem>
                                     </DropdownButton>
