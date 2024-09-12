@@ -30,7 +30,7 @@ const renderSceneContextMenu = ({
   hoverY,
 }: SceneContextMenuProps) => {
   return [
-    <MenuSection style={{ paddingRight: 10, marginBottom: 5 }}>
+    <MenuSection key="label" style={{ paddingRight: 10, marginBottom: 5 }}>
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: 5 }}>
           <LabelButton
@@ -100,7 +100,7 @@ const renderSceneContextMenu = ({
     >
       {l10n("FIELD_SET_AS_STARTING_SCENE")}
     </MenuItem>,
-    <MenuSection>
+    <MenuSection key="direction">
       <div style={{ width: 200 }}>
         <DirectionPicker
           id="startDirection"
@@ -120,7 +120,7 @@ const renderSceneContextMenu = ({
     </MenuSection>,
     ...(onRename
       ? [
-          <MenuDivider key="div-direction" />,
+          <MenuDivider key="div-rename" />,
           <MenuItem key="rename" onClick={onRename}>
             {l10n("FIELD_RENAME")}
           </MenuItem>,

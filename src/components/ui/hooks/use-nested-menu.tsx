@@ -69,28 +69,28 @@ const useNestedMenu = (
 
   // Handle listening for clicks and auto-hiding the menu
   useEffect(() => {
-    // This function is designed to handle every click
     const handleEveryClick = (event: MouseEvent) => {
+      if (isInitialMount.current) {
+        return;
+      }
+
       // Ignore if the menu isn't open
       if (!isOpen) {
         return;
       }
 
-      // Make this happen asynchronously
-      setTimeout(() => {
-        // Type guard
-        if (!(event.target instanceof Element)) {
-          return;
-        }
+      // Type guard
+      if (!(event.target instanceof Element)) {
+        return;
+      }
 
-        // Ignore if we're clicking inside the menu
-        if (event.target.closest('[role="menu"]') instanceof Element) {
-          return;
-        }
+      // Ignore if we're clicking inside the menu
+      if (event.target.closest('[role="menu"]') instanceof Element) {
+        return;
+      }
 
-        // Hide dropdown
-        closeMenu();
-      }, 10);
+      // Hide dropdown
+      closeMenu();
     };
 
     // Add listener
@@ -394,8 +394,21 @@ const useNestedMenu = (
   }, [parentMenuIndex, moveFocus, menuItemChildren]);
 
   // Track if this is the initial mount for auto focus handling
+  // Delay setting isInitialMount to false by one frame
+  // to prevent issues where contextmenu event handler will fire
+  // during the mount (especially in React.StrictMode)
+  const mountDelayRequest = React.useRef<number>();
+
   useEffect(() => {
-    isInitialMount.current = false;
+    isInitialMount.current = true;
+    mountDelayRequest.current = requestAnimationFrame(() => {
+      isInitialMount.current = false;
+    });
+    return () => {
+      if (mountDelayRequest.current !== undefined) {
+        cancelAnimationFrame(mountDelayRequest.current);
+      }
+    };
   }, []);
 
   return {
