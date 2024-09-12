@@ -19,6 +19,7 @@ import { Checkbox } from "ui/form/Checkbox";
 import clamp from "shared/lib/helpers/clamp";
 import { Select } from "ui/form/Select";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
@@ -146,7 +147,11 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
         id={field.key}
         name={field.key}
         value={selectedOption}
-        onChange={(e: { value: string }) => onChange(e.value)}
+        onChange={(e: SingleValue<{ value: number }>) => {
+          if (e) {
+            onChange(e.value);
+          }
+        }}
         options={options}
       />
     );

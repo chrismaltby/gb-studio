@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
@@ -15,7 +16,7 @@ interface CompilerPresetOption {
 
 export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
   name,
-  value,
+  value = 3000,
   onChange,
 }) => {
   const options: CompilerPresetOption[] = useMemo(
@@ -34,8 +35,10 @@ export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: CompilerPresetOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<CompilerPresetOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: CompilerPresetOption) => {
         return (
@@ -46,9 +49,4 @@ export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
       }}
     />
   );
-};
-
-CompilerPresetSelect.defaultProps = {
-  name: undefined,
-  value: 3000,
 };

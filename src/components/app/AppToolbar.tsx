@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Helmet } from "react-helmet";
 import debounce from "lodash/debounce";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -141,7 +140,7 @@ const AppToolbar: FC = () => {
   );
 
   const onChangeSearchTerm = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(e.currentTarget.value);
       onChangeSearchTermDebounced(e.currentTarget.value);
     },
@@ -189,10 +188,6 @@ const AppToolbar: FC = () => {
     };
   }, [onKeyDown]);
 
-  if (!loaded) {
-    return <Toolbar />;
-  }
-
   let appTitle = name || "Untitled";
   if (saveError) {
     appTitle = `${l10n("TOOLBAR_SAVING_ERROR")} [${saveStep}]`;
@@ -209,11 +204,16 @@ const AppToolbar: FC = () => {
     appTitle += ` (${l10n("TOOLBAR_MODIFIED")})`;
   }
 
+  useEffect(() => {
+    document.title = `GB Studio - ${appTitle}`;
+  }, [appTitle]);
+
+  if (!loaded) {
+    return <Toolbar />;
+  }
+
   return (
     <Toolbar focus={windowFocus}>
-      <Helmet>
-        <title>{`GB Studio - ${appTitle}`}</title>
-      </Helmet>
       <DropdownButton
         label={
           <span style={{ textAlign: "left", minWidth: 106 }}>

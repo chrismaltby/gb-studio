@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
-import { Dictionary } from "@reduxjs/toolkit";
 import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
@@ -50,7 +49,7 @@ export const useScriptEventTitle = (
 
   const [autoName, setAutoName] = useState("");
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
-    Dictionary<NamedVariable>
+    Record<string, NamedVariable>
   >({});
   const { entityType, sceneId, entityId } = context;
 

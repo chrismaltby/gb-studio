@@ -13,6 +13,7 @@ import {
   Select,
   SingleValueWithPreview,
 } from "ui/form/Select";
+import { SingleValue } from "react-select";
 
 interface PaletteIndexSelectProps {
   name: string;
@@ -28,7 +29,7 @@ interface PaletteIndexOption {
 
 export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   name,
-  value,
+  value = 0,
   onChange,
 }) => {
   const [options, setOptions] = useState<PaletteIndexOption[]>([]);
@@ -73,8 +74,10 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: PaletteIndexOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<PaletteIndexOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: PaletteIndexOption) => {
         return (
@@ -112,9 +115,4 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
       }}
     />
   );
-};
-
-PaletteIndexSelect.defaultProps = {
-  name: undefined,
-  value: 0,
 };

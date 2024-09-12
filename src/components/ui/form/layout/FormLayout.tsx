@@ -55,6 +55,7 @@ export interface FormFieldProps {
   readonly alignCheckbox?: boolean;
   readonly variant?: "normal" | "error" | "warning";
   readonly hasOverride?: boolean;
+  readonly children?: ReactNode;
 }
 
 export const FormField: FC<FormFieldProps> = ({
@@ -66,7 +67,7 @@ export const FormField: FC<FormFieldProps> = ({
   alignCheckbox,
   hasOverride,
   children,
-}) => (
+}: FormFieldProps) => (
   <StyledFormField
     $variant={variant}
     $alignCheckbox={alignCheckbox}

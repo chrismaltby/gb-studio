@@ -239,7 +239,7 @@ const ScriptEditorEvent = React.memo(
     );
 
     const onRename = useCallback(
-      (e) => {
+      (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
           entitiesActions.editScriptEventLabel({
             scriptEventId: id,
@@ -261,11 +261,14 @@ const ScriptEditorEvent = React.memo(
       setRename(false);
     }, []);
 
-    const onDetectRenameComplete = useCallback((e) => {
-      if (e.key === "Enter") {
-        setRename(false);
-      }
-    }, []);
+    const onDetectRenameComplete = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          setRename(false);
+        }
+      },
+      []
+    );
 
     drag(dragRef);
     drop(dropRef);

@@ -71,7 +71,3 @@ export const SliderField: FC<SliderFieldProps> = ({
     </Wrapper>
   );
 };
-
-SliderField.defaultProps = {
-  value: undefined,
-};

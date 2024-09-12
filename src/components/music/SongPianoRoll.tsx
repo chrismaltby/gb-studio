@@ -410,29 +410,26 @@ export const SongPianoRoll = ({
     [selectedChannel, pattern]
   );
 
-  const onSelectAll = useCallback(
-    (_e) => {
-      const selection = window.getSelection();
-      if (!selection || selection.focusNode) {
-        return;
-      }
-      window.getSelection()?.empty();
-      const allPatternCells = pattern
-        ?.map((c, i) => {
-          return c[selectedChannel].note !== null ? i : undefined;
-        })
-        .filter((c) => c !== undefined) as number[];
-      dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
+  const onSelectAll = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.focusNode) {
+      return;
+    }
+    window.getSelection()?.empty();
+    const allPatternCells = pattern
+      ?.map((c, i) => {
+        return c[selectedChannel].note !== null ? i : undefined;
+      })
+      .filter((c) => c !== undefined) as number[];
+    dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
 
-      // Blur any focused element to be able to use keyboard actions on the
-      // selection
-      const el = document.querySelector(":focus") as unknown as
-        | BlurableDOMElement
-        | undefined;
-      if (el && el.blur) el.blur();
-    },
-    [selectedChannel, dispatch, pattern]
-  );
+    // Blur any focused element to be able to use keyboard actions on the
+    // selection
+    const el = document.querySelector(":focus") as unknown as
+      | BlurableDOMElement
+      | undefined;
+    if (el && el.blur) el.blur();
+  }, [selectedChannel, dispatch, pattern]);
 
   useEffect(() => {
     if (!subpatternEditorFocus) {
@@ -444,7 +441,7 @@ export const SongPianoRoll = ({
   }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
-    (newMoveNoteTo) => {
+    (newMoveNoteTo: NoteRenderCoordinates | undefined) => {
       if (pattern) {
         const columnFrom = moveNoteFrom?.column || 0;
         const columnTo = newMoveNoteTo?.column || 0;
@@ -870,7 +867,8 @@ export const SongPianoRoll = ({
 
   // Clipboard
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName === "INPUT") {
         return;
       }

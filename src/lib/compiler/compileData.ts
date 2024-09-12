@@ -109,7 +109,6 @@ import {
   SpriteSheetData,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
-import type { Dictionary } from "@reduxjs/toolkit";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
@@ -215,7 +214,7 @@ export const precompileBackgrounds = async (
   backgrounds: BackgroundData[],
   scenes: Scene[],
   tilesets: TilesetData[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   colorMode: ColorModeSetting,
   projectRoot: string,
   tmpPath: string,
@@ -364,7 +363,7 @@ export const precompilePalettes = async (
   scenes: Scene[],
   settings: SettingsState,
   palettes: Palette[],
-  backgrounds: Dictionary<PrecompiledBackground>
+  backgrounds: Record<string, PrecompiledBackground>
 ) => {
   const usedPalettes: PrecompiledPalette[] = [];
   const usedPalettesCache: Record<string, number> = {};
@@ -602,7 +601,7 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteSheets: SpriteSheetData[],
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
   cgbOnly: boolean,
   projectRoot: string
@@ -704,7 +703,7 @@ export const precompileSprites = async (
 export const precompileAvatars = async (
   avatars: AvatarData[],
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   projectRoot: string,
   {
     warnings,
@@ -749,7 +748,7 @@ export const precompileAvatars = async (
 export const precompileEmotes = async (
   emotes: EmoteData[],
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   projectRoot: string,
   {
     warnings,
@@ -805,7 +804,7 @@ export const precompileEmotes = async (
 export const precompileTilesets = async (
   tilesets: TilesetData[],
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   projectRoot: string,
   {
     warnings,
@@ -860,7 +859,7 @@ export const precompileTilesets = async (
 
 export const precompileMusic = (
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   music: MusicData[],
   musicDriver: MusicDriverSetting
 ) => {
@@ -927,7 +926,7 @@ export const precompileMusic = (
 export const precompileFonts = async (
   usedFonts: FontData[],
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   defaultFontId: string,
   projectRoot: string,
   {
@@ -955,7 +954,7 @@ export const precompileFonts = async (
 
 export const precompileScenes = (
   scenes: Scene[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
   colorMode: ColorModeSetting,
   usedBackgrounds: PrecompiledBackground[],
@@ -1391,7 +1390,7 @@ const compile = async (
   usedSceneTypeIds: string[];
 }> => {
   const output: Record<string, string> = {};
-  const symbols: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
   const sceneMap: Record<string, SceneMapData> = {};
 
   if (rawProjectData.scenes.length === 0) {
@@ -1464,25 +1463,34 @@ const compile = async (
   );
 
   // Add event data
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    sceneId: string;
-    entityId: string;
-    entityType: ScriptBuilderEntityType;
-    scriptKey: string;
-    compiledScript: string;
-  }> = {};
-  const additionalOutput: Dictionary<{
-    filename: string;
-    data: string;
-  }> = {};
-  const compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
-  const compiledAssetsCache: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      sceneId: string;
+      entityId: string;
+      entityType: ScriptBuilderEntityType;
+      scriptKey: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalOutput: Record<
+    string,
+    {
+      filename: string;
+      data: string;
+    }
+  > = {};
+  const compiledCustomEventScriptCache: Record<
+    string,
+    {
+      scriptRef: string;
+      argsLen: number;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
+  const recursiveSymbolMap: Record<string, string> = {};
+  const compiledAssetsCache: Record<string, string> = {};
 
   const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
     (scene, sceneIndex) => {

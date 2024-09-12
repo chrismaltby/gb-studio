@@ -13,12 +13,6 @@ import {
 const meta: Meta<typeof Credits> = {
   title: "UI/Splash/Credits",
   component: Credits,
-  subcomponents: {
-    CreditsTitle,
-    CreditsSubHeading,
-    CreditsGrid,
-    CreditsPerson,
-  },
   parameters: {
     layout: "centered",
   },

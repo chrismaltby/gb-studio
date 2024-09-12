@@ -49,7 +49,7 @@ import {
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import L10NText from "ui/form/L10NText";
 import { SliderField } from "ui/form/SliderField";
-import { Option, Select } from "ui/form/Select";
+import { Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
@@ -64,6 +64,7 @@ import { ClipboardTypeScriptValue } from "store/features/clipboard/clipboardType
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { copy, paste } from "store/features/clipboard/clipboardHelpers";
+import { SingleValue } from "react-select";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;
@@ -956,11 +957,13 @@ const ValueSelect = ({
                     ) || options[0]
                   }
                   options={options}
-                  onChange={(e: Option) => {
-                    onChange({
-                      type: "number",
-                      value: ensureNumber(e.value, 0),
-                    });
+                  onChange={(e: SingleValue<{ value: number }>) => {
+                    if (e) {
+                      onChange({
+                        type: "number",
+                        value: ensureNumber(e.value, 0),
+                      });
+                    }
                   }}
                 />
               )}

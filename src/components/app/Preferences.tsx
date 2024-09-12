@@ -164,8 +164,10 @@ const Preferences = () => {
             <Select
               value={currentZoomValue}
               options={zoomOptions}
-              onChange={(newValue: Options) => {
-                onChangeZoomLevel(newValue.value);
+              onChange={(newValue) => {
+                if (newValue) {
+                  onChangeZoomLevel(newValue.value);
+                }
               }}
             />
           </FormField>
@@ -179,8 +181,10 @@ const Preferences = () => {
             <Select
               value={currentTrackerKeyBindings}
               options={trackerKeyBindingsOptions}
-              onChange={(newValue: Options) => {
-                onChangeTrackerKeyBindings(newValue.value);
+              onChange={(newValue) => {
+                if (newValue) {
+                  onChangeTrackerKeyBindings(newValue.value);
+                }
               }}
               formatOptionLabel={(
                 option: Options,

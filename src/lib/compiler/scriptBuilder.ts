@@ -17,7 +17,6 @@ import type {
   CustomEvent,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
@@ -144,7 +143,7 @@ export interface ScriptBuilderOptions {
   entityType: ScriptBuilderEntityType;
   entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<VariableMapData>;
+  variableAliasLookup: Record<string, VariableMapData>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -160,27 +159,36 @@ export interface ScriptBuilderOptions {
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
-  engineFields: Dictionary<EngineFieldSchema>;
+  engineFields: Record<string, EngineFieldSchema>;
   settings: SettingsState;
-  additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }>;
-  additionalOutput: Dictionary<{
-    filename: string;
-    data: string;
-  }>;
-  symbols: Dictionary<string>;
+  additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  >;
+  additionalOutput: Record<
+    string,
+    {
+      filename: string;
+      data: string;
+    }
+  >;
+  symbols: Record<string, string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
-  compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }>;
-  recursiveSymbolMap: Dictionary<string>;
-  additionalScriptsCache: Dictionary<string>;
+  compiledCustomEventScriptCache: Record<
+    string,
+    {
+      scriptRef: string;
+      argsLen: number;
+    }
+  >;
+  recursiveSymbolMap: Record<string, string>;
+  additionalScriptsCache: Record<string, string>;
   debugEnabled: boolean;
-  compiledAssetsCache: Dictionary<string>;
+  compiledAssetsCache: Record<string, string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -636,7 +644,7 @@ class ScriptBuilder {
   localsSize: number;
   actorIndex: number;
   stackPtr: number;
-  labelStackSize: Dictionary<number>;
+  labelStackSize: Record<string, number>;
   includeParams: number[];
   headers: string[];
 
@@ -4629,7 +4637,7 @@ extern void __mute_mask_${symbol};
 
   callScript = (
     scriptId: string,
-    input: Dictionary<string | ScriptValue | ScriptBuilderFunctionArg>
+    input: Record<string, string | ScriptValue | ScriptBuilderFunctionArg>
   ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);

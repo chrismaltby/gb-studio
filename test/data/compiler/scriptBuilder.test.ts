@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import { PrecompiledScene } from "../../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
@@ -1076,10 +1075,13 @@ test("should support using variable to change font with %f$Var", async () => {
 
 test("should allow passing actors to custom event", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -1137,10 +1139,13 @@ test("should allow passing actors to custom event", async () => {
 
 test("should allow passing actors to nested custom event", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -1365,10 +1370,13 @@ test("Should allow rnd to be used in rpn without script neutral error", () => {
 
 test("should reuse symbol for input scripts with identical contents", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -1475,12 +1483,15 @@ test("should reuse symbol for input scripts with identical contents", async () =
 test("should reuse symbol for input scripts with identical contents across multiple scenes", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
@@ -1646,12 +1657,15 @@ test("should reuse symbol for input scripts with identical contents across multi
 test("should reuse input symbol but NOT script symbol when scripts are identical across scenes", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
@@ -1804,11 +1818,14 @@ test("should reuse input symbol but NOT script symbol when scripts are identical
 
 test("should insert placeholder symbol for recursive scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -1877,12 +1894,15 @@ test("should insert placeholder symbol for recursive scripts", async () => {
 test("should NOT reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
@@ -1982,12 +2002,15 @@ test("should NOT reuse script symbol even if scene hashes are different as long 
 test("should reuse script symbol even if scene hashes are different when the same script is being called and the output is identical", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const customEvents: CustomEvent[] = [
     {
@@ -2067,12 +2090,15 @@ test("should reuse script symbol even if scene hashes are different when the sam
 test("should NOT reuse script symbol even if scene hashes are different causing the same script to be compiled with different output", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const customEvents: CustomEvent[] = [
     {
@@ -2182,12 +2208,15 @@ test("should NOT reuse script symbol even if scene hashes are different causing 
 test("should not reused script symbol when scripts are not identical", async () => {
   const output: string[] = [];
   const output2: string[] = [];
-  const symbols: Dictionary<string> = {};
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const additionalScriptsCache: Dictionary<string> = {};
+  const symbols: Record<string, string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const additionalScriptsCache: Record<string, string> = {};
 
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
@@ -2294,11 +2323,14 @@ test("should not reused script symbol when scripts are not identical", async () 
 
 test("should allow pass by reference for recursive scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2388,11 +2420,14 @@ test("should allow pass by reference for recursive scripts", async () => {
 
 test("should allow pass by value for recursive scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2482,11 +2517,14 @@ test("should allow pass by value for recursive scripts", async () => {
 
 test("should allow pass by reference between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2587,11 +2625,14 @@ test("should allow pass by reference between multiple scripts", async () => {
 
 test("should allow pass by reference to pass by value between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2692,11 +2733,14 @@ test("should allow pass by reference to pass by value between multiple scripts",
 
 test("should allow pass by value to pass by reference between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2797,11 +2841,14 @@ test("should allow pass by value to pass by reference between multiple scripts",
 
 test("should allow pass by value between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -2902,11 +2949,14 @@ test("should allow pass by value between multiple scripts", async () => {
 
 test("should allow pass by reference of script value between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,
@@ -3024,11 +3074,14 @@ test("should allow pass by reference of script value between multiple scripts", 
 
 test("should allow pass by value of script value between multiple scripts", async () => {
   const output: string[] = [];
-  const additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }> = {};
-  const recursiveSymbolMap: Dictionary<string> = {};
+  const additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  > = {};
+  const recursiveSymbolMap: Record<string, string> = {};
   const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
     scriptEventHandlers,

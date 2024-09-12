@@ -13,9 +13,6 @@ import { TextField } from "ui/form/TextField";
 const meta: Meta<typeof FormContainer> = {
   title: "UI/Forms/FormLayout",
   component: FormContainer,
-  subcomponents: {
-    // FormContainerItem,
-  },
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

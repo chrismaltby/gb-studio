@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Input } from "ui/form/Input";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
@@ -114,8 +115,8 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
           </OptionLabelWithInfo>
         );
       }}
-      onChange={(newValue: MovementSpeedOption) => {
-        if (newValue.value !== undefined) {
+      onChange={(newValue: SingleValue<MovementSpeedOption>) => {
+        if (newValue?.value !== undefined) {
           onChange?.(newValue.value);
         } else {
           setIsCustom({ isCustom: true, autoFocus: true });

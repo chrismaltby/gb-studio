@@ -1,4 +1,4 @@
-import { Middleware, Action, Dispatch } from "@reduxjs/toolkit";
+import { Middleware, Dispatch } from "@reduxjs/toolkit";
 import actions from "./assetsActions";
 import { RootState } from "store/configureStore";
 import {
@@ -8,7 +8,7 @@ import {
 import API from "renderer/lib/api";
 
 const assetsMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action: Action) => {
+  (store) => (next) => (action) => {
     if (actions.loadBackgroundAssetInfo.match(action)) {
       const state = store.getState();
       const background = backgroundSelectors.selectById(

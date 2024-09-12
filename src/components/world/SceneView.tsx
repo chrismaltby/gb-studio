@@ -469,7 +469,7 @@ const SceneView = memo(
     }, [sceneSelectionIds]);
 
     const onMoveDrag = useCallback(
-      (e) => {
+      (e: MouseEvent) => {
         const dragDeltaX =
           (e.pageX - dragState.current.lastPageX) / dragState.current.zoomRatio;
         const dragDeltaY =

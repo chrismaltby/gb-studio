@@ -82,7 +82,3 @@ export const NumberInput: FC<NumberInputProps> = ({
     </NumberInputWrapper>
   );
 };
-
-NumberInput.defaultProps = {
-  value: undefined,
-};

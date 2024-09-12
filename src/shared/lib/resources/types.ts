@@ -247,14 +247,8 @@ export const ScriptResource = Type.Object({
   name: Type.String(),
   symbol: Type.String(),
   description: Type.String(),
-  variables: Type.Record(
-    Type.String(),
-    Type.Union([ScriptVariable, Type.Undefined()])
-  ),
-  actors: Type.Record(
-    Type.String(),
-    Type.Union([ScriptActor, Type.Undefined()])
-  ),
+  variables: Type.Record(Type.String(), ScriptVariable),
+  actors: Type.Record(Type.String(), ScriptActor),
   script: Type.Array(ScriptEvent),
 });
 

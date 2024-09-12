@@ -14,6 +14,7 @@ import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import styled from "styled-components";
 import { Label } from "ui/form/Label";
 import { FlexGrow } from "ui/spacing/Spacing";
+import { SingleValue } from "react-select";
 
 interface ScriptEventUserPresetsProps {
   scriptEvent: ScriptEventNormalized;
@@ -257,8 +258,10 @@ export const ScriptEventUserPresets = ({
               name={"presetId"}
               value={currentValue}
               options={options}
-              onChange={(newValue: UserPresetOption) => {
-                setPreset(newValue.value);
+              onChange={(newValue: SingleValue<UserPresetOption>) => {
+                if (newValue) {
+                  setPreset(newValue.value);
+                }
               }}
             />
           </FormField>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
@@ -16,7 +16,11 @@ export const Container = styled.div`
   box-sizing: border-box;
 `;
 
-export const PageHeader: React.FC = ({ children }) => {
+interface PageHeaderProps {
+  children: ReactNode;
+}
+
+export const PageHeader = ({ children }: PageHeaderProps) => {
   return (
     <Wrapper>
       <Container>{children}</Container>

@@ -1,6 +1,5 @@
 // Helpers around script data
 
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   ScriptEventNormalized,
   ScriptEvent,
@@ -18,9 +17,9 @@ export const isEmptyScript = (script: ScriptEvent[]) => {
 
 export const isNormalizedScriptEqual = (
   idsA: string[] = [],
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   idsB: string[] = [],
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   const scriptAEvents: { args?: Record<string, unknown>; command: string }[] =
     [];

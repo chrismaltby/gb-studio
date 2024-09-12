@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import { Select } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface SceneTypeSelectProps {
   name: string;
@@ -16,7 +17,7 @@ interface SceneTypeOption {
 
 export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
   name,
-  value,
+  value = "0",
   onChange,
 }) => {
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
@@ -35,16 +36,11 @@ export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: SceneTypeOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<SceneTypeOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
 };
-
-SceneTypeSelect.defaultProps = {
-  name: undefined,
-  value: "0",
-};
-
-// {(showHiddenSceneTypes || scene.type === "2") &&

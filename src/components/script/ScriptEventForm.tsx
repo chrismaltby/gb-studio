@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import { customEventSelectors } from "store/features/entities/entitiesState";
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   CustomEventNormalized,
   ScriptEventFieldSchema,
@@ -26,8 +25,8 @@ interface ScriptEventFormProps {
 const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Dictionary<CustomEventNormalized>,
-  scriptEventDefs: Dictionary<ScriptEventDef>
+  customEvents: Record<string, CustomEventNormalized>,
+  scriptEventDefs: Record<string, ScriptEventDef>
 ) => {
   const eventCommands =
     (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];

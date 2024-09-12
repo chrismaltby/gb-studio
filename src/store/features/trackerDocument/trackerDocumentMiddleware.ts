@@ -8,6 +8,7 @@ import trackerDocumentActions from "./trackerDocumentActions";
 import electronActions from "store/features/electron/electronActions";
 import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
+import projectActions from "store/features/project/projectActions";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =
   (store) => (next) => async (action) => {
@@ -43,7 +44,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
     }
 
     if (
-      action.type === "project/saveProject/pending" &&
+      projectActions.saveProject.pending.match(action) &&
       state.trackerDocument.present.modified
     ) {
       store.dispatch(saveSongFile());

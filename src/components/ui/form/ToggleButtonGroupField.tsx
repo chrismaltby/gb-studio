@@ -35,7 +35,3 @@ export const ToggleButtonGroupField = <T,>({
     />
   </Wrapper>
 );
-
-ToggleButtonGroupField.defaultProps = {
-  value: undefined,
-};

@@ -12,6 +12,7 @@ import {
 } from "components/music/NavigatorModSongs";
 import ModViewer from "components/music/ModViewer";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
@@ -31,8 +32,10 @@ const MusicPageMod = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allTracks = useAppSelector((state) =>
-    musicSelectors.selectAll(state).filter(modFilter)
+  const allTracks = useAppSelector(musicSelectors.selectAll);
+  const allModTracks = useMemo(
+    () => allTracks.filter(modFilter).sort(sortByFilename),
+    [allTracks]
   );
 
   const track = useAppSelector((state) =>
@@ -47,8 +50,8 @@ const MusicPageMod = () => {
   }, [track]);
 
   const viewTrackId = useMemo(
-    () => track?.id || lastTrackId.current || allTracks[0]?.id,
-    [allTracks, track]
+    () => track?.id || lastTrackId.current || allModTracks[0]?.id,
+    [allModTracks, track]
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({

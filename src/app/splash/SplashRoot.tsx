@@ -1,20 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Splash from "components/app/Splash";
 import initRendererL10N from "renderer/lib/lang/initRendererL10N";
 import { initTheme } from "renderer/lib/theme";
 import "renderer/lib/globalErrorHandling";
 
-const render = () => {
-  ReactDOM.render(<Splash />, document.getElementById("App"));
-};
-
 (async () => {
   await initRendererL10N();
   await initTheme();
-  render();
-})();
 
-if (module.hot) {
-  module.hot.accept(render);
-}
+  const root = createRoot(document.getElementById("App") as HTMLElement);
+  root.render(
+    <React.StrictMode>
+      <Splash />
+    </React.StrictMode>
+  );
+})();

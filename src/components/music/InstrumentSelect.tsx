@@ -9,6 +9,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
+import { SingleValue } from "react-select";
 
 const defaultInstrumentOptions = Array(15)
   .fill("")
@@ -95,8 +96,10 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
     }
   }, [currentInstrument, options]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

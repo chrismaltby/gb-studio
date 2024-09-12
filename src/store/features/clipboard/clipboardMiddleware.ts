@@ -1,5 +1,5 @@
 import flatten from "lodash/flatten";
-import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
+import { AnyAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -93,9 +93,9 @@ const generateLocalVariableInsertActions = (
 
 const generateCustomEventInsertActions = async (
   customEvent: CustomEventNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingCustomEvents: CustomEventNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
 ): Promise<AnyAction[]> => {
   const actions: AnyAction[] = [];
 
@@ -156,7 +156,7 @@ const generateCustomEventInsertActions = async (
 
 const generateActorInsertActions = (
   actor: ActorNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
@@ -194,9 +194,9 @@ const generateActorInsertActions = (
 
 const generateActorPrefabInsertActions = async (
   prefab: ActorPrefabNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingActorPrefabs: ActorPrefabNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
 ): Promise<AnyAction[]> => {
   const actions: AnyAction[] = [];
 
@@ -255,7 +255,7 @@ const generateActorPrefabInsertActions = async (
 
 const generateTriggerInsertActions = (
   trigger: TriggerNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
@@ -295,9 +295,9 @@ const generateTriggerInsertActions = (
 
 const generateTriggerPrefabInsertActions = async (
   prefab: TriggerPrefabNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingTriggerPrefabs: TriggerPrefabNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
 ): Promise<AnyAction[]> => {
   const actions: AnyAction[] = [];
 
@@ -358,7 +358,7 @@ const generateSceneInsertActions = (
   scene: SceneNormalized,
   actors: ActorNormalized[],
   triggers: TriggerNormalized[],
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
@@ -1210,7 +1210,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               }
               return memo;
             },
-            {} as Dictionary<string>
+            {} as Record<string, string>
           );
 
           const newTileActions = data.metaspriteTiles.map((tile) => {
@@ -1256,7 +1256,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             }
             return memo;
           },
-          {} as Dictionary<string>
+          {} as Record<string, string>
         );
 
         const newTileActions = data.metaspriteTiles.map((tile) => {

@@ -85,8 +85,10 @@ const MusicPageUge = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSongs = useAppSelector((state) =>
-    musicSelectors.selectAll(state).filter(ugeFilter).sort(sortByFilename)
+  const allSongs = useAppSelector(musicSelectors.selectAll);
+  const allUgeSongs = useMemo(
+    () => allSongs.filter(ugeFilter).sort(sortByFilename),
+    [allSongs]
   );
 
   const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
@@ -103,8 +105,8 @@ const MusicPageUge = () => {
   }, [song]);
 
   const viewSongId = useMemo(
-    () => song?.id || lastSongId.current || allSongs[0]?.id,
-    [allSongs, song]
+    () => song?.id || lastSongId.current || allUgeSongs[0]?.id,
+    [allUgeSongs, song]
   );
 
   const viewSong = useAppSelector((state) =>

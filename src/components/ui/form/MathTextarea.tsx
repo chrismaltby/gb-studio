@@ -4,7 +4,6 @@ import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import CustomMention from "./CustomMention";
 import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
-import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
@@ -286,7 +285,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [variablesLookup, setVariablesLookup] = useState<
-    Dictionary<NamedVariable>
+    Record<string, NamedVariable>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
   const [error, setError] = useState<string>("");

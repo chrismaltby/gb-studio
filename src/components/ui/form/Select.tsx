@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import WindowedSelect from "react-windowed-select";
 import CRSelect from "react-select/creatable";
-import React, { CSSProperties, FC, ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
@@ -51,18 +51,20 @@ export interface SelectCommonProps {
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
-export const Select = styled(WindowedSelect).attrs((props) => ({
-  classNamePrefix: "CustomSelect",
-  styles: {
-    option: (base: CSSProperties) => ({
-      ...base,
-      height: 26,
-    }),
-  },
-  inputId: props.name,
-  menuPlacement: "auto",
-  menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-}))`
+export const Select: typeof WindowedSelect = styled(WindowedSelect).attrs(
+  (props) => ({
+    classNamePrefix: "CustomSelect",
+    styles: {
+      option: (base) => ({
+        ...base,
+        height: 26,
+      }),
+    },
+    inputId: props.name,
+    menuPlacement: "auto",
+    menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
+  })
+)`
   position: relative;
   width: 100%;
   min-width: 78px;
@@ -327,18 +329,20 @@ export const SelectMenu = styled.div`
   }
 `;
 
-export const CreatableSelect = styled(CRSelect).attrs((props) => ({
-  classNamePrefix: "CustomSelect",
-  styles: {
-    option: (base: CSSProperties) => ({
-      ...base,
-      height: 26,
-    }),
-  },
-  inputId: props.name,
-  menuPlacement: "auto",
-  menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-}))`
+export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
+  (props) => ({
+    classNamePrefix: "CustomSelect",
+    styles: {
+      option: (base) => ({
+        ...base,
+        height: 26,
+      }),
+    },
+    inputId: props.name,
+    menuPlacement: "auto",
+    menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
+  })
+)`
   .CustomSelect__control {
     height: 28px;
     min-height: 28px;

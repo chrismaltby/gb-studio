@@ -24,6 +24,7 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { UnitType } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -43,7 +44,7 @@ export const VariableSelectWrapper = styled.div`
   min-width: 78px;
 `;
 
-const Select = styled(DefaultSelect)`
+const Select: typeof DefaultSelect = styled(DefaultSelect)`
   .CustomSelect__control {
   }
 `;
@@ -275,8 +276,10 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         <Select
           value={currentValue}
           options={options}
-          onChange={(newValue: Option) => {
-            onChange(newValue.value);
+          onChange={(newValue: SingleValue<Option>) => {
+            if (newValue) {
+              onChange(newValue.value);
+            }
           }}
           {...selectProps}
         />

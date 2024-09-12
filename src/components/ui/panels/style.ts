@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import { Select } from "ui/form/Select";
 import { StyledButton } from "ui/buttons/style";
 
 interface StyledFloatingPanelProps {
@@ -44,7 +43,7 @@ export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
         `
       : ""}
 
-  ${Select} {
+  .CustomSelect {
     width: 120px;
 
     .CustomSelect__control {

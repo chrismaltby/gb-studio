@@ -635,17 +635,14 @@ const MetaspriteEditor = ({
     setIsOverEditor(false);
   }, [setIsOverEditor]);
 
-  const onSelectAll = useCallback(
-    (_e) => {
-      const selection = window.getSelection();
-      if (!selection || selection.focusNode) {
-        return;
-      }
-      window.getSelection()?.empty();
-      setSelectedTileIds(metasprite?.tiles || []);
-    },
-    [metasprite?.tiles, setSelectedTileIds]
-  );
+  const onSelectAll = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.focusNode) {
+      return;
+    }
+    window.getSelection()?.empty();
+    setSelectedTileIds(metasprite?.tiles || []);
+  }, [metasprite?.tiles, setSelectedTileIds]);
 
   // Keyboard handlers
   useEffect(() => {

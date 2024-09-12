@@ -402,7 +402,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onHexChange = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const parsedValue = e.target.value.replace(/[^#A-Fa-f0-9]/g, "");
       const croppedValue = parsedValue.startsWith("#")
         ? parsedValue.substring(0, 7)
@@ -422,8 +422,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeR = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorR(value);
       updateColorFromRGB(value, colorG, colorB);
@@ -432,8 +435,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeG = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorG(value);
       updateColorFromRGB(colorR, value, colorB);
@@ -442,8 +448,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeB = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorB(value);
       updateColorFromRGB(colorR, colorG, value);
@@ -452,8 +461,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeH = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 360);
       setColorH(value);
       updateColorFromHSV(value, colorS, colorV);
@@ -462,8 +474,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeS = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 100);
       setColorS(value);
       updateColorFromHSV(colorH, value, colorV);
@@ -472,8 +487,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeV = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 100);
       setColorV(value);
       updateColorFromHSV(colorH, colorS, value);
@@ -486,8 +504,13 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   }, [dispatch, paletteId]);
 
   const onCopy = useCallback(
-    (e) => {
-      if (e.target.nodeName !== "BODY" && e.target.value.length > 0) {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
+      if (
+        e.target.nodeName !== "BODY" &&
+        e.target instanceof HTMLInputElement &&
+        e.target.value.length > 0
+      ) {
         return;
       }
       e.preventDefault();
@@ -508,7 +531,8 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onPaste = useCallback(
-    async (e) => {
+    async (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -607,7 +631,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
           <ColorSlider
             steps={11}
             value={(colorR || 0) / 31}
-            onChange={(value) => onChangeR(Math.round(value * 31))}
+            onChange={(value) => onChangeR(Math.round(Number(value) * 31))}
             colorAtValue={(value) => {
               return `#${rgbToGBCHex(Math.round(value * 31), colorG, colorB)}`;
             }}

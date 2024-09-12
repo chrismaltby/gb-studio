@@ -9,7 +9,7 @@ import { WaveEditorInput } from "components/music/WaveEditorInput";
 
 interface WaveEditorFormProps {
   waveId: number;
-  onChange: (newValue: { value: string; label: string }) => void;
+  onChange: (newValue: { value: number; label: string }) => void;
 }
 
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
@@ -172,7 +172,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
             name="wave_index"
             value={selectedWave}
             options={waveOptions}
-            onChange={onChange}
+            onChange={(e) => e && onChange(e)}
           />
         </FormField>
       </FormRow>

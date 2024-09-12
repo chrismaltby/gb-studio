@@ -69,13 +69,13 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
 
   const addToSelection = useRef(false);
 
-  const onKeyDown = useCallback((e) => {
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.shiftKey) {
       addToSelection.current = true;
     }
   }, []);
 
-  const onKeyUp = useCallback((e) => {
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
     if (!e.shiftKey) {
       addToSelection.current = false;
     }
@@ -165,7 +165,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const [renameId, setRenameId] = useState("");
 
   const listenForRenameStart = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
       }

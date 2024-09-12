@@ -711,7 +711,7 @@ export const InstrumentSubpatternEditor = ({
   ]);
 
   const onSelectAll = useCallback(
-    (e) => {
+    (e: Event) => {
       if (activeField === undefined) {
         return;
       }

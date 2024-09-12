@@ -67,6 +67,7 @@ import { isScriptValue } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
 import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
+import { SingleValue } from "react-select";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -154,8 +155,10 @@ const ScriptEventFormInput = ({
   );
 
   const onChangeSelectField = useCallback(
-    (e: { value: unknown }) => {
-      onChange(e.value, index);
+    (e: SingleValue<{ value: unknown }>) => {
+      if (e) {
+        onChange(e.value, index);
+      }
     },
     [index, onChange]
   );

@@ -30,7 +30,3 @@ export const SelectField: FC<SelectFieldProps> = ({
     <Select inputId={name} name={name} value={value} options={options} />
   </Wrapper>
 );
-
-SelectField.defaultProps = {
-  value: undefined,
-};

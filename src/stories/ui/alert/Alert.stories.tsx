@@ -6,9 +6,6 @@ import { Alert, AlertItem } from "ui/alerts/Alert";
 const meta: Meta<typeof Alert> = {
   title: "UI/Alerts/Alert",
   component: Alert,
-  subcomponents: {
-    AlertItem,
-  },
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

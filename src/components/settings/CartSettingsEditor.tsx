@@ -10,6 +10,7 @@ import { CartType } from "store/features/settings/settingsState";
 import { Checkbox } from "ui/form/Checkbox";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Alert } from "ui/alerts/Alert";
+import { SingleValue } from "react-select";
 
 export interface CartSettingsEditorProps {
   searchTerm?: string;
@@ -78,8 +79,10 @@ const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
           <Select
             value={currentValue}
             options={cartOptions}
-            onChange={(newValue: CartTypeOption) => {
-              onChangeCartType(newValue.value);
+            onChange={(newValue: SingleValue<CartTypeOption>) => {
+              if (newValue) {
+                onChangeCartType(newValue.value);
+              }
             }}
           />
         </SettingRowInput>

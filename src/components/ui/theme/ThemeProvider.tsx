@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import lightTheme from "./lightTheme";
 import darkTheme from "./darkTheme";
@@ -24,7 +24,7 @@ const windowsThemes: Record<ThemeId, ThemeInterface> = {
 
 const systemThemes = API.platform === "darwin" ? themes : windowsThemes;
 
-const Provider: FC = ({ children }) => {
+const Provider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<ThemeInterface>(
     systemThemes[defaultTheme]
   );

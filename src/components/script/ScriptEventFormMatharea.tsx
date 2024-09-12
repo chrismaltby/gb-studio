@@ -59,10 +59,4 @@ ScriptEventFormMathArea.propTypes = {
   entityId: PropTypes.string.isRequired,
 };
 
-ScriptEventFormMathArea.defaultProps = {
-  id: undefined,
-  value: "",
-  placeholder: undefined,
-};
-
 export default ScriptEventFormMathArea;

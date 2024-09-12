@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   EVENT_SWITCH_SCENE,
   MAX_NESTED_SCRIPT_DEPTH,
@@ -179,13 +178,13 @@ const getSceneConnections = (
   showConnections: ShowConnectionsSetting,
   selectedSceneId: string,
   scene: SceneNormalized,
-  eventsLookup: Dictionary<ScriptEventNormalized>,
-  scenesLookup: Dictionary<SceneNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
-  customEventsLookup: Dictionary<CustomEventNormalized>
+  eventsLookup: Record<string, ScriptEventNormalized>,
+  scenesLookup: Record<string, SceneNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
+  customEventsLookup: Record<string, CustomEventNormalized>
 ) => {
   const ifMatches = (
     scriptEvent: ScriptEventNormalized,

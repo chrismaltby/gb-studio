@@ -9,9 +9,6 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 const meta: Meta<typeof Toolbar> = {
   title: "UI/Toolbars/Toolbar",
   component: Toolbar,
-  subcomponents: {
-    ToolbarTitle,
-  },
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

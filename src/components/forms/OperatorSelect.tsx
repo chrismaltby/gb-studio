@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import { FlexRow, FlexGrow } from "ui/spacing/Spacing";
@@ -16,7 +17,7 @@ interface OperatorOption {
 
 export const OperatorSelect: FC<OperatorSelectProps> = ({
   name,
-  value,
+  value = "==",
   onChange,
   ...selectProps
 }) => {
@@ -38,8 +39,10 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: OperatorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<OperatorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: OperatorOption) => {
         return (
@@ -55,9 +58,4 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
       {...selectProps}
     />
   );
-};
-
-OperatorSelect.defaultProps = {
-  name: undefined,
-  value: "==",
 };

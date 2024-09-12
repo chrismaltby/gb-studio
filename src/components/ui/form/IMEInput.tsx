@@ -13,7 +13,7 @@ export interface IMEInputProps
 }
 
 export const IMEInput = forwardRef<HTMLInputElement, IMEInputProps>(
-  ({ onKeyDown, ...rest }, outerRef) => {
+  ({ onKeyDown, displaySize, ...rest }, outerRef) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isComposing = useIMEIsComposing(inputRef);
 
@@ -29,7 +29,14 @@ export const IMEInput = forwardRef<HTMLInputElement, IMEInputProps>(
       [isComposing, onKeyDown]
     );
 
-    return <StyledInput ref={inputRef} onKeyDown={onKeyDownInner} {...rest} />;
+    return (
+      <StyledInput
+        ref={inputRef}
+        onKeyDown={onKeyDownInner}
+        $displaySize={displaySize}
+        {...rest}
+      />
+    );
   }
 );
 
