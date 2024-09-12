@@ -60,7 +60,7 @@ workerCtx.onmessage = async (evt) => {
 
     canvas = new OffscreenCanvas(img.width, img.height);
 
-    const tmpCtx = canvas.getContext("2d");
+    const tmpCtx = canvas.getContext("2d", { willReadFrequently: true });
     if (!tmpCtx) {
       return;
     }
