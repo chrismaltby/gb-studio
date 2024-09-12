@@ -1,6 +1,6 @@
 import DirectionPicker from "components/forms/DirectionPicker";
 import React, { Dispatch } from "react";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -9,7 +9,7 @@ import { LabelButton } from "ui/buttons/LabelButton";
 import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
 
 interface SceneContextMenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch: Dispatch<UnknownAction>;
   sceneId: string;
   additionalSceneIds: string[];
   startSceneId: string;

@@ -1,5 +1,5 @@
 import flatten from "lodash/flatten";
-import { AnyAction, Dispatch, Middleware } from "@reduxjs/toolkit";
+import { UnknownAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -77,7 +77,7 @@ const generateLocalVariableInsertActions = (
   newId: string,
   variables: Variable[]
 ) => {
-  const actions: AnyAction[] = [];
+  const actions: UnknownAction[] = [];
   for (const variable of variables) {
     if (variable.id.startsWith(originalId)) {
       const variableId = variable.id.replace(originalId, newId);
@@ -96,8 +96,8 @@ const generateCustomEventInsertActions = async (
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingCustomEvents: CustomEventNormalized[],
   existingScriptEventsLookup: Record<string, ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingEvent = existingCustomEvents.find(
     (e) => e.id === customEvent.id
@@ -161,8 +161,8 @@ const generateActorInsertActions = (
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addActorAction = entitiesActions.addActor({
     sceneId,
     x,
@@ -197,8 +197,8 @@ const generateActorPrefabInsertActions = async (
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingActorPrefabs: ActorPrefabNormalized[],
   existingScriptEventsLookup: Record<string, ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingPrefab = existingActorPrefabs.find((e) => e.id === prefab.id);
   if (
@@ -260,8 +260,8 @@ const generateTriggerInsertActions = (
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addTriggerAction = entitiesActions.addTrigger({
     sceneId,
     x,
@@ -298,8 +298,8 @@ const generateTriggerPrefabInsertActions = async (
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingTriggerPrefabs: TriggerPrefabNormalized[],
   existingScriptEventsLookup: Record<string, ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingPrefab = existingTriggerPrefabs.find((e) => e.id === prefab.id);
   if (
@@ -363,8 +363,8 @@ const generateSceneInsertActions = (
   variables: Variable[],
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addSceneAction = entitiesActions.addScene({
     x,
     y,

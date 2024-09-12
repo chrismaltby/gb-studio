@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {
-  AnyAction,
+  UnknownAction,
   createAsyncThunk,
   createSlice,
   PayloadAction,
@@ -488,7 +488,7 @@ const trackerSlice = createSlice({
         state.modified = false;
       })
       .addMatcher(
-        (action: AnyAction): action is AnyAction =>
+        (action: UnknownAction): action is UnknownAction =>
           action.type.startsWith("tracker/edit") ||
           action.type.startsWith("tracker/addSequence") ||
           action.type.startsWith("tracker/removeSequence"),

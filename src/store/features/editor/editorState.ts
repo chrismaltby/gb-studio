@@ -1,7 +1,7 @@
 import {
   createSlice,
   PayloadAction,
-  AnyAction,
+  UnknownAction,
   createSelector,
   ThunkDispatch,
 } from "@reduxjs/toolkit";
@@ -238,7 +238,7 @@ const toggleScriptEventSelectedId =
     parentKey: string;
   }) =>
   (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const state = getState();
@@ -1049,7 +1049,7 @@ const editorSlice = createSlice({
       })
       // When UI changes increment UI version number
       .addMatcher(
-        (action): action is AnyAction =>
+        (action): action is UnknownAction =>
           projectActions.loadUI.match(action) ||
           projectActions.reloadAssets.match(action),
         (state) => {

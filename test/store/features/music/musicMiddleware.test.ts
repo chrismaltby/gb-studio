@@ -7,7 +7,7 @@ import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground, dummyMusic } from "../../../dummydata";
-import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
+import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import ScripTracker from "../../../../src/renderer/lib/vendor/scriptracker/scriptracker";
 
 jest.mock("../../../../src/renderer/lib/vendor/scriptracker/scriptracker");
@@ -64,7 +64,7 @@ test("Should trigger call to play music", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.playMusic({ musicId: "track1" });
@@ -119,7 +119,7 @@ test("Should trigger a call to pause music", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.pauseMusic();
@@ -142,7 +142,7 @@ test("Should pause music when switching section", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = navigationActions.setSection("settings");

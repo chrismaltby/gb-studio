@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -7,7 +7,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface SceneFolderContextMenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch: Dispatch<UnknownAction>;
   scenes: SceneNormalized[];
 }
 
