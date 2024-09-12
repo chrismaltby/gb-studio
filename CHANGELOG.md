@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Fix issue where adding a new song wouldn't warn about unsaved changes in current song
+- Fix issue where adding a song with an already existing name wouldn't auto select the newly created song
+
 ## [4.1.2] - 2024-09-09
 
 ### Added

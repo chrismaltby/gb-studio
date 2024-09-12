@@ -1583,14 +1583,7 @@ ipcMain.handle(
             newFilename = filename.replace(/\d+$/, `${number}`);
           }
           const newPath = `${newFilename}.uge`;
-          await copy2(oPath, newPath);
-
-          const data = await loadMusicData(projectRoot)(newPath);
-          if (!data) {
-            console.error(`Unable to load asset ${filename}`);
-          }
-
-          return data;
+          return await copy2(oPath, newPath);
         }
       } catch (e) {
         console.error(e);
