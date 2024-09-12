@@ -1473,7 +1473,7 @@ test("Should be able to add flags to existing named variable ", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
-      ids: [],
+      ids: ["11"],
       entities: {
         "11": {
           id: "11",
@@ -1568,7 +1568,7 @@ test("Should not remove variable when name is empty but has named flags", () => 
   const state: EntitiesState = {
     ...initialState,
     variables: {
-      ids: [],
+      ids: ["14"],
       entities: {
         "14": {
           id: "14",
