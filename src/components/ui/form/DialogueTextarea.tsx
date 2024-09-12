@@ -544,6 +544,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenChar"
@@ -574,6 +575,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenSpeed"
@@ -601,6 +603,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenFont"
@@ -628,6 +631,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenGoto"
@@ -665,6 +669,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
       </MentionsInput>
     </DialogueTextareaWrapper>

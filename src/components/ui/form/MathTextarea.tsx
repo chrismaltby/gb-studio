@@ -396,6 +396,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <Mention
           className="Mentions__TokenFun"

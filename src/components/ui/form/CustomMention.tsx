@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import useStyles from "substyle";
 import { MentionProps } from "react-mentions";
 
@@ -58,18 +59,18 @@ const CustomMention = ({
   );
 };
 
-// CustomMention.propTypes = {
-//   onAdd: PropTypes.func,
-//   onRemove: PropTypes.func,
-//   renderSuggestion: PropTypes.func,
-//   trigger: PropTypes.oneOfType([
-//     PropTypes.string,
-//     PropTypes.instanceOf(RegExp),
-//   ]),
-//   markup: PropTypes.string,
-//   displayTransform: PropTypes.func,
-//   allowSpaceInQuery: PropTypes.bool,
-//   isLoading: PropTypes.bool,
-// };
+CustomMention.propTypes = {
+  onAdd: PropTypes.func,
+  onRemove: PropTypes.func,
+  renderSuggestion: PropTypes.func,
+  trigger: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.instanceOf(RegExp),
+  ]),
+  markup: PropTypes.string,
+  displayTransform: PropTypes.func,
+  allowSpaceInQuery: PropTypes.bool,
+  isLoading: PropTypes.bool.isRequired,
+};
 
 export default CustomMention;
