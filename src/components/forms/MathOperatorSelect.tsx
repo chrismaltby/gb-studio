@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from "react";
-import { SingleValue } from "react-select";
+import { components, SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
@@ -51,7 +51,11 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
         );
       }}
       components={{
-        SingleValue: () => currentValue?.value,
+        SingleValue: (props) => (
+          <components.SingleValue {...props}>
+            {currentValue?.value}
+          </components.SingleValue>
+        ),
       }}
       {...selectProps}
     />

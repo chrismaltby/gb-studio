@@ -25,7 +25,7 @@ import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import { SingleValue } from "react-select";
+import { components, SingleValue } from "react-select";
 
 interface PropertySelectProps {
   name: string;
@@ -278,7 +278,7 @@ export const PropertySelect = ({
           );
         }}
         components={{
-          SingleValue: () =>
+          SingleValue: (props) =>
             currentValue?.spriteSheetId !== undefined ? (
               <SingleValueWithPreview
                 preview={
@@ -290,7 +290,9 @@ export const PropertySelect = ({
                 {currentValue?.label}
               </SingleValueWithPreview>
             ) : (
-              currentValue?.label
+              <components.SingleValue {...props}>
+                {currentValue?.label}
+              </components.SingleValue>
             ),
         }}
       />
