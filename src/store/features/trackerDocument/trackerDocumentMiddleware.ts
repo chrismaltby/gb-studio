@@ -3,7 +3,11 @@ import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import navigationActions from "store/features/navigation/navigationActions";
-import { saveSongFile } from "./trackerDocumentState";
+import {
+  addNewSongFile,
+  requestAddNewSongFile,
+  saveSongFile,
+} from "./trackerDocumentState";
 import trackerDocumentActions from "./trackerDocumentActions";
 import electronActions from "store/features/electron/electronActions";
 import l10n from "shared/lib/lang/l10n";
@@ -17,7 +21,8 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
       (navigationActions.setSection.match(action) &&
         action.payload !== "music") ||
       (editorActions.setSelectedSongId.match(action) &&
-        action.payload !== state.editor.selectedSongId)
+        action.payload !== state.editor.selectedSongId) ||
+      requestAddNewSongFile.match(action)
     ) {
       if (state.trackerDocument.present.modified) {
         // Display confirmation and stop action if
@@ -40,6 +45,12 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
             return;
         }
       }
+    }
+
+    // Delay creation until confirmUnsavedChangesTrackerDialog has
+    // had a chance to ask about unsaved changes
+    if (requestAddNewSongFile.match(action)) {
+      store.dispatch(addNewSongFile(action.payload));
     }
 
     if (

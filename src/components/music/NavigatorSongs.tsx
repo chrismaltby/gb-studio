@@ -18,7 +18,7 @@ import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { NoSongsMessage } from "./NoSongsMessage";
-import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
+import { requestAddNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -503,7 +503,7 @@ export const NavigatorSongs = ({
                   const path = assetPath("music", {
                     filename: `${stripInvalidPathCharacters(filename)}.uge`,
                   });
-                  dispatch(addNewSongFile(path));
+                  dispatch(requestAddNewSongFile(path));
                 }
                 setAddSongMode(false);
               }}
