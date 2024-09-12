@@ -420,11 +420,9 @@ const generateSceneInsertActions = (
   );
 
   const actorMapping: Record<string, string> = actions
-    .filter((action) => {
-      return action.type === "entities/addActor";
-    })
+    .filter((action) => entitiesActions.addActor.match(action))
     .reduce((memo, action) => {
-      const oldId: string = action.payload?.defaults?.id;
+      const oldId: string = action.payload?.defaults?.id ?? "";
       const newId: string = action.payload?.actorId;
       if (oldId && newId) {
         memo[oldId] = newId;
@@ -433,14 +431,14 @@ const generateSceneInsertActions = (
     }, {} as Record<string, string>);
 
   const remappedActions = actions.map((action) => {
-    if (action.type !== "entities/addScriptEvents") {
+    if (!entitiesActions.addScriptEvents.match(action)) {
       return action;
     }
     return {
       ...action,
       payload: {
         ...action.payload,
-        data: action.payload.data.map((eventData: ScriptEventNormalized) => {
+        data: action.payload.data.map((eventData) => {
           return {
             ...eventData,
             args: patchEventArgs(
