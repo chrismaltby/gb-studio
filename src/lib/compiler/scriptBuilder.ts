@@ -57,6 +57,7 @@ import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
 import {
+  ConstScriptValue,
   isScriptValue,
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
@@ -1654,7 +1655,7 @@ class ScriptBuilder {
 
   _switch = (
     variable: ScriptBuilderStackVariable,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     this._addCmd("VM_SWITCH", variable, switchCases.length, popNum);
@@ -1666,7 +1667,7 @@ class ScriptBuilder {
 
   _switchVariable = (
     variable: string,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     const variableAlias = this.getVariableAlias(variable);
@@ -7554,7 +7555,7 @@ extern void __mute_mask_${symbol};
     this._addComment(`Switch Variable`);
     this._switchVariable(
       variable,
-      caseLabels.map((label, i) => [Number(caseKeys[i]), `${label}$`]),
+      caseLabels.map((label, i) => [caseKeys[i], `${label}$`]),
       0
     );
     this._addNL();
@@ -7568,6 +7569,59 @@ extern void __mute_mask_${symbol};
       this._addComment(`case ${caseKeys[i]}:`);
       this._label(caseLabels[i]);
       this._compilePath(cases[caseKeys[i]]);
+      this._jump(endLabel);
+    }
+    this._label(endLabel);
+
+    this._addNL();
+  };
+
+  caseVariableConstValue = (
+    variable: string,
+    cases: {
+      value: ConstScriptValue;
+      branch: ScriptEvent[] | ScriptBuilderPathFunction;
+    }[],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const numCases = cases.length;
+
+    if (numCases === 0) {
+      this._compilePath(falsePath);
+      return;
+    }
+
+    const caseLabels = cases.map(() => this.getNextLabel());
+    const endLabel = this.getNextLabel();
+
+    const extractSymbol = (value: ConstScriptValue): string | number => {
+      if (value.type === "number") {
+        return value.value;
+      } else if (value.type === "constant") {
+        return this.getConstantSymbol(value.value);
+      }
+      return 0;
+    };
+
+    this._addComment(`Switch Variable`);
+    this._switchVariable(
+      variable,
+      caseLabels.map((label, i) => {
+        return [extractSymbol(cases[i].value), `${label}$`];
+      }),
+      0
+    );
+    this._addNL();
+
+    // Default
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+
+    // Cases
+    for (let i = 0; i < numCases; i++) {
+      this._addComment(`case ${extractSymbol(cases[i].value)}:`);
+      this._label(caseLabels[i]);
+      this._compilePath(cases[i].branch);
       this._jump(endLabel);
     }
     this._label(endLabel);

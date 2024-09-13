@@ -63,11 +63,15 @@ import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import ValueSelect from "components/forms/ValueSelect";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isConstScriptValue,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
 import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
 import { SingleValue } from "react-select";
+import ConstantValueSelect from "components/forms/ConstantValueSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -402,6 +406,33 @@ const ScriptEventFormInput = ({
         entityId={entityId}
         value={
           isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
+  } else if (type === "constvalue") {
+    const isValueScript = isConstScriptValue(value);
+    const isNumberValue = typeof value === "number";
+    const isDefaultScript = isConstScriptValue(defaultValue);
+
+    return (
+      <ConstantValueSelect
+        name={id}
+        value={
+          isValueScript
+            ? value
+            : isNumberValue
+            ? { type: "number", value }
+            : isDefaultScript
+            ? defaultValue
+            : undefined
         }
         onChange={onChangeField}
         min={field.min}

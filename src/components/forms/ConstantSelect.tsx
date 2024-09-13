@@ -14,6 +14,7 @@ import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { constantName } from "shared/lib/entities/entitiesHelpers";
+import { StyledScriptEventBranchHeader } from "ui/scripting/style";
 
 interface ConstantSelectProps extends SelectCommonProps {
   id?: string;
@@ -38,6 +39,9 @@ const ConstantRenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;
+  }
+  ${StyledScriptEventBranchHeader} &&&& {
+    height: 22px;
   }
 `;
 
@@ -80,6 +84,10 @@ const ConstantRenameButton = styled.button`
     height: 12px;
     fill: #666;
   }
+
+  ${StyledScriptEventBranchHeader} &&&& {
+    height: 16px;
+  }
 `;
 
 const ConstantRenameCompleteButton = styled.button`
@@ -110,6 +118,10 @@ const ConstantRenameCompleteButton = styled.button`
     width: 12px;
     height: 12px;
     fill: #333;
+  }
+
+  ${StyledScriptEventBranchHeader} &&&& {
+    height: 16px;
   }
 `;
 

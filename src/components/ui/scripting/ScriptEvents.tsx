@@ -8,6 +8,7 @@ import {
   StyledScriptEditorChildrenLabel,
   StyledScriptEditorChildrenWrapper,
   StyledScriptEventBranchHeader,
+  StyledScriptEventBranchHeaderFields,
   StyledScriptEventField,
   StyledScriptEventFieldGroup,
   StyledScriptEventFields,
@@ -22,7 +23,7 @@ import {
   StyledScriptEventWarning,
   StyledScriptEventWrapper,
 } from "ui/scripting/style";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 
 export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
@@ -128,6 +129,7 @@ interface ScriptEventBranchHeaderProps {
   isOpen: boolean;
   altBg: boolean;
   children?: ReactNode;
+  label?: ReactNode;
   onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -136,20 +138,25 @@ export const ScriptEventBranchHeader = ({
   isOpen,
   altBg,
   children,
+  label,
   onToggle,
 }: ScriptEventBranchHeaderProps) => {
   return (
     <StyledScriptEventBranchHeader
-      onClick={onToggle}
       $nestLevel={nestLevel}
       $altBg={altBg}
       $isOpen={isOpen}
+      onClick={onToggle}
     >
       <StyledScriptEventHeaderCaret $isOpen={isOpen}>
         <ArrowIcon />
       </StyledScriptEventHeaderCaret>
       <FixedSpacer width={5} />
-      {children}
+      {label}
+      <StyledScriptEventBranchHeaderFields onClick={(e) => e.stopPropagation()}>
+        {children}
+      </StyledScriptEventBranchHeaderFields>
+      <FlexGrow />
     </StyledScriptEventBranchHeader>
   );
 };

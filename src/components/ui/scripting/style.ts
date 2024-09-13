@@ -1,5 +1,9 @@
 import styled, { css } from "styled-components";
+import { StyledButton } from "ui/buttons/style";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { Label } from "ui/form/Label";
+import { StyledFormField, StyledFormFieldInput } from "ui/form/layout/style";
+import { StyledInput } from "ui/form/style";
 
 // #region ScriptEventPlaceholder
 
@@ -246,74 +250,6 @@ export const StyledScriptEventHeaderCaret = styled.div<StyledScriptEventHeaderCa
 
 // #endregion ScriptEventHeader
 
-// #region ScriptEventBranchHeader
-
-interface StyledScriptEventBranchHeaderProps {
-  $nestLevel: number;
-  $altBg?: boolean;
-  $isOpen?: boolean;
-}
-
-export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchHeaderProps>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 0px 10px;
-  padding-right: 5px;
-  padding-left: 8px;
-  margin: -15px;
-
-  && {
-    margin-right: -5px;
-    margin-left: -5px;
-    flex-basis: 100%;
-    max-width: 100%;
-  }
-
-  height: 25px;
-  color: ${(props) => props.theme.colors.scripting.header.text};
-  line-height: 12px;
-
-  ${(props) =>
-    props.$nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest1Background};
-        `
-      : ""}
-  ${(props) =>
-    props.$nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest2Background};
-        `
-      : ""}
-    ${(props) =>
-    props.$nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest3Background};
-        `
-      : ""}
-    ${(props) =>
-    props.$nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest4Background};
-        `
-      : ""}
-
-
-  ${(props) =>
-    !props.$isOpen
-      ? css`
-          && {
-            margin-bottom: -5px;
-          }
-        `
-      : ""}
-`;
-
-// #endregion ScriptEventBranchHeader
-
 // #region ScriptEventFormWrapper
 
 export const StyledScriptEventFormWrapper = styled.div`
@@ -532,3 +468,117 @@ export const StyledScriptEventField = styled.div<StyledScriptEventFieldProps>`
 `;
 
 // #endregion ScriptEventField
+
+// #region ScriptEventBranchHeader
+
+interface StyledScriptEventBranchHeaderProps {
+  $nestLevel: number;
+  $altBg?: boolean;
+  $isOpen?: boolean;
+}
+
+export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchHeaderProps>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0px 10px;
+  padding-right: 5px;
+  padding-left: 8px;
+  margin-bottom: 5px;
+
+  && {
+    margin-right: -5px;
+    margin-left: -5px;
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  min-height: 25px;
+  color: ${(props) => props.theme.colors.scripting.header.text};
+  line-height: 12px;
+
+  border-bottom: 1px solid
+    ${(props) => props.theme.colors.scripting.form.background};
+
+  ${(props) =>
+    props.$nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest1Background};
+        `
+      : ""}
+  ${(props) =>
+    props.$nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest2Background};
+        `
+      : ""}
+    ${(props) =>
+    props.$nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest3Background};
+        `
+      : ""}
+    ${(props) =>
+    props.$nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest4Background};
+        `
+      : ""}
+
+
+  ${(props) =>
+    !props.$isOpen
+      ? css`
+          && {
+            margin-bottom: -5px;
+          }
+        `
+      : ""}
+
+  ${StyledScriptEventFields} {
+    padding: 0;
+    width: 100%;
+    & > * {
+      margin: 2px 0;
+    }
+  }
+
+  ${StyledFormField} {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+
+    ${Label} {
+      margin-bottom: 0;
+      margin-right: 10px;
+    }
+    ${StyledFormFieldInput} {
+      width: 100%;
+      max-width: 200px;
+
+      .CustomSelect__control {
+        height: 22px;
+        min-height: 22px;
+        font-weight: normal;
+      }
+
+      ${StyledInput} {
+        height: 22px;
+      }
+
+      ${StyledButton} {
+        height: 22px;
+      }
+    }
+  }
+`;
+
+export const StyledScriptEventBranchHeaderFields = styled.div`
+  width: 100%;
+  max-width: 200px;
+`;
+
+// #endregion ScriptEventBranchHeader
