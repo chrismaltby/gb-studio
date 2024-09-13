@@ -3489,7 +3489,6 @@ const addScriptEvents: CaseReducer<
       const newScriptEvent: ScriptEventNormalized = {
         ...scriptEventData,
         id: action.payload.scriptEventIds[scriptEventIndex],
-        symbol: undefined,
       };
       if (scriptEventData.children) {
         newScriptEvent.children = Object.keys(scriptEventData.children).reduce(

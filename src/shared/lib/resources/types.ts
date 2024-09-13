@@ -59,7 +59,6 @@ const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
-    symbol: Type.Optional(Type.String()), // Include symbol property to match TypeScript
     args: Type.Optional(ScriptEventArgs), // Matches ScriptEventArgs
     children: Type.Optional(
       Type.Record(

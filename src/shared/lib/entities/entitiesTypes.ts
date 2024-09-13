@@ -53,7 +53,6 @@ export type ScriptEventArgs = Record<string, unknown>;
 export type ScriptEvent = {
   id: string;
   command: string;
-  symbol?: string | undefined;
   args?: ScriptEventArgs | undefined;
   children?: Record<string, ScriptEvent[] | undefined> | undefined;
 };

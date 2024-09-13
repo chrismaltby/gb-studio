@@ -723,7 +723,6 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.customEvents),
     ...extractEntitySymbols(state.music),
     ...extractEntitySymbols(state.sounds),
-    ...extractEntitySymbols(state.scriptEvents),
   ];
 };
 
@@ -761,7 +760,6 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
   ensureEntitySymbolsUnique(state.sounds, symbols);
-  ensureEntitySymbolsUnique(state.scriptEvents, symbols);
 };
 
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
