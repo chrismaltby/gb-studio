@@ -29,7 +29,7 @@ const speedRegex = /!(S[0-5]+)!/g;
 const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
 
 interface DialogueTextareaWrapperProps {
-  singleLine?: boolean;
+  $singleLine?: boolean;
 }
 
 type ExtendedSuggestionDataItem = SuggestionDataItem & {
@@ -54,7 +54,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     padding: 5px;
     line-height: 16px;
-    ${(props) => (!props.singleLine ? `min-height: 38px;` : "")}
+    ${(props) => (!props.$singleLine ? `min-height: 38px;` : "")}
   }
 
   .MentionsInput__highlighter {
@@ -93,11 +93,11 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     line-height: 16px;
     padding: 5px;
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.input.hoverBackground};
     }
 
-    :focus {
+    &:focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
@@ -111,7 +111,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.variable};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.variable};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -124,7 +124,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.character};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.character};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -137,7 +137,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -150,7 +150,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -163,7 +163,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -377,7 +377,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   );
 
   return (
-    <DialogueTextareaWrapper singleLine={singleLine}>
+    <DialogueTextareaWrapper $singleLine={singleLine}>
       {editMode && (
         <RelativePortal
           offsetX={editMode.x}
@@ -544,6 +544,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenChar"
@@ -574,6 +575,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenSpeed"
@@ -601,6 +603,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenFont"
@@ -628,6 +631,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenGoto"
@@ -665,6 +669,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
       </MentionsInput>
     </DialogueTextareaWrapper>

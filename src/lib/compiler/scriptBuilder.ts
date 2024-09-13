@@ -17,7 +17,6 @@ import type {
   CustomEvent,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
@@ -144,8 +143,8 @@ export interface ScriptBuilderOptions {
   entityType: ScriptBuilderEntityType;
   entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<VariableMapData>;
-  constantsLookup: Dictionary<Constant>;
+  variableAliasLookup: Record<string, VariableMapData>;
+  constantsLookup: Record<string, Constant>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -161,27 +160,36 @@ export interface ScriptBuilderOptions {
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
-  engineFields: Dictionary<EngineFieldSchema>;
+  engineFields: Record<string, EngineFieldSchema>;
   settings: SettingsState;
-  additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }>;
-  additionalOutput: Dictionary<{
-    filename: string;
-    data: string;
-  }>;
-  symbols: Dictionary<string>;
+  additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  >;
+  additionalOutput: Record<
+    string,
+    {
+      filename: string;
+      data: string;
+    }
+  >;
+  symbols: Record<string, string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
-  compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }>;
-  recursiveSymbolMap: Dictionary<string>;
-  additionalScriptsCache: Dictionary<string>;
+  compiledCustomEventScriptCache: Record<
+    string,
+    {
+      scriptRef: string;
+      argsLen: number;
+    }
+  >;
+  recursiveSymbolMap: Record<string, string>;
+  additionalScriptsCache: Record<string, string>;
   debugEnabled: boolean;
-  compiledAssetsCache: Dictionary<string>;
+  compiledAssetsCache: Record<string, string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -638,7 +646,7 @@ class ScriptBuilder {
   localsSize: number;
   actorIndex: number;
   stackPtr: number;
-  labelStackSize: Dictionary<number>;
+  labelStackSize: Record<string, number>;
   includeParams: number[];
   headers: string[];
 
@@ -2015,7 +2023,8 @@ class ScriptBuilder {
     width: number,
     height: number,
     color: ScriptBuilderUIColor,
-    drawFrame: boolean
+    drawFrame: boolean,
+    autoScroll = true
   ) => {
     this._addCmd(
       "VM_OVERLAY_CLEAR",
@@ -2024,7 +2033,10 @@ class ScriptBuilder {
       width,
       height,
       color,
-      unionFlags([".UI_AUTO_SCROLL"].concat(drawFrame ? ".UI_DRAW_FRAME" : []))
+      unionFlags([
+        ...(autoScroll ? [".UI_AUTO_SCROLL"] : []),
+        ...(drawFrame ? [".UI_DRAW_FRAME"] : []),
+      ])
     );
   };
 
@@ -3904,15 +3916,8 @@ extern void __mute_mask_${symbol};
         }
       }
 
-      let endDelaySequence = "";
-      if (closeWhen === "text") {
-        endDelaySequence = `\\001\\${decOct(8)}\\001\\${decOct(6)}`;
-      } else if (textIndex !== input.length - 1) {
-        endDelaySequence = `\\001\\${decOct(7)}`;
-      }
-
       this._loadStructuredText(
-        `${textPosSequence}${text}${endDelaySequence}`,
+        `${textPosSequence}${text}`,
         avatarIndex,
         textHeight
       );
@@ -3923,7 +3928,8 @@ extern void __mute_mask_${symbol};
           20,
           textBoxHeight,
           ".UI_COLOR_WHITE",
-          showFrame
+          showFrame,
+          false
         );
       }
 
@@ -3935,15 +3941,15 @@ extern void __mute_mask_${symbol};
           ".OVERLAY_SPEED_INSTANT"
         );
         this._overlayMoveTo(0, textBoxY, overlayInSpeed);
-      }
 
-      this._overlaySetScroll(
-        textX + (avatarId ? 3 : 0),
-        textY,
-        (showFrame ? 19 : 20) - (avatarId ? 3 : 0) - textX,
-        textHeight,
-        ".UI_COLOR_WHITE"
-      );
+        this._overlaySetScroll(
+          textX + (avatarId ? 2 : 0),
+          textY,
+          (showFrame ? 19 : 20) - (avatarId ? 2 : 0) - textX,
+          textHeight,
+          ".UI_COLOR_WHITE"
+        );
+      }
 
       this._displayText();
 
@@ -4081,7 +4087,7 @@ extern void __mute_mask_${symbol};
     }
 
     this._loadStructuredText(choiceText);
-    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
@@ -4143,7 +4149,7 @@ extern void __mute_mask_${symbol};
     }
 
     this._loadStructuredText(menuText);
-    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true, true);
     if (layout === "menu") {
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
@@ -4651,7 +4657,7 @@ extern void __mute_mask_${symbol};
 
   callScript = (
     scriptId: string,
-    input: Dictionary<string | ScriptValue | ScriptBuilderFunctionArg>
+    input: Record<string, string | ScriptValue | ScriptBuilderFunctionArg>
   ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
@@ -5026,10 +5032,14 @@ extern void __mute_mask_${symbol};
       }
     );
 
+    const inputSymbol = customEvent.symbol
+      ? customEvent.symbol
+      : `script_custom_0`;
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
     // all calls to this script while compilation is still in progress will
     // use this symbol that gets replaced later
-    const placeholderSymbol = "__PLACEHOLDER|" + cacheKey + "|PLACEHOLDER__";
+    const placeholderSymbol =
+      "__PLACEHOLDER|" + inputSymbol + this._contextHash() + "|PLACEHOLDER__";
 
     const tmpResult = {
       scriptRef: placeholderSymbol,
@@ -5039,14 +5049,9 @@ extern void __mute_mask_${symbol};
     // Cache placeholder symbol to be used by recursive calls
     compiledCustomEventScriptCache[cacheKey] = tmpResult;
 
-    const symbol = this._compileSubScript(
-      "custom",
-      script,
-      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
-      {
-        argLookup,
-      }
-    );
+    const symbol = this._compileSubScript("custom", script, inputSymbol, {
+      argLookup,
+    });
 
     const result = {
       scriptRef: symbol,
@@ -7609,13 +7614,17 @@ extern void __mute_mask_${symbol};
     delete symbols[symbol];
   };
 
+  _contextHash = () => {
+    const { scene, entityType, entity, context } = this.options;
+    return `${scene.hash}_${context}_${entityType}_${entity?.id ?? ""}`;
+  };
+
   _compileSubScript = (
     type: "input" | "timer" | "music" | "thread" | "custom",
     script: ScriptEvent[],
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const { scene, entityType, entity } = this.options;
     let context: ScriptEditorCtxType = this.options.context;
 
     // Set script context to calculate default value for missing vars
@@ -7627,19 +7636,16 @@ extern void __mute_mask_${symbol};
 
     // Generate a quick hash of the script for this scene to see if
     // it's already been compiled - just reuse if possible
-    const preBuildHash = `${generateScriptHash(script)}_${
-      scene.hash
-    }_${context}_${entityType}_${entity?.id ?? ""}`;
+    const preBuildHash = `${generateScriptHash(
+      script
+    )}_${this._contextHash()}_${type === "custom" ? inputSymbol : ""}`;
 
-    if (
-      this.options.additionalScriptsCache[preBuildHash] &&
-      type !== "custom"
-    ) {
+    if (this.options.additionalScriptsCache[preBuildHash]) {
       return this.options.additionalScriptsCache[preBuildHash];
     }
 
     const symbol = this._getAvailableSymbol(
-      inputSymbol ? inputSymbol : `script_${type}_0`
+      inputSymbol ? inputSymbol : `script_${type}`
     );
 
     const compiledSubScript = compileEntityEvents(
@@ -7664,11 +7670,15 @@ extern void __mute_mask_${symbol};
     );
 
     // Check if identical to any already compiled scripts
-    const scriptHash = gbvmScriptChecksum(compiledSubScript);
+    const scriptHash = `${gbvmScriptChecksum(
+      inputSymbol
+        ? compiledSubScript.replaceAll(inputSymbol, "SCRIPT")
+        : compiledSubScript
+    )}_${type === "custom" ? inputSymbol : ""}`;
 
     // If this script is identical to an already generated script
     // just reuse the existing symbol rather than writing a duplicate file
-    if (this.options.additionalScriptsCache[scriptHash] && type !== "custom") {
+    if (this.options.additionalScriptsCache[scriptHash]) {
       return this.options.additionalScriptsCache[scriptHash];
     }
 

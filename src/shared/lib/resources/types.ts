@@ -59,7 +59,6 @@ const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
-    symbol: Type.Optional(Type.String()), // Include symbol property to match TypeScript
     args: Type.Optional(ScriptEventArgs), // Matches ScriptEventArgs
     children: Type.Optional(
       Type.Record(
@@ -247,14 +246,8 @@ export const ScriptResource = Type.Object({
   name: Type.String(),
   symbol: Type.String(),
   description: Type.String(),
-  variables: Type.Record(
-    Type.String(),
-    Type.Union([ScriptVariable, Type.Undefined()])
-  ),
-  actors: Type.Record(
-    Type.String(),
-    Type.Union([ScriptActor, Type.Undefined()])
-  ),
+  variables: Type.Record(Type.String(), ScriptVariable),
+  actors: Type.Record(Type.String(), ScriptActor),
   script: Type.Array(ScriptEvent),
 });
 

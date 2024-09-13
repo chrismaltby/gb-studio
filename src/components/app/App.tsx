@@ -32,22 +32,24 @@ const AppContent = styled.div`
 const App = () => {
   const dispatch = useAppDispatch();
   const [draggingOver, setDraggingOver] = useState(false);
-  const dragLeaveTimer = useRef<number>();
+  const dragLeaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const section = useAppSelector((state) => state.navigation.section);
   const error = useAppSelector((state) => state.error);
   const loaded = useAppSelector((state) => state.document.loaded);
 
   const onDragOver = useCallback(
-    (e) => {
+    (e: DragEvent) => {
       // Don't activate dropzone unless dragging a file
-      const types = e.dataTransfer.types;
+      const types = e.dataTransfer?.types;
       if (!types || types.indexOf("Files") === -1) {
         return;
       }
 
       e.preventDefault();
       e.stopPropagation();
-      clearTimeout(dragLeaveTimer.current);
+      if (dragLeaveTimer.current) {
+        clearTimeout(dragLeaveTimer.current);
+      }
       if (!draggingOver) {
         setDraggingOver(true);
       }
@@ -55,18 +57,23 @@ const App = () => {
     [draggingOver]
   );
 
-  const onDragLeave = useCallback((e) => {
+  const onDragLeave = useCallback((e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    clearTimeout(dragLeaveTimer.current);
+    if (dragLeaveTimer.current) {
+      clearTimeout(dragLeaveTimer.current);
+    }
     dragLeaveTimer.current = setTimeout(() => {
       setDraggingOver(false);
     }, 100);
   }, []);
 
   const onDrop = useCallback(
-    (e) => {
+    (e: DragEvent) => {
       setDraggingOver(false);
+      if (!e.dataTransfer?.files) {
+        return;
+      }
       for (let i = 0; i < e.dataTransfer.files.length; i++) {
         const file = e.dataTransfer.files[i];
         dispatch(projectActions.addFileToProject(file.path));

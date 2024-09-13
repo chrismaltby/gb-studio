@@ -29,24 +29,14 @@ import {
   ScriptEventHeader,
   ScriptEventWrapper,
   ScriptEventPlaceholder,
-  ScriptEventHeaderTitle,
-  ScriptEventHeaderCaret,
   ScriptEventRenameInput,
   ScriptEventRenameInputCompleteButton,
-  ScriptEventHeaderBreakpointIndicator,
 } from "ui/scripting/ScriptEvents";
-import {
-  ArrowIcon,
-  BreakpointIcon,
-  CheckIcon,
-  CommentIcon,
-} from "ui/icons/Icons";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { CheckIcon } from "ui/icons/Icons";
 import ScriptEventForm from "./ScriptEventForm";
 import l10n from "shared/lib/lang/l10n";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 import ItemTypes from "renderer/lib/dnd/itemTypes";
-import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RelativePortal } from "ui/layout/RelativePortal";
@@ -165,7 +155,7 @@ const ScriptEditorEvent = React.memo(
     );
 
     const onFetchClipboard = useCallback(
-      (e: React.MouseEvent<HTMLButtonElement>) => {
+      (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => {
         onSelect(e.shiftKey);
         dispatch(clipboardActions.fetchClipboard());
       },
@@ -249,7 +239,7 @@ const ScriptEditorEvent = React.memo(
     );
 
     const onRename = useCallback(
-      (e) => {
+      (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
           entitiesActions.editScriptEventLabel({
             scriptEventId: id,
@@ -271,11 +261,14 @@ const ScriptEditorEvent = React.memo(
       setRename(false);
     }, []);
 
-    const onDetectRenameComplete = useCallback((e) => {
-      if (e.key === "Enter") {
-        setRename(false);
-      }
-    }, []);
+    const onDetectRenameComplete = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          setRename(false);
+        }
+      },
+      []
+    );
 
     drag(dragRef);
     drop(dropRef);
@@ -291,7 +284,7 @@ const ScriptEditorEvent = React.memo(
       (scriptEvent?.args?.__label
         ? scriptEvent.args.__label
         : isComment && scriptEvent?.args?.text) || undefined;
-    const isOpen = scriptEvent?.args && !scriptEvent.args.__collapse;
+    const isOpen = (scriptEvent?.args && !scriptEvent.args.__collapse) ?? false;
     const isConditional = scriptEventDefs[command]?.isConditional ?? false;
     const editableSymbol = scriptEventDefs[command]?.editableSymbol ?? false;
 
@@ -401,9 +394,10 @@ const ScriptEditorEvent = React.memo(
     const onContextMenu = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
+        onFetchClipboard(e);
         setContextMenu({ x: e.pageX, y: e.pageY, menu: contextMenuItems });
       },
-      [contextMenuItems]
+      [contextMenuItems, onFetchClipboard]
     );
 
     const onContextMenuClose = useCallback(() => {
@@ -484,9 +478,6 @@ const ScriptEditorEvent = React.memo(
       <ScriptEventWrapper
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        conditional={isConditional}
-        nestLevel={nestLevel}
-        altBg={index % 2 === 0}
         style={{
           height: isDragging ? 0 : "auto",
           display: isDragging ? "none" : "block",
@@ -513,81 +504,52 @@ const ScriptEditorEvent = React.memo(
           <div ref={dragRef}>
             <ScriptEventHeader
               ref={headerRef}
-              conditional={isConditional}
-              comment={Boolean(commented || isComment)}
+              isConditional={isConditional}
+              isComment={Boolean(commented || isComment)}
               nestLevel={nestLevel}
               altBg={index % 2 === 0}
+              isOpen={isOpen}
               isSelected={scriptEventSelectionIds.includes(scriptEvent.id)}
               isExecuting={isExecuting}
+              isBreakpoint={breakpointEnabled}
+              breakpointTitle={l10n("FIELD_BREAKPOINT")}
+              menuItems={contextMenuItems}
+              onOpenMenu={onFetchClipboard}
+              onContextMenu={onContextMenu}
+              onToggle={!rename ? toggleOpen : undefined}
             >
               {isVisible && (
                 <>
-                  <ScriptEventHeaderTitle
-                    onClick={!rename ? toggleOpen : undefined}
-                    onContextMenu={onContextMenu}
-                  >
-                    {!commented ? (
-                      <ScriptEventHeaderCaret open={isOpen && !commented}>
-                        <ArrowIcon />
-                      </ScriptEventHeaderCaret>
-                    ) : (
-                      <ScriptEventHeaderCaret>
-                        <CommentIcon />
-                      </ScriptEventHeaderCaret>
-                    )}
-                    <FixedSpacer width={5} />
-                    {rename ? (
-                      <>
-                        <ScriptEventRenameInput
-                          autoFocus
-                          value={String(labelName || "")}
-                          onChange={onRename}
-                          onFocus={onRenameFocus}
-                          onBlur={onRenameComplete}
-                          onKeyDown={onDetectRenameComplete}
-                          placeholder={l10n("FIELD_RENAME")}
-                        />
-                        <ScriptEventRenameInputCompleteButton
-                          onClick={onRenameComplete}
-                          title={l10n("FIELD_RENAME")}
-                        >
-                          <CheckIcon />
-                        </ScriptEventRenameInputCompleteButton>
-                      </>
-                    ) : (
-                      <ScriptEventTitle
-                        command={scriptEvent.command}
-                        args={scriptEvent.args}
+                  {rename ? (
+                    <>
+                      <ScriptEventRenameInput
+                        autoFocus
+                        value={String(labelName || "")}
+                        onChange={onRename}
+                        onFocus={onRenameFocus}
+                        onBlur={onRenameComplete}
+                        onKeyDown={onDetectRenameComplete}
+                        placeholder={l10n("FIELD_RENAME")}
                       />
-                    )}
-                  </ScriptEventHeaderTitle>
-                  {breakpointEnabled && (
-                    <ScriptEventHeaderBreakpointIndicator
-                      title={l10n("FIELD_BREAKPOINT")}
-                    >
-                      <BreakpointIcon />
-                    </ScriptEventHeaderBreakpointIndicator>
+                      <ScriptEventRenameInputCompleteButton
+                        onClick={onRenameComplete}
+                        title={l10n("FIELD_RENAME")}
+                      >
+                        <CheckIcon />
+                      </ScriptEventRenameInputCompleteButton>
+                    </>
+                  ) : (
+                    <ScriptEventTitle
+                      command={scriptEvent.command}
+                      args={scriptEvent.args}
+                    />
                   )}
-
-                  <DropdownButton
-                    size="small"
-                    variant="transparent"
-                    menuDirection="right"
-                    onMouseDown={onFetchClipboard}
-                  >
-                    {contextMenuItems}
-                  </DropdownButton>
                 </>
               )}
             </ScriptEventHeader>
           </div>
           {isOpen && !commented && (
-            <ScriptEventFormWrapper
-              conditional={isConditional}
-              nestLevel={nestLevel}
-              altBg={index % 2 === 0}
-              data-handler-id={handlerId}
-            >
+            <ScriptEventFormWrapper data-handler-id={handlerId}>
               <ScriptEditorEventHelper event={scriptEvent} />
               {showSymbols && (
                 <ScriptEventSymbolEditorWrapper>

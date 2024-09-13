@@ -1,3 +1,5 @@
+import path from "path";
+import { readFile } from "fs-extra";
 import {
   anonymizeGBVMScript,
   gbvmScriptChecksum,
@@ -31,7 +33,7 @@ _scene_1_init::
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "hello world"
-        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -67,7 +69,7 @@ _SCRIPT::
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "hello world"
-        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -108,7 +110,7 @@ _scene_1_init::
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "hello world"
-        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -121,6 +123,48 @@ _scene_1_init::
     const output = anonymizeGBVMScript(input);
     expect(output).toContain("scene_2_init");
     expect(output).not.toContain("scene_1_init");
+  });
+
+  it("should give equal output for functionally identical scripts", async () => {
+    const input1 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_input_953.s"
+      ),
+      "utf8"
+    );
+    const input2 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_input_954.s"
+      ),
+      "utf8"
+    );
+
+    const output1 = anonymizeGBVMScript(input1);
+    const output2 = anonymizeGBVMScript(input2);
+    expect(output1).toEqual(output2);
+  });
+
+  it("should give equal output for functionally more identical scripts", async () => {
+    const input1 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_timer_40.s"
+      ),
+      "utf8"
+    );
+    const input2 = await readFile(
+      path.resolve(
+        __dirname,
+        "../../data/compiler/_files/data/script_timer_54.s"
+      ),
+      "utf8"
+    );
+
+    const output1 = anonymizeGBVMScript(input1);
+    const output2 = anonymizeGBVMScript(input2);
+    expect(output1).toEqual(output2);
   });
 });
 
@@ -152,7 +196,7 @@ describe("gbvmScriptChecksum", () => {
           ; Text Dialogue
           VM_LOAD_TEXT            0
           .asciz "hello world"
-          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
           VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
           VM_DISPLAY_TEXT
           VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -188,7 +232,7 @@ describe("gbvmScriptChecksum", () => {
           ; Text Dialogue
           VM_LOAD_TEXT            0
           .asciz "hello world"
-          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
           VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
           VM_DISPLAY_TEXT
           VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -233,7 +277,7 @@ describe("gbvmScriptChecksum", () => {
           ; Text Dialogue
           VM_LOAD_TEXT            0
           .asciz "hello world"
-          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
           VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
           VM_DISPLAY_TEXT
           VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
@@ -269,7 +313,7 @@ describe("gbvmScriptChecksum", () => {
           ; Text Dialogue
           VM_LOAD_TEXT            0
           .asciz "hello world!"
-          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+          VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
           VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
           VM_DISPLAY_TEXT
           VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/

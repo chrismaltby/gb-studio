@@ -1,26 +1,30 @@
-import styled from "styled-components";
+import React, { ReactNode } from "react";
+import {
+  StyledFixedSpacer,
+  StyledFlexBreak,
+  StyledFlexGrow,
+  StyledFlexRow,
+} from "ui/spacing/style";
+
+export const FlexGrow = (props: React.HTMLAttributes<HTMLDivElement>) => (
+  <StyledFlexGrow {...props} />
+);
 
 export interface FixedSpacerProps {
   width?: number;
   height?: number;
 }
 
-export const FlexGrow = styled.div`
-  flex-grow: 1;
-`;
+export const FixedSpacer = ({ width, height }: FixedSpacerProps) => (
+  <StyledFixedSpacer $width={width} $height={height} />
+);
 
-export const FixedSpacer = styled.div<FixedSpacerProps>`
-  width: ${(props) => (props.width ? props.width : 1)}px;
-  height: ${(props) => (props.height ? props.height : 1)}px;
-  flex-shrink: 0;
-`;
+export const FlexBreak = () => <StyledFlexBreak />;
 
-export const FlexBreak = styled.div`
-  flex-basis: 100% !important;
-  margin: 0 !important;
-  height: 0;
-`;
+export interface FlexRowProps {
+  children: ReactNode;
+}
 
-export const FlexRow = styled.div`
-  display: flex;
-`;
+export const FlexRow = ({ children }: FlexRowProps) => (
+  <StyledFlexRow children={children} />
+);

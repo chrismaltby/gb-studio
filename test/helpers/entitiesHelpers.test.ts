@@ -1,4 +1,3 @@
-import { Dictionary } from "lodash";
 import {
   isActorPrefabEqual,
   isTriggerPrefabEqual,
@@ -27,10 +26,10 @@ describe("isActorPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isActorPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -50,10 +49,10 @@ describe("isActorPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isActorPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -73,10 +72,10 @@ describe("isActorPrefabEqual", () => {
       name: "Another Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isActorPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -96,10 +95,10 @@ describe("isActorPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "baz" } },
     };
     const result = isActorPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -121,10 +120,10 @@ describe("isTriggerPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isTriggerPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -144,10 +143,10 @@ describe("isTriggerPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isTriggerPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -167,10 +166,10 @@ describe("isTriggerPrefabEqual", () => {
       name: "Another Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
     const result = isTriggerPrefabEqual(prefabA, lookupA, prefabB, lookupB);
@@ -190,10 +189,10 @@ describe("isTriggerPrefabEqual", () => {
       name: "My Prefab",
       script: ["event1"],
     };
-    const lookupA: Dictionary<ScriptEventNormalized> = {
+    const lookupA: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "bar" } },
     };
-    const lookupB: Dictionary<ScriptEventNormalized> = {
+    const lookupB: Record<string, ScriptEventNormalized> = {
       event1: { id: "My Prefab", command: "CMD", args: { foo: "baz" } },
     };
     const result = isTriggerPrefabEqual(prefabA, lookupA, prefabB, lookupB);

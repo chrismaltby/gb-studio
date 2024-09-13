@@ -40,7 +40,7 @@ const Pill = styled.button`
   padding: 3px 10px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -59,7 +59,7 @@ const BackgroundPreviewSettings = ({
   const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)

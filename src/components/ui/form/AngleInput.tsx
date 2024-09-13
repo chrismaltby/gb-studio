@@ -105,7 +105,3 @@ export const AngleInput: FC<
     </Wrapper>
   );
 };
-
-AngleInput.defaultProps = {
-  value: undefined,
-};

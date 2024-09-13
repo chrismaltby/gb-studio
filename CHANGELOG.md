@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
+
+### Fixed
+
+- Fix issue where adding a new song wouldn't warn about unsaved changes in current song
+- Fix issue where adding a song with an already existing name wouldn't auto select the newly created song
+- Fix issue where scene connection lines could get stuck in place if custom scripts that change scenes are called multiple times from the same scene
+- Fix issue where "Replace Script" confirmation alert would appear when pasting sometimes even if the custom script hadn't been modified
+- Fix issue preventing building projects containing a "Play Music" event but no music
+
+## [4.1.2] - 2024-09-09
+
 ### Added
 
 - Add ability to remove a single project from the recent files list by clicking "X" button that appears on hover
@@ -15,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update build log so the scripts with GBVM errors will display a link to edit the script which needs fixing.
 - When trying to open a project that has been deleted it will be removed from the recent projects list
+- Build process now runs in a Worker thread, meaning long builds will no longer cause the UI to become unresponsive
 
 ### Fixed
 
@@ -22,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue causing crash when trying to preview an FX Hammer effect index that doesn't exist
 - Fix issue building game when playing FX Hammer sound effect that doesn't exist (overflowed values will clamp to available range)
 - Fix issue where migrate project confirmation dialog would appear behind project window on Linux
+- Fix issue where "Display Dialogue" event would inconsistently pause between each dialogue in a multi dialogue sequence
+- Fix issue where text scroll would not scroll first character of each line of text when using avatars
 
 ## [4.1.1] - 2024-09-04
 

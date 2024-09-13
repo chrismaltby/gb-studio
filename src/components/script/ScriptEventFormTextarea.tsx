@@ -22,9 +22,9 @@ interface ScriptEventFormTextAreaProps {
 
 const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   id,
-  value,
+  value = "",
   placeholder,
-  maxlength,
+  maxlength = 52,
   singleLine = false,
   onChange,
   entityId,
@@ -67,13 +67,6 @@ ScriptEventFormTextArea.propTypes = {
   placeholder: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
-};
-
-ScriptEventFormTextArea.defaultProps = {
-  id: undefined,
-  value: "",
-  maxlength: 52,
-  placeholder: undefined,
 };
 
 export default ScriptEventFormTextArea;

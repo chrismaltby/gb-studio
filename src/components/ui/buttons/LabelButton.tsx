@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import styled from "styled-components";
 
 interface LabelButtonProps {
@@ -10,7 +9,7 @@ interface LabelColorProps {
   color?: string;
 }
 
-const colors: Dictionary<string> = {
+const colors: Record<string, string> = {
   red: "#e20e2b",
   orange: "#ff5722",
   yellow: "#ffc107",
@@ -20,7 +19,7 @@ const colors: Dictionary<string> = {
   gray: "#9e9e9e",
 };
 
-const textColors: Dictionary<string> = {
+const textColors: Record<string, string> = {
   red: "#ffffff",
   orange: "#ffffff",
   yellow: "#000000",
@@ -44,7 +43,7 @@ export const LabelButton = styled.button.attrs<LabelButtonProps>((props) => ({
   background-color: transparent;
   opacity: 0.9;
 
-  :hover {
+  &:hover {
     opacity: 1;
     transform: scale(1.25);
   }

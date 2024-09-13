@@ -1,4 +1,4 @@
-import { createSlice, Dictionary, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import keyBy from "lodash/keyBy";
 import projectActions from "store/features/project/projectActions";
 
@@ -29,7 +29,7 @@ export type SceneTypeSchema = {
 export interface EngineState {
   loaded: boolean;
   fields: EngineFieldSchema[];
-  lookup: Dictionary<EngineFieldSchema>;
+  lookup: Record<string, EngineFieldSchema>;
   sceneTypes: SceneTypeSchema[];
 }
 

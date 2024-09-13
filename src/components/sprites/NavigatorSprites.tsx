@@ -298,7 +298,7 @@ export const NavigatorSprites = ({
   const [renameId, setRenameId] = useState("");
 
   const listenForRenameStart = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
       }

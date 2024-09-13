@@ -6,6 +6,7 @@ import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import trackerActions from "store/features/tracker/trackerActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface SequenceOption {
   value: number;
@@ -20,14 +21,14 @@ interface SequenceEditorProps {
 }
 
 interface SequenceItemProps {
-  active: boolean;
-  selected: boolean;
+  $active: boolean;
+  $selected: boolean;
 }
 
 const Wrapper = styled.div`
   background-color: ${(props) => props.theme.colors.tracker.background};
 
-  ${Select} {
+  .CustomSelect {
     min-width: 0;
   }
 `;
@@ -41,7 +42,7 @@ const SequenceItem = styled.div<SequenceItemProps>`
   min-width: 50px;
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
         `
@@ -58,7 +59,7 @@ const AddSequenceButton = styled.button`
   svg {
     fill: ${(props) => props.theme.colors.button.text};
   }
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.button.nestedActiveBackground};
   }
 `;
@@ -201,8 +202,8 @@ export const SequenceEditorFwd = ({
           <SequenceItem
             key={i}
             onClick={() => setSequenceId(i)}
-            selected={i === sequenceId}
-            active={playingSequence === i}
+            $selected={i === sequenceId}
+            $active={playingSequence === i}
           >
             <div style={{ padding: "0 0 2px 2px" }}>{i + 1}:</div>
             <Select
@@ -210,8 +211,10 @@ export const SequenceEditorFwd = ({
               options={sequenceOptions}
               onFocus={() => setSelectHasFocus(true)}
               onBlur={() => setSelectHasFocus(false)}
-              onChange={(newValue: SequenceOption) => {
-                editSequence(i, newValue);
+              onChange={(newValue: SingleValue<SequenceOption>) => {
+                if (newValue) {
+                  editSequence(i, newValue);
+                }
               }}
             />
           </SequenceItem>

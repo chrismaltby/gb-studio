@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import styled from "styled-components";
 import { Slider } from "./Slider";
 import { Label } from "./Label";
-import { Input } from "./Input";
+import { StyledInput } from "./style";
 
 export interface SliderFieldProps {
   name: string;
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 const InnerWrapper = styled.div`
   display: flex;
 
-  ${Input} {
+  ${StyledInput} {
     width: 70px;
     margin-right: 10px;
     flex-shrink: 0;
@@ -50,7 +50,7 @@ export const SliderField: FC<SliderFieldProps> = ({
     <Wrapper>
       {label && <Label htmlFor={name}>{label}</Label>}
       <InnerWrapper>
-        <Input
+        <StyledInput
           id={name}
           type="number"
           name={name}
@@ -70,8 +70,4 @@ export const SliderField: FC<SliderFieldProps> = ({
       </InnerWrapper>
     </Wrapper>
   );
-};
-
-SliderField.defaultProps = {
-  value: undefined,
 };

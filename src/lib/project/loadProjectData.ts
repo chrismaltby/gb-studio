@@ -19,7 +19,6 @@ import type {
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
-import { Dictionary } from "@reduxjs/toolkit";
 import { loadEngineFields } from "lib/project/engineFields";
 import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadAllTilesetData from "lib/project/loadTilesetData";
@@ -44,7 +43,7 @@ import type { ProjectData } from "store/features/project/projectActions";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
-  scriptEventDefs: Dictionary<ScriptEventDef>;
+  scriptEventDefs: Record<string, ScriptEventDef>;
   engineFields: EngineFieldSchema[];
   sceneTypes: SceneTypeSchema[];
   modifiedSpriteIds: string[];

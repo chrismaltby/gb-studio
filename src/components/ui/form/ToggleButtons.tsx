@@ -26,11 +26,11 @@ const Option = styled.div`
   width: 100%;
   padding: 5px;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus {
+  &:focus {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
   }

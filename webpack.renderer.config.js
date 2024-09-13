@@ -3,9 +3,51 @@ const webpack = require("webpack");
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
 const Path = require("path");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const ReactRefreshTypeScript = require("react-refresh-typescript");
+
+const isDevelopment = process.env.NODE_ENV !== "production";
 
 const rendererRules = [
-  ...rules,
+  {
+    test: /\.worker\.(ts|js)$/,
+    exclude: /(node_modules|.webpack)/,
+    rules: [
+      {
+        loader: "worker-loader",
+        options: { publicPath: "../" },
+      },
+      {
+        loader: "ts-loader",
+        options: {
+          getCustomTransformers: isDevelopment
+            ? () => ({
+                before: [ReactRefreshTypeScript()],
+              })
+            : undefined,
+          transpileOnly: true,
+        },
+      },
+    ],
+  },
+  {
+    test: /^(?!.*\.worker\.ts$).*\.(ts|tsx|js|jsx)$/,
+    exclude: /(node_modules|.webpack)/,
+    use: [
+      {
+        loader: require.resolve("ts-loader"),
+        options: {
+          getCustomTransformers: isDevelopment
+            ? () => ({
+                before: [ReactRefreshTypeScript()],
+              })
+            : undefined,
+          transpileOnly: true,
+        },
+      },
+    ],
+  },
+  ...rules.slice(1), // Remove global ts-loader rule replaced with ReactRefreshTypeScript version defined above
   {
     test: /\.css$/,
     use: [{ loader: "style-loader" }, { loader: "css-loader" }],
@@ -18,6 +60,10 @@ const rendererPlugins = [
     Buffer: ["buffer", "Buffer"],
   }),
 ];
+
+if (isDevelopment) {
+  rendererPlugins.push(new ReactRefreshWebpackPlugin());
+}
 
 const srcPath = (subdir) => {
   return Path.join(__dirname, "src", subdir);
@@ -68,7 +114,6 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"],
     alias: {
-      "react-dom": "@hot-loader/react-dom",
       store: srcPath("store"),
       components: srcPath("components"),
       lang: srcPath("lang"),

@@ -1489,6 +1489,7 @@
   "WARNING_ENGINE_PLUGIN_OUT_OF_DATE": "Plugin \"{pluginName}\" was created for an older version of GB Studio and may not work correctly. Plugin uses engine \"{pluginEngineVersion}\" but GB Studio is using engine \"{expectedEngineVersion}\".",
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Plugin \"{pluginName}\" is based on an unknown engine version and may not work correctly. Plugin authors can fix this issue by making sure `engine/engine.json` exists in the plugin containing at least `{\"version\": \"{expectedEngineVersion}\"}`.",
   "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Background contains too many unique four color palettes ({paletteLength} where limit is {maxPaletteLength}) meaning it may not display correctly. Consider reducing the amount of colors used in this image.",
+  "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "Background \"{filename}\" is not a valid PNG file",
 
   "// 12": "Errors -------------------------------------------------------",
 

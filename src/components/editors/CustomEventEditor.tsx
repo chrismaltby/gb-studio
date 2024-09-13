@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "store/features/entities/entitiesState";
@@ -14,7 +14,7 @@ import {
   FormHeader,
   FormRow,
   FormSectionTitle,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
@@ -22,7 +22,6 @@ import { Button } from "ui/buttons/Button";
 import { BlankIcon, CheckIcon, LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { CustomEventSymbolsEditor } from "components/forms/symbols/CustomEventSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { Checkbox } from "ui/form/Checkbox";
 import { NoteField } from "ui/form/NoteField";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { Input } from "ui/form/Input";
@@ -34,10 +33,7 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ScriptUsesList } from "components/editors/script/ScriptUsesList";
-import {
-  SplitPaneHeader,
-  Wrapper as SplitPaneHeaderWrapper,
-} from "ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 
 const customEventName = (
@@ -61,10 +57,6 @@ const UsesCollapsedWrapper = styled.div`
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${SplitPaneHeaderWrapper} {
-    border-bottom: 0;
-  }
 `;
 
 const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
@@ -118,7 +110,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   );
 
   const onChangeDescription = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeCustomEventProp("description", e.currentTarget.value),
     [onChangeCustomEventProp]
   );
@@ -282,10 +274,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                   menuDirection="right"
                 >
                   {!showSymbols && !showUses && (
-                    <MenuItem onClick={() => setShowSymbols(true)}>
-                      <MenuItemIcon>
-                        <BlankIcon />
-                      </MenuItemIcon>
+                    <MenuItem
+                      onClick={() => setShowSymbols(true)}
+                      icon={<BlankIcon />}
+                    >
                       {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
                     </MenuItem>
                   )}
@@ -293,23 +285,19 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                   <MenuItem
                     key="view-editor"
                     onClick={() => setShowUses(false)}
+                    icon={!showUses ? <CheckIcon /> : <BlankIcon />}
                   >
-                    <MenuItemIcon>
-                      {!showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
                     {l10n("MENU_EDIT_CUSTOM_EVENT")}
                   </MenuItem>
-                  <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
-                    <MenuItemIcon>
-                      {showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
+                  <MenuItem
+                    key="view-uses"
+                    onClick={() => setShowUses(true)}
+                    icon={showUses ? <CheckIcon /> : <BlankIcon />}
+                  >
                     {l10n("FIELD_VIEW_SCRIPT_USES")}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={onRemove}>
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
+                  <MenuItem onClick={onRemove} icon={<BlankIcon />}>
                     {l10n("MENU_DELETE_CUSTOM_EVENT")}
                   </MenuItem>
                 </DropdownButton>
@@ -347,9 +335,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                     <>
                       {customEventVariables.length > 0 &&
                         customEventActors.length > 0 && (
-                          <FormSectionTitle
-                            style={{ width: "100%", marginBottom: 0 }}
-                          >
+                          <FormSectionTitle noMarginBottom>
                             {l10n("SIDEBAR_PARAMETERS")}
                           </FormSectionTitle>
                         )}
@@ -357,7 +343,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                       {customEventVariables.length > 0 && (
                         <SidebarColumn>
                           {customEventActors.length === 0 && (
-                            <FormSectionTitle style={{ marginTop: -11 }}>
+                            <FormSectionTitle>
                               {l10n("SIDEBAR_PARAMETERS")}
                             </FormSectionTitle>
                           )}
@@ -415,12 +401,14 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                             false
                                           )
                                         }
+                                        icon={
+                                          !variable.passByReference ? (
+                                            <CheckIcon />
+                                          ) : (
+                                            <BlankIcon />
+                                          )
+                                        }
                                       >
-                                        <Checkbox
-                                          id="byVal"
-                                          name="byVal"
-                                          checked={!variable.passByReference}
-                                        />
                                         {l10n("FIELD_PASS_BY_VALUE")}
                                       </MenuItem>
                                       <MenuItem
@@ -430,12 +418,14 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                             true
                                           )
                                         }
+                                        icon={
+                                          variable.passByReference ? (
+                                            <CheckIcon />
+                                          ) : (
+                                            <BlankIcon />
+                                          )
+                                        }
                                       >
-                                        <Checkbox
-                                          id="byRef"
-                                          name="byRef"
-                                          checked={variable.passByReference}
-                                        />
                                         {l10n("FIELD_PASS_BY_REFERENCE")}
                                       </MenuItem>
                                     </DropdownButton>
@@ -449,7 +439,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                       {customEventActors.length > 0 && (
                         <SidebarColumn>
                           {customEventVariables.length === 0 && (
-                            <FormSectionTitle style={{ marginTop: -11 }}>
+                            <FormSectionTitle>
                               {l10n("SIDEBAR_PARAMETERS")}
                             </FormSectionTitle>
                           )}
@@ -504,6 +494,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                 <SplitPaneHeader
                   collapsed={true}
                   onToggle={() => setShowUses(true)}
+                  borderBottom={false}
                 >
                   {l10n("SIDEBAR_SCRIPT_USES")}
                 </SplitPaneHeader>

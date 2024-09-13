@@ -44,12 +44,7 @@ import {
   TriggerScriptKey,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
-import {
-  Dictionary,
-  EntityAdapter,
-  EntityId,
-  EntityState,
-} from "@reduxjs/toolkit";
+import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
@@ -159,7 +154,7 @@ export interface DenormalizedEntities {
   triggerPrefabs: TriggerPrefab[];
 }
 
-const inodeToAssetCache: Dictionary<Asset> = {};
+const inodeToAssetCache: Record<string, Asset> = {};
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
@@ -410,10 +405,10 @@ export const denormalizeSprite = ({
   spriteStates,
 }: {
   sprite: SpriteSheetNormalized;
-  metasprites: Dictionary<Metasprite>;
-  metaspriteTiles: Dictionary<MetaspriteTile>;
-  spriteAnimations: Dictionary<SpriteAnimation>;
-  spriteStates: Dictionary<SpriteState>;
+  metasprites: Record<string, Metasprite>;
+  metaspriteTiles: Record<string, MetaspriteTile>;
+  spriteAnimations: Record<string, SpriteAnimation>;
+  spriteStates: Record<string, SpriteState>;
 }): SpriteSheetData => {
   const entities = {
     metasprites,
@@ -542,9 +537,9 @@ export const isVariableCustomEvent = (variable: string) => {
 
 export const isCustomEventEqual = (
   customEventA: CustomEventNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   customEventB: CustomEventNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   const compareA = {
     ...customEventA,
@@ -569,9 +564,9 @@ export const isCustomEventEqual = (
 
 export const isActorPrefabEqual = (
   prefabA: ActorPrefabNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   prefabB: ActorPrefabNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   type CompareType = Omit<ActorPrefabNormalized, ActorScriptKey | "id"> &
     Record<ActorScriptKey | "id", undefined>;
@@ -616,9 +611,9 @@ export const isActorPrefabEqual = (
 
 export const isTriggerPrefabEqual = (
   prefabA: TriggerPrefabNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   prefabB: TriggerPrefabNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   type CompareType = Omit<TriggerPrefabNormalized, TriggerScriptKey | "id"> &
     Record<TriggerScriptKey | "id", undefined>;
@@ -722,7 +717,9 @@ export const defaultLocalisedConstantName = (constantIndex: number) =>
 export const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
-const extractEntitySymbols = (entities: EntityState<{ symbol?: string }>) => {
+const extractEntitySymbols = (
+  entities: EntityState<{ symbol?: string }, string>
+) => {
   return Object.values(entities.entities).map(
     (entity) => entity?.symbol
   ) as string[];
@@ -743,7 +740,6 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.customEvents),
     ...extractEntitySymbols(state.music),
     ...extractEntitySymbols(state.sounds),
-    ...extractEntitySymbols(state.scriptEvents),
   ];
 };
 
@@ -752,7 +748,7 @@ export const genEntitySymbol = (state: EntitiesState, name: string) => {
 };
 
 const ensureEntitySymbolsUnique = (
-  entities: EntityState<{ symbol?: string }>,
+  entities: EntityState<{ symbol?: string }, string>,
   seenSymbols: string[]
 ) => {
   for (const entity of Object.values(entities.entities)) {
@@ -782,11 +778,10 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
   ensureEntitySymbolsUnique(state.sounds, symbols);
-  ensureEntitySymbolsUnique(state.scriptEvents, symbols);
 };
 
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
-  entities: EntityState<T>,
+  entities: EntityState<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ): T => {
@@ -819,7 +814,7 @@ export const storeRemovedAssetInInodeCache = <
   filename: string,
   projectRoot: string,
   assetFolder: string,
-  entities: EntityState<T>
+  entities: EntityState<T, string>
 ): Asset => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
 
@@ -852,8 +847,8 @@ export const storeRemovedAssetInInodeCache = <
 export const upsertAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ) => {
@@ -869,8 +864,8 @@ export const upsertAssetEntity = <
 export const removeAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset
 ) => {
   const existingEntities = entities.ids.map(
@@ -897,8 +892,8 @@ export const renameAssetEntity = <
     name: string;
   }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset,
   newFilename: string
 ) => {
@@ -920,8 +915,8 @@ export const renameAssetEntity = <
 
 export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   state: EntitiesState,
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   id: string,
   inputSymbol: string
 ) => {
@@ -946,11 +941,11 @@ export const isSlope = (value: number) => {
 
 export const updateCustomEventArgs = (
   customEvent: CustomEventNormalized,
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
-  const variables = {} as Dictionary<CustomEventVariable>;
-  const actors = {} as Dictionary<CustomEventActor>;
+  const variables = {} as Record<string, CustomEventVariable>;
+  const actors = {} as Record<string, CustomEventActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
@@ -1082,7 +1077,7 @@ export const updateCustomEventArgs = (
 
 export const updateAllCustomEventsArgs = (
   customEvents: CustomEventNormalized[],
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   for (const customEvent of customEvents) {

@@ -1,106 +1,62 @@
-import { ReactNode } from "react";
-import API from "renderer/lib/api";
-import styled, { css } from "styled-components";
-import { ThemeInterface } from "ui/theme/ThemeInterface";
+import React, { forwardRef, ReactNode } from "react";
+import styled from "styled-components";
+import { CaretRightIcon } from "ui/icons/Icons";
+import {
+  StyledMenu,
+  StyledMenuAccelerator,
+  StyledMenuDivider,
+  StyledMenuGroup,
+  StyledMenuItem,
+  StyledMenuItemCaret,
+  StyledMenuItemIcon,
+} from "ui/menu/style";
 
-export interface MenuProps {
-  readonly children?: ReactNode;
-  readonly theme?: ThemeInterface;
-}
+export const Menu = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>((props, outerRef) => <StyledMenu ref={outerRef} {...props} />);
 
-export const Menu = styled.div<MenuProps>`
-  display: flex;
-  flex-direction: column;
-  border-radius: ${(props) => props.theme.borderRadius}px;
-  width: max-content;
-  min-width: 100px;
-  user-select: none;
-  box-shadow: ${(props) => props.theme.colors.menu.boxShadow};
-  background: ${(props) => props.theme.colors.menu.background};
-  color: ${(props) => props.theme.colors.text};
-  font-size: ${(props) => props.theme.typography.menuFontSize};
-  padding: 4px 0;
-  font-weight: normal;
-  line-height: 15px;
-`;
-
-export interface MenuItemProps {
+export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly "data-index"?: number;
-  readonly focus?: boolean;
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
   readonly subMenu?: React.ReactElement[];
+  readonly icon?: ReactNode;
+  readonly children?: ReactNode;
 }
 
-export const MenuItem = styled.div<MenuItemProps>`
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: ${(props) => props.theme.typography.menuFontSize};
-  white-space: nowrap;
+export const MenuItem = ({
+  selected,
+  subMenu,
+  children,
+  icon,
+  ...props
+}: MenuItemProps) => (
+  <StyledMenuItem $selected={selected} {...props}>
+    {icon && <StyledMenuItemIcon>{icon}</StyledMenuItemIcon>}
+    {children}
+    {subMenu && <MenuItemCaret />}
+  </StyledMenuItem>
+);
 
-  &:hover,
-  &:focus {
-    background: ${(props) => props.theme.colors.menu.hoverBackground};
-    outline: none;
-    box-shadow: none;
-  }
+export interface MenuItemIconProps {
+  readonly children?: ReactNode;
+}
 
-  &:active {
-    background: ${(props) => props.theme.colors.menu.activeBackground};
-  }
+export const MenuItemIcon = ({ children }: MenuItemIconProps) => (
+  <StyledMenuItemIcon children={children} />
+);
 
-  ${Menu}:hover &:focus&:not(:hover) {
-    background: ${(props) => props.theme.colors.menu.activeBackground};
-  }
+interface MenuGroupProps {
+  children?: ReactNode;
+}
 
-  ${(props) =>
-    props.selected
-      ? css`
-          background: ${(props) => props.theme.colors.menu.hoverBackground};
-          outline: none;
-          box-shadow: none;
-        `
-      : ""}
-`;
-
-export const MenuItemIcon = styled.div<MenuItemProps>`
-  width: 15px;
-  height: 15px;
-  display: flex;
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  svg {
-    width: 12px;
-    height: 12px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-  &:nth-child(1) {
-    margin-left: -5px;
-    margin-right: 5px;
-  }
-  &:last-child:not(:first-child) {
-    margin-left: 5px;
-    margin-right: 0px;
-  }
-`;
-
-export const MenuGroup = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  opacity: 0.8;
-
-  ${MenuItem} + & {
-    margin-top: 10px;
-  }
-`;
+export const MenuGroup = ({ children }: MenuGroupProps) => (
+  <StyledMenuGroup children={children} />
+);
 
 export const MenuSection = styled.div`
   display: flex;
@@ -110,38 +66,15 @@ export const MenuSection = styled.div`
   white-space: nowrap;
 `;
 
-export const MenuDivider = styled.div`
-  border-bottom: 1px solid ${(props) => props.theme.colors.menu.divider};
-`;
+export const MenuDivider = () => <StyledMenuDivider />;
 
 export interface MenuAcceleratorProps {
   accelerator: string;
 }
 
-export const acceleratorForPlatform = (accelerator: string) => {
-  if (API.platform === "darwin") {
-    return accelerator
-      .replace(/CommandOrControl\+/g, "⌘")
-      .replace(/Shift\+/g, "⇧")
-      .replace(/Alt\+/g, "⌥");
-  }
-  return accelerator
-    .replace(/CommandOrControl\+/g, "Ctrl+")
-    .replace(/Shift\+/g, "Shift+")
-    .replace(/Alt\+/g, "Alt+");
-};
-
-export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>(
-  (props) => ({
-    children: acceleratorForPlatform(props.accelerator),
-  })
-)<MenuAcceleratorProps>`
-  flex-grow: 1;
-  font-size: 0.8em;
-  text-align: right;
-  margin-left: 20px;
-  color: ${(props) => props.theme.colors.secondaryText};
-`;
+export const MenuAccelerator = ({ accelerator }: MenuAcceleratorProps) => (
+  <StyledMenuAccelerator $accelerator={accelerator} />
+);
 
 export const MenuOverlay = styled.div`
   position: fixed;
@@ -152,14 +85,8 @@ export const MenuOverlay = styled.div`
   z-index: 1000;
 `;
 
-export const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  margin-left: 5px;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-`;
+export const MenuItemCaret = () => (
+  <StyledMenuItemCaret>
+    <CaretRightIcon />
+  </StyledMenuItemCaret>
+);

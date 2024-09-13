@@ -26,7 +26,7 @@ interface BackgroundSelectProps {
 }
 
 interface WrapperProps {
-  includeInfo?: boolean;
+  $includeInfo?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -35,7 +35,7 @@ const Wrapper = styled.div<WrapperProps>`
   min-width: 0;
   width: 67px;
   ${(props) =>
-    props.includeInfo
+    props.$includeInfo
       ? css`
           width: 100%;
         `
@@ -77,11 +77,11 @@ const Button = styled.button`
   width: 100%;
   text-align: left;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus,
+  &:focus,
   &&&:focus:not(.focus-visible) {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
@@ -116,7 +116,7 @@ const SpriteInfoTitle = styled.div`
 `;
 
 interface SpriteInfoRowProps {
-  error?: boolean;
+  $error?: boolean;
 }
 
 const SpriteInfoRow = styled.div<SpriteInfoRowProps>`
@@ -128,7 +128,7 @@ const SpriteInfoRow = styled.div<SpriteInfoRowProps>`
   opacity: 0.7;
 
   ${(props) =>
-    props.error
+    props.$error
       ? css`
           color: red;
         `
@@ -155,7 +155,7 @@ export const Pill = styled.span`
   margin-left: 3px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -169,7 +169,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
@@ -265,7 +265,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   };
 
   return (
-    <Wrapper includeInfo={includeInfo}>
+    <Wrapper $includeInfo={includeInfo}>
       <Button
         id={name}
         ref={buttonRef}
@@ -307,7 +307,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
               <SpriteInfoRow
-                error={
+                $error={
                   (numTiles > MAX_BACKGROUND_TILES_CGB ||
                     (!isCGBOnly && numTiles > MAX_BACKGROUND_TILES)) &&
                   !is360

@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { useAppSelector } from "store/hooks";
@@ -46,8 +47,8 @@ export const FlagSelect: FC<FlagSelectProps> = ({
     flagOptions.find((o) => (value ? o.value === value : o.value === value)) ||
     flagOptions[0];
 
-  const onFieldChange = (newOption: { value: number }) => {
-    if (onChange) {
+  const onFieldChange = (newOption: SingleValue<{ value: number }>) => {
+    if (newOption && onChange) {
       onChange(newOption.value);
     }
   };

@@ -11,7 +11,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -22,8 +22,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import { Checkbox } from "ui/form/Checkbox";
-import { CaretRightIcon, PinIcon } from "ui/icons/Icons";
+import { CaretRightIcon, CheckIcon, PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { WorldEditor } from "./WorldEditor";
 import { NoteField } from "ui/form/NoteField";
@@ -43,7 +42,7 @@ import { ActorEditorScripts } from "./actor/ActorEditorScripts";
 import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
-import { PrefabHeader } from "ui/form/PrefabHeader";
+import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 
 interface ActorEditorProps {
   id: string;
@@ -98,7 +97,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorProp("notes", e.currentTarget.value),
     [onChangeActorProp]
   );
@@ -290,8 +289,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       minWidth: 28,
                     }}
                   >
-                    <MenuItem onClick={onToggleField("isPinned")}>
-                      <Checkbox id="pin" name="pin" checked={actor.isPinned} />{" "}
+                    <MenuItem
+                      onClick={onToggleField("isPinned")}
+                      icon={actor.isPinned ? <CheckIcon /> : undefined}
+                    >
                       {l10n("FIELD_PIN_TO_SCREEN")}
                     </MenuItem>
                   </DropdownButton>

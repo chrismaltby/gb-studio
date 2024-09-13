@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const useDelayedState = <T>(initialState: T) => {
   const [value, setValue] = useState(initialState);
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout>;
   return [
     value,
     (newValue: T, waitTime?: number) => {

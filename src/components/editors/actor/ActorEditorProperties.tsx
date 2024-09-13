@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from "react";
-import { FormContainer, FormField, FormRow } from "ui/form/FormLayout";
+import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorNormalized,

@@ -36,17 +36,17 @@ interface SongPianoRollProps {
 }
 
 interface PianoKeyProps {
-  color: "white" | "black";
-  tall?: boolean;
-  highlight?: boolean;
+  $color: "white" | "black";
+  $tall?: boolean;
+  $highlight?: boolean;
 }
 
 interface SongGridHeaderProps {
-  cols: number;
+  $cols: number;
 }
 
 interface SongGridFooterProps {
-  cols: number;
+  $cols: number;
 }
 
 const Piano = styled.div`
@@ -77,7 +77,7 @@ const blackKeyStyle = css`
 `;
 
 const highlightStyle = css`
-  :after {
+  &:after {
     content: "";
     position: absolute;
     top: 0px;
@@ -99,14 +99,14 @@ const PianoKey = styled.div<PianoKeyProps>`
   font-size: 10px;
   padding-right: 5px;
   position: relative;
-  height: ${(props) => (props.tall ? 2 : 1.5) * CELL_SIZE}px;
+  height: ${(props) => (props.$tall ? 2 : 1.5) * CELL_SIZE}px;
   width: 100%;
   background: white;
   border-bottom: 1px solid #cfd8dc;
   box-shadow: rgba(0, 0, 0, 0.1) -2px 0px 2px 0px inset;
-  ${(props) => (props.color === "black" ? blackKeyStyle : "")}
-  ${(props) => (props.highlight ? highlightStyle : "")}
-  :hover {
+  ${(props) => (props.$color === "black" ? blackKeyStyle : "")}
+  ${(props) => (props.$highlight ? highlightStyle : "")}
+  &:hover {
     ${highlightStyle};
   }
 `;
@@ -118,7 +118,7 @@ const SongGrid = styled.div`
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
   position: relative;
-  :focus {
+  &:focus {
     z-index: 1;
   }
 `;
@@ -140,7 +140,7 @@ const RollPlaybackTracker = styled.div`
   top: 0;
   bottom: 0;
   left: ${30 + 10 + 1 - 10}px;
-  &::before {
+  &:before {
     content: "";
     position: absolute;
     top: 2px;
@@ -160,7 +160,7 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
   padding-left: ${30 + 10 + 1}px;
   z-index: 10;
   ${(props) => css`
-    width: ${props.cols * CELL_SIZE}px;
+    width: ${props.$cols * CELL_SIZE}px;
     height: ${CELL_SIZE}px;
     background-color: ${props.theme.colors.document.background};
     background-image: linear-gradient(
@@ -186,7 +186,7 @@ const SongGridFooter = styled.div<SongGridFooterProps>`
   z-index: 5;
   ${(props) => css`
     margin-top: ${CELL_SIZE / 2}px;
-    width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
+    width: calc(${props.$cols * CELL_SIZE}px + ${30 + 10 + 1}px);
     height: ${2 * CELL_SIZE}px;
     border-right: 2px solid #808080;
     background-color: ${props.theme.colors.sidebar.background};
@@ -410,29 +410,26 @@ export const SongPianoRoll = ({
     [selectedChannel, pattern]
   );
 
-  const onSelectAll = useCallback(
-    (_e) => {
-      const selection = window.getSelection();
-      if (!selection || selection.focusNode) {
-        return;
-      }
-      window.getSelection()?.empty();
-      const allPatternCells = pattern
-        ?.map((c, i) => {
-          return c[selectedChannel].note !== null ? i : undefined;
-        })
-        .filter((c) => c !== undefined) as number[];
-      dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
+  const onSelectAll = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.focusNode) {
+      return;
+    }
+    window.getSelection()?.empty();
+    const allPatternCells = pattern
+      ?.map((c, i) => {
+        return c[selectedChannel].note !== null ? i : undefined;
+      })
+      .filter((c) => c !== undefined) as number[];
+    dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
 
-      // Blur any focused element to be able to use keyboard actions on the
-      // selection
-      const el = document.querySelector(":focus") as unknown as
-        | BlurableDOMElement
-        | undefined;
-      if (el && el.blur) el.blur();
-    },
-    [selectedChannel, dispatch, pattern]
-  );
+    // Blur any focused element to be able to use keyboard actions on the
+    // selection
+    const el = document.querySelector(":focus") as unknown as
+      | BlurableDOMElement
+      | undefined;
+    if (el && el.blur) el.blur();
+  }, [selectedChannel, dispatch, pattern]);
 
   useEffect(() => {
     if (!subpatternEditorFocus) {
@@ -444,7 +441,7 @@ export const SongPianoRoll = ({
   }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
-    (newMoveNoteTo) => {
+    (newMoveNoteTo: NoteRenderCoordinates | undefined) => {
       if (pattern) {
         const columnFrom = moveNoteFrom?.column || 0;
         const columnTo = newMoveNoteTo?.column || 0;
@@ -870,7 +867,8 @@ export const SongPianoRoll = ({
 
   // Clipboard
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName === "INPUT") {
         return;
       }
@@ -1026,7 +1024,7 @@ export const SongPianoRoll = ({
             zIndex: 1,
           }}
         >
-          <SongGridHeader cols={64}>
+          <SongGridHeader $cols={64}>
             <div
               style={{ height: "100%" }}
               onMouseDown={(e) => {
@@ -1061,55 +1059,55 @@ export const SongPianoRoll = ({
                 .map((_, i) => (
                   <React.Fragment key={`pianokey_${i}`}>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - i * 12}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - i * 12}
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
-                      tall
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
+                      $tall
                     ></PianoKey>
                     <PianoKey
-                      color="black"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
+                      $color="black"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
                     ></PianoKey>
                     <PianoKey
-                      color="white"
-                      highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
+                      $color="white"
+                      $highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
                     >
                       C{8 - i}
                     </PianoKey>
@@ -1155,7 +1153,7 @@ export const SongPianoRoll = ({
               />
             </SongGrid>
           </div>
-          <SongGridFooter cols={64}>
+          <SongGridFooter $cols={64}>
             <FooterIcon>
               <WandIcon />
             </FooterIcon>

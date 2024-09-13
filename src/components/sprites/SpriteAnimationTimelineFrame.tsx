@@ -1,5 +1,4 @@
 import * as React from "react";
-import { findDOMNode } from "react-dom";
 import {
   DragSource,
   DropTarget,
@@ -14,8 +13,8 @@ import styled, { css } from "styled-components";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 
 interface CardWrapperProps {
-  selected: boolean;
-  isDragging?: boolean;
+  $selected: boolean;
+  $isDragging?: boolean;
 }
 
 const ItemType = "frame";
@@ -33,13 +32,13 @@ export const CardWrapper = styled.div<CardWrapperProps>`
   position: relative;
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
         `
       : ""}
   ${(props) =>
-    props.isDragging
+    props.$isDragging
       ? css`
           opacity: 0;
         `
@@ -83,11 +82,13 @@ const cardTarget = {
       return;
     }
 
+    // If no ref is set skip
+    if (!component.cardRef.current) {
+      return;
+    }
+
     // Determine rectangle on screen
-    const hoverBoundingRect = (
-      findDOMNode(component) as Element
-    ).getBoundingClientRect();
-    // ).getBoundingClientRect();
+    const hoverBoundingRect = component.cardRef.current.getBoundingClientRect();
 
     // Get horizontal middle
     const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
@@ -141,6 +142,8 @@ export interface CardProps {
 }
 
 class Card extends React.Component<CardProps> {
+  cardRef = React.createRef<HTMLDivElement>();
+
   render() {
     const {
       id,
@@ -158,8 +161,8 @@ class Card extends React.Component<CardProps> {
       connectDropTarget &&
       connectDragSource(
         connectDropTarget(
-          <div onClick={() => onSelect(id)}>
-            <CardWrapper selected={selected} isDragging={isDragging}>
+          <div ref={this.cardRef} onClick={() => onSelect(id)}>
+            <CardWrapper $selected={selected} $isDragging={isDragging}>
               <MetaspriteCanvas
                 metaspriteId={id}
                 spriteSheetId={spriteSheetId}

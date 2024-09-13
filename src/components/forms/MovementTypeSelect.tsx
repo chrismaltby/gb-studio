@@ -29,7 +29,7 @@ const MenuSpacer = styled.div`
 `;
 
 export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
-  value,
+  value = "horizontal",
   onChange,
 }) => {
   const selectedIcon = value ? (
@@ -58,10 +58,8 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
           onClick={() => {
             onChange?.(movementType);
           }}
+          icon={value === movementType ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value === movementType ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           <FlexGrow>{movementTypeNamesLookup[movementType]}</FlexGrow>
           <MenuSpacer />
           <MenuItemIcon>{movementTypeIconsLookup[movementType]}</MenuItemIcon>
@@ -69,8 +67,4 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
       ))}
     </DropdownButton>
   );
-};
-
-MovementTypeSelect.defaultProps = {
-  value: "horizontal",
 };

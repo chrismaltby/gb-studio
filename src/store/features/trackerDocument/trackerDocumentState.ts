@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 import {
-  AnyAction,
+  UnknownAction,
   createAsyncThunk,
   createSlice,
   PayloadAction,
+  createAction,
 } from "@reduxjs/toolkit";
 import cloneDeep from "lodash/cloneDeep";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
@@ -31,6 +32,10 @@ export const initialState: TrackerDocumentState = {
   error: "",
   modified: false,
 };
+
+export const requestAddNewSongFile = createAction<string>(
+  "tracker/requestAddNewSong"
+);
 
 export const addNewSongFile = createAsyncThunk<
   { data: MusicAssetData },
@@ -488,7 +493,7 @@ const trackerSlice = createSlice({
         state.modified = false;
       })
       .addMatcher(
-        (action: AnyAction): action is AnyAction =>
+        (action: UnknownAction): action is UnknownAction =>
           action.type.startsWith("tracker/edit") ||
           action.type.startsWith("tracker/addSequence") ||
           action.type.startsWith("tracker/removeSequence"),

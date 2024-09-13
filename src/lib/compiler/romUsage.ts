@@ -1,4 +1,5 @@
 import fs from "fs-extra";
+import Path from "path";
 import ensureBuildTools from "lib/compiler/ensureBuildTools";
 import spawn from "lib/helpers/cli/spawn";
 import l10n from "shared/lib/lang/l10n";
@@ -34,7 +35,7 @@ const romUsage = async ({
   warnings = (_msg) => {},
   progress = (_msg) => {},
 }: RomUsageOptions) => {
-  const env = Object.create(process.env);
+  const env = { ...process.env };
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const buildToolsVersion = await fs.readFile(
@@ -42,7 +43,11 @@ const romUsage = async ({
     "utf8"
   );
 
-  env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
+  env.PATH = [
+    Path.join(buildToolsPath, "gbdk", "bin"),
+    env.PATH ?? env.Path,
+  ].join(Path.delimiter);
+
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
 
@@ -54,8 +59,8 @@ const romUsage = async ({
 
   const romusageCommand =
     process.platform === "win32"
-      ? `..\\_gbstools\\gbdk\\bin\\romusage.exe`
-      : `../_gbstools/gbdk/bin/romusage`;
+      ? `"${buildToolsPath}\\gbdk\\bin\\romusage.exe"`
+      : "romusage";
   const romusageArgs = [`${buildRoot}/build/rom/game.map`, `-g`, `-sH`, `-sJ`];
 
   let output = "";

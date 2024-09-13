@@ -2,7 +2,7 @@ import { UnitsSelectButtonInputOverlay } from "components/forms/UnitsSelectButto
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { UnitType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
-import { Input } from "./Input";
+import { StyledInput } from "./style";
 
 export interface NumberInputProps
   extends React.DetailedHTMLProps<
@@ -62,7 +62,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 
   return (
     <NumberInputWrapper>
-      <Input
+      <StyledInput
         ref={inputRef}
         type="number"
         value={stringValue}
@@ -81,8 +81,4 @@ export const NumberInput: FC<NumberInputProps> = ({
       )}
     </NumberInputWrapper>
   );
-};
-
-NumberInput.defaultProps = {
-  value: undefined,
 };

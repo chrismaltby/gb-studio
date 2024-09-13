@@ -3,7 +3,7 @@ import middleware from "../../../../src/store/features/assets/assetsMiddleware";
 import actions from "../../../../src/store/features/assets/assetsActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground } from "../../../dummydata";
-import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
+import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import API from "../../../__mocks__/apiMock";
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -52,7 +52,7 @@ test("Should trigger call to check background assets", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.loadBackgroundAssetInfo({
@@ -125,7 +125,7 @@ test("Should not trigger call to check background assets if already cached asset
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.loadBackgroundAssetInfo({
@@ -187,7 +187,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.loadBackgroundAssetInfo({

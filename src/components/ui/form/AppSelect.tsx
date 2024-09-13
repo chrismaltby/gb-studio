@@ -3,6 +3,7 @@ import Path from "path";
 import { Select, Option } from "./Select";
 import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
+import { SingleValue } from "react-select";
 
 interface AppSelectProps {
   value?: string;
@@ -32,15 +33,17 @@ export const AppSelect: FC<AppSelectProps> = ({ value, onChange }) => {
   const currentValue =
     options.find((option) => option.value === value) || options[0];
 
-  const onSelectOption = async (newValue: Option) => {
-    if (newValue.value === "choose") {
-      const path = await API.dialog.chooseFile();
-      if (path) {
-        const newPath = Path.normalize(path);
-        onChange?.(newPath);
+  const onSelectOption = async (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      if (newValue.value === "choose") {
+        const path = await API.dialog.chooseFile();
+        if (path) {
+          const newPath = Path.normalize(path);
+          onChange?.(newPath);
+        }
+      } else {
+        onChange?.(newValue.value);
       }
-    } else {
-      onChange?.(newValue.value);
     }
   };
 

@@ -49,7 +49,7 @@ const SizeStep = styled.div`
   border-right: 1px solid ${(props) => props.theme.colors.input.border};
   transition: width 0.3s ease-in-out;
 
-  :hover {
+  &:hover {
     background-color: #191919;
   }
 `;
@@ -131,7 +131,10 @@ const DebuggerUsageData = ({
               const byteStep =
                 s.bytes - (sizes[i - 1] ? sizes[i - 1].bytes : 0);
               return (
-                <SizeStep style={{ width: `${(byteStep * 100) / maxSize}%` }}>
+                <SizeStep
+                  style={{ width: `${(byteStep * 100) / maxSize}%` }}
+                  key={i}
+                >
                   <TooltipWrapper
                     tooltip={
                       i <= romSizeIndex ? (

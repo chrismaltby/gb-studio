@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import styled, { css, keyframes } from "styled-components";
 
 const colorAnimation = keyframes`
@@ -20,10 +20,10 @@ const colorAnimation = keyframes`
   }
 `;
 
-const Wrapper = styled.span<{ animate: boolean }>`
+const Wrapper = styled.span<{ $animate: boolean }>`
   {
   ${(props) =>
-    props.animate
+    props.$animate
       ? css`
           background-image: linear-gradient(
             100deg,
@@ -45,15 +45,19 @@ const Wrapper = styled.span<{ animate: boolean }>`
       : ""}
 `;
 
-export const ColorAnimationText: FC = (props) => {
+interface ColorAnimationTextProps {
+  children: ReactNode;
+}
+
+export const ColorAnimationText = ({ children }: ColorAnimationTextProps) => {
   const [animate, setAnimate] = useState(false);
   return (
     <Wrapper
       onClick={() => setAnimate(!animate)}
       onAnimationEnd={() => setAnimate(false)}
-      animate={animate}
+      $animate={animate}
     >
-      {props.children}
+      {children}
     </Wrapper>
   );
 };

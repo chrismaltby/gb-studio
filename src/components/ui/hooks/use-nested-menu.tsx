@@ -11,11 +11,10 @@ import {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { SubMenuWrapper } from "ui/buttons/DropdownButton";
+import { StyledDropdownSubMenu } from "ui/buttons/style";
 import useWindowFocus from "ui/hooks/use-window-focus";
-import { CaretRightIcon } from "ui/icons/Icons";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { Menu, MenuItem, MenuItemCaret, MenuItemProps } from "ui/menu/Menu";
+import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
 
 const emptyArr: React.ReactNode[] = [];
 
@@ -70,28 +69,28 @@ const useNestedMenu = (
 
   // Handle listening for clicks and auto-hiding the menu
   useEffect(() => {
-    // This function is designed to handle every click
     const handleEveryClick = (event: MouseEvent) => {
+      if (isInitialMount.current) {
+        return;
+      }
+
       // Ignore if the menu isn't open
       if (!isOpen) {
         return;
       }
 
-      // Make this happen asynchronously
-      setTimeout(() => {
-        // Type guard
-        if (!(event.target instanceof Element)) {
-          return;
-        }
+      // Type guard
+      if (!(event.target instanceof Element)) {
+        return;
+      }
 
-        // Ignore if we're clicking inside the menu
-        if (event.target.closest('[role="menu"]') instanceof Element) {
-          return;
-        }
+      // Ignore if we're clicking inside the menu
+      if (event.target.closest('[role="menu"]') instanceof Element) {
+        return;
+      }
 
-        // Hide dropdown
-        closeMenu();
-      }, 10);
+      // Hide dropdown
+      closeMenu();
     };
 
     // Add listener
@@ -119,7 +118,7 @@ const useNestedMenu = (
   }, [isOpen]);
 
   // Clear submenu timer on unmount
-  const closeTimer = useRef<number>();
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
     return () => {
       if (closeTimer.current) {
@@ -326,13 +325,8 @@ const useNestedMenu = (
           children: (
             <>
               {child.props.children}
-              {child.props.subMenu && (
-                <MenuItemCaret>
-                  <CaretRightIcon />
-                </MenuItemCaret>
-              )}
               {itemIndex === parentMenuIndex && child.props.subMenu && (
-                <SubMenuWrapper menuDirection={menuDirection}>
+                <StyledDropdownSubMenu $menuDirection={menuDirection}>
                   <RelativePortal
                     pin={"parent-edge"}
                     parentWidth={menuWidth - 15}
@@ -343,7 +337,7 @@ const useNestedMenu = (
                       {subMenuChildrenWithProps}
                     </Menu>
                   </RelativePortal>
-                </SubMenuWrapper>
+                </StyledDropdownSubMenu>
               )}
             </>
           ),
@@ -400,8 +394,21 @@ const useNestedMenu = (
   }, [parentMenuIndex, moveFocus, menuItemChildren]);
 
   // Track if this is the initial mount for auto focus handling
+  // Delay setting isInitialMount to false by one frame
+  // to prevent issues where contextmenu event handler will fire
+  // during the mount (especially in React.StrictMode)
+  const mountDelayRequest = React.useRef<number>();
+
   useEffect(() => {
-    isInitialMount.current = false;
+    isInitialMount.current = true;
+    mountDelayRequest.current = requestAnimationFrame(() => {
+      isInitialMount.current = false;
+    });
+    return () => {
+      if (mountDelayRequest.current !== undefined) {
+        cancelAnimationFrame(mountDelayRequest.current);
+      }
+    };
   }, []);
 
   return {

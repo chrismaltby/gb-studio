@@ -15,6 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import uniq from "lodash/uniq";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface SoundEffectSelectProps extends SelectCommonProps {
   name: string;
@@ -155,8 +156,10 @@ export const SoundEffectSelect = ({
   }, [options, value]);
 
   const onSelectChange = useCallback(
-    (newValue: Option) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<Option>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

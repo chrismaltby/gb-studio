@@ -132,7 +132,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   const [renameId, setRenameId] = useState("");
 
   const listenForRenameStart = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
       } else if (e.code === "Escape") {

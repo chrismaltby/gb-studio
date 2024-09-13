@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
 
@@ -16,7 +17,7 @@ interface FadeSpeedOption {
 
 export const FadeSpeedSelect: FC<FadeSpeedSelectProps> = ({
   name,
-  value,
+  value = 2,
   allowNone,
   onChange,
 }) => {
@@ -39,14 +40,11 @@ export const FadeSpeedSelect: FC<FadeSpeedSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: FadeSpeedOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<FadeSpeedOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
-};
-
-FadeSpeedSelect.defaultProps = {
-  name: undefined,
-  value: 2,
 };

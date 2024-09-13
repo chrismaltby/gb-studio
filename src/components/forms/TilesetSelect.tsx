@@ -19,6 +19,7 @@ import { TileCanvas } from "components/world/TileCanvas";
 import uniq from "lodash/uniq";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
@@ -35,7 +36,11 @@ interface TilesetSelectProps extends SelectCommonProps {
 }
 
 interface TilesetOption extends Option {
-  tileset: Tileset;
+  tileset?: Tileset;
+}
+
+interface TilesetOptGroup extends OptGroup {
+  options: TilesetOption[];
 }
 
 const Wrapper = styled.div`
@@ -69,9 +74,9 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   ...selectProps
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
-  const [options, setOptions] = useState<OptGroup[]>([]);
+  const [options, setOptions] = useState<TilesetOptGroup[]>([]);
   const [currentTileset, setCurrentTileset] = useState<Tileset>();
-  const [currentValue, setCurrentValue] = useState<Option>();
+  const [currentValue, setCurrentValue] = useState<TilesetOption>();
 
   useEffect(() => {
     const filteredTilesets = filters
@@ -105,12 +110,12 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
                 { value: "", label: optionalLabel || l10n("FIELD_NONE") },
               ],
             },
-          ] as OptGroup[])
-        : ([] as OptGroup[])
+          ] as TilesetOptGroup[])
+        : ([] as TilesetOptGroup[])
     );
 
     setOptions(options);
-  }, [tilesets, optional, optionalLabel]);
+  }, [tilesets, optional, optionalLabel, filters]);
 
   useEffect(() => {
     setCurrentTileset(tilesets.find((v) => v.id === value));
@@ -121,6 +126,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
       setCurrentValue({
         value: currentTileset.id,
         label: `${currentTileset.name}`,
+        tileset: currentTileset,
       });
     } else if (optional) {
       setCurrentValue({
@@ -130,8 +136,10 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
     }
   }, [currentTileset, optional, optionalLabel]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

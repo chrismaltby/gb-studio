@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
@@ -21,19 +20,19 @@ export const determineUsedAssets = ({
   scriptEventHandlers,
 }: {
   projectData: ProjectResources;
-  customEventsLookup: Dictionary<CustomEvent>;
+  customEventsLookup: Record<string, CustomEvent>;
   scriptEventHandlers: ScriptEventHandlers;
 }) => {
   const variablesLookup = keyBy(projectData.variables.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
   const fontsLookup = keyBy(projectData.fonts, "id");
 
-  const usedVariablesLookup: Dictionary<Variable> = {};
-  const usedSoundsLookup: Dictionary<SoundData> = {};
-  const usedFontsLookup: Dictionary<FontData> = {};
+  const usedVariablesLookup: Record<string, Variable> = {};
+  const usedSoundsLookup: Record<string, SoundData> = {};
+  const usedFontsLookup: Record<string, FontData> = {};
 
   const addAssetById =
-    <T>(assetLookup: Dictionary<T>, usedLookup: Dictionary<T>) =>
+    <T>(assetLookup: Record<string, T>, usedLookup: Record<string, T>) =>
     (id: string) => {
       const asset = assetLookup[id];
       if (asset && !usedLookup[id]) {

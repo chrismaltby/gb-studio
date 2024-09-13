@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import { determineUsedAssets } from "lib/compiler/precompile/determineUsedAssets";
 import { CustomEvent, FontData } from "shared/lib/entities/entitiesTypes";
 import { getTestScriptHandlers } from "../../getTestScriptHandlers";
@@ -28,7 +27,7 @@ test("should include default font when provided", async () => {
       defaultFontId: "font2",
     },
   } as ProjectResources;
-  const customEventsLookup = {} as Dictionary<CustomEvent>;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -54,7 +53,7 @@ test("should include first font when default not provided", async () => {
       },
     ] as FontData[],
   } as ProjectResources;
-  const customEventsLookup = {} as Dictionary<CustomEvent>;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -101,7 +100,7 @@ test("should include fonts referenced in gbvm script blocks", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Dictionary<CustomEvent>;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -144,7 +143,7 @@ test("should include fonts referenced in dialogue", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Dictionary<CustomEvent>;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,

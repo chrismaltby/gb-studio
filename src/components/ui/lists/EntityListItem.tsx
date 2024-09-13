@@ -20,11 +20,15 @@ import {
   SceneIcon,
   ConstantIcon,
 } from "ui/icons/Icons";
+import {
+  StyledEntityIcon,
+  StyledEntityLabel,
+  StyledEntityLabelColor,
+  StyledEntityListItem,
+  StyledEntityWarningLabel,
+  StyledNavigatorArrow,
+} from "ui/lists/style";
 import { ContextMenu } from "ui/menu/ContextMenu";
-
-interface EntityListItemWrapperProps {
-  nestLevel?: number;
-}
 
 type EntityListItemData = {
   name: string;
@@ -71,71 +75,6 @@ type EntityListItemProps<T extends EntityListItemData> = {
       rename?: false;
     }
 );
-
-interface NavigatorArrowProps {
-  open: boolean;
-}
-
-interface EntityLabelColorProps {
-  color: string;
-}
-
-const NavigatorArrow = styled.span<NavigatorArrowProps>`
-  display: inline-flex;
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  width: 20px;
-  height: 20px;
-  margin-left: -5px;
-
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 8px;
-    height: 8px;
-    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
-  }
-`;
-
-const EntityListItemWrapper = styled.div<EntityListItemWrapperProps>`
-  display: flex;
-  align-items: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  width: 100%;
-  padding-left: ${(props) => (props.nestLevel || 0) * 15}px;
-`;
-
-const EntityIcon = styled.div`
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-`;
-
-const EntityLabel = styled.div`
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-grow: 1;
-`;
-
-const EntityWarningLabel = styled.span`
-  color: red;
-`;
-
-const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
-  className: `label--${props.color}`,
-}))`
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  margin-left: 5px;
-`;
 
 export const EntityListSearch = styled.input`
   margin: 5px 5px;
@@ -204,37 +143,40 @@ export const EntityListItem = <T extends EntityListItemData>({
   }, [item, props]);
 
   return (
-    <EntityListItemWrapper nestLevel={nestLevel} onContextMenu={onContextMenu}>
+    <StyledEntityListItem $nestLevel={nestLevel} onContextMenu={onContextMenu}>
       {collapsable && (
-        <NavigatorArrow open={!collapsed} onClick={() => onToggleCollapse?.()}>
+        <StyledNavigatorArrow
+          $open={!collapsed}
+          onClick={() => onToggleCollapse?.()}
+        >
           <ArrowIcon />
-        </NavigatorArrow>
+        </StyledNavigatorArrow>
       )}
-      {type === "custom" && icon && <EntityIcon>{icon}</EntityIcon>}
+      {type === "custom" && icon && <StyledEntityIcon>{icon}</StyledEntityIcon>}
       {type === "folder" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <FolderFilledIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "scene" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <SceneIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "actor" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <ActorIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "trigger" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <TriggerIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "variable" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <VariableIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "constant" && (
         <EntityIcon>
@@ -242,54 +184,54 @@ export const EntityListItem = <T extends EntityListItemData>({
         </EntityIcon>
       )}
       {type === "sprite" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <SpriteIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "animation" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <AnimationIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "background" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <BackgroundIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "song" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <SongIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "duty" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <DutyIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "wave" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <WaveIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "noise" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <NoiseIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "palette" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <PaletteIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "script" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <CodeIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "sound" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <SoundIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {props.rename ? (
         <RenameInput
@@ -299,14 +241,16 @@ export const EntityListItem = <T extends EntityListItemData>({
           onRenameCancel={onRenameCancel}
         />
       ) : (
-        <EntityLabel>
+        <StyledEntityLabel>
           {renderLabel ? renderLabel(item) : item.name}
           {item.warning && (
-            <EntityWarningLabel> ({item.warning})</EntityWarningLabel>
+            <StyledEntityWarningLabel>
+              ({item.warning})
+            </StyledEntityWarningLabel>
           )}
-        </EntityLabel>
+        </StyledEntityLabel>
       )}
-      {item.labelColor && <EntityLabelColor color={item.labelColor} />}
+      {item.labelColor && <StyledEntityLabelColor $color={item.labelColor} />}
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}
@@ -316,6 +260,6 @@ export const EntityListItem = <T extends EntityListItemData>({
           {contextMenu.menu}
         </ContextMenu>
       )}
-    </EntityListItemWrapper>
+    </StyledEntityListItem>
   );
 };

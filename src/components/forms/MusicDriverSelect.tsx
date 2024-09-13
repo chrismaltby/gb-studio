@@ -7,6 +7,7 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
+import { SingleValue } from "react-select";
 
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;
@@ -34,7 +35,7 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
   value,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] = useState<Option>();
+  const [currentValue, setCurrentValue] = useState<MusicDriverOption>();
   const musicDriverOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       huge: l10n("FIELD_HUGE_DRIVER_INFO"),
@@ -53,8 +54,10 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
   }, [value]);
 
   const onSelectChange = useCallback(
-    (newValue: MusicDriverOption) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<MusicDriverOption>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

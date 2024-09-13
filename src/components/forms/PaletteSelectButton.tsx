@@ -51,11 +51,11 @@ const Button = styled.button`
   height: 28px;
   flex-shrink: 0;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus,
+  &:focus,
   &&&:focus:not(.focus-visible) {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
@@ -78,7 +78,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   optionalDefaultPaletteId,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const palette =
     useAppSelector((state) =>

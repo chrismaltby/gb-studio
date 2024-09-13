@@ -2,7 +2,7 @@ import React from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { ChannelSelectField } from "./ChannelSelectField";
-import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 
 interface SongEditorRightToolsPanelProps {
   channelStatus: boolean[];
@@ -10,7 +10,7 @@ interface SongEditorRightToolsPanelProps {
 }
 
 interface WrapperProps {
-  size?: "small" | "medium";
+  $size?: "small" | "medium";
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -21,9 +21,9 @@ const Wrapper = styled.div<WrapperProps>`
   display: flex;
   background: ${(props) => props.theme.colors.document.background};
   ${(props) =>
-    props.size === "small"
+    props.$size === "small"
       ? css`
-          ${ChannelSelectGroup} ${Button} {
+          ${ChannelSelectGroup} ${StyledButton} {
             min-width: 10px;
           }
         `
@@ -45,7 +45,7 @@ const SongEditorRightToolsPanel = ({
   const view = useAppSelector((state) => state.tracker.view);
 
   return (
-    <Wrapper size={size}>
+    <Wrapper $size={size}>
       {view === "roll" ? (
         <>
           <ChannelSelectGroup>

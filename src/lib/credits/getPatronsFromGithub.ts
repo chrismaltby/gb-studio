@@ -48,6 +48,9 @@ const isPatrons = (input: unknown): input is Patrons => {
 };
 
 export const getPatronsFromGithub = async () => {
+  if (process.env.NODE_ENV === "test") {
+    return inbuiltPatrons;
+  }
   try {
     const now = new Date().getTime();
     if (cache.latest.timestamp > now) {

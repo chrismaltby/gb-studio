@@ -10,12 +10,11 @@ import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
-import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
+import { Menu, MenuGroup, MenuItem, MenuItemCaret } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
-import { Dictionary } from "@reduxjs/toolkit";
 import settingsActions from "store/features/settings/settingsActions";
 import {
   ScriptEventNormalized,
@@ -41,6 +40,8 @@ import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { StyledButton } from "ui/buttons/style";
+import { StyledMenu, StyledMenuItem } from "ui/menu/style";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -211,7 +212,7 @@ const instanciateScriptEvent = (
             ...memo,
             [key]: [],
           };
-        }, {} as Dictionary<string[]>)
+        }, {} as Record<string, string[]>)
       : undefined;
   return {
     command,
@@ -246,7 +247,7 @@ const eventToOption =
 const SelectMenu = styled.div`
   width: 300px;
 
-  ${Menu} {
+  ${StyledMenu} {
     width: 100%;
     height: 450px;
     min-height: 300px;
@@ -271,7 +272,7 @@ const SelectMenuInput = styled(IMEUnstyledInput)`
   box-sizing: border-box;
   width: 100%;
   height: 28px;
-  :focus {
+  &:focus {
     border: 2px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
     box-shadow: none;
@@ -299,7 +300,7 @@ const SelectMenuBackButton = styled.button`
 `;
 
 interface SelectMenuHeaderProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
@@ -331,7 +332,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
   }
 
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           ${SelectMenuTitle}:nth-child(1) {
             transform: translateX(-80px);
@@ -349,7 +350,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
 `;
 
 interface SelectMenuOptionsWrapperProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
@@ -360,7 +361,7 @@ const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
   flex-grow: 1;
   transition: transform 0.2s ease-in-out;
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           transform: translateX(-50%);
         `
@@ -375,20 +376,9 @@ const SelectMenuOptions = styled.div`
   flex-shrink: 0;
 `;
 
-const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-`;
-
 interface MenuItemFavoriteProps {
-  visible: boolean;
-  isFavorite: boolean;
+  $visible: boolean;
+  $isFavorite: boolean;
 }
 
 const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
@@ -400,7 +390,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
     fill: ${(props) => props.theme.colors.text};
   }
 
-  ${Button} {
+  ${StyledButton} {
     height: 18px;
     padding: 0;
     margin: -10px -5px;
@@ -408,19 +398,19 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
   }
 
   ${(props) =>
-    props.visible
+    props.$visible
       ? css`
           opacity: 1;
         `
       : ""}
   ${(props) =>
-    !props.isFavorite
+    !props.$isFavorite
       ? css`
           svg {
             opacity: 0.3;
           }
 
-          ${Button}:active {
+          ${StyledButton}:active {
             transform: scale(1.5);
             svg {
               opacity: 1;
@@ -428,7 +418,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
           }
         `
       : ""}      
-  ${MenuItem}:hover > & {
+  ${StyledMenuItem}:hover > & {
     opacity: 1;
   }
 `;
@@ -573,7 +563,7 @@ const AddScriptEventMenu = ({
         }
       }
       return memo;
-    }, {} as Dictionary<ScriptEventDef[]>);
+    }, {} as Record<string, ScriptEventDef[]>);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 
@@ -876,7 +866,7 @@ const AddScriptEventMenu = ({
     <SelectMenu>
       <Menu style={{ height: menuHeight }}>
         <SelectMenuHeader
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
           <SelectMenuTitle>{l10n("SIDEBAR_ADD_EVENT")}</SelectMenuTitle>
@@ -898,7 +888,7 @@ const AddScriptEventMenu = ({
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
@@ -934,21 +924,19 @@ const AddScriptEventMenu = ({
                   )}
 
                   {"options" in option ? (
-                    <MenuItemCaret>
-                      <CaretRightIcon />
-                    </MenuItemCaret>
+                    <MenuItemCaret />
                   ) : (
                     <>
                       <FlexGrow />
                       {!option.defaultArgs && (
                         <MenuItemFavorite
-                          visible={
+                          $visible={
                             (selectedCategoryIndex === -1 &&
                               selectedIndex === optionIndex) ||
                             selectedCategoryIndex === optionIndex ||
                             ("isFavorite" in option && option.isFavorite)
                           }
-                          isFavorite={option.isFavorite}
+                          $isFavorite={option.isFavorite}
                         >
                           <Button
                             size="small"
@@ -991,11 +979,11 @@ const AddScriptEventMenu = ({
                       {childOption.label}
                       <FlexGrow />
                       <MenuItemFavorite
-                        visible={
+                        $visible={
                           selectedIndex === childOptionIndex ||
                           childOption.isFavorite
                         }
-                        isFavorite={childOption.isFavorite}
+                        $isFavorite={childOption.isFavorite}
                       >
                         <Button
                           size="small"

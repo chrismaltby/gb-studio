@@ -40,7 +40,3 @@ export const NumberField: FC<NumberFieldProps> = ({
     />
   </Wrapper>
 );
-
-NumberField.defaultProps = {
-  value: undefined,
-};

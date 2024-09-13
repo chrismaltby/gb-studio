@@ -6,7 +6,6 @@ import * as eventHelpers from "lib/events/helpers";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
 import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
@@ -131,10 +130,11 @@ export type ScriptEventHandler = ScriptEventDef & {
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
-export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
+export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
+  console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
   sandbox: {},
   compiler: (code: string) => {
     // Convert es6 style modules to commonjs

@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
@@ -95,7 +94,7 @@ export type PrecompiledScene = Scene & {
   background: PrecompiledBackground;
   playerSprite?: PrecompiledSprite;
   parallax?: Array<{ height: number; speed: number }>;
-  actorsExclusiveLookup: Dictionary<number>;
+  actorsExclusiveLookup: Record<string, number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
@@ -1155,7 +1154,7 @@ export const compileScriptHeader = (scriptName: string) =>
 
 export const replaceScriptSymbols = (
   script: string,
-  replaceSymbols: Dictionary<string>
+  replaceSymbols: Record<string, string>
 ) => {
   let newScript = script;
   for (const key in replaceSymbols) {
@@ -1165,7 +1164,7 @@ export const replaceScriptSymbols = (
 };
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<{ symbol: string }>,
+  variableAliasLookup: Record<string, { symbol: string }>,
   constants: Constant[],
   stateReferences: string[]
 ) => {

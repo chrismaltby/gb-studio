@@ -25,12 +25,13 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { useStore } from "react-redux";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
+
+const MOUSE_ZOOM_SPEED = 0.5;
 
 const Wrapper = styled.div`
   position: absolute;
@@ -87,13 +88,13 @@ const WorldView = () => {
   //#region Component State
 
   const dispatch = useAppDispatch();
-  const store = useStore();
+  const store = useAppStore();
 
   const [scrollRef, scrollContainerSize] = useResizeObserver<HTMLDivElement>();
 
   const scrollContentsRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
-  const blockWheelZoom = useRef<number>();
+  const blockWheelZoom = useRef<ReturnType<typeof setTimeout>>();
 
   const [dragMode, setDragMode] = useState(false);
   const [hoverState, setHoverState] = useState<{ x: number; y: number }>();
@@ -178,7 +179,8 @@ const WorldView = () => {
   //#region Clipboard handling
 
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -189,8 +191,9 @@ const WorldView = () => {
   );
 
   const onPaste = useCallback(
-    (e) => {
-      if (e.target.nodeName !== "BODY") {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
+      if (e.target?.nodeName !== "BODY") {
         return;
       }
       e.preventDefault();
@@ -208,12 +211,13 @@ const WorldView = () => {
   //#region Keyboard handling
 
   const onKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.shiftKey && tool === "select") {
         setSelectionStart(undefined);
         setSelectionEnd(undefined);
         setAddToSelection(true);
       }
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -232,7 +236,7 @@ const WorldView = () => {
   );
 
   const onKeyUp = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (dragMode && (e.code === "Space" || e.key === "Alt")) {
         setDragMode(false);
       }
@@ -248,21 +252,30 @@ const WorldView = () => {
   //#region Zoom handling
 
   const onMouseWheel = useCallback(
-    (e) => {
+    (e: WheelEvent) => {
       if (e.ctrlKey && !blockWheelZoom.current) {
         e.preventDefault();
-        if (e.wheelDelta > 0) {
+        const absDeltaY = Math.abs(e.deltaY);
+        if (e.deltaY < 0) {
           dispatch(
-            editorActions.zoomIn({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomIn({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         } else {
           dispatch(
-            editorActions.zoomOut({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomOut({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         }
       } else {
         // Don't allow mousewheel zoom while scrolling
-        clearTimeout(blockWheelZoom.current);
+        if (blockWheelZoom.current) {
+          clearTimeout(blockWheelZoom.current);
+        }
         blockWheelZoom.current = setTimeout(() => {
           blockWheelZoom.current = undefined;
         }, 60);
@@ -618,9 +631,7 @@ const WorldView = () => {
   //#region Event Listeners
 
   useEffect(() => {
-    window.addEventListener("mousewheel", onMouseWheel, {
-      passive: false,
-    });
+    window.addEventListener("wheel", onMouseWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("copy", onCopy);
@@ -628,7 +639,7 @@ const WorldView = () => {
     window.addEventListener("resize", onWindowResize);
     window.addEventListener("blur", onWindowBlur);
     return () => {
-      window.removeEventListener("mousewheel", onMouseWheel);
+      window.removeEventListener("wheel", onMouseWheel);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("copy", onCopy);

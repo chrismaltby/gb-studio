@@ -21,6 +21,7 @@ const fields = [
   },
   {
     type: "group",
+    wrapItems: true,
     fields: [
       {
         key: "x",

@@ -9,6 +9,7 @@ import { ActorPrefabSelect } from "./ActorPrefabSelect";
 import { PillButton } from "ui/buttons/PillButton";
 import { CaretDownIcon } from "ui/icons/Icons";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
+import { StyledPillButton } from "ui/buttons/style";
 
 interface ActorPrefabSelectButtonProps {
   name: string;
@@ -24,7 +25,7 @@ const Wrapper = styled.div`
     min-width: 0;
   }
 
-  ${PillButton} {
+  ${StyledPillButton} {
     display: flex;
     align-items: center;
     span {
@@ -53,7 +54,7 @@ export const ActorPrefabSelectButton: FC<ActorPrefabSelectButtonProps> = ({
   onChange,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const prefab = useAppSelector((state) =>
     actorPrefabSelectors.selectById(state, value || "")
   );

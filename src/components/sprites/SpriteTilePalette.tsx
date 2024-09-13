@@ -31,7 +31,7 @@ const Pill = styled.button`
   padding: 3px 10px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;

@@ -16,6 +16,7 @@ import {
   FormatFolderLabel,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
@@ -167,8 +168,10 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     dmgPalette,
   ]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

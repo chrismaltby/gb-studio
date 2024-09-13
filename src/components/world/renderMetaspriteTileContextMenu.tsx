@@ -1,11 +1,11 @@
 import React, { Dispatch } from "react";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface MetaspriteTileContextMenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch: Dispatch<UnknownAction>;
   spriteSheetId: string;
   metaspriteId: string;
   selectedTileIds: string[];

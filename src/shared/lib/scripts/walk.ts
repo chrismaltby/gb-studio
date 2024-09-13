@@ -1,5 +1,4 @@
 import mapValues from "lodash/mapValues";
-import type { Dictionary } from "@reduxjs/toolkit";
 import {
   actorScriptKeys,
   ActorNormalized,
@@ -243,7 +242,7 @@ type WalkOptions =
   | {
       filter?: (ScriptEvent: ScriptEvent) => boolean;
       customEvents?: {
-        lookup: Dictionary<CustomEvent>;
+        lookup: Record<string, CustomEvent>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -434,7 +433,7 @@ type WalkNormalizedOptions =
       includeCommented?: boolean;
       overrides?: Record<string, ScriptEventArgsOverride>;
       customEvents?: {
-        lookup: Dictionary<CustomEventNormalized>;
+        lookup: Record<string, CustomEventNormalized>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -485,7 +484,7 @@ export const replaceCustomEventArgs = <
  */
 export const walkNormalizedScript = (
   ids: string[] = [],
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -570,7 +569,7 @@ export const walkNormalizedScript = (
  */
 export const walkNormalizedSceneSpecificScripts = (
   scene: SceneNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -581,8 +580,8 @@ export const walkNormalizedSceneSpecificScripts = (
 
 export const walkNormalizedActorScripts = (
   actor: ActorNormalized | ActorPrefabNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  prefabsLookup: Dictionary<ActorPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  prefabsLookup: Record<string, ActorPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -607,8 +606,8 @@ export const walkNormalizedActorScripts = (
 
 export const walkNormalizedTriggerScripts = (
   trigger: TriggerNormalized | TriggerPrefabNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  prefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  prefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -634,11 +633,11 @@ export const walkNormalizedTriggerScripts = (
 
 export const walkNormalizedSceneScripts = (
   scene: SceneNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -677,11 +676,11 @@ export const walkNormalizedSceneScripts = (
 
 export const walkNormalizedScenesScripts = (
   scenes: SceneNormalized[],
-  lookup: Dictionary<ScriptEventNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -706,7 +705,7 @@ export const walkNormalizedScenesScripts = (
 
 export const walkNormalizedCustomEventScripts = (
   customEvent: CustomEventNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
