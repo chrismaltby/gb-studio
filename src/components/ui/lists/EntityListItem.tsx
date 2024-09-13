@@ -179,9 +179,9 @@ export const EntityListItem = <T extends EntityListItemData>({
         </StyledEntityIcon>
       )}
       {type === "constant" && (
-        <EntityIcon>
+        <StyledEntityIcon>
           <ConstantIcon />
-        </EntityIcon>
+        </StyledEntityIcon>
       )}
       {type === "sprite" && (
         <StyledEntityIcon>

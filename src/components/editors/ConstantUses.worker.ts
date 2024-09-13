@@ -1,9 +1,6 @@
-import { Dictionary } from "@reduxjs/toolkit";
-import { lexText } from "shared/lib/compiler/lexText";
 import {
   actorName,
   customEventName,
-  isUnionValue,
   sceneName,
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
@@ -21,16 +18,12 @@ import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,
-  isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
-import {
-  constantInScriptValue,
-  variableInScriptValue,
-} from "shared/lib/scriptValue/helpers";
+import { constantInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 
 export type ConstantUse = {
@@ -79,23 +72,24 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const constantId: string = evt.data.constantId;
   const scenes: SceneNormalized[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
+  const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
+  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Record<string, TriggerNormalized> =
+    evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
-  const actorPrefabsLookup: Dictionary<ActorPrefabNormalized> =
+  const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
     evt.data.actorPrefabsLookup;
-  const triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized> =
+  const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
     evt.data.triggerPrefabsLookup;
-  const customEventsLookup: Dictionary<CustomEventNormalized> =
+  const customEventsLookup: Record<string, CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
 
   const uses: ConstantUse[] = [];
-  const useLookup: Dictionary<boolean> = {};
+  const useLookup: Record<string, boolean> = {};
 
   const isConstantInArg = (
     scriptEvent: ScriptEventNormalized,

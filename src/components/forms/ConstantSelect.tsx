@@ -29,7 +29,7 @@ export const ConstantSelectWrapper = styled.div`
   min-width: 78px;
 `;
 
-const Select = styled(DefaultSelect)`
+const Select: typeof DefaultSelect = styled(DefaultSelect)`
   .CustomSelect__control {
   }
 `;
@@ -139,7 +139,7 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
     );
   }, [constants]);
 
-  const currentValue = useMemo(() => {
+  const currentValue: Option | undefined = useMemo(() => {
     if (currentConstant) {
       return {
         value: currentConstant.id,
@@ -220,8 +220,10 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
         <Select
           value={currentValue}
           options={options}
-          onChange={(newValue: Option) => {
-            onChange(newValue.value);
+          onChange={(newValue) => {
+            if (newValue) {
+              onChange(newValue.value);
+            }
           }}
           {...selectProps}
         />
