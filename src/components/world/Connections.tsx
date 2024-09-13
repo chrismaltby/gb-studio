@@ -281,6 +281,12 @@ const Connections = ({
   );
 
   const calculate = useCallback(() => {
+    if (!showConnections) {
+      isWorkQueued.current = false;
+      isWorking.current = false;
+      setConnections([]);
+      return;
+    }
     if (isWorking.current) {
       isWorkQueued.current = true;
       return;
