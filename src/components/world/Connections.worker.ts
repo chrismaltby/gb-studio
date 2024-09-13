@@ -1,4 +1,5 @@
 import { EVENT_SWITCH_SCENE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
+import { uniqBy } from "lodash";
 import {
   SceneNormalized,
   ScriptEventNormalized,
@@ -37,19 +38,16 @@ export interface ConnectionsWorkerRequest {
 }
 
 export interface ConnectionsWorkerResult {
-  connections: TransitionCoords[];
+  connections: SceneTransitionCoords[];
 }
 
-export interface TransitionCoords {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  qx: number;
-  qy: number;
+export interface SceneTransitionCoords {
+  toX: number;
+  toY: number;
   type: "actor" | "trigger" | "scene";
   eventId: string;
-  sceneId: string;
+  fromSceneId: string;
+  toSceneId: string;
   entityId: string;
   direction: ActorDirection;
 }
@@ -60,10 +58,6 @@ interface CalculateTransitionCoordsProps {
   scene: SceneNormalized;
   destScene: SceneNormalized;
   entityId: string;
-  entityX?: number;
-  entityY?: number;
-  entityWidth?: number;
-  entityHeight?: number;
   direction?: ActorDirection;
 }
 
@@ -78,16 +72,7 @@ const calculateTransitionCoords = ({
   scene,
   destScene,
   entityId,
-  entityX = 0,
-  entityY = 0,
-  entityWidth = 0,
-  entityHeight = 0,
-}: CalculateTransitionCoordsProps): TransitionCoords => {
-  const startX = scene.x;
-  const startY = scene.y;
-  const destX = destScene.x;
-  const destY = destScene.y;
-
+}: CalculateTransitionCoordsProps): SceneTransitionCoords => {
   const scriptEventX = optimiseScriptValue(
     ensureScriptValue(scriptEvent.args?.x, defaultCoord)
   );
@@ -95,35 +80,16 @@ const calculateTransitionCoords = ({
     ensureScriptValue(scriptEvent.args?.y, defaultCoord)
   );
 
-  const x1 = startX + (entityX + entityWidth / 2) * 8;
-  const x2 =
-    destX + (scriptEventX.type === "number" ? scriptEventX.value : 0) * 8 + 5;
-  const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
-  const y2 =
-    20 +
-    destY +
-    (scriptEventY.type === "number" ? scriptEventY.value : 0) * 8 +
-    5;
-
-  const xDiff = Math.abs(x1 - x2);
-  const yDiff = Math.abs(y1 - y2);
-
-  const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
-  const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
-
-  const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
-  const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
+  const toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
+  const toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
 
   return {
-    x1,
-    y1,
-    x2,
-    y2,
-    qx,
-    qy,
+    toX,
+    toY,
     type,
     eventId: scriptEvent.id,
-    sceneId: scene.id,
+    fromSceneId: scene.id,
+    toSceneId: destScene.id,
     entityId,
     direction: scriptEvent.args?.direction as ActorDirection,
   };
@@ -160,7 +126,7 @@ const getSceneConnections = (
     }
   };
 
-  const connections: TransitionCoords[] = [];
+  const connections: SceneTransitionCoords[] = [];
   walkNormalizedSceneSpecificScripts(
     scene,
     eventsLookup,
@@ -207,10 +173,6 @@ const getSceneConnections = (
                 scene,
                 destScene,
                 entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: 2,
-                entityHeight: 1,
               })
             );
           });
@@ -241,10 +203,6 @@ const getSceneConnections = (
                 scene,
                 destScene,
                 entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: entity.width || 2,
-                entityHeight: entity.height || 1,
               })
             );
           });
@@ -288,7 +246,15 @@ workerCtx.onmessage = async (evt) => {
     )
     .flat();
 
-  workerCtx.postMessage({ connections });
+  // Get unique connections by sceneId+entityId+eventId so multiple calls
+  // to custom scripts from the same source don't draw multiple overlapping lines
+  const uniqConnections = uniqBy(
+    connections,
+    (connection) =>
+      `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`
+  );
+
+  workerCtx.postMessage({ connections: uniqConnections });
 };
 
 // -----------------------------------------------------------------
