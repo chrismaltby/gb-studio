@@ -27,6 +27,7 @@ import ConnectionsWorker, {
 import { throttle } from "lodash";
 import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
 import { ensureScriptValue } from "shared/lib/scriptValue/types";
+import { filterUndefined } from "shared/lib/helpers/array";
 
 const worker = new ConnectionsWorker();
 
@@ -377,83 +378,89 @@ const Connections = ({
   // Calculate absolute values of connections
   // by combining with the latest entity position values
   const absoluteConnections = useMemo(() => {
-    return connections.map((connection) => {
-      let toX = connection.toX;
-      let toY = connection.toY;
-      let toSceneId = connection.toSceneId;
+    return filterUndefined(
+      connections.map((connection) => {
+        let toX = connection.toX;
+        let toY = connection.toY;
+        let toSceneId = connection.toSceneId;
 
-      // If currently editing a script event by dragging destination marker
-      // then perform full calculation to get most up to date values for that event
-      if (connection.eventId === selectedEventId) {
-        const scriptEvent = eventsLookup[connection.eventId];
-        if (scriptEvent) {
-          const scriptEventX = optimiseScriptValue(
-            ensureScriptValue(scriptEvent.args?.x, defaultCoord)
-          );
-          const scriptEventY = optimiseScriptValue(
-            ensureScriptValue(scriptEvent.args?.y, defaultCoord)
-          );
-          toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
-          toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
-          toSceneId = String(scriptEvent.args?.sceneId || "");
+        // If currently editing a script event by dragging destination marker
+        // then perform full calculation to get most up to date values for that event
+        if (connection.eventId === selectedEventId) {
+          const scriptEvent = eventsLookup[connection.eventId];
+          if (scriptEvent) {
+            const scriptEventX = optimiseScriptValue(
+              ensureScriptValue(scriptEvent.args?.x, defaultCoord)
+            );
+            const scriptEventY = optimiseScriptValue(
+              ensureScriptValue(scriptEvent.args?.y, defaultCoord)
+            );
+            toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
+            toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
+            toSceneId = String(scriptEvent.args?.sceneId || "");
+          }
         }
-      }
 
-      const fromScene = scenesLookup[connection.fromSceneId];
-      const toScene = scenesLookup[toSceneId];
+        const fromScene = scenesLookup[connection.fromSceneId];
+        const toScene = scenesLookup[toSceneId];
 
-      const startX = fromScene.x;
-      const startY = fromScene.y;
-      const destX = toScene.x;
-      const destY = toScene.y;
-
-      let entityX = 0;
-      let entityY = 0;
-      let entityWidth = 0;
-      let entityHeight = 0;
-
-      if (connection.type === "trigger") {
-        const trigger = triggersLookup[connection.entityId];
-        if (trigger) {
-          entityX = trigger.x;
-          entityY = trigger.y;
-          entityWidth = trigger.width ?? 2;
-          entityHeight = trigger.height ?? 1;
+        if (!fromScene || !toScene) {
+          return undefined;
         }
-      } else if (connection.type === "actor") {
-        const actor = actorsLookup[connection.entityId];
-        if (actor) {
-          entityX = actor.x;
-          entityY = actor.y;
-          entityWidth = 2;
-          entityHeight = 1;
+
+        const startX = fromScene.x;
+        const startY = fromScene.y;
+        const destX = toScene.x;
+        const destY = toScene.y;
+
+        let entityX = 0;
+        let entityY = 0;
+        let entityWidth = 0;
+        let entityHeight = 0;
+
+        if (connection.type === "trigger") {
+          const trigger = triggersLookup[connection.entityId];
+          if (trigger) {
+            entityX = trigger.x;
+            entityY = trigger.y;
+            entityWidth = trigger.width ?? 2;
+            entityHeight = trigger.height ?? 1;
+          }
+        } else if (connection.type === "actor") {
+          const actor = actorsLookup[connection.entityId];
+          if (actor) {
+            entityX = actor.x;
+            entityY = actor.y;
+            entityWidth = 2;
+            entityHeight = 1;
+          }
         }
-      }
 
-      const x1 = startX + (entityX + entityWidth / 2) * 8;
-      const x2 = destX + toX * 8 + 5;
-      const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
-      const y2 = 20 + destY + toY * 8 + 5;
+        const x1 = startX + (entityX + entityWidth / 2) * 8;
+        const x2 = destX + toX * 8 + 5;
+        const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
+        const y2 = 20 + destY + toY * 8 + 5;
 
-      const xDiff = Math.abs(x1 - x2);
-      const yDiff = Math.abs(y1 - y2);
+        const xDiff = Math.abs(x1 - x2);
+        const yDiff = Math.abs(y1 - y2);
 
-      const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
-      const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
+        const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
+        const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
 
-      const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
-      const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
+        const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
+        const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
 
-      return {
-        ...connection,
-        x1,
-        y1,
-        x2,
-        y2,
-        qx,
-        qy,
-      };
-    });
+        return {
+          ...connection,
+          x1,
+          y1,
+          x2,
+          y2,
+          qx,
+          qy,
+        };
+      })
+    );
   }, [
     actorsLookup,
     connections,

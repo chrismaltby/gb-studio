@@ -12,3 +12,7 @@ export const chunk = <T>(arr: T[], len?: number): T[][] => {
 
   return chunks;
 };
+
+export const filterUndefined = <T>(arr: (T | undefined)[]): T[] => {
+  return arr.filter((t) => t !== undefined);
+};
