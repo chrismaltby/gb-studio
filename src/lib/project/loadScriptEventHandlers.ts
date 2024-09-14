@@ -9,6 +9,7 @@ import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
+import * as scriptValueTypes from "shared/lib/scriptValue/types";
 
 const globAsync = promisify(glob);
 
@@ -158,6 +159,7 @@ const vm = new NodeVM({
       "../helpers/trimlines": trimLines,
       "shared/lib/helpers/trimlines": trimLines,
       "shared/lib/scriptValue/helpers": scriptValueHelpers,
+      "shared/lib/scriptValue/types": scriptValueTypes,
     },
   },
 });

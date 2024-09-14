@@ -1,3 +1,5 @@
+const { isConstScriptValue } = require("shared/lib/scriptValue/types");
+
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SWITCH";
@@ -103,8 +105,14 @@ const compile = (input, helpers) => {
   const choiceLookup = Array(input.choices)
     .fill()
     .map((_, i) => {
+      const value = isConstScriptValue(input[`value${i}`])
+        ? input[`value${i}`]
+        : {
+            type: "number",
+            value: i + 1,
+          };
       return {
-        value: input[`value${i}`],
+        value,
         branch: input[`true${i}`],
       };
     });

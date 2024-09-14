@@ -419,20 +419,13 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "constvalue") {
     const isValueScript = isConstScriptValue(value);
-    const isNumberValue = typeof value === "number";
     const isDefaultScript = isConstScriptValue(defaultValue);
 
     return (
       <ConstantValueSelect
         name={id}
         value={
-          isValueScript
-            ? value
-            : isNumberValue
-            ? { type: "number", value }
-            : isDefaultScript
-            ? defaultValue
-            : undefined
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
         }
         onChange={onChangeField}
         min={field.min}

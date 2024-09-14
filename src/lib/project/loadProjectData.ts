@@ -40,6 +40,7 @@ import { migrateLegacyProject } from "./migrateLegacyProject";
 import { loadProjectResources } from "./loadProjectResources";
 import { readJson } from "lib/helpers/fs/readJson";
 import type { ProjectData } from "store/features/project/projectActions";
+import { migrateProjectResources } from "./migrateProjectResources";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
@@ -80,13 +81,15 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   const scriptEventDefs = await loadAllScriptEventHandlers(projectRoot);
   const originalJson = await readJson(projectPath);
 
-  const resources = !isProjectMetadataResource(originalJson)
+  const unmigratedResources = !isProjectMetadataResource(originalJson)
     ? migrateLegacyProject(
         originalJson as ProjectData,
         projectRoot,
         scriptEventDefs
       )
     : await loadProjectResources(projectRoot, originalJson);
+
+  const resources = await migrateProjectResources(unmigratedResources);
 
   const engineFields = await loadEngineFields(projectRoot);
   const sceneTypes = await loadSceneTypes(projectRoot);
