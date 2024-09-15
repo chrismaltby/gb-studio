@@ -121,6 +121,7 @@ const WorldView = () => {
   const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state)
   );
+  const allSceneIds = useAppSelector(sceneSelectors.selectIds);
 
   const showConnections = useAppSelector(
     (state) =>
@@ -210,6 +211,10 @@ const WorldView = () => {
 
   //#region Keyboard handling
 
+  const onSelectAllScenes = useCallback(() => {
+    dispatch(editorActions.setSceneSelectionIds(allSceneIds));
+  }, [allSceneIds, dispatch]);
+
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.shiftKey && tool === "select") {
@@ -220,6 +225,9 @@ const WorldView = () => {
       if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyA") {
+        return onSelectAllScenes();
       }
       if (e.ctrlKey || e.metaKey) {
         return;
@@ -232,7 +240,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, tool]
+    [dispatch, focus, onSelectAllScenes, tool]
   );
 
   const onKeyUp = useCallback(

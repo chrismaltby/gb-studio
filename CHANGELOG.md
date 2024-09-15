@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add ability to define constant values, compared to variables these don't take any extra memory when used in game
+- Add ability to select all scenes with Ctrl/Cmd + A from Game World view
 
 ### Changed
 
