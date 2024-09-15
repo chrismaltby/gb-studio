@@ -967,11 +967,26 @@ export const precompileScenes = (
   }
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
-    const background = usedBackgrounds.find(
+    const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
         (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
     );
+
+    if (!backgroundWithCommonTileset) {
+      warnings(
+        `Scene #${sceneIndex + 1} ${
+          scene.name ? `'${scene.name}'` : ""
+        } includes a common tileset that can't be located.`
+      );
+    }
+
+    const background =
+      backgroundWithCommonTileset ??
+      usedBackgrounds.find(
+        (background) => background.id === scene.backgroundId
+      );
+
     if (!background) {
       throw new Error(
         `Scene #${sceneIndex + 1} ${
