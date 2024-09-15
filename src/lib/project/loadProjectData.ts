@@ -36,11 +36,11 @@ import {
   isProjectMetadataResource,
 } from "shared/lib/resources/types";
 import { defaultPalettes } from "consts";
-import { migrateLegacyProject } from "./migrateLegacyProject";
+import { migrateLegacyProject } from "./migration/legacy/migrateLegacyProject";
 import { loadProjectResources } from "./loadProjectResources";
 import { readJson } from "lib/helpers/fs/readJson";
 import type { ProjectData } from "store/features/project/projectActions";
-import { migrateProjectResources } from "./migrateProjectResources";
+import { migrateProjectResources } from "./migration/migrateProjectResources";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;

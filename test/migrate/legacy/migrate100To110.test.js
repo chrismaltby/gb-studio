@@ -2,7 +2,7 @@ import {
   migrateFrom1To110Scenes,
   migrateFrom1To110Collisions,
   migrateFrom1To110Actors,
-} from "../../src/lib/project/migrateProject";
+} from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
 
 test("should migrate 1 to 1.1.0 to add scene width & height values", () => {
   const input = {

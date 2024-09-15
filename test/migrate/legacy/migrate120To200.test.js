@@ -2,7 +2,7 @@ import {
   migrateFrom120To200Collisions,
   migrateFrom120To200Event,
   migrateFrom120To200Actors,
-} from "../../src/lib/project/migrateProject";
+} from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
 
 test("should migrate collisions from 1.2.0 to 2.0.0", () => {
   const oldProject = {

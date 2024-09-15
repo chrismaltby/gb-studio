@@ -1,5 +1,5 @@
 import { Static, TSchema } from "@sinclair/typebox";
-import migrateProject from "lib/project/migrateProject";
+import migrateProject from "./migrateLegacyProjectVersions";
 import identity from "lodash/identity";
 import { BackgroundData, Scene } from "shared/lib/entities/entitiesTypes";
 import {

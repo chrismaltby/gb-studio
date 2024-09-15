@@ -11,9 +11,9 @@ import {
   migrateFrom330r3To330r4Event,
   migrateFrom330r4To330r5Event,
   migrateFrom330r6To330r7Event,
-} from "../../src/lib/project/migrateProject";
-import initElectronL10N from "../../src/lib/lang/initElectronL10N";
-import { getTestScriptHandlers } from "../getTestScriptHandlers";
+} from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
+import { getTestScriptHandlers } from "../../getTestScriptHandlers";
 
 beforeAll(async () => {
   await initElectronL10N();

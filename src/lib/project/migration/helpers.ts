@@ -1,27 +1,24 @@
 import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { CompressedProjectResources } from "shared/lib/resources/types";
 import {
-  mapActorsScript,
-  mapCustomScriptsScript,
   mapScenesScript,
+  mapActorsScript,
   mapTriggersScript,
+  mapCustomScriptsScript,
 } from "shared/lib/scripts/walk";
 
-export const LATEST_PROJECT_VERSION = "4.2.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
-
-type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
-type ProjectResourcesMigrationFn = (
+export type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
+export type ProjectResourcesMigrationFn = (
   resources: CompressedProjectResources
 ) => CompressedProjectResources;
 
-type ProjectResourcesMigration = {
+export type ProjectResourcesMigration = {
   from: { version: string; release: string };
   to: { version: string; release: string };
   migrationFn: ProjectResourcesMigrationFn;
 };
 
-const applyProjectResourcesMigration = (
+export const applyProjectResourcesMigration = (
   resources: CompressedProjectResources,
   migration: ProjectResourcesMigration
 ): CompressedProjectResources => {
@@ -40,7 +37,7 @@ const applyProjectResourcesMigration = (
   };
 };
 
-const migrateEvents = (
+export const migrateEvents = (
   resources: CompressedProjectResources,
   migrateFn: ScriptEventMigrationFn
 ): CompressedProjectResources => {
@@ -53,7 +50,32 @@ const migrateEvents = (
   };
 };
 
-const isProjectVersion = (
+export const createScriptEventsMigrator =
+  (migrateFn: ScriptEventMigrationFn) =>
+  (resources: CompressedProjectResources): CompressedProjectResources =>
+    migrateEvents(resources, migrateFn);
+
+export const pipeMigrationFns = (
+  migrationFns: ProjectResourcesMigrationFn[]
+): ProjectResourcesMigrationFn => {
+  return (resources: CompressedProjectResources): CompressedProjectResources =>
+    migrationFns.reduce(
+      (currentResources, migrationFn) => migrationFn(currentResources),
+      resources
+    );
+};
+
+export const pipeScriptEventMigrationFns = (
+  scriptEventMigrationFns: ScriptEventMigrationFn[]
+): ScriptEventMigrationFn => {
+  return (scriptEvent: ScriptEvent): ScriptEvent =>
+    scriptEventMigrationFns.reduce(
+      (currentScriptEvent, migrationFn) => migrationFn(currentScriptEvent),
+      scriptEvent
+    );
+};
+
+export const isProjectVersion = (
   version: string,
   release: string,
   resources: CompressedProjectResources
@@ -62,40 +84,4 @@ const isProjectVersion = (
     resources.metadata._version === version &&
     resources.metadata._release === release
   );
-};
-
-const migrateFrom410r1To420r1Event: ScriptEventMigrationFn = (scriptEvent) => {
-  if (scriptEvent.args && scriptEvent.command === "EVENT_SWITCH") {
-    for (let i = 0; i < 16; i++) {
-      const key = `value${i}`;
-      const defaultValue = i + 1;
-      const storedValue = scriptEvent.args[key];
-      const value =
-        typeof storedValue === "number" ? storedValue : defaultValue;
-      // Convert to constvalue
-      scriptEvent.args[key] = {
-        type: "number",
-        value,
-      };
-    }
-  }
-  return scriptEvent;
-};
-
-const migrations: ProjectResourcesMigration[] = [
-  {
-    from: { version: "4.1.0", release: "1" },
-    to: { version: "4.2.0", release: "1" },
-    migrationFn: (resources) => {
-      return migrateEvents(resources, migrateFrom410r1To420r1Event);
-    },
-  },
-];
-
-export const migrateProjectResources = async (
-  resources: CompressedProjectResources
-): Promise<CompressedProjectResources> => {
-  return migrations.reduce((migratedResources, migration) => {
-    return applyProjectResourcesMigration(migratedResources, migration);
-  }, resources);
 };

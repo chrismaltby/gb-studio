@@ -1,7 +1,7 @@
 import migrateProject, {
-  LATEST_PROJECT_VERSION,
-  LATEST_PROJECT_MINOR_VERSION,
-} from "../../src/lib/project/migrateProject";
+  LATEST_LEGACY_PROJECT_VERSION,
+  LATEST_LEGACY_PROJECT_MINOR_VERSION,
+} from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
 
 test("should migrate conditional events from 1.0.0 to latest release", () => {
   const oldProject = {
@@ -41,8 +41,8 @@ test("should migrate conditional events from 1.0.0 to latest release", () => {
 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
-    _version: LATEST_PROJECT_VERSION,
-    _release: LATEST_PROJECT_MINOR_VERSION,
+    _version: LATEST_LEGACY_PROJECT_VERSION,
+    _release: LATEST_LEGACY_PROJECT_MINOR_VERSION,
     settings: {
       colorMode: "mono",
       startMoveSpeed: 1,
@@ -159,8 +159,8 @@ test("should migrate conditional events from 1.2.0 to latest release", () => {
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
-    _version: LATEST_PROJECT_VERSION,
-    _release: LATEST_PROJECT_MINOR_VERSION,
+    _version: LATEST_LEGACY_PROJECT_VERSION,
+    _release: LATEST_LEGACY_PROJECT_MINOR_VERSION,
     settings: {
       colorMode: "mono",
       startMoveSpeed: 1,

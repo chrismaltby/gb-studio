@@ -7,7 +7,7 @@ import ScriptBuilder, {
 } from "./scriptBuilder";
 import { PrecompiledScene } from "./generateGBVMData";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
-import { LATEST_PROJECT_VERSION } from "lib/project/migrateProjectResources";
+import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";

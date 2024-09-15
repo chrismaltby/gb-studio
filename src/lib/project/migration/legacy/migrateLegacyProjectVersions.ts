@@ -54,8 +54,8 @@ import { ensureNumber } from "shared/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
-export const LATEST_PROJECT_VERSION = "4.1.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_LEGACY_PROJECT_VERSION = "4.1.0";
+export const LATEST_LEGACY_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (
   relativePath: string,
@@ -2754,8 +2754,8 @@ const migrateProject = (
     }
   }
 
-  data._version = LATEST_PROJECT_VERSION;
-  data._release = LATEST_PROJECT_MINOR_VERSION;
+  data._version = LATEST_LEGACY_PROJECT_VERSION;
+  data._release = LATEST_LEGACY_PROJECT_MINOR_VERSION;
 
   return data;
 };

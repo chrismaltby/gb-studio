@@ -2,8 +2,8 @@ import {
   migrateFrom400r1To400r2Event,
   migrateFrom400r2To400r3Event,
   migrateFrom400r3To400r4Event,
-} from "../../src/lib/project/migrateProject";
-import initElectronL10N from "../../src/lib/lang/initElectronL10N";
+} from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
 
 beforeAll(async () => {
   await initElectronL10N();
