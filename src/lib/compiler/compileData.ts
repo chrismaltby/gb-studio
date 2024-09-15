@@ -71,6 +71,7 @@ import {
   compileSceneFnPtrs,
   compileStateDefines,
   replaceScriptSymbols,
+  compileGameGlobalsHeader,
 } from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -2006,17 +2007,10 @@ const compile = async (
     precompiled.stateReferences
   );
 
-  output["game_globals.h"] =
-    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
-    Object.values(variableAliasLookup)
-      .map((v) => v?.symbol)
-      .map((string, stringIndex) => {
-        return `#define ${string} ${stringIndex}\n`;
-      })
-      .join("") +
-    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
-    `\n` +
-    `#endif\n`;
+  output["game_globals.h"] = compileGameGlobalsHeader(
+    variableAliasLookup,
+    projectData.variables.constants
+  );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
 

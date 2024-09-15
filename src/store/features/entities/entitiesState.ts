@@ -3162,7 +3162,7 @@ const addConstant: CaseReducer<
   const newConstant: Constant = {
     id: action.payload.constantId,
     name: "",
-    symbol: genEntitySymbol(state, `constant_${numConstants + 1}`),
+    symbol: genEntitySymbol(state, `const_constant_${numConstants + 1}`),
     value: 0,
   };
 

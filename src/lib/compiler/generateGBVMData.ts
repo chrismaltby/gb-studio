@@ -19,6 +19,7 @@ import type {
   SceneTypeSchema,
 } from "store/features/engine/engineState";
 import { Constant } from "shared/lib/resources/types";
+import { VariableMapData } from "./compileData";
 
 export interface PrecompiledBackground {
   id: string;
@@ -1164,7 +1165,7 @@ export const replaceScriptSymbols = (
 };
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Record<string, { symbol: string }>,
+  variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
   stateReferences: string[]
 ) => {
@@ -1189,6 +1190,32 @@ export const compileGameGlobalsInclude = (
         return `${string} = ${stringIndex}\n`;
       })
       .join("")
+  );
+};
+
+export const compileGameGlobalsHeader = (
+  variableAliasLookup: Record<string, VariableMapData>,
+  constants: Constant[]
+) => {
+  return (
+    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
+    Object.values(variableAliasLookup)
+      .map((v) => v?.symbol)
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
+      })
+      .join("") +
+    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `#define ${constant.symbol.toLocaleUpperCase()} = ${
+          constant.value
+        }\n`;
+      })
+      .join("") +
+    `\n` +
+    `#endif\n`
   );
 };
 
