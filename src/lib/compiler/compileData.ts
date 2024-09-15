@@ -975,7 +975,7 @@ export const precompileScenes = (
 
     if (!backgroundWithCommonTileset) {
       warnings(
-        `Scene #${sceneIndex + 1} ${
+        `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
         } includes a common tileset that can't be located.`
       );
@@ -989,7 +989,7 @@ export const precompileScenes = (
 
     if (!background) {
       throw new Error(
-        `Scene #${sceneIndex + 1} ${
+        `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
         } has missing or no background assigned.`
       );
@@ -999,7 +999,7 @@ export const precompileScenes = (
 
     if (scene.actors.length > MAX_ACTORS) {
       warnings(
-        `Scene #${sceneIndex + 1} ${
+        `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
         } contains ${
           scene.actors.length
@@ -1009,7 +1009,7 @@ export const precompileScenes = (
 
     if (scene.triggers.length > MAX_TRIGGERS) {
       warnings(
-        `Scene #${sceneIndex + 1} ${
+        `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
         } contains ${
           scene.triggers.length
