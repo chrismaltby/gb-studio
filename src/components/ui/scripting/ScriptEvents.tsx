@@ -93,7 +93,7 @@ export const ScriptEventHeader = forwardRef<
           onContextMenu={onContextMenu}
         >
           {!isComment ? (
-            <StyledScriptEventHeaderCaret $isOpen={isOpen && !isComment}>
+            <StyledScriptEventHeaderCaret $isOpen={isOpen}>
               <ArrowIcon />
             </StyledScriptEventHeaderCaret>
           ) : (
