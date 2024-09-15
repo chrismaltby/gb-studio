@@ -3157,10 +3157,12 @@ const addConstant: CaseReducer<
     constantId: string;
   }>
 > = (state, action) => {
+  const numConstants = localConstantSelectTotal(state);
+
   const newConstant: Constant = {
     id: action.payload.constantId,
     name: "",
-    symbol: genEntitySymbol(state, `const_0`),
+    symbol: genEntitySymbol(state, `constant_${numConstants + 1}`),
     value: 0,
   };
 
@@ -4686,6 +4688,9 @@ const localVariableSelectById = (state: EntitiesState, id: string) =>
 
 const localConstantSelectById = (state: EntitiesState, id: string) =>
   state.constants.entities[id];
+
+const localConstantSelectTotal = (state: EntitiesState) =>
+  state.constants.ids.length;
 
 // Global
 export const actorSelectors = actorsAdapter.getSelectors(
