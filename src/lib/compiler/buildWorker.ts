@@ -144,6 +144,7 @@ const run = async () => {
     if (terminating) {
       return;
     }
+    warnings(String(e));
     console.error("buildTask process terminated with error:", e);
     process.exit(1);
   }
