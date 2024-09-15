@@ -51,6 +51,7 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
           margin-top: -5px;
           margin-bottom: 5px;
           flex-basis: 100%;
+          width: 100%;
           background: ${(props) => props.theme.colors.sidebar.background};
         `
       : ""}
