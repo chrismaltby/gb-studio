@@ -4,7 +4,12 @@ module.exports = {
   roots: ["<rootDir>/src", "<rootDir>/test"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["jest-extended", "./test/setup.ts"],
-  collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}", "!src/**/*.d.ts"],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/vendor/**",
+    "!src/**/*.stories.{js,jsx,ts,tsx}",
+  ],
   transform: {
     "\\.[jt]sx?$": "ts-jest",
   },
