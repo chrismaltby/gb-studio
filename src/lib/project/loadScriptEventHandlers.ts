@@ -167,7 +167,18 @@ const loadScriptEventHandler = async (
   path: string
 ): Promise<ScriptEventHandler> => {
   const handlerCode = await readFile(path, "utf8");
-  const handler = vm.run(handlerCode) as ScriptEventHandler;
+
+  let handler: ScriptEventHandler;
+  try {
+    handler = vm.run(handlerCode) as ScriptEventHandler;
+  } catch (error) {
+    throw new Error(
+      `Failed to load script event handler at ${path}: ${
+        (error as Error).message
+      }`
+    );
+  }
+
   if (!handler.id) {
     throw new Error(`Event handler ${path} is missing id`);
   }

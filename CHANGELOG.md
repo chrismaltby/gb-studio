@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Improved error message that appears when project fails to open due to broken plugins
 
 ### Fixed
 
