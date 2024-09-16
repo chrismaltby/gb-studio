@@ -1209,7 +1209,7 @@ export const compileGameGlobalsHeader = (
     constants
       .filter((constant) => constant.symbol)
       .map((constant) => {
-        return `#define ${constant.symbol.toLocaleUpperCase()} = ${
+        return `#define ${constant.symbol.toLocaleUpperCase()} ${
           constant.value
         }\n`;
       })
