@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+
 ### Fixed
 
 - Fix issue where adding a new song wouldn't warn about unsaved changes in current song
