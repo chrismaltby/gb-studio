@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where scene connection lines could get stuck in place if custom scripts that change scenes are called multiple times from the same scene
 - Fix issue where "Replace Script" confirmation alert would appear when pasting sometimes even if the custom script hadn't been modified
 - Fix issue preventing building projects containing a "Play Music" event but no music
+- Fix issue where dialogue script events could cause horizontal scroll bars to appear in script editor when column was not wide enough to display all tabs
 
 ## [4.1.2] - 2024-09-09
 
