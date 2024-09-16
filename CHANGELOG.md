@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where adding a new song wouldn't warn about unsaved changes in current song
 - Fix issue where adding a song with an already existing name wouldn't auto select the newly created song
 - Fix issue where scene connection lines could get stuck in place if custom scripts that change scenes are called multiple times from the same scene
+- Fix issue preventing building projects containing a "Play Music" event but no music
 
 ## [4.1.2] - 2024-09-09
 

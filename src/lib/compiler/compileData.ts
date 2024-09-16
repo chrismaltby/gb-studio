@@ -883,9 +883,9 @@ export const precompileMusic = (
         cmd.args &&
         (cmd.args.musicId !== undefined || cmd.command === EVENT_MUSIC_PLAY)
       ) {
-        const musicId = ensureString(cmd.args.musicId, music[0].id);
+        const musicId = ensureString(cmd.args.musicId, music[0]?.id ?? "");
         // If never seen this track before add it to the list
-        if (usedMusicIds.indexOf(musicId) === -1) {
+        if (musicId.length > 0 && usedMusicIds.indexOf(musicId) === -1) {
           usedMusicIds.push(musicId);
         }
       } else if (eventHasArg(cmd, "references")) {
@@ -914,7 +914,7 @@ export const precompileMusic = (
         id: track.id,
       };
     })
-    .filter((track) => track)
+    .filter((track) => track.symbol)
     .map((track) => {
       return {
         ...track,
