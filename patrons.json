@@ -74,16 +74,16 @@
     },
     {
       "attributes": {
-        "full_name": "Gumpy Function"
+        "full_name": "Goosifer"
       },
-      "id": "93658267",
+      "id": "2840872",
       "type": "user"
     },
     {
       "attributes": {
-        "full_name": "Justin Kocian"
+        "full_name": "Gumpy Function"
       },
-      "id": "59293884",
+      "id": "93658267",
       "type": "user"
     },
     {
@@ -113,13 +113,6 @@
       },
       "id": "14825686",
       "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "The Judge"
-      },
-      "id": "111003767",
-      "type": "user"
     }
   ],
   "pastPatrons": [
@@ -135,6 +128,13 @@
         "full_name": "Gumpy Function"
       },
       "id": "128473778",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Justin Kocian"
+      },
+      "id": "59293884",
       "type": "user"
     },
     {
@@ -156,6 +156,13 @@
         "full_name": "Skittle"
       },
       "id": "57539298",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "The Judge"
+      },
+      "id": "111003767",
       "type": "user"
     },
     {

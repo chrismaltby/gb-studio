@@ -711,8 +711,12 @@ ipcMain.handle("app:show-project-window", () => {
 });
 
 ipcMain.handle("project:open", async (_event, arg) => {
-  const { projectPath } = arg;
-  return openProject(projectPath);
+  try {
+    const { projectPath } = arg;
+    return await openProject(projectPath);
+  } catch (e) {
+    dialog.showErrorBox(l10n("ERROR_TITLE"), String(e));
+  }
 });
 
 ipcMain.handle("project:open-project-picker", async (_event, _arg) => {

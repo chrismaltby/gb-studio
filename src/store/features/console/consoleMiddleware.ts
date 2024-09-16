@@ -70,7 +70,7 @@ const getLinkToSymbol = (
   }
 
   const scene = allScenes.find((s) => {
-    return symbol.startsWith(s.symbol);
+    return symbol.startsWith(`${s.symbol}_`) || symbol === s.symbol;
   });
 
   if (scene) {
@@ -135,10 +135,11 @@ const consoleMiddleware: Middleware<Dispatch, RootState> =
             });
           }
         }
-      } else if (action.payload.text.startsWith("Error in scene")) {
-        const symbol = action.payload.text.match(
-          /Error in scene '([^']*)'/
-        )?.[1];
+      } else if (
+        action.payload.text.startsWith("Error") &&
+        action.payload.text.includes("scene '")
+      ) {
+        const symbol = action.payload.text.match(/scene '([^']*)'/)?.[1];
         if (symbol) {
           const state = store.getState();
           const link = getLinkToSymbol(symbol, state);

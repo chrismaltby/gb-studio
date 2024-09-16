@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
 - "Switch" event updated to allow use of constant values for each branch condition
 
+## [4.1.3] - 2024-09-16
+
+### Changed
+
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Improved error message that appears when project fails to open due to broken plugins
+
 ### Fixed
 
 - Fix issue where adding a new song wouldn't warn about unsaved changes in current song
