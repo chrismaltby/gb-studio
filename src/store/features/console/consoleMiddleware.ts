@@ -70,7 +70,7 @@ const getLinkToSymbol = (
   }
 
   const scene = allScenes.find((s) => {
-    return symbol.startsWith(s.symbol);
+    return symbol.startsWith(`${s.symbol}_`) || symbol === s.symbol;
   });
 
   if (scene) {
