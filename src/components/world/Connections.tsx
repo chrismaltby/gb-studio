@@ -567,7 +567,9 @@ const Connections = ({
       }}
     >
       {connections.map((connection) => (
-        <React.Fragment key={`m_${connection.sceneId}_${connection.eventId}`}>
+        <React.Fragment
+          key={`m_${connection.sceneId}_${connection.entityId}_${connection.eventId}`}
+        >
           <Connection
             x1={connection.x1}
             x2={connection.x2}
