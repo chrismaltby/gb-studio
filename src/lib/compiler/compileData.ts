@@ -973,14 +973,6 @@ export const precompileScenes = (
         (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
     );
 
-    if (!backgroundWithCommonTileset) {
-      warnings(
-        `Error in scene '${scene.symbol}' : ${
-          scene.name ? `'${scene.name}'` : ""
-        } includes a common tileset that can't be located.`
-      );
-    }
-
     const background =
       backgroundWithCommonTileset ??
       usedBackgrounds.find(
@@ -992,6 +984,14 @@ export const precompileScenes = (
         `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
         } has missing or no background assigned.`
+      );
+    }
+
+    if (!backgroundWithCommonTileset) {
+      warnings(
+        `Error in scene '${scene.symbol}' : ${
+          scene.name ? `'${scene.name}'` : ""
+        } includes a common tileset that can't be located.`
       );
     }
 
