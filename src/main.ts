@@ -359,6 +359,7 @@ export const createProjectWindow = async () => {
       const data = await loadSpriteData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:sprite:changed", filename, data);
     },
@@ -366,6 +367,7 @@ export const createProjectWindow = async () => {
       const data = await loadBackgroundData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:background:changed", filename, data);
     },
@@ -376,6 +378,7 @@ export const createProjectWindow = async () => {
       const data = await loadMusicData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:music:changed", filename, data);
     },
@@ -383,6 +386,7 @@ export const createProjectWindow = async () => {
       const data = await loadSoundData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:sound:changed", filename, data);
     },
@@ -390,6 +394,7 @@ export const createProjectWindow = async () => {
       const data = await loadFontData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:font:changed", filename, data);
     },
@@ -397,6 +402,7 @@ export const createProjectWindow = async () => {
       const data = await loadAvatarData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:avatar:changed", filename, data);
     },
@@ -404,6 +410,7 @@ export const createProjectWindow = async () => {
       const data = await loadEmoteData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:emote:changed", filename, data);
     },
@@ -411,6 +418,7 @@ export const createProjectWindow = async () => {
       const data = await loadTilesetData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:tileset:changed", filename, data);
     },

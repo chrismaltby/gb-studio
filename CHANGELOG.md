@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
 - "Switch" event updated to allow use of constant values for each branch condition
 
+### Fixed
+
+- Fix issue where errors in watched files could cause application to crash
+
 ## [4.1.3] - 2024-09-16
 
 ### Changed
