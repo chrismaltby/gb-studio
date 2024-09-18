@@ -1504,6 +1504,9 @@
   "ERROR_PROJECT_PATH_INVALID": "Invalid directory path",
   "ERROR_MISSING_FONTS": "No fonts found in assets/fonts folder. An example font has been copied there for you to use.",
   "ERROR_ASSET_DOESNT_BELONG_TO_CURRENT_PROJECT": "This asset does not belong to the currently opened project",
+  "ERROR_REPORT_ISSUE": "Report Issue",
+  "ERROR_SAVE_PROJECT": "Save Project",
+  "ERROR_NO_UNSAVED_CHANGES": "No unsaved changes",
 
   "// 13": "Splash -------------------------------------------------------",
 
