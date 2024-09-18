@@ -90,6 +90,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       try {
         unwrapResult(action);
       } catch (error) {
+        console.error(error);
         if (
           error &&
           typeof error === "object" &&
@@ -102,7 +103,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
               filename: "",
               line: 0,
               col: 0,
-              stackTrace: error.message,
+              stackTrace: "stack" in error ? String(error.stack) : "",
             })
           );
         }
