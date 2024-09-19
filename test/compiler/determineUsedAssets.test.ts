@@ -1,7 +1,7 @@
 import { determineUsedAssets } from "lib/compiler/precompile/determineUsedAssets";
 import { CustomEvent, FontData } from "shared/lib/entities/entitiesTypes";
-import { getTestScriptHandlers } from "../../getTestScriptHandlers";
-import { dummyProjectResources, dummySceneResource } from "../../dummydata";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
+import { dummyProjectResources, dummySceneResource } from "../dummydata";
 import {
   FontResource,
   ProjectResources,

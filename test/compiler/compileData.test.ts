@@ -2,16 +2,16 @@
 import compile, {
   precompileBackgrounds,
   precompileScenes,
-} from "../../../src/lib/compiler/compileData";
+} from "../../src/lib/compiler/compileData";
 import {
   compileSceneProjectiles,
   PrecompiledBackground,
   PrecompiledScene,
   PrecompiledSprite,
-} from "../../../src/lib/compiler/generateGBVMData";
-import { EVENT_TEXT, EVENT_IF_TRUE } from "../../../src/consts";
+} from "../../src/lib/compiler/generateGBVMData";
+import { EVENT_TEXT, EVENT_IF_TRUE } from "../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
-import { getTestScriptHandlers } from "../../getTestScriptHandlers";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { ProjectResources } from "shared/lib/resources/types";
 import {
   BackgroundData,
@@ -23,7 +23,7 @@ import {
   dummyBackground,
   dummyScene,
   dummyScriptEvent,
-} from "../../dummydata";
+} from "../dummydata";
 import os from "os";
 
 test("should take into account state value when building projectiles", () => {

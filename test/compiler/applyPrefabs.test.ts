@@ -14,7 +14,7 @@ import {
   dummySceneResource,
   dummyTriggerPrefabResource,
   dummyTriggerResource,
-} from "../../dummydata";
+} from "../dummydata";
 
 describe("applyPrefabs", () => {
   it("should apply actor prefabs correctly", () => {

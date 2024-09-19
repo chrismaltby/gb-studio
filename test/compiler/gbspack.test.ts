@@ -8,7 +8,7 @@ import {
   replaceBank,
   toCartSize,
   toOutputFilename,
-} from "../../../src/lib/compiler/gbspack";
+} from "../../src/lib/compiler/gbspack";
 
 describe("Parse", () => {
   it("should parse area size", () => {

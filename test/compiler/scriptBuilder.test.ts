@@ -1,18 +1,18 @@
-import { PrecompiledScene } from "../../../src/lib/compiler/generateGBVMData";
+import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
-} from "../../../src/lib/compiler/scriptBuilder";
+} from "../../src/lib/compiler/scriptBuilder";
 import {
   CustomEvent,
   ScriptEvent,
-} from "../../../src/shared/lib/entities/entitiesTypes";
+} from "../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
   dummyPrecompiledBackground,
   dummyPrecompiledSpriteSheet,
   getDummyCompiledFont,
-} from "../../dummydata";
-import { getTestScriptHandlers } from "../../getTestScriptHandlers";
+} from "../dummydata";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
 
 test("Should be able to set active actor to player", async () => {
   const output: string[] = [];

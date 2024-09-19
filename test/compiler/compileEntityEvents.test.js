@@ -1,9 +1,9 @@
-import compileEntityEvents from "../../../src/lib/compiler/compileEntityEvents";
-import { EVENT_END, EVENT_TEXT, EVENT_IF_TRUE } from "../../../src/consts";
-import { getDummyCompiledFont } from "../../dummydata";
-import { getTestScriptHandlers } from "../../getTestScriptHandlers";
+import compileEntityEvents from "../../src/lib/compiler/compileEntityEvents";
+import { EVENT_END, EVENT_TEXT, EVENT_IF_TRUE } from "../../src/consts";
+import { getDummyCompiledFont } from "../dummydata";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
 
-jest.mock("../../../src/consts");
+jest.mock("../../src/consts");
 
 test("should compile empty events", async () => {
   const scriptEventHandlers = await getTestScriptHandlers();
