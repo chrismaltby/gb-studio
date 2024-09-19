@@ -600,7 +600,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
-  expect(usedBackgrounds).toHaveLength(3);
+  expect(usedBackgrounds).toHaveLength(2); //this should be 2, one for each of the 2 scene which is a combinason of background + tileset(or lack of), it would be 3 if there was a 3rd scene with background 2b and not tilesetId
   expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
   expect(backgroundLookup["3b"]).toBeUndefined();
 });
