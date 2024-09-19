@@ -925,7 +925,16 @@ ipcMain.handle(
 );
 
 ipcMain.handle("dialog:migrate-warning", async (_event, path: string) => {
-  return migrateWarning(path);
+  try {
+    return await migrateWarning(path);
+  } catch (e) {
+    if (e instanceof Error) {
+      dialog.showErrorBox(l10n("ERROR_INVALID_FILE_TYPE"), e.stack ?? "");
+    } else {
+      dialog.showErrorBox(l10n("ERROR_INVALID_FILE_TYPE"), String(e));
+    }
+    return false;
+  }
 });
 
 ipcMain.handle("close-project", () => {
