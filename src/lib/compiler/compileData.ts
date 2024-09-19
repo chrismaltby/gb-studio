@@ -271,18 +271,32 @@ export const precompileBackgrounds = async (
     return memo;
   }, {} as Record<string, TilesetData[]>);
 
+  const forceGenerateTilesetIds = scenes.reduce((memo, scene) => {
+    if (!scene.backgroundId) {
+      return memo;
+    }
+    if (!scene.tilesetId && !memo.has(scene.backgroundId)) {
+      memo.add(scene.backgroundId);
+    }
+    return memo;
+  }, new Set<string>(eventImageIds));
+
   // List of ids to generate 360 tiles
-  const generate360Ids = usedBackgrounds
-    .filter((background) =>
-      scenes.find(
-        (scene) => scene.backgroundId === background.id && scene.type === "LOGO"
+  const generate360Ids = new Set(
+    usedBackgrounds
+      .filter((background) =>
+        scenes.find(
+          (scene) =>
+            scene.backgroundId === background.id && scene.type === "LOGO"
+        )
       )
-    )
-    .map((background) => background.id);
+      .map((background) => background.id)
+  );
 
   const backgroundsData = await compileImages(
     usedBackgrounds,
     commonTilesetsLookup,
+    forceGenerateTilesetIds,
     generate360Ids,
     colorMode,
     projectRoot,
@@ -292,6 +306,7 @@ export const precompileBackgrounds = async (
   );
 
   const usedTilesets: CompiledTilesetData[] = [];
+  const usedTilesetLookup: Record<string, CompiledTilesetData> = {};
 
   const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
@@ -301,22 +316,59 @@ export const precompileBackgrounds = async (
       let tilemapIndex = -1;
       let tilemapAttrIndex = -1;
 
+      // Don't allow reusing tilesets if common tileset isn't set
+      const canReuseTilesets = !!background.commonTilesetId;
+
+      const genTilesetKey = (data: number[]): string => {
+        // If can't reuse tileset don't bother generating an id
+        return canReuseTilesets ? data.toString() : "";
+      };
+
+      const getExistingTileset = (
+        key: string
+      ): CompiledTilesetData | undefined => {
+        // If can't reuse tileset always return no match
+        return canReuseTilesets ? usedTilesetLookup[key] : undefined;
+      };
+
+      const setExistingTileset = (key: string, data: CompiledTilesetData) => {
+        // Even if this background can't reuse tilesets store tiles
+        // in cache incase another background could reuse these tiles
+        usedTilesetLookup[key] = data;
+      };
+
       // VRAM Bank 1
       if (background.vramData[0].length > 0) {
         tileset1Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_tileset`,
-          data: background.vramData[0],
-        });
+        const tilesetKey = genTilesetKey(background.vramData[0]);
+        const existingTileset = getExistingTileset(tilesetKey);
+        if (existingTileset) {
+          usedTilesets.push(existingTileset);
+        } else {
+          const newTileset = {
+            symbol: `${background.symbol}_tileset`,
+            data: background.vramData[0],
+          };
+          setExistingTileset(tilesetKey, newTileset);
+          usedTilesets.push(newTileset);
+        }
       }
 
       // VRAM Bank 2
       if (background.vramData[1].length > 0) {
         tileset2Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_cgb_tileset`,
-          data: background.vramData[1],
-        });
+        const tilesetKey = genTilesetKey(background.vramData[1]);
+        const existingTileset = getExistingTileset(tilesetKey);
+        if (existingTileset) {
+          usedTilesets.push(existingTileset);
+        } else {
+          const newTileset = {
+            symbol: `${background.symbol}_cgb_tileset`,
+            data: background.vramData[1],
+          };
+          setExistingTileset(tilesetKey, newTileset);
+          usedTilesets.push(newTileset);
+        }
       }
 
       // Extract Tilemap
@@ -325,7 +377,7 @@ export const precompileBackgrounds = async (
         usedTilemaps.push({
           symbol: `${background.symbol}_tilemap`,
           data: background.tilemap,
-          is360: generate360Ids.includes(background.id),
+          is360: generate360Ids.has(background.id),
         });
       }
 
@@ -335,7 +387,7 @@ export const precompileBackgrounds = async (
         usedTilemapAttrs.push({
           symbol: `${background.symbol}_tilemap_attr`,
           data: background.attr,
-          is360: generate360Ids.includes(background.id),
+          is360: generate360Ids.has(background.id),
         });
       }
 
