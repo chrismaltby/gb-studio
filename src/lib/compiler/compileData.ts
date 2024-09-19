@@ -270,30 +270,33 @@ export const precompileBackgrounds = async (
     }
     return memo;
   }, {} as Record<string, TilesetData[]>);
-  
-  const backgroundWithoutCommonTilesetLookup = scenes.reduce((memo, scene) => {
+
+  const forceGenerateTilesetIds = scenes.reduce((memo, scene) => {
     if (!scene.backgroundId) {
       return memo;
     }
-    if (!scene.tilesetId) {
-      memo[scene.backgroundId] = true;
+    if (!scene.tilesetId && !memo.has(scene.backgroundId)) {
+      memo.add(scene.backgroundId);
     }
     return memo;
-  }, {} as Record<string, boolean>);
+  }, new Set<string>(eventImageIds));
 
   // List of ids to generate 360 tiles
-  const generate360Ids = usedBackgrounds
-    .filter((background) =>
-      scenes.find(
-        (scene) => scene.backgroundId === background.id && scene.type === "LOGO"
+  const generate360Ids = new Set(
+    usedBackgrounds
+      .filter((background) =>
+        scenes.find(
+          (scene) =>
+            scene.backgroundId === background.id && scene.type === "LOGO"
+        )
       )
-    )
-    .map((background) => background.id);
+      .map((background) => background.id)
+  );
 
   const backgroundsData = await compileImages(
     usedBackgrounds,
     commonTilesetsLookup,
-	backgroundWithoutCommonTilesetLookup,
+    forceGenerateTilesetIds,
     generate360Ids,
     colorMode,
     projectRoot,
@@ -312,35 +315,35 @@ export const precompileBackgrounds = async (
       let tileset2Index = -1;
       let tilemapIndex = -1;
       let tilemapAttrIndex = -1;
-	  let existingTileset = null;
+      let existingTileset = null;
       // VRAM Bank 1
       if (background.vramData[0].length > 0) {
-		tileset1Index = usedTilesets.length;
-		const tilesetKey = background.vramData[0].toString();
-		existingTileset = usedTilesetLookup[tilesetKey];
-		if (!existingTileset){	
-			existingTileset = {
-				symbol: `${background.symbol}_tileset`,
-				data: background.vramData[0],
-			};	
-			usedTilesetLookup[tilesetKey] = existingTileset;
-		}
-		usedTilesets.push(existingTileset);
+        tileset1Index = usedTilesets.length;
+        const tilesetKey = background.vramData[0].toString();
+        existingTileset = usedTilesetLookup[tilesetKey];
+        if (!existingTileset) {
+          existingTileset = {
+            symbol: `${background.symbol}_tileset`,
+            data: background.vramData[0],
+          };
+          usedTilesetLookup[tilesetKey] = existingTileset;
+        }
+        usedTilesets.push(existingTileset);
       }
 
       // VRAM Bank 2
       if (background.vramData[1].length > 0) {
         tileset2Index = usedTilesets.length;
-		const tilesetKey = background.vramData[1].toString();
-		existingTileset = usedTilesetLookup[tilesetKey];
-		if (!existingTileset){	
-			existingTileset = {
-				symbol: `${background.symbol}_cgb_tileset`,
-				data: background.vramData[1],
-			};	
-			usedTilesetLookup[tilesetKey] = existingTileset;
-		}
-		usedTilesets.push(existingTileset);
+        const tilesetKey = background.vramData[1].toString();
+        existingTileset = usedTilesetLookup[tilesetKey];
+        if (!existingTileset) {
+          existingTileset = {
+            symbol: `${background.symbol}_cgb_tileset`,
+            data: background.vramData[1],
+          };
+          usedTilesetLookup[tilesetKey] = existingTileset;
+        }
+        usedTilesets.push(existingTileset);
       }
 
       // Extract Tilemap
@@ -349,7 +352,7 @@ export const precompileBackgrounds = async (
         usedTilemaps.push({
           symbol: `${background.symbol}_tilemap`,
           data: background.tilemap,
-          is360: generate360Ids.includes(background.id),
+          is360: generate360Ids.has(background.id),
         });
       }
 
@@ -359,7 +362,7 @@ export const precompileBackgrounds = async (
         usedTilemapAttrs.push({
           symbol: `${background.symbol}_tilemap_attr`,
           data: background.attr,
-          is360: generate360Ids.includes(background.id),
+          is360: generate360Ids.has(background.id),
         });
       }
 

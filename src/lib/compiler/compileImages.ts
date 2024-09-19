@@ -289,8 +289,8 @@ const compileImage = async (
 const compileImages = async (
   imgs: BackgroundData[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
-  backgroundWithoutCommonTilesetLookup: Record<string, boolean>,
-  generate360Ids: string[],
+  forceGenerateTilesetIds: Set<string>,
+  generate360Ids: Set<string>,
   colorMode: ColorModeSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
@@ -300,45 +300,46 @@ const compileImages = async (
     imgs
       .map((img) => {
         const commonTilesets = commonTilesetsLookup[img.id] ?? [];
-		const backgroundWithoutCommonTileset = backgroundWithoutCommonTilesetLookup[img.id] || !commonTilesets.length;
-		if (backgroundWithoutCommonTileset){
-			return [
-			() =>
-				compileImage(
-				img,
-				undefined,
-				generate360Ids.includes(img.id),
-				colorMode,
-				projectPath,
-				{ warnings }
-				),
-			...commonTilesets.map((commonTileset) => {
-				return () =>
-				compileImage(
-					img,
-					commonTileset,
-					generate360Ids.includes(img.id),
-					colorMode,
-					projectPath,
-					{ warnings }
-				);
-			}),
-			];
-		} else {
-			return [
-			...commonTilesets.map((commonTileset) => {
-				return () =>
-				compileImage(
-					img,
-					commonTileset,
-					generate360Ids.includes(img.id),
-					colorMode,
-					projectPath,
-					{ warnings }
-				);
-			}),
-			];
-		}
+        const forceGenerateTileset =
+          forceGenerateTilesetIds.has(img.id) || !commonTilesets.length;
+        if (forceGenerateTileset) {
+          return [
+            () =>
+              compileImage(
+                img,
+                undefined,
+                generate360Ids.has(img.id),
+                colorMode,
+                projectPath,
+                { warnings }
+              ),
+            ...commonTilesets.map((commonTileset) => {
+              return () =>
+                compileImage(
+                  img,
+                  commonTileset,
+                  generate360Ids.has(img.id),
+                  colorMode,
+                  projectPath,
+                  { warnings }
+                );
+            }),
+          ];
+        } else {
+          return [
+            ...commonTilesets.map((commonTileset) => {
+              return () =>
+                compileImage(
+                  img,
+                  commonTileset,
+                  generate360Ids.has(img.id),
+                  colorMode,
+                  projectPath,
+                  { warnings }
+                );
+            }),
+          ];
+        }
       })
       .flat()
   );

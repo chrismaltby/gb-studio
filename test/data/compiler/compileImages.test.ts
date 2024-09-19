@@ -16,8 +16,8 @@ test("should compile images", async () => {
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "mixed",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -36,8 +36,8 @@ test("should compile split large images into two tilesets for CGB mode", async (
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "color",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -57,8 +57,8 @@ test("should compile large images into one overflowing bank when not in color on
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "mixed",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -77,8 +77,8 @@ test("should split tiles into two banks when in color only mode, filling first 1
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "color",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -141,8 +141,8 @@ test("should handle overflow correctly for DMG mode", async () => {
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "mono",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -168,8 +168,8 @@ test("should handle overflow correctly for color only mode", async () => {
   const res = await compileImages(
     backgroundData,
     {},
-	{},
-    [],
+    new Set(),
+    new Set(),
     "color",
     `${__dirname}/_files/`,
     { warnings: () => {} }
