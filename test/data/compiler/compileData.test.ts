@@ -18,7 +18,12 @@ import {
   Scene,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
-import { dummyActor, dummyBackground, dummyScene } from "../../dummydata";
+import {
+  dummyActor,
+  dummyBackground,
+  dummyScene,
+  dummyScriptEvent,
+} from "../../dummydata";
 import os from "os";
 
 test("should take into account state value when building projectiles", () => {
@@ -539,6 +544,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img.png",
+      symbol: "bg2",
     },
     {
       id: "3b",
@@ -548,6 +554,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img2.png",
+      symbol: "bg3",
     },
   ] as BackgroundData[];
   const scenes = [
@@ -579,6 +586,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 16,
       imageHeight: 16,
       filename: "tile_img1.png",
+      symbol: "t1",
     },
     {
       id: "t2",
@@ -588,6 +596,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 16,
       imageHeight: 16,
       filename: "tile_img2.png",
+      symbol: "t2",
     },
   ] as TilesetData[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
@@ -600,7 +609,387 @@ test("should include extra backgrounds when using common tilesets", async () => 
     `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
-  expect(usedBackgrounds).toHaveLength(2); //this should be 2, one for each of the 2 scene which is a combinason of background + tileset(or lack of), it would be 3 if there was a 3rd scene with background 2b and not tilesetId
+  expect(usedBackgrounds).toHaveLength(2);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg2_t1`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg2_t1_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg2_t1_tileset`);
+  expect(usedBackgrounds[1].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg2_t2`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg2_t2_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg2_t2_tileset`);
   expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
   expect(backgroundLookup["3b"]).toBeUndefined();
+});
+
+test("should include tileset for background when also used without common tileset", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "test_img",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "test_img.png",
+      symbol: "bg2",
+    },
+    {
+      id: "3b",
+      name: "test_img2",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "test_img2.png",
+      symbol: "bg3",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "1",
+      name: "second_scene",
+      backgroundId: "2b",
+      tilesetId: "t2",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "2",
+      name: "third_scene",
+      backgroundId: "2b",
+      actors: [],
+      triggers: [],
+    },
+  ] as Scene[];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img1.png",
+      symbol: "t1",
+    },
+    {
+      id: "t2",
+      name: "tile_img2",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img2.png",
+      symbol: "t2",
+    },
+  ] as TilesetData[];
+  const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+  expect(usedBackgrounds).toHaveLength(3);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg2`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg2_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg2_tileset`);
+  expect(usedBackgrounds[1].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg2_t1`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg2_t1_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg2_t1_tileset`);
+  expect(usedBackgrounds[2].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[2].symbol).toBe(`bg2_t2`);
+  expect(usedBackgrounds[2].tilemap.symbol).toBe(`bg2_t2_tilemap`);
+  expect(usedBackgrounds[2].tileset.symbol).toBe(`bg2_t2_tileset`);
+  expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
+  expect(backgroundLookup["3b"]).toBeUndefined();
+});
+
+test("should share tilesets if possible when multiple backgrounds include common tileset", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "bg_ad",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
+    },
+    {
+      id: "3b",
+      name: "bg_bc",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "1",
+      name: "second_scene",
+      backgroundId: "3b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+  ] as Scene[];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img3.png",
+      symbol: "t1",
+    },
+  ] as TilesetData[];
+  const { usedBackgrounds } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+  expect(usedBackgrounds).toHaveLength(2);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg_ad_t1`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg_ad_t1_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+  expect(usedBackgrounds[1].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg_bc_t1`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg_bc_t1_tilemap`);
+  // Second background can reuse tileset from first as it uses common tilesets
+  // and the first background's tileset includes all tiles for this background
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+});
+
+test("should generate unique tileset for background if used without common tileset even if a match in common tilesets could be found", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "bg_ad",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
+    },
+    {
+      id: "3b",
+      name: "bg_bc",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "2",
+      name: "second_scene",
+      backgroundId: "3b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "3",
+      name: "third_scene",
+      backgroundId: "3b",
+      actors: [],
+      triggers: [],
+    },
+  ] as Scene[];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img3.png",
+      symbol: "t1",
+    },
+  ] as TilesetData[];
+  const { usedBackgrounds } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+  expect(usedBackgrounds).toHaveLength(3);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg_ad_t1`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg_ad_t1_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+
+  // Background was used in a scene without common tileset
+  // so should have unique tileset generated
+  expect(usedBackgrounds[1].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg_bc`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg_bc_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg_bc_tileset`);
+
+  // Background with shared common tileset should
+  // still share tiles with first image
+  expect(usedBackgrounds[2].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[2].symbol).toBe(`bg_bc_t1`);
+  expect(usedBackgrounds[2].tilemap.symbol).toBe(`bg_bc_t1_tilemap`);
+  expect(usedBackgrounds[2].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+});
+
+test("should generate unique tileset for background if referenced from script even if a match in common tilesets could be found", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "bg_ad",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
+    },
+    {
+      id: "3b",
+      name: "bg_bc",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "2",
+      name: "second_scene",
+      backgroundId: "3b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+      script: [
+        {
+          ...dummyScriptEvent,
+          args: {
+            references: [
+              {
+                type: "background",
+                id: "2b",
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ] as Scene[];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img3.png",
+      symbol: "t1",
+    },
+  ] as TilesetData[];
+  const { usedBackgrounds } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+
+  // Background was used in a scene without common tileset (in GBVM reference)
+  // so should have unique tileset generated
+  expect(usedBackgrounds).toHaveLength(3);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg_ad`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg_ad_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg_ad_tileset`);
+
+  // First background + common tileset should get a unique tileset
+  expect(usedBackgrounds[1].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg_ad_t1`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg_ad_t1_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+
+  // Background with shared common tileset should still share tiles with first image + common tileset
+  expect(usedBackgrounds[2].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[2].symbol).toBe(`bg_bc_t1`);
+  expect(usedBackgrounds[2].tilemap.symbol).toBe(`bg_bc_t1_tilemap`);
+  expect(usedBackgrounds[2].tileset.symbol).toBe(`bg_ad_t1_tileset`);
 });
