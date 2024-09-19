@@ -993,3 +993,145 @@ test("should generate unique tileset for background if referenced from script ev
   expect(usedBackgrounds[2].tilemap.symbol).toBe(`bg_bc_t1_tilemap`);
   expect(usedBackgrounds[2].tileset.symbol).toBe(`bg_ad_t1_tileset`);
 });
+
+test("should generate unique tileset for identical backgrounds if used without common tileset", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "bg_ad",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
+    },
+    {
+      id: "3b",
+      name: "bg_ad_copy",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad_copy",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "2",
+      name: "second_scene",
+      backgroundId: "3b",
+      actors: [],
+      triggers: [],
+    },
+  ] as Scene[];
+  const { usedBackgrounds } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    [],
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+
+  expect(usedBackgrounds).toHaveLength(2);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg_ad`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg_ad_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg_ad_tileset`);
+
+  expect(usedBackgrounds[1].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg_ad_copy`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg_ad_copy_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg_ad_copy_tileset`);
+});
+
+test("should allow reusing tileset for identical backgrounds if used with common tileset", async () => {
+  const backgrounds = [
+    {
+      id: "2b",
+      name: "bg_ad",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
+    },
+    {
+      id: "3b",
+      name: "bg_ad_copy",
+      width: 20,
+      height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
+      filename: "bg_ad.png",
+      symbol: "bg_ad_copy",
+    },
+  ] as BackgroundData[];
+  const scenes = [
+    {
+      ...dummyScene,
+      id: "1",
+      name: "first_scene",
+      backgroundId: "2b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+    {
+      ...dummyScene,
+      id: "2",
+      name: "second_scene",
+      backgroundId: "3b",
+      tilesetId: "t1",
+      actors: [],
+      triggers: [],
+    },
+  ] as Scene[];
+  const tilesets = [
+    {
+      id: "t1",
+      name: "tile_img1",
+      width: 2,
+      height: 2,
+      imageWidth: 16,
+      imageHeight: 16,
+      filename: "tile_img1.png",
+      symbol: "t1",
+    },
+  ] as TilesetData[];
+  const { usedBackgrounds } = await precompileBackgrounds(
+    backgrounds,
+    scenes,
+    tilesets,
+    {},
+    "mono",
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
+  );
+
+  expect(usedBackgrounds).toHaveLength(2);
+  expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
+  expect(usedBackgrounds[0].symbol).toBe(`bg_ad_t1`);
+  expect(usedBackgrounds[0].tilemap.symbol).toBe(`bg_ad_t1_tilemap`);
+  expect(usedBackgrounds[0].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+
+  expect(usedBackgrounds[1].id).toBe(backgrounds[1].id);
+  expect(usedBackgrounds[1].symbol).toBe(`bg_ad_copy_t1`);
+  expect(usedBackgrounds[1].tilemap.symbol).toBe(`bg_ad_copy_t1_tilemap`);
+  expect(usedBackgrounds[1].tileset.symbol).toBe(`bg_ad_t1_tileset`);
+});

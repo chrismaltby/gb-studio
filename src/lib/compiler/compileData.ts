@@ -315,35 +315,60 @@ export const precompileBackgrounds = async (
       let tileset2Index = -1;
       let tilemapIndex = -1;
       let tilemapAttrIndex = -1;
-      let existingTileset = null;
+
+      // Don't allow reusing tilesets if common tileset isn't set
+      const canReuseTilesets = !!background.commonTilesetId;
+
+      const genTilesetKey = (data: number[]): string => {
+        // If can't reuse tileset don't bother generating an id
+        return canReuseTilesets ? data.toString() : "";
+      };
+
+      const getExistingTileset = (
+        key: string
+      ): CompiledTilesetData | undefined => {
+        // If can't reuse tileset always return no match
+        return canReuseTilesets ? usedTilesetLookup[key] : undefined;
+      };
+
+      const setExistingTileset = (key: string, data: CompiledTilesetData) => {
+        // Even if this background can't reuse tilesets store tiles
+        // in cache incase another background could reuse these tiles
+        usedTilesetLookup[key] = data;
+      };
+
       // VRAM Bank 1
       if (background.vramData[0].length > 0) {
         tileset1Index = usedTilesets.length;
-        const tilesetKey = background.vramData[0].toString();
-        existingTileset = usedTilesetLookup[tilesetKey];
-        if (!existingTileset) {
-          existingTileset = {
+        const tilesetKey = genTilesetKey(background.vramData[0]);
+        const existingTileset = getExistingTileset(tilesetKey);
+        if (existingTileset) {
+          usedTilesets.push(existingTileset);
+        } else {
+          const newTileset = {
             symbol: `${background.symbol}_tileset`,
             data: background.vramData[0],
           };
-          usedTilesetLookup[tilesetKey] = existingTileset;
+          setExistingTileset(tilesetKey, newTileset);
+          usedTilesets.push(newTileset);
         }
-        usedTilesets.push(existingTileset);
       }
 
       // VRAM Bank 2
       if (background.vramData[1].length > 0) {
         tileset2Index = usedTilesets.length;
-        const tilesetKey = background.vramData[1].toString();
-        existingTileset = usedTilesetLookup[tilesetKey];
-        if (!existingTileset) {
-          existingTileset = {
+        const tilesetKey = genTilesetKey(background.vramData[1]);
+        const existingTileset = getExistingTileset(tilesetKey);
+        if (existingTileset) {
+          usedTilesets.push(existingTileset);
+        } else {
+          const newTileset = {
             symbol: `${background.symbol}_cgb_tileset`,
             data: background.vramData[1],
           };
-          usedTilesetLookup[tilesetKey] = existingTileset;
+          setExistingTileset(tilesetKey, newTileset);
+          usedTilesets.push(newTileset);
         }
-        usedTilesets.push(existingTileset);
       }
 
       // Extract Tilemap
