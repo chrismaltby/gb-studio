@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1681240910",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1694240919",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -10,6 +10,7 @@
   "SCENE": "Scena",
   "PROJECT": "Projekt",
   "CUSTOM_EVENT": "Skrypt własny",
+  "CONSTANT": "Stała",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Świat gry",
@@ -92,6 +93,9 @@
   "SIDEBAR_PREFABS": "Prefaby",
   "SIDEBAR_PREFAB_USES": "Użycie prefabów",
   "SIDEBAR_ADD_PREFAB": "Dodaj prefab",
+  "SIDEBAR_CONSTANTS": "Stałe",
+  "SIDEBAR_ADD_CONSTANT": "Dodaj stałą",
+  "SIDEBAR_CONSTANT_USES": "Użycie stałej",
   
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
@@ -380,6 +384,7 @@
   "FIELD_16BIT_CALCULATION": "Wartość jest obliczana przy użyciu dwóch 8-bitowych zmiennych",
   "FIELD_OFFSET": "Przesunięcie",
   "FIELD_VARIABLE_NOT_USED": "Zmienna nie została użyta w projekcie",
+  "FIELD_CONSTANT_NOT_USED": "Stała nie została użyta w projekcie",
   "FIELD_NONE": "Brak",
   "FIELD_DIMENSIONS": "Wymiary",
   "FIELD_SPRITE": "Grafika",
@@ -929,7 +934,8 @@
   "FIELD_READ_THREAD_HANDLE_VARIABLE_DESC": "Uchwyt wątku, który chcesz zatrzymać.",
   "FIELD_RUN_IN_BACKGROUND": "Uruchom w tle",
   "FIELD_RUN_IN_BACKGROUND_DESC": "Skrypt do uruchomienia w tle.",
-  
+  "FIELD_CONSTANT": "Stała",
+   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1259,7 +1265,7 @@
   "EVENT_ACTOR_DEACTIVATE_DESC": "Polecenie dezaktywuje aktora, powodując, że zachowuje się tak, jakby zniknął z ekranu. Stanie się niewidoczny, a jego skrypt równoległy zostanie zatrzymany.",
   "EVENT_ACTOR_ACTIVATE_LABEL": "Aktywuj {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Dezaktywuj {actor}",
-  "EVENT_IDLE": "Stały",
+  "EVENT_IDLE": "Bezczynność",
   "EVENT_IDLE_DESC": "Polecenie zatrzyma wykonanie skryptu na pojedyńczą klatkę.",
   "EVENT_LOOP_FOR_LABEL": "Dla ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "Podczas ({expression})",
@@ -1454,7 +1460,8 @@
   "MENU_CHECK_SPELLING_WHILE_TYPING": "Sprawdzaj pisownię w trakcie pisania",
   "MENU_DELETE_PREFAB": "Usuń prefab",
   "MENU_EDIT_PREFAB": "Edytuj prefab",
-  
+  "MENU_DELETE_CONSTANT": "Usuń stałą",
+	
   "// 11": "Warnings -----------------------------------------------------",
 
   "WARNING_BACKGROUND_TOO_SMALL": "Tło jest za małe, minimalne wymiary dla tła to: 160px x 144px",
@@ -1497,7 +1504,10 @@
   "ERROR_PROJECT_PATH_INVALID": "Niepoprawna ścieżka folderu",
   "ERROR_MISSING_FONTS": "Brak czcionki w folderze projektu assets/fonts. Przykładowa czcionka zostama tam przekopiowana, w celu jej użycia.",
   "ERROR_ASSET_DOESNT_BELONG_TO_CURRENT_PROJECT": "Ten zasób nie należy do aktualnie otwartego projektu",
-
+  "ERROR_REPORT_ISSUE": "Zgłoś problem",
+  "ERROR_SAVE_PROJECT": "Zapisz projekt",
+  "ERROR_NO_UNSAVED_CHANGES": "Brak zmian do zapisania",
+  
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nowy",
@@ -1590,6 +1600,9 @@
   "DIALOG_DELETE_PRESET_DESCRIPTION": "Wszelkie użycia tego presetu zostaną odłączone.",
   "DIALOG_APPLY_PRESET": "Zastosować zmiany w prescie?",
   "DIALOG_APPLY_PRESET_DESCRIPTION": "Zmodyfikowanie tego presetu spowoduje aktualizację wszystkich miejsc, w których jest używany.",
+  "DIALOG_DELETE_CONSTANT": "Usunąć stałą \"{name}\"?",
+  "DIALOG_DELETE_CONSTANT_USED": "{count} użycia tej stałej zostaną ustawione na '0'.\n\nZnaleziono w: {foundReferences}",
+  "DIALOG_DELETE_CONSTANT_USED_SINGLAR": "{count} użycie tej stałej zostanie ustawione na '0'.\n\nZnaleziono w: {foundReferences}",
   
  "// 16": "Settings ----------------------------------------------------",
 
