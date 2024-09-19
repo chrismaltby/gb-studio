@@ -300,7 +300,7 @@ const compileImages = async (
     imgs
       .map((img) => {
         const commonTilesets = commonTilesetsLookup[img.id] ?? [];
-		const backgroundWithoutCommonTileset = backgroundWithoutCommonTilesetLookup[img.id];
+		const backgroundWithoutCommonTileset = backgroundWithoutCommonTilesetLookup[img.id] || !commonTilesets.length;
 		if (backgroundWithoutCommonTileset){
 			return [
 			() =>
