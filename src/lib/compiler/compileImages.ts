@@ -300,46 +300,39 @@ const compileImages = async (
     imgs
       .map((img) => {
         const commonTilesets = commonTilesetsLookup[img.id] ?? [];
+        // If this background has never been used with a common tileset
+        // or has been referenced without a common tileset at any point
+        // it's tiles should always be generated
         const forceGenerateTileset =
-          forceGenerateTilesetIds.has(img.id) || !commonTilesets.length;
-        if (forceGenerateTileset) {
-          return [
-            () =>
+          commonTilesets.length === 0 || forceGenerateTilesetIds.has(img.id);
+        return [
+          // Generate background with no common tilesets applied
+          ...(forceGenerateTileset
+            ? [
+                () =>
+                  compileImage(
+                    img,
+                    undefined,
+                    generate360Ids.has(img.id),
+                    colorMode,
+                    projectPath,
+                    { warnings }
+                  ),
+              ]
+            : []),
+          // Generate background with each used common tileset
+          ...commonTilesets.map((commonTileset) => {
+            return () =>
               compileImage(
                 img,
-                undefined,
+                commonTileset,
                 generate360Ids.has(img.id),
                 colorMode,
                 projectPath,
                 { warnings }
-              ),
-            ...commonTilesets.map((commonTileset) => {
-              return () =>
-                compileImage(
-                  img,
-                  commonTileset,
-                  generate360Ids.has(img.id),
-                  colorMode,
-                  projectPath,
-                  { warnings }
-                );
-            }),
-          ];
-        } else {
-          return [
-            ...commonTilesets.map((commonTileset) => {
-              return () =>
-                compileImage(
-                  img,
-                  commonTileset,
-                  generate360Ids.has(img.id),
-                  colorMode,
-                  projectPath,
-                  { warnings }
-                );
-            }),
-          ];
-        }
+              );
+          }),
+        ];
       })
       .flat()
   );
