@@ -270,6 +270,16 @@ export const precompileBackgrounds = async (
     }
     return memo;
   }, {} as Record<string, TilesetData[]>);
+  
+  const backgroundWithoutCommonTilesetLookup = scenes.reduce((memo, scene) => {
+    if (!scene.backgroundId) {
+      return memo;
+    }
+    if (!scene.tilesetId) {
+      memo[scene.backgroundId] = true;
+    }
+    return memo;
+  }, {} as Record<string, boolean>);
 
   // List of ids to generate 360 tiles
   const generate360Ids = usedBackgrounds
@@ -283,6 +293,7 @@ export const precompileBackgrounds = async (
   const backgroundsData = await compileImages(
     usedBackgrounds,
     commonTilesetsLookup,
+	backgroundWithoutCommonTilesetLookup,
     generate360Ids,
     colorMode,
     projectRoot,
@@ -292,6 +303,7 @@ export const precompileBackgrounds = async (
   );
 
   const usedTilesets: CompiledTilesetData[] = [];
+  const usedTilesetLookup: Record<string, CompiledTilesetData> = {};
 
   const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
@@ -300,23 +312,35 @@ export const precompileBackgrounds = async (
       let tileset2Index = -1;
       let tilemapIndex = -1;
       let tilemapAttrIndex = -1;
-
+	  let existingTileset = null;
       // VRAM Bank 1
       if (background.vramData[0].length > 0) {
-        tileset1Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_tileset`,
-          data: background.vramData[0],
-        });
+		tileset1Index = usedTilesets.length;
+		const tilesetKey = background.vramData[0].toString();
+		existingTileset = usedTilesetLookup[tilesetKey];
+		if (!existingTileset){	
+			existingTileset = {
+				symbol: `${background.symbol}_tileset`,
+				data: background.vramData[0],
+			};	
+			usedTilesetLookup[tilesetKey] = existingTileset;
+		}
+		usedTilesets.push(existingTileset);
       }
 
       // VRAM Bank 2
       if (background.vramData[1].length > 0) {
         tileset2Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_cgb_tileset`,
-          data: background.vramData[1],
-        });
+		const tilesetKey = background.vramData[1].toString();
+		existingTileset = usedTilesetLookup[tilesetKey];
+		if (!existingTileset){	
+			existingTileset = {
+				symbol: `${background.symbol}_cgb_tileset`,
+				data: background.vramData[1],
+			};	
+			usedTilesetLookup[tilesetKey] = existingTileset;
+		}
+		usedTilesets.push(existingTileset);
       }
 
       // Extract Tilemap
