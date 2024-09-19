@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1691240916",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1694240919",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1504,7 +1504,10 @@
   "ERROR_PROJECT_PATH_INVALID": "Niepoprawna ścieżka folderu",
   "ERROR_MISSING_FONTS": "Brak czcionki w folderze projektu assets/fonts. Przykładowa czcionka zostama tam przekopiowana, w celu jej użycia.",
   "ERROR_ASSET_DOESNT_BELONG_TO_CURRENT_PROJECT": "Ten zasób nie należy do aktualnie otwartego projektu",
-
+  "ERROR_REPORT_ISSUE": "Zgłoś problem",
+  "ERROR_SAVE_PROJECT": "Zapisz projekt",
+  "ERROR_NO_UNSAVED_CHANGES": "Brak zmian do zapisania",
+  
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nowy",
