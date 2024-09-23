@@ -10,17 +10,9 @@ const lightTheme: ThemeInterface = {
   colors: {
     highlight: "#c92c61",
     highlightText: "#ffffff",
-    translucent: "rgba(255,255,255,0.3)",
-    hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
     background: "#f2f2f2",
     secondaryText: "#999999",
-    conditional: {
-      level1: "#b3e5fc",
-      level2: "#ffccbc",
-      level3: "#c8e6c9",
-      level4: "#d1c4e9",
-    },
     token: {
       variable: "#9ccc65",
       character: "#90caf9",
@@ -35,6 +27,10 @@ const lightTheme: ThemeInterface = {
       inactiveBackground: "#f6f6f6",
       inactiveBorder: "#d1d1d1",
       textShadow: "none",
+      button: {
+        border: "#9f9e9e",
+        borderTop: "#9f9e9e",
+      },
     },
     button: {
       background: "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
@@ -42,10 +38,6 @@ const lightTheme: ThemeInterface = {
       borderTop: "#c5c5c5",
       activeBackground: "#eaeaea",
       text: "#3b3a3b",
-      toolbar: {
-        border: "#9f9e9e",
-        borderTop: "#9f9e9e",
-      },
       nestedBackground: "#cccccc",
       nestedActiveBackground: "#bbbbbb",
     },
@@ -83,6 +75,12 @@ const lightTheme: ThemeInterface = {
         boxShadow: "-1px 0px 10px 0px rgba(0, 0, 0, 0.1) inset",
         hoverBackground: "#cfcfcf",
       },
+      header: {
+        background: "#ffffff",
+        activeBackground: "#fafafa",
+        border: "#d4d4d4",
+        text: "#3b3a3b",
+      },
     },
     document: {
       background: "#f9f9f9",
@@ -90,6 +88,10 @@ const lightTheme: ThemeInterface = {
     list: {
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
+    },
+    tabs: {
+      background: "#ffffff",
+      border: "#d4d4d4",
     },
     scripting: {
       header: {

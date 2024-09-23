@@ -11,14 +11,6 @@ export interface ThemeInterface {
     secondaryText: string;
     highlight: string;
     highlightText: string;
-    translucent: string;
-    hoverTranslucent: string;
-    conditional: {
-      level1: string;
-      level2: string;
-      level3: string;
-      level4: string;
-    };
     token: {
       variable: string;
       character: string;
@@ -33,6 +25,10 @@ export interface ThemeInterface {
       border: string;
       inactiveBorder: string;
       textShadow: string;
+      button: {
+        border: string;
+        borderTop: string;
+      };
     };
     button: {
       background: string;
@@ -40,10 +36,6 @@ export interface ThemeInterface {
       borderTop: string;
       activeBackground: string;
       text: string;
-      toolbar: {
-        border: string;
-        borderTop: string;
-      };
       nestedBackground: string;
       nestedActiveBackground: string;
     };
@@ -80,6 +72,12 @@ export interface ThemeInterface {
         boxShadow: string;
         hoverBackground: string;
       };
+      header: {
+        background: string;
+        activeBackground: string;
+        border: string;
+        text: string;
+      };
     };
     document: {
       background: string;
@@ -87,6 +85,10 @@ export interface ThemeInterface {
     list: {
       selectedBackground: string;
       activeBackground: string;
+    };
+    tabs: {
+      background: string;
+      border: string;
     };
     scripting: {
       header: {

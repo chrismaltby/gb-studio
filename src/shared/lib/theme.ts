@@ -1,4 +1,4 @@
-const themeIds = ["dark", "light", "neon"] as const;
+const themeIds = ["dark", "light"] as const;
 export type ThemeId = typeof themeIds[number];
 
 const isThemeId = (value: unknown): value is ThemeId => {

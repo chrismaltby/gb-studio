@@ -21,13 +21,18 @@ export const StyledSplitPaneHeader = styled.div<StyledSplitPaneHeaderProps>`
   padding-left: 5px;
   height: 30px;
   flex-shrink: 0;
-  background-color: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
+  background-color: ${(props) => props.theme.colors.sidebar.header.background};
+  color: ${(props) => props.theme.colors.sidebar.header.text};
+
+  svg {
+    fill: ${(props) => props.theme.colors.sidebar.header.text};
+  }
 
   ${(props) =>
     props.$borderBottom
       ? css`
-          border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+          border-bottom: 1px solid
+            ${(props) => props.theme.colors.sidebar.header.border};
         `
       : ""};
 
@@ -45,7 +50,7 @@ export const StyledSplitPaneHeader = styled.div<StyledSplitPaneHeaderProps>`
       ? css`
           &:active {
             background-color: ${(props) =>
-              props.theme.colors.input.hoverBackground};
+              props.theme.colors.sidebar.header.activeBackground};
           }
         `
       : css`
@@ -88,7 +93,7 @@ export const StyledSplitPaneHeaderCollapseIcon = styled.div<StyledSplitPaneHeade
   svg {
     width: 8px;
     transform: rotate(180deg);
-    fill: ${(props) => props.theme.colors.input.text};
+    fill: ${(props) => props.theme.colors.sidebar.header.text};
   }
 
   ${(props) =>

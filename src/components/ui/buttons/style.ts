@@ -250,9 +250,9 @@ export const StyledZoomLabel = styled.button<StyledZoomLabelProps>`
 
   -webkit-app-region: no-drag;
   background: ${(props) => props.theme.colors.button.background};
-  border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
+  border: 1px solid ${(props) => props.theme.colors.toolbar.button.border};
   border-top: 1px solid
-    ${(props) => props.theme.colors.button.toolbar.borderTop};
+    ${(props) => props.theme.colors.toolbar.button.borderTop};
   color: ${(props) => props.theme.colors.button.text};
   padding: 0px 5px;
 
