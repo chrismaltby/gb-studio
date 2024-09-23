@@ -94,17 +94,11 @@ export interface ThemeInterface {
       header: {
         text: string;
         background: string;
-        backgroundAlt: string;
         nest1Background: string;
-        nest1BackgroundAlt: string;
         nest2Background: string;
-        nest2BackgroundAlt: string;
         nest3Background: string;
-        nest3BackgroundAlt: string;
         nest4Background: string;
-        nest4BackgroundAlt: string;
         commentBackground: string;
-        commentBackgroundAlt: string;
       };
       branch: {
         nest1Background: string;

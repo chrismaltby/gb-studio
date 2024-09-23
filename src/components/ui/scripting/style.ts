@@ -125,12 +125,7 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
   padding-right: 10px;
   padding-left: 10px;
   height: 25px;
-  background: linear-gradient(
-    0deg,
-    ${(props) => props.theme.colors.scripting.header.backgroundAlt},
-    ${(props) => props.theme.colors.scripting.header.background}
-  );
-
+  background: ${(props) => props.theme.colors.scripting.header.background};
   color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
   cursor: move;
@@ -145,41 +140,25 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
   ${(props) =>
     props.$isConditional && props.$nestLevel % 4 === 0
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest1BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest1Background}
-          );
+          background: ${props.theme.colors.scripting.header.nest1Background};
         `
       : ""}
   ${(props) =>
     props.$isConditional && props.$nestLevel % 4 === 1
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest2BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest2Background}
-          );
+          background: ${props.theme.colors.scripting.header.nest2Background};
         `
       : ""}
     ${(props) =>
     props.$isConditional && props.$nestLevel % 4 === 2
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest3BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest3Background}
-          );
+          background: ${props.theme.colors.scripting.header.nest3Background};
         `
       : ""}
     ${(props) =>
     props.$isConditional && props.$nestLevel % 4 === 3
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest4BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest4Background}
-          );
+          background: ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
 
@@ -187,13 +166,8 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
     props.$isComment
       ? css`
           &&& {
-            background: linear-gradient(
-              0deg,
-              ${(props) =>
-                props.theme.colors.scripting.header.commentBackgroundAlt},
-              ${(props) =>
-                props.theme.colors.scripting.header.commentBackground}
-            );
+            background: ${(props) =>
+              props.theme.colors.scripting.header.commentBackground};
           }
         `
       : ""}
