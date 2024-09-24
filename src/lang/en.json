@@ -1519,6 +1519,10 @@
   "ERROR_REPORT_ISSUE": "Report Issue",
   "ERROR_SAVE_PROJECT": "Save Project",
   "ERROR_NO_UNSAVED_CHANGES": "No unsaved changes",
+  "ERROR_NO_PROJECT_IS_OPEN": "No project is open",
+  "ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN": "Open a project to first to add this plugin",
+  "ERROR_PLUGIN_REPOSITORY_NOT_FOUND": "Plugin repository not found",
+  "ERROR_PLUGIN_NOT_FOUND": "Plugin not found",
 
   "// 13": "Splash -------------------------------------------------------",
 

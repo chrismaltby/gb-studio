@@ -22,6 +22,7 @@ export const PluginMetadata = Type.Object({
   description: Type.String(),
   url: Type.Optional(Type.String()),
   images: Type.Optional(Type.Array(Type.String())),
+  filename: Type.String(),
 });
 
 export type PluginMetadata = Static<typeof PluginMetadata>;

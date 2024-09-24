@@ -5823,6 +5823,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/adm-zip@npm:^0.5.5":
+  version: 0.5.5
+  resolution: "@types/adm-zip@npm:0.5.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/4976dc61e33534ecfb7eee87e8a587db06420a4eb9f34eee9425aece82e9fdd01ddd22677ff6430c582f4d9735c7d714c71adb8f149e3511bc189501b4113631
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^5.0.1":
   version: 5.0.4
   resolution: "@types/aria-query@npm:5.0.4"
@@ -7215,6 +7224,13 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/51fb26cd678f914e13287e886da2d7021f8c2bc0ccc95e03d3e0447ee278dd3b40b9c57dc222acd5881adcf26f3edc40901a4953403232129e3876793cd17386
+  languageName: node
+  linkType: hard
+
+"adm-zip@npm:^0.5.16":
+  version: 0.5.16
+  resolution: "adm-zip@npm:0.5.16"
+  checksum: 10c0/6f10119d4570c7ba76dcf428abb8d3f69e63f92e51f700a542b43d4c0130373dd2ddfc8f85059f12d4a843703a90c3970cfd17876844b4f3f48bf042bfa6b49f
   languageName: node
   linkType: hard
 
@@ -12176,6 +12192,7 @@ __metadata:
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/jest-dom": "npm:^5.11.5"
     "@testing-library/react": "npm:^16.0.1"
+    "@types/adm-zip": "npm:^0.5.5"
     "@types/chroma-js": "npm:^2.4.4"
     "@types/classnames": "npm:^2.2.10"
     "@types/electron-devtools-installer": "npm:^2.2.0"
@@ -12203,6 +12220,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:5.62.0"
     "@vercel/webpack-asset-relocator-loader": "npm:1.7.3"
     about-window: "npm:^1.15.2"
+    adm-zip: "npm:^0.5.16"
     babel-eslint: "npm:^10.1.0"
     chokidar: "npm:^3.6.0"
     chroma-js: "npm:^2.4.2"

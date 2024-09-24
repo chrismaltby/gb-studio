@@ -125,7 +125,11 @@ import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
-import { getGlobalPluginsList, getRepoUrlById } from "lib/pluginManager/repo";
+import {
+  addPluginToProject,
+  getGlobalPluginsList,
+  getRepoUrlById,
+} from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -1834,6 +1838,18 @@ ipcMain.handle(
 
 ipcMain.handle("plugins:fetch-list", () => {
   return getGlobalPluginsList();
+});
+
+ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
+  if (!projectPath) {
+    dialog.showErrorBox(
+      l10n("ERROR_NO_PROJECT_IS_OPEN"),
+      l10n("ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN")
+    );
+    return;
+  }
+  const installedPath = await addPluginToProject(projectPath, pluginId, repoId);
+  shell.openPath(installedPath);
 });
 
 menu.on("new", async () => {

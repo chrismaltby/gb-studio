@@ -206,11 +206,23 @@ const PluginsManager = () => {
                 </StyledPluginImageCarousel>
               </StyledPluginManagerDetail>
               <StyledPluginManagerToolbar>
-                {l10n("FIELD_REQUIRES_GBS_VERSION", {
-                  version: selectedPluginItem.plugin.gbsVersion,
-                })}
+                {selectedPluginItem.plugin.gbsVersion &&
+                selectedPluginItem.plugin.gbsVersion !== "*"
+                  ? l10n("FIELD_REQUIRES_GBS_VERSION", {
+                      version: selectedPluginItem.plugin.gbsVersion,
+                    })
+                  : ""}
                 <FlexGrow />
-                <Button>{l10n("FIELD_ADD_TO_PROJECT")}</Button>
+                <Button
+                  onClick={() => {
+                    API.pluginManager.addPlugin(
+                      selectedPluginItem.id,
+                      selectedPluginItem.repo.id
+                    );
+                  }}
+                >
+                  {l10n("FIELD_ADD_TO_PROJECT")}
+                </Button>
               </StyledPluginManagerToolbar>
             </>
           ) : (
