@@ -48,6 +48,7 @@ import {
   ProjectResources,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
+import type { PluginRepositoryMetadata } from "lib/pluginManager/types";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -363,6 +364,17 @@ const APISetup = {
       ipcRenderer.invoke("debugger:set-watched", variableIds),
     sendToProjectWindow: (data: DebuggerDataPacket) =>
       ipcRenderer.send("debugger:data-receive", data),
+  },
+  pluginManager: {
+    getPluginsList: (): Promise<PluginRepositoryMetadata[]> =>
+      ipcRenderer.invoke("plugins:fetch-list"),
+    addPluginRepo: (url: string) => ipcRenderer.invoke("plugins:add-repo", url),
+    removePluginRepo: (url: string) =>
+      ipcRenderer.invoke("plugins:remove-repo", url),
+    addPlugin: (id: string, repoUrl?: string) =>
+      ipcRenderer.invoke("plugins:add", id, repoUrl),
+    removePlugin: (id: string, repoUrl?: string) =>
+      ipcRenderer.invoke("plugins:remove", id, repoUrl),
   },
   events: {
     menu: {

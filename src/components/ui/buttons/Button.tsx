@@ -5,7 +5,12 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   readonly id?: string;
   readonly size?: "small" | "medium" | "large";
-  readonly variant?: "normal" | "primary" | "transparent" | "underlined";
+  readonly variant?:
+    | "normal"
+    | "primary"
+    | "transparent"
+    | "underlined"
+    | "anchor";
   readonly active?: boolean;
 }
 

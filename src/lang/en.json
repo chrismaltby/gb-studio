@@ -935,6 +935,18 @@
   "FIELD_RUN_IN_BACKGROUND": "Run In Background",
   "FIELD_RUN_IN_BACKGROUND_DESC": "The script to run in the background thread.",
   "FIELD_CONSTANT": "Constant",
+  "FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT": "This package is installed for your project.",
+  "FIELD_THIS_PACKAGE_IS_INSTALLED_GLOBALLY": "This package is installed globally.",
+  "FIELD_VERSION": "Version",
+  "FIELD_VIEW_DOCUMENTATION": "View Documentation",
+  "FIELD_ADD_TO_PROJECT": "Add To Project",
+  "FIELD_SELECT_A_PLUGIN": "Select a Plugin",
+  "FIELD_NO_RESULTS": "No Results",
+  "FIELD_ALL_TYPES": "All Types",
+  "FIELD_ASSET_PACK": "Asset Pack",
+  "FIELD_EVENTS_PLUGIN": "Events Plugin",
+  "FIELD_ENGINE_PLUGIN": "Engine Plugin",
+  "FIELD_REQUIRES_GBS_VERSION": "Requires GB Studio Version: {version}",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1603,6 +1615,9 @@
   "DIALOG_DELETE_CONSTANT": "Delete Constant \"{name}\"?",
   "DIALOG_DELETE_CONSTANT_USED": "{count} uses of this constant will be set to '0'.\n\nFound in: {foundReferences}",
   "DIALOG_DELETE_CONSTANT_USED_SINGLAR": "{count} use of this constant will be set to '0'.\n\nFound in: {foundReferences}",
+  "DIALOG_LEAVING_GBSTUDIO": "Leaving GB Studio",
+  "DIALOG_THIS_LINK_IS_TAKING_YOU_TO": "This link is taking you to the following website",
+  "DIALOG_VISIT_SITE": "Visit Site",
 
   "// 16": "Settings ----------------------------------------------------",
 

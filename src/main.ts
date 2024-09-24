@@ -125,6 +125,8 @@ import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
+import { getGlobalPluginsList, getRepoUrlById } from "lib/pluginManager/repo";
+import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -132,6 +134,8 @@ declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
 declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -149,6 +153,7 @@ if (require("electron-squirrel-startup")) {
 let projectWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
 let preferencesWindow: BrowserWindow | null = null;
+let pluginsWindow: BrowserWindow | null = null;
 let playWindow: BrowserWindow | null = null;
 let musicWindow: BrowserWindow | null;
 
@@ -244,6 +249,37 @@ export const createPreferences = async () => {
 
   preferencesWindow.on("closed", () => {
     preferencesWindow = null;
+  });
+};
+
+export const createPluginsWindow = async () => {
+  pluginsWindow = new BrowserWindow({
+    width: 600,
+    height: 700,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      devTools: isDevMode,
+      preload: PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+
+  pluginsWindow.setMenu(null);
+  pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
+
+  pluginsWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
+      pluginsWindow?.show();
+    }, 40);
+  });
+
+  pluginsWindow.on("closed", () => {
+    pluginsWindow = null;
   });
 };
 
@@ -640,6 +676,15 @@ protocol.registerSchemesAsPrivileged([
       bypassCSP: true,
     },
   },
+  {
+    scheme: "gbshttp",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
 ]);
 
 // This method will be called when Electron has finished
@@ -671,7 +716,25 @@ app.on("ready", async () => {
     createSplash();
   }
 
-  protocol.registerFileProtocol("gbs", (req, callback) => {
+  protocol.registerHttpProtocol("gbshttp", async (req, callback) => {
+    const { host, pathname } = new URL(req.url);
+    if (host === "plugin-repo-asset") {
+      const [_, repoId, ...pathParts] = pathname.split("/");
+      const repoUrl = getRepoUrlById(repoId);
+      if (repoUrl) {
+        const repoRoot = Path.dirname(repoUrl);
+        const repoPath = pathParts.join("/");
+        return callback({
+          url: Path.join(repoRoot, repoPath),
+        });
+      }
+    }
+    return callback({
+      error: 500,
+    });
+  });
+
+  protocol.registerFileProtocol("gbs", async (req, callback) => {
     const { host, pathname } = new URL(req.url);
     if (host === "project") {
       // Load an asset from the current project
@@ -687,6 +750,9 @@ app.on("ready", async () => {
       guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
     }
+    return callback({
+      error: 500,
+    });
   });
 });
 
@@ -832,7 +898,12 @@ ipcMain.handle("open-external", async (_event, url) => {
     "https://github.com",
   ];
   const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
-  if (!match) throw new Error("URL not allowed");
+  if (!match) {
+    const cancel = confirmOpenURL(url);
+    if (cancel) {
+      return;
+    }
+  }
   shell.openExternal(url);
 });
 
@@ -1761,6 +1832,10 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle("plugins:fetch-list", () => {
+  return getGlobalPluginsList();
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -1846,6 +1921,14 @@ menu.on("preferences", () => {
     createPreferences();
   } else {
     preferencesWindow.show();
+  }
+});
+
+menu.on("pluginManager", () => {
+  if (!pluginsWindow) {
+    createPluginsWindow();
+  } else {
+    pluginsWindow.show();
   }
 });
 

@@ -77,6 +77,7 @@
     "image-size": "^1.0.0",
     "json-loader": "^0.5.7",
     "lodash": "^4.17.21",
+    "node-fetch": "^3.3.2",
     "node-gzip": "^1.1.2",
     "normalizr": "^3.6.2",
     "open": "^7.3.0",

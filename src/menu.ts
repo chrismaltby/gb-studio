@@ -43,6 +43,7 @@ type MenuListenerKey =
   | "exportProjectData"
   | "pasteInPlace"
   | "preferences"
+  | "pluginManager"
   | "openMusic";
 
 export type MenuZoomType = "in" | "out" | "reset";
@@ -72,6 +73,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   exportProjectData: [],
   pasteInPlace: [],
   preferences: [],
+  pluginManager: [],
   openMusic: [],
 };
 
@@ -271,6 +273,17 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
               },
             },
           ],
+        },
+      ],
+    },
+    {
+      label: l10n("MENU_PLUGINS"),
+      submenu: [
+        {
+          label: l10n("MENU_OPEN_PLUGIN_MANAGER"),
+          click: () => {
+            notifyListeners("pluginManager");
+          },
         },
       ],
     },
@@ -503,13 +516,13 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
     },
   ];
 
-  if (plugins && plugins.length > 0) {
-    template.splice(3, 0, {
-      id: "plugins",
-      label: l10n("MENU_PLUGINS"),
-      submenu: plugins,
-    });
-  }
+  // if (plugins && plugins.length > 0) {
+  //   template.splice(3, 0, {
+  //     id: "plugins",
+  //     label: l10n("MENU_PLUGINS"),
+  //     submenu: plugins,
+  //   });
+  // }
 
   if (isDevMode) {
     const submenu = template[template.length - 3].submenu || [];

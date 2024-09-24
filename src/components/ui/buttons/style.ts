@@ -4,7 +4,12 @@ import styled, { css } from "styled-components";
 
 export interface StyledButtonProps {
   readonly $size?: "small" | "medium" | "large";
-  readonly $variant?: "normal" | "primary" | "transparent" | "underlined";
+  readonly $variant?:
+    | "normal"
+    | "primary"
+    | "transparent"
+    | "underlined"
+    | "anchor";
   readonly $active?: boolean;
   readonly disabled?: boolean;
 }
@@ -41,6 +46,7 @@ export const StyledButton = styled.button<StyledButtonProps>`
   ${(props) => (props.$variant === "primary" ? primaryStyles : "")}
   ${(props) => (props.$variant === "transparent" ? transparentStyles : "")}
   ${(props) => (props.$variant === "underlined" ? underlinedStyles : "")}
+  ${(props) => (props.$variant === "anchor" ? anchorStyles : "")}
 `;
 
 const smallStyles = css`
@@ -165,6 +171,27 @@ const underlinedStyles = css<StyledButtonProps>`
           &:hover {
             background: rgba(128, 128, 128, 0.3);
           }
+          &:active {
+            background: rgba(128, 128, 128, 0.2);
+          }
+        `
+      : ""}
+`;
+
+const anchorStyles = css<StyledButtonProps>`
+  background: transparent;
+  border-color: transparent;
+  color: ${(props) => props.theme.colors.highlight};
+  text-decoration: underline;
+  position: relative;
+  overflow: visible;
+  padding: 0;
+  height: auto;
+  cursor: pointer;
+
+  ${(props) =>
+    !props.disabled
+      ? css`
           &:active {
             background: rgba(128, 128, 128, 0.2);
           }
