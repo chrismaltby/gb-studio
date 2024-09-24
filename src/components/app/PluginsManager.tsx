@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
 import { Button } from "ui/buttons/Button";
-import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
+import { FlexGrow } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import type {
@@ -18,12 +18,16 @@ import {
   PluginTypeSelect,
   OptionalPluginType,
 } from "components/forms/PluginTypeSelect";
+import { BlankIcon, CheckIcon, UpdateIcon } from "ui/icons/Icons";
+import semverGt from "semver/functions/gt";
 
 export type PluginItem = {
   id: string;
   name: string;
   plugin: PluginMetadata;
   repo: PluginRepositoryMetadata;
+  installedVersion?: string;
+  updateAvailable: boolean;
 };
 
 const PluginsManager = () => {
@@ -43,24 +47,40 @@ const PluginsManager = () => {
     []
   );
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await API.pluginManager.getPluginsList();
-      const items: PluginItem[] = [];
-      for (const repo of res) {
-        for (const plugin of repo.plugins) {
-          items.push({
-            id: plugin.id,
-            name: plugin.name,
-            plugin,
-            repo,
-          });
-        }
+  const refreshData = useCallback(async () => {
+    const repos = await API.pluginManager.getPluginsList();
+    const installedPlugins = await API.pluginManager.getInstalledPlugins();
+    const items: PluginItem[] = [];
+    for (const repo of repos) {
+      for (const plugin of repo.plugins) {
+        const installedVersion = installedPlugins.find(
+          (p) => p.path === plugin.filename.replace(/\.zip$/, ".json")
+        )?.version;
+        items.push({
+          id: plugin.id,
+          name: plugin.name,
+          installedVersion,
+          updateAvailable: installedVersion
+            ? semverGt(plugin.version, installedVersion)
+            : false,
+          plugin,
+          repo,
+        });
       }
-      setPluginItems(items);
     }
-    fetchData();
+    setPluginItems(items);
   }, []);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  useEffect(() => {
+    window.addEventListener("focus", refreshData);
+    return () => {
+      window.removeEventListener("focus", refreshData);
+    };
+  });
 
   const filteredPluginItems = useMemo(() => {
     return pluginItems
@@ -149,7 +169,18 @@ const PluginsManager = () => {
                 children={({ item }) => (
                   <EntityListItem
                     item={item}
-                    type={"scene"}
+                    type={"custom"}
+                    icon={
+                      item.installedVersion ? (
+                        item.updateAvailable ? (
+                          <UpdateIcon />
+                        ) : (
+                          <CheckIcon />
+                        )
+                      ) : (
+                        <BlankIcon />
+                      )
+                    }
                     renderLabel={renderLabel}
                   />
                 )}
@@ -213,15 +244,35 @@ const PluginsManager = () => {
                     })
                   : ""}
                 <FlexGrow />
+                {selectedPluginItem.installedVersion && (
+                  <Button
+                    onClick={async () => {
+                      await API.pluginManager.removePlugin(
+                        selectedPluginItem.id,
+                        selectedPluginItem.repo.id
+                      );
+                      refreshData();
+                    }}
+                  >
+                    {l10n("FIELD_REMOVE_PLUGIN")}
+                  </Button>
+                )}
                 <Button
-                  onClick={() => {
-                    API.pluginManager.addPlugin(
+                  onClick={async () => {
+                    await API.pluginManager.addPlugin(
                       selectedPluginItem.id,
                       selectedPluginItem.repo.id
                     );
+                    refreshData();
                   }}
                 >
-                  {l10n("FIELD_ADD_TO_PROJECT")}
+                  {l10n(
+                    selectedPluginItem.updateAvailable
+                      ? "FIELD_UPDATE_PLUGIN"
+                      : selectedPluginItem.installedVersion
+                      ? "FIELD_REINSTALL_PLUGIN"
+                      : "FIELD_ADD_TO_PROJECT"
+                  )}
                 </Button>
               </StyledPluginManagerToolbar>
             </>
@@ -305,6 +356,9 @@ const StyledPluginManagerToolbar = styled.div`
   align-items: center;
   background: ${(props) => props.theme.colors.sidebar.background};
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  & > *:not(:last-child) {
+    margin-right: 5px;
+  }
 `;
 
 const StyledPluginManagerNoSelectionView = styled.div`

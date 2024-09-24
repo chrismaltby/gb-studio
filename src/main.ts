@@ -131,6 +131,10 @@ import {
   getRepoUrlById,
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
+import {
+  getsPluginsInProject,
+  InstalledPluginData,
+} from "lib/pluginManager/project";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -272,7 +276,7 @@ export const createPluginsWindow = async () => {
       preload: PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-
+  pluginsWindow.setAlwaysOnTop(true);
   pluginsWindow.setMenu(null);
   pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
 
@@ -1848,8 +1852,16 @@ ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
     );
     return;
   }
-  const installedPath = await addPluginToProject(projectPath, pluginId, repoId);
-  shell.openPath(installedPath);
+  await addPluginToProject(projectPath, pluginId, repoId);
+});
+
+ipcMain.handle("plugins:get-installed", async () => {
+  const plugins: InstalledPluginData[] = [];
+  if (projectPath) {
+    const projectPlugins = await getsPluginsInProject(projectPath);
+    plugins.push(...projectPlugins);
+  }
+  return plugins;
 });
 
 menu.on("new", async () => {
