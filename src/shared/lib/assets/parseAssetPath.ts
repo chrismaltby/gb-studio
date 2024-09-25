@@ -1,4 +1,4 @@
-import { relative, sep, normalize } from "path";
+import { relative, sep } from "path";
 import { pathToPosix } from "shared/lib/helpers/path";
 
 const extractPluginPath = (relativePath: string, assetFolder: string) => {
