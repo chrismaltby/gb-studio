@@ -108,7 +108,17 @@ const openAbout = () => {
   });
 };
 
-const buildMenu = async () => {
+type DynamicMenuItem = {
+  id: string;
+  label: string;
+};
+
+interface BuildMenuProps {
+  themes: DynamicMenuItem[];
+  languages: DynamicMenuItem[];
+}
+
+const buildMenu = async ({ themes, languages }: BuildMenuProps) => {
   const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
@@ -395,6 +405,20 @@ const buildMenu = async () => {
                 notifyListeners("updateTheme", "dark");
               },
             },
+            ...(themes.length > 0
+              ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
+              : []),
+            ...themes.map(
+              (theme): MenuItemConstructorOptions => ({
+                id: theme.id,
+                label: theme.label,
+                type: "checkbox",
+                checked: settings.get("theme") === theme.id,
+                click() {
+                  notifyListeners("updateTheme", theme.id);
+                },
+              })
+            ),
           ],
         },
         {
@@ -422,7 +446,21 @@ const buildMenu = async () => {
                   notifyListeners("updateLocale", locale);
                 },
               };
-            })
+            }),
+            ...(languages.length > 0
+              ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
+              : []),
+            ...languages.map(
+              (language): MenuItemConstructorOptions => ({
+                id: language.id,
+                label: language.label,
+                type: "checkbox",
+                checked: settings.get("locale") === language.id,
+                click() {
+                  notifyListeners("updateLocale", language.id);
+                },
+              })
+            )
           ),
         },
         { type: "separator" },

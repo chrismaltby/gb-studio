@@ -7,6 +7,8 @@ export const PluginType = Type.Union(
     Type.Literal("enginePlugin"),
     Type.Literal("eventsPlugin"),
     Type.Literal("theme"),
+    Type.Literal("lang"),
+    Type.Literal("template"),
   ],
   { default: "assetPack" }
 );

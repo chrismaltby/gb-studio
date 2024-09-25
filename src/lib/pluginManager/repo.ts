@@ -22,6 +22,8 @@ import { dialog } from "electron";
 import confirmDeletePluginRepository from "lib/electron/dialog/confirmDeletePluginRepository";
 import { guardAssetWithinProject } from "lib/helpers/assets";
 import { OFFICIAL_REPO_URL } from "consts";
+import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
+import { ensureGlobalPluginsPath } from "./globalPlugins";
 
 const rmdir = promisify(rimraf);
 
@@ -140,7 +142,6 @@ export const addPluginToProject = async (
   repoId: string
 ) => {
   try {
-    const projectRoot = dirname(projectPath);
     const repoURL = getRepoUrlById(repoId);
     if (!repoURL) {
       throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
@@ -156,11 +157,34 @@ export const addPluginToProject = async (
       throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
     }
 
+    const pluginURL =
+      plugin.filename.startsWith("http:") ||
+      plugin.filename.startsWith("https:")
+        ? plugin.filename
+        : join(repoRoot, plugin.filename);
+
+    let outputPath = "";
+
+    if (isGlobalPluginType(plugin.type)) {
+      const globalPluginsPath = await ensureGlobalPluginsPath();
+      outputPath = join(globalPluginsPath, pluginId);
+    } else {
+      if (!projectPath) {
+        dialog.showErrorBox(
+          l10n("ERROR_NO_PROJECT_IS_OPEN"),
+          l10n("ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN")
+        );
+        return;
+      }
+      const projectRoot = dirname(projectPath);
+      outputPath = join(projectRoot, "plugins", pluginId);
+      guardAssetWithinProject(outputPath, projectRoot);
+    }
+
     // Remove -rc* to treat release candidates as identical
     // to releases when confirming plugins are compatible
     // (alpha and beta versions will always warn)
     const releaseVersion = VERSION.replace(/-rc.*/, "");
-
     if (plugin.gbsVersion && !satisfies(releaseVersion, plugin.gbsVersion)) {
       const cancel = confirmIncompatiblePlugin(
         releaseVersion,
@@ -170,16 +194,6 @@ export const addPluginToProject = async (
         return;
       }
     }
-
-    const pluginURL =
-      plugin.filename.startsWith("http:") ||
-      plugin.filename.startsWith("https:")
-        ? plugin.filename
-        : join(repoRoot, plugin.filename);
-
-    const outputPath = join(projectRoot, "plugins", pluginId);
-
-    guardAssetWithinProject(outputPath, projectRoot);
 
     const res = await fetch(pluginURL);
 

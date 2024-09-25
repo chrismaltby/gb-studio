@@ -388,7 +388,10 @@ export const createProjectWindow = async () => {
   projectWindow.on("closed", () => {
     projectWindow = null;
     projectPath = "";
-    menu.buildMenu();
+    menu.buildMenu({
+      themes: [],
+      languages: [],
+    });
 
     if (musicWindow) {
       musicWindow.destroy();
@@ -704,7 +707,10 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", async () => {
   initElectronL10N();
 
-  menu.buildMenu();
+  menu.buildMenu({
+    themes: [],
+    languages: [],
+  });
 
   // Enable DevTools.
   if (isDevMode) {
@@ -1817,13 +1823,6 @@ ipcMain.handle("plugins:remove-repo", async (_, url: string) => {
 });
 
 ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
-  if (!projectPath) {
-    dialog.showErrorBox(
-      l10n("ERROR_NO_PROJECT_IS_OPEN"),
-      l10n("ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN")
-    );
-    return;
-  }
   await addPluginToProject(projectPath, pluginId, repoId);
 });
 

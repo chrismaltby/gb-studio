@@ -37,6 +37,7 @@ import {
   StyledPluginManagerToolbar,
   StyledPluginManagerNoSelectionView,
 } from "./style";
+import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 
 export type PluginItem = {
   id: string;
@@ -72,6 +73,8 @@ const PluginsManagerPlugins = ({
       eventsPlugin: l10n("FIELD_EVENTS_PLUGIN"),
       enginePlugin: l10n("FIELD_ENGINE_PLUGIN"),
       theme: l10n("MENU_THEME"),
+      lang: l10n("FIELD_LANGUAGE_PLUGIN"),
+      template: l10n("FIELD_TEMPLATE_PLUGIN"),
     }),
     []
   );
@@ -206,6 +209,8 @@ const PluginsManagerPlugins = ({
       ? "FIELD_UPDATE_PLUGIN"
       : selectedPluginItem?.installedVersion
       ? "FIELD_REINSTALL_PLUGIN"
+      : selectedPluginItem && isGlobalPluginType(selectedPluginItem.plugin.type)
+      ? "FIELD_INSTALL_PLUGIN"
       : "FIELD_ADD_TO_PROJECT"
   );
 
@@ -293,7 +298,11 @@ const PluginsManagerPlugins = ({
               </p>
               <p>
                 <strong>
-                  {l10n("FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT")}
+                  {l10n(
+                    isGlobalPluginType(selectedPluginItem.plugin.type)
+                      ? "FIELD_THIS_PACKAGE_IS_INSTALLED_GLOBALLY"
+                      : "FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT"
+                  )}
                 </strong>
               </p>
               {selectedPluginItem.plugin.url && (
