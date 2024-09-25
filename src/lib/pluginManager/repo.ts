@@ -69,7 +69,7 @@ export const addUserRepo = async (url: string) => {
     const castData = Value.Cast(PluginRepositoryMetadata, data);
     const name = castData.shortName || castData.name;
     if (!name) {
-      throw new Error(l10n('Repository "name" is missing'));
+      throw new Error('Repository "name" is missing');
     }
     const updated: PluginRepositoryEntry[] = [
       ...userRepositories.filter((entry) => {
