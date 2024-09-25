@@ -53,7 +53,7 @@ export class ThemeManager {
     this.pluginThemes = {};
   }
 
-  loadPluginThemes = async () => {
+  async loadPluginThemes() {
     const globalPluginsPath = getGlobalPluginsPath();
     const pluginPaths = await globAsync(
       join(globalPluginsPath, "**/theme.json")
@@ -70,7 +70,22 @@ export class ThemeManager {
         this.pluginThemes[id] = mergedTheme;
       }
     }
-  };
+  }
+
+  async loadPluginTheme(path: string) {
+    const globalPluginsPath = getGlobalPluginsPath();
+    const theme = await loadThemePlugin(path);
+    if (theme) {
+      const id = relative(globalPluginsPath, path);
+      const baseTheme =
+        theme.type === "dark"
+          ? this.systemThemes.dark
+          : this.systemThemes.light;
+      const mergedTheme = merge(cloneDeep(baseTheme), theme);
+      this.pluginThemes[id] = mergedTheme;
+      return mergedTheme;
+    }
+  }
 
   getTheme(themeId: string, systemShouldUseDarkColors: boolean) {
     // Use plugin theme if available

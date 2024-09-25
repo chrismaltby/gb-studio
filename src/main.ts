@@ -1969,10 +1969,7 @@ menu.on("updateTheme", (value) => {
   for (const pluginTheme of pluginThemes) {
     setMenuItemChecked(`theme-${pluginTheme.id}`, value === pluginTheme.id);
   }
-  const themeId = ensureString(value, "");
-  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
-  sendToSplashWindow("update-theme", theme);
-  sendToProjectWindow("update-theme", theme);
+  refreshTheme();
 });
 
 menu.on("updateLocale", (value) => {
@@ -2014,15 +2011,13 @@ menu.on("updateShowNavigator", (value) => {
 });
 
 nativeTheme?.on("updated", () => {
-  const themeId = ensureString(settings.get("theme"), "");
-  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
-  sendToSplashWindow("update-theme", theme);
-  sendToProjectWindow("update-theme", theme);
+  refreshTheme();
 });
 
 watchGlobalPlugins({
-  onChangedThemePlugin: function (path: string): void {
-    console.log("onChangedThemePlugin: ", path);
+  onChangedThemePlugin: async (path: string) => {
+    await themeManager.loadPluginTheme(path);
+    refreshTheme();
   },
   onChangedLanguagePlugin: function (path: string): void {
     console.log("onChangedLanguagePlugin: ", path);
@@ -2040,6 +2035,13 @@ watchGlobalPlugins({
     console.log("onRemoveTemplatePlugin: ", path);
   },
 });
+
+const refreshTheme = () => {
+  const themeId = ensureString(settings.get("theme"), "");
+  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", theme);
+  sendToProjectWindow("update-theme", theme);
+};
 
 const newProject = async () => {
   keepOpen = true;
