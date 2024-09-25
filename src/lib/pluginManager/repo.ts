@@ -6,7 +6,7 @@ import { Value } from "@sinclair/typebox/value";
 import { checksumString } from "lib/helpers/checksum";
 import { join, dirname, relative } from "path";
 import l10n from "shared/lib/lang/l10n";
-import { createWriteStream } from "fs-extra";
+import { createWriteStream, remove } from "fs-extra";
 import getTmp from "lib/helpers/getTmp";
 import AdmZip from "adm-zip";
 import rimraf from "rimraf";
@@ -129,8 +129,12 @@ export const addPluginToProject = async (
       fileStream.on("finish", resolve);
     });
 
+    // Extract plugin
     const zip = new AdmZip(tmpPluginZipPath);
     zip.extractAllTo(outputPath, true);
+
+    // Remove tmp files
+    await remove(tmpPluginZipPath);
 
     return outputPath;
   } catch (e) {
