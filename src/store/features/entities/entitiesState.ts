@@ -329,8 +329,12 @@ const loadBackground: CaseReducer<
   upsertAssetEntity(
     state.backgrounds,
     backgroundsAdapter,
-    action.payload.data,
-    ["id", "symbol"]
+    {
+      ...action.payload.data,
+      autoColor: false,
+      tileColors: [],
+    },
+    ["id", "symbol", "autoColor", "tileColors"]
   );
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
