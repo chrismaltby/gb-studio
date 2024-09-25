@@ -150,11 +150,12 @@ export const StyledPluginItemRowRepoBtns = styled.div`
   }
 `;
 
-export const StyledPluginManagerRepoForm = styled.div`
+export const StyledPluginManagerRepoForm = styled.form`
   padding: 10px;
   & input {
     margin-bottom: 10px;
   }
+  background: ${(props) => props.theme.colors.scripting.form.background};
 `;
 
 export const StyledPluginManagerRepoBtns = styled.div`

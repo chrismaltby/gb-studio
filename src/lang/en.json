@@ -1643,6 +1643,8 @@
   "DIALOG_VISIT_SITE": "Visit Site",
   "DIALOG_DELETE_PLUGIN": "Delete Plugin \"{name}\"?",
   "DIALOG_DELETE_PLUGIN_DESCRIPTION": "The folder \n{filename}\nwill be removed from your file system. This action cannot be undone.",
+  "DIALOG_DELETE_PLUGIN_REPO": "Delete Plugin Repository \"{name}\"?",
+  "DIALOG_DELETE_PLUGIN_REPO_DESCRIPTION": "The repository \n{url}\nwill be removed.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "This plugin may be incompatible with your version of GB Studio",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using version {version}.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using a prerelease version {version}.",

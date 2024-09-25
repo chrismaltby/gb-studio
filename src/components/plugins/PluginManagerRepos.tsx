@@ -27,6 +27,7 @@ import {
 import { TextField } from "ui/form/TextField";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import { CloseIcon } from "ui/icons/Icons";
+import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 
 export type RepoItem = {
   id: string;
@@ -52,6 +53,7 @@ const PluginsManagerRepos = ({ onClose }: PluginsManagerReposProps) => {
   const [repoItems, setRepoItems] = useState<PluginRepositoryEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState("");
+  const [url, setUrl] = useState("");
 
   const refreshData = useCallback(async () => {
     const reposList = await API.pluginManager.getPluginRepos();
@@ -71,8 +73,8 @@ const PluginsManagerRepos = ({ onClose }: PluginsManagerReposProps) => {
         return searchKey.includes(search);
       })
       .sort((a, b) => {
-        const isCoreA = a.id.startsWith("GB Studio");
-        const isCoreB = b.id.startsWith("GB Studio");
+        const isCoreA = a.id === "core";
+        const isCoreB = b.id === "core";
         if (isCoreA && !isCoreB) {
           return -1;
         } else if (!isCoreA && isCoreB) {
@@ -83,21 +85,37 @@ const PluginsManagerRepos = ({ onClose }: PluginsManagerReposProps) => {
       });
   }, [repoItems, searchTerm]);
 
-  const renderLabel = useCallback((item: PluginRepositoryEntry) => {
-    return (
-      <StyledPluginItemRow>
-        <StyledPluginItemRowRepoName>{item.name}</StyledPluginItemRowRepoName>
-        <StyledPluginItemRowRepoUrl>{item.url}</StyledPluginItemRowRepoUrl>
-        <StyledPluginItemRowRepoBtns>
-          {!protectedIds.includes(item.id) && (
-            <Button size="small" title={l10n("FIELD_DELETE_REPOSITORY")}>
-              <CloseIcon />
-            </Button>
-          )}
-        </StyledPluginItemRowRepoBtns>
-      </StyledPluginItemRow>
-    );
-  }, []);
+  const renderLabel = useCallback(
+    (item: PluginRepositoryEntry) => {
+      return (
+        <StyledPluginItemRow>
+          <StyledPluginItemRowRepoName>{item.name}</StyledPluginItemRowRepoName>
+          <StyledPluginItemRowRepoUrl>{item.url}</StyledPluginItemRowRepoUrl>
+          <StyledPluginItemRowRepoBtns>
+            {!protectedIds.includes(item.id) && (
+              <Button
+                disabled={action !== "none"}
+                size="small"
+                title={l10n("FIELD_DELETE_REPOSITORY")}
+                onClick={async () => {
+                  if (action !== "none") {
+                    return;
+                  }
+                  setAction("remove");
+                  await API.pluginManager.removePluginRepo(item.url);
+                  refreshData();
+                  setAction("none");
+                }}
+              >
+                <CloseIcon />
+              </Button>
+            )}
+          </StyledPluginItemRowRepoBtns>
+        </StyledPluginItemRow>
+      );
+    },
+    [action, refreshData]
+  );
 
   const height = listSize.height ?? 200;
 
@@ -143,9 +161,35 @@ const PluginsManagerRepos = ({ onClose }: PluginsManagerReposProps) => {
           name="url"
           label={l10n("FIELD_REPOSITORY_URL")}
           placeholder="https://www.example.com/repository.json"
+          value={url}
+          onChange={(e) => setUrl(e.currentTarget.value)}
         ></TextField>
         <StyledPluginManagerRepoBtns>
-          <Button>{l10n("FIELD_ADD_REPOSITORY")}</Button>
+          <Button
+            disabled={action !== "none"}
+            onClick={async () => {
+              if (action !== "none") {
+                return;
+              }
+              setAction("add");
+              await API.pluginManager.addPluginRepo(url);
+              refreshData();
+              setAction("none");
+              setUrl("");
+            }}
+          >
+            <ConsistentWidthLabel
+              label={
+                action === "add"
+                  ? l10n("FIELD_ADDING")
+                  : l10n("FIELD_ADD_REPOSITORY")
+              }
+              possibleValues={[
+                l10n("FIELD_INSTALLING"),
+                l10n("FIELD_ADD_REPOSITORY"),
+              ]}
+            />
+          </Button>
           <FlexGrow />
           <Button onClick={onClose}>{l10n("FIELD_CLOSE")}</Button>
         </StyledPluginManagerRepoBtns>

@@ -7,7 +7,7 @@ import PluginsManagerRepos from "components/plugins/PluginManagerRepos";
 type PluginManagerSection = "plugins" | "repos";
 
 const PluginsManager = () => {
-  const [section, setSection] = useState<PluginManagerSection>("repos");
+  const [section, setSection] = useState<PluginManagerSection>("plugins");
   return (
     <ThemeProvider>
       <GlobalStyle />

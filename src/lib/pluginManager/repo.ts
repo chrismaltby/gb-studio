@@ -19,6 +19,7 @@ import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFolder
 import { satisfies } from "semver";
 import confirmIncompatiblePlugin from "lib/electron/dialog/confirmIncompatiblePlugin";
 import { dialog } from "electron";
+import confirmDeletePluginRepository from "lib/electron/dialog/confirmDeletePluginRepository";
 
 const rmdir = promisify(rimraf);
 
@@ -39,7 +40,7 @@ const cache: {
 };
 const oneHour = 60 * 60 * 1000;
 
-export const getReposList = (): PluginRepositoryEntry[] => {
+export const getUserReposList = (): PluginRepositoryEntry[] => {
   const userRepositories: PluginRepositoryEntry[] = [];
   const storedUserRepositories: unknown = settings.get("plugins:repositories");
   if (Array.isArray(storedUserRepositories)) {
@@ -49,7 +50,56 @@ export const getReposList = (): PluginRepositoryEntry[] => {
       }
     }
   }
+  return userRepositories;
+};
+
+export const getReposList = (): PluginRepositoryEntry[] => {
+  const userRepositories = getUserReposList();
   return [corePluginRepository, ...userRepositories];
+};
+
+export const addUserRepo = async (url: string) => {
+  try {
+    const userRepositories = getUserReposList();
+    const data = await (await fetch(url)).json();
+    const castData = Value.Cast(PluginRepositoryMetadata, data);
+    const name = castData.shortName || castData.name;
+    if (!name) {
+      throw new Error(l10n('Repository "name" is missing'));
+    }
+    const updated: PluginRepositoryEntry[] = [
+      ...userRepositories.filter((entry) => {
+        return entry.url !== url;
+      }),
+      {
+        id: checksumString(url),
+        name,
+        url,
+      },
+    ];
+    settings.set("plugins:repositories", updated);
+  } catch (e) {
+    dialog.showErrorBox(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"), String(e));
+  }
+};
+
+export const removeUserRepo = async (url: string) => {
+  const userRepositories = getUserReposList();
+  const repo = userRepositories.find((entry) => entry.url === url);
+
+  if (!repo) {
+    return;
+  }
+
+  const cancel = confirmDeletePluginRepository(repo.name, url);
+  if (cancel) {
+    return;
+  }
+
+  const updated = userRepositories.filter((entry) => {
+    return entry.url !== url;
+  });
+  settings.set("plugins:repositories", updated);
 };
 
 export const getGlobalPluginsList = async (force?: boolean) => {

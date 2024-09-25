@@ -127,10 +127,12 @@ import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
 import {
   addPluginToProject,
+  addUserRepo,
   getGlobalPluginsList,
   getReposList,
   getRepoUrlById,
   removePluginFromProject,
+  removeUserRepo,
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 import { getPluginsInProject } from "lib/pluginManager/project";
@@ -1804,6 +1806,14 @@ ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
 
 ipcMain.handle("plugins:list-repos", () => {
   return getReposList();
+});
+
+ipcMain.handle("plugins:add-repo", async (_, url: string) => {
+  await addUserRepo(url);
+});
+
+ipcMain.handle("plugins:remove-repo", async (_, url: string) => {
+  await removeUserRepo(url);
 });
 
 ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
