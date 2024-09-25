@@ -138,6 +138,7 @@ import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 import { getPluginsInProject } from "lib/pluginManager/project";
 import { ensureGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import { InstalledPluginData } from "lib/pluginManager/types";
+import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -2012,6 +2013,27 @@ nativeTheme?.on("updated", () => {
   );
   sendToSplashWindow("update-theme", themeId);
   sendToProjectWindow("update-theme", themeId);
+});
+
+watchGlobalPlugins({
+  onChangedThemePlugin: function (path: string): void {
+    console.log("onChangedThemePlugin: ", path);
+  },
+  onChangedLanguagePlugin: function (path: string): void {
+    console.log("onChangedLanguagePlugin: ", path);
+  },
+  onChangedTemplatePlugin: function (path: string): void {
+    console.log("onChangedTemplatePlugin: ", path);
+  },
+  onRemoveThemePlugin: function (path: string): void {
+    console.log("onRemoveThemePlugin: ", path);
+  },
+  onRemoveLanguagePlugin: function (path: string): void {
+    console.log("onRemoveLanguagePlugin: ", path);
+  },
+  onRemoveTemplatePlugin: function (path: string): void {
+    console.log("onRemoveTemplatePlugin: ", path);
+  },
 });
 
 const newProject = async () => {
