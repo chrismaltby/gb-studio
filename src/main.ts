@@ -277,7 +277,6 @@ export const createPluginsWindow = async () => {
       preload: PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-  pluginsWindow.setAlwaysOnTop(true);
   pluginsWindow.setMenu(null);
   pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
 
