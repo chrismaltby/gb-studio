@@ -80,7 +80,7 @@ import loadProjectData, {
 import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
-import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
+import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import initElectronL10N, {
   getAppLocale,
   locales,
@@ -386,7 +386,7 @@ export const createProjectWindow = async () => {
   projectWindow.on("closed", () => {
     projectWindow = null;
     projectPath = "";
-    menu.buildMenu([]);
+    menu.buildMenu();
 
     if (musicWindow) {
       musicWindow.destroy();
@@ -702,7 +702,7 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", async () => {
   initElectronL10N();
 
-  menu.buildMenu([]);
+  menu.buildMenu();
 
   // Enable DevTools.
   if (isDevMode) {
@@ -1157,49 +1157,6 @@ ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   setMenuItemChecked("showConnectionsNone", showConnections === false);
   setMenuItemChecked("showNavigator", showNavigator);
 });
-
-ipcMain.on(
-  "set-menu-plugins",
-  (
-    _event,
-    plugins: Array<{
-      id: string;
-      plugin: string;
-      name: string;
-      accelerator: string;
-    }>
-  ) => {
-    const distinct = <T>(value: T, index: number, self: T[]) =>
-      self.indexOf(value) === index;
-
-    const pluginValues = Object.values(plugins);
-
-    const pluginNames = pluginValues
-      .map((plugin) => plugin.plugin)
-      .filter(distinct);
-
-    menu.buildMenu(
-      pluginNames.map((pluginName) => {
-        return {
-          label: pluginName,
-          submenu: pluginValues
-            .filter((plugin) => {
-              return plugin.plugin === pluginName;
-            })
-            .map((plugin) => {
-              return {
-                label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
-                accelerator: plugin.accelerator,
-                click() {
-                  sendToProjectWindow("menu:plugin-run", plugin.id);
-                },
-              };
-            }),
-        };
-      })
-    );
-  }
-);
 
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);

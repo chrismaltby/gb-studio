@@ -104,7 +104,7 @@ const openAbout = () => {
   });
 };
 
-const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
+const buildMenu = async () => {
   const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
@@ -516,14 +516,6 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
     },
   ];
 
-  // if (plugins && plugins.length > 0) {
-  //   template.splice(3, 0, {
-  //     id: "plugins",
-  //     label: l10n("MENU_PLUGINS"),
-  //     submenu: plugins,
-  //   });
-  // }
-
   if (isDevMode) {
     const submenu = template[template.length - 3].submenu || [];
     if ("push" in submenu) {
@@ -644,9 +636,7 @@ const appMenu = {
   on,
   off,
   ref: () => menu,
-  buildMenu: (plugins: MenuItemConstructorOptions[]) => {
-    buildMenu(plugins);
-  },
+  buildMenu,
 };
 
 export const setMenuItemChecked = (id: string, checkedValue: boolean) => {
