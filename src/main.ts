@@ -19,6 +19,7 @@ import {
   stat,
   statSync,
   move,
+  mkdir,
 } from "fs-extra";
 import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
@@ -136,6 +137,7 @@ import {
   getsPluginsInProject,
   InstalledPluginData,
 } from "lib/pluginManager/project";
+import { ensureGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1927,6 +1929,21 @@ menu.on("pluginManager", () => {
   } else {
     pluginsWindow.show();
   }
+});
+
+menu.on("globalPlugins", async () => {
+  const globalPluginsPath = await ensureGlobalPluginsPath();
+  shell.openPath(globalPluginsPath);
+});
+
+menu.on("projectPlugins", () => {
+  if (!projectPath) {
+    dialog.showErrorBox(l10n("ERROR_NO_PROJECT_IS_OPEN"), "");
+    return;
+  }
+  const projectRoot = Path.dirname(projectPath);
+  const pluginsPath = Path.join(projectRoot, "plugins");
+  shell.openPath(pluginsPath);
 });
 
 menu.on("updateTheme", (value) => {

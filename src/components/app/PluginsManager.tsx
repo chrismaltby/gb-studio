@@ -175,16 +175,16 @@ const PluginsManager = () => {
             <Select
               options={[
                 {
-                  label: "All Repositories",
+                  label: l10n("FIELD_ALL_REPOSITORIES"),
                   value: "",
                 },
                 {
-                  label: "Refetch Repositories",
+                  label: l10n("FIELD_REFRESH_REPOSITORIES"),
                   value: "refetch",
                 },
               ]}
               value={{
-                label: "All Repositories",
+                label: l10n("FIELD_ALL_REPOSITORIES"),
                 value: "",
               }}
               onChange={(value) => {

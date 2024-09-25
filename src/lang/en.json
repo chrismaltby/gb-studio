@@ -953,6 +953,9 @@
   "FIELD_UPDATE_PLUGIN": "Update Plugin",
   "FIELD_INSTALLING": "Installing...",
   "FIELD_REMOVING": "Removing...",
+  "FIELD_ALL_REPOSITORIES": "All Repositories",
+  "FIELD_REFRESH_REPOSITORIES": "Refresh Repositories",
+  "FIELD_MANAGE_REPOSITORIES": "Manage Repositories",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1480,6 +1483,8 @@
   "MENU_EDIT_PREFAB": "Edit Prefab",
   "MENU_DELETE_CONSTANT": "Delete Constant",
   "MENU_PLUGIN_MANAGER": "Plugin Manager",
+  "MENU_GLOBAL_PLUGINS": "Global Plugins...",
+  "MENU_PROJECT_PLUGINS": "Project Plugins...",
 
   "// 11": "Warnings -----------------------------------------------------",
 

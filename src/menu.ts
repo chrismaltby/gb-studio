@@ -44,6 +44,8 @@ type MenuListenerKey =
   | "pasteInPlace"
   | "preferences"
   | "pluginManager"
+  | "globalPlugins"
+  | "projectPlugins"
   | "openMusic";
 
 export type MenuZoomType = "in" | "out" | "reset";
@@ -74,6 +76,8 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   pasteInPlace: [],
   preferences: [],
   pluginManager: [],
+  globalPlugins: [],
+  projectPlugins: [],
   openMusic: [],
 };
 
@@ -283,6 +287,19 @@ const buildMenu = async () => {
           label: l10n("MENU_PLUGIN_MANAGER"),
           click: () => {
             notifyListeners("pluginManager");
+          },
+        },
+        { type: "separator" },
+        {
+          label: l10n("MENU_GLOBAL_PLUGINS"),
+          click: () => {
+            notifyListeners("globalPlugins");
+          },
+        },
+        {
+          label: l10n("MENU_PROJECT_PLUGINS"),
+          click: () => {
+            notifyListeners("projectPlugins");
           },
         },
       ],
