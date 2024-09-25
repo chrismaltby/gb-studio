@@ -1523,6 +1523,7 @@
   "ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN": "Open a project to first to add this plugin",
   "ERROR_PLUGIN_REPOSITORY_NOT_FOUND": "Plugin repository not found",
   "ERROR_PLUGIN_NOT_FOUND": "Plugin not found",
+  "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Unable to remove plugin",
 
   "// 13": "Splash -------------------------------------------------------",
 
@@ -1622,6 +1623,8 @@
   "DIALOG_LEAVING_GBSTUDIO": "Leaving GB Studio",
   "DIALOG_THIS_LINK_IS_TAKING_YOU_TO": "This link is taking you to the following website",
   "DIALOG_VISIT_SITE": "Visit Site",
+  "DIALOG_DELETE_PLUGIN": "Delete Plugin \"{name}\"?",
+  "DIALOG_DELETE_PLUGIN_DESCRIPTION": "The folder \n{filename}\nwill be removed from your file system. This action cannot be undone.",
 
   "// 16": "Settings ----------------------------------------------------",
 

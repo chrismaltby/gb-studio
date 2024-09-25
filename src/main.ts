@@ -129,6 +129,7 @@ import {
   addPluginToProject,
   getGlobalPluginsList,
   getRepoUrlById,
+  removePluginFromProject,
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 import {
@@ -1853,6 +1854,17 @@ ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
     return;
   }
   await addPluginToProject(projectPath, pluginId, repoId);
+});
+
+ipcMain.handle("plugins:remove", async (_, pluginId: string) => {
+  if (!projectPath) {
+    dialog.showErrorBox(
+      l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
+      l10n("ERROR_NO_PROJECT_IS_OPEN")
+    );
+    return;
+  }
+  await removePluginFromProject(projectPath, pluginId);
 });
 
 ipcMain.handle("plugins:get-installed", async () => {

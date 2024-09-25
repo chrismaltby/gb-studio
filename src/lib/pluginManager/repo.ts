@@ -4,11 +4,17 @@ import { ensureStringArray } from "shared/types";
 import { PluginRepositoryMetadata } from "./types";
 import { Value } from "@sinclair/typebox/value";
 import { checksumString } from "lib/helpers/checksum";
-import { join, dirname } from "path";
+import { join, dirname, relative } from "path";
 import l10n from "shared/lib/lang/l10n";
 import { createWriteStream } from "fs-extra";
 import getTmp from "lib/helpers/getTmp";
 import AdmZip from "adm-zip";
+import rimraf from "rimraf";
+import { promisify } from "util";
+import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
+import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
+
+const rmdir = promisify(rimraf);
 
 const CORE_PLUGIN_REPOSITORY = "http://127.0.0.1:9999/repository.json";
 
@@ -103,4 +109,22 @@ export const addPluginToProject = async (
   zip.extractAllTo(outputPath, true);
 
   return outputPath;
+};
+
+export const removePluginFromProject = async (
+  projectPath: string,
+  pluginId: string
+) => {
+  const projectRoot = dirname(projectPath);
+  const pluginsPath = join(projectRoot, "plugins");
+  const outputPath = join(pluginsPath, pluginId);
+  const cancel = confirmDeletePlugin(
+    pluginId,
+    relative(projectRoot, outputPath)
+  );
+  if (cancel) {
+    return;
+  }
+  await rmdir(outputPath);
+  await removeEmptyFoldersBetweenPaths(pluginsPath, dirname(outputPath));
 };
