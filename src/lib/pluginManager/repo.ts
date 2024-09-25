@@ -13,8 +13,12 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
 import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
+import { satisfies } from "semver";
+import confirmIncompatiblePlugin from "lib/electron/dialog/confirmIncompatiblePlugin";
 
 const rmdir = promisify(rimraf);
+
+declare const VERSION: string;
 
 const CORE_PLUGIN_REPOSITORY = "http://127.0.0.1:9999/repository.json";
 
@@ -87,6 +91,14 @@ export const addPluginToProject = async (
   if (!plugin) {
     throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
   }
+
+  if (plugin.gbsVersion && !satisfies(VERSION, plugin.gbsVersion)) {
+    const cancel = confirmIncompatiblePlugin(VERSION, plugin.gbsVersion);
+    if (cancel) {
+      return;
+    }
+  }
+
   const pluginURL = join(repoRoot, plugin.filename);
   const outputPath = join(dirname(projectPath), "plugins", pluginId);
 

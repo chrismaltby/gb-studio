@@ -280,7 +280,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
       label: l10n("MENU_PLUGINS"),
       submenu: [
         {
-          label: l10n("MENU_OPEN_PLUGIN_MANAGER"),
+          label: l10n("MENU_PLUGIN_MANAGER"),
           click: () => {
             notifyListeners("pluginManager");
           },

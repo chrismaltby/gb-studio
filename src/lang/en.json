@@ -947,6 +947,10 @@
   "FIELD_EVENTS_PLUGIN": "Events Plugin",
   "FIELD_ENGINE_PLUGIN": "Engine Plugin",
   "FIELD_REQUIRES_GBS_VERSION": "Requires GB Studio Version: {version}",
+  "FIELD_INSTALL_ANYWAY": "Install Anyway",
+  "FIELD_REMOVE_PLUGIN": "Remove Plugin",
+  "FIELD_REINSTALL_PLUGIN": "Reinstall Plugin",
+  "FIELD_UPDATE_PLUGIN": "Update Plugin",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1473,6 +1477,7 @@
   "MENU_DELETE_PREFAB": "Delete Prefab",
   "MENU_EDIT_PREFAB": "Edit Prefab",
   "MENU_DELETE_CONSTANT": "Delete Constant",
+  "MENU_PLUGIN_MANAGER": "Plugin Manager",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1625,6 +1630,9 @@
   "DIALOG_VISIT_SITE": "Visit Site",
   "DIALOG_DELETE_PLUGIN": "Delete Plugin \"{name}\"?",
   "DIALOG_DELETE_PLUGIN_DESCRIPTION": "The folder \n{filename}\nwill be removed from your file system. This action cannot be undone.",
+  "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "This plugin may be incompatible with your version of GB Studio",
+  "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using version {version}.",
+  "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using a prerelease version {version}.",
 
   "// 16": "Settings ----------------------------------------------------",
 
