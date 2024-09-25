@@ -1,7 +1,10 @@
 import fetch from "node-fetch";
 import settings from "electron-settings";
-import { ensureStringArray } from "shared/types";
-import { PluginRepositoryMetadata } from "./types";
+import {
+  isPluginRepositoryEntry,
+  PluginRepositoryEntry,
+  PluginRepositoryMetadata,
+} from "./types";
 import { Value } from "@sinclair/typebox/value";
 import { checksumString } from "lib/helpers/checksum";
 import { join, dirname, relative } from "path";
@@ -21,7 +24,11 @@ const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
-const CORE_PLUGIN_REPOSITORY = "http://127.0.0.1:9999/repository.json";
+export const corePluginRepository: PluginRepositoryEntry = {
+  id: "core",
+  name: "GB Studio",
+  url: "http://127.0.0.1:9999/repository.json",
+};
 
 const cache: {
   value: PluginRepositoryMetadata[];
@@ -32,12 +39,17 @@ const cache: {
 };
 const oneHour = 60 * 60 * 1000;
 
-export const getRepoUrls = () => {
-  const userRepositoryUrls = ensureStringArray(
-    settings.get("plugins:repositories"),
-    []
-  );
-  return [CORE_PLUGIN_REPOSITORY, ...userRepositoryUrls];
+export const getReposList = (): PluginRepositoryEntry[] => {
+  const userRepositories: PluginRepositoryEntry[] = [];
+  const storedUserRepositories: unknown = settings.get("plugins:repositories");
+  if (Array.isArray(storedUserRepositories)) {
+    for (const entry of storedUserRepositories) {
+      if (isPluginRepositoryEntry(entry)) {
+        userRepositories.push(entry);
+      }
+    }
+  }
+  return [corePluginRepository, ...userRepositories];
 };
 
 export const getGlobalPluginsList = async (force?: boolean) => {
@@ -45,16 +57,16 @@ export const getGlobalPluginsList = async (force?: boolean) => {
   if (!force && cache.timestamp > now) {
     return cache.value;
   }
-  const repositoryUrls = getRepoUrls();
+  const reposList = getReposList();
   const repos: PluginRepositoryMetadata[] = [];
-  for (const url of repositoryUrls) {
+  for (const repo of reposList) {
     try {
-      const data = await (await fetch(url)).json();
+      const data = await (await fetch(repo.url)).json();
       const castData = Value.Cast(PluginRepositoryMetadata, data);
       repos.push({
         ...castData,
-        id: checksumString(url),
-        url,
+        id: checksumString(repo.url),
+        url: repo.url,
       });
     } catch (e) {
       dialog.showErrorBox(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"), String(e));
@@ -66,8 +78,8 @@ export const getGlobalPluginsList = async (force?: boolean) => {
 };
 
 export const getRepoUrlById = (id: string): string | undefined => {
-  const repositoryUrls = getRepoUrls();
-  return repositoryUrls.find((url) => checksumString(url) === id);
+  const reposList = getReposList();
+  return reposList.find((repo) => checksumString(repo.url) === id)?.url;
 };
 
 export const addPluginToProject = async (

@@ -48,8 +48,11 @@ import {
   ProjectResources,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
-import type { PluginRepositoryMetadata } from "lib/pluginManager/types";
-import { InstalledPluginData } from "lib/pluginManager/project";
+import type {
+  PluginRepositoryEntry,
+  PluginRepositoryMetadata,
+  InstalledPluginData,
+} from "lib/pluginManager/types";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -369,6 +372,8 @@ const APISetup = {
   pluginManager: {
     getPluginsList: (force?: boolean): Promise<PluginRepositoryMetadata[]> =>
       ipcRenderer.invoke("plugins:fetch-list", force),
+    getPluginRepos: (): Promise<PluginRepositoryEntry[]> =>
+      ipcRenderer.invoke("plugins:list-repos"),
     addPluginRepo: (url: string) => ipcRenderer.invoke("plugins:add-repo", url),
     removePluginRepo: (url: string) =>
       ipcRenderer.invoke("plugins:remove-repo", url),

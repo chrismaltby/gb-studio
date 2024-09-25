@@ -1,4 +1,5 @@
 import { Type, Static } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 
 export const PluginType = Type.Union(
   [
@@ -38,3 +39,22 @@ export const PluginRepositoryMetadata = Type.Object({
 });
 
 export type PluginRepositoryMetadata = Static<typeof PluginRepositoryMetadata>;
+
+export const PluginRepositoryEntry = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  url: Type.String(),
+});
+
+export type PluginRepositoryEntry = Static<typeof PluginRepositoryEntry>;
+
+export const isPluginRepositoryEntry = (
+  value: unknown
+): value is PluginRepositoryEntry => {
+  return Value.Check(PluginRepositoryEntry, value);
+};
+
+export type InstalledPluginData = {
+  path: string;
+  version: string;
+};

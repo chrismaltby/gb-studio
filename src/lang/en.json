@@ -956,6 +956,11 @@
   "FIELD_ALL_REPOSITORIES": "All Repositories",
   "FIELD_REFRESH_REPOSITORIES": "Refresh Repositories",
   "FIELD_MANAGE_REPOSITORIES": "Manage Repositories",
+  "FIELD_REPOSITORY_URL": "Repository URL",
+  "FIELD_ADD_REPOSITORY": "Add Repository",
+  "FIELD_DELETE_REPOSITORY": "Delete Repository",
+  "FIELD_ADDING": "Adding...",
+  "FIELD_CLOSE": "Close",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

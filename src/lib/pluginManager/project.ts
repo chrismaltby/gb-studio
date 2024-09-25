@@ -2,15 +2,11 @@ import { readJSON } from "fs-extra";
 import glob from "glob";
 import { join, dirname, relative } from "path";
 import { promisify } from "util";
+import { InstalledPluginData } from "./types";
 
 const globAsync = promisify(glob);
 
-export type InstalledPluginData = {
-  path: string;
-  version: string;
-};
-
-export const getsPluginsInProject = async (projectPath: string) => {
+export const getPluginsInProject = async (projectPath: string) => {
   const projectRoot = dirname(projectPath);
   const pluginPaths = await globAsync(join(projectRoot, "**/plugin.json"));
   const plugins: InstalledPluginData[] = [];

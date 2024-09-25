@@ -128,15 +128,14 @@ import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
 import {
   addPluginToProject,
   getGlobalPluginsList,
+  getReposList,
   getRepoUrlById,
   removePluginFromProject,
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
-import {
-  getsPluginsInProject,
-  InstalledPluginData,
-} from "lib/pluginManager/project";
+import { getPluginsInProject } from "lib/pluginManager/project";
 import { ensureGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
+import { InstalledPluginData } from "lib/pluginManager/types";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1803,6 +1802,10 @@ ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
   return getGlobalPluginsList(force);
 });
 
+ipcMain.handle("plugins:list-repos", () => {
+  return getReposList();
+});
+
 ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
   if (!projectPath) {
     dialog.showErrorBox(
@@ -1828,7 +1831,7 @@ ipcMain.handle("plugins:remove", async (_, pluginId: string) => {
 ipcMain.handle("plugins:get-installed", async () => {
   const plugins: InstalledPluginData[] = [];
   if (projectPath) {
-    const projectPlugins = await getsPluginsInProject(projectPath);
+    const projectPlugins = await getPluginsInProject(projectPath);
     plugins.push(...projectPlugins);
   }
   return plugins;
