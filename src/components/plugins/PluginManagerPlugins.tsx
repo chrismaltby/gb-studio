@@ -10,7 +10,7 @@ import type {
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { Input } from "ui/form/Input";
-import { Select } from "ui/form/Select";
+import { Option, Select } from "ui/form/Select";
 import {
   PluginTypeSelect,
   OptionalPluginType,
@@ -59,9 +59,11 @@ const PluginsManagerPlugins = ({
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<PluginManagerAction>("none");
   const [pluginItems, setPluginItems] = useState<PluginItem[]>([]);
+  const [reposOptions, setReposOptions] = useState<Option[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [typeFilter, setTypeFilter] = useState<OptionalPluginType>("");
+  const [repoFilter, setRepoFilter] = useState<string>("");
 
   const typeLabel: Record<OptionalPluginType, string> = useMemo(
     () => ({
@@ -88,7 +90,7 @@ const PluginsManagerPlugins = ({
           (p) => p.path === join(plugin.id, "plugin.json")
         )?.version;
         items.push({
-          id: plugin.id,
+          id: `${repo.id}-${plugin.id}`,
           name: plugin.name,
           installedVersion,
           updateAvailable: installedVersion
@@ -99,8 +101,17 @@ const PluginsManagerPlugins = ({
         });
       }
     }
+    const options: Option[] = [
+      { value: "", label: l10n("FIELD_ALL_REPOSITORIES") },
+    ].concat(
+      repos.map((repo) => ({
+        value: repo.id,
+        label: repo.shortName || repo.name,
+      }))
+    );
     setLoading(false);
     setPluginItems(items);
+    setReposOptions(options);
   }, []);
 
   const refreshUsingCachedData = useCallback(() => {
@@ -124,30 +135,51 @@ const PluginsManagerPlugins = ({
         if (typeFilter && item.plugin.type !== typeFilter) {
           return false;
         }
+        if (repoFilter && item.repo.id !== repoFilter) {
+          return false;
+        }
         const searchKey =
-          `@${item.id} ${item.name} ${item.repo.name}`.toLocaleUpperCase();
+          `${item.plugin.filename} ${item.name}`.toLocaleUpperCase();
         const search = searchTerm.toLocaleUpperCase();
         return searchKey.includes(search);
       })
       .sort((a, b) => {
-        const isCoreA = a.id.startsWith("core/");
-        const isCoreB = b.id.startsWith("core/");
-        if (isCoreA && !isCoreB) {
+        const isCoreRepoA = a.repo.id === "core";
+        const isCoreRepoB = b.repo.id === "core";
+        const isCorePluginA = a.plugin.id.startsWith("core/");
+        const isCorePluginB = b.plugin.id.startsWith("core/");
+
+        if (isCoreRepoA && !isCoreRepoB) {
           return -1;
-        } else if (!isCoreA && isCoreB) {
+        } else if (!isCoreRepoA && isCoreRepoB) {
           return 1;
-        } else {
-          return a.id.localeCompare(b.id);
         }
+
+        if (isCorePluginA && !isCorePluginB) {
+          return -1;
+        } else if (!isCorePluginA && isCorePluginB) {
+          return 1;
+        }
+
+        return a.id.localeCompare(b.id);
       });
-  }, [pluginItems, searchTerm, typeFilter]);
+  }, [pluginItems, repoFilter, searchTerm, typeFilter]);
+
+  const selectedRepoOption = useMemo(
+    () =>
+      reposOptions.find((o) => o.value === repoFilter) ?? {
+        value: "",
+        label: l10n("FIELD_ALL_REPOSITORIES"),
+      },
+    [repoFilter, reposOptions]
+  );
 
   const renderLabel = useCallback(
     (item: PluginItem) => {
       return (
         <StyledPluginItemRow>
           <StyledPluginItemRowName>
-            {item.id}@{item.plugin.version}
+            {item.plugin.id}@{item.plugin.version}
           </StyledPluginItemRowName>
           <StyledPluginItemRowType title={typeLabel[item.plugin.type]}>
             {typeLabel[item.plugin.type]}
@@ -155,7 +187,7 @@ const PluginsManagerPlugins = ({
           <StyledPluginItemRowRepo
             title={`${item.repo.name}\n${item.repo.url}`}
           >
-            {item.repo.shortName ?? item.repo.name}
+            {item.repo.shortName || item.repo.name}
           </StyledPluginItemRowRepo>
         </StyledPluginItemRow>
       );
@@ -197,20 +229,13 @@ const PluginsManagerPlugins = ({
             onChange={setTypeFilter}
           />
           <Select
-            options={[
-              {
-                label: l10n("FIELD_ALL_REPOSITORIES"),
-                value: "",
-              },
-            ]}
-            value={{
-              label: l10n("FIELD_ALL_REPOSITORIES"),
-              value: "",
-            }}
+            options={reposOptions}
+            value={selectedRepoOption}
             onChange={(value) => {
               if (!value) {
                 return;
               }
+              setRepoFilter(value.value);
             }}
           />
           <DropdownButton label={<SettingsIcon />} showArrow={false}>
@@ -294,7 +319,7 @@ const PluginsManagerPlugins = ({
                   <img
                     key={url}
                     alt=""
-                    src={`gbshttp://plugin-repo-asset/${selectedPluginItem.repo.id}/${selectedPluginItem.id}/${url}`}
+                    src={`gbshttp://plugin-repo-asset/${selectedPluginItem.repo.id}/${selectedPluginItem.plugin.id}/${url}`}
                   />
                 ))}
               </StyledPluginImageCarousel>
@@ -316,7 +341,7 @@ const PluginsManagerPlugins = ({
                     }
                     setAction("remove");
                     await API.pluginManager.removePlugin(
-                      selectedPluginItem.id,
+                      selectedPluginItem.plugin.id,
                       selectedPluginItem.repo.id
                     );
                     refreshData();
@@ -344,7 +369,7 @@ const PluginsManagerPlugins = ({
                   }
                   setAction("install");
                   await API.pluginManager.addPlugin(
-                    selectedPluginItem.id,
+                    selectedPluginItem.plugin.id,
                     selectedPluginItem.repo.id
                   );
                   refreshData();

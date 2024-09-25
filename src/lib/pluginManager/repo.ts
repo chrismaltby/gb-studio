@@ -20,6 +20,7 @@ import { satisfies } from "semver";
 import confirmIncompatiblePlugin from "lib/electron/dialog/confirmIncompatiblePlugin";
 import { dialog } from "electron";
 import confirmDeletePluginRepository from "lib/electron/dialog/confirmDeletePluginRepository";
+import { guardAssetWithinProject } from "lib/helpers/assets";
 
 const rmdir = promisify(rimraf);
 
@@ -115,7 +116,7 @@ export const getGlobalPluginsList = async (force?: boolean) => {
       const castData = Value.Cast(PluginRepositoryMetadata, data);
       repos.push({
         ...castData,
-        id: checksumString(repo.url),
+        id: repo.id,
         url: repo.url,
       });
     } catch (e) {
@@ -129,7 +130,7 @@ export const getGlobalPluginsList = async (force?: boolean) => {
 
 export const getRepoUrlById = (id: string): string | undefined => {
   const reposList = getReposList();
-  return reposList.find((repo) => checksumString(repo.url) === id)?.url;
+  return reposList.find((repo) => repo.id === id)?.url;
 };
 
 export const addPluginToProject = async (
@@ -138,6 +139,7 @@ export const addPluginToProject = async (
   repoId: string
 ) => {
   try {
+    const projectRoot = dirname(projectPath);
     const repoURL = getRepoUrlById(repoId);
     if (!repoURL) {
       throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
@@ -174,7 +176,9 @@ export const addPluginToProject = async (
         ? plugin.filename
         : join(repoRoot, plugin.filename);
 
-    const outputPath = join(dirname(projectPath), "plugins", pluginId);
+    const outputPath = join(projectRoot, "plugins", pluginId);
+
+    guardAssetWithinProject(outputPath, projectRoot);
 
     const res = await fetch(pluginURL);
 
@@ -211,6 +215,8 @@ export const removePluginFromProject = async (
   const projectRoot = dirname(projectPath);
   const pluginsPath = join(projectRoot, "plugins");
   const outputPath = join(pluginsPath, pluginId);
+  guardAssetWithinProject(outputPath, projectRoot);
+
   const cancel = confirmDeletePlugin(
     pluginId,
     relative(projectRoot, outputPath)
