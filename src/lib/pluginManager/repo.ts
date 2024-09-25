@@ -39,7 +39,11 @@ export const getRepoUrls = () => {
   return [CORE_PLUGIN_REPOSITORY, ...userRepositoryUrls];
 };
 
-export const getGlobalPluginsList = async () => {
+export const getGlobalPluginsList = async (force?: boolean) => {
+  const now = new Date().getTime();
+  if (!force && cache.timestamp > now) {
+    return cache.value;
+  }
   const repositoryUrls = getRepoUrls();
   const repos: PluginRepositoryMetadata[] = [];
   for (const url of repositoryUrls) {
@@ -51,20 +55,9 @@ export const getGlobalPluginsList = async () => {
       url,
     });
   }
-  const now = new Date().getTime();
   cache.value = repos;
   cache.timestamp = now + oneHour;
   return repos;
-};
-
-export const getCachedGlobalPluginsList = async () => {
-  const now = new Date().getTime();
-  if (cache.timestamp > now) {
-    return cache.value;
-  }
-  const repos = await getGlobalPluginsList();
-  cache.value = repos;
-  cache.timestamp = now + oneHour;
 };
 
 export const getRepoUrlById = (id: string): string | undefined => {
@@ -82,7 +75,7 @@ export const addPluginToProject = async (
     throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
   }
   const repoRoot = dirname(repoURL);
-  const repos = await getCachedGlobalPluginsList();
+  const repos = await getGlobalPluginsList();
   const repo = repos?.find((r) => r.id === repoId);
   if (!repo) {
     throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));

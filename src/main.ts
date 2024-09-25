@@ -1842,8 +1842,8 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle("plugins:fetch-list", () => {
-  return getGlobalPluginsList();
+ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
+  return getGlobalPluginsList(force);
 });
 
 ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {

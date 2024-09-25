@@ -20,6 +20,7 @@ import {
 } from "components/forms/PluginTypeSelect";
 import { BlankIcon, CheckIcon, UpdateIcon } from "ui/icons/Icons";
 import semverGt from "semver/functions/gt";
+import LoadingPane from "ui/loading/LoadingPane";
 
 export type PluginItem = {
   id: string;
@@ -31,6 +32,7 @@ export type PluginItem = {
 };
 
 const PluginsManager = () => {
+  const [loading, setLoading] = useState(true);
   const [pluginItems, setPluginItems] = useState<PluginItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState("");
@@ -47,8 +49,12 @@ const PluginsManager = () => {
     []
   );
 
-  const refreshData = useCallback(async () => {
-    const repos = await API.pluginManager.getPluginsList();
+  const refreshData = useCallback(async (force?: boolean) => {
+    if (force) {
+      setLoading(true);
+      setPluginItems([]);
+    }
+    const repos = await API.pluginManager.getPluginsList(force);
     const installedPlugins = await API.pluginManager.getInstalledPlugins();
     const items: PluginItem[] = [];
     for (const repo of repos) {
@@ -68,17 +74,22 @@ const PluginsManager = () => {
         });
       }
     }
+    setLoading(false);
     setPluginItems(items);
   }, []);
+
+  const refreshUsingCachedData = useCallback(() => {
+    refreshData();
+  }, [refreshData]);
 
   useEffect(() => {
     refreshData();
   }, [refreshData]);
 
   useEffect(() => {
-    window.addEventListener("focus", refreshData);
+    window.addEventListener("focus", refreshUsingCachedData);
     return () => {
-      window.removeEventListener("focus", refreshData);
+      window.removeEventListener("focus", refreshUsingCachedData);
     };
   });
 
@@ -110,7 +121,7 @@ const PluginsManager = () => {
     (item: PluginItem) => {
       return (
         <StyledPluginItemRow>
-          <StyledPluginItemRowName>@{item.id}</StyledPluginItemRowName>
+          <StyledPluginItemRowName>{item.id}</StyledPluginItemRowName>
           <StyledPluginItemRowType title={typeLabel[item.plugin.type]}>
             {typeLabel[item.plugin.type]}
           </StyledPluginItemRowType>
@@ -152,10 +163,22 @@ const PluginsManager = () => {
                   label: "All Repositories",
                   value: "",
                 },
+                {
+                  label: "Refetch Repositories",
+                  value: "refetch",
+                },
               ]}
               value={{
                 label: "All Repositories",
                 value: "",
+              }}
+              onChange={(value) => {
+                if (!value) {
+                  return;
+                }
+                if (value.value === "refetch") {
+                  refreshData(true);
+                }
               }}
             />
           </StyledPluginManagerSearch>
@@ -187,7 +210,7 @@ const PluginsManager = () => {
               />
             ) : (
               <StyledPluginManagerNoResults>
-                {l10n("FIELD_NO_RESULTS")}
+                {l10n(loading ? "FIELD_LOADING" : "FIELD_NO_RESULTS")}
               </StyledPluginManagerNoResults>
             )}
           </StyledPluginManagerSearchResults>
@@ -278,7 +301,7 @@ const PluginsManager = () => {
             </>
           ) : (
             <StyledPluginManagerNoSelectionView>
-              {l10n("FIELD_SELECT_A_PLUGIN")}
+              {l10n(loading ? "FIELD_LOADING" : "FIELD_SELECT_A_PLUGIN")}
             </StyledPluginManagerNoSelectionView>
           )}
         </StyledPluginManagerDetailColumn>
@@ -319,7 +342,8 @@ const StyledPluginManagerSearchResults = styled.div`
 `;
 
 const StyledPluginManagerNoResults = styled.div`
-  padding: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
 `;
 
 const StyledPluginManagerDetailColumn = styled.div`

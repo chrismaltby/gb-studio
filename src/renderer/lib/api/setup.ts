@@ -367,8 +367,8 @@ const APISetup = {
       ipcRenderer.send("debugger:data-receive", data),
   },
   pluginManager: {
-    getPluginsList: (): Promise<PluginRepositoryMetadata[]> =>
-      ipcRenderer.invoke("plugins:fetch-list"),
+    getPluginsList: (force?: boolean): Promise<PluginRepositoryMetadata[]> =>
+      ipcRenderer.invoke("plugins:fetch-list", force),
     addPluginRepo: (url: string) => ipcRenderer.invoke("plugins:add-repo", url),
     removePluginRepo: (url: string) =>
       ipcRenderer.invoke("plugins:remove-repo", url),
