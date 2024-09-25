@@ -85,8 +85,13 @@ export const addPluginToProject = async (
     throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
   }
 
-  if (plugin.gbsVersion && !satisfies(VERSION, plugin.gbsVersion)) {
-    const cancel = confirmIncompatiblePlugin(VERSION, plugin.gbsVersion);
+  // Remove -rc* to treat release candidates as identical
+  // to releases when confirming plugins are compatible
+  // (alpha and beta versions will always warn)
+  const releaseVersion = VERSION.replace(/-rc.*/, "");
+
+  if (plugin.gbsVersion && !satisfies(releaseVersion, plugin.gbsVersion)) {
+    const cancel = confirmIncompatiblePlugin(releaseVersion, plugin.gbsVersion);
     if (cancel) {
       return;
     }
