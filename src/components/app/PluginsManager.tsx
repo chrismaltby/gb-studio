@@ -20,7 +20,7 @@ import {
 } from "components/forms/PluginTypeSelect";
 import { BlankIcon, CheckIcon, UpdateIcon } from "ui/icons/Icons";
 import semverGt from "semver/functions/gt";
-import LoadingPane from "ui/loading/LoadingPane";
+import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 
 export type PluginItem = {
   id: string;
@@ -31,8 +31,11 @@ export type PluginItem = {
   updateAvailable: boolean;
 };
 
+type PluginManagerAction = "none" | "install" | "remove";
+
 const PluginsManager = () => {
   const [loading, setLoading] = useState(true);
+  const [action, setAction] = useState<PluginManagerAction>("none");
   const [pluginItems, setPluginItems] = useState<PluginItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState("");
@@ -121,12 +124,16 @@ const PluginsManager = () => {
     (item: PluginItem) => {
       return (
         <StyledPluginItemRow>
-          <StyledPluginItemRowName>{item.id}</StyledPluginItemRowName>
+          <StyledPluginItemRowName>
+            {item.id}@{item.plugin.version}
+          </StyledPluginItemRowName>
           <StyledPluginItemRowType title={typeLabel[item.plugin.type]}>
             {typeLabel[item.plugin.type]}
           </StyledPluginItemRowType>
-          <StyledPluginItemRowRepo title={item.repo.url}>
-            {item.repo.url?.replace(/[^]*\/\//, "")}
+          <StyledPluginItemRowRepo
+            title={`${item.repo.name}\n${item.repo.url}`}
+          >
+            {item.repo.shortName ?? item.repo.name}
           </StyledPluginItemRowRepo>
         </StyledPluginItemRow>
       );
@@ -139,6 +146,14 @@ const PluginsManager = () => {
   const selectedPluginItem = useMemo(() => {
     return pluginItems.find((item) => item.id === selectedId);
   }, [pluginItems, selectedId]);
+
+  const installBtnLabel = l10n(
+    selectedPluginItem?.updateAvailable
+      ? "FIELD_UPDATE_PLUGIN"
+      : selectedPluginItem?.installedVersion
+      ? "FIELD_REINSTALL_PLUGIN"
+      : "FIELD_ADD_TO_PROJECT"
+  );
 
   return (
     <ThemeProvider>
@@ -269,33 +284,56 @@ const PluginsManager = () => {
                 <FlexGrow />
                 {selectedPluginItem.installedVersion && (
                   <Button
+                    disabled={action !== "none"}
                     onClick={async () => {
+                      if (action !== "none") {
+                        return;
+                      }
+                      setAction("remove");
                       await API.pluginManager.removePlugin(
                         selectedPluginItem.id,
                         selectedPluginItem.repo.id
                       );
                       refreshData();
+                      setAction("none");
                     }}
                   >
-                    {l10n("FIELD_REMOVE_PLUGIN")}
+                    <ConsistentWidthLabel
+                      label={
+                        action === "remove"
+                          ? l10n("FIELD_REMOVING")
+                          : l10n("FIELD_REMOVE_PLUGIN")
+                      }
+                      possibleValues={[
+                        l10n("FIELD_INSTALLING"),
+                        l10n("FIELD_REMOVE_PLUGIN"),
+                      ]}
+                    />
                   </Button>
                 )}
                 <Button
+                  disabled={action !== "none"}
                   onClick={async () => {
+                    if (action !== "none") {
+                      return;
+                    }
+                    setAction("install");
                     await API.pluginManager.addPlugin(
                       selectedPluginItem.id,
                       selectedPluginItem.repo.id
                     );
                     refreshData();
+                    setAction("none");
                   }}
                 >
-                  {l10n(
-                    selectedPluginItem.updateAvailable
-                      ? "FIELD_UPDATE_PLUGIN"
-                      : selectedPluginItem.installedVersion
-                      ? "FIELD_REINSTALL_PLUGIN"
-                      : "FIELD_ADD_TO_PROJECT"
-                  )}
+                  <ConsistentWidthLabel
+                    label={
+                      action === "install"
+                        ? l10n("FIELD_INSTALLING")
+                        : installBtnLabel
+                    }
+                    possibleValues={[l10n("FIELD_INSTALLING"), installBtnLabel]}
+                  />
                 </Button>
               </StyledPluginManagerToolbar>
             </>
@@ -374,6 +412,7 @@ const StyledPluginManagerDetail = styled.div`
 `;
 
 const StyledPluginManagerToolbar = styled.div`
+  font-size: 11px;
   display: flex;
   min-height: 30px;
   padding: 10px;
@@ -417,15 +456,14 @@ const StyledPluginItemRowName = styled.div`
 `;
 
 const StyledPluginItemRowType = styled.div`
-  width: 115px;
+  width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
 const StyledPluginItemRowRepo = styled.div`
-  width: 95px;
-  text-align: right;
+  width: 90px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -951,6 +951,8 @@
   "FIELD_REMOVE_PLUGIN": "Remove Plugin",
   "FIELD_REINSTALL_PLUGIN": "Reinstall Plugin",
   "FIELD_UPDATE_PLUGIN": "Update Plugin",
+  "FIELD_INSTALLING": "Installing...",
+  "FIELD_REMOVING": "Removing...",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

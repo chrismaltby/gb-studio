@@ -30,6 +30,7 @@ export type PluginMetadata = Static<typeof PluginMetadata>;
 export const PluginRepositoryMetadata = Type.Object({
   id: Type.String(),
   name: Type.String(),
+  shortName: Type.String(),
   author: Type.String(),
   description: Type.String(),
   url: Type.Optional(Type.String()),
