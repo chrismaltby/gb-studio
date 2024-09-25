@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
 const lightTheme: ThemeInterface = {
+  name: "Light",
   type: "light",
   typography: {
     fontSize: "11px",

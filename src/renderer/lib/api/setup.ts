@@ -4,7 +4,6 @@ import type {
   MusicDataPacket,
   MusicDataReceivePacket,
 } from "shared/lib/music/types";
-import type { ThemeId } from "shared/lib/theme";
 import {
   ensurePromisedNumber,
   ensurePromisedString,
@@ -53,6 +52,7 @@ import type {
   PluginRepositoryMetadata,
   InstalledPluginData,
 } from "lib/pluginManager/types";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -136,10 +136,10 @@ const APISetup = {
       ipcRenderer.invoke("get-l10n-strings"),
   },
   theme: {
-    getTheme: (): Promise<ThemeId> => ipcRenderer.invoke("get-theme"),
-    onChange: (callback: (themeId: ThemeId) => void) =>
-      ipcRenderer.on("update-theme", (_, themeId: ThemeId) =>
-        callback(themeId)
+    getTheme: (): Promise<ThemeInterface> => ipcRenderer.invoke("get-theme"),
+    onChange: (callback: (theme: ThemeInterface) => void) =>
+      ipcRenderer.on("update-theme", (_, theme: ThemeInterface) =>
+        callback(theme)
       ),
   },
   paths: {

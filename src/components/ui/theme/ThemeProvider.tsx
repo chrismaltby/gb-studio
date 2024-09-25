@@ -1,36 +1,14 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
-import lightTheme from "./lightTheme";
-import darkTheme from "./darkTheme";
-import lightThemeWin from "./lightThemeWin";
-import darkThemeWin from "./darkThemeWin";
 import { ThemeInterface } from "./ThemeInterface";
 import API from "renderer/lib/api";
-import type { ThemeId } from "shared/lib/theme";
 import { defaultTheme } from "renderer/lib/theme";
 
-const themes: Record<ThemeId, ThemeInterface> = {
-  light: lightTheme,
-  dark: darkTheme,
-};
-
-const windowsThemes: Record<ThemeId, ThemeInterface> = {
-  light: lightThemeWin,
-  dark: darkThemeWin,
-};
-
-const systemThemes = API.platform === "darwin" ? themes : windowsThemes;
-
 const Provider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<ThemeInterface>(
-    systemThemes[defaultTheme]
-  );
+  const [theme, setTheme] = useState<ThemeInterface>(defaultTheme);
 
   useEffect(() => {
-    const updateAppTheme = (themeId: ThemeId) => {
-      setTheme(systemThemes[themeId]);
-    };
-    API.theme.onChange(updateAppTheme);
+    API.theme.onChange(setTheme);
   }, []);
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

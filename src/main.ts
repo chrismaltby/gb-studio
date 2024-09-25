@@ -27,8 +27,7 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
-import { toThemeId } from "shared/lib/theme";
-import { isString, isStringArray, JsonValue } from "shared/types";
+import { ensureString, isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
 import createProject, { CreateProjectInput } from "lib/project/createProject";
 import open from "open";
@@ -139,6 +138,7 @@ import { getPluginsInProject } from "lib/pluginManager/project";
 import { ensureGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import { InstalledPluginData } from "lib/pluginManager/types";
 import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
+import { ThemeManager } from "lib/themes/themeManager";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -180,6 +180,8 @@ let musicWindowInitialized = false;
 let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
+
+const themeManager = new ThemeManager(process.platform);
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -390,7 +392,7 @@ export const createProjectWindow = async () => {
     projectWindow = null;
     projectPath = "";
     menu.buildMenu({
-      themes: [],
+      themeManager,
       languages: [],
     });
 
@@ -708,8 +710,10 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", async () => {
   initElectronL10N();
 
+  await themeManager.loadPluginThemes();
+
   menu.buildMenu({
-    themes: [],
+    themeManager,
     languages: [],
   });
 
@@ -1278,12 +1282,10 @@ ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
 });
 
 ipcMain.handle("get-l10n-strings", () => getL10NData());
+
 ipcMain.handle("get-theme", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  return themeId;
+  const themeId = ensureString(settings.get("theme"), "");
+  return themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
 });
 
 ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
@@ -1959,13 +1961,18 @@ menu.on("projectPlugins", () => {
 });
 
 menu.on("updateTheme", (value) => {
+  const pluginThemes = themeManager.getPluginThemes();
   settings.set("theme", value as JsonValue);
   setMenuItemChecked("themeDefault", value === undefined);
   setMenuItemChecked("themeLight", value === "light");
   setMenuItemChecked("themeDark", value === "dark");
-  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
-  sendToSplashWindow("update-theme", newThemeId);
-  sendToProjectWindow("update-theme", newThemeId);
+  for (const pluginTheme of pluginThemes) {
+    setMenuItemChecked(`theme-${pluginTheme.id}`, value === pluginTheme.id);
+  }
+  const themeId = ensureString(value, "");
+  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", theme);
+  sendToProjectWindow("update-theme", theme);
 });
 
 menu.on("updateLocale", (value) => {
@@ -2007,12 +2014,10 @@ menu.on("updateShowNavigator", (value) => {
 });
 
 nativeTheme?.on("updated", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  sendToSplashWindow("update-theme", themeId);
-  sendToProjectWindow("update-theme", themeId);
+  const themeId = ensureString(settings.get("theme"), "");
+  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", theme);
+  sendToProjectWindow("update-theme", theme);
 });
 
 watchGlobalPlugins({

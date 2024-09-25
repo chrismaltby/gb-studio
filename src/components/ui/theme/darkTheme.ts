@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
 const darkTheme: ThemeInterface = {
+  name: "Dark",
   type: "dark",
   typography: {
     fontSize: "11px",

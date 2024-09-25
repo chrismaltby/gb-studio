@@ -10,6 +10,7 @@ import {
 import { assetsRoot } from "./consts";
 import l10n from "shared/lib/lang/l10n";
 import { locales } from "lib/lang/initElectronL10N";
+import { ThemeManager } from "lib/themes/themeManager";
 
 declare const COMMITHASH: string;
 
@@ -114,11 +115,12 @@ type DynamicMenuItem = {
 };
 
 interface BuildMenuProps {
-  themes: DynamicMenuItem[];
+  themeManager: ThemeManager;
   languages: DynamicMenuItem[];
 }
 
-const buildMenu = async ({ themes, languages }: BuildMenuProps) => {
+const buildMenu = async ({ themeManager, languages }: BuildMenuProps) => {
+  const pluginThemes = themeManager.getPluginThemes();
   const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
@@ -405,13 +407,13 @@ const buildMenu = async ({ themes, languages }: BuildMenuProps) => {
                 notifyListeners("updateTheme", "dark");
               },
             },
-            ...(themes.length > 0
+            ...(pluginThemes.length > 0
               ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
               : []),
-            ...themes.map(
+            ...pluginThemes.map(
               (theme): MenuItemConstructorOptions => ({
-                id: theme.id,
-                label: theme.label,
+                id: `theme-${theme.id}`,
+                label: theme.name,
                 type: "checkbox",
                 checked: settings.get("theme") === theme.id,
                 click() {
