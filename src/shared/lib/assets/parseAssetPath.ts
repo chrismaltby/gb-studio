@@ -1,19 +1,37 @@
-import Path from "path";
+import { relative, sep, normalize } from "path";
 import { pathToPosix } from "shared/lib/helpers/path";
+
+const extractPluginPath = (relativePath: string, assetFolder: string) => {
+  if (!relativePath.startsWith("plugins")) {
+    return undefined;
+  }
+
+  const assetFolderIndex = relativePath.lastIndexOf(assetFolder);
+
+  if (assetFolderIndex === -1) {
+    return undefined;
+  }
+
+  const extractedPath = relativePath.substring(
+    "plugins".length + 1,
+    assetFolderIndex - 1
+  );
+  return extractedPath.split(sep).join("/");
+};
 
 const parseAssetPath = (
   filename: string,
   projectRoot: string,
   assetFolder: string
 ) => {
-  const relativePath = Path.relative(projectRoot, filename);
+  const relativePath = relative(projectRoot, filename);
   const plugin = relativePath.startsWith("plugins")
-    ? relativePath.split(Path.sep)[1]
+    ? extractPluginPath(relativePath, assetFolder)
     : undefined;
   const file = pathToPosix(
     plugin
-      ? Path.relative(`plugins/${plugin}/${assetFolder}/`, relativePath)
-      : Path.relative(`assets/${assetFolder}/`, relativePath)
+      ? relative(`plugins/${plugin}/${assetFolder}/`, relativePath)
+      : relative(`assets/${assetFolder}/`, relativePath)
   );
   return {
     relativePath,
