@@ -21,6 +21,7 @@ import {
 import { BlankIcon, CheckIcon, UpdateIcon } from "ui/icons/Icons";
 import semverGt from "semver/functions/gt";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
+import { join } from "path";
 
 export type PluginItem = {
   id: string;
@@ -63,7 +64,7 @@ const PluginsManager = () => {
     for (const repo of repos) {
       for (const plugin of repo.plugins) {
         const installedVersion = installedPlugins.find(
-          (p) => p.path === plugin.filename.replace(/\.zip$/, ".json")
+          (p) => p.path === join(plugin.id, "plugin.json")
         )?.version;
         items.push({
           id: plugin.id,

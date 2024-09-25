@@ -15,6 +15,7 @@ import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
 import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
 import { satisfies } from "semver";
 import confirmIncompatiblePlugin from "lib/electron/dialog/confirmIncompatiblePlugin";
+import { dialog } from "electron";
 
 const rmdir = promisify(rimraf);
 
@@ -47,13 +48,17 @@ export const getGlobalPluginsList = async (force?: boolean) => {
   const repositoryUrls = getRepoUrls();
   const repos: PluginRepositoryMetadata[] = [];
   for (const url of repositoryUrls) {
-    const data = await (await fetch(url)).json();
-    const castData = Value.Cast(PluginRepositoryMetadata, data);
-    repos.push({
-      ...castData,
-      id: checksumString(url),
-      url,
-    });
+    try {
+      const data = await (await fetch(url)).json();
+      const castData = Value.Cast(PluginRepositoryMetadata, data);
+      repos.push({
+        ...castData,
+        id: checksumString(url),
+        url,
+      });
+    } catch (e) {
+      dialog.showErrorBox(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"), String(e));
+    }
   }
   cache.value = repos;
   cache.timestamp = now + oneHour;
@@ -70,55 +75,67 @@ export const addPluginToProject = async (
   pluginId: string,
   repoId: string
 ) => {
-  const repoURL = getRepoUrlById(repoId);
-  if (!repoURL) {
-    throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
-  }
-  const repoRoot = dirname(repoURL);
-  const repos = await getGlobalPluginsList();
-  const repo = repos?.find((r) => r.id === repoId);
-  if (!repo) {
-    throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
-  }
-  const plugin = repo.plugins.find((p) => p.id === pluginId);
-  if (!plugin) {
-    throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
-  }
-
-  // Remove -rc* to treat release candidates as identical
-  // to releases when confirming plugins are compatible
-  // (alpha and beta versions will always warn)
-  const releaseVersion = VERSION.replace(/-rc.*/, "");
-
-  if (plugin.gbsVersion && !satisfies(releaseVersion, plugin.gbsVersion)) {
-    const cancel = confirmIncompatiblePlugin(releaseVersion, plugin.gbsVersion);
-    if (cancel) {
-      return;
+  try {
+    const repoURL = getRepoUrlById(repoId);
+    if (!repoURL) {
+      throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
     }
+    const repoRoot = dirname(repoURL);
+    const repos = await getGlobalPluginsList();
+    const repo = repos?.find((r) => r.id === repoId);
+    if (!repo) {
+      throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
+    }
+    const plugin = repo.plugins.find((p) => p.id === pluginId);
+    if (!plugin) {
+      throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
+    }
+
+    // Remove -rc* to treat release candidates as identical
+    // to releases when confirming plugins are compatible
+    // (alpha and beta versions will always warn)
+    const releaseVersion = VERSION.replace(/-rc.*/, "");
+
+    if (plugin.gbsVersion && !satisfies(releaseVersion, plugin.gbsVersion)) {
+      const cancel = confirmIncompatiblePlugin(
+        releaseVersion,
+        plugin.gbsVersion
+      );
+      if (cancel) {
+        return;
+      }
+    }
+
+    const pluginURL =
+      plugin.filename.startsWith("http:") ||
+      plugin.filename.startsWith("https:")
+        ? plugin.filename
+        : join(repoRoot, plugin.filename);
+
+    const outputPath = join(dirname(projectPath), "plugins", pluginId);
+
+    const res = await fetch(pluginURL);
+
+    const tmpDir = getTmp();
+    const tmpPluginZipPath = join(
+      tmpDir,
+      `${checksumString(`${repoId}::${pluginId}`)}.zip`
+    );
+
+    const fileStream = createWriteStream(tmpPluginZipPath);
+    await new Promise((resolve, reject) => {
+      res.body?.pipe(fileStream);
+      res.body?.on("error", reject);
+      fileStream.on("finish", resolve);
+    });
+
+    const zip = new AdmZip(tmpPluginZipPath);
+    zip.extractAllTo(outputPath, true);
+
+    return outputPath;
+  } catch (e) {
+    dialog.showErrorBox(l10n("ERROR_UNABLE_TO_INSTALL_PLUGIN"), String(e));
   }
-
-  const pluginURL = join(repoRoot, plugin.filename);
-  const outputPath = join(dirname(projectPath), "plugins", pluginId);
-
-  const res = await fetch(pluginURL);
-
-  const tmpDir = getTmp();
-  const tmpPluginZipPath = join(
-    tmpDir,
-    `${checksumString(`${repoId}::${pluginId}`)}.zip`
-  );
-
-  const fileStream = createWriteStream(tmpPluginZipPath);
-  await new Promise((resolve, reject) => {
-    res.body?.pipe(fileStream);
-    res.body?.on("error", reject);
-    fileStream.on("finish", resolve);
-  });
-
-  const zip = new AdmZip(tmpPluginZipPath);
-  zip.extractAllTo(outputPath, true);
-
-  return outputPath;
 };
 
 export const removePluginFromProject = async (

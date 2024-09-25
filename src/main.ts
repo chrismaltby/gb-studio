@@ -19,7 +19,6 @@ import {
   stat,
   statSync,
   move,
-  mkdir,
 } from "fs-extra";
 import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
