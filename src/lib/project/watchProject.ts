@@ -67,11 +67,17 @@ const watchProject = (
     .on("unlink", callbacks.onRemoveSprite);
 
   const backgroundWatcher = chokidar
-    .watch(`${backgroundsRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${backgroundsRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/backgrounds/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedBackground)
     .on("change", callbacks.onChangedBackground)
     .on("unlink", callbacks.onRemoveBackground);
