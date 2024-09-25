@@ -386,6 +386,7 @@ export const createProjectWindow = async () => {
 
   projectWindow.on("closed", () => {
     projectWindow = null;
+    projectPath = "";
     menu.buildMenu([]);
 
     if (musicWindow) {
