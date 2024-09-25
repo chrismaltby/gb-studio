@@ -63,7 +63,7 @@ const loadAllAvatarData = async (
     `${projectRoot}/assets/avatars/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/avatars/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/**/avatars/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(

@@ -66,7 +66,7 @@ const loadAllSoundData = async (projectRoot: string) => {
     `${projectRoot}/assets/sounds/**/@(*.vgm|*.VGM|*.vgz|*.VGZ|*.wav|*.WAV|*.sav|*.SAV)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/sounds/**/@(*.vgm|*.VGM|*.vgz|*.VGZ|*.wav|*.WAV|*.sav|*.SAV)`
+    `${projectRoot}/plugins/**/sounds/**/@(*.vgm|*.VGM|*.vgz|*.VGZ|*.wav|*.WAV|*.sav|*.SAV)`
   );
   const soundsData = await Promise.all(
     ([] as Promise<SoundAssetData>[]).concat(

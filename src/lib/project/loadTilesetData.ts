@@ -60,7 +60,7 @@ const loadAllTilesetData = async (projectRoot: string) => {
     `${projectRoot}/assets/tilesets/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/tilesets/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/**/tilesets/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(
