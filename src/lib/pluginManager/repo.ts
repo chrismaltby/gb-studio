@@ -21,6 +21,7 @@ import confirmIncompatiblePlugin from "lib/electron/dialog/confirmIncompatiblePl
 import { dialog } from "electron";
 import confirmDeletePluginRepository from "lib/electron/dialog/confirmDeletePluginRepository";
 import { guardAssetWithinProject } from "lib/helpers/assets";
+import { OFFICIAL_REPO_URL } from "consts";
 
 const rmdir = promisify(rimraf);
 
@@ -29,7 +30,7 @@ declare const VERSION: string;
 export const corePluginRepository: PluginRepositoryEntry = {
   id: "core",
   name: "GB Studio",
-  url: "http://127.0.0.1:9999/repository.json",
+  url: OFFICIAL_REPO_URL,
 };
 
 const cache: {

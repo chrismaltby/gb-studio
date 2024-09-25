@@ -24,6 +24,8 @@ const localesRoot = path.normalize(`${rootDir}/src/lang`);
 const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
+export const OFFICIAL_REPO_URL = "http://127.0.0.1:9999/repository.json";
+
 const MAX_ACTORS = 20;
 const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
