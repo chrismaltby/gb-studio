@@ -79,6 +79,9 @@ const SettingsPage: FC = () => {
     colorMode,
     sgbEnabled,
     customHead,
+    defaultBGP,
+    defaultOBP0,
+    defaultOBP1,
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
     defaultFontId,
@@ -89,6 +92,7 @@ const SettingsPage: FC = () => {
     compilerPreset,
   } = settings;
 
+  const dmgEnabled = colorMode !== "color";
   const colorEnabled = colorMode !== "mono";
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -337,6 +341,39 @@ const SettingsPage: FC = () => {
               </FormInfo>
             </SettingRowInput>
           </SearchableSettingRow>
+          {dmgEnabled && (
+            <>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={["DMG Background Palette (BGP)"]}//TODO: l10n language lookup -NB
+              >
+                <SettingRowLabel>
+                  {"DMG Background Palette (BGP)"}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <div>
+
+                  </div>
+                </SettingRowInput>
+                <SettingRowLabel>
+                  {"DMG Object Palette 0 (OBP0)"}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <div>
+
+                  </div>
+                </SettingRowInput>
+                <SettingRowLabel>
+                  {"DMG Object Palette 1 (OBP1)"}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <div>
+
+                  </div>
+                </SettingRowInput>
+              </SearchableSettingRow>
+            </>            
+          )}
           {colorEnabled && (
             <>
               <SearchableSettingRow
