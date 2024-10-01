@@ -152,6 +152,9 @@ export const defaultProjectSettings: Settings = {
   zoom: 100,
   sgbEnabled: false,
   customHead: "",
+  defaultBGP: [0, 1, 2, 3],
+  defaultOBP0: [0, 0, 1, 3],
+  defaultOBP1: [0, 0, 2, 3],
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",

@@ -373,6 +373,8 @@ const SceneView = memo(
         state.project.present.settings.defaultBackgroundPaletteIds ?? []
     );
 
+    //TODO: getBGP, getOBP0, getOBP1 -NB
+
     const getPalette = useCallback(
       (paletteIndex: number) => {
         const sceneBackgroundPaletteIds = scene?.paletteIds ?? [];
