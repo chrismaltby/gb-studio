@@ -43,8 +43,7 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
-import { NumberInput } from "ui/form/NumberInput";
-import { castEventToInt } from "renderer/lib/helpers/castEventValue";
+import { DMGPalettePicker } from "components/forms/DMGPalettePicker";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -167,49 +166,22 @@ const SettingsPage: FC = () => {
   );
 
   const onEditBGP = useCallback(
-    (index: number, e: number) => {
-      const bgp = defaultBGP ? [...defaultBGP] : [];
-      bgp[index] = e;
-      editSettings({
-        defaultBGP: [
-          bgp[0],
-          bgp[1],
-          bgp[2],
-          bgp[3],
-        ],
-      });
+    (palette: [number, number, number, number]) => {
+      editSettings({ defaultBGP: palette });
     },
     [defaultBGP, editSettings]
   );
 
   const onEditOBP0 = useCallback(
-    (index: number, e: number) => {
-      const obp0 = defaultOBP0 ? [...defaultOBP0] : [];
-      obp0[index] = e;
-      editSettings({
-        defaultOBP0: [
-          obp0[0],
-          obp0[1],
-          obp0[2],
-          obp0[3],
-        ],
-      });
+    (palette: [number, number, number, number]) => {
+      editSettings({ defaultOBP0: palette });
     },
     [defaultOBP0, editSettings]
   );
 
   const onEditOBP1 = useCallback(
-    (index: number, e: number) => {
-      const obp1 = defaultOBP1 ? [...defaultOBP1] : [];
-      obp1[index] = e;
-      editSettings({
-        defaultOBP1: [
-          obp1[0],
-          obp1[1],
-          obp1[2],
-          obp1[3],
-        ],
-      });
+    (palette: [number, number, number, number]) => {
+      editSettings({ defaultOBP1: palette });
     },
     [defaultOBP1, editSettings]
   );
@@ -403,21 +375,12 @@ const SettingsPage: FC = () => {
                   {"DMG Background Palette (BGP)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <FormRow>
-                    {[0, 1, 2, 3].map((index) => (
-                      <FormField name={`bgp_${index}`}>
-                        <NumberInput
-                          style={{backgroundColor:`#${dmgColors[settings.defaultBGP[index]]}`, color:`#${dmgColors[(settings.defaultBGP[index]+2)%4]}`}}
-                          id={`bgp_${index}`}
-                          name={`bgp_${index}`}
-                          min={0}
-                          max={3}
-                          value={settings.defaultBGP[index]}
-                          onChange={(e) => onEditBGP(index, castEventToInt(e, index))}
-                        />
-                      </FormField>
-                    ))}
-                  </FormRow>
+                  <DMGPalettePicker 
+                    name="bgp" 
+                    palette={settings.defaultBGP} 
+                    isSpritePalette={false} 
+                    onChange={onEditBGP} 
+                  />
                 </SettingRowInput>
               </SearchableSettingRow>
               <SearchableSettingRow
@@ -428,21 +391,12 @@ const SettingsPage: FC = () => {
                   {"DMG Object Palette 0 (OBP0)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <FormRow>
-                    {[1, 2, 3].map((index) => (
-                      <FormField name={`obp0_${index}`}>
-                        <NumberInput
-                          style={{backgroundColor:`#${dmgColors[settings.defaultOBP0[index]]}`, color:`#${dmgColors[(settings.defaultOBP0[index]+2)%4]}`}}
-                          id={`obp0_${index}`}
-                          name={`obp0_${index}`}
-                          min={0}
-                          max={3}
-                          value={settings.defaultOBP0[index]}
-                          onChange={(e) => onEditOBP0(index, castEventToInt(e, index))}
-                        />
-                      </FormField>
-                    ))}
-                  </FormRow>
+                  <DMGPalettePicker 
+                    name="obp0" 
+                    palette={settings.defaultOBP0} 
+                    isSpritePalette={true} 
+                    onChange={onEditOBP0} 
+                  />
                 </SettingRowInput>
               </SearchableSettingRow>
               <SearchableSettingRow
@@ -453,21 +407,12 @@ const SettingsPage: FC = () => {
                   {"DMG Object Palette 1 (OBP1)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <FormRow>
-                    {[1, 2, 3].map((index) => (
-                      <FormField name={`obp1_${index}`}>
-                        <NumberInput
-                          style={{backgroundColor:`#${dmgColors[settings.defaultOBP1[index]]}`, color:`#${dmgColors[(settings.defaultOBP1[index]+2)%4]}`}}
-                          id={`obp1_${index}`}
-                          name={`obp1_${index}`}
-                          min={0}
-                          max={3}
-                          value={settings.defaultOBP1[index]}
-                          onChange={(e) => onEditOBP1(index, castEventToInt(e, index))}
-                        />
-                      </FormField>
-                    ))}
-                  </FormRow>
+                  <DMGPalettePicker 
+                    name="obp1" 
+                    palette={settings.defaultOBP1} 
+                    isSpritePalette={true} 
+                    onChange={onEditOBP1} 
+                  />
                 </SettingRowInput>
               </SearchableSettingRow>
             </>            
