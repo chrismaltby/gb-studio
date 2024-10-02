@@ -102,10 +102,15 @@ const lightTheme: ThemeInterface = {
       activeBackground: "#eaeaea",
     },
     tabs: {
-      background: "#ffffff",
+      background: "linear-gradient(0deg, #f2f2f2 0%, #e4e4e4 100%)",
+      selectedBackground: "#ffffff",
+      secondaryBackground: "#ffffff",
       border: "#d4d4d4",
     },
     scripting: {
+      tabs: {
+        background: "#f2f2f2",
+      },
       header: {
         text: "#3b3a3b",
         background: "linear-gradient(0deg, #e4e4e4, #efefef)",

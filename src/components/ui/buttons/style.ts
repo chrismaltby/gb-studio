@@ -90,10 +90,10 @@ const normalStyles = css<StyledButtonProps>`
 const primaryStyles = css`
   background: ${(props) => props.theme.colors.highlight};
   border-color: transparent;
-  color: #fff;
+  color: ${(props) => props.theme.colors.highlightText};
 
-  svg {
-    fill: #fff;
+  && > svg {
+    fill: ${(props) => props.theme.colors.highlightText};
   }
 
   &:active {

@@ -12,7 +12,7 @@ const darkTheme: ThemeInterface = {
     highlight: "#c92c61",
     highlightText: "#ffffff",
     text: "#b7babb",
-    background: "#222222",
+    background: "#444444",
     secondaryText: "#777777",
     token: {
       variable: "#9ccc65",
@@ -103,10 +103,15 @@ const darkTheme: ThemeInterface = {
       activeBackground: "#333333",
     },
     tabs: {
-      background: "#000000",
+      background: "linear-gradient(0deg, #222 0%, #111 100%)",
+      selectedBackground: "#000000",
+      secondaryBackground: "#000000",
       border: "#333333",
     },
     scripting: {
+      tabs: {
+        background: "#222222",
+      },
       header: {
         text: "#ffffff",
         background: "linear-gradient(0deg, #444444, #4e4e4e)",

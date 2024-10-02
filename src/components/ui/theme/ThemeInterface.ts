@@ -100,6 +100,8 @@ export interface ThemeInterface {
     };
     tabs: {
       background: string;
+      selectedBackground: string;
+      secondaryBackground: string;
       border: string;
     };
     scripting: {
@@ -117,6 +119,9 @@ export interface ThemeInterface {
         nest2Background: string;
         nest3Background: string;
         nest4Background: string;
+      };
+      tabs: {
+        background: string;
       };
       form: {
         background: string;

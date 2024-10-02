@@ -523,6 +523,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           $size={size}
           $variant={variant}
           $active={active}
+          data-is-active={active}
           onKeyDown={onButtonKeyDown}
           onClick={onButtonClick}
           tabIndex={0}
