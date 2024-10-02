@@ -29,14 +29,13 @@ const darkTheme: ThemeInterface = {
       inactiveBorder: "#000000",
       textShadow: "none",
       button: {
-        border: "transparent",
-        borderTop: "#9f9e9e",
+        border: "#313334",
       },
     },
     button: {
-      background: "linear-gradient(to bottom, #6a6d6e 0%, #616364 100%)",
-      border: "transparent",
-      borderTop: "#9f9e9e",
+      background:
+        "linear-gradient(to bottom, #9f9e9e 0%, #9f9e9e 5%, #6a6d6e 5%, #616364 100%) no-repeat",
+      border: "#313334",
       activeBackground: "#505252",
       text: "#fbfeff",
       nestedBackground: "#444444",
@@ -83,10 +82,23 @@ const darkTheme: ThemeInterface = {
         text: "#b7babb",
       },
     },
+    panel: {
+      background: "#222222",
+      border: "#000000",
+      divider: "#000000",
+      text: "#b7babb",
+      icon: "#b7babb",
+      selectedIcon: "#ffffff",
+      selectedBackground: "#111111",
+      activeBackground: "#444444",
+      hoverBackground: "#333333",
+    },
     document: {
       background: "#444444",
     },
     list: {
+      text: "#b7babb",
+      icon: "#666666",
       selectedBackground: "#000000",
       activeBackground: "#333333",
     },

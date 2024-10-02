@@ -13,14 +13,12 @@ const lightThemeWin: ThemeInterface = {
       button: {
         ...lightTheme.colors.toolbar.button,
         border: "#bbbbbb",
-        borderTop: "#bbbbbb",
       },
     },
     button: {
       ...lightTheme.colors.button,
       background: "#fafafa",
       border: "#bbbbbb",
-      borderTop: "#bbbbbb",
     },
     menu: {
       ...lightTheme.colors.menu,

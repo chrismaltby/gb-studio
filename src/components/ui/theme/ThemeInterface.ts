@@ -28,13 +28,11 @@ export interface ThemeInterface {
       textShadow: string;
       button: {
         border: string;
-        borderTop: string;
       };
     };
     button: {
       background: string;
       border: string;
-      borderTop: string;
       activeBackground: string;
       text: string;
       nestedBackground: string;
@@ -80,10 +78,23 @@ export interface ThemeInterface {
         text: string;
       };
     };
+    panel: {
+      background: string;
+      border: string;
+      divider: string;
+      text: string;
+      icon: string;
+      selectedIcon: string;
+      selectedBackground: string;
+      hoverBackground: string;
+      activeBackground: string;
+    };
     document: {
       background: string;
     };
     list: {
+      text: string;
+      icon: string;
       selectedBackground: string;
       activeBackground: string;
     };

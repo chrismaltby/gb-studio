@@ -27,6 +27,7 @@ export const Button = ({
       $size={size}
       $variant={variant}
       $active={active}
+      data-is-active={active}
       {...props}
     />
   );

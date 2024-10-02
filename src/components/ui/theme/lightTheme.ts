@@ -30,13 +30,11 @@ const lightTheme: ThemeInterface = {
       textShadow: "none",
       button: {
         border: "#9f9e9e",
-        borderTop: "#9f9e9e",
       },
     },
     button: {
       background: "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
       border: "#c5c5c5",
-      borderTop: "#c5c5c5",
       activeBackground: "#eaeaea",
       text: "#3b3a3b",
       nestedBackground: "#cccccc",
@@ -83,10 +81,23 @@ const lightTheme: ThemeInterface = {
         text: "#3b3a3b",
       },
     },
+    panel: {
+      background: "#f2f2f2",
+      border: "#d4d4d4",
+      divider: "#d4d4d4",
+      text: "#3b3a3b",
+      icon: "#3b3a3b",
+      selectedIcon: "#000000",
+      selectedBackground: "#cccccc",
+      activeBackground: "#eaeaea",
+      hoverBackground: "#dddddd",
+    },
     document: {
       background: "#f9f9f9",
     },
     list: {
+      text: "#3b3a3b",
+      icon: "#888888",
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
     },

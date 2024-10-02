@@ -14,14 +14,12 @@ const darkThemeWin: ThemeInterface = {
       button: {
         ...darkTheme.colors.toolbar.button,
         border: "#333333",
-        borderTop: "#333333",
       },
     },
     button: {
       ...darkTheme.colors.button,
       background: "#6a6d6e",
       border: "#333333",
-      borderTop: "#333333",
     },
     menu: {
       ...darkTheme.colors.menu,
