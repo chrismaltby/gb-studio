@@ -39,8 +39,7 @@ export const SpriteSliceCanvas = ({
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
   const settings = useAppSelector((state) => state.project.present.settings);
-  const monoPalette = objPalette === "OBP0" ? settings.defaultOBP0 : settings.defaultOBP1;
-  
+  const monoPalette = objPalette === "OBP1" ? settings.defaultOBP1 : settings.defaultOBP0;
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {

@@ -62,11 +62,12 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
+//NOTE: this assumes GB Studio's sprite image requirements are met... https://www.gbstudio.dev/docs/assets/sprites#image-requirements
 export const indexSpriteColour = (g: number, objPalette: [number, number, number, number]) => {
   if (g < 65) return objPalette[3];
   if (g < 130) return objPalette[2];
-  if (g < 205) return objPalette[1];
-  return 0;//objPalette[0] is never used
+  if (g < 205) return objPalette[2];
+  return objPalette[1];
 };
 
 export const colorizeSpriteData = (
@@ -80,7 +81,7 @@ export const colorizeSpriteData = (
       mutData[index + 1],
       objPalette
     );
-    const color = paletteRGB[objPalette[colorIndex]];
+    const color = paletteRGB[colorIndex];
     const r = mutData[index];
     const g = mutData[index + 1];
     const b = mutData[index + 2];
