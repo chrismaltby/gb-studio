@@ -38,11 +38,13 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
-import { FormField } from "ui/form/layout/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { NumberInput } from "ui/form/NumberInput";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -162,6 +164,54 @@ const SettingsPage: FC = () => {
   const onChangeCompilerPreset = useCallback(
     (value: number) => onChangeSettingProp("compilerPreset", value),
     [onChangeSettingProp]
+  );
+
+  const onEditBGP = useCallback(
+    (index: number, e: number) => {
+      const bgp = defaultBGP ? [...defaultBGP] : [];
+      bgp[index] = e;
+      editSettings({
+        defaultBGP: [
+          bgp[0],
+          bgp[1],
+          bgp[2],
+          bgp[3],
+        ],
+      });
+    },
+    [defaultBGP, editSettings]
+  );
+
+  const onEditOBP0 = useCallback(
+    (index: number, e: number) => {
+      const obp0 = defaultOBP0 ? [...defaultOBP0] : [];
+      obp0[index] = e;
+      editSettings({
+        defaultOBP0: [
+          obp0[0],
+          obp0[1],
+          obp0[2],
+          obp0[3],
+        ],
+      });
+    },
+    [defaultOBP0, editSettings]
+  );
+
+  const onEditOBP1 = useCallback(
+    (index: number, e: number) => {
+      const obp1 = defaultOBP1 ? [...defaultOBP1] : [];
+      obp1[index] = e;
+      editSettings({
+        defaultOBP1: [
+          obp1[0],
+          obp1[1],
+          obp1[2],
+          obp1[3],
+        ],
+      });
+    },
+    [defaultOBP1, editSettings]
   );
 
   const onEditPaletteId = useCallback(
@@ -351,25 +401,68 @@ const SettingsPage: FC = () => {
                   {"DMG Background Palette (BGP)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <div>
-
-                  </div>
+                  <FormRow>
+                    {[0, 1, 2, 3].map((index) => (
+                      <FormField name={`bgp_${index}`}>
+                        <NumberInput
+                          id={`bgp_${index}`}
+                          name={`bgp_${index}`}
+                          min={0}
+                          max={3}
+                          value={settings.defaultBGP[index]}
+                          onChange={(e) => onEditBGP(index, castEventToInt(e, index))}
+                        />
+                      </FormField>
+                    ))}
+                  </FormRow>
                 </SettingRowInput>
+              </SearchableSettingRow>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={["DMG Object Palette 0 (OBP0)"]}
+              >
                 <SettingRowLabel>
                   {"DMG Object Palette 0 (OBP0)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <div>
-
-                  </div>
+                  <FormRow>
+                    {[1, 2, 3].map((index) => (
+                      <FormField name={`obp0_${index}`}>
+                        <NumberInput
+                          id={`obp0_${index}`}
+                          name={`obp0_${index}`}
+                          min={0}
+                          max={3}
+                          value={settings.defaultOBP0[index]}
+                          onChange={(e) => onEditOBP0(index, castEventToInt(e, index))}
+                        />
+                      </FormField>
+                    ))}
+                  </FormRow>
                 </SettingRowInput>
+              </SearchableSettingRow>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={["DMG Object Palette 0 (OBP0)"]}
+              >
                 <SettingRowLabel>
                   {"DMG Object Palette 1 (OBP1)"}
                 </SettingRowLabel>
                 <SettingRowInput>
-                  <div>
-
-                  </div>
+                  <FormRow>
+                    {[1, 2, 3].map((index) => (
+                      <FormField name={`obp1_${index}`}>
+                        <NumberInput
+                          id={`obp1_${index}`}
+                          name={`obp1_${index}`}
+                          min={0}
+                          max={3}
+                          value={settings.defaultOBP1[index]}
+                          onChange={(e) => onEditOBP1(index, castEventToInt(e, index))}
+                        />
+                      </FormField>
+                    ))}
+                  </FormRow>
                 </SettingRowInput>
               </SearchableSettingRow>
             </>            

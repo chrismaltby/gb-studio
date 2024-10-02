@@ -21,6 +21,7 @@ interface ObjPaletteOption {
   colors: string[];
 }
 
+//TODO: change these based on the global palette colors and the selected OBP settings -NB
 const options: ObjPaletteOption[] = [
   {
     value: "OBP0",
