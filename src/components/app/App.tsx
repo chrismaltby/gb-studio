@@ -20,6 +20,7 @@ const AppWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: ${(props) => props.theme.colors.document.background};
 `;
 
 const AppContent = styled.div`

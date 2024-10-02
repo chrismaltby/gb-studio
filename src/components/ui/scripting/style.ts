@@ -254,7 +254,7 @@ export const StyledScriptEventFields = styled.div`
 // #region ScriptEventWrapper
 
 export const StyledScriptEventWrapper = styled.div`
-  background-color: ${(props) => props.theme.colors.scripting.form.background};
+  background: ${(props) => props.theme.colors.scripting.form.background};
   color: ${(props) => props.theme.colors.text};
 `;
 

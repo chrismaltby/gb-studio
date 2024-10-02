@@ -44,7 +44,7 @@ export const Navigator = () => {
   );
   const dispatch = useAppDispatch();
   const windowSize = useWindowSize();
-  const height = windowSize.height ? windowSize.height - 38 - 2 : 0;
+  const height = windowSize.height ? windowSize.height - 38 - 4 : 0;
 
   const updateSplitSizes = (newSizes: number[], manuallyEdited: boolean) => {
     dispatch(

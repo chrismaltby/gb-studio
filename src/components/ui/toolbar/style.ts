@@ -61,7 +61,6 @@ export const StyledToolbar = styled.div<StyledToolbarProps>`
 
 const blurStyles = css`
   background: ${(props) => props.theme.colors.toolbar.inactiveBackground};
-  opacity: 0.5;
 `;
 
 export const StyledToolbarTitle = styled.div`
