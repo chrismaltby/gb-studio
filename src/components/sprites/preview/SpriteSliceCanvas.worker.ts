@@ -25,7 +25,7 @@ workerCtx.onmessage = async (evt) => {
   const height = evt.data.height;
   const flipX = evt.data.flipX;
   const flipY = evt.data.flipY;
-  const objPalette = evt.data.objPalette;
+  const monoPalette = evt.data.monoPalette;
   const palette = evt.data.palette;
 
   let img: ImageBitmap;
@@ -64,7 +64,7 @@ workerCtx.onmessage = async (evt) => {
 
   // Colorize
   const imageData = ctx.getImageData(0, 0, width, height);
-  colorizeSpriteData(imageData.data, objPalette, palette);
+  colorizeSpriteData(imageData.data, monoPalette, palette);
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();

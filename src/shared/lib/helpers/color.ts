@@ -62,38 +62,25 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
-  //NOTE: can't use settings inside of workers
-  // const settings = useAppSelector((state) => state.project.present.settings);
-  // const obp =  objPalette === "OBP1" ? settings.defaultOBP1 : settings.defaultOBP0;
-  // if (g < 65) return obp[3];
-  // if (g < 130) return obp[2];
-  // if (g < 205) return obp[1];
-  // return 0;
-  if (g < 65) {
-    return 3;
-  }
-  if (g < 130) {
-    return objPalette === "OBP1" ? 2 : 3;
-  }
-  if (g < 205) {
-    return objPalette === "OBP1" ? 2 : 1;
-  }
-  return 0;
+export const indexSpriteColour = (g: number, objPalette: [number, number, number, number]) => {
+  if (g < 65) return objPalette[3];
+  if (g < 130) return objPalette[2];
+  if (g < 205) return objPalette[1];
+  return 0;//objPalette[0] is never used
 };
 
 export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
-  objPalette: ObjPalette | null,
+  objPalette: [number, number, number, number],
   palette: string[]
 ) => {
   const paletteRGB = palette.map(hex2GBCrgb);
   for (let index = 0; index < mutData.length; index += 4) {
     const colorIndex = indexSpriteColour(
       mutData[index + 1],
-      objPalette || "OBP0"
+      objPalette
     );
-    const color = paletteRGB[colorIndex];
+    const color = paletteRGB[objPalette[colorIndex]];
     const r = mutData[index];
     const g = mutData[index + 1];
     const b = mutData[index + 2];

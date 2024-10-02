@@ -46,6 +46,8 @@ export const MetaspriteCanvas = memo(
     );
     const width = spriteSheet?.canvasWidth || 0;
     const height = spriteSheet?.canvasHeight || 0;
+    const settings = useAppSelector((state) => state.project.present.settings);
+    const monoPalettes = [settings.defaultOBP0, settings.defaultOBP1];
 
     // Cache metasprite tiles
     useEffect(() => {
@@ -111,6 +113,7 @@ export const MetaspriteCanvas = memo(
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
         previewAsMono,
+        monoPalettes
       });
     }, [
       canvasRef,
@@ -122,6 +125,7 @@ export const MetaspriteCanvas = memo(
       flipX,
       workerId,
       previewAsMono,
+      monoPalettes
     ]);
 
     return (
