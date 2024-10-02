@@ -283,6 +283,8 @@ const SettingsPage: FC = () => {
     [dispatch]
   );
 
+  const dmgColors = [settings.customColorsWhite, settings.customColorsLight, settings.customColorsDark, settings.customColorsBlack];
+
   return (
     <SettingsPageWrapper>
       {showMenu && (
@@ -405,6 +407,7 @@ const SettingsPage: FC = () => {
                     {[0, 1, 2, 3].map((index) => (
                       <FormField name={`bgp_${index}`}>
                         <NumberInput
+                          style={{backgroundColor:`#${dmgColors[settings.defaultBGP[index]]}`, color:`#${dmgColors[(settings.defaultBGP[index]+2)%4]}`}}
                           id={`bgp_${index}`}
                           name={`bgp_${index}`}
                           min={0}
@@ -429,6 +432,7 @@ const SettingsPage: FC = () => {
                     {[1, 2, 3].map((index) => (
                       <FormField name={`obp0_${index}`}>
                         <NumberInput
+                          style={{backgroundColor:`#${dmgColors[settings.defaultOBP0[index]]}`, color:`#${dmgColors[(settings.defaultOBP0[index]+2)%4]}`}}
                           id={`obp0_${index}`}
                           name={`obp0_${index}`}
                           min={0}
@@ -443,7 +447,7 @@ const SettingsPage: FC = () => {
               </SearchableSettingRow>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["DMG Object Palette 0 (OBP0)"]}
+                searchMatches={["DMG Object Palette 1 (OBP1)"]}
               >
                 <SettingRowLabel>
                   {"DMG Object Palette 1 (OBP1)"}
@@ -453,6 +457,7 @@ const SettingsPage: FC = () => {
                     {[1, 2, 3].map((index) => (
                       <FormField name={`obp1_${index}`}>
                         <NumberInput
+                          style={{backgroundColor:`#${dmgColors[settings.defaultOBP1[index]]}`, color:`#${dmgColors[(settings.defaultOBP1[index]+2)%4]}`}}
                           id={`obp1_${index}`}
                           name={`obp1_${index}`}
                           min={0}
