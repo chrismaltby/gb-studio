@@ -451,7 +451,7 @@ const SceneView = memo(
               getSpritePalette(7),
             ]
           : undefined,
-      [gbcEnabled, getSpritePalette]
+      [previewAsMono, getSpritePalette]
     );
 
     const slopePreview = useAppSelector((state) => state.editor.slopePreview);
