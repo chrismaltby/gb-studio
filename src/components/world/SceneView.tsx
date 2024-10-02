@@ -439,7 +439,7 @@ const SceneView = memo(
 
     const spritePalettes = useMemo(
       () =>
-        gbcEnabled
+        !previewAsMono
           ? [
               getSpritePalette(0),
               getSpritePalette(1),
