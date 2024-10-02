@@ -378,14 +378,6 @@ const SceneView = memo(
       state.project.present.settings.defaultBGP ?? [0,1,2,3]
     );
 
-    const defaultOBP0 = useAppSelector((state) =>
-      state.project.present.settings.defaultOBP0 ?? [0,1,2,3]
-    );
-
-    const defaultOBP1 = useAppSelector((state) =>
-      state.project.present.settings.defaultOBP1 ?? [0,1,2,3]
-    );
-
     const getPalette = useCallback(
       (paletteIndex: number) => {
         const sceneBackgroundPaletteIds = scene?.paletteIds ?? [];

@@ -23,7 +23,7 @@ interface SceneSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
   optional?: boolean;
-  optionalLabel?: string;
+  optionalLabels?: string[];
   onChange?: (newId: string) => void;
 }
 
@@ -61,10 +61,11 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   value,
   onChange,
   optional,
-  optionalLabel,
+  optionalLabels,
   ...selectProps
 }) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const optionalScenes = (optionalLabels || []).map((optionalLabel, i) => ({ value: i.toString(), label: optionalLabel }) ) as SceneOption[];
   const backgroundsLookup = useAppSelector((state) =>
     backgroundSelectors.selectEntities(state)
   );
@@ -84,20 +85,9 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   }, [scenes]);
 
   useEffect(() => {
-    setOptions(
-      ([] as SceneOption[]).concat(
-        optional
-          ? ([
-              {
-                value: "",
-                label: optionalLabel || "None",
-              },
-            ] as SceneOption[])
-          : ([] as SceneOption[]),
-        scenes.map(sceneToSceneOption).sort(sortByLabel)
-      )
-    );
-  }, [scenes, optional, optionalLabel]);
+    const sceneOptions = scenes.map(sceneToSceneOption).sort(sortByLabel);
+    setOptions(([] as SceneOption[]).concat(optionalScenes, sceneOptions));
+  }, [scenes, optional, optionalLabels]);
 
   useEffect(() => {
     setCurrentScene(scenes.find((v) => v.id === value));
@@ -109,6 +99,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
         sceneToSceneOption(currentScene, scenes.indexOf(currentScene))
       );
     }
+    else if (optional && optionalScenes.length > 0) setCurrentValue(optionalScenes[+(value || 1)]);
   }, [currentScene, scenes]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
