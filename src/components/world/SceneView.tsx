@@ -259,8 +259,9 @@ const SceneView = memo(
     );
     const previewAsMono = useAppSelector(
       (state) =>
-        state.project.present.settings.colorMode === "mixed" &&
-        state.project.present.settings.previewAsMono
+        state.project.present.settings.colorMode === "mono" ||
+        (state.project.present.settings.colorMode === "mixed" &&
+         state.project.present.settings.previewAsMono)
     );
 
     const tool = useAppSelector((state) => state.editor.tool);
@@ -373,7 +374,17 @@ const SceneView = memo(
         state.project.present.settings.defaultBackgroundPaletteIds ?? []
     );
 
-    //TODO: getBGP, getOBP0, getOBP1 -NB
+    const defaultBGP = useAppSelector((state) =>
+      state.project.present.settings.defaultBGP ?? [0,1,2,3]
+    );
+
+    const defaultOBP0 = useAppSelector((state) =>
+      state.project.present.settings.defaultOBP0 ?? [0,1,2,3]
+    );
+
+    const defaultOBP1 = useAppSelector((state) =>
+      state.project.present.settings.defaultOBP1 ?? [0,1,2,3]
+    );
 
     const getPalette = useCallback(
       (paletteIndex: number) => {
@@ -674,6 +685,7 @@ const SceneView = memo(
                       : undefined
                   }
                   previewAsMono={previewAsMono}
+                  monoPalette={defaultBGP}
                 />
               ) : (
                 <ColorizedImage
@@ -683,6 +695,7 @@ const SceneView = memo(
                   tiles={tileColors}
                   palettes={palettes}
                   previewAsMono={previewAsMono}
+                  monoPalette={defaultBGP}
                 />
               )}
             </>

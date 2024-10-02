@@ -14,6 +14,7 @@ interface AutoColorizedImageProps {
   src: string;
   tilesSrc?: string;
   previewAsMono?: boolean;
+  monoPalette?: [number,number,number,number];
 }
 
 const AutoColorizedImage = ({
@@ -22,6 +23,7 @@ const AutoColorizedImage = ({
   src,
   tilesSrc,
   previewAsMono,
+  monoPalette
 }: AutoColorizedImageProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
@@ -65,10 +67,11 @@ const AutoColorizedImage = ({
         width,
         height,
         previewAsMono,
+        monoPalette,
         id: workerId.current,
       });
     }
-  }, [height, src, tilesSrc, width, previewAsMono]);
+  }, [height, src, tilesSrc, width, previewAsMono, monoPalette]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };

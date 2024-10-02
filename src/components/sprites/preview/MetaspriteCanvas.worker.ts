@@ -79,7 +79,7 @@ workerCtx.onmessage = async (evt) => {
       [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) => {
         tilesCanvases[i] = new OffscreenCanvas(img.width, img.height);
         const colors = previewAsMono
-          ? DMG_PALETTE.colors
+          ? DMG_PALETTE.colors //TODO: replace with custom DMG colors from settings
           : palettes[i] || DMG_PALETTE.colors;
         const canvas = tilesCanvases[i];
         const ctx = canvas.getContext("2d");

@@ -28,6 +28,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tilesSrc = evt.data.tilesSrc as string | undefined;
   const previewAsMono = evt.data.previewAsMono;
+  const monoPalette = evt.data.monoPalette ?? [0, 1, 2, 3];
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
@@ -126,7 +127,7 @@ workerCtx.onmessage = async (evt) => {
   const palettesRGB = paletteData.palettes.map((colors: string[]) =>
     colors.map(hex2GBCrgb)
   );
-  const dmgPalette = DMG_PALETTE.colors.map(hex2GBCrgb);
+  const dmgPalette = DMG_PALETTE.colors.map(hex2GBCrgb);//TODO: update dmg palette from custom colors instead of it being constant -NB
 
   const tiles = paletteData.map;
   const indexedImage = paletteData.indexedImage;
@@ -146,7 +147,7 @@ workerCtx.onmessage = async (evt) => {
         const index = ii * 4;
         const colorIndex = indexedImage.data[ii];
         const color = previewAsMono
-          ? dmgPalette[colorIndex]
+          ? dmgPalette[monoPalette[colorIndex]]
           : palette[colorIndex];
         data[index] = color.r;
         data[index + 1] = color.g;

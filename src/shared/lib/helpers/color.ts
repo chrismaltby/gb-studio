@@ -63,6 +63,13 @@ export const rgb5BitToGBCHex = (
 };
 
 export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
+  //NOTE: can't use settings inside of workers
+  // const settings = useAppSelector((state) => state.project.present.settings);
+  // const obp =  objPalette === "OBP1" ? settings.defaultOBP1 : settings.defaultOBP0;
+  // if (g < 65) return obp[3];
+  // if (g < 130) return obp[2];
+  // if (g < 205) return obp[1];
+  // return 0;
   if (g < 65) {
     return 3;
   }
