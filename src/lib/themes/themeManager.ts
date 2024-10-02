@@ -54,6 +54,7 @@ export class ThemeManager {
   }
 
   async loadPluginThemes() {
+    this.pluginThemes = {};
     const globalPluginsPath = getGlobalPluginsPath();
     const pluginPaths = await globAsync(
       join(globalPluginsPath, "**/theme.json")

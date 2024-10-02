@@ -391,11 +391,7 @@ export const createProjectWindow = async () => {
   projectWindow.on("closed", () => {
     projectWindow = null;
     projectPath = "";
-    menu.buildMenu({
-      themeManager,
-      languages: [],
-    });
-
+    refreshMenu();
     if (musicWindow) {
       musicWindow.destroy();
     }
@@ -712,10 +708,7 @@ app.on("ready", async () => {
 
   await themeManager.loadPluginThemes();
 
-  menu.buildMenu({
-    themeManager,
-    languages: [],
-  });
+  refreshMenu();
 
   // Enable DevTools.
   if (isDevMode) {
@@ -2017,6 +2010,7 @@ nativeTheme?.on("updated", () => {
 watchGlobalPlugins({
   onChangedThemePlugin: async (path: string) => {
     await themeManager.loadPluginTheme(path);
+    refreshMenu();
     refreshTheme();
   },
   onChangedLanguagePlugin: function (path: string): void {
@@ -2025,8 +2019,10 @@ watchGlobalPlugins({
   onChangedTemplatePlugin: function (path: string): void {
     console.log("onChangedTemplatePlugin: ", path);
   },
-  onRemoveThemePlugin: function (path: string): void {
-    console.log("onRemoveThemePlugin: ", path);
+  onRemoveThemePlugin: async () => {
+    await themeManager.loadPluginThemes();
+    refreshMenu();
+    refreshTheme();
   },
   onRemoveLanguagePlugin: function (path: string): void {
     console.log("onRemoveLanguagePlugin: ", path);
@@ -2041,6 +2037,13 @@ const refreshTheme = () => {
   const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
   sendToSplashWindow("update-theme", theme);
   sendToProjectWindow("update-theme", theme);
+};
+
+const refreshMenu = () => {
+  menu.buildMenu({
+    themeManager,
+    languages: [],
+  });
 };
 
 const newProject = async () => {
