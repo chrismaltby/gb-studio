@@ -31,8 +31,8 @@ const PillWrapper = styled.div`
   left: 10px;
   z-index: 11;
   border-radius: 16px;
-  background: ${(props) => props.theme.colors.document.background};
-  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.background};
   font-size: ${(props) => props.theme.typography.fontSize};
 `;
 

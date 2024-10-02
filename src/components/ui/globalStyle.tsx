@@ -88,7 +88,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   div::-webkit-scrollbar-corner {
-    background: ${(props) => props.theme.colors.document.background};
+    background: ${(props) => props.theme.colors.background};
   }
 
   body .CustomSelect__menu {

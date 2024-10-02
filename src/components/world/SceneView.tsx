@@ -64,7 +64,7 @@ interface SceneViewProps {
 const SceneName = styled.div`
   white-space: nowrap;
   font-size: 11px;
-  background-color: ${(props) => props.theme.colors.document.background};
+  background-color: ${(props) => props.theme.colors.background};
   border-radius: 32px;
   transition: background 0.3s ease-in-out;
   overflow: hidden;
@@ -166,8 +166,7 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           &:after {
             content: "";
-            background-color: ${(props) =>
-              props.theme.colors.document.background};
+            background-color: ${(props) => props.theme.colors.background};
             border-radius: 4px;
             opacity: 0.8;
             position: absolute;

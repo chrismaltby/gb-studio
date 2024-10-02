@@ -32,7 +32,7 @@ export const SplashContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   color: ${(props) => props.theme.colors.text};
   padding: 20px;
   flex-grow: 1;
@@ -301,7 +301,7 @@ export const SplashScroll = styled.div`
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   color: ${(props) => props.theme.colors.text};
   position: relative;
 

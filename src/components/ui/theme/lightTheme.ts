@@ -12,7 +12,7 @@ const lightTheme: ThemeInterface = {
     highlight: "#c92c61",
     highlightText: "#ffffff",
     text: "#3b3a3b",
-    background: "#f2f2f2",
+    background: "#f9f9f9",
     secondaryText: "#999999",
     token: {
       variable: "#9ccc65",
