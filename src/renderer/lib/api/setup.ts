@@ -51,6 +51,7 @@ import type {
   PluginRepositoryEntry,
   PluginRepositoryMetadata,
   InstalledPluginData,
+  PluginType,
 } from "lib/pluginManager/types";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
 
@@ -377,10 +378,10 @@ const APISetup = {
     addPluginRepo: (url: string) => ipcRenderer.invoke("plugins:add-repo", url),
     removePluginRepo: (url: string) =>
       ipcRenderer.invoke("plugins:remove-repo", url),
-    addPlugin: (id: string, repoUrl?: string) =>
-      ipcRenderer.invoke("plugins:add", id, repoUrl),
-    removePlugin: (id: string, repoUrl?: string) =>
-      ipcRenderer.invoke("plugins:remove", id, repoUrl),
+    addPlugin: (id: string, repoId: string) =>
+      ipcRenderer.invoke("plugins:add", id, repoId),
+    removePlugin: (id: string, pluginType: PluginType) =>
+      ipcRenderer.invoke("plugins:remove", id, pluginType),
     getInstalledPlugins: (): Promise<InstalledPluginData[]> =>
       ipcRenderer.invoke("plugins:get-installed"),
   },

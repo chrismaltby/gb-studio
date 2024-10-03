@@ -135,10 +135,15 @@ import {
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 import { getPluginsInProject } from "lib/pluginManager/project";
-import { ensureGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
-import { InstalledPluginData } from "lib/pluginManager/types";
+import {
+  ensureGlobalPluginsPath,
+  getPluginsInstalledGlobally,
+  removeGlobalPlugin,
+} from "lib/pluginManager/globalPlugins";
+import { InstalledPluginData, PluginType } from "lib/pluginManager/types";
 import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
 import { ThemeManager } from "lib/themes/themeManager";
+import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1822,16 +1827,23 @@ ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
   await addPluginToProject(projectPath, pluginId, repoId);
 });
 
-ipcMain.handle("plugins:remove", async (_, pluginId: string) => {
-  if (!projectPath) {
-    dialog.showErrorBox(
-      l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
-      l10n("ERROR_NO_PROJECT_IS_OPEN")
-    );
-    return;
+ipcMain.handle(
+  "plugins:remove",
+  async (_, pluginId: string, pluginType: PluginType) => {
+    if (isGlobalPluginType(pluginType)) {
+      await removeGlobalPlugin(pluginId);
+    } else {
+      if (!projectPath) {
+        dialog.showErrorBox(
+          l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
+          l10n("ERROR_NO_PROJECT_IS_OPEN")
+        );
+        return;
+      }
+      await removePluginFromProject(projectPath, pluginId);
+    }
   }
-  await removePluginFromProject(projectPath, pluginId);
-});
+);
 
 ipcMain.handle("plugins:get-installed", async () => {
   const plugins: InstalledPluginData[] = [];
@@ -1839,6 +1851,8 @@ ipcMain.handle("plugins:get-installed", async () => {
     const projectPlugins = await getPluginsInProject(projectPath);
     plugins.push(...projectPlugins);
   }
+  const globalPlugins = await getPluginsInstalledGlobally();
+  plugins.push(...globalPlugins);
   return plugins;
 });
 

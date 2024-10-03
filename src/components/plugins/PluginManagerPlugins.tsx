@@ -351,7 +351,7 @@ const PluginsManagerPlugins = ({
                     setAction("remove");
                     await API.pluginManager.removePlugin(
                       selectedPluginItem.plugin.id,
-                      selectedPluginItem.repo.id
+                      selectedPluginItem.plugin.type
                     );
                     refreshData();
                     setAction("none");
