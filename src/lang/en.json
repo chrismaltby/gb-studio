@@ -946,7 +946,7 @@
   "FIELD_ASSET_PACK": "Asset Pack",
   "FIELD_EVENTS_PLUGIN": "Events Plugin",
   "FIELD_ENGINE_PLUGIN": "Engine Plugin",
-  "FIELD_LANGUAGE_PLUGIN": "Language Pack",
+  "FIELD_LANGUAGE_PLUGIN": "Localisation",
   "FIELD_TEMPLATE_PLUGIN": "Project Template",
   "FIELD_REQUIRES_GBS_VERSION": "Requires GB Studio Version: {version}",
   "FIELD_INSTALL_ANYWAY": "Install Anyway",
