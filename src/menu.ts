@@ -9,8 +9,8 @@ import {
 } from "electron";
 import { assetsRoot } from "./consts";
 import l10n from "shared/lib/lang/l10n";
-import { locales } from "lib/lang/initElectronL10N";
 import { ThemeManager } from "lib/themes/themeManager";
+import { L10nManager } from "lib/lang/l10nManager";
 
 declare const COMMITHASH: string;
 
@@ -109,18 +109,16 @@ const openAbout = () => {
   });
 };
 
-type DynamicMenuItem = {
-  id: string;
-  label: string;
-};
-
 interface BuildMenuProps {
   themeManager: ThemeManager;
-  languages: DynamicMenuItem[];
+  l10nManager: L10nManager;
 }
 
-const buildMenu = async ({ themeManager, languages }: BuildMenuProps) => {
+const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
   const pluginThemes = themeManager.getPluginThemes();
+  const pluginLangs = l10nManager.getPluginL10Ns();
+  const systemLangs = l10nManager.getSystemL10Ns();
+
   const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
@@ -438,24 +436,24 @@ const buildMenu = async ({ themeManager, languages }: BuildMenuProps) => {
               },
               { type: "separator" },
             ],
-            locales.map((locale) => {
+            systemLangs.map((language) => {
               return {
-                id: `locale-${locale}`,
-                label: locale,
+                id: `locale-${language.id}`,
+                label: language.name,
                 type: "checkbox",
-                checked: settings.get("locale") === locale,
+                checked: settings.get("locale") === language.id,
                 click() {
-                  notifyListeners("updateLocale", locale);
+                  notifyListeners("updateLocale", language.id);
                 },
               };
             }),
-            ...(languages.length > 0
+            ...(pluginLangs.length > 0
               ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
               : []),
-            ...languages.map(
+            ...pluginLangs.map(
               (language): MenuItemConstructorOptions => ({
-                id: language.id,
-                label: language.label,
+                id: `locale-${language.id}`,
+                label: language.name,
                 type: "checkbox",
                 checked: settings.get("locale") === language.id,
                 click() {

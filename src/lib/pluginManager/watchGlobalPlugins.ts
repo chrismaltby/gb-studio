@@ -29,7 +29,7 @@ const watchGlobalPlugins = (callbacks: {
     .on("unlink", callbacks.onRemoveThemePlugin);
 
   const languagePluginWatcher = chokidar
-    .watch([`${globalPluginsPath}/**/language.{json,JSON}`], {
+    .watch([`${globalPluginsPath}/**/lang.{json,JSON}`], {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,

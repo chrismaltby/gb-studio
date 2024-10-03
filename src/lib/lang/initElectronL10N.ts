@@ -6,6 +6,7 @@ import Path from "path";
 import en from "lang/en.json";
 import { localesRoot } from "consts";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
+import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 
 const localesPath = `${localesRoot}/*.json`;
 
@@ -30,11 +31,22 @@ export const loadLanguage = (locale: string) => {
 
   if (locale && locale !== "en") {
     try {
-      const translation = JSON.parse(
-        fs.readFileSync(`${localesRoot}/${locale}.json`, "utf-8")
-      ) as L10NLookup;
-      setL10NData(translation);
-      return translation;
+      const isPlugin = Path.basename(locale) === "lang.json";
+      const globalPluginsPath = getGlobalPluginsPath();
+
+      if (isPlugin) {
+        const translation = JSON.parse(
+          fs.readFileSync(`${globalPluginsPath}/${locale}`, "utf-8")
+        ) as L10NLookup;
+        setL10NData(translation);
+        return translation;
+      } else {
+        const translation = JSON.parse(
+          fs.readFileSync(`${localesRoot}/${locale}.json`, "utf-8")
+        ) as L10NLookup;
+        setL10NData(translation);
+        return translation;
+      }
     } catch (e) {
       console.warn("No language pack for user setting, falling back to en");
       console.warn(

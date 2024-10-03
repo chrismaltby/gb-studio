@@ -80,10 +80,7 @@ import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
-import initElectronL10N, {
-  getAppLocale,
-  locales,
-} from "lib/lang/initElectronL10N";
+import initElectronL10N, { getAppLocale } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -144,6 +141,7 @@ import { InstalledPluginData, PluginType } from "lib/pluginManager/types";
 import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
 import { ThemeManager } from "lib/themes/themeManager";
 import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
+import { L10nManager } from "lib/lang/l10nManager";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -187,6 +185,7 @@ let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
 
 const themeManager = new ThemeManager(process.platform);
+const l10nManager = new L10nManager();
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -712,6 +711,7 @@ app.on("ready", async () => {
   initElectronL10N();
 
   await themeManager.loadPluginThemes();
+  await l10nManager.loadPlugins();
 
   refreshMenu();
 
@@ -1982,8 +1982,11 @@ menu.on("updateTheme", (value) => {
 menu.on("updateLocale", (value) => {
   settings.set("locale", value as JsonValue);
   setMenuItemChecked("localeDefault", value === undefined);
-  for (const locale of locales) {
-    setMenuItemChecked(`locale-${locale}`, value === locale);
+  for (const lang of l10nManager.getSystemL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
+  }
+  for (const lang of l10nManager.getPluginL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
   }
   switchLanguageDialog();
   initElectronL10N();
@@ -2027,8 +2030,9 @@ watchGlobalPlugins({
     refreshMenu();
     refreshTheme();
   },
-  onChangedLanguagePlugin: function (path: string): void {
-    console.log("onChangedLanguagePlugin: ", path);
+  onChangedLanguagePlugin: async (path: string) => {
+    await l10nManager.loadPlugin(path);
+    refreshMenu();
   },
   onChangedTemplatePlugin: function (path: string): void {
     console.log("onChangedTemplatePlugin: ", path);
@@ -2038,8 +2042,9 @@ watchGlobalPlugins({
     refreshMenu();
     refreshTheme();
   },
-  onRemoveLanguagePlugin: function (path: string): void {
-    console.log("onRemoveLanguagePlugin: ", path);
+  onRemoveLanguagePlugin: async () => {
+    await l10nManager.loadPlugins();
+    refreshMenu();
   },
   onRemoveTemplatePlugin: function (path: string): void {
     console.log("onRemoveTemplatePlugin: ", path);
@@ -2056,7 +2061,7 @@ const refreshTheme = () => {
 const refreshMenu = () => {
   menu.buildMenu({
     themeManager,
-    languages: [],
+    l10nManager,
   });
 };
 
