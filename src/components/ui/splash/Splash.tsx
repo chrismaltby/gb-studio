@@ -5,6 +5,15 @@ import { Button } from "ui/buttons/Button";
 import projectIcon from "ui/icons/gbsproj.png";
 import { CloseIcon } from "ui/icons/Icons";
 import { StyledSplashTab, StyledSplashWindow } from "ui/splash/style";
+import type { TemplatePlugin } from "lib/templates/templateManager";
+import {
+  Option,
+  Select,
+  SelectMenu,
+  selectMenuStyleProps,
+} from "ui/form/Select";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import pluginPreview from "assets/templatePreview/plugin.png";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
@@ -149,6 +158,7 @@ export interface Template {
 
 export interface SplashTemplateSelectProps {
   templates: Template[];
+  templatePlugins: TemplatePlugin[];
   name: string;
   value: string;
   onChange: (newValue: string) => void;
@@ -247,11 +257,30 @@ export const SplashTemplateVideo: FC<SplashTemplateVideoProps> = ({
 
 export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
   templates,
+  templatePlugins,
   name,
   value,
   onChange,
 }) => {
-  const selectedTemplate = templates.find((template) => template.id === value);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedPluginId, setSelectedPluginId] = useState(
+    templatePlugins[0]?.id ?? ""
+  );
+  const selectedPlugin =
+    templatePlugins.find((template) => template.id === selectedPluginId) ||
+    templatePlugins[0];
+  const selectedTemplate =
+    templates.find((template) => template.id === value) ?? selectedPlugin;
+
+  const templatePluginOptions: Option[] = templatePlugins.map((v) => ({
+    value: v.id,
+    label: v.name,
+  }));
+
+  const selectedTemplatePluginOption: Option =
+    templatePluginOptions.find((t) => t.value === selectedPluginId) ??
+    templatePluginOptions[0];
+
   return (
     <SplashTemplateSelectWrapper>
       <SplashTemplateSelectOptions>
@@ -279,6 +308,52 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
             </SplashTemplateLabel>
           </SplashTemplateButtonWrapper>
         ))}
+        {selectedPlugin && (
+          <SplashTemplateButtonWrapper key={selectedPlugin.id}>
+            <SplashTemplateButton
+              id={`${name}_${selectedPlugin.id}`}
+              name={name}
+              value={selectedPlugin.id}
+              checked={selectedPlugin.id === value}
+              onChange={() => onChange(selectedPlugin.id)}
+              onClick={() => setIsOpen(true)}
+            />
+            <SplashTemplateLabel
+              htmlFor={`${name}_${selectedPlugin.id}`}
+              title={selectedPlugin.name}
+            >
+              <img
+                src={selectedPlugin.preview}
+                alt={selectedPlugin.name}
+                onError={(e) =>
+                  ((e.target as HTMLImageElement).src = pluginPreview)
+                }
+              />
+            </SplashTemplateLabel>
+            {isOpen && (
+              <RelativePortal pin="top-right" offsetX={78}>
+                <SelectMenu>
+                  <Select
+                    name={name}
+                    options={templatePluginOptions}
+                    value={selectedTemplatePluginOption}
+                    onChange={(option) => {
+                      if (option) {
+                        setSelectedPluginId(option.value);
+                        onChange(option.value);
+                        setIsOpen(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      setIsOpen(false);
+                    }}
+                    {...selectMenuStyleProps}
+                  />
+                </SelectMenu>
+              </RelativePortal>
+            )}
+          </SplashTemplateButtonWrapper>
+        )}
       </SplashTemplateSelectOptions>
       {selectedTemplate && (
         <>

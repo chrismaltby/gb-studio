@@ -39,7 +39,7 @@ const watchGlobalPlugins = (callbacks: {
     .on("unlink", callbacks.onRemoveLanguagePlugin);
 
   const templatePluginWatcher = chokidar
-    .watch([`${globalPluginsPath}/**/template.{json,JSON}`], {
+    .watch([`${globalPluginsPath}/**/project.gbsproj`], {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,

@@ -53,7 +53,8 @@ import type {
   InstalledPluginData,
   PluginType,
 } from "lib/pluginManager/types";
-import { ThemeInterface } from "ui/theme/ThemeInterface";
+import type { ThemeInterface } from "ui/theme/ThemeInterface";
+import type { TemplatePlugin } from "lib/templates/templateManager";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -142,6 +143,10 @@ const APISetup = {
       ipcRenderer.on("update-theme", (_, theme: ThemeInterface) =>
         callback(theme)
       ),
+  },
+  templates: {
+    getTemplatesList: (): Promise<TemplatePlugin[]> =>
+      ipcRenderer.invoke("templates:list"),
   },
   paths: {
     getDocumentsPath: (): Promise<string> =>
@@ -485,6 +490,11 @@ const APISetup = {
             value: SettingsState[K]
           ) => void
         >("setting:changed"),
+    },
+    templates: {
+      templatesListChanged: createSubscribeAPI<
+        (event: IpcRendererEvent, templates: TemplatePlugin[]) => void
+      >("templates:list:changed"),
     },
     watch: {
       sprite: createWatchSubscribeAPI<SpriteAssetData>("watch:sprite"),

@@ -134,6 +134,7 @@ import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
 import { getPluginsInProject } from "lib/pluginManager/project";
 import {
   ensureGlobalPluginsPath,
+  getGlobalPluginsPath,
   getPluginsInstalledGlobally,
   removeGlobalPlugin,
 } from "lib/pluginManager/globalPlugins";
@@ -142,6 +143,7 @@ import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
 import { ThemeManager } from "lib/themes/themeManager";
 import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 import { L10nManager } from "lib/lang/l10nManager";
+import { TemplateManager } from "lib/templates/templateManager";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -186,6 +188,7 @@ let scriptEventHandlers: ScriptEventHandlers = {};
 
 const themeManager = new ThemeManager(process.platform);
 const l10nManager = new L10nManager();
+const templateManager = new TemplateManager();
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -712,6 +715,7 @@ app.on("ready", async () => {
 
   await themeManager.loadPluginThemes();
   await l10nManager.loadPlugins();
+  await templateManager.loadPlugins();
 
   refreshMenu();
 
@@ -768,6 +772,13 @@ app.on("ready", async () => {
       const filename = Path.join(assetsRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, assetsRoot);
+      return callback({ path: filename });
+    } else if (host === "global-plugin") {
+      // Load an asset from the GB Studio global plugins folder
+      const globalPluginsPath = getGlobalPluginsPath();
+      const filename = Path.join(globalPluginsPath, decodeURI(pathname));
+      // Check has permission to access this asset
+      guardAssetWithinProject(filename, globalPluginsPath);
       return callback({ path: filename });
     }
     return callback({
@@ -1856,6 +1867,10 @@ ipcMain.handle("plugins:get-installed", async () => {
   return plugins;
 });
 
+ipcMain.handle("templates:list", async () => {
+  return templateManager.getPluginTemplates();
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -2034,8 +2049,9 @@ watchGlobalPlugins({
     await l10nManager.loadPlugin(path);
     refreshMenu();
   },
-  onChangedTemplatePlugin: function (path: string): void {
-    console.log("onChangedTemplatePlugin: ", path);
+  onChangedTemplatePlugin: async (path: string) => {
+    await templateManager.loadPlugin(path);
+    refreshTemplatesList();
   },
   onRemoveThemePlugin: async () => {
     await themeManager.loadPluginThemes();
@@ -2046,8 +2062,9 @@ watchGlobalPlugins({
     await l10nManager.loadPlugins();
     refreshMenu();
   },
-  onRemoveTemplatePlugin: function (path: string): void {
-    console.log("onRemoveTemplatePlugin: ", path);
+  onRemoveTemplatePlugin: async () => {
+    await templateManager.loadPlugins();
+    refreshTemplatesList();
   },
 });
 
@@ -2056,6 +2073,13 @@ const refreshTheme = () => {
   const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
   sendToSplashWindow("update-theme", theme);
   sendToProjectWindow("update-theme", theme);
+};
+
+const refreshTemplatesList = () => {
+  sendToSplashWindow(
+    "templates:list:changed",
+    templateManager.getPluginTemplates()
+  );
 };
 
 const refreshMenu = () => {
