@@ -434,9 +434,9 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
-  dmgBGP?: number[];
-  dmgOBP0?: number[];
-  dmgOBP1?: number[];
+  dmgBGP?: [number,number,number,number];
+  dmgOBP0?: [number,number,number,number];
+  dmgOBP1?: [number,number,number,number];
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];

@@ -677,7 +677,7 @@ const SceneView = memo(
                       : undefined
                   }
                   previewAsMono={previewAsMono}
-                  monoPalette={defaultBGP}
+                  monoPalette={scene.dmgBGP ?? defaultBGP}
                 />
               ) : (
                 <ColorizedImage
@@ -687,7 +687,7 @@ const SceneView = memo(
                   tiles={tileColors}
                   palettes={palettes}
                   previewAsMono={previewAsMono}
-                  monoPalette={defaultBGP}
+                  monoPalette={scene.dmgBGP ?? defaultBGP}
                 />
               )}
             </>

@@ -21,13 +21,6 @@ export const DMGPalettePicker = ({
   const settings = useAppSelector((state) => state.project.present.settings);
   const dmgColors = [settings.customColorsWhite, settings.customColorsLight, settings.customColorsDark, settings.customColorsBlack];
   const fields = isSpritePalette ? [1, 2, 3] : [0, 1, 2, 3];
-  const onEdit = useCallback(
-    (index: number, e: number) => {
-      palette[index] = e;
-      onChange(palette);
-    },
-    [palette]
-  );
 
   function getRows() {
     return fields.map((index) =>
@@ -39,7 +32,11 @@ export const DMGPalettePicker = ({
           min={0}
           max={3}
           value={palette[index]}
-          onChange={(e) => onEdit(index, castEventToInt(e, index))}
+          onChange={(e) => {
+            let newPalette = [palette[0], palette[1], palette[2], palette[3]];
+            newPalette[index] = castEventToInt(e, 0);
+            onChange(newPalette as [number, number, number, number]);
+          }}
         />
       </FormField>
     );

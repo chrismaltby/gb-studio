@@ -73,6 +73,7 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
+import { DMGPalettePicker } from "components/forms/DMGPalettePicker";
 
 interface SceneEditorProps {
   id: string;
@@ -149,7 +150,18 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId
   );
-
+  const defaultBGP = useAppSelector((state) =>
+    state.project.present.settings.defaultBGP
+  );
+  const defaultOBP0 = useAppSelector((state) =>
+    state.project.present.settings.defaultOBP0
+  );
+  const defaultOBP1 = useAppSelector((state) =>
+    state.project.present.settings.defaultOBP1
+  );
+  const monoEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "color"
+  );
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
   );
@@ -322,6 +334,24 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onChangeStartDirection = useCallback(
     (e: ActorDirection) => onChangeSettingProp("startDirection", e),
     [onChangeSettingProp]
+  );
+
+  const onEditBGP = useCallback(
+    (palette: [number, number, number, number]) =>
+      onChangeSceneProp("dmgBGP", palette),
+    [onChangeSceneProp]
+  );
+
+  const onEditOBP0 = useCallback(
+    (palette: [number, number, number, number]) =>
+      onChangeSceneProp("dmgOBP0", palette),
+    [onChangeSceneProp]
+  );
+
+  const onEditOBP1 = useCallback(
+    (palette: [number, number, number, number]) =>
+      onChangeSceneProp("dmgOBP1", palette),
+    [onChangeSceneProp]
   );
 
   const selectSidebar = () => {
@@ -739,14 +769,14 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
               </SidebarColumn>
             )}
 
-            {colorsEnabled && (
               <SidebarColumn>
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
                     label={
                       <>
-                        {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                      {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                      {colorsEnabled && (
                         <InlineDropdownWrapper>
                           <DropdownButton
                             size="small"
@@ -784,10 +814,18 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             </MenuItem>
                           </DropdownButton>
                         </InlineDropdownWrapper>
+                        )}
                       </>
-                    }
-                  >
-                    {!background?.autoColor && (
+                    }>
+                    {monoEnabled && (
+                      <DMGPalettePicker 
+                        name="bgp" 
+                        palette={scene.dmgBGP ?? defaultBGP} 
+                        isSpritePalette={false} 
+                        onChange={onEditBGP} 
+                      />
+                    )}
+                    {colorsEnabled && !background?.autoColor && (
                       <PaletteButtons>
                         {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                           <PaletteSelectButton
@@ -816,6 +854,23 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     name="playerSpriteSheetId"
                     label={l10n("FIELD_SCENE_SPRITE_PALETTES")}
                   >
+                  {monoEnabled && (
+                    <DMGPalettePicker 
+                      name="obp0" 
+                      palette={scene.dmgOBP0 ?? defaultOBP0} 
+                      isSpritePalette={true} 
+                      onChange={onEditOBP0} 
+                    />
+                  )}
+                  {monoEnabled && (
+                    <DMGPalettePicker 
+                      name="obp1" 
+                      palette={scene.dmgOBP1 ?? defaultOBP1} 
+                      isSpritePalette={true} 
+                      onChange={onEditOBP1} 
+                    />
+                  )}
+                  {colorsEnabled && (
                     <PaletteButtons>
                       {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                         <PaletteSelectButton
@@ -837,12 +892,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         />
                       ))}
                     </PaletteButtons>
+                    )}
                   </FormField>
                 </FormRow>
 
                 {/* <FormDivider /> */}
               </SidebarColumn>
-            )}
             {scene.type !== "LOGO" && (
               <SidebarColumn>
                 <FormRow>
