@@ -823,6 +823,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         palette={scene.dmgBGP ?? defaultBGP} 
                         isSpritePalette={false} 
                         onChange={onEditBGP} 
+                        showName={true}
                       />
                     )}
                     {colorsEnabled && !background?.autoColor && (
@@ -854,22 +855,24 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     name="playerSpriteSheetId"
                     label={l10n("FIELD_SCENE_SPRITE_PALETTES")}
                   >
-                  {monoEnabled && (
-                    <DMGPalettePicker 
-                      name="obp0" 
-                      palette={scene.dmgOBP0 ?? defaultOBP0} 
-                      isSpritePalette={true} 
-                      onChange={onEditOBP0} 
-                    />
-                  )}
-                  {monoEnabled && (
-                    <DMGPalettePicker 
-                      name="obp1" 
-                      palette={scene.dmgOBP1 ?? defaultOBP1} 
-                      isSpritePalette={true} 
-                      onChange={onEditOBP1} 
-                    />
-                  )}
+                  {monoEnabled &&
+                    <PaletteButtons>
+                      <DMGPalettePicker 
+                        name="obp0" 
+                        palette={scene.dmgOBP0 ?? defaultOBP0} 
+                        isSpritePalette={true} 
+                        onChange={onEditOBP0} 
+                        showName={true}
+                      />
+                      <DMGPalettePicker 
+                        name="obp1" 
+                        palette={scene.dmgOBP1 ?? defaultOBP1} 
+                        isSpritePalette={true} 
+                        onChange={onEditOBP1} 
+                        showName={true}
+                      />
+                    </PaletteButtons>
+                  }
                   {colorsEnabled && (
                     <PaletteButtons>
                       {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (

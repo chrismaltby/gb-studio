@@ -9,24 +9,35 @@ type DMGPalettePickerProps = {
   palette: [number, number, number, number]
   isSpritePalette: boolean
   onChange: (palette: [number, number, number, number]) => void;
+  showName?: boolean
 };
 
 export const DMGPalettePicker = ({
   name,
   palette,
   isSpritePalette,
-  onChange
+  onChange,
+  showName
 }: DMGPalettePickerProps) => {
 
   const settings = useAppSelector((state) => state.project.present.settings);
   const dmgColors = [settings.customColorsWhite, settings.customColorsLight, settings.customColorsDark, settings.customColorsBlack];
   const fields = isSpritePalette ? [1, 2, 3] : [0, 1, 2, 3];
-
+  const width = showName ? `max-width: ${isSpritePalette ? 121 : 245}px;` : "width: 100%";
   const DMGPalettePickerStyle = styled.div`
     display: flex;
-    width: 100%;
-    box-sizing: border-box;`
+    ${width}
+    box-sizing: border-box;
+  `
 
+  const DMGPaletteTextStyle = styled.div`
+    width: 9px;
+    color: grey;
+    font-size: 9px;
+    text-align: center;
+    transform-origin:50% 50%;
+    transform: rotate(90deg) translate(-7px,8px);
+  `
   function getRows() {
     return fields.map((index) =>
       <NumberInput
@@ -45,5 +56,6 @@ export const DMGPalettePicker = ({
     );
   }
 
-  return <DMGPalettePickerStyle>{getRows()}</DMGPalettePickerStyle>;
+  if (showName) return <DMGPalettePickerStyle><DMGPaletteTextStyle>{name.toUpperCase()}</DMGPaletteTextStyle>{getRows()}</DMGPalettePickerStyle>;
+  else return <DMGPalettePickerStyle>{getRows()}</DMGPalettePickerStyle>;
 };

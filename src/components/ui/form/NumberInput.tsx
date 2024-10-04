@@ -17,7 +17,7 @@ export interface NumberInputProps
 const NumberInputWrapper = styled.div`
   position: relative;
   width: 100%;
-  min-width: 45px;
+  min-width: 10px;
 `;
 
 const valueToString = (value: unknown) =>
