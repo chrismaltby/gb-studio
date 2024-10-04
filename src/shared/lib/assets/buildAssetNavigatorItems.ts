@@ -1,6 +1,9 @@
+import { join } from "path";
+
 type Asset = {
   id: string;
   filename: string;
+  plugin?: string;
 };
 
 export type FileSystemNavigatorItem<T> = {
@@ -17,8 +20,11 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: "base",
 });
 
-const sortByFilename = (a: Asset, b: Asset) => {
-  return collator.compare(a.filename, b.filename);
+const sortByName = <T>(
+  a: FileSystemNavigatorItem<T>,
+  b: FileSystemNavigatorItem<T>
+) => {
+  return collator.compare(a.name, b.name);
 };
 
 export const buildAssetNavigatorItems = <T extends Asset>(
@@ -59,45 +65,44 @@ export const buildAssetNavigatorItems = <T extends Asset>(
     return result;
   }
 
-  assets
-    .slice()
-    .sort(sortByFilename)
-    .forEach((asset) => {
-      const path = asset.filename;
-      const parts = path.split(/[\\/]/);
-      let currentPath = "";
+  assets.slice().forEach((asset) => {
+    const path = asset.plugin
+      ? join("plugins", asset.plugin, asset.filename)
+      : asset.filename;
+    const parts = path.split(/[\\/]/);
+    let currentPath = "";
 
-      parts.forEach((part, index) => {
-        const isLast = index === parts.length - 1;
-        currentPath += (currentPath ? "/" : "") + part;
-        if (isLast) {
-          const nestLevel = parts.length > 1 ? parts.length - 1 : 0;
-          if (!isVisible(currentPath, nestLevel)) {
-            return;
-          }
-          result.push({
-            id: asset.id,
-            type: "file",
-            name: currentPath.replace(/\.[^.]*$/, ""),
-            filename: part,
-            nestLevel,
-            asset,
-          });
-        } else if (!uniqueFolders.has(currentPath)) {
-          if (!isVisible(currentPath, index)) {
-            return;
-          }
-          uniqueFolders.add(currentPath);
-          result.push({
-            id: currentPath,
-            type: "folder",
-            name: currentPath,
-            filename: part,
-            nestLevel: index,
-          });
+    parts.forEach((part, index) => {
+      const isLast = index === parts.length - 1;
+      currentPath += (currentPath ? "/" : "") + part;
+      if (isLast) {
+        const nestLevel = parts.length > 1 ? parts.length - 1 : 0;
+        if (!isVisible(currentPath, nestLevel)) {
+          return;
         }
-      });
+        result.push({
+          id: asset.id,
+          type: "file",
+          name: currentPath.replace(/\.[^.]*$/, ""),
+          filename: part,
+          nestLevel,
+          asset,
+        });
+      } else if (!uniqueFolders.has(currentPath)) {
+        if (!isVisible(currentPath, index)) {
+          return;
+        }
+        uniqueFolders.add(currentPath);
+        result.push({
+          id: currentPath,
+          type: "folder",
+          name: currentPath,
+          filename: part,
+          nestLevel: index,
+        });
+      }
     });
+  });
 
-  return result;
+  return result.sort(sortByName);
 };
