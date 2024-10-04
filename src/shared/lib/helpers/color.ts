@@ -64,8 +64,7 @@ export const rgb5BitToGBCHex = (
 
 //NOTE: this assumes GB Studio's sprite image requirements are met... https://www.gbstudio.dev/docs/assets/sprites#image-requirements
 export const indexSpriteColour = (g: number, objPalette: [number, number, number, number]) => {
-  if (g < 65) return objPalette[3];
-  if (g < 130) return objPalette[2];
+  if (g < 130) return objPalette[3];
   if (g < 205) return objPalette[2];
   return objPalette[1];
 };
