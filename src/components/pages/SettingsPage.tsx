@@ -370,10 +370,10 @@ const SettingsPage: FC = () => {
             <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["DMG Background Palette (BGP)"]}//TODO: l10n language lookup -NB
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_BGP")]}
               >
                 <SettingRowLabel>
-                  {"DMG Background Palette (BGP)"}
+                  {l10n("FIELD_DEFAULT_DMG_BGP")}
                 </SettingRowLabel>
                 <SettingRowInput>
                   <DMGPalettePicker 
@@ -386,10 +386,10 @@ const SettingsPage: FC = () => {
               </SearchableSettingRow>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["DMG Object Palette 0 (OBP0)"]}
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_OBP0")]}
               >
                 <SettingRowLabel>
-                  {"DMG Object Palette 0 (OBP0)"}
+                  {l10n("FIELD_DEFAULT_DMG_OBP0")}
                 </SettingRowLabel>
                 <SettingRowInput>
                   <DMGPalettePicker 
@@ -402,10 +402,10 @@ const SettingsPage: FC = () => {
               </SearchableSettingRow>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["DMG Object Palette 1 (OBP1)"]}
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_OBP1")]}
               >
                 <SettingRowLabel>
-                  {"DMG Object Palette 1 (OBP1)"}
+                  {l10n("FIELD_DEFAULT_DMG_OBP1")}
                 </SettingRowLabel>
                 <SettingRowInput>
                   <DMGPalettePicker 
