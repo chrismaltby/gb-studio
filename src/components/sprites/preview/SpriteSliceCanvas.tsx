@@ -87,7 +87,7 @@ export const SpriteSliceCanvas = ({
       height,
       flipX,
       flipY,
-      monoPalette: palette ? [0,1,2,3] : monoPalette,
+      monoPalette: palette ? [0,0,1,3] : monoPalette,
       palette: (palette || DMG_PALETTE).colors,
     });
   }, [
