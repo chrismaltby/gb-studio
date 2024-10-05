@@ -40,6 +40,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
+import { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const TILE_SIZE = 8;
 
@@ -374,9 +375,16 @@ const SceneView = memo(
         state.project.present.settings.defaultBackgroundPaletteIds ?? []
     );
 
-    const defaultBGP = useAppSelector((state) =>
-      state.project.present.settings.defaultBGP ?? [0,1,2,3]
-    );
+    const backgroundMonoPalette = useAppSelector((state) => {
+      const defaultBGP = state.project.present.settings.defaultBGP ?? [0,1,2,3]
+      return scene.dmgBGP ?? defaultBGP;
+    });
+
+    const spriteMonoPalettes = useAppSelector((state) => {
+      const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
+      const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
+      return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1] as [MonoPalette, MonoPalette];
+    });
 
     const getPalette = useCallback(
       (paletteIndex: number) => {
@@ -677,7 +685,7 @@ const SceneView = memo(
                       : undefined
                   }
                   previewAsMono={previewAsMono}
-                  monoPalette={scene.dmgBGP ?? defaultBGP}
+                  monoPalette={backgroundMonoPalette}
                 />
               ) : (
                 <ColorizedImage
@@ -687,7 +695,7 @@ const SceneView = memo(
                   tiles={tileColors}
                   palettes={palettes}
                   previewAsMono={previewAsMono}
-                  monoPalette={scene.dmgBGP ?? defaultBGP}
+                  monoPalette={backgroundMonoPalette}
                 />
               )}
             </>
@@ -791,6 +799,7 @@ const SceneView = memo(
                 sceneId={id}
                 palettes={spritePalettes}
                 editable={editable}
+                sceneMonoPalettes={spriteMonoPalettes}
               />
             ))}
           {selected && (

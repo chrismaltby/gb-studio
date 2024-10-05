@@ -44,6 +44,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { DMGPalettePicker } from "components/forms/DMGPalettePicker";
+import type { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -166,21 +167,21 @@ const SettingsPage: FC = () => {
   );
 
   const onEditBGP = useCallback(
-    (palette: [number, number, number, number]) => {
+    (palette: MonoPalette) => {
       editSettings({ defaultBGP: palette });
     },
     [defaultBGP, editSettings]
   );
 
   const onEditOBP0 = useCallback(
-    (palette: [number, number, number, number]) => {
+    (palette: MonoPalette) => {
       editSettings({ defaultOBP0: palette });
     },
     [defaultOBP0, editSettings]
   );
 
   const onEditOBP1 = useCallback(
-    (palette: [number, number, number, number]) => {
+    (palette: MonoPalette) => {
       editSettings({ defaultOBP1: palette });
     },
     [defaultOBP1, editSettings]

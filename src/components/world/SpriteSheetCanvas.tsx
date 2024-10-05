@@ -6,7 +6,7 @@ import {
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
+import { ActorDirection, Palette, MonoPalette } from "shared/lib/entities/entitiesTypes";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
 
 interface SpriteSheetCanvasProps {
@@ -16,6 +16,7 @@ interface SpriteSheetCanvasProps {
   palettes?: Palette[];
   previewAsMono?: boolean;
   offsetPosition?: boolean;
+  sceneMonoPalettes?:[MonoPalette, MonoPalette];
 }
 
 const Wrapper = styled.div`
@@ -31,6 +32,7 @@ const SpriteSheetCanvas = ({
   palettes,
   previewAsMono,
   offsetPosition,
+  sceneMonoPalettes,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
@@ -91,6 +93,7 @@ const SpriteSheetCanvas = ({
         palettes={palettes}
         flipX={flipX}
         previewAsMono={previewAsMono}
+        sceneMonoPalettes={sceneMonoPalettes}
       />
     </Wrapper>
   );

@@ -2,13 +2,14 @@ import React, { useCallback } from "react";
 import {useAppSelector } from "store/hooks";
 import { NumberInput } from "ui/form/NumberInput";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
+import type { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 type DMGPalettePickerProps = {
   name: string
-  palette: [number, number, number, number]
+  palette: MonoPalette
   isSpritePalette: boolean
-  onChange: (palette: [number, number, number, number]) => void;
+  onChange: (palette: MonoPalette) => void;
   showName?: boolean
 };
 
@@ -41,6 +42,7 @@ export const DMGPalettePicker = ({
   function getRows() {
     return fields.map((index) =>
       <NumberInput
+        key={index}
         style={{backgroundColor:`#${dmgColors[palette[index]]}`, color:`#${dmgColors[(palette[index]+2)%4]}`}}
         id={`${name}_${index}`}
         name={`${name}_${index}`}
@@ -50,7 +52,7 @@ export const DMGPalettePicker = ({
         onChange={(e) => {
           let newPalette = [palette[0], palette[1], palette[2], palette[3]];
           newPalette[index] = castEventToInt(e, 0);
-          onChange(newPalette as [number, number, number, number]);
+          onChange(newPalette as MonoPalette);
         }}
       />
     );

@@ -8,7 +8,7 @@ import {
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
-import { Palette } from "shared/lib/entities/entitiesTypes";
+import { MonoPalette, Palette } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderActorContextMenu from "./renderActorContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
@@ -19,6 +19,7 @@ interface ActorViewProps {
   sceneId: string;
   palettes?: Palette[];
   editable?: boolean;
+  sceneMonoPalettes?:[MonoPalette, MonoPalette];
 }
 
 interface WrapperProps {
@@ -68,7 +69,7 @@ const CanvasWrapper = styled.div`
 `;
 
 const ActorView = memo(
-  ({ id, sceneId, palettes, editable }: ActorViewProps) => {
+  ({ id, sceneId, palettes, editable, sceneMonoPalettes }: ActorViewProps) => {
     const dispatch = useAppDispatch();
 
     const actor = useAppSelector((state) =>
@@ -190,6 +191,7 @@ const ActorView = memo(
                 palettes={palettes}
                 previewAsMono={previewAsMono}
                 offsetPosition
+                sceneMonoPalettes={sceneMonoPalettes}
               />
               {showBoundingBox && (
                 <SpriteBoundingBox
