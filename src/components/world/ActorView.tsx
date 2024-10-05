@@ -19,7 +19,7 @@ interface ActorViewProps {
   sceneId: string;
   palettes?: Palette[];
   editable?: boolean;
-  sceneMonoPalettes?:[MonoPalette, MonoPalette];
+  sceneMonoPalettes?:MonoPalette[];
 }
 
 interface WrapperProps {

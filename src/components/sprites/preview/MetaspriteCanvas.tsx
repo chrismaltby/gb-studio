@@ -18,7 +18,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
-  sceneMonoPalettes?:[MonoPalette, MonoPalette]
+  sceneMonoPalettes?:MonoPalette[]
 }
 
 const worker = new MetaspriteCanvasWorker();

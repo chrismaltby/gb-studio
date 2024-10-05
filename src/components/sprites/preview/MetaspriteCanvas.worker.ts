@@ -28,7 +28,7 @@ workerCtx.onmessage = async (evt) => {
   const palettes: [string, string, string, string][] = evt.data.palettes;
   const previewAsMono = evt.data.previewAsMono;
   const monoPalettes = evt.data.monoPalettes ?? [[0,0,1,3], [0,0,2,3]];
-  const key = JSON.stringify({ src, palettes, previewAsMono });
+  const key = JSON.stringify({ src, palettes, previewAsMono, monoPalettes });
 
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;

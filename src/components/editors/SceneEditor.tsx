@@ -337,20 +337,20 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [onChangeSettingProp]
   );
 
-  const onEditBGP = useCallback((palette: MonoPalette) =>
-    onChangeSceneProp("dmgBGP", palette),
-    [onChangeSceneProp]
+  const onEditBGP = useCallback(
+    (palette: MonoPalette) =>
+    onChangeSceneProp("dmgBGP", palette), [onChangeSceneProp]
   );
 
-  const onEditOBP0 = useCallback((palette: MonoPalette) =>{
-    onChangeSceneProp("spritePaletteIds", scene.spritePaletteIds);
-    onChangeSceneProp("dmgOBP0", palette);
-  }, [onChangeSceneProp]);
+  const onEditOBP0 = useCallback(
+    (palette: MonoPalette) =>
+    onChangeSceneProp("dmgOBP0", palette), [onChangeSceneProp]
+  );
 
-  const onEditOBP1 = useCallback((palette: MonoPalette) => {
-    onChangeSceneProp("spritePaletteIds", scene.spritePaletteIds);
-    onChangeSceneProp("dmgOBP1", palette);
-  }, [onChangeSceneProp]);
+  const onEditOBP1 = useCallback(
+    (palette: MonoPalette) =>
+    onChangeSceneProp("dmgOBP1", palette), [onChangeSceneProp]
+  );
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());

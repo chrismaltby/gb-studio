@@ -383,7 +383,7 @@ const SceneView = memo(
     const spriteMonoPalettes = useAppSelector((state) => {
       const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
       const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
-      return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1] as [MonoPalette, MonoPalette];
+      return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
     });
 
     const getPalette = useCallback(

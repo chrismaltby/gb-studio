@@ -16,7 +16,7 @@ interface SpriteSheetCanvasProps {
   palettes?: Palette[];
   previewAsMono?: boolean;
   offsetPosition?: boolean;
-  sceneMonoPalettes?:[MonoPalette, MonoPalette];
+  sceneMonoPalettes?:MonoPalette[];
 }
 
 const Wrapper = styled.div`
