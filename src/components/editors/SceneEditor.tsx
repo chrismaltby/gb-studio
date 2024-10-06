@@ -564,7 +564,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [gbcEnabled, getPalette]
   );
 
-  const monoPalettes = useAppSelector((state) => {
+  const backgroundMonoPalette = useAppSelector((state) => {
+    const defaultBGP = state.project.present.settings.defaultBGP ?? [0,1,2,3];
+    return scene.dmgBGP ?? defaultBGP;
+  });
+
+  const spriteMonoPalettes = useAppSelector((state) => {
     const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
     const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
     return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
@@ -718,6 +723,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         onChange={onChangeBackgroundId}
                         is360={scene.type === "LOGO"}
                         includeInfo
+                        palettes={palettes}
+                        previewAsMono={previewAsMono}
+                        monoPalette={backgroundMonoPalette}
                       />
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         {showCommonTilesetButton && (
@@ -959,7 +967,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       optionalValue={defaultPlayerSprites[scene.type]}
                       palettes={palettes}
                       previewAsMono={previewAsMono}
-                      monoPalettes={monoPalettes}
+                      monoPalettes={spriteMonoPalettes}
                     />
                   </FormField>
                 </FormRow>
