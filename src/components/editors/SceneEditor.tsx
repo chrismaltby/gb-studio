@@ -7,6 +7,7 @@ import BackgroundWarnings from "components/world/BackgroundWarnings";
 import {
   backgroundSelectors,
   sceneSelectors,
+  paletteSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -60,7 +61,7 @@ import {
   ClipboardTypePaletteIds,
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
-import { SCREEN_WIDTH } from "consts";
+import { SCREEN_WIDTH, DMG_PALETTE } from "consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
@@ -528,6 +529,47 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
   const scrollKey = `${scene.id}_${scriptKey}`;
 
+  const gbcEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
+  
+  const previewAsMono = useAppSelector(
+    (state) =>
+      state.project.present.settings.colorMode === "mono" ||
+      (state.project.present.settings.colorMode === "mixed" &&
+       state.project.present.settings.previewAsMono)
+  );
+
+  const palettesLookup = useAppSelector((state) =>
+    paletteSelectors.selectEntities(state)
+  );
+
+  const getPalette = useCallback(
+    (paletteIndex: number) => {
+      const sceneSpritePaletteIds = scene?.paletteIds ?? [];
+      if (sceneSpritePaletteIds[paletteIndex] === "dmg") {
+        return DMG_PALETTE;
+      }
+      return (
+        palettesLookup[sceneSpritePaletteIds[paletteIndex]] ||
+        palettesLookup[defaultSpritePaletteIds[paletteIndex]] ||
+        DMG_PALETTE
+      );
+    },
+    [defaultSpritePaletteIds, palettesLookup, scene?.paletteIds]
+  );
+
+  const palettes = useMemo(() => ([0,1,2,3,4,5,6,7].map(i =>
+    gbcEnabled ? getPalette(i) : DMG_PALETTE)),
+    [gbcEnabled, getPalette]
+  );
+
+  const monoPalettes = useAppSelector((state) => {
+    const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
+    const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
+    return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
+  });
+
   return (
     <Sidebar onClick={selectSidebar}>
       <CachedScroll key={scrollKey} cacheKey={scrollKey}>
@@ -915,6 +957,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       optional
                       optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
                       optionalValue={defaultPlayerSprites[scene.type]}
+                      palettes={palettes}
+                      previewAsMono={previewAsMono}
+                      monoPalettes={monoPalettes}
                     />
                   </FormField>
                 </FormRow>

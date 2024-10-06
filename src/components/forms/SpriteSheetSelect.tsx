@@ -5,6 +5,8 @@ import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import {
   ActorDirection,
   SpriteSheetNormalized,
+  Palette, 
+  MonoPalette
 } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
@@ -25,6 +27,9 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   frame?: number;
   onChange?: (newId: string) => void;
   filter?: (spriteSheet: SpriteSheetNormalized) => boolean;
+  palettes?: Palette[]
+  previewAsMono?: boolean
+  monoPalettes?: MonoPalette[]
   optional?: boolean;
   optionalLabel?: string;
 }
@@ -51,6 +56,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   frame,
   onChange,
   filter,
+  palettes,
+  previewAsMono,
+  monoPalettes,
   optional,
   optionalLabel,
   ...selectProps
@@ -129,6 +137,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={option.value}
                 direction={direction}
                 frame={frame}
+                palettes={palettes}
+                previewAsMono={previewAsMono}
+                monoPalettes={monoPalettes}
               />
             }
           >
@@ -144,6 +155,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || ""}
                 direction={direction}
                 frame={frame}
+                palettes={palettes}
+                previewAsMono={previewAsMono}
+                monoPalettes={monoPalettes}
               />
             }
           >

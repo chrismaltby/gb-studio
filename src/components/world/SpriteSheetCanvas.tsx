@@ -16,7 +16,7 @@ interface SpriteSheetCanvasProps {
   palettes?: Palette[];
   previewAsMono?: boolean;
   offsetPosition?: boolean;
-  sceneMonoPalettes?:MonoPalette[];
+  monoPalettes?:MonoPalette[];
 }
 
 const Wrapper = styled.div`
@@ -32,7 +32,7 @@ const SpriteSheetCanvas = ({
   palettes,
   previewAsMono,
   offsetPosition,
-  sceneMonoPalettes,
+  monoPalettes,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
@@ -93,7 +93,7 @@ const SpriteSheetCanvas = ({
         palettes={palettes}
         flipX={flipX}
         previewAsMono={previewAsMono}
-        sceneMonoPalettes={sceneMonoPalettes}
+        monoPalettes={monoPalettes}
       />
     </Wrapper>
   );

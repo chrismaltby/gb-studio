@@ -4,6 +4,8 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorPrefabNormalized,
   CollisionGroup,
+  Palette,
+  MonoPalette
 } from "shared/lib/entities/entitiesTypes";
 import { SidebarColumn } from "ui/sidebars/Sidebar";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
@@ -15,10 +17,17 @@ import { useAppDispatch } from "store/hooks";
 
 interface ActorPrefabEditorPropertiesProps {
   prefab: ActorPrefabNormalized;
+  palettes?: Palette[];
+  previewAsMono?: boolean;
+  monoPalettes?: MonoPalette[];
 }
 
-export const ActorPrefabEditorProperties: FC<ActorPrefabEditorPropertiesProps> =
-  ({ prefab }) => {
+export const ActorPrefabEditorProperties: FC<ActorPrefabEditorPropertiesProps> = ({ 
+  prefab,
+  palettes,
+  previewAsMono,
+  monoPalettes, 
+}) => {
     const dispatch = useAppDispatch();
 
     const onChangeActorPrefabProp = useCallback(
@@ -75,6 +84,9 @@ export const ActorPrefabEditorProperties: FC<ActorPrefabEditorPropertiesProps> =
                   frame={0}
                   onChange={onChangeSpriteSheetId}
                   includeInfo
+                  previewAsMono={previewAsMono}
+                  palettes={palettes}
+                  monoPalettes={monoPalettes}
                 />
               </FormField>
             </FormRow>

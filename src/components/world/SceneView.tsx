@@ -40,7 +40,6 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
-import { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const TILE_SIZE = 8;
 
@@ -799,7 +798,7 @@ const SceneView = memo(
                 sceneId={id}
                 palettes={spritePalettes}
                 editable={editable}
-                sceneMonoPalettes={spriteMonoPalettes}
+                monoPalettes={spriteMonoPalettes}
               />
             ))}
           {selected && (

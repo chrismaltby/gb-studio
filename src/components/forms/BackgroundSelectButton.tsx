@@ -8,6 +8,7 @@ import {
   SelectMenu,
   selectMenuStyleProps,
 } from "ui/form/Select";
+import { Palette, MonoPalette } from "shared/lib/entities/entitiesTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
@@ -23,6 +24,9 @@ interface BackgroundSelectProps {
   tilesetId: string;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
+  palettes?: Palette[];
+  previewAsMono?: boolean;
+  monoPalette?: MonoPalette;
 }
 
 interface WrapperProps {
@@ -167,6 +171,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   is360,
   tilesetId,
   includeInfo,
+  palettes,
+  previewAsMono,
+  monoPalette,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();

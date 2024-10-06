@@ -19,7 +19,7 @@ interface ActorViewProps {
   sceneId: string;
   palettes?: Palette[];
   editable?: boolean;
-  sceneMonoPalettes?:MonoPalette[];
+  monoPalettes?:MonoPalette[];
 }
 
 interface WrapperProps {
@@ -69,7 +69,7 @@ const CanvasWrapper = styled.div`
 `;
 
 const ActorView = memo(
-  ({ id, sceneId, palettes, editable, sceneMonoPalettes }: ActorViewProps) => {
+  ({ id, sceneId, palettes, editable, monoPalettes }: ActorViewProps) => {
     const dispatch = useAppDispatch();
 
     const actor = useAppSelector((state) =>
@@ -191,7 +191,7 @@ const ActorView = memo(
                 palettes={palettes}
                 previewAsMono={previewAsMono}
                 offsetPosition
-                sceneMonoPalettes={sceneMonoPalettes}
+                monoPalettes={monoPalettes}
               />
               {showBoundingBox && (
                 <SpriteBoundingBox

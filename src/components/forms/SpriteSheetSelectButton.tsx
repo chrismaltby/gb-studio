@@ -3,7 +3,7 @@ import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
+import { ActorDirection, Palette, MonoPalette } from "shared/lib/entities/entitiesTypes";
 import {
   FormatFolderLabel,
   SelectMenu,
@@ -24,6 +24,9 @@ interface SpriteSheetSelectProps {
   optional?: boolean;
   optionalLabel?: string;
   optionalValue?: string;
+  palettes?: Palette[];
+  previewAsMono?: boolean;
+  monoPalettes?: MonoPalette[];
 }
 
 interface WrapperProps {
@@ -149,6 +152,9 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   optional,
   optionalLabel,
   optionalValue,
+  palettes,
+  previewAsMono,
+  monoPalettes,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -240,6 +246,9 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value || optionalValue || ""}
                 direction={direction}
                 frame={frame}
+                palettes={palettes}
+                previewAsMono={previewAsMono}
+                monoPalettes={monoPalettes}
               />
             </PreviewWrapper>
           ) : (
@@ -279,6 +288,9 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 onBlur={closeMenu}
                 optional={optional}
                 optionalLabel={optionalLabel}
+                palettes={palettes}
+                previewAsMono={previewAsMono}
+                monoPalettes={monoPalettes}
                 {...selectMenuStyleProps}
               />
             </SelectMenu>
