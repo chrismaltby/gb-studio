@@ -575,6 +575,24 @@ export const SettingsResource = Type.Object({
   zoom: Type.Number(),
   sgbEnabled: Type.Boolean(),
   customHead: Type.String(),
+  defaultBGP: Type.Tuple([
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+  ]),
+  defaultOBP0: Type.Tuple([
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+  ]),
+  defaultOBP1: Type.Tuple([
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+  ]),
   defaultBackgroundPaletteIds: Type.Tuple([
     Type.String(),
     Type.String(),

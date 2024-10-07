@@ -38,11 +38,13 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
-import { FormField } from "ui/form/layout/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { DMGPalettePicker } from "components/forms/DMGPalettePicker";
+import type { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -79,6 +81,9 @@ const SettingsPage: FC = () => {
     colorMode,
     sgbEnabled,
     customHead,
+    defaultBGP,
+    defaultOBP0,
+    defaultOBP1,
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
     defaultFontId,
@@ -89,6 +94,7 @@ const SettingsPage: FC = () => {
     compilerPreset,
   } = settings;
 
+  const dmgEnabled = colorMode !== "color";
   const colorEnabled = colorMode !== "mono";
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,6 +166,27 @@ const SettingsPage: FC = () => {
     [onChangeSettingProp]
   );
 
+  const onEditBGP = useCallback(
+    (palette: MonoPalette) => {
+      editSettings({ defaultBGP: palette });
+    },
+    [defaultBGP, editSettings]
+  );
+
+  const onEditOBP0 = useCallback(
+    (palette: MonoPalette) => {
+      editSettings({ defaultOBP0: palette });
+    },
+    [defaultOBP0, editSettings]
+  );
+
+  const onEditOBP1 = useCallback(
+    (palette: MonoPalette) => {
+      editSettings({ defaultOBP1: palette });
+    },
+    [defaultOBP1, editSettings]
+  );
+
   const onEditPaletteId = useCallback(
     (index: number, e: string) => {
       const paletteIds = defaultBackgroundPaletteIds
@@ -228,6 +255,8 @@ const SettingsPage: FC = () => {
     },
     [dispatch]
   );
+
+  const dmgColors = [settings.customColorsWhite, settings.customColorsLight, settings.customColorsDark, settings.customColorsBlack];
 
   return (
     <SettingsPageWrapper>
@@ -337,6 +366,58 @@ const SettingsPage: FC = () => {
               </FormInfo>
             </SettingRowInput>
           </SearchableSettingRow>
+          {dmgEnabled && (
+            <>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_BGP")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_DMG_BGP")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <DMGPalettePicker 
+                    name="bgp" 
+                    palette={settings.defaultBGP} 
+                    isSpritePalette={false} 
+                    onChange={onEditBGP} 
+                  />
+                </SettingRowInput>
+              </SearchableSettingRow>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_OBP0")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_DMG_OBP0")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <DMGPalettePicker 
+                    name="obp0" 
+                    palette={settings.defaultOBP0} 
+                    isSpritePalette={true} 
+                    onChange={onEditOBP0} 
+                  />
+                </SettingRowInput>
+              </SearchableSettingRow>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_DEFAULT_DMG_OBP1")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_DMG_OBP1")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <DMGPalettePicker 
+                    name="obp1" 
+                    palette={settings.defaultOBP1} 
+                    isSpritePalette={true} 
+                    onChange={onEditOBP1} 
+                  />
+                </SettingRowInput>
+              </SearchableSettingRow>
+            </>            
+          )}
           {colorEnabled && (
             <>
               <SearchableSettingRow

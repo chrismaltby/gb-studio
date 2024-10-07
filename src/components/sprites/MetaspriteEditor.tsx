@@ -163,8 +163,8 @@ const MetaspriteEditor = ({
   const gridSize = 8;
   const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
-  const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+  const previewAsMono = useAppSelector((state) =>
+    state.project.present.settings.colorMode === "mono" || state.project.present.settings.previewAsMono
   );
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
@@ -718,7 +718,7 @@ const MetaspriteEditor = ({
 
   const getTilePalette = useCallback(
     (metaspriteTile: MetaspriteTile) => {
-      if (!colorsEnabled) {
+      if (previewAsMono) {
         return undefined;
       }
       if (!scene) {
@@ -731,7 +731,7 @@ const MetaspriteEditor = ({
           defaultSpritePaletteIds[metaspriteTile.paletteIndex]
       ];
     },
-    [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled]
+    [scene, defaultSpritePaletteIds, palettesLookup, previewAsMono]
   );
 
   const [contextMenu, setContextMenu] =
@@ -806,6 +806,7 @@ const MetaspriteEditor = ({
                 <MetaspriteCanvas
                   spriteSheetId={spriteSheetId}
                   metaspriteId={prevMetaspriteId}
+                  previewAsMono={previewAsMono}
                 />
               </div>
             )}

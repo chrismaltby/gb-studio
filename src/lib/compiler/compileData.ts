@@ -427,8 +427,10 @@ export const precompilePalettes = async (
   const isColor = settings.colorMode !== "mono" || settings.sgbEnabled;
 
   const palettesLookup = indexById(palettes);
-  const defaultBackgroundPaletteIds =
-    settings.defaultBackgroundPaletteIds || [];
+  const defaultBGP = settings.defaultBGP || [];
+  const defaultOBP0 = settings.defaultOBP0 || [];
+  const defaultOBP1 = settings.defaultOBP1 || [];
+  const defaultBackgroundPaletteIds = settings.defaultBackgroundPaletteIds || [];
   const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
 
   const getPalette = (id: string, fallbackId: string): Palette => {
@@ -461,25 +463,26 @@ export const precompilePalettes = async (
     };
   };
 
+  const getDMGPalette = (scenePal: number[], defaultPal: number[]): [string, string, string, string] => {
+    const defaultPalette = ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"] as [string, string, string, string];
+    if (scenePal.length == 4) return [defaultPalette[scenePal[0]], defaultPalette[scenePal[1]], defaultPalette[scenePal[2]], defaultPalette[scenePal[3]]];
+    else if (defaultPal.length == 4) return [defaultPalette[defaultPal[0]], defaultPalette[defaultPal[1]], defaultPalette[defaultPal[2]], defaultPalette[defaultPal[3]]];
+    return defaultPalette;
+  };
+
   // Background palettes
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
+    const sceneBGP = scene.dmgBGP || [];
 
     const background = backgrounds[scene.backgroundId];
     if (background?.autoPalettes?.[0]) {
     }
 
     const scenePalette = {
-      dmg: [
-        ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string
-        ],
-      ],
+      dmg: [ getDMGPalette(sceneBGP, defaultBGP), ],
       colors: isColor
         ? [
             getBackgroundPalette(
@@ -552,21 +555,13 @@ export const precompilePalettes = async (
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
     const sceneSpritePaletteIds = scene.spritePaletteIds || [];
+    const sceneOBP0 = scene.dmgOBP0 || [];
+    const sceneOBP1 = scene.dmgOBP1 || [];
 
     const actorsPalette = {
       dmg: [
-        ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string
-        ],
-        ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string
-        ],
+        getDMGPalette(sceneOBP0, defaultOBP0),
+        getDMGPalette(sceneOBP1, defaultOBP1),
       ],
       colors: isColor
         ? [

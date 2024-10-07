@@ -6,7 +6,7 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile, Palette } from "shared/lib/entities/entitiesTypes";
+import { MetaspriteTile, Palette, MonoPalette } from "shared/lib/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
@@ -18,6 +18,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  monoPalettes?:MonoPalette[]
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -29,6 +30,7 @@ export const MetaspriteCanvas = memo(
     flipX = false,
     palettes,
     previewAsMono,
+    monoPalettes,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
     const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
@@ -46,6 +48,8 @@ export const MetaspriteCanvas = memo(
     );
     const width = spriteSheet?.canvasWidth || 0;
     const height = spriteSheet?.canvasHeight || 0;
+    const settings = useAppSelector((state) => state.project.present.settings);
+    const obp01 = monoPalettes ?? [settings.defaultOBP0, settings.defaultOBP1];
 
     // Cache metasprite tiles
     useEffect(() => {
@@ -111,6 +115,7 @@ export const MetaspriteCanvas = memo(
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
         previewAsMono,
+        obp01
       });
     }, [
       canvasRef,
@@ -122,6 +127,7 @@ export const MetaspriteCanvas = memo(
       flipX,
       workerId,
       previewAsMono,
+      obp01
     ]);
 
     return (

@@ -572,6 +572,9 @@ describe("TypeBox Schemas", () => {
       zoom: 1,
       sgbEnabled: false,
       customHead: "head",
+      defaultBGP: [0, 1, 2, 3],
+      defaultOBP0: [0, 0, 1, 3],
+      defaultOBP1: [0, 0, 2, 3],
       defaultBackgroundPaletteIds: [
         "palette1",
         "palette2",
