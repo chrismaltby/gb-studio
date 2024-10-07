@@ -6,40 +6,23 @@ import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { checksumFile } from "lib/helpers/checksum";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
-
-const FRAME_SIZE = 16;
+import {
+  SpriteResource,
+  SpriteResourceAsset,
+} from "shared/lib/resources/types";
+import { getAssetResource } from "./assets";
 
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
-export interface SpriteAssetData {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  numTiles: number;
-  plugin?: string;
-  inode: string;
-  checksum: string;
-  _v: number;
-  width: number;
-  height: number;
-  canvasWidth: number;
-  canvasHeight: number;
-  boundsX: number;
-  boundsY: number;
-  boundsWidth: number;
-  boundsHeight: number;
-  animSpeed: number | null;
-  states: string[];
-  numFrames: number;
-}
-
 const loadSpriteData =
   (projectRoot: string) =>
-  async (filename: string): Promise<SpriteAssetData | null> => {
+  async (filename: string): Promise<SpriteResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+
+    const resource = await getAssetResource(SpriteResource, filename);
+
     try {
       const size = await sizeOfAsync(filename);
       if (!size || !size.width || !size.height) {
@@ -48,20 +31,23 @@ const loadSpriteData =
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
       const checksum = await checksumFile(filename);
-      const numFrames = size.width / FRAME_SIZE; // @TODO can this be removed now?
       const name = file.replace(/.png/i, "");
       return {
         id: uuidv4(),
         plugin,
         name,
         symbol: toValidSymbol(`sprite_${name}`),
-        numFrames,
-        filename: file,
-        inode,
-        checksum,
         width: size.width,
         height: size.height,
-        states: [],
+        states: [
+          {
+            id: uuidv4(),
+            name: "",
+            animationType: "multi_movement",
+            flipLeft: true,
+            animations: [],
+          },
+        ],
         numTiles: 0,
         canvasWidth: 32,
         canvasHeight: 32,
@@ -71,6 +57,11 @@ const loadSpriteData =
         boundsHeight: 16,
         animSpeed: 15,
         _v: Date.now(),
+        _resourceType: "sprite",
+        ...resource,
+        filename: file,
+        inode,
+        checksum,
       };
     } catch (e) {
       console.error(e);
@@ -87,12 +78,12 @@ const loadAllSpriteData = async (projectRoot: string) => {
   );
   const spriteData = (
     await Promise.all(
-      ([] as Promise<SpriteAssetData | null>[]).concat(
+      ([] as Promise<SpriteResourceAsset | null>[]).concat(
         spritePaths.map(loadSpriteData(projectRoot)),
         pluginPaths.map(loadSpriteData(projectRoot))
       )
     )
-  ).filter((i) => i) as SpriteAssetData[];
+  ).filter((i) => i) as SpriteResourceAsset[];
   return spriteData;
 };
 

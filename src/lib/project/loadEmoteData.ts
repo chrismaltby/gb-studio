@@ -6,18 +6,8 @@ import { stat } from "fs";
 import { PNG } from "pngjs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
-
-export interface EmoteAssetData {
-  id: string;
-  plugin: string | undefined;
-  name: string;
-  symbol: string;
-  width: number;
-  height: number;
-  filename: string;
-  inode: string;
-  _v: number;
-}
+import { EmoteResource, EmoteResourceAsset } from "shared/lib/resources/types";
+import { getAssetResource } from "./assets";
 
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);
@@ -35,23 +25,26 @@ const sizeOfAsync = (
 
 const loadEmoteData =
   (projectRoot: string) =>
-  async (filename: string): Promise<EmoteAssetData | null> => {
+  async (filename: string): Promise<EmoteResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
+    const resource = await getAssetResource(EmoteResource, filename);
     try {
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
       const name = file.replace(/.png/i, "");
       return {
+        _resourceType: "emote",
         id: uuid(),
         plugin,
         name,
         symbol: toValidSymbol(`emote_${name}`),
         width: size.width,
         height: size.height,
+        _v: Date.now(),
+        ...resource,
         filename: file,
         inode,
-        _v: Date.now(),
       };
     } catch (e) {
       console.error(e);
@@ -61,7 +54,7 @@ const loadEmoteData =
 
 const loadAllEmoteData = async (
   projectRoot: string
-): Promise<EmoteAssetData[]> => {
+): Promise<EmoteResourceAsset[]> => {
   const imagePaths = await globAsync(
     `${projectRoot}/assets/emotes/**/@(*.png|*.PNG)`
   );
@@ -70,13 +63,13 @@ const loadAllEmoteData = async (
   );
   const imageData = (
     await Promise.all(
-      ([] as Promise<EmoteAssetData | null>[]).concat(
+      ([] as Promise<EmoteResourceAsset | null>[]).concat(
         imagePaths.map(loadEmoteData(projectRoot)),
         pluginPaths.map(loadEmoteData(projectRoot))
       )
     )
   ).filter((i) => i);
-  return imageData as EmoteAssetData[];
+  return imageData as EmoteResourceAsset[];
 };
 
 export default loadAllEmoteData;

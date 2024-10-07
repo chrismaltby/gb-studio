@@ -88,7 +88,9 @@ export const loadProjectResources = async (
   metadataResource: ProjectMetadataResource
 ): Promise<CompressedProjectResources> => {
   const projectResources = naturalSortPaths(
-    await globAsync(path.join(projectRoot, "project", "**/*.gbsres"))
+    await globAsync(
+      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres")
+    )
   );
 
   const resources = (

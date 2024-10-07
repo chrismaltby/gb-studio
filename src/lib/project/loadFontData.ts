@@ -7,19 +7,8 @@ import { PNG } from "pngjs";
 
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
-
-export interface FontAssetData {
-  id: string;
-  plugin: string | undefined;
-  name: string;
-  symbol: string;
-  width: number;
-  height: number;
-  filename: string;
-  inode: string;
-  mapping: Record<string, number>;
-  _v: number;
-}
+import { FontResource, FontResourceAsset } from "shared/lib/resources/types";
+import { getAssetResource } from "./assets";
 
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);
@@ -37,8 +26,9 @@ const sizeOfAsync = (
 
 const loadFontData =
   (projectRoot: string) =>
-  async (filename: string): Promise<FontAssetData | null> => {
+  async (filename: string): Promise<FontResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
+    const resource = await getAssetResource(FontResource, filename);
     try {
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
@@ -62,16 +52,18 @@ const loadFontData =
       } catch (e) {}
 
       return {
+        _resourceType: "font",
         id: uuid(),
         plugin,
         name,
         symbol: toValidSymbol(`font_${name}`),
         width: size.width,
         height: size.height,
-        filename: file,
-        inode,
         mapping,
         _v: Date.now(),
+        ...resource,
+        filename: file,
+        inode,
       };
     } catch (e) {
       console.error(e);
@@ -81,7 +73,7 @@ const loadFontData =
 
 const loadAllFontData = async (
   projectRoot: string
-): Promise<FontAssetData[]> => {
+): Promise<FontResourceAsset[]> => {
   const imagePaths = await globAsync(
     `${projectRoot}/assets/fonts/**/@(*.png|*.PNG)`
   );
@@ -90,13 +82,13 @@ const loadAllFontData = async (
   );
   const imageData = (
     await Promise.all(
-      ([] as Promise<FontAssetData | null>[]).concat(
+      ([] as Promise<FontResourceAsset | null>[]).concat(
         imagePaths.map(loadFontData(projectRoot)),
         pluginPaths.map(loadFontData(projectRoot))
       )
     )
   ).filter((i) => i);
-  return imageData as FontAssetData[];
+  return imageData as FontResourceAsset[];
 };
 
 export default loadAllFontData;

@@ -3,6 +3,9 @@ import sizeOf from "image-size";
 import { promisify } from "util";
 import { sliceIndexedImage, toIndex } from "shared/lib/tiles/indexedImage";
 import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
+import { Static, TSchema } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
+import { readJson } from "lib/helpers/fs/readJson";
 
 export type AssetFolder =
   | "backgrounds"
@@ -111,4 +114,24 @@ export const potentialAssetFolders = async (
   }
 
   return folders;
+};
+
+export const getAssetResource = async <T extends TSchema>(
+  resourceType: T,
+  filename: string
+): Promise<Static<T> | undefined> => {
+  let resource: Static<T> | undefined = undefined;
+
+  try {
+    const resourcePath = filename + ".gbsres";
+    const resourceData = await readJson(resourcePath);
+
+    if (Value.Check(resourceType, resourceData)) {
+      resource = resourceData;
+    }
+  } catch (e) {
+    console.log("No .gbsres exists yet for file: " + filename);
+  }
+
+  return resource;
 };

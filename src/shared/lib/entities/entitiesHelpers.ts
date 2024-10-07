@@ -419,6 +419,21 @@ export const denormalizeSprite = ({
   return denormalize(sprite, spriteSheetsSchema, entities);
 };
 
+export const normalizeSprite = (
+  sprite: SpriteSheet
+): {
+  entities: {
+    spriteSheets: Record<string, SpriteSheetNormalized>;
+    metasprites: Record<string, Metasprite>;
+    metaspriteTiles: Record<string, MetaspriteTile>;
+    spriteAnimations: Record<string, SpriteAnimation>;
+    spriteStates: Record<string, SpriteState>;
+  };
+  result: string;
+} => {
+  return normalize(sprite, spriteSheetsSchema);
+};
+
 export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
 };
@@ -852,7 +867,10 @@ export const upsertAssetEntity = <
   entity: T,
   keepProps: (keyof T)[]
 ) => {
-  adapter.upsertOne(entities, mergeAssetEntity(entities, entity, keepProps));
+  const mergedEntity = mergeAssetEntity(entities, entity, keepProps);
+  const didInsert = entity === mergedEntity;
+  adapter.upsertOne(entities, mergedEntity);
+  return didInsert;
 };
 
 /**

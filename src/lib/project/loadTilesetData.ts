@@ -6,29 +6,23 @@ import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 import { TILE_SIZE } from "consts";
+import {
+  TilesetResource,
+  TilesetResourceAsset,
+} from "shared/lib/resources/types";
+import { getAssetResource } from "./assets";
 
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
-export interface TilesetAssetData {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-}
-
 const loadTilesetData =
   (projectRoot: string) =>
-  async (filename: string): Promise<TilesetAssetData | null> => {
+  async (filename: string): Promise<TilesetResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "tilesets");
+
+    const resource = await getAssetResource(TilesetResource, filename);
+
     try {
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
@@ -37,6 +31,7 @@ const loadTilesetData =
       const width = size?.width ?? 160;
       const height = size?.height ?? 144;
       return {
+        _resourceType: "tileset",
         id: uuid(),
         plugin,
         name,
@@ -45,9 +40,10 @@ const loadTilesetData =
         height: Math.min(Math.floor(height / TILE_SIZE), 255),
         imageWidth: width,
         imageHeight: height,
+        _v: Date.now(),
+        ...resource,
         filename: file,
         inode,
-        _v: Date.now(),
       };
     } catch (e) {
       console.error(e);
@@ -64,12 +60,12 @@ const loadAllTilesetData = async (projectRoot: string) => {
   );
   const imageData = (
     await Promise.all(
-      ([] as Array<Promise<TilesetAssetData | null>>).concat(
+      ([] as Array<Promise<TilesetResourceAsset | null>>).concat(
         imagePaths.map(loadTilesetData(projectRoot)),
         pluginPaths.map(loadTilesetData(projectRoot))
       )
     )
-  ).filter((i) => i) as TilesetAssetData[];
+  ).filter((i) => i) as TilesetResourceAsset[];
   return imageData;
 };
 

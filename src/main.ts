@@ -84,7 +84,7 @@ import initElectronL10N, { getAppLocale } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
-import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
+import { loadMusicData } from "lib/project/loadMusicData";
 import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
@@ -109,6 +109,7 @@ import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
+  MusicResourceAsset,
   ProjectResources,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
@@ -1635,7 +1636,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   "tracker:new",
-  async (_event, assetPath: string): Promise<MusicAssetData> => {
+  async (_event, assetPath: string): Promise<MusicResourceAsset> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = Path.join(projectRoot, assetPath);
 
@@ -1646,7 +1647,7 @@ ipcMain.handle(
     const copy2 = async (
       oPath: string,
       path: string
-    ): Promise<MusicAssetData> => {
+    ): Promise<MusicResourceAsset> => {
       try {
         const exists = await pathExists(path);
         if (!exists) {
