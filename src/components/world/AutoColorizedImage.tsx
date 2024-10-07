@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import AutoColorizedImageWorker, {
   AutoColorizedImageResult,
 } from "./AutoColorizedImage.worker";
+import { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const workerPool: AutoColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -14,7 +15,7 @@ interface AutoColorizedImageProps {
   src: string;
   tilesSrc?: string;
   previewAsMono?: boolean;
-  monoPalette?: [number,number,number,number];
+  monoPalette?: MonoPalette;
 }
 
 const AutoColorizedImage = ({

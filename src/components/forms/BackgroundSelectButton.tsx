@@ -285,23 +285,30 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
         onBlur={onButtonBlur}
       >
         <ButtonContent>
-          {background ? 
-            !previewAsMono && isColor && background.autoColor ? (
-              <AutoColorizedImage
-                width={background.width * TILE_SIZE}
-                height={background.height * TILE_SIZE}
-                src={assetURL("backgrounds", background)}
-              />
-            ) : (
-              <ColorizedImage
-                width={background.width * TILE_SIZE}
-                height={background.height * TILE_SIZE}
-                src={assetURL("backgrounds", background)}
-                tiles={background.tileColors}
-                palettes={palettes ?? defaultPalettes}
-                previewAsMono={previewAsMono}
-                monoPalette={monoPalette}
-              />
+          {/* {!previewAsMono && isColor && background.autoColor ? (
+            <AutoColorizedImage
+              width={background.width * TILE_SIZE}
+              height={background.height * TILE_SIZE}
+              src={assetURL("backgrounds", background)}
+            />
+          ) : (
+            <ColorizedImage
+              width={background.width * TILE_SIZE}
+              height={background.height * TILE_SIZE}
+              src={assetURL("backgrounds", background)}
+              tiles={background.tileColors}
+              palettes={palettes ?? defaultPalettes}
+              previewAsMono={previewAsMono}
+              monoPalette={monoPalette}
+            />
+          )} */}
+          {background ? (
+            <Thumbnail
+              style={{
+                backgroundImage:
+                  background && assetURLStyleProp("backgrounds", background),
+              }}
+            />
           ) : (
             <NoValue />
           )}

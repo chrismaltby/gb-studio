@@ -17,7 +17,6 @@ interface ColorizedImageProps {
   palettes: Palette[];
   previewAsMono?: boolean;
   monoPalette?: [number,number,number,number];
-  style?: string;
 }
 
 const ColorizedImage = ({
@@ -28,7 +27,6 @@ const ColorizedImage = ({
   palettes,
   previewAsMono,
   monoPalette,
-  style
 }: ColorizedImageProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
