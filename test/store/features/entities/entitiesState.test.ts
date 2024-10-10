@@ -348,7 +348,7 @@ test("Should add new music track if loaded while project is open", () => {
     ...dummyMusicResource,
     id: "track1",
     filename: "track1.mod",
-    inode: "0",
+    inode: "50",
     _v: 0,
   };
 

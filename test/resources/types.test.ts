@@ -459,7 +459,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate FontResource", () => {
-    const validFont = {
+    const validFont: FontResource = {
       _resourceType: "font",
       id: "font1",
       name: "Font 1",
@@ -467,6 +467,7 @@ describe("TypeBox Schemas", () => {
       filename: "filename",
       width: 16,
       height: 16,
+      mapping: {},
     };
     const invalidFont = {
       _resourceType: "font",

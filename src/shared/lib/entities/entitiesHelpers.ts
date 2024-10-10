@@ -424,10 +424,10 @@ export const normalizeSprite = (
 ): {
   entities: {
     spriteSheets: Record<string, SpriteSheetNormalized>;
-    metasprites: Record<string, Metasprite>;
-    metaspriteTiles: Record<string, MetaspriteTile>;
-    spriteAnimations: Record<string, SpriteAnimation>;
-    spriteStates: Record<string, SpriteState>;
+    metasprites: Record<string, Metasprite> | undefined;
+    metaspriteTiles: Record<string, MetaspriteTile> | undefined;
+    spriteAnimations: Record<string, SpriteAnimation> | undefined;
+    spriteStates: Record<string, SpriteState> | undefined;
   };
   result: string;
 } => {

@@ -462,19 +462,19 @@ const loadSprite: CaseReducer<
     // If inserted also insert metasprite + animation data
     metaspriteTilesAdapter.addMany(
       state.metaspriteTiles,
-      normalizedSpriteData.entities.metaspriteTiles
+      normalizedSpriteData.entities.metaspriteTiles ?? {}
     );
     metaspritesAdapter.addMany(
       state.metasprites,
-      normalizedSpriteData.entities.metasprites
+      normalizedSpriteData.entities.metasprites ?? {}
     );
     spriteAnimationsAdapter.addMany(
       state.spriteAnimations,
-      normalizedSpriteData.entities.spriteAnimations
+      normalizedSpriteData.entities.spriteAnimations ?? {}
     );
     spriteStatesAdapter.addMany(
       state.spriteStates,
-      normalizedSpriteData.entities.spriteStates
+      normalizedSpriteData.entities.spriteStates ?? {}
     );
   }
 

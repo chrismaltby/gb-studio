@@ -47,12 +47,12 @@ describe("paths", () => {
       actors: [],
       triggers: [],
     } as unknown as CompressedSceneResourceWithChildren;
-    expect(getSceneFolderPath(scene)).toEqual("scenes/scene1");
+    expect(getSceneFolderPath(scene)).toEqual("project/scenes/scene1");
   });
 
   test("getSceneResourcePath should return correct resource path", () => {
-    expect(getSceneResourcePath("scenes/scene1")).toEqual(
-      "scenes/scene1/scene.gbsres"
+    expect(getSceneResourcePath("project/scenes/scene1")).toEqual(
+      "project/scenes/scene1/scene.gbsres"
     );
   });
 
@@ -62,9 +62,9 @@ describe("paths", () => {
       name: "Actor1",
       _resourceType: "actor",
     } as ActorResource;
-    const sceneFolder = "scenes/scene1";
+    const sceneFolder = "project/scenes/scene1";
     expect(getActorResourcePath(sceneFolder, actor)).toEqual(
-      "scenes/scene1/actors/actor1.gbsres"
+      "project/scenes/scene1/actors/actor1.gbsres"
     );
   });
 
@@ -74,9 +74,11 @@ describe("paths", () => {
       name: "Actor1",
       _resourceType: "actor",
     } as ActorResource;
-    const sceneFolder = "scenes/scene1";
+    const sceneFolder = "project/scenes/scene1";
     const getActorPath = curryActorResourcePath(sceneFolder);
-    expect(getActorPath(actor)).toEqual("scenes/scene1/actors/actor1.gbsres");
+    expect(getActorPath(actor)).toEqual(
+      "project/scenes/scene1/actors/actor1.gbsres"
+    );
   });
 
   test("getTriggerResourcePath should return correct trigger resource path", () => {
@@ -85,9 +87,9 @@ describe("paths", () => {
       name: "Trigger1",
       _resourceType: "trigger",
     } as TriggerResource;
-    const sceneFolder = "scenes/scene1";
+    const sceneFolder = "project/scenes/scene1";
     expect(getTriggerResourcePath(sceneFolder, trigger)).toEqual(
-      "scenes/scene1/triggers/trigger1.gbsres"
+      "project/scenes/scene1/triggers/trigger1.gbsres"
     );
   });
 
@@ -97,10 +99,10 @@ describe("paths", () => {
       name: "Trigger1",
       _resourceType: "trigger",
     } as TriggerResource;
-    const sceneFolder = "scenes/scene1";
+    const sceneFolder = "project/scenes/scene1";
     const getTriggerPath = curryTriggerResourcePath(sceneFolder);
     expect(getTriggerPath(trigger)).toEqual(
-      "scenes/scene1/triggers/trigger1.gbsres"
+      "project/scenes/scene1/triggers/trigger1.gbsres"
     );
   });
 
@@ -113,9 +115,9 @@ describe("paths", () => {
       triggers: [{ id: "3", name: "Trigger1", _resourceType: "trigger" }],
     } as CompressedSceneResourceWithChildren;
     expect(getSceneResourcePaths(scene)).toEqual([
-      "scenes/scene1/scene.gbsres",
-      "scenes/scene1/actors/actor1.gbsres",
-      "scenes/scene1/triggers/trigger1.gbsres",
+      "project/scenes/scene1/scene.gbsres",
+      "project/scenes/scene1/actors/actor1.gbsres",
+      "project/scenes/scene1/triggers/trigger1.gbsres",
     ]);
   });
 
@@ -125,7 +127,9 @@ describe("paths", () => {
       name: "Palette1",
       _resourceType: "palette",
     } as PaletteResource;
-    expect(getPaletteResourcePath(palette)).toEqual("palettes/palette1.gbsres");
+    expect(getPaletteResourcePath(palette)).toEqual(
+      "project/palettes/palette1.gbsres"
+    );
   });
 
   test("getScriptResourcePath should return correct script resource path", () => {
@@ -134,7 +138,9 @@ describe("paths", () => {
       name: "Script1",
       _resourceType: "script",
     } as ScriptResource;
-    expect(getScriptResourcePath(script)).toEqual("scripts/script1.gbsres");
+    expect(getScriptResourcePath(script)).toEqual(
+      "project/scripts/script1.gbsres"
+    );
   });
 
   test("getActorPrefabResourcePath should return correct actor prefab resource path", () => {
@@ -145,7 +151,7 @@ describe("paths", () => {
     } as ActorPrefabResource;
 
     expect(getActorPrefabResourcePath(actorPrefab)).toEqual(
-      "prefabs/actors/actorprefab1.gbsres"
+      "project/prefabs/actors/actorprefab1.gbsres"
     );
   });
 
@@ -157,7 +163,7 @@ describe("paths", () => {
     } as TriggerPrefabResource;
 
     expect(getTriggerPrefabResourcePath(triggerPrefab)).toEqual(
-      "prefabs/triggers/triggerprefab1.gbsres"
+      "project/prefabs/triggers/triggerprefab1.gbsres"
     );
   });
 });
