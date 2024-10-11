@@ -1,9 +1,9 @@
 import chokidar from "chokidar";
-import { getGlobalPluginsPath } from "./globalPlugins";
+import { ensureGlobalPluginsPath } from "./globalPlugins";
 
 type WatchCallback = (path: string) => void;
 
-const watchGlobalPlugins = (callbacks: {
+const watchGlobalPlugins = async (callbacks: {
   onChangedThemePlugin: WatchCallback;
   onChangedLanguagePlugin: WatchCallback;
   onChangedTemplatePlugin: WatchCallback;
@@ -11,7 +11,7 @@ const watchGlobalPlugins = (callbacks: {
   onRemoveLanguagePlugin: WatchCallback;
   onRemoveTemplatePlugin: WatchCallback;
 }) => {
-  const globalPluginsPath = getGlobalPluginsPath();
+  const globalPluginsPath = await ensureGlobalPluginsPath();
 
   const awaitWriteFinish = {
     stabilityThreshold: 1000,
