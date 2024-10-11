@@ -15,6 +15,7 @@ export interface StyledButtonProps {
 }
 
 export const StyledButton = styled.button<StyledButtonProps>`
+  user-select: none;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -314,6 +315,7 @@ export interface StyledPillButtonProps {
 }
 
 export const StyledPillButton = styled.button<StyledPillButtonProps>`
+  user-select: none;
   color: ${(props) => props.theme.colors.button.text};
   background: ${(props) => props.theme.colors.list.activeBackground};
   border: 0px;

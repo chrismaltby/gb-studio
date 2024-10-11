@@ -36,8 +36,15 @@ import {
   StyledPluginImageCarousel,
   StyledPluginManagerToolbar,
   StyledPluginManagerNoSelectionView,
+  StyledPillButtonWrapper,
 } from "./style";
-import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
+import {
+  isGlobalPluginType,
+  pluginDescriptionForType,
+  pluginNameForType,
+} from "shared/lib/plugins/pluginHelpers";
+import { PillButton } from "ui/buttons/PillButton";
+import { TooltipWrapper } from "ui/tooltips/Tooltip";
 
 export type PluginItem = {
   id: string;
@@ -296,15 +303,30 @@ const PluginsManagerPlugins = ({
               <p>
                 {l10n("FIELD_AUTHOR")}: {selectedPluginItem.plugin.author}
               </p>
-              <p>
-                <strong>
-                  {l10n(
+              <StyledPillButtonWrapper>
+                <TooltipWrapper
+                  tooltip={l10n(
                     isGlobalPluginType(selectedPluginItem.plugin.type)
                       ? "FIELD_THIS_PACKAGE_IS_INSTALLED_GLOBALLY"
                       : "FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT"
                   )}
-                </strong>
-              </p>
+                >
+                  <PillButton>
+                    {isGlobalPluginType(selectedPluginItem.plugin.type)
+                      ? l10n("FIELD_GLOBAL")
+                      : l10n("PROJECT")}
+                  </PillButton>
+                </TooltipWrapper>
+                <TooltipWrapper
+                  tooltip={pluginDescriptionForType(
+                    selectedPluginItem.plugin.type
+                  )}
+                >
+                  <PillButton>
+                    {pluginNameForType(selectedPluginItem.plugin.type)}
+                  </PillButton>
+                </TooltipWrapper>
+              </StyledPillButtonWrapper>
               {selectedPluginItem.plugin.url && (
                 <Button
                   variant="anchor"

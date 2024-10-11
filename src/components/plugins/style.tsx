@@ -161,3 +161,11 @@ export const StyledPluginManagerRepoForm = styled.form`
 export const StyledPluginManagerRepoBtns = styled.div`
   display: flex;
 `;
+
+export const StyledPillButtonWrapper = styled.div`
+  display: flex;
+  & > *:not(:first-child) {
+    margin-left: 5px;
+  }
+  margin-bottom: 10px;
+`;
