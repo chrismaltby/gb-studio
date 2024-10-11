@@ -970,6 +970,7 @@
   "FIELD_DELETE_REPOSITORY": "Delete Repository",
   "FIELD_ADDING": "Adding...",
   "FIELD_CLOSE": "Close",
+  "FIELD_LICENSE": "License",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -297,12 +297,20 @@ const PluginsManagerPlugins = ({
           <>
             <StyledPluginManagerDetail>
               <h1>{selectedPluginItem.name}</h1>
-              <h2>
-                {l10n("FIELD_VERSION")} {selectedPluginItem.plugin.version}
-              </h2>
               <p>
-                {l10n("FIELD_AUTHOR")}: {selectedPluginItem.plugin.author}
+                <strong>{l10n("FIELD_VERSION")}:</strong>{" "}
+                {selectedPluginItem.plugin.version}
               </p>
+              <p>
+                <strong>{l10n("FIELD_AUTHOR")}:</strong>{" "}
+                {selectedPluginItem.plugin.author}
+              </p>
+              {selectedPluginItem.plugin.license && (
+                <p>
+                  <strong>{l10n("FIELD_LICENSE")}:</strong>{" "}
+                  {selectedPluginItem.plugin.license}
+                </p>
+              )}
               <StyledPillButtonWrapper>
                 <TooltipWrapper
                   tooltip={l10n(

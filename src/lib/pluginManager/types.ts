@@ -23,6 +23,7 @@ export const PluginMetadata = Type.Object({
   name: Type.String(),
   author: Type.String(),
   description: Type.String(),
+  license: Type.Optional(Type.String()),
   url: Type.Optional(Type.String()),
   images: Type.Optional(Type.Array(Type.String())),
   filename: Type.String(),
