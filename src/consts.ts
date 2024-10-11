@@ -24,7 +24,7 @@ const localesRoot = path.normalize(`${rootDir}/src/lang`);
 const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
-export const OFFICIAL_REPO_URL = "http://127.0.0.1:9999/repository.json";
+export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";
 
 const MAX_ACTORS = 20;
 const MAX_ACTORS_SMALL = 10;
