@@ -7,6 +7,7 @@ import en from "lang/en.json";
 import { localesRoot } from "consts";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
+import mapValues from "lodash/mapValues";
 
 const localesPath = `${localesRoot}/*.json`;
 
@@ -38,6 +39,14 @@ export const loadLanguage = (locale: string) => {
         const translation = JSON.parse(
           fs.readFileSync(`${globalPluginsPath}/${locale}`, "utf-8")
         ) as L10NLookup;
+
+        // If localisation has debug flag set all missing values will
+        // use translation keys rather than fallback to English
+        if (translation.debug) {
+          const debugLang = mapValues(en, (_value, key) => key);
+          setL10NData(debugLang);
+        }
+
         setL10NData(translation);
         return translation;
       } else {
