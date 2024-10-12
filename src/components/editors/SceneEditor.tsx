@@ -153,13 +153,13 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     !!scene?.tilesetId
   );
   const defaultBGP = useAppSelector((state) =>
-    state.project.present.settings.defaultBGP
+    state.project.present.settings.defaultBGP ?? [0,1,2,3]
   );
   const defaultOBP0 = useAppSelector((state) =>
-    state.project.present.settings.defaultOBP0
+    state.project.present.settings.defaultOBP0 ?? [0,0,1,3]
   );
   const defaultOBP1 = useAppSelector((state) =>
-    state.project.present.settings.defaultOBP1
+    state.project.present.settings.defaultOBP1 ?? [0,0,2,3]
   );
   const monoEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "color"
@@ -564,16 +564,15 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [gbcEnabled, getPalette]
   );
 
-  const backgroundMonoPalette = useAppSelector((state) => {
-    const defaultBGP = state.project.present.settings.defaultBGP ?? [0,1,2,3];
-    return scene.dmgBGP ?? defaultBGP;
-  });
+  const backgroundMonoPalette = useMemo(() => 
+    scene.dmgBGP ?? defaultBGP, 
+    [defaultBGP, previewAsMono]
+  );
 
-  const spriteMonoPalettes = useAppSelector((state) => {
-    const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
-    const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
-    return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
-  });
+  const spriteMonoPalettes = useMemo(() => 
+    [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1],
+    [defaultOBP0, defaultOBP1, previewAsMono]
+  );
 
   return (
     <Sidebar onClick={selectSidebar}>
