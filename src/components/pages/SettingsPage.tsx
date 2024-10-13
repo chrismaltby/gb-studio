@@ -43,6 +43,8 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { CollisionSetting } from "shared/lib/resources/types";
+import { defaultCollisionSettings } from "consts";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -204,6 +206,17 @@ const SettingsPage: FC = () => {
     [defaultSpritePaletteIds, editSettings]
   );
 
+  const onEditCollisionSetting = useCallback(
+    (setting: CollisionSetting) => {
+      const collisionSettings = settings.collisionSettings ?? defaultCollisionSettings
+      const changedIndex = collisionSettings.findIndex(s => s.key == setting.key);
+      collisionSettings[changedIndex] = setting;
+      
+      editSettings({ collisionSettings: collisionSettings });
+    },
+    [defaultSpritePaletteIds, editSettings]
+  );
+
   const onEditDefaultPlayerSprites = useCallback(
     (sceneType: string, spriteSheetId: string) => {
       console.log("onEditDefaultPlayerSprites", sceneType, spriteSheetId);
@@ -257,6 +270,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
               {l10n("SETTINGS_MUSIC")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsCollisions")}>
+              {l10n("SETTINGS_COLLISIONS")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -622,6 +638,15 @@ const SettingsPage: FC = () => {
               </FormField>
             </SettingRowInput>
           </SearchableSettingRow>
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[l10n("SETTINGS_COLLISIONS")]}
+        >
+          <CardAnchor id="settingsCollisions" />
+          <CardHeading>{l10n("SETTINGS_COLLISIONS")}</CardHeading>
+          {/* TODO: edit colors and names of collision settings */}
         </SearchableCard>
 
         <EngineFieldsEditor searchTerm={searchTerm} />

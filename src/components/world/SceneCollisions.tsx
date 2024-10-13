@@ -32,6 +32,10 @@ const SceneCollisions = ({
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
+  const collisionAlpha = useAppSelector(
+    (state) => Math.floor(state.project.present.settings.collisionLayerAlpha * 255).toString(16)
+  );
+
   const collisionSettings = useAppSelector(
     (state) => state.project.present.settings.collisionSettings
   );
@@ -39,106 +43,119 @@ const SceneCollisions = ({
   const solidColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "solid");
-      return setting ? setting.color : "#FA2828";
+      const color = setting ? setting.color : "#FA2828";
+      return color + collisionAlpha;
     }, 
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const topColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "top");
-      return setting ? setting.color : "#2828FA";
+      const color = setting ? setting.color : "#2828FA";
+      return color + collisionAlpha;
     }, 
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const bottomColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "bottom");
-      return setting ? setting.color : "#FFFA28";
+      const color = setting ? setting.color : "#FFFA28";
+      return color + collisionAlpha;
     }, 
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const leftColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "left");
-      return setting ? setting.color : "#FA28FA";
+      const color = setting ? setting.color : "#FA28FA";
+      return color + collisionAlpha;
     }, 
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const rightColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "right");
-      return setting ? setting.color : "#28FAFA";
+      const color = setting ? setting.color : "#28FAFA";
+      return color + collisionAlpha;
     }, 
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const ladderColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "ladder");
-      return setting ? setting.color : "#008000";
+      const color = setting ? setting.color : "#008000";
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slopeColor = "#0000FF";
   const slope45RightColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_45_right");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slope45LeftColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_45_left");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slope22Right_botColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_right_bot");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slope22RightTopColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_right_top");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slope22LeftTopColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_left_top");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const slope22LeftBotColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_left_bot");
-      return setting ? setting.color : slopeColor;
+      const color = setting ? setting.color : slopeColor;
+      return color + collisionAlpha;
     },
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
   const spareColors = useMemo(
     () => ["08","09","10","11","12","13","14","15"].map(i => {
       const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      return setting ? setting.color : "#008000";
+      const color = setting ? setting.color : "#008000";
+      return color + collisionAlpha;
     }),
-    [collisionSettings]
+    [collisionSettings, collisionAlpha]
   );
 
 
