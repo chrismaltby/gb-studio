@@ -1,6 +1,11 @@
 import styled, { css } from "styled-components";
 import { COLLISIONS_EXTRA_SYMBOLS } from "consts";
 
+
+interface BrushToolbarBackgroundColorProps {
+  $color: string;
+}
+
 export const brushToolbarCollisionTileStyles = css`
   position: relative;
   background-color: ${(props) => props.theme.colors.input.background};
@@ -11,11 +16,11 @@ export const brushToolbarCollisionTileStyles = css`
   border-radius: 4px;
 }`;
 
-export const BrushToolbarTileSolidIcon = styled.div`
+export const BrushToolbarTileSolidIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     height: 20px;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.3);
@@ -23,11 +28,11 @@ export const BrushToolbarTileSolidIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileTopIcon = styled.div`
+export const BrushToolbarTileTopIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     height: 10px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -36,11 +41,11 @@ export const BrushToolbarTileTopIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileBottomIcon = styled.div`
+export const BrushToolbarTileBottomIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     height: 10px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -50,11 +55,11 @@ export const BrushToolbarTileBottomIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileLeftIcon = styled.div`
+export const BrushToolbarTileLeftIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     width: 10px;
     height: 20px;
     border-top-left-radius: 4px;
@@ -64,11 +69,11 @@ export const BrushToolbarTileLeftIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileRightIcon = styled.div`
+export const BrushToolbarTileRightIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     width: 10px;
     height: 20px;
     border-top-right-radius: 4px;
@@ -79,7 +84,7 @@ export const BrushToolbarTileRightIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarLadderTileIcon = styled.div`
+export const BrushToolbarLadderTileIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     display: block;
@@ -104,121 +109,121 @@ export const BrushToolbarLadderTileIcon = styled.div`
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope45RightIcon = styled.div`
+export const BrushToolbarTileSlope45RightIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope45LeftIcon = styled.div`
+export const BrushToolbarTileSlope45LeftIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope22RightBottomIcon = styled.div`
+export const BrushToolbarTileSlope22RightBottomIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope22RightTopIcon = styled.div`
+export const BrushToolbarTileSlope22RightTopIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope22LeftBottomIcon = styled.div`
+export const BrushToolbarTileSlope22LeftBottomIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope22LeftTopIcon = styled.div`
+export const BrushToolbarTileSlope22LeftTopIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope67RightBottomIcon = styled.div`
+export const BrushToolbarTileSlope67RightBottomIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope67RightTopIcon = styled.div`
+export const BrushToolbarTileSlope67RightTopIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope67LeftBottomIcon = styled.div`
+export const BrushToolbarTileSlope67LeftBottomIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
   }
   ${brushToolbarCollisionTileStyles};
 `;
 
-export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
+export const BrushToolbarTileSlope67LeftTopIcon = styled.div<BrushToolbarBackgroundColorProps>`
   &:before {
     content: "";
     width: 20px;
     height: 20px;
     display: block;
-    background-color: rgb(250, 40, 40);
+    background-color: ${(props) => props.$color};
     clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -226,6 +231,7 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
 
 interface BrushToolbarExtraTileIconProps {
   $value: string;
+  $color: string;
 }
 
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
@@ -238,6 +244,7 @@ export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconPro
     align-items: center;
     justify-content: center;
     font: 16px "Public Pixel";
+    background-color: ${(props) => props.$color};
   }
   ${brushToolbarCollisionTileStyles};
 `;

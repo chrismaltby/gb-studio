@@ -1,6 +1,7 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { Settings } from "shared/lib/resources/types";
+import l10n from "shared/lib/lang/l10n";
+import { CollisionSetting, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -58,7 +59,7 @@ export const BRUSH_FILL = "fill";
 export const BRUSH_MAGIC = "magic";
 export const BRUSH_SLOPE = "slope";
 
-export const COLLISIONS_EXTRA_SYMBOLS = "89BCDEF";
+export const COLLISIONS_EXTRA_SYMBOLS = "89ABCDEF";
 
 export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
@@ -77,12 +78,9 @@ export const TILE_PROP_SLOPE_LEFT = 0x10;
 export const COLLISION_SLOPE_45_RIGHT = TILE_PROP_SLOPE_45;
 export const COLLISION_SLOPE_22_RIGHT_BOT = TILE_PROP_SLOPE_22_BOT;
 export const COLLISION_SLOPE_22_RIGHT_TOP = TILE_PROP_SLOPE_22_TOP;
-export const COLLISION_SLOPE_45_LEFT =
-  TILE_PROP_SLOPE_45 | TILE_PROP_SLOPE_LEFT;
-export const COLLISION_SLOPE_22_LEFT_BOT =
-  TILE_PROP_SLOPE_22_BOT | TILE_PROP_SLOPE_LEFT;
-export const COLLISION_SLOPE_22_LEFT_TOP =
-  TILE_PROP_SLOPE_22_TOP | TILE_PROP_SLOPE_LEFT;
+export const COLLISION_SLOPE_45_LEFT = TILE_PROP_SLOPE_45 | TILE_PROP_SLOPE_LEFT;
+export const COLLISION_SLOPE_22_LEFT_BOT = TILE_PROP_SLOPE_22_BOT | TILE_PROP_SLOPE_LEFT;
+export const COLLISION_SLOPE_22_LEFT_TOP = TILE_PROP_SLOPE_22_TOP | TILE_PROP_SLOPE_LEFT;
 
 export const COLLISION_SLOPE_VALUES = [
   COLLISION_SLOPE_45_RIGHT,
@@ -136,6 +134,29 @@ export const EVENT_GROUP = "EVENT_GROUP";
 
 export const LYC_SYNC_VALUE = 150;
 
+export const defaultCollisionSettings: CollisionSetting[] = [
+  { key: "solid",              color: "#FA2828" },
+  { key: "top",                color: "#2828FA" },
+  { key: "bottom",             color: "#FFFA28" },
+  { key: "left",               color: "#FA28FA" },
+  { key: "right",              color: "#28FAFA" },
+  { key: "ladder",             color: "#008000" },
+  { key: "slope_45_right",     color: "#0000FF" },
+  { key: "slope_45_left",      color: "#0000FF" },
+  { key: "slope_22_right_bot", color: "#0000FF" },
+  { key: "slope_22_right_top", color: "#0000FF" },
+  { key: "slope_22_left_top",  color: "#0000FF" },
+  { key: "slope_22_left_bot",  color: "#0000FF" },
+  { key: "spare_08",           color: "#008000" },
+  { key: "spare_09",           color: "#008000" },
+  { key: "spare_10",           color: "#800000" },
+  { key: "spare_11",           color: "#800000" },
+  { key: "spare_12",           color: "#000080" },
+  { key: "spare_13",           color: "#000080" },
+  { key: "spare_14",           color: "#800080" },
+  { key: "spare_15",           color: "#800080" },
+];
+
 export const defaultProjectSettings: Settings = {
   startSceneId: "",
   startX: 0,
@@ -147,6 +168,8 @@ export const defaultProjectSettings: Settings = {
   showConnections: "selected",
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
+  collisionLayerAlpha: 0.5,
+  collisionSettings: defaultCollisionSettings,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
