@@ -27,7 +27,7 @@ export const BrushToolbarTileTopIcon = styled.div`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(40, 40, 255);
+    background-color: rgb(250, 40, 40);
     height: 10px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -40,7 +40,7 @@ export const BrushToolbarTileBottomIcon = styled.div`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(255, 255, 40);
+    background-color: rgb(250, 40, 40);
     height: 10px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -54,7 +54,7 @@ export const BrushToolbarTileLeftIcon = styled.div`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(255, 40, 255);
+    background-color: rgb(250, 40, 40);
     width: 10px;
     height: 20px;
     border-top-left-radius: 4px;
@@ -68,8 +68,7 @@ export const BrushToolbarTileRightIcon = styled.div`
   &:before {
     content: "";
     display: block;
-    background-color: rgb(40, 255, 255);
-    background-color: orange;
+    background-color: rgb(250, 40, 40);
     width: 10px;
     height: 20px;
     border-top-right-radius: 4px;
@@ -111,7 +110,7 @@ export const BrushToolbarTileSlope45RightIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: blue;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -123,7 +122,7 @@ export const BrushToolbarTileSlope45LeftIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: blue;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -135,7 +134,7 @@ export const BrushToolbarTileSlope22RightBottomIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: green;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -147,7 +146,7 @@ export const BrushToolbarTileSlope22RightTopIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: green;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -159,7 +158,7 @@ export const BrushToolbarTileSlope22LeftBottomIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: green;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -171,7 +170,7 @@ export const BrushToolbarTileSlope22LeftTopIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: green;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -183,7 +182,7 @@ export const BrushToolbarTileSlope67RightBottomIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: fuchsia;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -195,7 +194,7 @@ export const BrushToolbarTileSlope67RightTopIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: fuchsia;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -207,7 +206,7 @@ export const BrushToolbarTileSlope67LeftBottomIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: cyan;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
   }
   ${brushToolbarCollisionTileStyles};
@@ -219,7 +218,7 @@ export const BrushToolbarTileSlope67LeftTopIcon = styled.div`
     width: 20px;
     height: 20px;
     display: block;
-    background-color: cyan;
+    background-color: rgb(250, 40, 40);
     clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
   }
   ${brushToolbarCollisionTileStyles};

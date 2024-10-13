@@ -36,10 +36,11 @@ const SceneCollisions = ({
       // eslint-disable-next-line no-self-assign
       canvas.current.width = canvas.current.width; // Clear canvas
       const ctx = canvas.current.getContext("2d");
-
+      
       if (!ctx) return;
-
+      
       ctx.font = "8px Public Pixel";
+      const solidFill = "rgba(250,40,40,0.6)";
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
@@ -47,42 +48,42 @@ const SceneCollisions = ({
           const tile = collisions[collisionIndex];
           const tileprop = tile & TILE_PROPS;
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
-            ctx.fillStyle = "rgba(250,40,40,0.6)";
+            ctx.fillStyle = solidFill;//"rgba(250,40,40,0.6)";
             ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
           } else if (tile !== 0) {
             if (tile & COLLISION_TOP) {
-              ctx.fillStyle = "rgba(40,40,250,0.6)";
+              ctx.fillStyle = solidFill;//"rgba(40,40,250,0.6)";
               ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
                 TILE_SIZE,
-                TILE_SIZE * 0.4
+                TILE_SIZE * 0.5
               );
             }
             if (tile & COLLISION_BOTTOM) {
-              ctx.fillStyle = "rgba(255,250,40,0.6)";
+              ctx.fillStyle = solidFill;//"rgba(255,250,40,0.6)";
               ctx.fillRect(
                 xi * TILE_SIZE,
-                (yi + 0.6) * TILE_SIZE,
+                (yi + .5) * TILE_SIZE,
                 TILE_SIZE,
-                TILE_SIZE * 0.4
+                TILE_SIZE * 0.5
               );
             }
             if (tile & COLLISION_LEFT) {
-              ctx.fillStyle = "rgba(250,40,250,0.6)";
+              ctx.fillStyle = solidFill;//"rgba(250,40,250,0.6)";
               ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
-                TILE_SIZE * 0.4,
+                TILE_SIZE * 0.5,
                 TILE_SIZE
               );
             }
             if (tile & COLLISION_RIGHT) {
-              ctx.fillStyle = "rgba(40,250,250,0.6)";
+              ctx.fillStyle = solidFill;//"rgba(40,250,250,0.6)";
               ctx.fillRect(
-                (xi + 0.6) * TILE_SIZE,
+                (xi + 0.5) * TILE_SIZE,
                 yi * TILE_SIZE,
-                TILE_SIZE * 0.4,
+                TILE_SIZE * 0.5,
                 TILE_SIZE
               );
             }
@@ -111,46 +112,52 @@ const SceneCollisions = ({
                 );
                 break;
               case COLLISION_SLOPE_45_RIGHT: // slope right
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;//ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;// ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_22_RIGHT_TOP: // slope right shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;// ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_45_LEFT: // slope left
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;// ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_22_LEFT_BOT: // slope left shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;// ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_22_LEFT_TOP: // slope left shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.fillStyle = solidFill;// ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.fill(); // Render the path
                 break;
               default:
                 const tilepropValue = (tileprop >> 4) - 7;
