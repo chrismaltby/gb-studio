@@ -15,6 +15,7 @@ import {
   COLLISION_SLOPE_22_LEFT_BOT,
   COLLISIONS_EXTRA_SYMBOLS,
 } from "consts";
+import { useAppSelector } from "store/hooks";
 
 const TILE_SIZE = 8;
 
@@ -30,6 +31,11 @@ const SceneCollisions = ({
   collisions,
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
+
+  const collisionLayerOpacity = useAppSelector(
+    (state) =>
+      Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
+  );
 
   useEffect(() => {
     if (canvas.current) {
@@ -47,11 +53,11 @@ const SceneCollisions = ({
           const tile = collisions[collisionIndex];
           const tileprop = tile & TILE_PROPS;
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
-            ctx.fillStyle = "rgba(250,40,40,0.6)";
+            ctx.fillStyle = "rgba(250,40,40,1)";
             ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
           } else if (tile !== 0) {
             if (tile & COLLISION_TOP) {
-              ctx.fillStyle = "rgba(40,40,250,0.6)";
+              ctx.fillStyle = "rgba(40,40,250,1)";
               ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
@@ -60,7 +66,7 @@ const SceneCollisions = ({
               );
             }
             if (tile & COLLISION_BOTTOM) {
-              ctx.fillStyle = "rgba(255,250,40,0.6)";
+              ctx.fillStyle = "rgba(255,250,40,1)";
               ctx.fillRect(
                 xi * TILE_SIZE,
                 (yi + 0.6) * TILE_SIZE,
@@ -69,7 +75,7 @@ const SceneCollisions = ({
               );
             }
             if (tile & COLLISION_LEFT) {
-              ctx.fillStyle = "rgba(250,40,250,0.6)";
+              ctx.fillStyle = "rgba(250,40,250,1)";
               ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
@@ -78,7 +84,7 @@ const SceneCollisions = ({
               );
             }
             if (tile & COLLISION_RIGHT) {
-              ctx.fillStyle = "rgba(40,250,250,0.6)";
+              ctx.fillStyle = "rgba(40,250,250,1)";
               ctx.fillRect(
                 (xi + 0.6) * TILE_SIZE,
                 yi * TILE_SIZE,
@@ -90,7 +96,7 @@ const SceneCollisions = ({
           if (tileprop) {
             switch (tileprop) {
               case TILE_PROP_LADDER: // Ladder
-                ctx.fillStyle = "rgba(0,128,0,0.6)";
+                ctx.fillStyle = "rgba(0,128,0,1)";
                 ctx.fillRect(
                   (xi + 0.0) * TILE_SIZE,
                   yi * TILE_SIZE,
@@ -111,42 +117,42 @@ const SceneCollisions = ({
                 );
                 break;
               case COLLISION_SLOPE_45_RIGHT: // slope right
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
               case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
               case COLLISION_SLOPE_22_RIGHT_TOP: // slope right shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
               case COLLISION_SLOPE_45_LEFT: // slope left
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
               case COLLISION_SLOPE_22_LEFT_BOT: // slope left shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
               case COLLISION_SLOPE_22_LEFT_TOP: // slope left shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.strokeStyle = "rgba(0,0,255,1)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
@@ -157,19 +163,19 @@ const SceneCollisions = ({
                 switch (tilepropValue) {
                   case 1:
                   case 2:
-                    ctx.fillStyle = `rgba(0,128,0,0.5)`;
+                    ctx.fillStyle = `rgba(0,128,0,1)`;
                     break;
                   case 3:
                   case 4:
-                    ctx.fillStyle = `rgba(128,0,0,0.5)`;
+                    ctx.fillStyle = `rgba(128,0,0,1)`;
                     break;
                   case 5:
                   case 6:
-                    ctx.fillStyle = `rgba(0,0,128,0.5)`;
+                    ctx.fillStyle = `rgba(0,0,128,1)`;
                     break;
                   case 7:
                   case 8:
-                    ctx.fillStyle = `rgba(128,0,128,0.5)`;
+                    ctx.fillStyle = `rgba(128,0,128,1)`;
                     break;
                 }
                 ctx.fillRect(
@@ -178,7 +184,7 @@ const SceneCollisions = ({
                   TILE_SIZE,
                   TILE_SIZE
                 );
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillStyle = "rgba(255,255,255,1)";
                 ctx.fillText(
                   COLLISIONS_EXTRA_SYMBOLS[tilepropValue - 1],
                   xi * TILE_SIZE,
@@ -197,6 +203,9 @@ const SceneCollisions = ({
       ref={canvas}
       width={width * TILE_SIZE}
       height={height * TILE_SIZE}
+      style={{
+        opacity: collisionLayerOpacity,
+      }}
     />
   );
 };

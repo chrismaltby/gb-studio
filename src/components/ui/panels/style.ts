@@ -6,7 +6,6 @@ interface StyledFloatingPanelProps {
 }
 
 export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
-  position: absolute;
   display: flex;
   color: ${(props) => props.theme.colors.panel.text};
   background: ${(props) => props.theme.colors.panel.background};

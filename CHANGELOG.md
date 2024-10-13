@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add events "Load Projectile Into Slot" and "Launch Projectile In Slot" to allow more advanced control over setup and launch of projectiles and changing the loaded projectiles at run time
 - Add ability to hover over tiles in debugger VRAM preview to see tile memory address information [@pau-tomas](https://github.com/pau-tomas)
 - Add animation states to generated `game_globals.h` allowing use from engine code [@Mico27](https://github.com/Mico27)
+- Add ability to change collision layer opacity in World view when collision tool is selected [@Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
 
 ### Changed
 

@@ -982,6 +982,8 @@
   "FIELD_TILE_INDEX": "Tile Index",
   "FIELD_MEMORY_BANK": "Bank",
   "FIELD_SHARED": "Shared",
+  "FIELD_LAYER_OPACITY": "Layer Opacity",
+  "FIELD_HIDE_OTHER_LAYERS": "Hide Other Layers",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

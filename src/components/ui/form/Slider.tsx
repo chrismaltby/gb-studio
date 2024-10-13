@@ -6,6 +6,8 @@ export interface SliderProps {
   value: number;
   min: number;
   max: number;
+  step?: number;
+  labelledBy?: string;
   onChange?: (value: number) => void;
 }
 
@@ -47,13 +49,22 @@ const RangeThumb = styled.div<RangeThumbProps>`
       : ""}
 `;
 
-export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
+export const Slider: FC<SliderProps> = ({
+  labelledBy,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}) => {
   const themeContext = useContext(ThemeContext);
 
   return (
     <Range
+      labelledBy={labelledBy}
       min={min}
       max={max}
+      step={step}
       values={[value]}
       onChange={(values) => onChange?.(values[0])}
       renderTrack={({ props, children }) => (
