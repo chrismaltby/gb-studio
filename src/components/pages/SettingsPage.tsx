@@ -678,7 +678,7 @@ const SettingsPage: FC = () => {
             <div>
               {collisionSettings.map((setting) => (
                 <CollisionLayerPicker 
-                  name={setting.name ?? (getDefaultCollisionNames(setting.key))}
+                  name={((setting.name && setting.name.trim().length > 0) ? setting.name : (getDefaultCollisionNames(setting.key)))}
                   layer={setting}
                   onChange={onEditCollisionSetting}
                 >

@@ -199,12 +199,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   
   const tileTypes = useAppSelector(
     (state) => state.project.present.settings.collisionSettings.map(t => {//defaultCollisionSettings
+      const name = t.name && t.name.trim().length > 0 ? t.name : undefined;
+      const letter = name ? name[0] : undefined;
       switch (t.key) {      
         case "solid":
           return {
             key: t.key,
             flag: COLLISION_ALL,
-            name: t.name ?? l10n("FIELD_SOLID"),
+            name: name ?? l10n("FIELD_SOLID"),
             color: t.color,
             icon: <BrushToolbarTileSolidIcon  $color={t.color} />,
           }
@@ -212,7 +214,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_TOP,
-            name: t.name ?? l10n("FIELD_COLLISION_TOP"),
+            name: name ?? l10n("FIELD_COLLISION_TOP"),
             color: t.color,
             icon: <BrushToolbarTileTopIcon $color={t.color} />,
           }
@@ -220,7 +222,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_BOTTOM,
-            name: t.name ?? l10n("FIELD_COLLISION_BOTTOM"),
+            name: name ?? l10n("FIELD_COLLISION_BOTTOM"),
             color: t.color,
             icon: <BrushToolbarTileBottomIcon $color={t.color} />,
           }
@@ -228,7 +230,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_LEFT,
-            name: t.name ?? l10n("FIELD_COLLISION_LEFT"),
+            name: name ?? l10n("FIELD_COLLISION_LEFT"),
             color: t.color,
             icon: <BrushToolbarTileLeftIcon $color={t.color} />,
           }
@@ -236,7 +238,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_RIGHT,
-            name: t.name ?? l10n("FIELD_COLLISION_RIGHT"),
+            name: name ?? l10n("FIELD_COLLISION_RIGHT"),
             color: t.color,
             icon: <BrushToolbarTileRightIcon $color={t.color} />,
           }
@@ -244,7 +246,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: TILE_PROP_LADDER,
-            name: t.name ?? l10n("FIELD_LADDER"),
+            name: name ?? l10n("FIELD_LADDER"),
             color: t.color,
             icon: <BrushToolbarLadderTileIcon $color={t.color} />,
           }
@@ -252,7 +254,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_45_RIGHT,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_RIGHT,
             icon: <BrushToolbarTileSlope45RightIcon $color={t.color} />,
@@ -261,7 +263,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_45_LEFT,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_LEFT,
             icon: <BrushToolbarTileSlope45LeftIcon $color={t.color} />,
@@ -270,7 +272,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_22_RIGHT_BOT,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
             color: t.color,
             extra: COLLISION_BOTTOM,
             icon: <BrushToolbarTileSlope22RightBottomIcon $color={t.color} />,
@@ -279,7 +281,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_22_RIGHT_TOP,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_RIGHT,
             icon: <BrushToolbarTileSlope22RightTopIcon $color={t.color} />,
@@ -288,7 +290,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_22_LEFT_TOP,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_LEFT,
             icon: <BrushToolbarTileSlope22LeftTopIcon $color={t.color} />,
@@ -297,7 +299,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: COLLISION_SLOPE_22_LEFT_BOT,
-            name: t.name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
+            name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
             color: t.color,
             extra: COLLISION_BOTTOM,
             icon: <BrushToolbarTileSlope22LeftBottomIcon $color={t.color} />,
@@ -306,65 +308,65 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           return {
             key: t.key,
             flag: 0x80,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[0]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[0]} $color={t.color} />,
           }
         case "spare_09":
           return {
             key: t.key,
             flag: 0x90,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[1]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[1]} $color={t.color} />,
           }
         case "spare_10":
           return {
             key: t.key,
             flag: 0xa0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[2]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[2]} $color={t.color} />,
           }
         case "spare_11":
           return {
             key: t.key,
             flag: 0xb0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[3]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[3]} $color={t.color} />,
           }
         case "spare_12":
           return {
             key: t.key,
             flag: 0xc0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[4]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[4]} $color={t.color} />,
           }
         case "spare_13":
           return {
             key: t.key,
             flag: 0xd0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[5]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[5]} $color={t.color} />,
           }
         case "spare_14":
           return {
             key: t.key,
             flag: 0xe0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[6]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[6]} $color={t.color} />,
           }
         case "spare_15":
           return {
             key: t.key,
             flag: 0xf0,
-            name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
+            name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[7]} $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[7]} $color={t.color} />,
           }
         default:
           return {
@@ -372,7 +374,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0,
             name: "None",
             color: "FFFFFFFF",
-            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[8]} $color={t.color} />
+            icon: <BrushToolbarExtraTileIcon $value={letter ?? spareSymbols[8]} $color={t.color} />
           }
       }
     })

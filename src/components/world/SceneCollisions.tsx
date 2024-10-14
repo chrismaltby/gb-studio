@@ -148,7 +148,7 @@ const SceneCollisions = ({
   const spareSymbols = useMemo(
     () => ["08","09","10","11","12","13","14","15"].map(i => {
       const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      return setting && setting.icon ? setting.icon[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
+      return setting && setting.name ? setting.name[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
     }),
     [collisionSettings, collisionAlpha]
   );
