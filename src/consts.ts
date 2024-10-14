@@ -1,6 +1,5 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import l10n from "shared/lib/lang/l10n";
 import { CollisionSetting, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
