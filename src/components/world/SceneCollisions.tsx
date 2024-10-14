@@ -153,6 +153,27 @@ const SceneCollisions = ({
     [collisionSettings, collisionAlpha]
   );
 
+  const letters = useMemo(
+    () => collisionSettings.map(s => (s.name && s.name.length > 0) ? s.name[0] : undefined), 
+    [collisionSettings]
+  );
+
+  const drawLetter = (letter: string, ctx: CanvasRenderingContext2D, x: number, y: number) => {
+    ctx.fillRect(
+      x * TILE_SIZE,
+      y * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE
+    );
+    const c = (ctx.fillStyle as string);
+    const tileAlpha = c.length < 8 ? 1.0 : Number("0x"+c.slice(7,9)) / 255.0;
+    ctx.fillStyle = tileAlpha < 0.5 ? c.slice(0,7)+"FF" : "#FFFFFFFF";
+    ctx.fillText(
+      letter,
+      x * TILE_SIZE,
+      (y + 0.9) * TILE_SIZE
+    );
+  }
 
   useEffect(() => {
     if (canvas.current) {
@@ -162,22 +183,32 @@ const SceneCollisions = ({
       
       if (!ctx) return;
       
-      ctx.font = "8px Public Pixel";
+      
+      //"color" | "color-burn" | "color-dodge" | "copy" | "darken" 
+      //"destination-atop" | "destination-in" | "destination-out" | "destination-over"
+      //"difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter"
+      //"luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light"
+      //"source-atop" | "source-in" | "source-out" | "source-over" | "xor";
       ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha =  collisionAlpha;
+      ctx.globalAlpha = collisionAlpha;
+      ctx.font = "8px Public Pixel";
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
           const tileprop = tile & TILE_PROPS;
+          
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
             ctx.fillStyle = solidColor;
-            ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-          } else if (tile !== 0) {
+            if (letters[0]) drawLetter(letters[0], ctx, xi, yi);
+            else ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          } 
+          else if (tile !== 0) {
             if (tile & COLLISION_TOP) {
               ctx.fillStyle = topColor;
-              ctx.fillRect(
+              if (letters[1]) drawLetter(letters[1], ctx, xi, yi);
+              else ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
                 TILE_SIZE,
@@ -186,7 +217,8 @@ const SceneCollisions = ({
             }
             if (tile & COLLISION_BOTTOM) {
               ctx.fillStyle = bottomColor;
-              ctx.fillRect(
+              if (letters[2]) drawLetter(letters[2], ctx, xi, yi);
+              else ctx.fillRect(
                 xi * TILE_SIZE,
                 (yi + .5) * TILE_SIZE,
                 TILE_SIZE,
@@ -195,7 +227,8 @@ const SceneCollisions = ({
             }
             if (tile & COLLISION_LEFT) {
               ctx.fillStyle = leftColor;
-              ctx.fillRect(
+              if (letters[3]) drawLetter(letters[3], ctx, xi, yi);
+              else ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
                 TILE_SIZE * 0.5,
@@ -204,7 +237,8 @@ const SceneCollisions = ({
             }
             if (tile & COLLISION_RIGHT) {
               ctx.fillStyle = rightColor;
-              ctx.fillRect(
+              if (letters[4]) drawLetter(letters[4], ctx, xi, yi);
+              else ctx.fillRect(
                 (xi + 0.5) * TILE_SIZE,
                 yi * TILE_SIZE,
                 TILE_SIZE * 0.5,
@@ -216,88 +250,98 @@ const SceneCollisions = ({
             switch (tileprop) {
               case TILE_PROP_LADDER: // Ladder
                 ctx.fillStyle = ladderColor
-                ctx.fillRect(
-                  (xi + 0.0) * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE * 0.2,
-                  TILE_SIZE
-                );
-                ctx.fillRect(
-                  (xi + 0.8) * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE * 0.2,
-                  TILE_SIZE
-                );
-                ctx.fillRect(
-                  xi * TILE_SIZE,
-                  (yi + 0.4) * TILE_SIZE,
-                  TILE_SIZE,
-                  TILE_SIZE * 0.2
-                );
+                if (letters[5]) drawLetter(letters[5], ctx, xi, yi);
+                else {
+                  ctx.fillRect(
+                    (xi + 0.0) * TILE_SIZE,
+                    yi * TILE_SIZE,
+                    TILE_SIZE * 0.2,
+                    TILE_SIZE
+                  );
+                  ctx.fillRect(
+                    (xi + 0.8) * TILE_SIZE,
+                    yi * TILE_SIZE,
+                    TILE_SIZE * 0.2,
+                    TILE_SIZE
+                  );
+                  ctx.fillRect(
+                    xi * TILE_SIZE,
+                    (yi + 0.4) * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE * 0.2
+                  );
+                }
                 break;
               case COLLISION_SLOPE_45_RIGHT: // slope right
                 ctx.fillStyle = slope45RightColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[6]) drawLetter(letters[6], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
                 ctx.fillStyle = slope22RightBotColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[7]) drawLetter(letters[7], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               case COLLISION_SLOPE_22_RIGHT_TOP: // slope right shalow TOP
                 ctx.fillStyle = slope22RightTopColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[8]) drawLetter(letters[8], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               case COLLISION_SLOPE_45_LEFT: // slope left
                 ctx.fillStyle = slope45LeftColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[9]) drawLetter(letters[9], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                  ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               case COLLISION_SLOPE_22_LEFT_BOT: // slope left shalow BOT
                 ctx.fillStyle = slope22LeftBotColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[10]) drawLetter(letters[10], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               case COLLISION_SLOPE_22_LEFT_TOP: // slope left shalow TOP
                 ctx.fillStyle = slope22LeftTopColor;
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.fill(); // Render the path
+                if (letters[11]) drawLetter(letters[11], ctx, xi, yi);
+                else {
+                  ctx.beginPath();
+                  ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                  ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                  ctx.fill(); // Render the path
+                }
                 break;
               default:
                 const tilepropValue = (tileprop >> 4) - 8;
                 ctx.fillStyle = spareColors[tilepropValue];
-                ctx.fillRect(
-                  xi * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE,
-                  TILE_SIZE
-                );
-                ctx.fillStyle = "#FFFFFF40";
-                ctx.fillText(
-                  spareSymbols[tilepropValue],
-                  xi * TILE_SIZE,
-                  (yi + 0.9) * TILE_SIZE
-                );
+                drawLetter(spareSymbols[tilepropValue], ctx, xi, yi);
                 break;
             }
           }

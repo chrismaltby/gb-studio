@@ -33,8 +33,6 @@ export const CollisionLayerPicker = ({
 }: CollisionLayerPickerProps) => {
 
   const collisionSettings = useAppSelector((state) => state.project.present.settings.collisionSettings ?? defaultCollisionSettings);
-  const layerColor = useMemo(()=> layer.color, [layer.color]);
-  const valueText = useMemo(()=> layer.name, [layer.name])
 
   const spareSymbols = useMemo(
     () => ["08","09","10","11","12","13","14","15"].map(i => {
@@ -45,30 +43,30 @@ export const CollisionLayerPicker = ({
   );
 
   const collisionIcon = useMemo(()=> {
-    if (layer && layer.name) return <BrushToolbarExtraTileIcon $value={layer.name[0]} $color={layerColor} />;
+    if (layer && layer.name) return <BrushToolbarExtraTileIcon $value={layer.name[0]} $color={layer.color} />;
     switch(layer.key) {
-      case "solid": return <BrushToolbarTileSolidIcon  $color={layerColor} />;
-      case "top": return <BrushToolbarTileTopIcon $color={layerColor} />;
-      case "bottom": return <BrushToolbarTileBottomIcon $color={layerColor} />;
-      case "left": return <BrushToolbarTileLeftIcon $color={layerColor} />;
-      case "right": return <BrushToolbarTileRightIcon $color={layerColor} />;
-      case "ladder": return <BrushToolbarLadderTileIcon $color={layerColor} />;
-      case "slope_45_right": return <BrushToolbarTileSlope45RightIcon $color={layerColor} />;
-      case "slope_45_left": return <BrushToolbarTileSlope45LeftIcon $color={layerColor} />;
-      case "slope_22_right_bot": return <BrushToolbarTileSlope22RightBottomIcon $color={layerColor} />;
-      case "slope_22_right_top": return <BrushToolbarTileSlope22RightTopIcon $color={layerColor} />;
-      case "slope_22_left_top": return <BrushToolbarTileSlope22LeftTopIcon $color={layerColor} />;
-      case "slope_22_left_bot": return <BrushToolbarTileSlope22LeftBottomIcon $color={layerColor} />;
-      case "spare_08": return <BrushToolbarExtraTileIcon $value={spareSymbols[0]} $color={layerColor} />;
-      case "spare_09": return <BrushToolbarExtraTileIcon $value={spareSymbols[1]} $color={layerColor} />;
-      case "spare_10": return <BrushToolbarExtraTileIcon $value={spareSymbols[2]} $color={layerColor} />;
-      case "spare_11": return <BrushToolbarExtraTileIcon $value={spareSymbols[3]} $color={layerColor} />;
-      case "spare_12": return <BrushToolbarExtraTileIcon $value={spareSymbols[4]} $color={layerColor} />;
-      case "spare_13": return <BrushToolbarExtraTileIcon $value={spareSymbols[5]} $color={layerColor} />;
-      case "spare_14": return <BrushToolbarExtraTileIcon $value={spareSymbols[6]} $color={layerColor} />;
-      case "spare_15": return <BrushToolbarExtraTileIcon $value={spareSymbols[7]} $color={layerColor} />;
+      case "solid": return <BrushToolbarTileSolidIcon  $color={layer.color} />;
+      case "top": return <BrushToolbarTileTopIcon $color={layer.color} />;
+      case "bottom": return <BrushToolbarTileBottomIcon $color={layer.color} />;
+      case "left": return <BrushToolbarTileLeftIcon $color={layer.color} />;
+      case "right": return <BrushToolbarTileRightIcon $color={layer.color} />;
+      case "ladder": return <BrushToolbarLadderTileIcon $color={layer.color} />;
+      case "slope_45_right": return <BrushToolbarTileSlope45RightIcon $color={layer.color} />;
+      case "slope_45_left": return <BrushToolbarTileSlope45LeftIcon $color={layer.color} />;
+      case "slope_22_right_bot": return <BrushToolbarTileSlope22RightBottomIcon $color={layer.color} />;
+      case "slope_22_right_top": return <BrushToolbarTileSlope22RightTopIcon $color={layer.color} />;
+      case "slope_22_left_top": return <BrushToolbarTileSlope22LeftTopIcon $color={layer.color} />;
+      case "slope_22_left_bot": return <BrushToolbarTileSlope22LeftBottomIcon $color={layer.color} />;
+      case "spare_08": return <BrushToolbarExtraTileIcon $value={spareSymbols[0]} $color={layer.color} />;
+      case "spare_09": return <BrushToolbarExtraTileIcon $value={spareSymbols[1]} $color={layer.color} />;
+      case "spare_10": return <BrushToolbarExtraTileIcon $value={spareSymbols[2]} $color={layer.color} />;
+      case "spare_11": return <BrushToolbarExtraTileIcon $value={spareSymbols[3]} $color={layer.color} />;
+      case "spare_12": return <BrushToolbarExtraTileIcon $value={spareSymbols[4]} $color={layer.color} />;
+      case "spare_13": return <BrushToolbarExtraTileIcon $value={spareSymbols[5]} $color={layer.color} />;
+      case "spare_14": return <BrushToolbarExtraTileIcon $value={spareSymbols[6]} $color={layer.color} />;
+      case "spare_15": return <BrushToolbarExtraTileIcon $value={spareSymbols[7]} $color={layer.color} />;
       default: return <div/>;
-    }}, [layer.key, layerColor]
+    }}, [layer.key, layer.name, layer.color, spareSymbols]
   );
 
   const CollisionLayerStyle = styled.div`
@@ -81,31 +79,33 @@ export const CollisionLayerPicker = ({
 
   const ColorInputStyle = styled.input`
     margin-left: 8px;
-    width: 64px;
+    width: 88px;
     height: 32px;
-    background-color: ${layerColor};
+    background-color: ${layer.color};
     color: black;
-    font-size: 12px;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 15px;
   `
 
   return (<CollisionLayerStyle>
     {collisionIcon}
     <Input
       id={layer.key+".name"}
-      value={valueText}
+      value={layer.name}
       placeholder={name}
       onChange={(e) => {
         onChange({
           key: layer.key,
           name: e.currentTarget.value,
           icon: layer.icon,
-          color: layerColor
+          color: layer.color
         });
       }}
     />
     <ColorInputStyle
       id={layer.key+".color"}
-      value={layerColor}
+      value={layer.color}
       placeholder="#000000FF"
       onChange={(e) => {
         onChange({

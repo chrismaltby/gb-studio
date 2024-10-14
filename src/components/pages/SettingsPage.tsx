@@ -236,7 +236,7 @@ const SettingsPage: FC = () => {
 
   const onEditCollisionSetting = useCallback((setting: CollisionSetting) =>   
     editSettings({ collisionSettings: collisionSettings.map(s => s.key == setting.key ? setting : s) }),
-    [defaultSpritePaletteIds, editSettings, collisionSettings]
+    [editSettings, collisionSettings]
   );
 
   const onEditDefaultPlayerSprites = useCallback(
@@ -678,6 +678,7 @@ const SettingsPage: FC = () => {
             <div>
               {collisionSettings.map((setting) => (
                 <CollisionLayerPicker 
+                  key={setting.key+".picker"}
                   name={((setting.name && setting.name.trim().length > 0) ? setting.name : (getDefaultCollisionNames(setting.key)))}
                   layer={setting}
                   onChange={onEditCollisionSetting}
