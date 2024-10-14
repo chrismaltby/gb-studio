@@ -1,4 +1,12 @@
-import React, { memo, useCallback, useContext } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
@@ -29,6 +37,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
+import { debounce, isEqual } from "lodash";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -119,6 +128,8 @@ const ScriptEventFormField = memo(
 
     const context = useContext(ScriptEditorContext);
 
+    const lastUpdateSource = useRef<"user" | "store">("store");
+
     const overrides = useAppSelector((state) => {
       if (context.entityType === "actorPrefab" && context.instanceId) {
         const instance = actorSelectors.selectById(state, context.instanceId);
@@ -130,9 +141,12 @@ const ScriptEventFormField = memo(
     });
 
     const args = scriptEvent?.args;
-    const value: unknown = field.multiple
-      ? ([] as unknown[]).concat([], args?.[field.key || ""])
-      : args?.[field.key || ""];
+
+    const [value, setValue] = useState(
+      field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""]
+    );
 
     const setArgsValues = useCallback(
       (newArgs: Record<string, unknown>) => {
@@ -166,67 +180,92 @@ const ScriptEventFormField = memo(
           );
         }
       },
-      [context.entityType, context.instanceId, dispatch, scriptEvent]
+      [context.entityType, context.instanceId, dispatch, scriptEvent.id]
     );
 
+    const latestArgs = useRef(args);
+
+    useEffect(() => {
+      latestArgs.current = args;
+    }, [args]);
+
+    const debouncedPublishArgValue = useMemo(() => {
+      return debounce(
+        (key: string, value: unknown) => {
+          if (context.entityType === "actorPrefab" && context.instanceId) {
+            dispatch(
+              entitiesActions.editActorPrefabScriptEventOverride({
+                actorId: context.instanceId,
+                scriptEventId: scriptEvent.id,
+                args: {
+                  [key]: value,
+                },
+              })
+            );
+          } else if (
+            context.entityType === "triggerPrefab" &&
+            context.instanceId
+          ) {
+            dispatch(
+              entitiesActions.editTriggerPrefabScriptEventOverride({
+                triggerId: context.instanceId,
+                scriptEventId: scriptEvent.id,
+                args: {
+                  [key]: value,
+                },
+              })
+            );
+          } else {
+            dispatch(
+              entitiesActions.editScriptEventArg({
+                scriptEventId: scriptEvent.id,
+                key,
+                value,
+              })
+            );
+          }
+          if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
+            API.script
+              .scriptEventPostUpdateFn(
+                scriptEvent.command,
+                field.key,
+                { ...latestArgs.current, [key]: value },
+                latestArgs.current || {}
+              )
+              .then((updatedArgs) => {
+                if (updatedArgs) {
+                  setArgsValues(updatedArgs);
+                }
+              });
+          }
+          lastUpdateSource.current = "store";
+        },
+        200,
+        {
+          leading: true,
+          trailing: true,
+          maxWait: 1000,
+        }
+      );
+    }, [
+      context.entityType,
+      context.instanceId,
+      dispatch,
+      field.hasPostUpdateFn,
+      field.key,
+      scriptEvent.command,
+      scriptEvent.id,
+      setArgsValues,
+    ]);
+
+    // Set local state value + queue a store update
     const setArgValue = useCallback(
       (key: string, value: unknown) => {
-        if (context.entityType === "actorPrefab" && context.instanceId) {
-          dispatch(
-            entitiesActions.editActorPrefabScriptEventOverride({
-              actorId: context.instanceId,
-              scriptEventId: scriptEvent.id,
-              args: {
-                [key]: value,
-              },
-            })
-          );
-        } else if (
-          context.entityType === "triggerPrefab" &&
-          context.instanceId
-        ) {
-          dispatch(
-            entitiesActions.editTriggerPrefabScriptEventOverride({
-              triggerId: context.instanceId,
-              scriptEventId: scriptEvent.id,
-              args: {
-                [key]: value,
-              },
-            })
-          );
-        } else {
-          dispatch(
-            entitiesActions.editScriptEventArg({
-              scriptEventId: scriptEvent.id,
-              key,
-              value,
-            })
-          );
-        }
-        if (scriptEvent && field.key && field.hasPostUpdateFn) {
-          API.script
-            .scriptEventPostUpdateFn(
-              scriptEvent.command,
-              field.key,
-              { ...scriptEvent.args, [key]: value },
-              scriptEvent.args || {}
-            )
-            .then((updatedArgs) => {
-              if (updatedArgs) {
-                setArgsValues(updatedArgs);
-              }
-            });
-        }
+        lastUpdateSource.current = "user";
+        setValue(value);
+        debouncedPublishArgValue(key, value);
       },
-      [
-        context.entityType,
-        context.instanceId,
-        dispatch,
-        field.hasPostUpdateFn,
-        field.key,
-        scriptEvent,
-        setArgsValues,
-      ]
+      [debouncedPublishArgValue]
     );
 
     const onChange = useCallback(
@@ -248,6 +287,20 @@ const ScriptEventFormField = memo(
       },
       [field.key, setArgValue, value]
     );
+
+    // Handle value updating from store (only if not currently updating due to user input)
+    useEffect(() => {
+      if (lastUpdateSource.current !== "store") {
+        return;
+      }
+      const storeValue = field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""];
+
+      if (!isEqual(value, storeValue)) {
+        setValue(storeValue);
+      }
+    }, [value, debouncedPublishArgValue, field.key, field.multiple, args]);
 
     const onAddValue = useCallback(
       (valueIndex: number) => {
@@ -387,7 +440,6 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
-                onChangeArg={setArgValue}
                 onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
@@ -413,7 +465,6 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
-          onChangeArg={setArgValue}
           onInsertEventAfter={onInsertEventAfter}
         />
       );
