@@ -60,32 +60,6 @@ export const CollisionLayerPicker = ({
     [settings.collisionSettings, defaultCollisionSettings]
   );
 
-  const getDefaultCollisionNames = (key: string) => {
-    switch(key) {
-      case "solid": return l10n("FIELD_SOLID");
-      case "top": return l10n("FIELD_COLLISION_TOP");
-      case "bottom": return l10n("FIELD_COLLISION_BOTTOM");
-      case "left": return l10n("FIELD_COLLISION_LEFT");
-      case "right": return l10n("FIELD_COLLISION_RIGHT");
-      case "ladder": return l10n("FIELD_LADDER");
-      case "slope_45_right": return l10n("FIELD_COLLISION_SLOPE_45_RIGHT");
-      case "slope_45_left": return l10n("FIELD_COLLISION_SLOPE_45_LEFT");
-      case "slope_22_right_bot": return l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT");
-      case "slope_22_right_top": return l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP");
-      case "slope_22_left_top": return l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP");
-      case "slope_22_left_bot": return l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT");
-      case "spare_08": return l10n("FIELD_COLLISION_SPARE", { tile: 8 });
-      case "spare_09": return l10n("FIELD_COLLISION_SPARE", { tile: 9 });
-      case "spare_10": return l10n("FIELD_COLLISION_SPARE", { tile: 10 });
-      case "spare_11": return l10n("FIELD_COLLISION_SPARE", { tile: 11 });
-      case "spare_12": return l10n("FIELD_COLLISION_SPARE", { tile: 12 });
-      case "spare_13": return l10n("FIELD_COLLISION_SPARE", { tile: 13 });
-      case "spare_14": return l10n("FIELD_COLLISION_SPARE", { tile: 14 });
-      case "spare_15": return l10n("FIELD_COLLISION_SPARE", { tile: 15 });
-      default: return "";
-    }
-  };
-
   return (<div> 
     {collisionSettings.map((layer) => {
       let icon;
