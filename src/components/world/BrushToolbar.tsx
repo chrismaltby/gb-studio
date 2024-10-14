@@ -44,6 +44,7 @@ import {
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
   defaultCollisionSettings,
+  COLLISIONS_EXTRA_SYMBOLS,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
 import editorActions from "store/features/editor/editorActions";
@@ -83,6 +84,8 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { StyledButton } from "ui/buttons/style";
+import { SliderField } from "ui/form/SliderField";
+import { Slider } from "ui/form/Slider";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -151,6 +154,12 @@ const PaletteModal = styled.div`
   }
 `;
 
+const SliderWrapper = styled.div`
+  width: 100px;
+  margin: 10px
+  pad-right: 15px
+`;
+
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useAppDispatch();
 
@@ -172,6 +181,20 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   );
   const showCollisionExtraTiles = useAppSelector(
     (state) => state.project.present.settings.showCollisionExtraTiles
+  );
+  const collisionAlpha = useAppSelector(
+    (state) => state.project.present.settings.collisionLayerAlpha
+  );
+  const collisionSettings = useAppSelector(
+    (state) => state.project.present.settings.collisionSettings
+  );
+  
+  const spareSymbols = useMemo(
+    () => ["08","09","10","11","12","13","14","15"].map(i => {
+      const setting = collisionSettings.find(s => s.key == ("spare_"+i));
+      return setting && setting.icon ? setting.icon[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
+    }),
+    [collisionSettings, collisionAlpha]
   );
   
   const tileTypes = useAppSelector(
@@ -285,7 +308,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0x80,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="8" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[0]} $color={t.color} />,
           }
         case "spare_09":
           return {
@@ -293,7 +316,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0x90,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="9" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[1]} $color={t.color} />,
           }
         case "spare_10":
           return {
@@ -301,7 +324,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xa0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="10" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[2]} $color={t.color} />,
           }
         case "spare_11":
           return {
@@ -309,7 +332,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xb0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="11" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[3]} $color={t.color} />,
           }
         case "spare_12":
           return {
@@ -317,7 +340,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xc0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="12" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[4]} $color={t.color} />,
           }
         case "spare_13":
           return {
@@ -325,7 +348,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xd0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="13" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[5]} $color={t.color} />,
           }
         case "spare_14":
           return {
@@ -333,7 +356,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xe0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="14" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[6]} $color={t.color} />,
           }
         case "spare_15":
           return {
@@ -341,15 +364,15 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: 0xf0,
             name: t.name ?? l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
             color: t.color,
-            icon: <BrushToolbarExtraTileIcon $value="15" $color={t.color} />,
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[7]} $color={t.color} />,
           }
         default:
           return {
             key: "none",
             flag: 0,
             name: "None",
-            color: "FFFFFF",
-            icon: <BrushToolbarExtraTileIcon $value="15" $color={t.color} />
+            color: "FFFFFFFF",
+            icon: <BrushToolbarExtraTileIcon $value={spareSymbols[8]} $color={t.color} />
           }
       }
     })
@@ -487,6 +510,15 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     },
     [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId]
   );
+
+  const onCollisionAlphaChanged = useCallback((a?: number) => {
+    dispatch(
+      settingsActions.editSettings({
+        collisionLayerAlpha: a,
+      })
+    );
+  }, [dispatch, collisionAlpha]);
+
 
   const onToggleViewSlopeTiles = useCallback(() => {
     dispatch(
@@ -727,6 +759,16 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             <FloatingPanelDivider />
           </>
         )}
+
+        {showTileTypes && (<SliderWrapper>
+          <Slider
+            value={collisionAlpha} 
+            min={0} 
+            max={255} 
+            onChange={onCollisionAlphaChanged}
+          ></Slider>
+        </SliderWrapper>)}
+
         <Button
           variant="transparent"
           onClick={toggleShowLayers}

@@ -234,9 +234,10 @@ interface BrushToolbarExtraTileIconProps {
   $color: string;
 }
 
+
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
   &:before {
-    content: "${(props) => COLLISIONS_EXTRA_SYMBOLS[+props.$value - 8]}";
+    content: "${(props) => props.$value}";
     display: flex;
     width: 22px;
     height: 22px;

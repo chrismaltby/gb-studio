@@ -33,7 +33,7 @@ const SceneCollisions = ({
   const canvas = useRef<HTMLCanvasElement>(null);
 
   const collisionAlpha = useAppSelector(
-    (state) => Math.floor(state.project.present.settings.collisionLayerAlpha * 255).toString(16)
+    (state) => Math.floor(state.project.present.settings.collisionLayerAlpha) / 255
   );
 
   const collisionSettings = useAppSelector(
@@ -43,8 +43,7 @@ const SceneCollisions = ({
   const solidColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "solid");
-      const color = setting ? setting.color : "#FA2828";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#FA2828FF";
     }, 
     [collisionSettings, collisionAlpha]
   );
@@ -52,8 +51,7 @@ const SceneCollisions = ({
   const topColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "top");
-      const color = setting ? setting.color : "#2828FA";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#2828FAFF";
     }, 
     [collisionSettings, collisionAlpha]
   );
@@ -61,8 +59,7 @@ const SceneCollisions = ({
   const bottomColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "bottom");
-      const color = setting ? setting.color : "#FFFA28";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#FFFA28FF";
     }, 
     [collisionSettings, collisionAlpha]
   );
@@ -70,8 +67,7 @@ const SceneCollisions = ({
   const leftColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "left");
-      const color = setting ? setting.color : "#FA28FA";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#FA28FAFF";
     }, 
     [collisionSettings, collisionAlpha]
   );
@@ -79,8 +75,7 @@ const SceneCollisions = ({
   const rightColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "right");
-      const color = setting ? setting.color : "#28FAFA";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#28FAFAFF";
     }, 
     [collisionSettings, collisionAlpha]
   );
@@ -88,18 +83,16 @@ const SceneCollisions = ({
   const ladderColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "ladder");
-      const color = setting ? setting.color : "#008000";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#008000FF";
     },
     [collisionSettings, collisionAlpha]
   );
 
-  const slopeColor = "#0000FF";
+  const slopeColor = "#0000FFFF";
   const slope45RightColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_45_right");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
@@ -107,17 +100,15 @@ const SceneCollisions = ({
   const slope45LeftColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_45_left");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
 
-  const slope22Right_botColor = useMemo(
+  const slope22RightBotColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_right_bot");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
@@ -125,8 +116,7 @@ const SceneCollisions = ({
   const slope22RightTopColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_right_top");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
@@ -134,8 +124,7 @@ const SceneCollisions = ({
   const slope22LeftTopColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_left_top");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
@@ -143,8 +132,7 @@ const SceneCollisions = ({
   const slope22LeftBotColor = useMemo(
     () => {
       const setting = collisionSettings.find(s => s.key == "slope_22_left_bot");
-      const color = setting ? setting.color : slopeColor;
-      return color + collisionAlpha;
+      return setting ? setting.color : slopeColor;
     },
     [collisionSettings, collisionAlpha]
   );
@@ -152,8 +140,15 @@ const SceneCollisions = ({
   const spareColors = useMemo(
     () => ["08","09","10","11","12","13","14","15"].map(i => {
       const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      const color = setting ? setting.color : "#008000";
-      return color + collisionAlpha;
+      return setting ? setting.color : "#00800080";
+    }),
+    [collisionSettings, collisionAlpha]
+  );
+
+  const spareSymbols = useMemo(
+    () => ["08","09","10","11","12","13","14","15"].map(i => {
+      const setting = collisionSettings.find(s => s.key == ("spare_"+i));
+      return setting && setting.icon ? setting.icon[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
     }),
     [collisionSettings, collisionAlpha]
   );
@@ -168,6 +163,8 @@ const SceneCollisions = ({
       if (!ctx) return;
       
       ctx.font = "8px Public Pixel";
+      ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha =  collisionAlpha;
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
@@ -247,7 +244,7 @@ const SceneCollisions = ({
                 ctx.fill(); // Render the path
                 break;
               case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
-                ctx.fillStyle = slope22LeftBotColor;
+                ctx.fillStyle = slope22RightBotColor;
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
@@ -295,9 +292,9 @@ const SceneCollisions = ({
                   TILE_SIZE,
                   TILE_SIZE
                 );
-                ctx.fillStyle = "rgba(255,255,255,0.2)";
+                ctx.fillStyle = "#FFFFFF40";
                 ctx.fillText(
-                  COLLISIONS_EXTRA_SYMBOLS[tilepropValue],
+                  spareSymbols[tilepropValue],
                   xi * TILE_SIZE,
                   (yi + 0.9) * TILE_SIZE
                 );
@@ -307,7 +304,7 @@ const SceneCollisions = ({
         }
       }
     }
-  }, [collisions, height, width]);
+  }, [collisions, height, width, collisionAlpha]);
 
   return (
     <canvas
