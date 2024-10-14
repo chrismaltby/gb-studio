@@ -39,12 +39,13 @@ export const CollisionLayerPicker = ({
   const spareSymbols = useMemo(
     () => ["08","09","10","11","12","13","14","15"].map(i => {
       const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      return setting && setting.name ? setting.name[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
+      return COLLISIONS_EXTRA_SYMBOLS[+i-8];
     }),
     [collisionSettings]
   );
 
   const collisionIcon = useMemo(()=> {
+    if (layer && layer.name) return <BrushToolbarExtraTileIcon $value={layer.name[0]} $color={layerColor} />;
     switch(layer.key) {
       case "solid": return <BrushToolbarTileSolidIcon  $color={layerColor} />;
       case "top": return <BrushToolbarTileTopIcon $color={layerColor} />;

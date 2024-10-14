@@ -208,7 +208,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: COLLISION_ALL,
             name: name ?? l10n("FIELD_SOLID"),
             color: t.color,
-            icon: <BrushToolbarTileSolidIcon  $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSolidIcon  $color={t.color} />,
           }
         case "top":
           return {
@@ -216,7 +216,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: COLLISION_TOP,
             name: name ?? l10n("FIELD_COLLISION_TOP"),
             color: t.color,
-            icon: <BrushToolbarTileTopIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileTopIcon $color={t.color} />,
           }
         case "bottom":
           return {
@@ -224,7 +224,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: COLLISION_BOTTOM,
             name: name ?? l10n("FIELD_COLLISION_BOTTOM"),
             color: t.color,
-            icon: <BrushToolbarTileBottomIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileBottomIcon $color={t.color} />,
           }
         case "left":
           return {
@@ -232,7 +232,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: COLLISION_LEFT,
             name: name ?? l10n("FIELD_COLLISION_LEFT"),
             color: t.color,
-            icon: <BrushToolbarTileLeftIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileLeftIcon $color={t.color} />,
           }
         case "right":
           return {
@@ -240,7 +240,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: COLLISION_RIGHT,
             name: name ?? l10n("FIELD_COLLISION_RIGHT"),
             color: t.color,
-            icon: <BrushToolbarTileRightIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileRightIcon $color={t.color} />,
           }
         case "ladder":
           return {
@@ -248,7 +248,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             flag: TILE_PROP_LADDER,
             name: name ?? l10n("FIELD_LADDER"),
             color: t.color,
-            icon: <BrushToolbarLadderTileIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarLadderTileIcon $color={t.color} />,
           }
         case "slope_45_right":
           return {
@@ -257,7 +257,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-            icon: <BrushToolbarTileSlope45RightIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope45RightIcon $color={t.color} />,
           }
         case "slope_45_left":
           return {
@@ -266,7 +266,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_LEFT,
-            icon: <BrushToolbarTileSlope45LeftIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope45LeftIcon $color={t.color} />,
           }
         case "slope_22_right_bot":
           return {
@@ -275,7 +275,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
             color: t.color,
             extra: COLLISION_BOTTOM,
-            icon: <BrushToolbarTileSlope22RightBottomIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope22RightBottomIcon $color={t.color} />,
           }
         case "slope_22_right_top":
           return {
@@ -284,7 +284,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-            icon: <BrushToolbarTileSlope22RightTopIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope22RightTopIcon $color={t.color} />,
           }
         case "slope_22_left_top":
           return {
@@ -293,7 +293,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
             color: t.color,
             extra: COLLISION_BOTTOM | COLLISION_LEFT,
-            icon: <BrushToolbarTileSlope22LeftTopIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope22LeftTopIcon $color={t.color} />,
           }
         case "slope_22_left_bot":
           return {
@@ -302,7 +302,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
             color: t.color,
             extra: COLLISION_BOTTOM,
-            icon: <BrushToolbarTileSlope22LeftBottomIcon $color={t.color} />,
+            icon: letter ? <BrushToolbarExtraTileIcon $value={letter} $color={t.color} /> : <BrushToolbarTileSlope22LeftBottomIcon $color={t.color} />,
           }
         case "spare_08":
           return {
