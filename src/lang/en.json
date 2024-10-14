@@ -1625,6 +1625,7 @@
   "SETTINGS_COLOR": "Color Options",
   "SETTINGS_BUILD": "Build Options",
   "SETTINGS_COLLISIONS": "Collisions",
+  "SETTINGS_TILE_COLLISIONS": "Tile Collision Layers",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

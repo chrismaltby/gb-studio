@@ -649,9 +649,9 @@ const SettingsPage: FC = () => {
 
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={["Tile Collision Layers"]}
+            searchMatches={[l10n("SETTINGS_TILE_COLLISIONS")]}
           >
-            <SettingRowLabel>Tile Collision Layers</SettingRowLabel>
+            <SettingRowLabel>{l10n("SETTINGS_TILE_COLLISIONS")}</SettingRowLabel>
             <SettingRowInput>
               <CollisionLayerPicker key={"TileCollisionLayers"} onChange={onEditCollisionSetting} />
             </SettingRowInput>
