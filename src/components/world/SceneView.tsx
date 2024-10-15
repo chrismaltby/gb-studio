@@ -573,6 +573,10 @@ const SceneView = memo(
         menu: JSX.Element[];
       }>();
 
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
+
     const renderContextMenu = useCallback(() => {
       return renderSceneContextMenu({
         dispatch,
@@ -582,6 +586,7 @@ const SceneView = memo(
         startDirection,
         hoverX,
         hoverY,
+        onClose: onContextMenuClose,
       });
     }, [
       dispatch,
@@ -591,6 +596,7 @@ const SceneView = memo(
       sceneSelectionIds,
       startDirection,
       startSceneId,
+      onContextMenuClose,
     ]);
 
     const onContextMenu = useCallback(
@@ -609,10 +615,6 @@ const SceneView = memo(
       },
       [renderContextMenu, tool]
     );
-
-    const onContextMenuClose = useCallback(() => {
-      setContextMenu(undefined);
-    }, []);
 
     const onToggleSelection = useCallback(() => {
       dispatch(editorActions.toggleSceneSelectedId(id));

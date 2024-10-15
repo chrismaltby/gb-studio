@@ -229,7 +229,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: SceneNavigatorItem) => {
+    (item: SceneNavigatorItem, onClose: () => void) => {
       if (item.type === "scene") {
         return renderSceneContextMenu({
           dispatch,
@@ -240,6 +240,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           hoverX: 0,
           hoverY: 0,
           onRename: () => setRenameId(item.id),
+          onClose,
         });
       } else if (item.type === "actor") {
         return renderActorContextMenu({

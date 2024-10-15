@@ -63,7 +63,10 @@ type EntityListItemProps<T extends EntityListItemData> = {
   collapsable?: boolean;
   onToggleCollapse?: () => void;
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  renderContextMenu?: (item: T) => JSX.Element[] | undefined;
+  renderContextMenu?: (
+    item: T,
+    closeMenu: () => void
+  ) => JSX.Element[] | undefined;
   renderLabel?: (item: T) => React.ReactNode;
 } & (
   | {
@@ -111,22 +114,24 @@ export const EntityListItem = <T extends EntityListItemData>({
       y: number;
       menu: JSX.Element[];
     }>();
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
   const onContextMenu = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (!renderContextMenu) {
         return;
       }
-      const menu = renderContextMenu(item);
+      const menu = renderContextMenu(item, onContextMenuClose);
       if (!menu) {
         return;
       }
       setContextMenu({ x: e.pageX, y: e.pageY, menu });
     },
-    [item, renderContextMenu]
+    [item, renderContextMenu, onContextMenuClose]
   );
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
 
   const onRenameComplete = useCallback(
     (newValue: string) => {

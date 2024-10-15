@@ -14,7 +14,7 @@ import {
 export const Menu = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->((props, outerRef) => <StyledMenu ref={outerRef} {...props} />);
+>((props, outerRef) => <StyledMenu ref={outerRef} role="menu" {...props} />);
 
 export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly "data-index"?: number;

@@ -17,6 +17,7 @@ interface SceneContextMenuProps {
   hoverX: number;
   hoverY: number;
   onRename?: () => void;
+  onClose?: () => void;
 }
 
 const renderSceneContextMenu = ({
@@ -28,6 +29,7 @@ const renderSceneContextMenu = ({
   startDirection,
   hoverX,
   hoverY,
+  onClose,
 }: SceneContextMenuProps) => {
   return [
     <MenuSection key="label" style={{ paddingRight: 10, marginBottom: 5 }}>
@@ -60,7 +62,7 @@ const renderSceneContextMenu = ({
             <div key={color} style={{ marginRight: color === "gray" ? 0 : 5 }}>
               <LabelButton
                 color={color}
-                onClick={() =>
+                onClick={() => {
                   dispatch(
                     additionalSceneIds.length > 1
                       ? entitiesActions.editScenes(
@@ -77,8 +79,9 @@ const renderSceneContextMenu = ({
                             labelColor: color,
                           },
                         })
-                  )
-                }
+                  );
+                  onClose?.();
+                }}
               />
             </div>
           )
@@ -114,6 +117,7 @@ const renderSceneContextMenu = ({
                 startY: hoverY,
               })
             );
+            onClose?.();
           }}
         />
       </div>
