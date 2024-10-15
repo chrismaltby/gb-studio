@@ -37,7 +37,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
-import { debounce, isEqual } from "lodash";
+import { throttle, isEqual } from "lodash";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -189,64 +189,56 @@ const ScriptEventFormField = memo(
       latestArgs.current = args;
     }, [args]);
 
-    const debouncedPublishArgValue = useMemo(() => {
-      return debounce(
-        (key: string, value: unknown) => {
-          if (context.entityType === "actorPrefab" && context.instanceId) {
-            dispatch(
-              entitiesActions.editActorPrefabScriptEventOverride({
-                actorId: context.instanceId,
-                scriptEventId: scriptEvent.id,
-                args: {
-                  [key]: value,
-                },
-              })
-            );
-          } else if (
-            context.entityType === "triggerPrefab" &&
-            context.instanceId
-          ) {
-            dispatch(
-              entitiesActions.editTriggerPrefabScriptEventOverride({
-                triggerId: context.instanceId,
-                scriptEventId: scriptEvent.id,
-                args: {
-                  [key]: value,
-                },
-              })
-            );
-          } else {
-            dispatch(
-              entitiesActions.editScriptEventArg({
-                scriptEventId: scriptEvent.id,
-                key,
-                value,
-              })
-            );
-          }
-          if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
-            API.script
-              .scriptEventPostUpdateFn(
-                scriptEvent.command,
-                field.key,
-                { ...latestArgs.current, [key]: value },
-                latestArgs.current || {}
-              )
-              .then((updatedArgs) => {
-                if (updatedArgs) {
-                  setArgsValues(updatedArgs);
-                }
-              });
-          }
-          lastUpdateSource.current = "store";
-        },
-        200,
-        {
-          leading: true,
-          trailing: true,
-          maxWait: 1000,
+    const throttledPublishArgValue = useMemo(() => {
+      return throttle((key: string, value: unknown) => {
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEventArg({
+              scriptEventId: scriptEvent.id,
+              key,
+              value,
+            })
+          );
         }
-      );
+        if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
+          API.script
+            .scriptEventPostUpdateFn(
+              scriptEvent.command,
+              field.key,
+              { ...latestArgs.current, [key]: value },
+              latestArgs.current || {}
+            )
+            .then((updatedArgs) => {
+              if (updatedArgs) {
+                setArgsValues(updatedArgs);
+              }
+            });
+        }
+        lastUpdateSource.current = "store";
+      }, 64);
     }, [
       context.entityType,
       context.instanceId,
@@ -263,9 +255,9 @@ const ScriptEventFormField = memo(
       (key: string, value: unknown) => {
         lastUpdateSource.current = "user";
         setValue(value);
-        debouncedPublishArgValue(key, value);
+        throttledPublishArgValue(key, value);
       },
-      [debouncedPublishArgValue]
+      [throttledPublishArgValue]
     );
 
     const onChange = useCallback(
@@ -300,7 +292,7 @@ const ScriptEventFormField = memo(
       if (!isEqual(value, storeValue)) {
         setValue(storeValue);
       }
-    }, [value, debouncedPublishArgValue, field.key, field.multiple, args]);
+    }, [value, throttledPublishArgValue, field.key, field.multiple, args]);
 
     const onAddValue = useCallback(
       (valueIndex: number) => {
