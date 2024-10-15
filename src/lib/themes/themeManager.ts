@@ -1,5 +1,4 @@
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
-import { ThemeId } from "shared/lib/theme";
 import darkTheme from "ui/theme/darkTheme";
 import darkThemeWin from "ui/theme/darkThemeWin";
 import lightTheme from "ui/theme/lightTheme";
@@ -12,6 +11,9 @@ import { readJSON } from "fs-extra";
 import { merge, cloneDeep } from "lodash";
 
 const globAsync = promisify(glob);
+
+const themeIds = ["dark", "light"] as const;
+export type ThemeId = typeof themeIds[number];
 
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,
