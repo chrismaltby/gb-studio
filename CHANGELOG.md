@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue where errors in watched files could cause application to crash
+- Fix issue where quickly clicking Create Project button during project creation could prevent new project from opening
 
 ## [4.1.3] - 2024-09-16
 

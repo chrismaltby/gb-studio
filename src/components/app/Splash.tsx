@@ -221,6 +221,11 @@ export const Splash = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (creating) {
+      return;
+    }
+
     if (!name) {
       setNameError(l10n("ERROR_PLEASE_ENTER_PROJECT_NAME"));
       return;
@@ -329,7 +334,7 @@ export const Splash = () => {
 
         {section === "new" && (
           <SplashContent>
-            <SplashForm onSubmit={!creating ? onSubmit : undefined}>
+            <SplashForm onSubmit={onSubmit}>
               <FormRow>
                 <TextField
                   name="name"
