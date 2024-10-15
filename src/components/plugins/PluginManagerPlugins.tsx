@@ -11,14 +11,9 @@ import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { Input } from "ui/form/Input";
 import { Option, Select } from "ui/form/Select";
-import {
-  PluginTypeSelect,
-  OptionalPluginType,
-} from "components/forms/PluginTypeSelect";
+import { PluginTypeSelect } from "components/forms/PluginTypeSelect";
 import { BlankIcon, CheckIcon, SettingsIcon, UpdateIcon } from "ui/icons/Icons";
-import semverGt from "semver/functions/gt";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
-import { join } from "path";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import {
@@ -39,7 +34,10 @@ import {
   StyledPillButtonWrapper,
 } from "./style";
 import {
+  buildPluginItems,
+  filterPluginItems,
   isGlobalPluginType,
+  OptionalPluginType,
   pluginDescriptionForType,
   pluginNameForType,
 } from "shared/lib/plugins/pluginHelpers";
@@ -93,24 +91,7 @@ const PluginsManagerPlugins = ({
     }
     const repos = await API.pluginManager.getPluginsList(force);
     const installedPlugins = await API.pluginManager.getInstalledPlugins();
-    const items: PluginItem[] = [];
-    for (const repo of repos) {
-      for (const plugin of repo.plugins) {
-        const installedVersion = installedPlugins.find(
-          (p) => p.path === join(plugin.id, "plugin.json")
-        )?.version;
-        items.push({
-          id: `${repo.id}-${plugin.id}`,
-          name: plugin.name,
-          installedVersion,
-          updateAvailable: installedVersion
-            ? semverGt(plugin.version, installedVersion)
-            : false,
-          plugin,
-          repo,
-        });
-      }
-    }
+    const items = buildPluginItems(installedPlugins, repos);
     const options: Option[] = [
       { value: "", label: l10n("FIELD_ALL_REPOSITORIES") },
     ].concat(
@@ -140,39 +121,7 @@ const PluginsManagerPlugins = ({
   });
 
   const filteredPluginItems = useMemo(() => {
-    return pluginItems
-      .filter((item) => {
-        if (typeFilter && item.plugin.type !== typeFilter) {
-          return false;
-        }
-        if (repoFilter && item.repo.id !== repoFilter) {
-          return false;
-        }
-        const searchKey =
-          `${item.plugin.filename} ${item.name}`.toLocaleUpperCase();
-        const search = searchTerm.toLocaleUpperCase();
-        return searchKey.includes(search);
-      })
-      .sort((a, b) => {
-        const isCoreRepoA = a.repo.id === "core";
-        const isCoreRepoB = b.repo.id === "core";
-        const isCorePluginA = a.plugin.id.startsWith("core/");
-        const isCorePluginB = b.plugin.id.startsWith("core/");
-
-        if (isCoreRepoA && !isCoreRepoB) {
-          return -1;
-        } else if (!isCoreRepoA && isCoreRepoB) {
-          return 1;
-        }
-
-        if (isCorePluginA && !isCorePluginB) {
-          return -1;
-        } else if (!isCorePluginA && isCorePluginB) {
-          return 1;
-        }
-
-        return a.id.localeCompare(b.id);
-      });
+    return filterPluginItems(pluginItems, searchTerm, typeFilter, repoFilter);
   }, [pluginItems, repoFilter, searchTerm, typeFilter]);
 
   const selectedRepoOption = useMemo(

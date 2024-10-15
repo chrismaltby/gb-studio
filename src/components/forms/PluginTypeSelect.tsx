@@ -2,9 +2,7 @@ import React, { useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
-import type { PluginType } from "lib/pluginManager/types";
-
-export type OptionalPluginType = PluginType | "";
+import { OptionalPluginType } from "shared/lib/plugins/pluginHelpers";
 
 interface PluginTypeSelectProps extends SelectCommonProps {
   name: string;
