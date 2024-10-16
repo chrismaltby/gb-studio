@@ -353,6 +353,7 @@ export const dummyProjectData: ProjectData = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 
@@ -623,6 +624,7 @@ export const dummySettingsResource: SettingsResource = {
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -731,6 +733,7 @@ export const dummyProjectResources: ProjectResources = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 

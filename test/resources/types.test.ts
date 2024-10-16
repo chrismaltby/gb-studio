@@ -632,6 +632,7 @@ describe("TypeBox Schemas", () => {
       compilerPreset: 3000,
       scriptEventPresets: {},
       scriptEventDefaultPresets: {},
+      runSceneSelectionOnly: false,
     };
     const invalidSettings = {
       _resourceType: "settings",

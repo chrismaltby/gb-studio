@@ -971,6 +971,9 @@
   "FIELD_ADDING": "Adding...",
   "FIELD_CLOSE": "Close",
   "FIELD_LICENSE": "License",
+  "FIELD_RUN_SCENE": "Run Scene",
+  "FIELD_RUN_FROM_HERE": "Run From Here",
+  "FIELD_INCLUDE_SELECTION_ONLY": "Include Selection Only",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

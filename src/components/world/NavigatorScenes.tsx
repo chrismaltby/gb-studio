@@ -62,7 +62,9 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const sceneSelectionIds = useAppSelector(
     (state) => state.editor.sceneSelectionIds
   );
-
+  const runSceneSelectionOnly = useAppSelector(
+    (state) => state.project.present.settings.runSceneSelectionOnly
+  );
   const [folderId, setFolderId] = useState("");
 
   const dispatch = useAppDispatch();
@@ -240,6 +242,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           hoverX: 0,
           hoverY: 0,
           onRename: () => setRenameId(item.id),
+          runSceneSelectionOnly,
           onClose,
         });
       } else if (item.type === "actor") {
@@ -265,7 +268,14 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         assertUnreachable(item);
       }
     },
-    [dispatch, sceneSelectionIds, scenes, startDirection, startSceneId]
+    [
+      dispatch,
+      runSceneSelectionOnly,
+      sceneSelectionIds,
+      scenes,
+      startDirection,
+      startSceneId,
+    ]
   );
 
   const renderLabel = useCallback(

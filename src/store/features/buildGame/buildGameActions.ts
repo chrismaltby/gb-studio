@@ -10,10 +10,18 @@ const buildGame = createAction(
       buildType = "web",
       exportBuild = false,
       debugEnabled = false,
+      startSceneId,
+      startX,
+      startY,
+      onlySelection,
     }: {
       buildType?: BuildType;
       exportBuild?: boolean;
       debugEnabled?: boolean;
+      startSceneId?: string;
+      startX?: number;
+      startY?: number;
+      onlySelection?: boolean;
     } = {
       buildType: "web",
       exportBuild: false,
@@ -25,6 +33,10 @@ const buildGame = createAction(
         buildType,
         exportBuild,
         debugEnabled,
+        startSceneId,
+        startX,
+        startY,
+        onlySelection,
       },
     };
   }

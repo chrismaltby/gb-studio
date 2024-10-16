@@ -213,6 +213,7 @@ export const defaultProjectSettings: Settings = {
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const defaultPalettes: Palette[] = [

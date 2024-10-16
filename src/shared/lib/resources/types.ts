@@ -662,6 +662,7 @@ export const SettingsResource = Type.Object({
     Type.Record(Type.String(), ScriptEventPreset)
   ),
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
+  runSceneSelectionOnly: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

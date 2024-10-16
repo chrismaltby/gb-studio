@@ -232,7 +232,9 @@ const SceneView = memo(
     const { x: hoverX, y: hoverY } = useAppSelector(
       (state) => state.editor.hover
     );
-
+    const runSceneSelectionOnly = useAppSelector(
+      (state) => state.project.present.settings.runSceneSelectionOnly
+    );
     const selected = useAppSelector((state) => state.editor.scene === id);
     const sceneSelectionIds = useAppSelector(
       (state) => state.editor.sceneSelectionIds
@@ -586,6 +588,7 @@ const SceneView = memo(
         startDirection,
         hoverX,
         hoverY,
+        runSceneSelectionOnly,
         onClose: onContextMenuClose,
       });
     }, [
@@ -596,6 +599,7 @@ const SceneView = memo(
       sceneSelectionIds,
       startDirection,
       startSceneId,
+      runSceneSelectionOnly,
       onContextMenuClose,
     ]);
 
