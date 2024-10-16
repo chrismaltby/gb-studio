@@ -974,6 +974,8 @@
   "FIELD_RUN_SCENE": "Run Scene",
   "FIELD_RUN_FROM_HERE": "Run From Here",
   "FIELD_INCLUDE_SELECTION_ONLY": "Include Selection Only",
+  "FIELD_PROJECTILE_SLOT": "Projectile Slot",
+  "FIELD_PROJECTILE_SLOT_DESC": "The slot that contains the project you want to launch",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1194,6 +1196,8 @@
   "EVENT_ACTOR_COLLISIONS_DISABLE_DESC": "Disable all collision checks for an actor allowing the player and all other actor's to pass through it while moving.",
   "EVENT_LAUNCH_PROJECTILE": "Launch Projectile",
   "EVENT_LAUNCH_PROJECTILE_DESC": "Launch a projectile from an actor in a specified direction. When a project collides with other actors it will trigger their OnHit scripts.",
+  "EVENT_LAUNCH_PROJECTILE_SLOT": "Launch Projectile From Slot",
+  "EVENT_LAUNCH_PROJECTILE_SLOT_DESC": "Launch a slot's projectile from an actor in a specified direction. When a project collides with other actors it will trigger their OnHit scripts.",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR": "If Actor Relative To Actor",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR_DESC": "Conditionally run part of the script based on the position of one actor relative to another.",
   "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR": "If Actor Distance From Actor",
