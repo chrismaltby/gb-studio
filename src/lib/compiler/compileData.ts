@@ -72,6 +72,8 @@ import {
   compileStateDefines,
   replaceScriptSymbols,
   compileGameGlobalsHeader,
+  compileGlobalProjectilesHeader,
+  compileGlobalProjectiles,
 } from "./generateGBVMData";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -82,6 +84,7 @@ import {
 } from "./compileMusic";
 import { chunk } from "shared/lib/helpers/array";
 import {
+  GlobalProjectiles,
   ScriptBuilderEntity,
   ScriptBuilderEntityType,
   toProjectileHash,
@@ -1148,6 +1151,15 @@ export const precompileScenes = (
         if (
           event.args &&
           event.args.spriteSheetId &&
+          event.command === "EVENT_LOAD_PROJECTILE_SLOT" &&
+          !event.args.__comment
+        ) {
+          eventSpriteIds.push(ensureString(event.args.spriteSheetId, ""));
+        }
+
+        if (
+          event.args &&
+          event.args.spriteSheetId &&
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
           let actorId = ensureString(event.args.actorId, "");
@@ -1460,6 +1472,7 @@ const compile = async (
   const output: Record<string, string> = {};
   const symbols: Record<string, string> = {};
   const sceneMap: Record<string, SceneMapData> = {};
+  const globalProjectiles: GlobalProjectiles[] = [];
 
   if (rawProjectData.scenes.length === 0) {
     throw new Error(
@@ -1644,6 +1657,7 @@ const compile = async (
           additionalScripts,
           additionalOutput,
           symbols,
+          globalProjectiles,
           compiledCustomEventScriptCache,
           additionalScriptsCache,
           recursiveSymbolMap,
@@ -2031,6 +2045,15 @@ const compile = async (
         precompiled.usedSprites
       );
     }
+  });
+
+  globalProjectiles.forEach((projectiles) => {
+    output[`${projectiles.symbol}.h`] =
+      compileGlobalProjectilesHeader(projectiles);
+    output[`${projectiles.symbol}.c`] = compileGlobalProjectiles(
+      projectiles,
+      precompiled.usedSprites
+    );
   });
 
   const startScene =

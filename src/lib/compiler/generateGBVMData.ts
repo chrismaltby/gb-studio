@@ -20,6 +20,7 @@ import type {
 } from "store/features/engine/engineState";
 import { Constant } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
+import { GlobalProjectiles } from "./scriptBuilder";
 
 export interface PrecompiledBackground {
   id: string;
@@ -761,6 +762,56 @@ export const compileSceneProjectilesHeader = (
     FARPTR_TYPE,
     sceneProjectilesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`
+  );
+
+export const compileGlobalProjectiles = (
+  projectiles: GlobalProjectiles,
+  sprites: PrecompiledSprite[]
+) =>
+  toStructArrayDataFile(
+    PROJECTILE_TYPE,
+    projectiles.symbol,
+    `// Global Projectiles: ${projectiles.symbol}`,
+    filterNull(
+      projectiles.projectiles.map((projectile, projectileIndex) => {
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
+        if (!sprite) return null;
+        const stateIndex = sprite.states.findIndex(
+          (state) => state.name === projectile.spriteStateId
+        );
+        const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
+        return {
+          __comment: `Projectile ${projectileIndex}`,
+          sprite: toFarPtr(sprite.symbol),
+          move_speed: Math.round(projectile.speed * 16),
+          life_time: Math.round(projectile.lifeTime * 60),
+          collision_group: toASMCollisionGroup(projectile.collisionGroup),
+          collision_mask: toASMCollisionMask(projectile.collisionMask),
+          bounds: compileBounds(sprite),
+          anim_tick: projectile.animSpeed,
+          animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
+          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
+        };
+      })
+    ),
+    // Dependencies
+    flatten(
+      projectiles.projectiles.map((projectile) => {
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
+        return sprite.symbol;
+      })
+    )
+  );
+
+export const compileGlobalProjectilesHeader = (
+  projectiles: GlobalProjectiles
+) =>
+  toArrayDataHeader(
+    FARPTR_TYPE,
+    projectiles.symbol,
+    `// Global Projectiles: ${projectiles.symbol}`
   );
 
 export const compileSceneCollisions = (

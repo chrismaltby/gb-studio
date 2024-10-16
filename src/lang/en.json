@@ -1198,6 +1198,8 @@
   "EVENT_LAUNCH_PROJECTILE_DESC": "Launch a projectile from an actor in a specified direction. When a projectile collides with other actors it will trigger their OnHit scripts.",
   "EVENT_LAUNCH_PROJECTILE_SLOT": "Launch Projectile From Slot",
   "EVENT_LAUNCH_PROJECTILE_SLOT_DESC": "Launch a slot's projectile from an actor in a specified direction. When a projectile collides with other actors it will trigger their OnHit scripts.",
+  "EVENT_LOAD_PROJECTILE_SLOT": "Load Projectile Into Slot",
+  "EVENT_LOAD_PROJECTILE_SLOT_DESC": "Load projectile data into a specified slot",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR": "If Actor Relative To Actor",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR_DESC": "Conditionally run part of the script based on the position of one actor relative to another.",
   "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR": "If Actor Distance From Actor",

@@ -134,6 +134,23 @@ interface ScriptBuilderFunctionArgLookup {
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
+interface Projectile {
+  hash: string;
+  spriteSheetId: string;
+  spriteStateId: string;
+  speed: number;
+  animSpeed: number;
+  lifeTime: number;
+  initialOffset: number;
+  collisionGroup: string;
+  collisionMask: string[];
+}
+
+export interface GlobalProjectiles {
+  symbol: string;
+  projectiles: Projectile[];
+}
+
 export interface ScriptBuilderOptions {
   scriptEventHandlers: ScriptEventHandlers;
   context: ScriptEditorCtxType;
@@ -178,6 +195,7 @@ export interface ScriptBuilderOptions {
     }
   >;
   symbols: Record<string, string>;
+  globalProjectiles: GlobalProjectiles[];
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
   compiledCustomEventScriptCache: Record<
@@ -687,6 +705,7 @@ class ScriptBuilder {
       additionalScripts: options.additionalScripts || {},
       additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
+      globalProjectiles: options.globalProjectiles || [],
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
@@ -1843,6 +1862,16 @@ class ScriptBuilder {
 
   _projectileLaunch = (index: number, addr: string) => {
     this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
+  };
+
+  _projectileLoad = (destIndex: number, srcIndex: number, symbol: string) => {
+    this._addCmd(
+      "VM_PROJECTILE_LOAD_TYPE",
+      destIndex,
+      srcIndex,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
   };
 
   _spritesHide = () => {
@@ -3671,6 +3700,78 @@ extern void __mute_mask_${symbol};
     return projectileIndex;
   };
 
+  getGlobalProjectile = (
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    lifeTime: number,
+    initialOffset: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ): { symbol: string; index: number } => {
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      lifeTime,
+      initialOffset,
+      collisionGroup,
+      collisionMask,
+    });
+
+    // Check cached projectiles first
+    for (const projectiles of this.options.globalProjectiles) {
+      const index = projectiles.projectiles.findIndex(
+        (p) => p.hash === projectileHash
+      );
+      if (index > -1) {
+        return {
+          symbol: projectiles.symbol,
+          index,
+        };
+      }
+    }
+
+    // Not found add to existing
+    const lastGlobalProjectiles =
+      this.options.globalProjectiles[this.options.globalProjectiles.length - 1];
+
+    const projectile: Projectile = {
+      hash: projectileHash,
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      lifeTime,
+      initialOffset,
+      collisionGroup,
+      collisionMask,
+    };
+
+    if (lastGlobalProjectiles && lastGlobalProjectiles.projectiles.length < 5) {
+      lastGlobalProjectiles.projectiles.push(projectile);
+      return {
+        symbol: lastGlobalProjectiles.symbol,
+        index: lastGlobalProjectiles.projectiles.length - 1,
+      };
+    }
+
+    // No existing global projectiles array to add to, make a new one
+
+    const symbol = this._getAvailableSymbol(
+      `global_projectiles_${this.options.globalProjectiles.length}`
+    );
+
+    this.options.globalProjectiles.push({
+      symbol,
+      projectiles: [projectile],
+    });
+
+    return { symbol, index: 0 };
+  };
+
   _rpnProjectilePosArgs = (actorRef: string, x = 0, y = 0) => {
     this._actorGetPosition(actorRef);
     const rpn = this._rpn();
@@ -3817,6 +3918,32 @@ extern void __mute_mask_${symbol};
       .stop();
     this._projectileLaunch(projectileIndex, ".ARG3");
     this._stackPop(4);
+    this._addNL();
+  };
+
+  loadProjectile = (
+    index: number,
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    lifeTime: number,
+    initialOffset: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { symbol, index: srcIndex } = this.getGlobalProjectile(
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      lifeTime,
+      initialOffset,
+      collisionGroup,
+      collisionMask
+    );
+    this._addComment("Load Projectile Into Slot");
+    this._projectileLoad(index, srcIndex, symbol);
     this._addNL();
   };
 
