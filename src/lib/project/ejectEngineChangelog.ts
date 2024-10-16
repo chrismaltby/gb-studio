@@ -755,6 +755,18 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e2",
+    description: createDescription("Updates", [
+      "Update VM_PROJECTILE_LOAD_TYPE to allow setting both source and destination index",
+    ]),
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_projectiles.h",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

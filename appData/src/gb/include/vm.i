@@ -1605,11 +1605,12 @@ OP_VM_PROJECTILE_LAUNCH  = 0x80
 
 OP_VM_PROJECTILE_LOAD_TYPE = 0x81
 ;-- Loads projectile into a slot for VM_PROJECTILE_LAUNCH.
-; @param TYPE Slot number to load into.
+; @param DEST_TYPE Slot number to load into.
+; @param SRC_TYPE Slot number to load from.
 ; @param BANK Bank number of projectile data to load.
 ; @param ADDR Projectile data to load.
-.macro VM_PROJECTILE_LOAD_TYPE TYPE, BANK, ADDR
-        .db OP_VM_PROJECTILE_LOAD_TYPE, #>ADDR, #<ADDR, #<BANK, #<TYPE
+.macro VM_PROJECTILE_LOAD_TYPE DEST_TYPE, SRC_TYPE, BANK, ADDR
+        .db OP_VM_PROJECTILE_LOAD_TYPE, #>ADDR, #<ADDR, #<BANK, #<SRC_TYPE, #<DEST_TYPE
 .endm
 
 ; --- MATH -------------------------------------------
