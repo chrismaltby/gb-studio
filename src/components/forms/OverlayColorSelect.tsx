@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
 
@@ -16,7 +17,7 @@ interface OverlayColorOption {
 
 export const OverlayColorSelect: FC<OverlayColorSelectProps> = ({
   name,
-  value,
+  value = "black",
   onChange,
 }) => {
   const options: OverlayColorOption[] = useMemo(
@@ -32,14 +33,11 @@ export const OverlayColorSelect: FC<OverlayColorSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: OverlayColorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<OverlayColorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
-};
-
-OverlayColorSelect.defaultProps = {
-  name: undefined,
-  value: "black",
 };

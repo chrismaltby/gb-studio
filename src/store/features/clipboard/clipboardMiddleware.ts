@@ -1,5 +1,5 @@
 import flatten from "lodash/flatten";
-import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
+import { UnknownAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -77,7 +77,7 @@ const generateLocalVariableInsertActions = (
   newId: string,
   variables: Variable[]
 ) => {
-  const actions: AnyAction[] = [];
+  const actions: UnknownAction[] = [];
   for (const variable of variables) {
     if (variable.id.startsWith(originalId)) {
       const variableId = variable.id.replace(originalId, newId);
@@ -93,11 +93,11 @@ const generateLocalVariableInsertActions = (
 
 const generateCustomEventInsertActions = async (
   customEvent: CustomEventNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingCustomEvents: CustomEventNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingEvent = existingCustomEvents.find(
     (e) => e.id === customEvent.id
@@ -156,13 +156,13 @@ const generateCustomEventInsertActions = async (
 
 const generateActorInsertActions = (
   actor: ActorNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addActorAction = entitiesActions.addActor({
     sceneId,
     x,
@@ -194,11 +194,11 @@ const generateActorInsertActions = (
 
 const generateActorPrefabInsertActions = async (
   prefab: ActorPrefabNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingActorPrefabs: ActorPrefabNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingPrefab = existingActorPrefabs.find((e) => e.id === prefab.id);
   if (
@@ -255,13 +255,13 @@ const generateActorPrefabInsertActions = async (
 
 const generateTriggerInsertActions = (
   trigger: TriggerNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addTriggerAction = entitiesActions.addTrigger({
     sceneId,
     x,
@@ -295,11 +295,11 @@ const generateTriggerInsertActions = (
 
 const generateTriggerPrefabInsertActions = async (
   prefab: TriggerPrefabNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingTriggerPrefabs: TriggerPrefabNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingPrefab = existingTriggerPrefabs.find((e) => e.id === prefab.id);
   if (
@@ -358,13 +358,13 @@ const generateSceneInsertActions = (
   scene: SceneNormalized,
   actors: ActorNormalized[],
   triggers: TriggerNormalized[],
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addSceneAction = entitiesActions.addScene({
     x,
     y,
@@ -420,11 +420,9 @@ const generateSceneInsertActions = (
   );
 
   const actorMapping: Record<string, string> = actions
-    .filter((action) => {
-      return action.type === "entities/addActor";
-    })
+    .filter((action) => entitiesActions.addActor.match(action))
     .reduce((memo, action) => {
-      const oldId: string = action.payload?.defaults?.id;
+      const oldId: string = action.payload?.defaults?.id ?? "";
       const newId: string = action.payload?.actorId;
       if (oldId && newId) {
         memo[oldId] = newId;
@@ -433,14 +431,14 @@ const generateSceneInsertActions = (
     }, {} as Record<string, string>);
 
   const remappedActions = actions.map((action) => {
-    if (action.type !== "entities/addScriptEvents") {
+    if (!entitiesActions.addScriptEvents.match(action)) {
       return action;
     }
     return {
       ...action,
       payload: {
         ...action.payload,
-        data: action.payload.data.map((eventData: ScriptEventNormalized) => {
+        data: action.payload.data.map((eventData) => {
           return {
             ...eventData,
             args: patchEventArgs(
@@ -1210,7 +1208,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               }
               return memo;
             },
-            {} as Dictionary<string>
+            {} as Record<string, string>
           );
 
           const newTileActions = data.metaspriteTiles.map((tile) => {
@@ -1256,7 +1254,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             }
             return memo;
           },
-          {} as Dictionary<string>
+          {} as Record<string, string>
         );
 
         const newTileActions = data.metaspriteTiles.map((tile) => {

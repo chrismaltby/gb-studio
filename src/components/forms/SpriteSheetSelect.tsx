@@ -16,6 +16,7 @@ import {
   FormatFolderLabel,
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import { SingleValue } from "react-select";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;
@@ -109,8 +110,10 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     }
   }, [currentSpriteSheet, optional, optionalLabel]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

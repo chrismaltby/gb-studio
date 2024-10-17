@@ -55,10 +55,14 @@ export const NumberInput: FC<NumberInputProps> = ({
   );
 
   useEffect(() => {
-    if (document.activeElement !== inputRef.current) {
+    const newStringValue = valueToString(value);
+    if (
+      stringValue !== newStringValue &&
+      (newStringValue !== "0" || document.activeElement !== inputRef.current)
+    ) {
       setStringValue(valueToString(value));
     }
-  }, [value]);
+  }, [stringValue, value]);
 
   return (
     <NumberInputWrapper>
@@ -81,8 +85,4 @@ export const NumberInput: FC<NumberInputProps> = ({
       )}
     </NumberInputWrapper>
   );
-};
-
-NumberInput.defaultProps = {
-  value: undefined,
 };

@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Add ability to define constant values, compared to variables these don't take any extra memory when used in game
+- Add ability to select all scenes with Ctrl/Cmd + A from Game World view
+- Add plugin manager for installing plugins from the official plugin repository, accessible from the menu at `Plugins / Plugin Manager`
+- Add support for theme, localization and project template plugins
+- Add ability to right click a scene to "Run From Here" allowing quick preview of a specific scene. Optionally can only include the selected scenes for faster build previews in large projects.
+
+### Changed
+
+- Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
+- "Switch" event updated to allow use of constant values for each branch condition
+- Optimised compilation of backgrounds by reusing tileset data where possible if common tilesets are used [@Mico27](https://github.com/Mico27)
+- Moved `.gbsres` files for assets to the same folder as the asset files. Allows asset plugins to include `.gbsres` e.g sprite asset pack plugins can include animations
+- Optimised script editor by throttling the processing that was occuring on every key press
+
+### Fixed
+
+- Fix issue where errors in watched files could cause application to crash
+- Fix issue where quickly clicking "Create Project" button during project creation could prevent new project from opening
+- Fix issue where CLI tool was ignoring project's debugger enabled setting causing debugger comments to always be included in generated gbvm code
+
+## [4.1.3] - 2024-09-16
+
+### Changed
+
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Improved error message that appears when project fails to open due to broken plugins
+
+### Fixed
+
+- Fix issue where adding a new song wouldn't warn about unsaved changes in current song
+- Fix issue where adding a song with an already existing name wouldn't auto select the newly created song
+- Fix issue where scene connection lines could get stuck in place if custom scripts that change scenes are called multiple times from the same scene
+- Fix issue where "Replace Script" confirmation alert would appear when pasting sometimes even if the custom script hadn't been modified
+- Fix issue preventing building projects containing a "Play Music" event but no music
+- Fix issue where dialogue script events could cause horizontal scroll bars to appear in script editor when column was not wide enough to display all tabs
+- Fix issue where errors causing the build process to end early where not being display correctly in the Build Log
+- Fix issue preventing build when a scene includes a common tileset that has been deleted
+
 ## [4.1.2] - 2024-09-09
 
 ### Added

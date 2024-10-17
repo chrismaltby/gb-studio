@@ -1,7 +1,7 @@
 import {
   createSlice,
   PayloadAction,
-  AnyAction,
+  UnknownAction,
   createSelector,
   ThunkDispatch,
 } from "@reduxjs/toolkit";
@@ -48,6 +48,7 @@ export type EditorSelectionType =
   | "trigger"
   | "customEvent"
   | "variable"
+  | "constant"
   | "actorPrefab"
   | "triggerPrefab";
 
@@ -203,7 +204,7 @@ export const initialState: EditorState = {
   navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
   clipboardVariables: [],
-  navigatorSplitSizes: [400, 30, 30, 30],
+  navigatorSplitSizes: [400, 30, 30, 30, 30],
   navigatorSplitSizesManuallyEdited: false,
   focusSceneId: "",
   selectedSpriteSheetId: "",
@@ -238,7 +239,7 @@ const toggleScriptEventSelectedId =
     parentKey: string;
   }) =>
   (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const state = getState();
@@ -424,6 +425,12 @@ const editorSlice = createSlice({
       state.entityId = action.payload.variableId;
     },
 
+    selectConstant: (state, action: PayloadAction<{ constantId: string }>) => {
+      state.type = "constant";
+      state.scene = "";
+      state.entityId = action.payload.constantId;
+    },
+
     selectActor: (
       state,
       action: PayloadAction<{ actorId: string; sceneId: string }>
@@ -533,7 +540,7 @@ const editorSlice = createSlice({
         return Math.min(
           800,
           action.payload.delta !== undefined
-            ? oldZoom + -action.payload.delta
+            ? oldZoom + action.payload.delta
             : zoomIn(oldZoom)
         );
       };
@@ -964,6 +971,11 @@ const editorSlice = createSlice({
           state.entityId = action.payload.triggerPrefabId;
         }
       })
+      .addCase(entitiesActions.addConstant, (state, action) => {
+        state.type = "constant";
+        state.scene = "";
+        state.entityId = action.payload.constantId;
+      })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
@@ -1049,7 +1061,7 @@ const editorSlice = createSlice({
       })
       // When UI changes increment UI version number
       .addMatcher(
-        (action): action is AnyAction =>
+        (action): action is UnknownAction =>
           projectActions.loadUI.match(action) ||
           projectActions.reloadAssets.match(action),
         (state) => {

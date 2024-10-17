@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
@@ -19,6 +18,8 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
+import { Constant } from "shared/lib/resources/types";
+import { VariableMapData } from "./compileData";
 
 export interface PrecompiledBackground {
   id: string;
@@ -94,7 +95,7 @@ export type PrecompiledScene = Scene & {
   background: PrecompiledBackground;
   playerSprite?: PrecompiledSprite;
   parallax?: Array<{ height: number; speed: number }>;
-  actorsExclusiveLookup: Dictionary<number>;
+  actorsExclusiveLookup: Record<string, number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
@@ -1154,7 +1155,7 @@ export const compileScriptHeader = (scriptName: string) =>
 
 export const replaceScriptSymbols = (
   script: string,
-  replaceSymbols: Dictionary<string>
+  replaceSymbols: Record<string, string>
 ) => {
   let newScript = script;
   for (const key in replaceSymbols) {
@@ -1164,7 +1165,8 @@ export const replaceScriptSymbols = (
 };
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<{ symbol: string }>,
+  variableAliasLookup: Record<string, VariableMapData>,
+  constants: Constant[],
   stateReferences: string[]
 ) => {
   const variables = Object.values(variableAliasLookup).map(
@@ -1177,11 +1179,43 @@ export const compileGameGlobalsInclude = (
       })
       .join("") +
     `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `${constant.symbol.toLocaleUpperCase()} = ${constant.value}\n`;
+      })
+      .join("") +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
       .join("")
+  );
+};
+
+export const compileGameGlobalsHeader = (
+  variableAliasLookup: Record<string, VariableMapData>,
+  constants: Constant[]
+) => {
+  return (
+    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
+    Object.values(variableAliasLookup)
+      .map((v) => v?.symbol)
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
+      })
+      .join("") +
+    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `#define ${constant.symbol.toLocaleUpperCase()} ${
+          constant.value
+        }\n`;
+      })
+      .join("") +
+    `\n` +
+    `#endif\n`
   );
 };
 

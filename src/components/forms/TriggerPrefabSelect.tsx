@@ -10,6 +10,7 @@ import {
 } from "ui/form/Select";
 import { sortByLabel } from "shared/lib/helpers/sort";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface TriggerPrefabSelectProps extends SelectCommonProps {
   name: string;
@@ -55,8 +56,10 @@ export const TriggerPrefabSelect = ({
   }, [options, value]);
 
   const onSelectChange = useCallback(
-    (newValue: Option) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<Option>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   actorName,
   customEventName,
@@ -66,22 +65,23 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const scriptId: string = evt.data.scriptId;
   const scenes: SceneNormalized[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
+  const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
-  const actorPrefabsLookup: Dictionary<ActorPrefabNormalized> =
+  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Record<string, TriggerNormalized> =
+    evt.data.triggersLookup;
+  const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
     evt.data.actorPrefabsLookup;
-  const triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized> =
+  const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
     evt.data.triggerPrefabsLookup;
-  const customEventsLookup: Dictionary<CustomEventNormalized> =
+  const customEventsLookup: Record<string, CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
 
   const uses: ScriptUse[] = [];
-  const useLookup: Dictionary<boolean> = {};
+  const useLookup: Record<string, boolean> = {};
 
   walkNormalizedScenesScripts(
     scenes,

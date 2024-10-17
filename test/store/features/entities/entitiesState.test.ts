@@ -2,12 +2,7 @@
 import reducer, {
   initialState,
 } from "../../../../src/store/features/entities/entitiesState";
-import {
-  EntitiesState,
-  Background,
-  Music,
-  SpriteSheetNormalized,
-} from "../../../../src/shared/lib/entities/entitiesTypes";
+import { EntitiesState } from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
 import projectActions from "../../../../src/store/features/project/projectActions";
 import {
@@ -25,10 +20,16 @@ import {
   dummyVariable,
   dummyTriggerPrefabNormalized,
   dummyCustomEventNormalized,
+  dummyMusicResource,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
-import { CompressedProjectResources } from "shared/lib/resources/types";
+import {
+  CompressedBackgroundResourceAsset,
+  CompressedProjectResources,
+  MusicResourceAsset,
+  SpriteResourceAsset,
+} from "shared/lib/resources/types";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -184,8 +185,10 @@ test("Should fix scene widths if background has changed while project is open", 
     },
   };
 
-  const loadBackground: Background = {
-    ...dummyBackground,
+  const loadBackground: CompressedBackgroundResourceAsset = {
+    ...dummyCompressedBackgroundResource,
+    _v: 0,
+    inode: "0",
     id: "bg1",
     width: 64,
     height: 40,
@@ -207,8 +210,10 @@ test("Should add new background if loaded while project is open", () => {
     ...initialState,
   };
 
-  const loadBackground: Background = {
-    ...dummyBackground,
+  const loadBackground: CompressedBackgroundResourceAsset = {
+    ...dummyCompressedBackgroundResource,
+    _v: 0,
+    inode: "0",
     id: "bg1",
     width: 20,
     height: 18,
@@ -258,9 +263,11 @@ test("Should add new sprite sheet if loaded while project is open", () => {
     ...initialState,
   };
 
-  const loadSpriteSheet: SpriteSheetNormalized = {
+  const loadSpriteSheet: SpriteResourceAsset = {
     ...dummySpriteSheet,
     id: "sprite1",
+    _resourceType: "sprite",
+    states: [],
   };
 
   const action = entitiesActions.loadSprite({
@@ -287,10 +294,12 @@ test("Should update sprite sheet if modified while project is open", () => {
     },
   };
 
-  const loadSpriteSheet: SpriteSheetNormalized = {
+  const loadSpriteSheet: SpriteResourceAsset = {
     ...dummySpriteSheet,
     id: "sprite1",
     filename: "sprite1.png",
+    _resourceType: "sprite",
+    states: [],
   };
 
   const action = entitiesActions.loadSprite({
@@ -335,10 +344,12 @@ test("Should add new music track if loaded while project is open", () => {
     ...initialState,
   };
 
-  const loadMusic: Music = {
-    ...dummyMusic,
+  const loadMusic: MusicResourceAsset = {
+    ...dummyMusicResource,
     id: "track1",
     filename: "track1.mod",
+    inode: "50",
+    _v: 0,
   };
 
   const action = entitiesActions.loadMusic({
@@ -367,10 +378,11 @@ test("Should update music track if modified while project is open", () => {
     },
   };
 
-  const loadMusic: Music = {
-    ...dummyMusic,
+  const loadMusic: MusicResourceAsset = {
+    ...dummyMusicResource,
     id: "track1",
     filename: "track1.mod",
+    inode: "0",
     _v: 1,
   };
 
@@ -1473,7 +1485,7 @@ test("Should be able to add flags to existing named variable ", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
-      ids: [],
+      ids: ["11"],
       entities: {
         "11": {
           id: "11",
@@ -1568,7 +1580,7 @@ test("Should not remove variable when name is empty but has named flags", () => 
   const state: EntitiesState = {
     ...initialState,
     variables: {
-      ids: [],
+      ids: ["14"],
       entities: {
         "14": {
           id: "14",

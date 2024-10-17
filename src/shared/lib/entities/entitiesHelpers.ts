@@ -44,12 +44,7 @@ import {
   TriggerScriptKey,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
-import {
-  Dictionary,
-  EntityAdapter,
-  EntityId,
-  EntityState,
-} from "@reduxjs/toolkit";
+import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
@@ -77,7 +72,7 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { ProjectEntityResources } from "shared/lib/resources/types";
+import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
 
 export interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -101,6 +96,7 @@ export interface NormalizedEntities {
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
+  constants: Record<EntityId, Constant>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
@@ -121,6 +117,7 @@ export interface NormalizedResult {
   emotes: EntityId[];
   tilesets: EntityId[];
   variables: EntityId[];
+  constants: EntityId[];
   variableResources: EntityId[];
   engineFieldValues: EntityId[];
 }
@@ -150,13 +147,14 @@ export interface DenormalizedEntities {
   tilesets: Tileset[];
   triggers: Trigger[];
   variables: {
+    constants: Constant[];
     variables: Variable[];
   };
   actorPrefabs: ActorPrefab[];
   triggerPrefabs: TriggerPrefab[];
 }
 
-const inodeToAssetCache: Dictionary<Asset> = {};
+const inodeToAssetCache: Record<string, Asset> = {};
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
@@ -211,8 +209,10 @@ const spritesSchema = new schema.Entity("sprites", {
   states: [spriteStatesSchema],
 });
 const variablesSchema = new schema.Entity("variables");
+const constantsSchema = new schema.Entity("constants");
 const variablesResourceSchema = new schema.Entity("variableResources", {
   variables: [variablesSchema],
+  constants: [constantsSchema],
 });
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
@@ -324,8 +324,14 @@ export const denormalizeEntities = (
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
     tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
-    variableResources: { variables: { variables: state.variables.ids } },
+    variableResources: {
+      variables: {
+        variables: state.variables.ids,
+        constants: state.constants.ids,
+      },
+    },
     variables: state.variables.entities as Record<EntityId, Variable>,
+    constants: state.constants.entities as Record<EntityId, Constant>,
     engineFieldValueResources: {
       engineFieldValues: { engineFieldValues: state.engineFieldValues.ids },
     },
@@ -399,10 +405,10 @@ export const denormalizeSprite = ({
   spriteStates,
 }: {
   sprite: SpriteSheetNormalized;
-  metasprites: Dictionary<Metasprite>;
-  metaspriteTiles: Dictionary<MetaspriteTile>;
-  spriteAnimations: Dictionary<SpriteAnimation>;
-  spriteStates: Dictionary<SpriteState>;
+  metasprites: Record<string, Metasprite>;
+  metaspriteTiles: Record<string, MetaspriteTile>;
+  spriteAnimations: Record<string, SpriteAnimation>;
+  spriteStates: Record<string, SpriteState>;
 }): SpriteSheetData => {
   const entities = {
     metasprites,
@@ -411,6 +417,21 @@ export const denormalizeSprite = ({
     spriteStates,
   };
   return denormalize(sprite, spriteSheetsSchema, entities);
+};
+
+export const normalizeSprite = (
+  sprite: SpriteSheet
+): {
+  entities: {
+    spriteSheets: Record<string, SpriteSheetNormalized>;
+    metasprites: Record<string, Metasprite> | undefined;
+    metaspriteTiles: Record<string, MetaspriteTile> | undefined;
+    spriteAnimations: Record<string, SpriteAnimation> | undefined;
+    spriteStates: Record<string, SpriteState> | undefined;
+  };
+  result: string;
+} => {
+  return normalize(sprite, spriteSheetsSchema);
 };
 
 export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
@@ -531,9 +552,9 @@ export const isVariableCustomEvent = (variable: string) => {
 
 export const isCustomEventEqual = (
   customEventA: CustomEventNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   customEventB: CustomEventNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   const compareA = {
     ...customEventA,
@@ -558,9 +579,9 @@ export const isCustomEventEqual = (
 
 export const isActorPrefabEqual = (
   prefabA: ActorPrefabNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   prefabB: ActorPrefabNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   type CompareType = Omit<ActorPrefabNormalized, ActorScriptKey | "id"> &
     Record<ActorScriptKey | "id", undefined>;
@@ -605,9 +626,9 @@ export const isActorPrefabEqual = (
 
 export const isTriggerPrefabEqual = (
   prefabA: TriggerPrefabNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   prefabB: TriggerPrefabNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   type CompareType = Omit<TriggerPrefabNormalized, TriggerScriptKey | "id"> &
     Record<TriggerScriptKey | "id", undefined>;
@@ -661,6 +682,12 @@ export const customEventName = (
   return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
 };
 
+export const constantName = (constant: NamedEntity, constantIndex: number) => {
+  return (constant.name || defaultLocalisedConstantName(constantIndex))
+    .toLocaleUpperCase()
+    .replace(/\s/g, "_");
+};
+
 export const paletteName = (palette: Palette, paletteIndex: number) => {
   // If we have a default name for a palette, use the localized version
   if (palette.defaultName) {
@@ -700,10 +727,14 @@ export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
 export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+export const defaultLocalisedConstantName = (constantIndex: number) =>
+  `${l10n("CONSTANT")} ${constantIndex + 1}`;
 export const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
-const extractEntitySymbols = (entities: EntityState<{ symbol?: string }>) => {
+const extractEntitySymbols = (
+  entities: EntityState<{ symbol?: string }, string>
+) => {
   return Object.values(entities.entities).map(
     (entity) => entity?.symbol
   ) as string[];
@@ -720,10 +751,10 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.tilesets),
     ...extractEntitySymbols(state.fonts),
     ...extractEntitySymbols(state.variables),
+    ...extractEntitySymbols(state.constants),
     ...extractEntitySymbols(state.customEvents),
     ...extractEntitySymbols(state.music),
     ...extractEntitySymbols(state.sounds),
-    ...extractEntitySymbols(state.scriptEvents),
   ];
 };
 
@@ -732,7 +763,7 @@ export const genEntitySymbol = (state: EntitiesState, name: string) => {
 };
 
 const ensureEntitySymbolsUnique = (
-  entities: EntityState<{ symbol?: string }>,
+  entities: EntityState<{ symbol?: string }, string>,
   seenSymbols: string[]
 ) => {
   for (const entity of Object.values(entities.entities)) {
@@ -758,14 +789,14 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.tilesets, symbols);
   ensureEntitySymbolsUnique(state.fonts, symbols);
   ensureEntitySymbolsUnique(state.variables, symbols);
+  ensureEntitySymbolsUnique(state.constants, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
   ensureEntitySymbolsUnique(state.sounds, symbols);
-  ensureEntitySymbolsUnique(state.scriptEvents, symbols);
 };
 
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
-  entities: EntityState<T>,
+  entities: EntityState<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ): T => {
@@ -798,7 +829,7 @@ export const storeRemovedAssetInInodeCache = <
   filename: string,
   projectRoot: string,
   assetFolder: string,
-  entities: EntityState<T>
+  entities: EntityState<T, string>
 ): Asset => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
 
@@ -831,12 +862,15 @@ export const storeRemovedAssetInInodeCache = <
 export const upsertAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ) => {
-  adapter.upsertOne(entities, mergeAssetEntity(entities, entity, keepProps));
+  const mergedEntity = mergeAssetEntity(entities, entity, keepProps);
+  const didInsert = entity === mergedEntity;
+  adapter.upsertOne(entities, mergedEntity);
+  return didInsert;
 };
 
 /**
@@ -848,8 +882,8 @@ export const upsertAssetEntity = <
 export const removeAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset
 ) => {
   const existingEntities = entities.ids.map(
@@ -876,8 +910,8 @@ export const renameAssetEntity = <
     name: string;
   }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset,
   newFilename: string
 ) => {
@@ -899,8 +933,8 @@ export const renameAssetEntity = <
 
 export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   state: EntitiesState,
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   id: string,
   inputSymbol: string
 ) => {
@@ -925,11 +959,11 @@ export const isSlope = (value: number) => {
 
 export const updateCustomEventArgs = (
   customEvent: CustomEventNormalized,
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
-  const variables = {} as Dictionary<CustomEventVariable>;
-  const actors = {} as Dictionary<CustomEventActor>;
+  const variables = {} as Record<string, CustomEventVariable>;
+  const actors = {} as Record<string, CustomEventActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
@@ -1061,7 +1095,7 @@ export const updateCustomEventArgs = (
 
 export const updateAllCustomEventsArgs = (
   customEvents: CustomEventNormalized[],
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   for (const customEvent of customEvents) {

@@ -3,13 +3,14 @@ import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "ui/form/layout/FormLayout";
-import { Select } from "ui/form/Select";
+import { Option, Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
 import { Button } from "ui/buttons/Button";
 import { Alert, AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import { useAppDispatch } from "store/hooks";
+import { SingleValue } from "react-select";
 
 const volumeOptions = [
   {
@@ -63,7 +64,7 @@ export const InstrumentWaveEditor = ({
 
   const onChangeFieldSelect =
     <T extends keyof WaveInstrument>(key: T) =>
-    (e: { value: string; label: string }) => {
+    (e: { value: number | string; label: string }) => {
       const editValue = e.value;
       dispatch(
         trackerDocumentActions.editWaveInstrument({
@@ -103,7 +104,9 @@ export const InstrumentWaveEditor = ({
             name="volume"
             value={selectedVolume}
             options={volumeOptions}
-            onChange={onChangeFieldSelect("volume")}
+            onChange={(e: SingleValue<Option>) =>
+              e && onChangeFieldSelect("volume")(e)
+            }
           />
         </FormField>
       </FormRow>

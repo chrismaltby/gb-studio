@@ -68,6 +68,11 @@ interface TokenVar {
   symbol: string;
 }
 
+interface TokenConst {
+  type: "CONST";
+  symbol: string;
+}
+
 interface TokenFunction {
   type: "FUN";
   function: FunctionSymbol;
@@ -81,13 +86,19 @@ interface TokenOperator {
 export type Token =
   | TokenVal
   | TokenVar
+  | TokenConst
   | TokenLBrace
   | TokenRBrace
   | TokenFunction
   | TokenOperator
   | TokenSeperator;
 
-export type RPNToken = TokenVal | TokenVar | TokenFunction | TokenOperator;
+export type RPNToken =
+  | TokenVal
+  | TokenVar
+  | TokenConst
+  | TokenFunction
+  | TokenOperator;
 
 const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
 

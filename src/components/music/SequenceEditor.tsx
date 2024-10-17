@@ -6,6 +6,7 @@ import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import trackerActions from "store/features/tracker/trackerActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface SequenceOption {
   value: number;
@@ -25,9 +26,9 @@ interface SequenceItemProps {
 }
 
 const Wrapper = styled.div`
-  background-color: ${(props) => props.theme.colors.tracker.background};
+  background-color: ${(props) => props.theme.colors.sidebar.background};
 
-  ${Select} {
+  .CustomSelect {
     min-width: 0;
   }
 `;
@@ -210,8 +211,10 @@ export const SequenceEditorFwd = ({
               options={sequenceOptions}
               onFocus={() => setSelectHasFocus(true)}
               onBlur={() => setSelectHasFocus(false)}
-              onChange={(newValue: SequenceOption) => {
-                editSequence(i, newValue);
+              onChange={(newValue: SingleValue<SequenceOption>) => {
+                if (newValue) {
+                  editSequence(i, newValue);
+                }
               }}
             />
           </SequenceItem>

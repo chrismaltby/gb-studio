@@ -25,12 +25,13 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { useStore } from "react-redux";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
+
+const MOUSE_ZOOM_SPEED = 0.5;
 
 const Wrapper = styled.div`
   position: absolute;
@@ -43,6 +44,7 @@ const Wrapper = styled.div`
 
 const WorldGrid = styled.div`
   position: absolute;
+  background: ${(props) => props.theme.colors.document.background};
 `;
 
 const WorldContent = styled.div`
@@ -87,7 +89,7 @@ const WorldView = () => {
   //#region Component State
 
   const dispatch = useAppDispatch();
-  const store = useStore();
+  const store = useAppStore();
 
   const [scrollRef, scrollContainerSize] = useResizeObserver<HTMLDivElement>();
 
@@ -120,6 +122,7 @@ const WorldView = () => {
   const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state)
   );
+  const allSceneIds = useAppSelector(sceneSelectors.selectIds);
 
   const showConnections = useAppSelector(
     (state) =>
@@ -137,16 +140,16 @@ const WorldView = () => {
   const viewportWidth = scrollContainerSize?.width ?? 0;
   const viewportHeight = scrollContainerSize?.height ?? 0;
 
+  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
+
   const scrollWidth = useAppSelector((state) =>
-    Math.max(viewportWidth, getMaxSceneRight(state) + 20)
+    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxSceneRight(state) + 20)
   );
   const scrollHeight = useAppSelector((state) =>
-    Math.max(viewportHeight, getMaxSceneBottom(state) + 60)
+    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxSceneBottom(state) + 60)
   );
 
   const focus = useAppSelector((state) => state.editor.worldFocus);
-
-  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
 
   const searchTerm = useAppSelector((state) => state.editor.searchTerm);
 
@@ -178,7 +181,8 @@ const WorldView = () => {
   //#region Clipboard handling
 
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -189,8 +193,9 @@ const WorldView = () => {
   );
 
   const onPaste = useCallback(
-    (e) => {
-      if (e.target.nodeName !== "BODY") {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
+      if (e.target?.nodeName !== "BODY") {
         return;
       }
       e.preventDefault();
@@ -207,15 +212,23 @@ const WorldView = () => {
 
   //#region Keyboard handling
 
+  const onSelectAllScenes = useCallback(() => {
+    dispatch(editorActions.setSceneSelectionIds(allSceneIds));
+  }, [allSceneIds, dispatch]);
+
   const onKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.shiftKey && tool === "select") {
         setSelectionStart(undefined);
         setSelectionEnd(undefined);
         setAddToSelection(true);
       }
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyA") {
+        return onSelectAllScenes();
       }
       if (e.ctrlKey || e.metaKey) {
         return;
@@ -228,11 +241,11 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, tool]
+    [dispatch, focus, onSelectAllScenes, tool]
   );
 
   const onKeyUp = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (dragMode && (e.code === "Space" || e.key === "Alt")) {
         setDragMode(false);
       }
@@ -248,16 +261,23 @@ const WorldView = () => {
   //#region Zoom handling
 
   const onMouseWheel = useCallback(
-    (e) => {
+    (e: WheelEvent) => {
       if (e.ctrlKey && !blockWheelZoom.current) {
         e.preventDefault();
-        if (e.wheelDelta > 0) {
+        const absDeltaY = Math.abs(e.deltaY);
+        if (e.deltaY < 0) {
           dispatch(
-            editorActions.zoomIn({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomIn({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         } else {
           dispatch(
-            editorActions.zoomOut({ section: "world", delta: e.deltaY * 0.5 })
+            editorActions.zoomOut({
+              section: "world",
+              delta: absDeltaY * MOUSE_ZOOM_SPEED,
+            })
           );
         }
       } else {
@@ -620,9 +640,7 @@ const WorldView = () => {
   //#region Event Listeners
 
   useEffect(() => {
-    window.addEventListener("mousewheel", onMouseWheel, {
-      passive: false,
-    });
+    window.addEventListener("wheel", onMouseWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("copy", onCopy);
@@ -630,7 +648,7 @@ const WorldView = () => {
     window.addEventListener("resize", onWindowResize);
     window.addEventListener("blur", onWindowBlur);
     return () => {
-      window.removeEventListener("mousewheel", onMouseWheel);
+      window.removeEventListener("wheel", onMouseWheel);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("copy", onCopy);

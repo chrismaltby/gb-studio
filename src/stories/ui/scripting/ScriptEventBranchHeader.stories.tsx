@@ -1,15 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { MenuItem } from "ui/menu/Menu";
 import { ScriptEventBranchHeader } from "ui/scripting/ScriptEvents";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof ScriptEventBranchHeader> = {
   title: "UI/Scripting/ScriptEventBranchHeader",
   component: ScriptEventBranchHeader,
-  subcomponents: {
-    MenuItem,
-  },
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

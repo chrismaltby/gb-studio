@@ -12,6 +12,7 @@ import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
+import { SingleValue } from "react-select";
 
 interface AnimationStateSelectProps extends SelectCommonProps {
   name: string;
@@ -202,8 +203,10 @@ const AnimationStateSelect = ({
         <CreatableSelect
           name={name}
           value={currentValue}
-          onChange={(e: Option) => {
-            onChange?.(e.value);
+          onChange={(e: SingleValue<Option>) => {
+            if (e) {
+              onChange?.(e.value);
+            }
           }}
           options={options}
         />
@@ -211,8 +214,10 @@ const AnimationStateSelect = ({
         <DefaultSelect
           name={name}
           value={currentValue}
-          onChange={(e: Option) => {
-            onChange?.(e.value);
+          onChange={(e: SingleValue<Option>) => {
+            if (e) {
+              onChange?.(e.value);
+            }
           }}
           options={options}
         />

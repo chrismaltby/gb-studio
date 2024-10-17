@@ -334,7 +334,7 @@ const SpritesPage = () => {
           flex: "1 1 0",
           minWidth: 0,
           overflow: "hidden",
-          background: themeContext?.colors.document.background,
+          background: themeContext?.colors.background,
           color: themeContext?.colors.text,
           height: windowHeight - 38,
           position: "relative",

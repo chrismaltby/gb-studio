@@ -1,12 +1,13 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { useAppSelector } from "store/hooks";
 import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { DialoguePreview } from "./DialoguePreview";
 import { MenuPreview } from "./MenuPreview";
 import { ensureBoolean, ensureNumber, ensureString } from "shared/types";
-import { argValue } from "components/world/SceneEventHelper";
+import { getArgValue } from "components/world/SceneEventHelper";
 import styled from "styled-components";
+import { constantSelectors } from "store/features/entities/entitiesState";
 
 interface ScriptEditorEventHelperProps {
   event: ScriptEventNormalized;
@@ -33,6 +34,15 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
   const eventId = useAppSelector((state) => state.editor.eventId);
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+  );
+
+  const constantsLookup = useAppSelector(constantSelectors.selectEntities);
+
+  const argValue = useCallback(
+    (arg: unknown): unknown => {
+      return getArgValue(arg, constantsLookup);
+    },
+    [constantsLookup]
   );
 
   if (!event || !scriptEventDef || eventId !== event.id) {

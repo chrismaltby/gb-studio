@@ -1,7 +1,8 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
+  constantSelectors,
   scriptEventSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
@@ -14,6 +15,7 @@ import {
   ensureString,
 } from "shared/types";
 import { DialoguePreview } from "components/script/DialoguePreview";
+import { Constant } from "shared/lib/resources/types";
 
 const TILE_SIZE = 8;
 
@@ -142,11 +144,18 @@ const PosOffset = styled.div`
   }
 `;
 
-export const argValue = (arg: unknown): unknown => {
+export const getArgValue = (
+  arg: unknown,
+  constantsLookup: Record<string, Constant>
+): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
     if (unionArg.type === "variable" || unionArg.type === "property") {
       return undefined;
+    }
+    if (unionArg.type === "constant") {
+      const constant = constantsLookup[String(unionArg.value)];
+      return constant?.value ?? 0;
     }
     return unionArg.value;
   }
@@ -182,6 +191,15 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const event = sceneEventVisible ? scriptEventsLookup[eventId] : undefined;
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+  );
+
+  const constantsLookup = useAppSelector(constantSelectors.selectEntities);
+
+  const argValue = useCallback(
+    (arg: unknown): unknown => {
+      return getArgValue(arg, constantsLookup);
+    },
+    [constantsLookup]
   );
 
   const args = useMemo(() => {

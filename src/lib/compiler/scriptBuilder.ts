@@ -17,7 +17,6 @@ import type {
   CustomEvent,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
@@ -52,12 +51,13 @@ import { lexText } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
 import {
+  ConstScriptValue,
   isScriptValue,
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
@@ -144,7 +144,8 @@ export interface ScriptBuilderOptions {
   entityType: ScriptBuilderEntityType;
   entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<VariableMapData>;
+  variableAliasLookup: Record<string, VariableMapData>;
+  constantsLookup: Record<string, Constant>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -160,27 +161,36 @@ export interface ScriptBuilderOptions {
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
-  engineFields: Dictionary<EngineFieldSchema>;
+  engineFields: Record<string, EngineFieldSchema>;
   settings: SettingsState;
-  additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }>;
-  additionalOutput: Dictionary<{
-    filename: string;
-    data: string;
-  }>;
-  symbols: Dictionary<string>;
+  additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  >;
+  additionalOutput: Record<
+    string,
+    {
+      filename: string;
+      data: string;
+    }
+  >;
+  symbols: Record<string, string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
-  compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }>;
-  recursiveSymbolMap: Dictionary<string>;
-  additionalScriptsCache: Dictionary<string>;
+  compiledCustomEventScriptCache: Record<
+    string,
+    {
+      scriptRef: string;
+      argsLen: number;
+    }
+  >;
+  recursiveSymbolMap: Record<string, string>;
+  additionalScriptsCache: Record<string, string>;
   debugEnabled: boolean;
-  compiledAssetsCache: Dictionary<string>;
+  compiledAssetsCache: Record<string, string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -287,6 +297,7 @@ type RPNHandler = {
   refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
   int8: (value: number | string) => RPNHandler;
   int16: (value: number | string) => RPNHandler;
+  intConstant: (value: string) => RPNHandler;
   operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
   stop: () => void;
 };
@@ -636,7 +647,7 @@ class ScriptBuilder {
   localsSize: number;
   actorIndex: number;
   stackPtr: number;
-  labelStackSize: Dictionary<number>;
+  labelStackSize: Record<string, number>;
   includeParams: number[];
   headers: string[];
 
@@ -657,6 +668,7 @@ class ScriptBuilder {
       entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
+      constantsLookup: options.constantsLookup || {},
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
@@ -858,6 +870,10 @@ class ScriptBuilder {
         } else if (token.type === "OP") {
           const op = toScriptOperator(token.operator);
           rpn = rpn.operator(op);
+        } else if (token.type === "CONST") {
+          rpn = rpn.intConstant(token.symbol);
+        } else {
+          assertUnreachable(token);
         }
         token = rpnTokens.shift();
       }
@@ -881,6 +897,9 @@ class ScriptBuilder {
       .replace(/\n/g, "")
       .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
         return this.getVariableAlias(symbol.replace(/\$/g, ""));
+      })
+      .replace(/@([a-z0-9-]{36})@/g, (symbol) => {
+        return this.getConstantSymbol(symbol.replace(/@/g, ""));
       });
   };
 
@@ -1426,6 +1445,12 @@ class ScriptBuilder {
         stack.push(0);
         return rpn;
       },
+      intConstant: (value: string) => {
+        const symbol = this.getConstantSymbol(value);
+        rpnCmd(".R_INT16", symbol);
+        stack.push(0);
+        return rpn;
+      },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
         if (!rpnUnaryOperators.includes(op)) {
@@ -1577,6 +1602,10 @@ class ScriptBuilder {
           rpn.int16(rpnOp.value ?? 0);
           break;
         }
+        case "constant": {
+          rpn.intConstant(rpnOp.value);
+          break;
+        }
         case "variable": {
           rpn.refVariable(rpnOp.value);
           break;
@@ -1626,7 +1655,7 @@ class ScriptBuilder {
 
   _switch = (
     variable: ScriptBuilderStackVariable,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     this._addCmd("VM_SWITCH", variable, switchCases.length, popNum);
@@ -1638,7 +1667,7 @@ class ScriptBuilder {
 
   _switchVariable = (
     variable: string,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     const variableAlias = this.getVariableAlias(variable);
@@ -4629,7 +4658,7 @@ extern void __mute_mask_${symbol};
 
   callScript = (
     scriptId: string,
-    input: Dictionary<string | ScriptValue | ScriptBuilderFunctionArg>
+    input: Record<string, string | ScriptValue | ScriptBuilderFunctionArg>
   ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
@@ -5337,6 +5366,15 @@ extern void __mute_mask_${symbol};
     };
 
     return newAlias;
+  };
+
+  getConstantSymbol = (id: string): string => {
+    const { constantsLookup } = this.options;
+    const constant = constantsLookup[id];
+    if (!constant) {
+      return "0";
+    }
+    return constant.symbol.toLocaleUpperCase();
   };
 
   variableInc = (variable: ScriptBuilderVariable) => {
@@ -7517,7 +7555,7 @@ extern void __mute_mask_${symbol};
     this._addComment(`Switch Variable`);
     this._switchVariable(
       variable,
-      caseLabels.map((label, i) => [Number(caseKeys[i]), `${label}$`]),
+      caseLabels.map((label, i) => [caseKeys[i], `${label}$`]),
       0
     );
     this._addNL();
@@ -7531,6 +7569,59 @@ extern void __mute_mask_${symbol};
       this._addComment(`case ${caseKeys[i]}:`);
       this._label(caseLabels[i]);
       this._compilePath(cases[caseKeys[i]]);
+      this._jump(endLabel);
+    }
+    this._label(endLabel);
+
+    this._addNL();
+  };
+
+  caseVariableConstValue = (
+    variable: string,
+    cases: {
+      value: ConstScriptValue;
+      branch: ScriptEvent[] | ScriptBuilderPathFunction;
+    }[],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const numCases = cases.length;
+
+    if (numCases === 0) {
+      this._compilePath(falsePath);
+      return;
+    }
+
+    const caseLabels = cases.map(() => this.getNextLabel());
+    const endLabel = this.getNextLabel();
+
+    const extractSymbol = (value: ConstScriptValue): string | number => {
+      if (value.type === "number") {
+        return value.value;
+      } else if (value.type === "constant") {
+        return this.getConstantSymbol(value.value);
+      }
+      return 0;
+    };
+
+    this._addComment(`Switch Variable`);
+    this._switchVariable(
+      variable,
+      caseLabels.map((label, i) => {
+        return [extractSymbol(cases[i].value), `${label}$`];
+      }),
+      0
+    );
+    this._addNL();
+
+    // Default
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+
+    // Cases
+    for (let i = 0; i < numCases; i++) {
+      this._addComment(`case ${extractSymbol(cases[i].value)}:`);
+      this._label(caseLabels[i]);
+      this._compilePath(cases[i].branch);
       this._jump(endLabel);
     }
     this._label(endLabel);

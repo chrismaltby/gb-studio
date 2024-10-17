@@ -1,8 +1,9 @@
-import { ThemeId } from "shared/lib/theme";
 import API from "./api";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
+import lightTheme from "ui/theme/lightTheme";
 
 let hasInit = false;
-let defaultTheme: ThemeId = "light";
+let defaultTheme: ThemeInterface = lightTheme;
 
 export const initTheme = async () => {
   if (hasInit) {

@@ -25,7 +25,6 @@ import {
   StyledDropdownSubMenu,
   StyledInlineDropdownWrapper,
 } from "./style";
-import useWindowFocus from "ui/hooks/use-window-focus";
 
 export interface DropdownButtonProps {
   readonly label?: ReactNode;
@@ -68,7 +67,6 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     const menuRef = useRef<HTMLDivElement>(null);
     const subMenuRef = useRef<HTMLDivElement>(null);
     const clickedOpen = useRef(false);
-    const windowFocus = useWindowFocus();
 
     const [isOpen, setIsOpen] = useState(false);
     const [menuWidth, setMenuWidth] = useState(0);
@@ -100,10 +98,16 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
 
     // Close menu if window loses focus
     useEffect(() => {
-      if (!windowFocus && isOpen) {
-        closeMenu();
-      }
-    }, [closeMenu, isOpen, windowFocus]);
+      const onWindowBlur = () => {
+        if (isOpen) {
+          closeMenu();
+        }
+      };
+      window.addEventListener("blur", onWindowBlur);
+      return () => {
+        window.removeEventListener("blur", onWindowBlur);
+      };
+    }, [closeMenu, isOpen]);
 
     // Handle listening for clicks and auto-hiding the menu
     useEffect(() => {
@@ -523,6 +527,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           $size={size}
           $variant={variant}
           $active={active}
+          data-is-active={active}
           onKeyDown={onButtonKeyDown}
           onClick={onButtonClick}
           tabIndex={0}

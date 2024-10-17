@@ -71,7 +71,7 @@ export const TextGotoSelect = ({
   }, []);
 
   const onFocusOut = useCallback(
-    (event) => {
+    (event: React.FocusEvent<HTMLFormElement, Element>) => {
       if (event.currentTarget.contains(event.relatedTarget)) {
         return;
       }
@@ -91,7 +91,7 @@ export const TextGotoSelect = ({
   );
 
   const onChangeX = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValue({
         ...internalValue,
         offsetX: parseInt(event.currentTarget.value, 10),
@@ -101,7 +101,7 @@ export const TextGotoSelect = ({
   );
 
   const onChangeY = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValue({
         ...internalValue,
         offsetY: parseInt(event.currentTarget.value, 10),

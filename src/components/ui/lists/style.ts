@@ -20,6 +20,7 @@ export const StyledEntityListItem = styled.div<StyledEntityListItemProps>`
   text-overflow: ellipsis;
   overflow: hidden;
   width: 100%;
+  color: ${(props) => props.theme.colors.list.text};
   padding-left: ${(props) => (props.$nestLevel || 0) * 15}px;
 `;
 
@@ -33,7 +34,7 @@ export const StyledNavigatorArrow = styled.span<StyledNavigatorArrowProps>`
   margin-left: -5px;
 
   svg {
-    fill: ${(props) => props.theme.colors.text};
+    fill: ${(props) => props.theme.colors.list.text};
     width: 8px;
     height: 8px;
     transform: rotate(${(props) => (props.$open ? 90 : 0)}deg);
@@ -42,11 +43,10 @@ export const StyledNavigatorArrow = styled.span<StyledNavigatorArrowProps>`
 
 export const StyledEntityIcon = styled.div`
   svg {
-    fill: ${(props) => props.theme.colors.text};
+    fill: ${(props) => props.theme.colors.list.icon};
     width: 10px;
     height: 10px;
     margin-right: 5px;
-    opacity: 0.5;
   }
 `;
 

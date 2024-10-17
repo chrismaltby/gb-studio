@@ -40,7 +40,7 @@ export const TextField: FC<TextFieldProps> = ({
   placeholder,
   errorLabel,
   size,
-  value,
+  value = "",
   onChange,
   additionalRight,
 }) => (
@@ -75,7 +75,3 @@ export const TextField: FC<TextFieldProps> = ({
     )}
   </FormField>
 );
-
-TextField.defaultProps = {
-  value: "",
-};

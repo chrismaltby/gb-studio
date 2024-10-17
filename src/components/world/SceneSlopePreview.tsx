@@ -25,7 +25,8 @@ const SceneSlopePreview = ({
   const { startX, startY, endX, endY, slopeIncline } = slopePreview;
   const [offset, setOffset] = useState(slopePreview.offset);
 
-  const onKeyDown = useCallback((e) => {
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!(e.target instanceof HTMLElement)) return;
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -34,7 +35,8 @@ const SceneSlopePreview = ({
     }
   }, []);
 
-  const onKeyUp = useCallback((e) => {
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
+    if (!(e.target instanceof HTMLElement)) return;
     if (e.target.nodeName !== "BODY") {
       return;
     }

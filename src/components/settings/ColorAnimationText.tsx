@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import styled, { css, keyframes } from "styled-components";
 
 const colorAnimation = keyframes`
@@ -45,7 +45,11 @@ const Wrapper = styled.span<{ $animate: boolean }>`
       : ""}
 `;
 
-export const ColorAnimationText: FC = (props) => {
+interface ColorAnimationTextProps {
+  children: ReactNode;
+}
+
+export const ColorAnimationText = ({ children }: ColorAnimationTextProps) => {
   const [animate, setAnimate] = useState(false);
   return (
     <Wrapper
@@ -53,7 +57,7 @@ export const ColorAnimationText: FC = (props) => {
       onAnimationEnd={() => setAnimate(false)}
       $animate={animate}
     >
-      {props.children}
+      {children}
     </Wrapper>
   );
 };

@@ -21,6 +21,7 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
+import { components, SingleValue } from "react-select";
 
 interface ActorSelectProps {
   name: string;
@@ -196,8 +197,10 @@ export const ActorSelect = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: ActorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<ActorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: ActorOption) => {
         return option.spriteSheetId ? (
@@ -217,7 +220,7 @@ export const ActorSelect = ({
         );
       }}
       components={{
-        SingleValue: () =>
+        SingleValue: (props) =>
           currentValue?.spriteSheetId ? (
             <SingleValueWithPreview
               preview={
@@ -231,7 +234,9 @@ export const ActorSelect = ({
               {currentValue?.label}
             </SingleValueWithPreview>
           ) : (
-            currentValue?.label
+            <components.SingleValue {...props}>
+              {currentValue?.label}
+            </components.SingleValue>
           ),
       }}
     />

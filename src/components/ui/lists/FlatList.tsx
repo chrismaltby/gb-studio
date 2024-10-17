@@ -1,5 +1,11 @@
 import throttle from "lodash/throttle";
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, {
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
@@ -11,7 +17,7 @@ export interface FlatListItem {
   name: string;
 }
 
-interface RowProps<T> {
+interface RowProps<T extends FlatListItem> {
   readonly index: number;
   readonly style: CSSProperties;
   readonly data: {
@@ -27,14 +33,14 @@ interface RowProps<T> {
   };
 }
 
-export interface FlatListProps<T> {
+export interface FlatListProps<T extends FlatListItem> {
   readonly height: number;
   readonly items: T[];
   readonly selectedId?: string;
   readonly highlightIds?: string[];
   readonly setSelectedId?: (id: string, item: T) => void;
   readonly onKeyDown?: (e: KeyboardEvent, item?: T) => void;
-  readonly children?: (props: {
+  readonly children: (props: {
     selected: boolean;
     item: T;
     index: number;
@@ -85,6 +91,12 @@ export const FlatList = <T extends FlatListItem>({
   onKeyDown,
   children,
 }: FlatListProps<T>) => {
+  const typedSetSelectedId = setSelectedId as <T extends FlatListItem>(
+    id: string,
+    item: T
+  ) => void | undefined;
+  const typedItems = items as T[];
+
   const ref = useRef<HTMLDivElement>(null);
   const [hasFocus, setHasFocus] = useState(false);
   const list = useRef<List>(null);
@@ -168,10 +180,8 @@ export const FlatList = <T extends FlatListItem>({
   };
 
   const setFocus = (id: string) => {
-    console.log("SET FOCUS", id);
     if (ref.current) {
       const el = ref.current.querySelector('[data-id="' + id + '"]');
-      console.log("SET FOCUS ON EL", el);
       if (el) {
         (el as HTMLDivElement).focus();
       }
@@ -216,13 +226,16 @@ export const FlatList = <T extends FlatListItem>({
         itemCount={items.length}
         itemSize={25}
         itemData={{
-          items,
-          selectedIndex,
-          selectedId,
+          items: typedItems,
+          selectedId: selectedId ?? "",
           highlightIds,
-          setSelectedId,
-          focus: hasFocus,
-          renderItem: children,
+          setSelectedId: typedSetSelectedId,
+          renderItem: ((props: { selected: boolean; item: T; index: number }) =>
+            children(props)) as (props: {
+            selected: boolean;
+            item: FlatListItem;
+            index: number;
+          }) => ReactNode,
         }}
       >
         {Row}

@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import { Select } from "ui/form/Select";
 import { StyledButton } from "ui/buttons/style";
 
 interface StyledFloatingPanelProps {
@@ -9,8 +8,9 @@ interface StyledFloatingPanelProps {
 export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
   position: absolute;
   display: flex;
-  background: ${(props) => props.theme.colors.sidebar.background};
-  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  color: ${(props) => props.theme.colors.panel.text};
+  background: ${(props) => props.theme.colors.panel.background};
+  border: 1px solid ${(props) => props.theme.colors.panel.border};
   border-radius: 4px;
   padding: 0 4px;
 
@@ -19,12 +19,32 @@ export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
     height: 36px;
     border-radius: 0;
     padding: 5px;
+    color: ${(props) => props.theme.colors.panel.text};
+    background: ${(props) => props.theme.colors.panel.background};
+
+    &:hover {
+      background: ${(props) => props.theme.colors.panel.hoverBackground};
+    }
+
+    &:active {
+      background: ${(props) => props.theme.colors.panel.activeBackground};
+    }
+
     svg {
+      fill: ${(props) => props.theme.colors.panel.icon};
       width: 20px;
       height: 20px;
       max-width: 20px;
       max-height: 20px;
     }
+
+    &[data-is-active="true"] {
+      background: ${(props) => props.theme.colors.panel.selectedBackground};
+      svg {
+        fill: ${(props) => props.theme.colors.panel.selectedIcon};
+      }
+    }
+
     & ~ ${StyledButton} {
       margin-left: 1px;
     }
@@ -44,7 +64,7 @@ export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
         `
       : ""}
 
-  ${Select} {
+  .CustomSelect {
     width: 120px;
 
     .CustomSelect__control {
@@ -65,7 +85,7 @@ export const StyledFloatingPanel = styled.div<StyledFloatingPanelProps>`
 `;
 
 export const StyledFloatingPanelDivider = styled.div`
-  background: ${(props) => props.theme.colors.sidebar.border};
+  background: ${(props) => props.theme.colors.panel.divider};
   min-width: 1px;
   min-height: 1px;
   align-self: stretch;

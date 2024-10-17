@@ -665,7 +665,7 @@ export const SongTracker = ({
   );
 
   const onSelectAll = useCallback(
-    (e) => {
+    (e: Event) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -744,7 +744,8 @@ export const SongTracker = ({
   }, []);
 
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName === "INPUT") {
         return;
       }

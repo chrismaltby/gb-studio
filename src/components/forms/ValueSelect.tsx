@@ -25,6 +25,7 @@ import {
   BlankIcon,
   CheckIcon,
   CompassIcon,
+  ConstantIcon,
   CrossIcon,
   DivideIcon,
   ExpressionIcon,
@@ -49,7 +50,7 @@ import {
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import L10NText from "ui/form/L10NText";
 import { SliderField } from "ui/form/SliderField";
-import { Option, Select } from "ui/form/Select";
+import { Select } from "ui/form/Select";
 import { ensureNumber } from "shared/types";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
@@ -64,6 +65,9 @@ import { ClipboardTypeScriptValue } from "store/features/clipboard/clipboardType
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { copy, paste } from "store/features/clipboard/clipboardHelpers";
+import { constantSelectors } from "store/features/entities/entitiesState";
+import { ConstantSelect } from "./ConstantSelect";
+import { SingleValue } from "react-select";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;
@@ -86,6 +90,7 @@ const iconLookup: Record<
   direction: <CompassIcon />,
   variable: <VariableIcon />,
   indirect: <VariableIcon />,
+  constant: <ConstantIcon />,
   expression: <ExpressionIcon />,
   property: <ActorIcon />,
   true: <TrueIcon />,
@@ -129,6 +134,7 @@ const l10nKeyLookup: Record<
   direction: "FIELD_DIRECTION",
   variable: "FIELD_VARIABLE",
   indirect: "FIELD_VARIABLE",
+  constant: "FIELD_CONSTANT",
   expression: "FIELD_EXPRESSION",
   property: "FIELD_PROPERTY",
   true: "FIELD_TRUE",
@@ -396,6 +402,9 @@ const ValueSelect = ({
   const dispatch = useAppDispatch();
   const context = useContext(ScriptEditorContext);
   const editorType = useSelector((state: RootState) => state.editor.type);
+  const defaultConstant = useAppSelector(
+    (state) => constantSelectors.selectAll(state)[0]
+  );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -454,6 +463,13 @@ const ValueSelect = ({
       value: defaultVariable,
     });
   }, [context.type, onChange]);
+
+  const setConstant = useCallback(() => {
+    onChange({
+      type: "constant",
+      value: defaultConstant?.id ?? "",
+    });
+  }, [defaultConstant, onChange]);
 
   const setProperty = useCallback(() => {
     onChange({
@@ -533,6 +549,8 @@ const ValueSelect = ({
         setNumber();
       } else if (e.key === "$") {
         setVariable();
+      } else if (e.key === "c") {
+        setConstant();
       } else if (e.key === "p") {
         setProperty();
       } else if (e.key === "e") {
@@ -582,6 +600,7 @@ const ValueSelect = ({
       } else {
         return false;
       }
+      e.stopPropagation();
       return true;
     },
     [
@@ -592,6 +611,7 @@ const ValueSelect = ({
       setProperty,
       setValueFunction,
       setVariable,
+      setConstant,
     ]
   );
 
@@ -726,6 +746,14 @@ const ValueSelect = ({
               <MenuAccelerator accelerator="$" />
             </MenuItem>,
             <MenuItem
+              key="constant"
+              onClick={setConstant}
+              icon={value.type === "constant" ? <CheckIcon /> : <BlankIcon />}
+            >
+              {l10n("FIELD_CONSTANT")}
+              <MenuAccelerator accelerator="c" />
+            </MenuItem>,
+            <MenuItem
               key="property"
               onClick={setProperty}
               icon={value.type === "property" ? <CheckIcon /> : <BlankIcon />}
@@ -787,6 +815,7 @@ const ValueSelect = ({
       mathMenu,
       onCopyValue,
       onPasteValue,
+      setConstant,
       setDirection,
       setExpression,
       setNumber,
@@ -956,11 +985,13 @@ const ValueSelect = ({
                     ) || options[0]
                   }
                   options={options}
-                  onChange={(e: Option) => {
-                    onChange({
-                      type: "number",
-                      value: ensureNumber(e.value, 0),
-                    });
+                  onChange={(e: SingleValue<{ value: number }>) => {
+                    if (e) {
+                      onChange({
+                        type: "number",
+                        value: ensureNumber(e.value, 0),
+                      });
+                    }
                   }}
                 />
               )}
@@ -1017,6 +1048,25 @@ const ValueSelect = ({
               onChange={(newValue) => {
                 onChange({
                   type: "variable",
+                  value: newValue,
+                });
+              }}
+            />
+          </InputGroup>
+        </ValueWrapper>
+      );
+    } else if (value.type === "constant") {
+      return (
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
+          <InputGroup ref={dropRef}>
+            <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+            <ConstantSelect
+              name={name}
+              value={value.value}
+              allowRename
+              onChange={(newValue) => {
+                onChange({
+                  type: "constant",
                   value: newValue,
                 });
               }}

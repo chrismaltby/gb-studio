@@ -1,6 +1,6 @@
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_GROUP } from "consts";
 import React, { Dispatch } from "react";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -16,7 +16,7 @@ import {
 } from "store/features/clipboard/clipboardTypes";
 
 interface ScriptEventContextMenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch: Dispatch<UnknownAction>;
   scriptEventId: string;
   command: string;
   args?: Record<string, unknown>;

@@ -19,7 +19,7 @@ const Wrapper = styled.div<WrapperProps>`
   right: 10px;
   z-index: 10;
   display: flex;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   ${(props) =>
     props.$size === "small"
       ? css`

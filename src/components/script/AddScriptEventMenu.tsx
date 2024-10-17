@@ -15,7 +15,6 @@ import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
-import { Dictionary } from "@reduxjs/toolkit";
 import settingsActions from "store/features/settings/settingsActions";
 import {
   ScriptEventNormalized,
@@ -213,7 +212,7 @@ const instanciateScriptEvent = (
             ...memo,
             [key]: [],
           };
-        }, {} as Dictionary<string[]>)
+        }, {} as Record<string, string[]>)
       : undefined;
   return {
     command,
@@ -564,7 +563,7 @@ const AddScriptEventMenu = ({
         }
       }
       return memo;
-    }, {} as Dictionary<ScriptEventDef[]>);
+    }, {} as Record<string, ScriptEventDef[]>);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 

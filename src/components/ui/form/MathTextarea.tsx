@@ -1,10 +1,9 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import CustomMention from "./CustomMention";
 import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
-import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
@@ -13,8 +12,10 @@ import { SelectMenu, selectMenuStyleProps } from "./Select";
 import { VariableSelect } from "components/forms/VariableSelect";
 import l10n from "shared/lib/lang/l10n";
 import { portalRoot } from "ui/layout/Portal";
+import { ConstantSelect } from "components/forms/ConstantSelect";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
+const constRegex = /@([a-z0-9-]{36})@/g;
 
 const functionSymbols = [
   {
@@ -233,6 +234,19 @@ export const MathTextareaWrapper = styled.div`
   .Mentions__TokenOp {
     color: ${(props) => props.theme.colors.token.operator};
   }
+
+  .Mentions__TokenConst {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.constant};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.constant};
+      color: ${(props) => props.theme.colors.input.background};
+    }
+  }
 `;
 
 const MathError = styled.div`
@@ -258,12 +272,18 @@ const searchVariables =
       }));
   };
 
+export type NamedConstant = {
+  id: string;
+  name: string;
+};
+
 export interface MathTextareaProps {
   id?: string;
   value: string;
   entityId: string;
   placeholder?: string;
   variables: NamedVariable[];
+  constants: NamedConstant[];
   onChange: (newValue: string) => void;
 }
 
@@ -271,6 +291,7 @@ type EditModeOptions =
   | {
       id: string;
       index: number;
+      type: "variable" | "constant";
       x: number;
       y: number;
     }
@@ -282,12 +303,10 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   onChange,
   entityId,
   variables,
+  constants,
   placeholder,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const [variablesLookup, setVariablesLookup] = useState<
-    Dictionary<NamedVariable>
-  >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
   const [error, setError] = useState<string>("");
 
@@ -298,9 +317,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    setVariablesLookup(keyBy(variables, "code"));
-  }, [variables]);
+  const variablesLookup = useMemo(() => keyBy(variables, "code"), [variables]);
 
   const debouncedEvaluate = useRef<(value: string) => void>(
     debounce((val) => {
@@ -323,6 +340,17 @@ export const MathTextarea: FC<MathTextareaProps> = ({
 
   useEffect(() => debouncedEvaluate.current(value), [value]);
 
+  const constantOptions = useMemo(() => {
+    return constants.map((constant) => ({
+      id: constant.id,
+      display: constant.name,
+    }));
+  }, [constants]);
+
+  const constantsLookup = useMemo(() => {
+    return keyBy(constants, "id");
+  }, [constants]);
+
   return (
     <MathTextareaWrapper>
       {editMode && (
@@ -333,29 +361,55 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           zIndex={10000}
         >
           <SelectMenu>
-            <VariableSelect
-              name="replaceVar"
-              value={editMode.id}
-              allowRename={false}
-              entityId={entityId}
-              onChange={(newId) => {
-                let matches = 0;
-                const newValue = value.replace(varRegex, (match) => {
-                  if (matches === editMode.index) {
+            {editMode.type === "variable" && (
+              <VariableSelect
+                name="replaceVar"
+                value={editMode.id}
+                allowRename={false}
+                entityId={entityId}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(varRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `$${newId.padStart(2, "0")}$`;
+                    }
                     matches++;
-                    return `$${newId.padStart(2, "0")}$`;
-                  }
-                  matches++;
-                  return match;
-                });
-                onChange(newValue);
-                setEditMode(undefined);
-              }}
-              onBlur={() => {
-                setEditMode(undefined);
-              }}
-              {...selectMenuStyleProps}
-            />
+                    return match;
+                  });
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
+            {editMode.type === "constant" && (
+              <ConstantSelect
+                name="replaceConst"
+                value={editMode.id}
+                allowRename={false}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(constRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `@${newId}@`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
           </SelectMenu>
         </RelativePortal>
       )}
@@ -390,13 +444,16 @@ export const MathTextarea: FC<MathTextareaProps> = ({
             }
             const rect = input.getBoundingClientRect();
             const rect2 = e.currentTarget.getBoundingClientRect();
+
             setEditMode({
+              type: "variable",
               id: id.replace(/^0/, ""),
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <Mention
           className="Mentions__TokenFun"
@@ -411,6 +468,38 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           data={operatorSearch}
           markup="__id__"
           regex={operatorRegex}
+        />
+        <CustomMention
+          className="Mentions__TokenConst"
+          trigger={/(([A-Z0-9_][A-Z0-9_]+))$/u}
+          markup="@__id__@"
+          data={constantOptions}
+          regex={/@([a-z0-9-]{36})@/}
+          displayTransform={(constant) =>
+            constantsLookup[constant]?.name || "0"
+          }
+          hoverTransform={(constant) =>
+            `${l10n("FIELD_CONSTANT")}: ${
+              constantsLookup[constant]?.name || "0"
+            }`
+          }
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+
+            setEditMode({
+              type: "constant",
+              id,
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
+          isLoading={false}
         />
       </MentionsInput>
       {error.length > 0 && <MathError>{error}</MathError>}

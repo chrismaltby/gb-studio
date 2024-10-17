@@ -152,6 +152,7 @@ export const getAutoLabel = (
     ) {
       return scriptValueToString(value, {
         variableNameForId: (id) => `||variable:${id}||`,
+        constantNameForId: (id) => `||constant:${id}||`,
         actorNameForId: (id) => `||actor:${id}||`,
         propertyNameForId,
         directionForValue,
@@ -166,9 +167,13 @@ export const getAutoLabel = (
         propertyParts[1]
       )}`;
     } else if (fieldType === "matharea") {
-      return String(value).replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
-        return `||variable:${match}||`;
-      });
+      return String(value)
+        .replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
+          return `||variable:${match}||`;
+        })
+        .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
+          return `||constant:${match}||`;
+        });
     } else if (fieldType === "scene") {
       return `||scene:${value}||`;
     } else if (fieldType === "direction") {
@@ -213,6 +218,7 @@ export const replaceAutoLabelLocalValues = (
   lookups: {
     actorNameForId: (value: unknown) => string;
     variableNameForId: (value: unknown) => string;
+    constantNameForId: (value: unknown) => string;
     sceneNameForId: (value: unknown) => string;
     spriteNameForId: (value: unknown) => string;
     emoteNameForId: (value: unknown) => string;
@@ -227,6 +233,10 @@ export const replaceAutoLabelLocalValues = (
     .replace(
       /\|\|variable:([a-zA-Z0-9$-]+)\|\|/g,
       (match, id) => lookups.variableNameForId(id) ?? match
+    )
+    .replace(
+      /\|\|constant:([a-zA-Z0-9$-]+)\|\|/g,
+      (match, id) => lookups.constantNameForId(id) ?? match
     )
     .replace(
       /\|\|scene:([a-zA-Z0-9$-]+)\|\|/g,

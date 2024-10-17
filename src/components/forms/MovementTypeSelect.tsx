@@ -29,7 +29,7 @@ const MenuSpacer = styled.div`
 `;
 
 export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
-  value,
+  value = "horizontal",
   onChange,
 }) => {
   const selectedIcon = value ? (
@@ -67,8 +67,4 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
       ))}
     </DropdownButton>
   );
-};
-
-MovementTypeSelect.defaultProps = {
-  value: "horizontal",
 };

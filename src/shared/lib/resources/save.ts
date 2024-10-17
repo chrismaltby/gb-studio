@@ -25,15 +25,16 @@ import {
   getActorPrefabResourcePath,
   getActorResourcePath,
   getPaletteResourcePath,
-  getResourceAssetPath,
   getSceneFolderPath,
   getSceneResourcePath,
   getScriptResourcePath,
   getTriggerPrefabResourcePath,
   getTriggerResourcePath,
+  projectResourcesFolder,
 } from "shared/lib/resources/paths";
 import SparkMD5 from "spark-md5";
 import { omit } from "shared/types";
+import { assetPath } from "shared/lib/helpers/assets";
 
 const userSettingKeys: (keyof SettingsResource)[] = [
   "worldScrollX",
@@ -84,11 +85,22 @@ export const encodeResource = <T extends Record<string, unknown>>(
 export const buildResourceExportBuffer = (
   projectResources: CompressedProjectResources
 ): WriteFile[] => {
-  const projectPartsFolder = "project";
-  const variablesResFilename = Path.join(`variables.gbsres`);
-  const settingsResFilename = Path.join(`settings.gbsres`);
-  const userSettingsResFilename = Path.join(`user_settings.gbsres`);
-  const engineFieldValuesResFilename = Path.join(`engine_field_values.gbsres`);
+  const variablesResFilename = Path.join(
+    projectResourcesFolder,
+    `variables.gbsres`
+  );
+  const settingsResFilename = Path.join(
+    projectResourcesFolder,
+    `settings.gbsres`
+  );
+  const userSettingsResFilename = Path.join(
+    projectResourcesFolder,
+    `user_settings.gbsres`
+  );
+  const engineFieldValuesResFilename = Path.join(
+    projectResourcesFolder,
+    `engine_field_values.gbsres`
+  );
 
   const writeBuffer: WriteFile[] = [];
 
@@ -116,10 +128,9 @@ export const buildResourceExportBuffer = (
     resourceType: string,
     resource: T
   ) => {
-    const filePath = Path.join(projectPartsFolder, filename);
     const data = encodeResource(resourceType, resource);
     writeBuffer.push({
-      path: filePath,
+      path: filename,
       checksum: SparkMD5.hash(data),
       data,
     });
@@ -170,17 +181,19 @@ export const buildResourceExportBuffer = (
   }
 
   for (const background of projectResources.backgrounds) {
-    const backgroundFilename = getUniquePath(getResourceAssetPath(background));
+    const assetFilename = assetPath("backgrounds", background);
+    const resFilename = assetFilename + ".gbsres";
     writeResource<CompressedBackgroundResource>(
-      backgroundFilename,
+      resFilename,
       "background",
       background
     );
   }
 
   for (const sprite of projectResources.sprites) {
-    const spriteFilename = getUniquePath(getResourceAssetPath(sprite));
-    writeResource<SpriteResource>(spriteFilename, "sprite", sprite);
+    const assetFilename = assetPath("sprites", sprite);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<SpriteResource>(resFilename, "sprite", sprite);
   }
 
   for (const palette of projectResources.palettes) {
@@ -216,33 +229,39 @@ export const buildResourceExportBuffer = (
   }
 
   for (const song of projectResources.music) {
-    const songFilename = getUniquePath(getResourceAssetPath(song));
-    writeResource<MusicResource>(songFilename, "music", song);
+    const assetFilename = assetPath("music", song);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<MusicResource>(resFilename, "music", song);
   }
 
   for (const sound of projectResources.sounds) {
-    const soundFilename = getUniquePath(getResourceAssetPath(sound));
-    writeResource<SoundResource>(soundFilename, "sound", sound);
+    const assetFilename = assetPath("sounds", sound);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<SoundResource>(resFilename, "sound", sound);
   }
 
   for (const emote of projectResources.emotes) {
-    const emoteFilename = getUniquePath(getResourceAssetPath(emote));
-    writeResource<EmoteResource>(emoteFilename, "emote", emote);
+    const assetFilename = assetPath("emotes", emote);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<EmoteResource>(resFilename, "emote", emote);
   }
 
   for (const avatar of projectResources.avatars) {
-    const avatarFilename = getUniquePath(getResourceAssetPath(avatar));
-    writeResource<AvatarResource>(avatarFilename, "avatar", avatar);
+    const assetFilename = assetPath("avatars", avatar);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<AvatarResource>(resFilename, "avatar", avatar);
   }
 
   for (const tileset of projectResources.tilesets) {
-    const tilesetFilename = getUniquePath(getResourceAssetPath(tileset));
-    writeResource<TilesetResource>(tilesetFilename, "tileset", tileset);
+    const assetFilename = assetPath("tilesets", tileset);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<TilesetResource>(resFilename, "tileset", tileset);
   }
 
   for (const font of projectResources.fonts) {
-    const fontFilename = getUniquePath(getResourceAssetPath(font));
-    writeResource<FontResource>(fontFilename, "font", font);
+    const assetFilename = assetPath("fonts", font);
+    const resFilename = assetFilename + ".gbsres";
+    writeResource<FontResource>(resFilename, "font", font);
   }
 
   const clearedSettings = userSettingKeys.reduce((acc, key) => {

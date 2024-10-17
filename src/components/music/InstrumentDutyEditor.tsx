@@ -11,6 +11,7 @@ import { Alert, AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch } from "store/hooks";
+import { SingleValue } from "react-select";
 
 const dutyOptions = [
   {
@@ -101,16 +102,18 @@ export const InstrumentDutyEditor = ({
 
   const onChangeFieldSelect =
     <T extends keyof DutyInstrument>(key: T) =>
-    (e: { value: string; label: string }) => {
-      const editValue = e.value;
-      dispatch(
-        trackerDocumentActions.editDutyInstrument({
-          instrumentId: instrument.index,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
+    (e: SingleValue<{ value: string; label: string }>) => {
+      if (e) {
+        const editValue = e.value;
+        dispatch(
+          trackerDocumentActions.editDutyInstrument({
+            instrumentId: instrument.index,
+            changes: {
+              [key]: editValue,
+            },
+          })
+        );
+      }
     };
 
   const onTestInstrument = () => {

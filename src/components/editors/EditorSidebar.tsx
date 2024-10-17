@@ -8,6 +8,7 @@ import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
 import { ActorPrefabEditor } from "./ActorPrefabEditor";
 import { TriggerPrefabEditor } from "./TriggerPrefabEditor";
+import { ConstantEditor } from "./ConstantEditor";
 
 const EditorSidebar = () => {
   const type = useAppSelector((state) => state.editor.type);
@@ -37,6 +38,9 @@ const EditorSidebar = () => {
   }
   if (type === "variable") {
     return <VariableEditor id={entityId} />;
+  }
+  if (type === "constant") {
+    return <ConstantEditor id={entityId} />;
   }
   return <div />;
 };

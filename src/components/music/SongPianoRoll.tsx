@@ -162,7 +162,7 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
   ${(props) => css`
     width: ${props.$cols * CELL_SIZE}px;
     height: ${CELL_SIZE}px;
-    background-color: ${props.theme.colors.document.background};
+    background-color: ${props.theme.colors.background};
     background-image: linear-gradient(
       90deg,
       ${props.theme.colors.tracker.rollCell.border} 2px,
@@ -174,7 +174,7 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     background-position-x: ${30 + 10 + 1}px;
     border-bottom: 1px solid #808080;
     margin-bottom: -1px;
-    border-right: 2px solid ${props.theme.colors.document.background};
+    border-right: 2px solid ${props.theme.colors.background};
   `}
 `;
 
@@ -410,29 +410,26 @@ export const SongPianoRoll = ({
     [selectedChannel, pattern]
   );
 
-  const onSelectAll = useCallback(
-    (_e) => {
-      const selection = window.getSelection();
-      if (!selection || selection.focusNode) {
-        return;
-      }
-      window.getSelection()?.empty();
-      const allPatternCells = pattern
-        ?.map((c, i) => {
-          return c[selectedChannel].note !== null ? i : undefined;
-        })
-        .filter((c) => c !== undefined) as number[];
-      dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
+  const onSelectAll = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.focusNode) {
+      return;
+    }
+    window.getSelection()?.empty();
+    const allPatternCells = pattern
+      ?.map((c, i) => {
+        return c[selectedChannel].note !== null ? i : undefined;
+      })
+      .filter((c) => c !== undefined) as number[];
+    dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
 
-      // Blur any focused element to be able to use keyboard actions on the
-      // selection
-      const el = document.querySelector(":focus") as unknown as
-        | BlurableDOMElement
-        | undefined;
-      if (el && el.blur) el.blur();
-    },
-    [selectedChannel, dispatch, pattern]
-  );
+    // Blur any focused element to be able to use keyboard actions on the
+    // selection
+    const el = document.querySelector(":focus") as unknown as
+      | BlurableDOMElement
+      | undefined;
+    if (el && el.blur) el.blur();
+  }, [selectedChannel, dispatch, pattern]);
 
   useEffect(() => {
     if (!subpatternEditorFocus) {
@@ -444,7 +441,7 @@ export const SongPianoRoll = ({
   }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
-    (newMoveNoteTo) => {
+    (newMoveNoteTo: NoteRenderCoordinates | undefined) => {
       if (pattern) {
         const columnFrom = moveNoteFrom?.column || 0;
         const columnTo = newMoveNoteTo?.column || 0;
@@ -870,7 +867,8 @@ export const SongPianoRoll = ({
 
   // Clipboard
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName === "INPUT") {
         return;
       }

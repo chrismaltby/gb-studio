@@ -8,6 +8,7 @@ import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface ParallaxOption {
   value: number;
@@ -225,12 +226,14 @@ const ParallaxSelect = ({
         name={name}
         value={selectValue}
         options={options}
-        onChange={(newValue: ParallaxOption) => {
-          if (newValue.value > 0) {
-            onChange?.(sliceLayers(value, newValue.value));
-          } else {
-            onChange?.(undefined);
-            setHoverLayer(undefined);
+        onChange={(newValue: SingleValue<ParallaxOption>) => {
+          if (newValue) {
+            if (newValue.value > 0) {
+              onChange?.(sliceLayers(value, newValue.value));
+            } else {
+              onChange?.(undefined);
+              setHoverLayer(undefined);
+            }
           }
         }}
       />

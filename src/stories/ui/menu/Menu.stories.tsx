@@ -7,7 +7,6 @@ import { Menu, MenuDivider, MenuItem, MenuGroup } from "ui/menu/Menu";
 const meta: Meta<typeof Menu> = {
   title: "UI/Menu/Menu",
   component: Menu,
-  subcomponents: { MenuItem, MenuDivider },
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

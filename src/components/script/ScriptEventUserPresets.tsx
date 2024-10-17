@@ -1,7 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
-import { ScriptEventArgs, ScriptEventPreset } from "shared/lib/resources/types";
+import {
+  ScriptEventArgs,
+  ScriptEventPreset,
+  Settings,
+} from "shared/lib/resources/types";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -14,6 +18,7 @@ import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import styled from "styled-components";
 import { Label } from "ui/form/Label";
 import { FlexGrow } from "ui/spacing/Spacing";
+import { SingleValue } from "react-select";
 
 interface ScriptEventUserPresetsProps {
   scriptEvent: ScriptEventNormalized;
@@ -60,6 +65,8 @@ const PresetGroupsForm = styled.div`
 
 type EditMode = "select" | "edit" | "create";
 
+const empty: Settings["scriptEventPresets"][""] = {};
+
 export const ScriptEventUserPresets = ({
   scriptEvent,
   onChange,
@@ -77,7 +84,8 @@ export const ScriptEventUserPresets = ({
     (state) => state.scriptEventDefs.lookup[scriptEvent.command]
   );
   const userPresets = useAppSelector(
-    (state) => getSettings(state).scriptEventPresets[scriptEvent.command] ?? {}
+    (state) =>
+      getSettings(state).scriptEventPresets[scriptEvent.command] ?? empty
   );
   const userPresetsDefault = useAppSelector(
     (state) => getSettings(state).scriptEventDefaultPresets[scriptEvent.command]
@@ -257,8 +265,10 @@ export const ScriptEventUserPresets = ({
               name={"presetId"}
               value={currentValue}
               options={options}
-              onChange={(newValue: UserPresetOption) => {
-                setPreset(newValue.value);
+              onChange={(newValue: SingleValue<UserPresetOption>) => {
+                if (newValue) {
+                  setPreset(newValue.value);
+                }
               }}
             />
           </FormField>

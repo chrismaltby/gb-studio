@@ -59,7 +59,6 @@ const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
-    symbol: Type.Optional(Type.String()), // Include symbol property to match TypeScript
     args: Type.Optional(ScriptEventArgs), // Matches ScriptEventArgs
     children: Type.Optional(
       Type.Record(
@@ -247,14 +246,8 @@ export const ScriptResource = Type.Object({
   name: Type.String(),
   symbol: Type.String(),
   description: Type.String(),
-  variables: Type.Record(
-    Type.String(),
-    Type.Union([ScriptVariable, Type.Undefined()])
-  ),
-  actors: Type.Record(
-    Type.String(),
-    Type.Union([ScriptActor, Type.Undefined()])
-  ),
+  variables: Type.Record(Type.String(), ScriptVariable),
+  actors: Type.Record(Type.String(), ScriptActor),
   script: Type.Array(ScriptEvent),
 });
 
@@ -280,6 +273,9 @@ export type CompressedBackgroundResource = Static<
   typeof CompressedBackgroundResource
 >;
 
+export type CompressedBackgroundResourceAsset = CompressedBackgroundResource &
+  AssetMetadata;
+
 export const BackgroundResource = Type.Composite([
   Type.Omit(CompressedBackgroundResource, ["tileColors"]),
   Type.Object({
@@ -303,6 +299,8 @@ export const TilesetResource = Type.Object({
 });
 
 export type TilesetResource = Static<typeof TilesetResource>;
+
+export type TilesetResourceAsset = TilesetResource & AssetMetadata;
 
 export const ObjPalette = Type.Union([
   Type.Literal("OBP0"),
@@ -379,6 +377,15 @@ export const SpriteResource = Type.Object({
 
 export type SpriteResource = Static<typeof SpriteResource>;
 
+export const AssetMetadata = Type.Object({
+  _v: Type.Number(),
+  inode: Type.String(),
+});
+
+export type AssetMetadata = Static<typeof AssetMetadata>;
+
+export type SpriteResourceAsset = SpriteResource & AssetMetadata;
+
 export const EmoteResource = Type.Object({
   _resourceType: Type.Literal("emote"),
   id: Type.String(),
@@ -392,6 +399,8 @@ export const EmoteResource = Type.Object({
 
 export type EmoteResource = Static<typeof EmoteResource>;
 
+export type EmoteResourceAsset = EmoteResource & AssetMetadata;
+
 export const AvatarResource = Type.Object({
   _resourceType: Type.Literal("avatar"),
   id: Type.String(),
@@ -404,6 +413,8 @@ export const AvatarResource = Type.Object({
 
 export type AvatarResource = Static<typeof AvatarResource>;
 
+export type AvatarResourceAsset = AvatarResource & AssetMetadata;
+
 export const FontResource = Type.Object({
   _resourceType: Type.Literal("font"),
   id: Type.String(),
@@ -413,9 +424,12 @@ export const FontResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   plugin: Type.Optional(Type.String()),
+  mapping: Type.Record(Type.String(), Type.Number()),
 });
 
 export type FontResource = Static<typeof FontResource>;
+
+export type FontResourceAsset = FontResource & AssetMetadata;
 
 export const SoundType = Type.Union([
   Type.Literal("wav"),
@@ -436,6 +450,8 @@ export const SoundResource = Type.Object({
 
 export type SoundResource = Static<typeof SoundResource>;
 
+export type SoundResourceAsset = SoundResource & AssetMetadata;
+
 export const MusicSettings = Type.Object({
   disableSpeedConversion: Type.Optional(Type.Boolean()),
 });
@@ -452,6 +468,8 @@ export const MusicResource = Type.Object({
 });
 
 export type MusicResource = Static<typeof MusicResource>;
+
+export type MusicResourceAsset = MusicResource & AssetMetadata;
 
 export const PaletteResource = Type.Object({
   _resourceType: Type.Literal("palette"),
@@ -644,6 +662,7 @@ export const SettingsResource = Type.Object({
     Type.Record(Type.String(), ScriptEventPreset)
   ),
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
+  runSceneSelectionOnly: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
@@ -659,9 +678,21 @@ export const VariableData = Type.Object({
 
 export type VariableData = Static<typeof VariableData>;
 
+export const ConstantData = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  symbol: Type.String(),
+  value: Type.Number(),
+});
+
+export type ConstantData = Static<typeof ConstantData>;
+
+export type Constant = ExtractResource<ConstantData>;
+
 export const VariablesResource = Type.Object({
   _resourceType: Type.Literal("variables"),
   variables: Type.Array(VariableData),
+  constants: Type.Array(ConstantData),
 });
 
 export type VariablesResource = Static<typeof VariablesResource>;

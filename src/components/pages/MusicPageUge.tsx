@@ -40,7 +40,7 @@ const ContentWrapper = styled.div`
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   color: ${(props) => props.theme.colors.text};
   position: relative;
   display: flex;
@@ -85,8 +85,10 @@ const MusicPageUge = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSongs = useAppSelector((state) =>
-    musicSelectors.selectAll(state).filter(ugeFilter).sort(sortByFilename)
+  const allSongs = useAppSelector(musicSelectors.selectAll);
+  const allUgeSongs = useMemo(
+    () => allSongs.filter(ugeFilter).sort(sortByFilename),
+    [allSongs]
   );
 
   const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
@@ -103,8 +105,8 @@ const MusicPageUge = () => {
   }, [song]);
 
   const viewSongId = useMemo(
-    () => song?.id || lastSongId.current || allSongs[0]?.id,
-    [allSongs, song]
+    () => song?.id || lastSongId.current || allUgeSongs[0]?.id,
+    [allUgeSongs, song]
   );
 
   const viewSong = useAppSelector((state) =>
@@ -325,7 +327,7 @@ const MusicPageUge = () => {
               flex: "1 1 0",
               minWidth: 0,
               overflow: "hidden",
-              background: themeContext?.colors.document.background,
+              background: themeContext?.colors.background,
               color: themeContext?.colors.text,
               height: windowHeight - 38,
               position: "relative",

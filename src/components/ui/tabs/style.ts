@@ -25,18 +25,19 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
   margin: 0px;
   font-size: 12px;
   font-weight: bold;
-  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.tabs.border};
   text-align: left;
   padding: 0;
   padding-right: 10px;
   display: flex;
   align-items: center;
   padding-top: 0px;
+  background: ${(props) => props.theme.colors.tabs.background};
 
   ${(props) =>
     props.$variant === "secondary"
       ? css`
-          background-color: ${(props) => props.theme.colors.input.background};
+          background: ${(props) => props.theme.colors.tabs.secondaryBackground};
         `
       : ""}
 
@@ -51,7 +52,9 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
           margin-top: -5px;
           margin-bottom: 5px;
           flex-basis: 100%;
-          background: ${(props) => props.theme.colors.sidebar.background};
+          width: 100%;
+          background: ${(props) =>
+            props.theme.colors.scripting.tabs.background};
         `
       : ""}
 
@@ -66,6 +69,8 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
           height: 25px;
           flex-basis: 100%;
           padding-left: 12px;
+          background: ${(props) =>
+            props.theme.colors.scripting.form.background};
         `
       : ""}
 `;
@@ -141,15 +146,15 @@ export const StyledTab = styled.button<StyledTabProps>`
   ${(props) =>
     props.$selected && props.$variant !== "secondary"
       ? css`
-          background: ${(props) => props.theme.colors.input.background};
+          background: ${(props) => props.theme.colors.tabs.selectedBackground};
           opacity: 1;
-          border-right: 1px solid ${(props) => props.theme.colors.input.border};
-          border-top: 1px solid ${(props) => props.theme.colors.input.border};
+          border-right: 1px solid ${(props) => props.theme.colors.tabs.border};
+          border-top: 1px solid ${(props) => props.theme.colors.tabs.border};
           margin-top: -1px;
           overflow: visible;
           -webkit-mask-image: none;
           &:not(:first-child) {
-            border-left: 1px solid ${(props) => props.theme.colors.input.border};
+            border-left: 1px solid ${(props) => props.theme.colors.tabs.border};
           }
         `
       : ""}
@@ -157,7 +162,7 @@ export const StyledTab = styled.button<StyledTabProps>`
   ${(props) =>
     props.$selected && props.$variant === "secondary"
       ? css`
-          background: ${(props) => props.theme.colors.input.background};
+          background: ${(props) => props.theme.colors.tabs.secondaryBackground};
           opacity: 1;
           overflow: visible;
           -webkit-mask-image: none;
@@ -196,9 +201,9 @@ ${(props) =>
       ${(props) =>
     props.$selected && props.$variant === "scriptEvent"
       ? css`
-          border-left: 1px solid ${(props) => props.theme.colors.input.border};
-          border-right: 1px solid ${(props) => props.theme.colors.input.border};
-          border-top: 1px solid ${(props) => props.theme.colors.input.border};
+          border-left: 1px solid ${(props) => props.theme.colors.tabs.border};
+          border-right: 1px solid ${(props) => props.theme.colors.tabs.border};
+          border-top: 1px solid ${(props) => props.theme.colors.tabs.border};
         `
       : ""}
 
@@ -211,12 +216,10 @@ export const StyledStickyTabs = styled.div`
   position: sticky;
   top: 0px;
   z-index: 1;
-  background: ${(props) => props.theme.colors.sidebar.background};
-  box-shadow: ${(props) => props.theme.colors.sidebar.well.boxShadow};
 `;
 
 export const StyledTabSettings = styled.div`
-  background-color: ${(props) => props.theme.colors.input.background};
+  background-color: ${(props) => props.theme.colors.tabs.secondaryBackground};
   border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
   padding: 10px;
 `;

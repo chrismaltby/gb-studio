@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { components, SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
@@ -16,7 +17,7 @@ interface MathOperatorOption {
 
 export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
   name,
-  value,
+  value = "+=",
   onChange,
   ...selectProps
 }) => {
@@ -36,8 +37,10 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: MathOperatorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<MathOperatorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: MathOperatorOption) => {
         return (
@@ -48,14 +51,13 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
         );
       }}
       components={{
-        SingleValue: () => currentValue?.value,
+        SingleValue: (props) => (
+          <components.SingleValue {...props}>
+            {currentValue?.value}
+          </components.SingleValue>
+        ),
       }}
       {...selectProps}
     />
   );
-};
-
-MathOperatorSelect.defaultProps = {
-  name: undefined,
-  value: "+=",
 };

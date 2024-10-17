@@ -25,6 +25,7 @@ import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { components, SingleValue } from "react-select";
 
 interface PropertySelectProps {
   name: string;
@@ -258,8 +259,10 @@ export const PropertySelect = ({
         name={name}
         value={currentValue}
         options={options}
-        onChange={(newValue: ActorOption) => {
-          onChange?.(newValue.value);
+        onChange={(newValue: SingleValue<ActorOption>) => {
+          if (newValue) {
+            onChange?.(newValue.value);
+          }
         }}
         formatOptionLabel={(option: ActorOption) => {
           return option.menuSpriteSheetId !== undefined ? (
@@ -275,7 +278,7 @@ export const PropertySelect = ({
           );
         }}
         components={{
-          SingleValue: () =>
+          SingleValue: (props) =>
             currentValue?.spriteSheetId !== undefined ? (
               <SingleValueWithPreview
                 preview={
@@ -287,7 +290,9 @@ export const PropertySelect = ({
                 {currentValue?.label}
               </SingleValueWithPreview>
             ) : (
-              currentValue?.label
+              <components.SingleValue {...props}>
+                {currentValue?.label}
+              </components.SingleValue>
             ),
         }}
       />

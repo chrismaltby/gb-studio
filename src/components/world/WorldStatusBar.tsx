@@ -23,9 +23,9 @@ interface ContainerProps {
 
 const Container = styled.div<ContainerProps>`
   color: ${(props) => props.theme.colors.text};
-  background: ${(props) => props.theme.colors.document.background};
   font-size: ${(props) => props.theme.typography.fontSize};
-  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.background};
   border-radius: 16px;
   margin-right: 15px;
   height: 19px;

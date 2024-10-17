@@ -16,6 +16,8 @@ import {
   PriorityTileIcon,
   SlopeIcon,
   AutoColorIcon,
+  CheckIcon,
+  BlankIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -61,7 +63,6 @@ import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
-import { Checkbox } from "ui/form/Checkbox";
 import {
   BrushToolbarExtraTileIcon,
   BrushToolbarLadderTileIcon,
@@ -693,21 +694,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             variant="transparent"
             menuDirection="right"
           >
-            <MenuItem onClick={onToggleViewSlopeTiles}>
-              <Checkbox
-                id="showCollisionSlopeTiles"
-                name="showCollisionSlopeTiles"
-                checked={showCollisionSlopeTiles}
-              />
-              {` ${l10n("FIELD_VIEW_SLOPE_TILES")}`}
+            <MenuItem
+              onClick={onToggleViewSlopeTiles}
+              icon={showCollisionSlopeTiles ? <CheckIcon /> : <BlankIcon />}
+            >
+              {l10n("FIELD_VIEW_SLOPE_TILES")}
             </MenuItem>
-            <MenuItem onClick={onToggleViewExtraTiles}>
-              <Checkbox
-                id="showCollisionSlopeTiles"
-                name="showCollisionSlopeTiles"
-                checked={showCollisionExtraTiles}
-              />
-              {` ${l10n("FIELD_VIEW_EXTRA_TILES")}`}
+            <MenuItem
+              onClick={onToggleViewExtraTiles}
+              icon={showCollisionExtraTiles ? <CheckIcon /> : <BlankIcon />}
+            >
+              {l10n("FIELD_VIEW_EXTRA_TILES")}
             </MenuItem>
           </DropdownButton>
         )}

@@ -252,7 +252,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   }, [dispatch, sceneId, x, y]);
 
   const onKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -277,7 +278,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   );
 
   const onKeyUp = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }

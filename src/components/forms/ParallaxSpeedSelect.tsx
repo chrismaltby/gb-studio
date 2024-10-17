@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
 
@@ -50,8 +51,10 @@ export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
       value={currentValue}
       options={options}
       isDisabled={disabled}
-      onChange={(newValue: ParallaxSpeedOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<ParallaxSpeedOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );

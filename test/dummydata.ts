@@ -288,6 +288,7 @@ export const dummyProjectData: ProjectData = {
   palettes: [],
   customEvents: [],
   variables: [],
+  constants: [],
   music: [],
   fonts: [],
   avatars: [],
@@ -352,6 +353,7 @@ export const dummyProjectData: ProjectData = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 
@@ -543,6 +545,7 @@ export const dummyFontResource: FontResource = {
   filename: "font.png",
   width: 16,
   height: 16,
+  mapping: {},
 };
 
 export const dummySettingsResource: SettingsResource = {
@@ -621,11 +624,13 @@ export const dummySettingsResource: SettingsResource = {
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
   variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+  constants: [],
 };
 
 export const dummyVariable: Variable = {
@@ -658,6 +663,7 @@ export const dummyProjectResources: ProjectResources = {
   variables: {
     _resourceType: "variables",
     variables: [],
+    constants: [],
   },
   music: [],
   fonts: [],
@@ -727,6 +733,7 @@ export const dummyProjectResources: ProjectResources = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 

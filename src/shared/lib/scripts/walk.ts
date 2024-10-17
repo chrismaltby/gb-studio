@@ -1,5 +1,4 @@
 import mapValues from "lodash/mapValues";
-import type { Dictionary } from "@reduxjs/toolkit";
 import {
   actorScriptKeys,
   ActorNormalized,
@@ -23,6 +22,11 @@ import {
   TriggerPrefab,
   ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
+import type {
+  CompressedSceneResourceWithChildren,
+  SceneResource,
+  ScriptResource,
+} from "shared/lib/resources/types";
 
 //#region Script Events
 
@@ -99,10 +103,12 @@ export const mapUncommentedScript = (
  * @param callback - A mapping function that is applied to each ScriptEvent.
  * @returns A new denormalized scene with updated scripts.
  */
-export const mapSceneScript = (
-  scene: Scene,
+export const mapSceneScript = <
+  T extends Scene | SceneResource | CompressedSceneResourceWithChildren
+>(
+  scene: T,
   callback: (e: ScriptEvent) => ScriptEvent
-) => {
+): T => {
   const newScene = {
     ...scene,
     actors: scene.actors.map((actor) => {
@@ -111,15 +117,6 @@ export const mapSceneScript = (
         newActor[key] = mapScript(actor[key], callback);
       });
       return newActor;
-      // return {
-      //   ...actor,
-      //   script: mapScript(actor.script, callback),
-      //   startScript: mapScript(actor.startScript, callback),
-      //   updateScript: mapScript(actor.updateScript, callback),
-      //   hit1Script: mapScript(actor.hit1Script, callback),
-      //   hit2Script: mapScript(actor.hit2Script, callback),
-      //   hit3Script: mapScript(actor.hit3Script, callback),
-      // };
     }),
     triggers: scene.triggers.map((trigger) => {
       const newTrigger = { ...trigger };
@@ -127,43 +124,12 @@ export const mapSceneScript = (
         newTrigger[key] = mapScript(trigger[key], callback);
       });
       return newTrigger;
-      // return {
-      //   ...trigger,
-      //   script: mapScript(trigger.script, callback),
-      //   leaveScript: mapScript(trigger.leaveScript, callback),
-      // };
     }),
   };
   walkSceneScriptsKeys((key) => {
     newScene[key] = mapScript(scene[key], callback);
   });
   return newScene;
-
-  // return {
-  //   ...scene,
-  //   script: mapScript(scene.script, callback),
-  //   playerHit1Script: mapScript(scene.playerHit1Script, callback),
-  //   playerHit2Script: mapScript(scene.playerHit2Script, callback),
-  //   playerHit3Script: mapScript(scene.playerHit3Script, callback),
-  //   actors: scene.actors.map((actor) => {
-  //     return {
-  //       ...actor,
-  //       script: mapScript(actor.script, callback),
-  //       startScript: mapScript(actor.startScript, callback),
-  //       updateScript: mapScript(actor.updateScript, callback),
-  //       hit1Script: mapScript(actor.hit1Script, callback),
-  //       hit2Script: mapScript(actor.hit2Script, callback),
-  //       hit3Script: mapScript(actor.hit3Script, callback),
-  //     };
-  //   }),
-  //   triggers: scene.triggers.map((trigger) => {
-  //     return {
-  //       ...trigger,
-  //       script: mapScript(trigger.script, callback),
-  //       leaveScript: mapScript(trigger.leaveScript, callback),
-  //     };
-  //   }),
-  // };
 };
 
 /**
@@ -173,10 +139,12 @@ export const mapSceneScript = (
  * @param callback - A mapping function that is applied to each ScriptEvent.
  * @returns A new denormalized scene with updated scripts.
  */
-export const mapScenesScript = (
-  scenes: Scene[],
+export const mapScenesScript = <
+  T extends Scene | SceneResource | CompressedSceneResourceWithChildren
+>(
+  scenes: T[],
   callback: (e: ScriptEvent) => ScriptEvent
-) => {
+): T[] => {
   return scenes.map((scene) => {
     return mapSceneScript(scene, callback);
   });
@@ -193,6 +161,15 @@ export const mapActorScript = <T extends Actor | ActorPrefab>(
   return newActor;
 };
 
+export const mapActorsScript = <T extends Actor | ActorPrefab>(
+  actors: T[],
+  callback: (e: ScriptEvent) => ScriptEvent
+): T[] => {
+  return actors.map((actor) => {
+    return mapActorScript(actor, callback);
+  });
+};
+
 export const mapTriggerScript = <T extends Trigger | TriggerPrefab>(
   trigger: T,
   callback: (e: ScriptEvent) => ScriptEvent
@@ -202,6 +179,34 @@ export const mapTriggerScript = <T extends Trigger | TriggerPrefab>(
     newTrigger[key] = mapScript(trigger[key], callback);
   });
   return newTrigger;
+};
+
+export const mapTriggersScript = <T extends Trigger | TriggerPrefab>(
+  triggers: T[],
+  callback: (e: ScriptEvent) => ScriptEvent
+): T[] => {
+  return triggers.map((trigger) => {
+    return mapTriggerScript(trigger, callback);
+  });
+};
+
+export const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
+  customScript: T,
+  callback: (e: ScriptEvent) => ScriptEvent
+): T => {
+  return {
+    ...customScript,
+    script: mapScript(customScript.script, callback),
+  };
+};
+
+export const mapCustomScriptsScript = <T extends CustomEvent | ScriptResource>(
+  customScripts: T[],
+  callback: (e: ScriptEvent) => ScriptEvent
+): T[] => {
+  return customScripts.map((customScript) => {
+    return mapCustomScriptScript(customScript, callback);
+  });
 };
 
 //#endregion Map Script Events
@@ -243,7 +248,7 @@ type WalkOptions =
   | {
       filter?: (ScriptEvent: ScriptEvent) => boolean;
       customEvents?: {
-        lookup: Dictionary<CustomEvent>;
+        lookup: Record<string, CustomEvent>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -434,7 +439,7 @@ type WalkNormalizedOptions =
       includeCommented?: boolean;
       overrides?: Record<string, ScriptEventArgsOverride>;
       customEvents?: {
-        lookup: Dictionary<CustomEventNormalized>;
+        lookup: Record<string, CustomEventNormalized>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -485,7 +490,7 @@ export const replaceCustomEventArgs = <
  */
 export const walkNormalizedScript = (
   ids: string[] = [],
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -570,7 +575,7 @@ export const walkNormalizedScript = (
  */
 export const walkNormalizedSceneSpecificScripts = (
   scene: SceneNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -581,8 +586,8 @@ export const walkNormalizedSceneSpecificScripts = (
 
 export const walkNormalizedActorScripts = (
   actor: ActorNormalized | ActorPrefabNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  prefabsLookup: Dictionary<ActorPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  prefabsLookup: Record<string, ActorPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -607,8 +612,8 @@ export const walkNormalizedActorScripts = (
 
 export const walkNormalizedTriggerScripts = (
   trigger: TriggerNormalized | TriggerPrefabNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  prefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  prefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
@@ -634,11 +639,11 @@ export const walkNormalizedTriggerScripts = (
 
 export const walkNormalizedSceneScripts = (
   scene: SceneNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -677,11 +682,11 @@ export const walkNormalizedSceneScripts = (
 
 export const walkNormalizedScenesScripts = (
   scenes: SceneNormalized[],
-  lookup: Dictionary<ScriptEventNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
   callback: (
     scriptEvent: ScriptEventNormalized,
@@ -706,7 +711,7 @@ export const walkNormalizedScenesScripts = (
 
 export const walkNormalizedCustomEventScripts = (
   customEvent: CustomEventNormalized,
-  lookup: Dictionary<ScriptEventNormalized>,
+  lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {

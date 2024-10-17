@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
-import { Dictionary } from "@reduxjs/toolkit";
 import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
@@ -11,10 +10,12 @@ import {
   sceneSelectors,
   spriteSheetSelectors,
   emoteSelectors,
+  constantSelectors,
 } from "store/features/entities/entitiesState";
 import keyBy from "lodash/keyBy";
 import {
   actorName,
+  constantName,
   customEventName,
   sceneName,
 } from "shared/lib/entities/entitiesHelpers";
@@ -50,7 +51,7 @@ export const useScriptEventTitle = (
 
   const [autoName, setAutoName] = useState("");
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
-    Dictionary<NamedVariable>
+    Record<string, NamedVariable>
   >({});
   const { entityType, sceneId, entityId } = context;
 
@@ -85,6 +86,12 @@ export const useScriptEventTitle = (
   );
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
+  );
+  const constantsLookup = useAppSelector((state) =>
+    constantSelectors.selectEntities(state)
+  );
+  const constants = useAppSelector((state) =>
+    constantSelectors.selectAll(state)
   );
 
   useEffect(() => {
@@ -134,6 +141,16 @@ export const useScriptEventTitle = (
             namedVariablesLookup[id]?.name.replace(/ /g, "") ?? String(value)
           }`;
         };
+        const constantNameForId = (value: unknown) => {
+          const constant = constantsLookup[value as string];
+          if (constant) {
+            return constantName(constant, constants.indexOf(constant)).replace(
+              / /g,
+              ""
+            );
+          }
+          return "0";
+        };
         const sceneNameForId = (value: unknown) => {
           const scene = scenesLookup[value as string];
           if (scene) {
@@ -174,6 +191,7 @@ export const useScriptEventTitle = (
                 {
                   actorNameForId,
                   variableNameForId,
+                  constantNameForId,
                   sceneNameForId,
                   spriteNameForId,
                   emoteNameForId,
@@ -210,6 +228,8 @@ export const useScriptEventTitle = (
     context,
     scriptEventDefs,
     isVisible,
+    constantsLookup,
+    constants,
   ]);
 
   return String(labelName || autoName || eventName);

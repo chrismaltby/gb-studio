@@ -8,14 +8,16 @@ import {
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroup,
+  ScriptEventBranchHeader,
 } from "ui/scripting/ScriptEvents";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import {
   sceneSelectors,
   soundSelectors,
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 interface ScriptEventFieldsProps {
   scriptEvent: ScriptEventNormalized;
@@ -53,6 +55,8 @@ const ScriptEventFields = ({
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, context.sceneId)
   );
+
+  const dispatch = useAppDispatch();
 
   return (
     <ScriptEventFieldsWrapper>
@@ -129,6 +133,42 @@ const ScriptEventFields = ({
                 parentType={parentType}
               />
             </ScriptEventFieldGroup>
+          );
+        }
+
+        if (field.type === "collapsable") {
+          return (
+            <ScriptEventBranchHeader
+              key={genKey(scriptEvent.id, field.key || "", fieldIndex)}
+              nestLevel={nestLevel}
+              isOpen={!value?.[field.key ?? ""]}
+              altBg={altBg}
+              onToggle={() =>
+                dispatch(
+                  entitiesActions.editScriptEventArg({
+                    scriptEventId: scriptEvent.id,
+                    key: field.key ?? "",
+                    value: !value?.[field.key ?? ""],
+                  })
+                )
+              }
+              label={field.label}
+            >
+              {field.fields && (
+                <ScriptEventFields
+                  scriptEvent={scriptEvent}
+                  entityId={entityId}
+                  nestLevel={nestLevel}
+                  altBg={altBg}
+                  renderEvents={renderEvents}
+                  fields={field.fields}
+                  value={value}
+                  parentId={parentId}
+                  parentKey={parentKey}
+                  parentType={parentType}
+                />
+              )}
+            </ScriptEventBranchHeader>
           );
         }
 
