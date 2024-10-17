@@ -41,8 +41,10 @@ export interface ProjectileData {
   spriteStateId: string;
   speed: number;
   animSpeed: number;
+  loopAnim: boolean;
   lifeTime: number;
   initialOffset: number;
+  destroyOnHit: boolean;
   collisionGroup: string;
   collisionMask: string[];
 }
@@ -737,8 +739,10 @@ export const compileSceneProjectiles = (
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
+          strong: !projectile.destroyOnHit,
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
+          anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
@@ -788,8 +792,10 @@ export const compileGlobalProjectiles = (
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
+          strong: !projectile.destroyOnHit,
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
+          anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };

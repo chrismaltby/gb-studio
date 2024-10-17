@@ -62,158 +62,6 @@ const fields = [
     ],
   },
   {
-    key: "actorId",
-    type: "actor",
-    label: l10n("FIELD_SOURCE"),
-    description: l10n("FIELD_ACTOR_PROJECTILE_SOURCE_DESC"),
-    defaultValue: "$self$",
-    conditions: [
-      {
-        key: "__section",
-        in: ["source"],
-      },
-    ],
-  },
-  {
-    type: "group",
-    conditions: [
-      {
-        key: "__section",
-        in: ["source"],
-      },
-    ],
-    fields: [
-      {
-        key: "x",
-        label: l10n("FIELD_OFFSET_X"),
-        description: l10n("FIELD_PROJECTILE_OFFSET_X_DESC"),
-        type: "number",
-        min: -256,
-        max: 256,
-        width: "50%",
-        defaultValue: 0,
-      },
-      {
-        key: "y",
-        label: l10n("FIELD_OFFSET_Y"),
-        description: l10n("FIELD_PROJECTILE_OFFSET_Y_DESC"),
-        type: "number",
-        min: -256,
-        max: 256,
-        width: "50%",
-        defaultValue: 0,
-      },
-    ],
-  },
-  {
-    type: "group",
-    conditions: [
-      {
-        key: "__section",
-        in: ["source"],
-      },
-    ],
-    fields: [
-      {
-        label: l10n("FIELD_LAUNCH_AT"),
-        key: "directionType",
-        type: "select",
-        options: [
-          ["direction", l10n("FIELD_FIXED_DIRECTION")],
-          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
-          ["target", l10n("FIELD_ACTOR_TARGET")],
-          ["angle", l10n("FIELD_ANGLE")],
-          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
-        ],
-        defaultValue: "direction",
-        alignBottom: true,
-      },
-      {
-        key: "otherActorId",
-        label: l10n("FIELD_DIRECTION"),
-        description: l10n("FIELD_PROJECTILE_DIRECTION_DESC"),
-        type: "actor",
-        defaultValue: "$self$",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "actor",
-          },
-        ],
-      },
-      {
-        key: "direction",
-        label: l10n("FIELD_DIRECTION"),
-        description: l10n("FIELD_PROJECTILE_DIRECTION_DESC"),
-        type: "direction",
-        defaultValue: "right",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "direction",
-          },
-        ],
-      },
-      {
-        key: "angle",
-        label: l10n("FIELD_ANGLE"),
-        description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
-        type: "angle",
-        defaultValue: 0,
-        min: -256,
-        max: 256,
-        conditions: [
-          {
-            key: "directionType",
-            eq: "angle",
-          },
-        ],
-      },
-      {
-        key: "angleVariable",
-        label: l10n("FIELD_ANGLE"),
-        description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
-        type: "variable",
-        defaultValue: "LAST_VARIABLE",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "anglevar",
-          },
-        ],
-      },
-      {
-        key: "targetActorId",
-        label: l10n("FIELD_TARGET"),
-        description: l10n("FIELD_PROJECTILE_TARGET_DESC"),
-        type: "actor",
-        defaultValue: "$self$",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "target",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    key: "initialOffset",
-    label: l10n("FIELD_DIRECTION_OFFSET"),
-    description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
-    type: "number",
-    min: 0,
-    max: 256,
-    width: "50%",
-    defaultValue: 0,
-    conditions: [
-      {
-        key: "__section",
-        in: ["source"],
-      },
-    ],
-  },
-  {
     type: "group",
     conditions: [
       {
@@ -242,19 +90,35 @@ const fields = [
     ],
   },
   {
-    key: "lifeTime",
-    label: l10n("FIELD_LIFE_TIME"),
-    description: l10n("FIELD_PROJECTILE_LIFE_TIME_DESC"),
-    type: "number",
-    min: 0,
-    max: 4,
-    step: 0.1,
-    width: "50%",
-    defaultValue: 1,
+    type: "group",
+    alignBottom: true,
     conditions: [
       {
         key: "__section",
         in: ["projectile", undefined],
+      },
+    ],
+    fields: [
+      {
+        key: "lifeTime",
+        label: l10n("FIELD_LIFE_TIME"),
+        description: l10n("FIELD_PROJECTILE_LIFE_TIME_DESC"),
+        type: "number",
+        min: 0,
+        max: 4,
+        step: 0.1,
+        width: "50%",
+        defaultValue: 1,
+      },
+      {
+        key: "initialOffset",
+        label: l10n("FIELD_INITIAL_OFFSET"),
+        description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
+        type: "number",
+        min: 0,
+        max: 256,
+        width: "50%",
+        defaultValue: 0,
       },
     ],
   },
@@ -326,6 +190,12 @@ const fields = [
 
 const userPresetsGroups = [
   {
+    id: "slot",
+    label: l10n("FIELD_PROJECTILE_SLOT"),
+    fields: ["slot"],
+    selected: true,
+  },
+  {
     id: "projectile",
     label: l10n("FIELD_PROJECTILE"),
     fields: [
@@ -336,28 +206,9 @@ const userPresetsGroups = [
       "lifeTime",
       "loopAnim",
       "destroyOnHit",
+      "initialOffset",
       "collisionGroup",
       "collisionMask",
-    ],
-    selected: true,
-  },
-  {
-    id: "source",
-    label: l10n("FIELD_SOURCE"),
-    fields: ["actorId", "x", "y"],
-    selected: true,
-  },
-  {
-    id: "direction",
-    label: l10n("FIELD_DIRECTION"),
-    fields: [
-      "directionType",
-      "otherActorId",
-      "direction",
-      "angle",
-      "angleVariable",
-      "targetActorId",
-      "initialOffset",
     ],
     selected: true,
   },
@@ -373,8 +224,10 @@ const compile = (input, helpers) => {
     input.spriteStateId,
     input.speed,
     input.animSpeed,
+    input.loopAnim,
     input.lifeTime,
     input.initialOffset,
+    input.destroyOnHit,
     input.collisionGroup,
     input.collisionMask
   );

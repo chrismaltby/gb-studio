@@ -8,17 +8,14 @@ const subGroups = {
 
 const fields = [
   {
-    key: "slot",
-    label: l10n("FIELD_PROJECTILE_SLOT"),
-    description: l10n("FIELD_PROJECTILE_SLOT_DESC"),
-    type: "togglebuttons",
-    options: [0, 1, 2, 3, 4].map((n) => [
-      n,
-      l10n("FIELD_SLOT_N", { slot: n + 1 }),
-      l10n("FIELD_PROJECTILE_SLOT_N", { slot: n + 1 }),
-    ]),
-    allowNone: false,
-    defaultValue: 0,
+    key: "__section",
+    type: "tabs",
+    defaultValue: "source",
+    variant: "eventSection",
+    values: {
+      source: l10n("FIELD_SOURCE"),
+      presets: l10n("FIELD_PRESETS"),
+    },
   },
   {
     key: "actorId",
@@ -26,9 +23,21 @@ const fields = [
     label: l10n("FIELD_SOURCE"),
     description: l10n("FIELD_ACTOR_PROJECTILE_SOURCE_DESC"),
     defaultValue: "$self$",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source", undefined],
+      },
+    ],
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source", undefined],
+      },
+    ],
     fields: [
       {
         key: "x",
@@ -54,6 +63,12 @@ const fields = [
   },
   {
     type: "group",
+    conditions: [
+      {
+        key: "__section",
+        in: ["source", undefined],
+      },
+    ],
     fields: [
       {
         label: l10n("FIELD_LAUNCH_AT"),
@@ -139,36 +154,65 @@ const fields = [
     ],
   },
   {
-    key: "initialOffset",
-    label: l10n("FIELD_DIRECTION_OFFSET"),
-    description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
-    type: "number",
-    min: 0,
-    max: 256,
-    width: "50%",
+    key: "slot",
+    label: l10n("FIELD_PROJECTILE_SLOT"),
+    description: l10n("FIELD_PROJECTILE_SLOT_DESC"),
+    type: "togglebuttons",
+    options: [0, 1, 2, 3, 4].map((n) => [
+      n,
+      l10n("FIELD_SLOT_N", { slot: n + 1 }),
+      l10n("FIELD_PROJECTILE_SLOT_N", { slot: n + 1 }),
+    ]),
+    allowNone: false,
     defaultValue: 0,
+    conditions: [
+      {
+        key: "__section",
+        in: ["source", undefined],
+      },
+    ],
   },
   {
-    type: "group",
-    alignBottom: true,
-    fields: [
+    type: "presets",
+    conditions: [
       {
-        key: "loopAnim",
-        label: l10n("FIELD_LOOP_ANIMATION"),
-        description: l10n("FIELD_LOOP_ANIMATION_DESC"),
-        type: "checkbox",
-        defaultValue: true,
-      },
-      {
-        key: "destroyOnHit",
-        label: l10n("FIELD_DESTROY_ON_HIT"),
-        description: l10n("FIELD_PROJECTILE_DESTROY_ON_HIT_DESC"),
-        type: "checkbox",
-        defaultValue: true,
+        key: "__section",
+        in: ["presets"],
       },
     ],
   },
 ];
+
+const userPresetsGroups = [
+  {
+    id: "slot",
+    label: l10n("FIELD_PROJECTILE_SLOT"),
+    fields: ["slot"],
+    selected: true,
+  },
+  {
+    id: "source",
+    label: l10n("FIELD_SOURCE"),
+    fields: ["actorId", "x", "y"],
+    selected: true,
+  },
+  {
+    id: "direction",
+    label: l10n("FIELD_DIRECTION"),
+    fields: [
+      "directionType",
+      "otherActorId",
+      "direction",
+      "angle",
+      "angleVariable",
+      "targetActorId",
+      "initialOffset",
+    ],
+    selected: true,
+  },
+];
+
+const userPresetsIgnore = ["__section"];
 
 const compile = (input, helpers) => {
   const {
@@ -191,64 +235,37 @@ const compile = (input, helpers) => {
       projectileIndex,
       input.x,
       input.y,
-      input.direction,
-      input.destroyOnHit,
-      input.loopAnim
+      input.direction
     );
   } else if (input.directionType === "angle") {
-    launchProjectileInAngle(
-      projectileIndex,
-      input.x,
-      input.y,
-      input.angle,
-      input.destroyOnHit,
-      input.loopAnim
-    );
+    launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
   } else if (input.directionType === "anglevar") {
     launchProjectileInAngleVariable(
       projectileIndex,
       input.x,
       input.y,
-      input.angleVariable,
-      input.destroyOnHit,
-      input.loopAnim
+      input.angleVariable
     );
   } else if (input.directionType === "actor") {
     if (input.actorId === input.otherActorId) {
-      launchProjectileInSourceActorDirection(
-        projectileIndex,
-        input.x,
-        input.y,
-        input.destroyOnHit,
-        input.loopAnim
-      );
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
     } else {
       launchProjectileInActorDirection(
         projectileIndex,
         input.x,
         input.y,
-        input.otherActorId,
-        input.destroyOnHit,
-        input.loopAnim
+        input.otherActorId
       );
     }
   } else if (input.directionType === "target") {
     if (input.actorId === input.targetActorId) {
-      launchProjectileInSourceActorDirection(
-        projectileIndex,
-        input.x,
-        input.y,
-        input.destroyOnHit,
-        input.loopAnim
-      );
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
     } else {
       launchProjectileTowardsActor(
         projectileIndex,
         input.x,
         input.y,
-        input.targetActorId,
-        input.destroyOnHit,
-        input.loopAnim
+        input.targetActorId
       );
     }
   }
@@ -261,5 +278,7 @@ module.exports = {
   subGroups,
   fields,
   compile,
+  userPresetsGroups,
+  userPresetsIgnore,
   waitUntilAfterInitFade: true,
 };

@@ -117,6 +117,8 @@ typedef struct spritesheet_t {
 
 typedef struct projectile_def_t
 {
+    bool anim_noloop          : 1;
+    bool strong               : 1;
     bounding_box_t bounds;
     far_ptr_t sprite;
     uint8_t life_time;

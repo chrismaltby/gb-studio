@@ -976,6 +976,7 @@
   "FIELD_INCLUDE_SELECTION_ONLY": "Include Selection Only",
   "FIELD_PROJECTILE_SLOT": "Projectile Slot",
   "FIELD_PROJECTILE_SLOT_DESC": "The slot that contains the projectile you want to launch",
+  "FIELD_INITIAL_OFFSET": "Initial Offset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

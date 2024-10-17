@@ -11,12 +11,11 @@ BANKREF(VM_PROJECTILE)
 typedef struct projectile_launch_t {
     point16_t pos;
     uint16_t angle;
-    uint16_t flags;
 } projectile_launch_t;
 
 void vm_projectile_launch(SCRIPT_CTX * THIS, UBYTE type, INT16 idx) OLDCALL BANKED {
     projectile_launch_t * params = VM_REF_TO_PTR(idx);
-    projectile_launch(type, &params->pos, (UBYTE)params->angle, (UBYTE)params->flags);
+    projectile_launch(type, &params->pos, (UBYTE)params->angle);
 }
 
 void vm_projectile_load_type(SCRIPT_CTX * THIS, UBYTE dest_type, UBYTE src_type, UBYTE projectile_def_bank, const projectile_def_t * projectile_def) OLDCALL BANKED {

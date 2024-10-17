@@ -30,6 +30,7 @@ import {
   PrecompiledEmote,
   PrecompiledTilesetData,
   PrecompiledBackground,
+  PrecompiledProjectile,
 } from "./generateGBVMData";
 import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
 import {
@@ -134,21 +135,9 @@ interface ScriptBuilderFunctionArgLookup {
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
-interface Projectile {
-  hash: string;
-  spriteSheetId: string;
-  spriteStateId: string;
-  speed: number;
-  animSpeed: number;
-  lifeTime: number;
-  initialOffset: number;
-  collisionGroup: string;
-  collisionMask: string[];
-}
-
 export interface GlobalProjectiles {
   symbol: string;
-  projectiles: Projectile[];
+  projectiles: PrecompiledProjectile[];
 }
 
 export interface ScriptBuilderOptions {
@@ -431,15 +420,6 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
   );
 };
 
-const toProjectileFlags = (destroyOnHit: boolean, loopAnim: boolean) => {
-  return unionFlags(
-    ([] as string[]).concat(
-      !destroyOnHit ? ".PROJECTILE_STRONG" : [],
-      !loopAnim ? ".PROJECTILE_ANIM_ONCE" : []
-    )
-  );
-};
-
 const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
   if (priority === "low") {
     return ".SFX_PRIORITY_MINIMAL";
@@ -616,8 +596,10 @@ export const toProjectileHash = ({
   spriteStateId,
   speed,
   animSpeed,
+  loopAnim,
   lifeTime,
   initialOffset,
+  destroyOnHit,
   collisionGroup,
   collisionMask,
 }: {
@@ -625,8 +607,10 @@ export const toProjectileHash = ({
   spriteStateId: string;
   speed: number;
   animSpeed: number;
+  loopAnim: boolean;
   lifeTime: number;
   initialOffset: number;
+  destroyOnHit: boolean;
   collisionGroup: string;
   collisionMask: string[];
 }) =>
@@ -636,8 +620,10 @@ export const toProjectileHash = ({
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask: [...collisionMask].sort(),
     })
@@ -3679,8 +3665,10 @@ extern void __mute_mask_${symbol};
     spriteStateId: string,
     speed: number,
     animSpeed: number,
+    loopAnim: boolean,
     lifeTime: number,
     initialOffset: number,
+    destroyOnHit: boolean,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -3690,8 +3678,10 @@ extern void __mute_mask_${symbol};
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask,
     });
@@ -3705,8 +3695,10 @@ extern void __mute_mask_${symbol};
     spriteStateId: string,
     speed: number,
     animSpeed: number,
+    loopAnim: boolean,
     lifeTime: number,
     initialOffset: number,
+    destroyOnHit: boolean,
     collisionGroup: string,
     collisionMask: string[]
   ): { symbol: string; index: number } => {
@@ -3715,8 +3707,10 @@ extern void __mute_mask_${symbol};
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask,
     });
@@ -3738,14 +3732,16 @@ extern void __mute_mask_${symbol};
     const lastGlobalProjectiles =
       this.options.globalProjectiles[this.options.globalProjectiles.length - 1];
 
-    const projectile: Projectile = {
+    const projectile: PrecompiledProjectile = {
       hash: projectileHash,
       spriteSheetId,
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask,
     };
@@ -3790,19 +3786,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    direction: string,
-    destroyOnHit = false,
-    loopAnim = false
+    direction: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(dirToAngle(direction))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(dirToAngle(direction)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3810,19 +3801,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number,
-    destroyOnHit = false,
-    loopAnim = false
+    angle: number
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(Math.round(angle % 256))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(Math.round(angle % 256)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3830,39 +3816,31 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string,
-    destroyOnHit = false,
-    loopAnim = false
+    angleVariable: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .refVariable(angleVariable)
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.refVariable(angleVariable).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
   launchProjectileInSourceActorDirection = (
     projectileIndex: number,
     x = 0,
-    y = 0,
-    destroyOnHit = false,
-    loopAnim = false
+    y = 0
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
     this._actorGetAngle(actorRef, ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3870,21 +3848,18 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    actorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
     this.setActorId(".ARG1", actorId);
     this._actorGetAngle(".ARG1", ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3892,9 +3867,7 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    otherActorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    otherActorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -3914,10 +3887,9 @@ extern void __mute_mask_${symbol};
       .int16(8 * 16)
       .operator(".DIV")
       .operator(".ATAN2")
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3927,8 +3899,10 @@ extern void __mute_mask_${symbol};
     spriteStateId: string,
     speed: number,
     animSpeed: number,
+    loopAnim: boolean,
     lifeTime: number,
     initialOffset: number,
+    destroyOnHit: boolean,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -3937,8 +3911,10 @@ extern void __mute_mask_${symbol};
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask
     );
