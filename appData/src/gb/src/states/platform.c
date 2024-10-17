@@ -125,12 +125,12 @@ void platform_update(void) BANKED {
         // PLAYER.pos.x = 0;
         pl_vel_y = 0;
         if (INPUT_UP) {
-            // Climb laddder
-            if( IS_LADDER( tile_at( tile_x_mid, ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3 ) ) ) {  //Grab with bottom edge
+            // Climb ladder
+            if(IS_LADDER( tile_at( tile_x_mid, ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3))) { // Grab with bottom edge
                 pl_vel_y = -plat_climb_vel;
             }
             else {
-                on_ladder = FALSE; //go back to standing when leaving the top of a ladder
+                on_ladder = FALSE; // go back to standing when leaving the top of a ladder
             }
         } else if (INPUT_DOWN) {
             // Descend ladder
@@ -200,7 +200,7 @@ void platform_update(void) BANKED {
         // Vertical Movement
         if (INPUT_UP) {
             // Grab upwards ladder
-            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3); //was top, use feet instead
+            tile_y = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3); // was top, use feet instead
             col = tile_at(tile_x_mid, tile_y);
             if (IS_LADDER(col)) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width) ) << 4);
