@@ -203,7 +203,7 @@ void platform_update(void) BANKED {
             tile_y = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3); // was top, use feet instead
             col = tile_at(tile_x_mid, tile_y);
             if (IS_LADDER(col)) {
-                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width) ) << 4);
+                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width)) << 4);
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
@@ -212,7 +212,7 @@ void platform_update(void) BANKED {
             tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
             col = tile_at(tile_x_mid, tile_y);
             if (IS_LADDER(col)) {
-                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width) ) << 4);
+                PLAYER.pos.x = (((tile_x_mid << 3) + 3 - (PLAYER.bounds.left + p_half_width)) << 4);
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
