@@ -260,8 +260,9 @@ const SceneView = memo(
     );
     const previewAsMono = useAppSelector(
       (state) =>
-        state.project.present.settings.colorMode === "mixed" &&
-        state.project.present.settings.previewAsMono
+        state.project.present.settings.colorMode === "mono" ||
+        (state.project.present.settings.colorMode === "mixed" &&
+         state.project.present.settings.previewAsMono)
     );
 
     const tool = useAppSelector((state) => state.editor.tool);
@@ -374,6 +375,17 @@ const SceneView = memo(
         state.project.present.settings.defaultBackgroundPaletteIds ?? []
     );
 
+    const backgroundMonoPalette = useAppSelector((state) => {
+      const defaultBGP = state.project.present.settings.defaultBGP ?? [0,1,2,3]
+      return scene.dmgBGP ?? defaultBGP;
+    });
+
+    const spriteMonoPalettes = useAppSelector((state) => {
+      const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
+      const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
+      return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
+    });
+
     const getPalette = useCallback(
       (paletteIndex: number) => {
         const sceneBackgroundPaletteIds = scene?.paletteIds ?? [];
@@ -427,7 +439,7 @@ const SceneView = memo(
 
     const spritePalettes = useMemo(
       () =>
-        gbcEnabled
+        !previewAsMono
           ? [
               getSpritePalette(0),
               getSpritePalette(1),
@@ -439,7 +451,7 @@ const SceneView = memo(
               getSpritePalette(7),
             ]
           : undefined,
-      [gbcEnabled, getSpritePalette]
+      [previewAsMono, getSpritePalette]
     );
 
     const slopePreview = useAppSelector((state) => state.editor.slopePreview);
@@ -677,6 +689,7 @@ const SceneView = memo(
                       : undefined
                   }
                   previewAsMono={previewAsMono}
+                  monoPalette={backgroundMonoPalette}
                 />
               ) : (
                 <ColorizedImage
@@ -686,6 +699,7 @@ const SceneView = memo(
                   tiles={tileColors}
                   palettes={palettes}
                   previewAsMono={previewAsMono}
+                  monoPalette={backgroundMonoPalette}
                 />
               )}
             </>
@@ -789,6 +803,7 @@ const SceneView = memo(
                 sceneId={id}
                 palettes={spritePalettes}
                 editable={editable}
+                monoPalettes={spriteMonoPalettes}
               />
             ))}
           {selected && (

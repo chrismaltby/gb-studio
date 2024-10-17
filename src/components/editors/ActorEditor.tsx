@@ -1,8 +1,9 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useState, useMemo } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
   sceneSelectors,
+  paletteSelectors,
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -43,6 +44,7 @@ import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
+import { DMG_PALETTE } from "consts";
 
 interface ActorEditorProps {
   id: string;
@@ -62,6 +64,52 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
+
+  const gbcEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
+  
+  const previewAsMono = useAppSelector(
+    (state) =>
+      state.project.present.settings.colorMode === "mono" ||
+      (state.project.present.settings.colorMode === "mixed" &&
+       state.project.present.settings.previewAsMono)
+  );
+
+  const palettesLookup = useAppSelector((state) =>
+    paletteSelectors.selectEntities(state)
+  );
+
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds || []
+  );
+
+  const getPalette = useCallback(
+    (paletteIndex: number) => {
+      const sceneSpritePaletteIds = scene?.paletteIds ?? [];
+      if (sceneSpritePaletteIds[paletteIndex] === "dmg") {
+        return DMG_PALETTE;
+      }
+      return (
+        palettesLookup[sceneSpritePaletteIds[paletteIndex]] ||
+        palettesLookup[defaultSpritePaletteIds[paletteIndex]] ||
+        DMG_PALETTE
+      );
+    },
+    [defaultSpritePaletteIds, palettesLookup, scene?.paletteIds]
+  );
+
+  const palettes = useMemo(() => ([0,1,2,3,4,5,6,7].map(i =>
+    gbcEnabled ? getPalette(i) : DMG_PALETTE)),
+    [gbcEnabled, getPalette]
+  );
+
+  const monoPalettes = useAppSelector((state) => {
+    const defaultOBP0 = state.project.present.settings.defaultOBP0 ?? [0,0,1,3];
+    const defaultOBP1 = state.project.present.settings.defaultOBP1 ?? [0,0,2,3];
+    return [scene.dmgOBP0 ?? defaultOBP0, scene.dmgOBP1 ?? defaultOBP1];
+  });
+
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor
   );
@@ -415,9 +463,19 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         {!lockScriptEditor && (
           <SidebarColumns>
             {prefab ? (
-              <ActorPrefabEditorProperties prefab={prefab} />
+              <ActorPrefabEditorProperties 
+                prefab={prefab}
+                previewAsMono={previewAsMono}
+                palettes={palettes}
+                monoPalettes ={monoPalettes}
+              />
             ) : (
-              <ActorEditorProperties actor={actor} />
+              <ActorEditorProperties 
+                actor={actor}
+                previewAsMono={previewAsMono}
+                palettes={palettes}
+                monoPalettes ={monoPalettes}
+              />
             )}
           </SidebarColumns>
         )}

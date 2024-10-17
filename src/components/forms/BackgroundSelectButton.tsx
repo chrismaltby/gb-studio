@@ -8,13 +8,16 @@ import {
   SelectMenu,
   selectMenuStyleProps,
 } from "ui/form/Select";
+import { Palette, MonoPalette } from "shared/lib/entities/entitiesTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
-import { assetURLStyleProp } from "shared/lib/helpers/assets";
+import { assetURL, assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { DMG_PALETTE, MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB, TILE_SIZE } from "consts";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { FlexGrow } from "ui/spacing/Spacing";
+import AutoColorizedImage from "components/world/AutoColorizedImage";
+import ColorizedImage from "components/world/ColorizedImage";
 
 interface BackgroundSelectProps {
   name: string;
@@ -23,6 +26,9 @@ interface BackgroundSelectProps {
   tilesetId: string;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
+  palettes?: Palette[];
+  previewAsMono?: boolean;
+  monoPalette?: MonoPalette;
 }
 
 interface WrapperProps {
@@ -167,6 +173,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   is360,
   tilesetId,
   includeInfo,
+  palettes,
+  previewAsMono,
+  monoPalette,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -264,6 +273,8 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
     }
   };
 
+  const defaultPalettes = [0,1,2,3,4,5,6,7].map(i => DMG_PALETTE);
+
   return (
     <Wrapper $includeInfo={includeInfo}>
       <Button
@@ -274,6 +285,23 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
         onBlur={onButtonBlur}
       >
         <ButtonContent>
+          {/* {!previewAsMono && isColor && background.autoColor ? (
+            <AutoColorizedImage
+              width={background.width * TILE_SIZE}
+              height={background.height * TILE_SIZE}
+              src={assetURL("backgrounds", background)}
+            />
+          ) : (
+            <ColorizedImage
+              width={background.width * TILE_SIZE}
+              height={background.height * TILE_SIZE}
+              src={assetURL("backgrounds", background)}
+              tiles={background.tileColors}
+              palettes={palettes ?? defaultPalettes}
+              previewAsMono={previewAsMono}
+              monoPalette={monoPalette}
+            />
+          )} */}
           {background ? (
             <Thumbnail
               style={{

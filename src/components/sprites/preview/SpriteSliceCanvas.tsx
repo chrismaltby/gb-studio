@@ -38,6 +38,8 @@ export const SpriteSliceCanvas = ({
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
+  const settings = useAppSelector((state) => state.project.present.settings);
+  const monoPalette = objPalette === "OBP1" ? settings.defaultOBP1 : settings.defaultOBP0;
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -85,7 +87,7 @@ export const SpriteSliceCanvas = ({
       height,
       flipX,
       flipY,
-      objPalette: palette ? "OBP0" : objPalette,
+      monoPalette: palette ? [0,0,1,3] : monoPalette,
       palette: (palette || DMG_PALETTE).colors,
     });
   }, [
@@ -97,7 +99,7 @@ export const SpriteSliceCanvas = ({
     height,
     flipX,
     flipY,
-    objPalette,
+    monoPalette,
     palette,
     workerId,
   ]);

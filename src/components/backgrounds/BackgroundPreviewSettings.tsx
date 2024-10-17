@@ -4,6 +4,7 @@ import {
   backgroundSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
+import settingsActions from "store/features/settings/settingsActions";
 import editorActions from "store/features/editor/editorActions";
 import electronActions from "store/features/electron/electronActions";
 import { SceneSelect } from "components/forms/SceneSelect";
@@ -66,7 +67,12 @@ const BackgroundPreviewSettings = ({
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const value = useAppSelector((state) => state.editor.previewAsSceneId);
+  const value = useAppSelector((state) => {
+    if (state.project.present.settings.previewAsMono) return "0";
+    const sceneId = state.editor.previewAsSceneId;
+    if (sceneId === "") return "1";
+    return sceneId;
+  });
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, value)
   );
@@ -144,6 +150,11 @@ const BackgroundPreviewSettings = ({
   };
 
   const onChange = (newValue: string) => {
+    dispatch(
+      settingsActions.editSettings({
+        previewAsMono: (newValue == "0"),
+      })
+    );
     dispatch(editorActions.setPreviewAsSceneId(newValue));
   };
 
@@ -173,7 +184,7 @@ const BackgroundPreviewSettings = ({
                   onBlur={closeMenu}
                   maxMenuHeight={200}
                   optional
-                  optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
+                  optionalLabels={[l10n("FIELD_COLOR_MODE_MONO"), l10n("FIELD_DEFAULT_COLORS")]}
                   {...selectMenuStyleProps}
                 />
               </SelectMenu>
@@ -190,7 +201,8 @@ const BackgroundPreviewSettings = ({
               ? l10n("FIELD_PREVIEW_AS_SCENE", {
                   sceneName: sceneName(scene, sceneIndex),
                 })
-              : l10n("FIELD_PREVIEW_AS_DEFAULT")}
+              : ([l10n("FIELD_PREVIEW_AS_MONO"), l10n("FIELD_PREVIEW_AS_DEFAULT")][+value])
+              }
           </Pill>
           <FixedSpacer width={5} />
         </>
