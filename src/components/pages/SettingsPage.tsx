@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useLayoutEffect, useState } from "react";
+import React, { FC, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
@@ -43,6 +43,9 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { CollisionSetting } from "shared/lib/resources/types";
+import { defaultCollisionSettings } from "consts";
+import { CollisionLayerPicker } from "components/forms/CollisionLayerPicker";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -204,6 +207,16 @@ const SettingsPage: FC = () => {
     [defaultSpritePaletteIds, editSettings]
   );
 
+  const collisionSettings = useMemo(
+    () => settings.collisionSettings ?? defaultCollisionSettings, 
+    [settings.collisionSettings, defaultCollisionSettings]
+  );
+
+  const onEditCollisionSetting = useCallback((setting: CollisionSetting) =>   
+    editSettings({ collisionSettings: collisionSettings.map(s => s.key == setting.key ? setting : s) }),
+    [editSettings]
+  );
+
   const onEditDefaultPlayerSprites = useCallback(
     (sceneType: string, spriteSheetId: string) => {
       console.log("onEditDefaultPlayerSprites", sceneType, spriteSheetId);
@@ -257,6 +270,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
               {l10n("SETTINGS_MUSIC")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsCollisions")}>
+              {l10n("SETTINGS_COLLISIONS")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -620,6 +636,24 @@ const SettingsPage: FC = () => {
                   <FormInfo>{l10n("FIELD_GBT_PLAYER_NOTE")}</FormInfo>
                 )}
               </FormField>
+            </SettingRowInput>
+          </SearchableSettingRow>
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[l10n("SETTINGS_COLLISIONS")]}
+        >
+          <CardAnchor id="settingsCollisions" />
+          <CardHeading>{l10n("SETTINGS_COLLISIONS")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("SETTINGS_TILE_COLLISIONS")]}
+          >
+            <SettingRowLabel>{l10n("SETTINGS_TILE_COLLISIONS")}</SettingRowLabel>
+            <SettingRowInput>
+              <CollisionLayerPicker key={"TileCollisionLayers"} onChange={onEditCollisionSetting} />
             </SettingRowInput>
           </SearchableSettingRow>
         </SearchableCard>
