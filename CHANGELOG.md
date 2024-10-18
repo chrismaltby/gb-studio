@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved `.gbsres` files for assets to the same folder as the asset files. Allows asset plugins to include `.gbsres` e.g sprite asset pack plugins can include animations
 - Optimised script editor by throttling the processing that was occuring on every key press
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below [@Steinbeuge](https://github.com/Steinbeuge)
 
 ### Fixed
 
