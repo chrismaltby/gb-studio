@@ -159,12 +159,6 @@ const SceneCollisions = ({
 
       if (!ctx) return;
 
-      //"color" | "color-burn" | "color-dodge" | "copy" | "darken"
-      //"destination-atop" | "destination-in" | "destination-out" | "destination-over"
-      //"difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter"
-      //"luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light"
-      //"source-atop" | "source-in" | "source-out" | "source-over" | "xor";
-      ctx.globalCompositeOperation = "screen";
       ctx.globalAlpha = collisionAlpha;
       ctx.font = "8px Public Pixel";
 
@@ -193,7 +187,7 @@ const SceneCollisions = ({
                   xi * TILE_SIZE,
                   yi * TILE_SIZE,
                   TILE_SIZE,
-                  TILE_SIZE * 0.5
+                  TILE_SIZE * 0.375
                 );
             }
             if (tile & COLLISION_BOTTOM) {
@@ -202,9 +196,9 @@ const SceneCollisions = ({
               else
                 ctx.fillRect(
                   xi * TILE_SIZE,
-                  (yi + 0.5) * TILE_SIZE,
+                  (yi + 0.625) * TILE_SIZE,
                   TILE_SIZE,
-                  TILE_SIZE * 0.5
+                  TILE_SIZE * 0.375
                 );
             }
             if (tile & COLLISION_LEFT) {
@@ -214,7 +208,7 @@ const SceneCollisions = ({
                 ctx.fillRect(
                   xi * TILE_SIZE,
                   yi * TILE_SIZE,
-                  TILE_SIZE * 0.5,
+                  TILE_SIZE * 0.375,
                   TILE_SIZE
                 );
             }
@@ -223,9 +217,9 @@ const SceneCollisions = ({
               if (letters[4]) drawLetter(letters[4], ctx, xi, yi);
               else
                 ctx.fillRect(
-                  (xi + 0.5) * TILE_SIZE,
+                  (xi + 0.625) * TILE_SIZE,
                   yi * TILE_SIZE,
-                  TILE_SIZE * 0.5,
+                  TILE_SIZE * 0.375,
                   TILE_SIZE
                 );
             }
@@ -239,20 +233,26 @@ const SceneCollisions = ({
                   ctx.fillRect(
                     (xi + 0.0) * TILE_SIZE,
                     yi * TILE_SIZE,
-                    TILE_SIZE * 0.2,
+                    TILE_SIZE * 0.25,
                     TILE_SIZE
                   );
                   ctx.fillRect(
-                    (xi + 0.8) * TILE_SIZE,
+                    (xi + 0.75) * TILE_SIZE,
                     yi * TILE_SIZE,
-                    TILE_SIZE * 0.2,
+                    TILE_SIZE * 0.25,
                     TILE_SIZE
                   );
                   ctx.fillRect(
                     xi * TILE_SIZE,
-                    (yi + 0.4) * TILE_SIZE,
+                    (yi + 0.125) * TILE_SIZE,
                     TILE_SIZE,
-                    TILE_SIZE * 0.2
+                    TILE_SIZE * 0.25
+                  );
+                  ctx.fillRect(
+                    xi * TILE_SIZE,
+                    (yi + 0.625) * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE * 0.25
                   );
                 }
                 break;
