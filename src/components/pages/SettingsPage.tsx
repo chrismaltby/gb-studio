@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useLayoutEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
@@ -43,9 +43,7 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
-import { CollisionSetting } from "shared/lib/resources/types";
-import { defaultCollisionSettings } from "consts";
-import { CollisionLayerPicker } from "components/forms/CollisionLayerPicker";
+import { CollisionTileLabelsPicker } from "components/forms/CollisionTileLabelsPicker";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -205,16 +203,6 @@ const SettingsPage: FC = () => {
       });
     },
     [defaultSpritePaletteIds, editSettings]
-  );
-
-  const collisionSettings = useMemo(
-    () => settings.collisionSettings ?? defaultCollisionSettings, 
-    [settings.collisionSettings, defaultCollisionSettings]
-  );
-
-  const onEditCollisionSetting = useCallback((setting: CollisionSetting) =>   
-    editSettings({ collisionSettings: collisionSettings.map(s => s.key == setting.key ? setting : s) }),
-    [editSettings]
   );
 
   const onEditDefaultPlayerSprites = useCallback(
@@ -651,9 +639,11 @@ const SettingsPage: FC = () => {
             searchTerm={searchTerm}
             searchMatches={[l10n("SETTINGS_TILE_COLLISIONS")]}
           >
-            <SettingRowLabel>{l10n("SETTINGS_TILE_COLLISIONS")}</SettingRowLabel>
+            <SettingRowLabel>
+              {l10n("SETTINGS_TILE_COLLISIONS")}
+            </SettingRowLabel>
             <SettingRowInput>
-              <CollisionLayerPicker key={"TileCollisionLayers"} onChange={onEditCollisionSetting} />
+              <CollisionTileLabelsPicker />
             </SettingRowInput>
           </SearchableSettingRow>
         </SearchableCard>

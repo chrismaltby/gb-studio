@@ -33,158 +33,133 @@ const SceneCollisions = ({
   const canvas = useRef<HTMLCanvasElement>(null);
 
   const collisionAlpha = useAppSelector(
-    (state) => Math.floor(state.project.present.settings.collisionLayerAlpha) / 255
+    (state) =>
+      Math.floor(state.project.present.settings.collisionLayerAlpha) / 255
   );
 
-  const collisionSettings = useAppSelector(
-    (state) => state.project.present.settings.collisionSettings
+  const collisionTileLabels = useAppSelector(
+    (state) => state.project.present.settings.collisionTileLabels
   );
 
-  const solidColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "solid");
-      return setting ? setting.color : "#FA2828FF";
-    }, 
-    [collisionSettings, collisionAlpha]
-  );
+  const solidColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "solid");
+    return setting ? setting.color : "#FA2828FF";
+  }, [collisionTileLabels]);
 
-  const topColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "top");
-      return setting ? setting.color : "#2828FAFF";
-    }, 
-    [collisionSettings, collisionAlpha]
-  );
+  const topColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "top");
+    return setting ? setting.color : "#2828FAFF";
+  }, [collisionTileLabels]);
 
-  const bottomColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "bottom");
-      return setting ? setting.color : "#FFFA28FF";
-    }, 
-    [collisionSettings, collisionAlpha]
-  );
+  const bottomColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "bottom");
+    return setting ? setting.color : "#FFFA28FF";
+  }, [collisionTileLabels]);
 
-  const leftColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "left");
-      return setting ? setting.color : "#FA28FAFF";
-    }, 
-    [collisionSettings, collisionAlpha]
-  );
+  const leftColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "left");
+    return setting ? setting.color : "#FA28FAFF";
+  }, [collisionTileLabels]);
 
-  const rightColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "right");
-      return setting ? setting.color : "#28FAFAFF";
-    }, 
-    [collisionSettings, collisionAlpha]
-  );
+  const rightColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "right");
+    return setting ? setting.color : "#28FAFAFF";
+  }, [collisionTileLabels]);
 
-  const ladderColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "ladder");
-      return setting ? setting.color : "#008000FF";
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const ladderColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "ladder");
+    return setting ? setting.color : "#008000FF";
+  }, [collisionTileLabels]);
 
   const slopeColor = "#0000FFFF";
-  const slope45RightColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_45_right");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope45RightColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "slope_45_right");
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
-  const slope45LeftColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_45_left");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope45LeftColor = useMemo(() => {
+    const setting = collisionTileLabels.find((s) => s.key === "slope_45_left");
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
-  const slope22RightBotColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_22_right_bot");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope22RightBotColor = useMemo(() => {
+    const setting = collisionTileLabels.find(
+      (s) => s.key === "slope_22_right_bot"
+    );
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
-  const slope22RightTopColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_22_right_top");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope22RightTopColor = useMemo(() => {
+    const setting = collisionTileLabels.find(
+      (s) => s.key === "slope_22_right_top"
+    );
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
-  const slope22LeftTopColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_22_left_top");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope22LeftTopColor = useMemo(() => {
+    const setting = collisionTileLabels.find(
+      (s) => s.key === "slope_22_left_top"
+    );
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
-  const slope22LeftBotColor = useMemo(
-    () => {
-      const setting = collisionSettings.find(s => s.key == "slope_22_left_bot");
-      return setting ? setting.color : slopeColor;
-    },
-    [collisionSettings, collisionAlpha]
-  );
+  const slope22LeftBotColor = useMemo(() => {
+    const setting = collisionTileLabels.find(
+      (s) => s.key === "slope_22_left_bot"
+    );
+    return setting ? setting.color : slopeColor;
+  }, [collisionTileLabels]);
 
   const spareColors = useMemo(
-    () => ["08","09","10","11","12","13","14","15"].map(i => {
-      const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      return setting ? setting.color : "#00800080";
-    }),
-    [collisionSettings, collisionAlpha]
+    () =>
+      ["08", "09", "10", "11", "12", "13", "14", "15"].map((i) => {
+        const setting = collisionTileLabels.find((s) => s.key === "spare_" + i);
+        return setting ? setting.color : "#00800080";
+      }),
+    [collisionTileLabels]
   );
 
   const spareSymbols = useMemo(
-    () => ["08","09","10","11","12","13","14","15"].map(i => {
-      const setting = collisionSettings.find(s => s.key == ("spare_"+i));
-      return setting && setting.name ? setting.name[0] : COLLISIONS_EXTRA_SYMBOLS[+i-8];
-    }),
-    [collisionSettings, collisionAlpha]
+    () =>
+      ["08", "09", "10", "11", "12", "13", "14", "15"].map((i) => {
+        const setting = collisionTileLabels.find((s) => s.key === "spare_" + i);
+        return setting && setting.name
+          ? setting.name[0]
+          : COLLISIONS_EXTRA_SYMBOLS[+i - 8];
+      }),
+    [collisionTileLabels]
   );
 
   const letters = useMemo(
-    () => collisionSettings.map(s => (s.name && s.name.length > 0) ? s.name[0] : undefined), 
-    [collisionSettings]
+    () =>
+      collisionTileLabels.map((s) =>
+        s.name && s.name.length > 0 ? s.name[0] : undefined
+      ),
+    [collisionTileLabels]
   );
 
-  const drawLetter = (letter: string, ctx: CanvasRenderingContext2D, x: number, y: number) => {
-    ctx.fillRect(
-      x * TILE_SIZE,
-      y * TILE_SIZE,
-      TILE_SIZE,
-      TILE_SIZE
-    );
-    const c = (ctx.fillStyle as string);
-    const tileAlpha = c.length < 8 ? 1.0 : Number("0x"+c.slice(7,9)) / 255.0;
-    ctx.fillStyle = tileAlpha < 0.5 ? c.slice(0,7)+"FF" : "#FFFFFFFF";
-    ctx.fillText(
-      letter,
-      x * TILE_SIZE,
-      (y + 0.9) * TILE_SIZE
-    );
-  }
+  const drawLetter = (
+    letter: string,
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number
+  ) => {
+    ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    const c = ctx.fillStyle as string;
+    const tileAlpha = c.length < 8 ? 1.0 : Number("0x" + c.slice(7, 9)) / 255.0;
+    ctx.fillStyle = tileAlpha < 0.5 ? c.slice(0, 7) + "FF" : "#FFFFFFFF";
+    ctx.fillText(letter, x * TILE_SIZE, (y + 0.9) * TILE_SIZE);
+  };
 
   useEffect(() => {
     if (canvas.current) {
       // eslint-disable-next-line no-self-assign
       canvas.current.width = canvas.current.width; // Clear canvas
       const ctx = canvas.current.getContext("2d");
-      
+
       if (!ctx) return;
-      
-      
-      //"color" | "color-burn" | "color-dodge" | "copy" | "darken" 
+
+      //"color" | "color-burn" | "color-dodge" | "copy" | "darken"
       //"destination-atop" | "destination-in" | "destination-out" | "destination-over"
       //"difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter"
       //"luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light"
@@ -198,58 +173,67 @@ const SceneCollisions = ({
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
           const tileprop = tile & TILE_PROPS;
-          
+
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
             ctx.fillStyle = solidColor;
             if (letters[0]) drawLetter(letters[0], ctx, xi, yi);
-            else ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-          } 
-          else if (tile !== 0) {
-            if (tile & COLLISION_TOP) {
-              ctx.fillStyle = topColor;
-              if (letters[1]) drawLetter(letters[1], ctx, xi, yi);
-              else ctx.fillRect(
+            else
+              ctx.fillRect(
                 xi * TILE_SIZE,
                 yi * TILE_SIZE,
                 TILE_SIZE,
-                TILE_SIZE * 0.5
+                TILE_SIZE
               );
+          } else if (tile !== 0) {
+            if (tile & COLLISION_TOP) {
+              ctx.fillStyle = topColor;
+              if (letters[1]) drawLetter(letters[1], ctx, xi, yi);
+              else
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE,
+                  TILE_SIZE * 0.5
+                );
             }
             if (tile & COLLISION_BOTTOM) {
               ctx.fillStyle = bottomColor;
               if (letters[2]) drawLetter(letters[2], ctx, xi, yi);
-              else ctx.fillRect(
-                xi * TILE_SIZE,
-                (yi + .5) * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE * 0.5
-              );
+              else
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  (yi + 0.5) * TILE_SIZE,
+                  TILE_SIZE,
+                  TILE_SIZE * 0.5
+                );
             }
             if (tile & COLLISION_LEFT) {
               ctx.fillStyle = leftColor;
               if (letters[3]) drawLetter(letters[3], ctx, xi, yi);
-              else ctx.fillRect(
-                xi * TILE_SIZE,
-                yi * TILE_SIZE,
-                TILE_SIZE * 0.5,
-                TILE_SIZE
-              );
+              else
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.5,
+                  TILE_SIZE
+                );
             }
             if (tile & COLLISION_RIGHT) {
               ctx.fillStyle = rightColor;
               if (letters[4]) drawLetter(letters[4], ctx, xi, yi);
-              else ctx.fillRect(
-                (xi + 0.5) * TILE_SIZE,
-                yi * TILE_SIZE,
-                TILE_SIZE * 0.5,
-                TILE_SIZE
-              );
+              else
+                ctx.fillRect(
+                  (xi + 0.5) * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.5,
+                  TILE_SIZE
+                );
             }
           }
           if (tileprop) {
             switch (tileprop) {
               case TILE_PROP_LADDER: // Ladder
-                ctx.fillStyle = ladderColor
+                ctx.fillStyle = ladderColor;
                 if (letters[5]) drawLetter(letters[5], ctx, xi, yi);
                 else {
                   ctx.fillRect(
@@ -348,7 +332,27 @@ const SceneCollisions = ({
         }
       }
     }
-  }, [collisions, height, width, collisionAlpha]);
+  }, [
+    bottomColor,
+    collisionAlpha,
+    collisions,
+    height,
+    ladderColor,
+    leftColor,
+    letters,
+    rightColor,
+    slope22LeftBotColor,
+    slope22LeftTopColor,
+    slope22RightBotColor,
+    slope22RightTopColor,
+    slope45LeftColor,
+    slope45RightColor,
+    solidColor,
+    spareColors,
+    spareSymbols,
+    topColor,
+    width,
+  ]);
 
   return (
     <canvas
