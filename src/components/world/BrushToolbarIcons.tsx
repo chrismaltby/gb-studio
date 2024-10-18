@@ -1,6 +1,4 @@
 import styled, { css } from "styled-components";
-import { COLLISIONS_EXTRA_SYMBOLS } from "consts";
-
 
 interface BrushToolbarBackgroundColorProps {
   $color: string;
@@ -234,7 +232,6 @@ interface BrushToolbarExtraTileIconProps {
   $color: string;
 }
 
-
 export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconProps>`
   &:before {
     content: "${(props) => props.$value}";
@@ -248,9 +245,9 @@ export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconPro
     background-color: ${(props) => props.$color};
     color: ${(props) => {
       const c = props.$color;
-      const a = c.length <= 7 ? 1.0 : Number("0x"+c.slice(7,9)) / 255.0;
-      return a < 0.8 ? c.slice(0,7)+"FF" : "#FFFFFFFF";
-    }}
+      const a = c.length <= 7 ? 1.0 : Number("0x" + c.slice(7, 9)) / 255.0;
+      return a < 0.8 ? c.slice(0, 7) + "FF" : "#FFFFFFFF";
+    }};
   }
   ${brushToolbarCollisionTileStyles};
 `;
