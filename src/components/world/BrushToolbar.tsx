@@ -153,9 +153,9 @@ const PaletteModal = styled.div`
 `;
 
 const SliderWrapper = styled.div`
-  width: 100px;
-  margin: 10px
-  pad-right: 15px
+  display: flex;
+  width: 32px;
+  align-items: center;
 `;
 
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
@@ -180,8 +180,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const showCollisionExtraTiles = useAppSelector(
     (state) => state.project.present.settings.showCollisionExtraTiles
   );
-  const collisionAlpha = useAppSelector(
-    (state) => state.project.present.settings.collisionLayerAlpha
+  const collisionLayerOpacity = useAppSelector(
+    (state) => state.project.present.settings.collisionLayerOpacity
   );
   const collisionTileLabels = useAppSelector(
     (state) => state.project.present.settings.collisionTileLabels
@@ -614,7 +614,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     (a?: number) => {
       dispatch(
         settingsActions.editSettings({
-          collisionLayerAlpha: a,
+          collisionLayerOpacity: a,
         })
       );
     },
@@ -864,7 +864,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         {showTileTypes && (
           <SliderWrapper>
             <Slider
-              value={collisionAlpha}
+              value={collisionLayerOpacity}
               min={0}
               max={255}
               onChange={onCollisionAlphaChanged}

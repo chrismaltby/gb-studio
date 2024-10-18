@@ -170,7 +170,7 @@ export const defaultProjectSettings: Settings = {
   showConnections: "selected",
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
-  collisionLayerAlpha: 128,
+  collisionLayerOpacity: 50,
   collisionTileLabels: defaultCollisionTileLabels,
   worldScrollX: 0,
   worldScrollY: 0,

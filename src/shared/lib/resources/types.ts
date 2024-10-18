@@ -579,7 +579,7 @@ export const SettingsResource = Type.Object({
   showConnections: ShowConnectionsSetting,
   showCollisionSlopeTiles: Type.Boolean(),
   showCollisionExtraTiles: Type.Boolean(),
-  collisionLayerAlpha: Type.Number(),
+  collisionLayerOpacity: Type.Number(),
   collisionTileLabels: Type.Array(CollisionTileLabel),
   worldScrollX: Type.Number(),
   worldScrollY: Type.Number(),

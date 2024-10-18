@@ -32,9 +32,9 @@ const SceneCollisions = ({
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
-  const collisionAlpha = useAppSelector(
+  const collisionLayerOpacity = useAppSelector(
     (state) =>
-      Math.floor(state.project.present.settings.collisionLayerAlpha) / 255
+      Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
   );
 
   const collisionTileLabels = useAppSelector(
@@ -159,7 +159,6 @@ const SceneCollisions = ({
 
       if (!ctx) return;
 
-      ctx.globalAlpha = collisionAlpha;
       ctx.font = "8px Public Pixel";
 
       for (let yi = 0; yi < height; yi++) {
@@ -334,7 +333,6 @@ const SceneCollisions = ({
     }
   }, [
     bottomColor,
-    collisionAlpha,
     collisions,
     height,
     ladderColor,
@@ -359,6 +357,9 @@ const SceneCollisions = ({
       ref={canvas}
       width={width * TILE_SIZE}
       height={height * TILE_SIZE}
+      style={{
+        opacity: collisionLayerOpacity,
+      }}
     />
   );
 };
