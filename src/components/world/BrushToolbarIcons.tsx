@@ -92,8 +92,8 @@ export const BrushToolbarLadderTileIcon = styled.div<BrushToolbarBackgroundColor
     height: 18px;
     margin-left: 2px;
     margin-top: 2px;
-    border-left: 4px solid green;
-    border-right: 4px solid green;
+    border-left: 4px solid ${(props) => props.$color};
+    border-right: 4px solid ${(props) => props.$color};
   }
   &:after {
     position: absolute;
@@ -103,8 +103,8 @@ export const BrushToolbarLadderTileIcon = styled.div<BrushToolbarBackgroundColor
     height: 6px;
     left: 2px;
     top: 4px;
-    border-top: 4px solid green;
-    border-bottom: 4px solid green;
+    border-top: 4px solid ${(props) => props.$color};
+    border-bottom: 4px solid ${(props) => props.$color};
   }
   ${brushToolbarCollisionTileStyles};
 `;
