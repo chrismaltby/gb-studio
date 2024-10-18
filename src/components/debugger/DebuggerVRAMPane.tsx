@@ -11,44 +11,38 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled, { ThemeContext } from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { decHexVal } from "shared/lib/helpers/8bit";
+import l10n from "shared/lib/lang/l10n";
+import { DataLabel, DataRow } from "components/debugger/DebuggerState";
 
 const Content = styled.div`
-  position: relative;
   background: ${(props) => props.theme.colors.scripting.form.background};
   padding: 10px;
   max-width: 256px;
 `;
 
+const VramPreview = styled.div`
+  position: relative;
+  max-height: 240px;
+`;
+
 const Canvas = styled.canvas`
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 0px;
+  left: 0px;
   width: 256px;
   height: 256px;
   border-radius: 4px;
   image-rendering: pixelated;
 `;
 
-const TileInfo = styled.div`
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 12px;
-  display: flex;
-  flex-direction: row;
-`;
-
-const Label = styled.span`
-  font-weight: bold;
-  padding-right: 5px;
+const TileAddr = styled.span`
+  font-family: monospace;
 `;
 
 const VramAreaLabel = styled.span`
   opacity: 0.5;
-`;
-
-const Gap = styled.span`
-  flex-grow: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const DebuggerVRAMPane = () => {
@@ -65,7 +59,7 @@ const DebuggerVRAMPane = () => {
   const [position, setPosition] = useState([-1, -1]);
   const [index, setIndex] = useState(0);
   const [bank, setBank] = useState(0);
-  const [vramArea, setVramArea] = useState("");
+  const [vramArea, setVramArea] = useState(l10n("NAV_SPRITES"));
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -79,7 +73,6 @@ const DebuggerVRAMPane = () => {
     }
 
     const drawWidth = canvas.width;
-    const drawHeight = canvas.height;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -97,9 +90,6 @@ const DebuggerVRAMPane = () => {
 
     const drawGrid = () => {
       if (ctx) {
-        // ctx.fillStyle = "#000";
-        // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         // Draw grid
         ctx.beginPath();
         ctx.strokeStyle = "rgba(0, 0, 0, .1)";
@@ -151,15 +141,16 @@ const DebuggerVRAMPane = () => {
 
           let vramArea = "";
           if (j < 8) {
-            vramArea = "Sprites";
+            vramArea = l10n("NAV_SPRITES");
           } else if (j < 12) {
-            vramArea = "Shared";
+            vramArea = l10n("FIELD_SHARED");
           } else if (j < 16) {
-            vramArea = "UI";
+            vramArea = l10n("MENU_UI_ELEMENTS");
           } else if (j < 24) {
-            vramArea = "Background";
+            vramArea = l10n("FIELD_BACKGROUND");
             index = index - 256;
           }
+
           if (j < 24) {
             setPosition([i, j]);
             setIndex(index);
@@ -189,16 +180,23 @@ const DebuggerVRAMPane = () => {
       {!isCollapsed && (
         <>
           <Content>
-            <img src={vramPreview} alt=""></img>
-            <Canvas ref={canvasRef} width="512px" height="512px" />
-            <TileInfo>
-              <Label>Tile index:</Label>
-              <span>
-                {index} (${decHexVal(index)}) @ Bank {bank}
-              </span>
-              <Gap></Gap>
+            <VramPreview>
+              <img src={vramPreview} alt=""></img>
+              <Canvas ref={canvasRef} width={512} height={512} />
+            </VramPreview>
+            <DataRow>
+              <DataLabel>{l10n("FIELD_TILE_INDEX")}:</DataLabel>
+              <TileAddr>
+                {String(index).padStart(3, "0")} (${decHexVal(index)})
+              </TileAddr>
+            </DataRow>
+            <DataRow>
+              <DataLabel>{l10n("FIELD_MEMORY_BANK")}:</DataLabel>
+              <TileAddr>{bank}</TileAddr>
+            </DataRow>
+            <DataRow>
               <VramAreaLabel>{vramArea}</VramAreaLabel>
-            </TileInfo>
+            </DataRow>
           </Content>
         </>
       )}

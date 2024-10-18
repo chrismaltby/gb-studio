@@ -12,14 +12,14 @@ const Content = styled.div`
   padding: 10px;
 `;
 
-const DataRow = styled.div`
+export const DataRow = styled.div`
   padding-bottom: 5px;
   &:last-of-type {
     padding-bottom: 0;
   }
 `;
 
-const DataLabel = styled.span`
+export const DataLabel = styled.span`
   font-weight: bold;
   padding-right: 5px;
 `;

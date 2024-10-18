@@ -979,6 +979,9 @@
   "FIELD_PROJECTILE_SLOT_DESC": "The slot that contains the projectile you want to launch",
   "FIELD_LOAD_PROJECTILE_SLOT_DESC": "The slot where you want to store projectile data",
   "FIELD_INITIAL_OFFSET": "Initial Offset",
+  "FIELD_TILE_INDEX": "Tile Index",
+  "FIELD_MEMORY_BANK": "Bank",
+  "FIELD_SHARED": "Shared",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
