@@ -1,4 +1,5 @@
 export interface ThemeInterface {
+  name: string;
   type: "light" | "dark";
   typography: {
     fontSize: string;
@@ -11,14 +12,6 @@ export interface ThemeInterface {
     secondaryText: string;
     highlight: string;
     highlightText: string;
-    translucent: string;
-    hoverTranslucent: string;
-    conditional: {
-      level1: string;
-      level2: string;
-      level3: string;
-      level4: string;
-    };
     token: {
       variable: string;
       character: string;
@@ -33,17 +26,15 @@ export interface ThemeInterface {
       border: string;
       inactiveBorder: string;
       textShadow: string;
+      button: {
+        border: string;
+      };
     };
     button: {
       background: string;
       border: string;
-      borderTop: string;
       activeBackground: string;
       text: string;
-      toolbar: {
-        border: string;
-        borderTop: string;
-      };
       nestedBackground: string;
       nestedActiveBackground: string;
     };
@@ -80,35 +71,57 @@ export interface ThemeInterface {
         boxShadow: string;
         hoverBackground: string;
       };
+      header: {
+        background: string;
+        activeBackground: string;
+        border: string;
+        text: string;
+      };
+    };
+    panel: {
+      background: string;
+      border: string;
+      divider: string;
+      text: string;
+      icon: string;
+      selectedIcon: string;
+      selectedBackground: string;
+      hoverBackground: string;
+      activeBackground: string;
     };
     document: {
       background: string;
     };
     list: {
+      text: string;
+      icon: string;
       selectedBackground: string;
       activeBackground: string;
+    };
+    tabs: {
+      background: string;
+      selectedBackground: string;
+      secondaryBackground: string;
+      border: string;
     };
     scripting: {
       header: {
         text: string;
         background: string;
-        backgroundAlt: string;
         nest1Background: string;
-        nest1BackgroundAlt: string;
         nest2Background: string;
-        nest2BackgroundAlt: string;
         nest3Background: string;
-        nest3BackgroundAlt: string;
         nest4Background: string;
-        nest4BackgroundAlt: string;
         commentBackground: string;
-        commentBackgroundAlt: string;
       };
       branch: {
         nest1Background: string;
         nest2Background: string;
         nest3Background: string;
         nest4Background: string;
+      };
+      tabs: {
+        background: string;
       };
       form: {
         background: string;

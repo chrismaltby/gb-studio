@@ -44,6 +44,7 @@ const Wrapper = styled.div`
 
 const WorldGrid = styled.div`
   position: absolute;
+  background: ${(props) => props.theme.colors.document.background};
 `;
 
 const WorldContent = styled.div`
@@ -139,16 +140,16 @@ const WorldView = () => {
   const viewportWidth = scrollContainerSize?.width ?? 0;
   const viewportHeight = scrollContainerSize?.height ?? 0;
 
+  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
+
   const scrollWidth = useAppSelector((state) =>
-    Math.max(viewportWidth, getMaxSceneRight(state) + 20)
+    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxSceneRight(state) + 20)
   );
   const scrollHeight = useAppSelector((state) =>
-    Math.max(viewportHeight, getMaxSceneBottom(state) + 60)
+    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxSceneBottom(state) + 60)
   );
 
   const focus = useAppSelector((state) => state.editor.worldFocus);
-
-  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
 
   const searchTerm = useAppSelector((state) => state.editor.searchTerm);
 

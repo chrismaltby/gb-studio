@@ -7,7 +7,7 @@ export const SearchInput = styled.input.attrs((_props) => ({
   width: 125px;
   background-color: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.text};
-  border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
+  border: 1px solid ${(props) => props.theme.colors.toolbar.button.border};
   border-radius: 20px;
   font-size: 13px;
   padding: 0px 10px;

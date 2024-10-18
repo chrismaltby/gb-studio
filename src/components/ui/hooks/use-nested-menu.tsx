@@ -12,7 +12,6 @@ import {
   useLayoutEffect,
 } from "react";
 import { StyledDropdownSubMenu } from "ui/buttons/style";
-import useWindowFocus from "ui/hooks/use-window-focus";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
 
@@ -27,7 +26,6 @@ const useNestedMenu = (
   const isInitialMount = useRef(true);
   const menuRef = useRef<HTMLDivElement>(null);
   const subMenuRef = useRef<HTMLDivElement>(null);
-  const windowFocus = useWindowFocus();
 
   const [isOpen, setIsOpen] = useState(initiallyOpen);
   const [menuWidth, setMenuWidth] = useState(0);
@@ -59,13 +57,16 @@ const useNestedMenu = (
 
   // Close menu if window loses focus
   useEffect(() => {
-    if (isInitialMount.current) {
-      return;
-    }
-    if (!windowFocus && isOpen) {
-      closeMenu();
-    }
-  }, [closeMenu, isOpen, windowFocus]);
+    const onWindowBlur = () => {
+      if (isOpen) {
+        closeMenu();
+      }
+    };
+    window.addEventListener("blur", onWindowBlur);
+    return () => {
+      window.removeEventListener("blur", onWindowBlur);
+    };
+  }, [closeMenu, isOpen]);
 
   // Handle listening for clicks and auto-hiding the menu
   useEffect(() => {

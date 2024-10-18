@@ -13,6 +13,8 @@ import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilen
 
 type Entity = { id: string; name: string };
 
+export const projectResourcesFolder = "project";
+
 const entityToFilePath = (entity: Entity, fallbackName: string): string => {
   return (
     `${stripInvalidPathCharacters(entity.name || "")
@@ -58,6 +60,7 @@ export const getSceneFolderPath = (
   scene: CompressedSceneResourceWithChildren
 ): string =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[scene._resourceType],
     `${entityToFilePath(scene, "scene")}`
   );
@@ -110,18 +113,21 @@ export const getSceneResourcePaths = (
 
 export const getPaletteResourcePath = (palette: PaletteResource) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[palette._resourceType],
     `${entityToFilePath(palette, "palette")}.gbsres`
   );
 
 export const getScriptResourcePath = (script: ScriptResource) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[script._resourceType],
     `${entityToFilePath(script, "script")}.gbsres`
   );
 
 export const getActorPrefabResourcePath = (actorPrefab: ActorPrefabResource) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[actorPrefab._resourceType],
     `${entityToFilePath(actorPrefab, "actor")}.gbsres`
   );
@@ -130,6 +136,7 @@ export const getTriggerPrefabResourcePath = (
   triggerPrefab: TriggerPrefabResource
 ) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[triggerPrefab._resourceType],
     `${entityToFilePath(triggerPrefab, "trigger")}.gbsres`
   );

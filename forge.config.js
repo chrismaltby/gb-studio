@@ -121,6 +121,15 @@ module.exports = async () => {
                 ],
               },
               {
+                html: "./src/app/plugins/plugins.html",
+                js: "./src/app/plugins/PluginsRoot.tsx",
+                preload: {
+                  js: "./src/app/plugins/preload.ts",
+                  config: rendererPreloadConfig,
+                },
+                name: "plugins_window",
+              },
+              {
                 html: "./src/app/music/music.html",
                 js: "./src/app/music/MusicRoot.tsx",
                 preload: {

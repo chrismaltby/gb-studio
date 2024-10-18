@@ -65,7 +65,7 @@ const Label = styled.label`
   }
 
   ${Input}:checked + & {
-    color: #fff;
+    color: ${(props) => props.theme.colors.highlightText};
     background: ${(props) => props.theme.colors.highlight};
   }
 

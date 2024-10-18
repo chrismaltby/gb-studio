@@ -54,7 +54,7 @@ const Document = styled.div`
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   color: ${(props) => props.theme.colors.text};
   position: relative;
   display: flex;

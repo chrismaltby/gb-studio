@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
 const lightTheme: ThemeInterface = {
+  name: "Light",
   type: "light",
   typography: {
     fontSize: "11px",
@@ -10,17 +11,9 @@ const lightTheme: ThemeInterface = {
   colors: {
     highlight: "#c92c61",
     highlightText: "#ffffff",
-    translucent: "rgba(255,255,255,0.3)",
-    hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
-    background: "#f2f2f2",
+    background: "#f9f9f9",
     secondaryText: "#999999",
-    conditional: {
-      level1: "#b3e5fc",
-      level2: "#ffccbc",
-      level3: "#c8e6c9",
-      level4: "#d1c4e9",
-    },
     token: {
       variable: "#9ccc65",
       character: "#90caf9",
@@ -35,17 +28,15 @@ const lightTheme: ThemeInterface = {
       inactiveBackground: "#f6f6f6",
       inactiveBorder: "#d1d1d1",
       textShadow: "none",
+      button: {
+        border: "#9f9e9e",
+      },
     },
     button: {
       background: "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
       border: "#c5c5c5",
-      borderTop: "#c5c5c5",
       activeBackground: "#eaeaea",
       text: "#3b3a3b",
-      toolbar: {
-        border: "#9f9e9e",
-        borderTop: "#9f9e9e",
-      },
       nestedBackground: "#cccccc",
       nestedActiveBackground: "#bbbbbb",
     },
@@ -83,29 +74,51 @@ const lightTheme: ThemeInterface = {
         boxShadow: "-1px 0px 10px 0px rgba(0, 0, 0, 0.1) inset",
         hoverBackground: "#cfcfcf",
       },
+      header: {
+        background: "#ffffff",
+        activeBackground: "#fafafa",
+        border: "#d4d4d4",
+        text: "#3b3a3b",
+      },
+    },
+    panel: {
+      background: "#f2f2f2",
+      border: "#d4d4d4",
+      divider: "#d4d4d4",
+      text: "#3b3a3b",
+      icon: "#3b3a3b",
+      selectedIcon: "#000000",
+      selectedBackground: "#cccccc",
+      activeBackground: "#eaeaea",
+      hoverBackground: "#dddddd",
     },
     document: {
       background: "#f9f9f9",
     },
     list: {
+      text: "#3b3a3b",
+      icon: "#888888",
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
     },
+    tabs: {
+      background: "linear-gradient(0deg, #f2f2f2 0%, #e4e4e4 100%)",
+      selectedBackground: "#ffffff",
+      secondaryBackground: "#ffffff",
+      border: "#d4d4d4",
+    },
     scripting: {
+      tabs: {
+        background: "#f2f2f2",
+      },
       header: {
         text: "#3b3a3b",
-        background: "#efefef",
-        backgroundAlt: "#e4e4e4",
-        nest1Background: "#b3e5fc",
-        nest1BackgroundAlt: "#81d4fa",
-        nest2Background: "#ffccbc",
-        nest2BackgroundAlt: "#ffab91",
-        nest3Background: "#c8e6c9",
-        nest3BackgroundAlt: "#a5d6a7",
-        nest4Background: "#d1c4e9",
-        nest4BackgroundAlt: "#b39ddb",
-        commentBackground: "#dcedc8",
-        commentBackgroundAlt: "#c5e1a5",
+        background: "linear-gradient(0deg, #e4e4e4, #efefef)",
+        nest1Background: "linear-gradient(0deg, #81d4fa, #b3e5fc)",
+        nest2Background: "linear-gradient(0deg, #ffab91, #ffccbc)",
+        nest3Background: "linear-gradient(0deg, #a5d6a7, #c8e6c9)",
+        nest4Background: "linear-gradient(0deg, #b39ddb, #d1c4e9)",
+        commentBackground: "linear-gradient(0deg, #c5e1a5, #dcedc8)",
       },
       branch: {
         nest1Background: "#e1f5fe",

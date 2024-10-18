@@ -64,7 +64,7 @@ interface SceneViewProps {
 const SceneName = styled.div`
   white-space: nowrap;
   font-size: 11px;
-  background-color: ${(props) => props.theme.colors.document.background};
+  background-color: ${(props) => props.theme.colors.background};
   border-radius: 32px;
   transition: background 0.3s ease-in-out;
   overflow: hidden;
@@ -166,8 +166,7 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           &:after {
             content: "";
-            background-color: ${(props) =>
-              props.theme.colors.document.background};
+            background-color: ${(props) => props.theme.colors.background};
             border-radius: 4px;
             opacity: 0.8;
             position: absolute;
@@ -233,7 +232,9 @@ const SceneView = memo(
     const { x: hoverX, y: hoverY } = useAppSelector(
       (state) => state.editor.hover
     );
-
+    const runSceneSelectionOnly = useAppSelector(
+      (state) => state.project.present.settings.runSceneSelectionOnly
+    );
     const selected = useAppSelector((state) => state.editor.scene === id);
     const sceneSelectionIds = useAppSelector(
       (state) => state.editor.sceneSelectionIds
@@ -574,6 +575,10 @@ const SceneView = memo(
         menu: JSX.Element[];
       }>();
 
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
+
     const renderContextMenu = useCallback(() => {
       return renderSceneContextMenu({
         dispatch,
@@ -583,6 +588,8 @@ const SceneView = memo(
         startDirection,
         hoverX,
         hoverY,
+        runSceneSelectionOnly,
+        onClose: onContextMenuClose,
       });
     }, [
       dispatch,
@@ -592,6 +599,8 @@ const SceneView = memo(
       sceneSelectionIds,
       startDirection,
       startSceneId,
+      runSceneSelectionOnly,
+      onContextMenuClose,
     ]);
 
     const onContextMenu = useCallback(
@@ -610,10 +619,6 @@ const SceneView = memo(
       },
       [renderContextMenu, tool]
     );
-
-    const onContextMenuClose = useCallback(() => {
-      setContextMenu(undefined);
-    }, []);
 
     const onToggleSelection = useCallback(() => {
       dispatch(editorActions.toggleSceneSelectedId(id));

@@ -245,7 +245,7 @@ const WorldPage = () => {
           minWidth: 0,
           flexShrink: 0,
           overflow: "hidden",
-          background: themeContext?.colors.document.background,
+          background: themeContext?.colors.background,
           color: themeContext?.colors.text,
           height: windowHeight - 38,
           position: "relative",
@@ -257,7 +257,7 @@ const WorldPage = () => {
           ref={documentContainerRef}
           style={{
             overflow: "hidden",
-            background: themeContext?.colors.document.background,
+            background: themeContext?.colors.background,
             color: themeContext?.colors.text,
             flexGrow: 1,
             position: "relative",

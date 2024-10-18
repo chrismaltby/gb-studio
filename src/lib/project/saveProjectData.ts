@@ -26,7 +26,6 @@ const saveProjectData = async (
   const metadata = patch.metadata;
 
   const projectFolder = Path.dirname(projectPath);
-  const projectPartsFolder = Path.join(projectFolder, "project");
 
   let completedCount = 0;
 
@@ -35,9 +34,11 @@ const saveProjectData = async (
   };
 
   const existingResourcePaths = new Set(
-    (await globAsync(Path.join(projectPartsFolder, "**/*.gbsres"))).map(
-      (path) => pathToPosix(Path.relative(projectFolder, path))
-    )
+    (
+      await globAsync(
+        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres")
+      )
+    ).map((path) => pathToPosix(Path.relative(projectFolder, path)))
   );
   const expectedResourcePaths: Set<string> = new Set(patch.paths);
 

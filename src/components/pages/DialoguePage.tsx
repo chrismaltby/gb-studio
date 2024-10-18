@@ -26,7 +26,7 @@ import {
 } from "shared/lib/scripts/walk";
 
 const Wrapper = styled.div`
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   display: flex;
   flex-direction: column;
   width: 100%;

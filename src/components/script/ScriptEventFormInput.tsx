@@ -84,7 +84,6 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
-  onChangeArg: (key: string, newValue: unknown) => void;
   onInsertEventAfter: () => void;
 }
 
@@ -117,7 +116,6 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
-  onChangeArg,
   onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
@@ -883,7 +881,6 @@ const ScriptEventFormInput = ({
             allowRename={false}
             args={args}
             onChange={onChangeUnionField}
-            onChangeArg={onChangeArg}
             onInsertEventAfter={onInsertEventAfter}
           />
         </div>

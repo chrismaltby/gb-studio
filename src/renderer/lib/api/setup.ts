@@ -4,7 +4,6 @@ import type {
   MusicDataPacket,
   MusicDataReceivePacket,
 } from "shared/lib/music/types";
-import type { ThemeId } from "shared/lib/theme";
 import {
   ensurePromisedNumber,
   ensurePromisedString,
@@ -27,27 +26,35 @@ import type {
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
-import type { BackgroundAssetData } from "lib/project/loadBackgroundData";
-import type { SpriteAssetData } from "lib/project/loadSpriteData";
-import type { MusicAssetData } from "lib/project/loadMusicData";
-import type { SoundAssetData } from "lib/project/loadSoundData";
-import type { FontAssetData } from "lib/project/loadFontData";
-import type { AvatarAssetData } from "lib/project/loadAvatarData";
-import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/romUsage";
-import type { TilesetAssetData } from "lib/project/loadTilesetData";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import {
+  AvatarResourceAsset,
+  CompressedBackgroundResourceAsset,
+  EmoteResourceAsset,
+  FontResourceAsset,
+  MusicResourceAsset,
   ProjectResources,
+  SoundResourceAsset,
+  SpriteResourceAsset,
+  TilesetResourceAsset,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
+import type {
+  PluginRepositoryEntry,
+  PluginRepositoryMetadata,
+  InstalledPluginData,
+  PluginType,
+} from "lib/pluginManager/types";
+import type { ThemeInterface } from "ui/theme/ThemeInterface";
+import type { TemplatePlugin } from "lib/templates/templateManager";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -131,11 +138,15 @@ const APISetup = {
       ipcRenderer.invoke("get-l10n-strings"),
   },
   theme: {
-    getTheme: (): Promise<ThemeId> => ipcRenderer.invoke("get-theme"),
-    onChange: (callback: (themeId: ThemeId) => void) =>
-      ipcRenderer.on("update-theme", (_, themeId: ThemeId) =>
-        callback(themeId)
+    getTheme: (): Promise<ThemeInterface> => ipcRenderer.invoke("get-theme"),
+    onChange: (callback: (theme: ThemeInterface) => void) =>
+      ipcRenderer.on("update-theme", (_, theme: ThemeInterface) =>
+        callback(theme)
       ),
+  },
+  templates: {
+    getTemplatesList: (): Promise<TemplatePlugin[]> =>
+      ipcRenderer.invoke("templates:list"),
   },
   paths: {
     getDocumentsPath: (): Promise<string> =>
@@ -320,7 +331,7 @@ const APISetup = {
       ipcRenderer.invoke("sfx:play-fxhammer", filename, effectIndex),
   },
   tracker: {
-    addNewUGEFile: (path: string): Promise<MusicAssetData> =>
+    addNewUGEFile: (path: string): Promise<MusicResourceAsset> =>
       ipcRenderer.invoke("tracker:new", path),
     loadUGEFile: (path: string): Promise<Song | null> =>
       ipcRenderer.invoke("tracker:load", path),
@@ -363,6 +374,21 @@ const APISetup = {
       ipcRenderer.invoke("debugger:set-watched", variableIds),
     sendToProjectWindow: (data: DebuggerDataPacket) =>
       ipcRenderer.send("debugger:data-receive", data),
+  },
+  pluginManager: {
+    getPluginsList: (force?: boolean): Promise<PluginRepositoryMetadata[]> =>
+      ipcRenderer.invoke("plugins:fetch-list", force),
+    getPluginRepos: (): Promise<PluginRepositoryEntry[]> =>
+      ipcRenderer.invoke("plugins:list-repos"),
+    addPluginRepo: (url: string) => ipcRenderer.invoke("plugins:add-repo", url),
+    removePluginRepo: (url: string) =>
+      ipcRenderer.invoke("plugins:remove-repo", url),
+    addPlugin: (id: string, repoId: string) =>
+      ipcRenderer.invoke("plugins:add", id, repoId),
+    removePlugin: (id: string, pluginType: PluginType) =>
+      ipcRenderer.invoke("plugins:remove", id, pluginType),
+    getInstalledPlugins: (): Promise<InstalledPluginData[]> =>
+      ipcRenderer.invoke("plugins:get-installed"),
   },
   events: {
     menu: {
@@ -465,16 +491,23 @@ const APISetup = {
           ) => void
         >("setting:changed"),
     },
+    templates: {
+      templatesListChanged: createSubscribeAPI<
+        (event: IpcRendererEvent, templates: TemplatePlugin[]) => void
+      >("templates:list:changed"),
+    },
     watch: {
-      sprite: createWatchSubscribeAPI<SpriteAssetData>("watch:sprite"),
+      sprite: createWatchSubscribeAPI<SpriteResourceAsset>("watch:sprite"),
       background:
-        createWatchSubscribeAPI<BackgroundAssetData>("watch:background"),
-      music: createWatchSubscribeAPI<MusicAssetData>("watch:music"),
-      sound: createWatchSubscribeAPI<SoundAssetData>("watch:sound"),
-      font: createWatchSubscribeAPI<FontAssetData>("watch:font"),
-      avatar: createWatchSubscribeAPI<AvatarAssetData>("watch:avatar"),
-      emote: createWatchSubscribeAPI<EmoteAssetData>("watch:emote"),
-      tileset: createWatchSubscribeAPI<TilesetAssetData>("watch:tileset"),
+        createWatchSubscribeAPI<CompressedBackgroundResourceAsset>(
+          "watch:background"
+        ),
+      music: createWatchSubscribeAPI<MusicResourceAsset>("watch:music"),
+      sound: createWatchSubscribeAPI<SoundResourceAsset>("watch:sound"),
+      font: createWatchSubscribeAPI<FontResourceAsset>("watch:font"),
+      avatar: createWatchSubscribeAPI<AvatarResourceAsset>("watch:avatar"),
+      emote: createWatchSubscribeAPI<EmoteResourceAsset>("watch:emote"),
+      tileset: createWatchSubscribeAPI<TilesetResourceAsset>("watch:tileset"),
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<

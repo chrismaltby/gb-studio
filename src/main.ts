@@ -27,8 +27,7 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
-import { toThemeId } from "shared/lib/theme";
-import { isString, isStringArray, JsonValue } from "shared/types";
+import { ensureString, isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
 import createProject, { CreateProjectInput } from "lib/project/createProject";
 import open from "open";
@@ -80,15 +79,12 @@ import loadProjectData, {
 import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
-import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
-import initElectronL10N, {
-  getAppLocale,
-  locales,
-} from "lib/lang/initElectronL10N";
+import l10n, { getL10NData } from "shared/lib/lang/l10n";
+import initElectronL10N, { getAppLocale } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
-import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
+import { loadMusicData } from "lib/project/loadMusicData";
 import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
@@ -113,6 +109,7 @@ import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
+  MusicResourceAsset,
   ProjectResources,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
@@ -125,6 +122,29 @@ import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
+import {
+  addPluginToProject,
+  addUserRepo,
+  getGlobalPluginsList,
+  getReposList,
+  getRepoUrlById,
+  removePluginFromProject,
+  removeUserRepo,
+} from "lib/pluginManager/repo";
+import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
+import { getPluginsInProject } from "lib/pluginManager/project";
+import {
+  ensureGlobalPluginsPath,
+  getGlobalPluginsPath,
+  getPluginsInstalledGlobally,
+  removeGlobalPlugin,
+} from "lib/pluginManager/globalPlugins";
+import { InstalledPluginData, PluginType } from "lib/pluginManager/types";
+import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
+import { ThemeManager } from "lib/themes/themeManager";
+import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
+import { L10nManager } from "lib/lang/l10nManager";
+import { TemplateManager } from "lib/templates/templateManager";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -132,6 +152,8 @@ declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
 declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -149,6 +171,7 @@ if (require("electron-squirrel-startup")) {
 let projectWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
 let preferencesWindow: BrowserWindow | null = null;
+let pluginsWindow: BrowserWindow | null = null;
 let playWindow: BrowserWindow | null = null;
 let musicWindow: BrowserWindow | null;
 
@@ -163,6 +186,10 @@ let musicWindowInitialized = false;
 let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
+
+const themeManager = new ThemeManager(process.platform);
+const l10nManager = new L10nManager();
+const templateManager = new TemplateManager();
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -244,6 +271,36 @@ export const createPreferences = async () => {
 
   preferencesWindow.on("closed", () => {
     preferencesWindow = null;
+  });
+};
+
+export const createPluginsWindow = async () => {
+  pluginsWindow = new BrowserWindow({
+    width: 600,
+    height: 700,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      devTools: isDevMode,
+      preload: PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  pluginsWindow.setMenu(null);
+  pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
+
+  pluginsWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
+      pluginsWindow?.show();
+    }, 40);
+  });
+
+  pluginsWindow.on("closed", () => {
+    pluginsWindow = null;
   });
 };
 
@@ -341,8 +398,8 @@ export const createProjectWindow = async () => {
 
   projectWindow.on("closed", () => {
     projectWindow = null;
-    menu.buildMenu([]);
-
+    projectPath = "";
+    refreshMenu();
     if (musicWindow) {
       musicWindow.destroy();
     }
@@ -640,6 +697,15 @@ protocol.registerSchemesAsPrivileged([
       bypassCSP: true,
     },
   },
+  {
+    scheme: "gbshttp",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
 ]);
 
 // This method will be called when Electron has finished
@@ -648,7 +714,11 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", async () => {
   initElectronL10N();
 
-  menu.buildMenu([]);
+  await themeManager.loadPluginThemes();
+  await l10nManager.loadPlugins();
+  await templateManager.loadPlugins();
+
+  refreshMenu();
 
   // Enable DevTools.
   if (isDevMode) {
@@ -671,7 +741,25 @@ app.on("ready", async () => {
     createSplash();
   }
 
-  protocol.registerFileProtocol("gbs", (req, callback) => {
+  protocol.registerHttpProtocol("gbshttp", async (req, callback) => {
+    const { host, pathname } = new URL(req.url);
+    if (host === "plugin-repo-asset") {
+      const [_, repoId, ...pathParts] = pathname.split("/");
+      const repoUrl = getRepoUrlById(repoId);
+      if (repoUrl) {
+        const repoRoot = Path.dirname(repoUrl);
+        const repoPath = pathParts.join("/");
+        return callback({
+          url: Path.join(repoRoot, repoPath),
+        });
+      }
+    }
+    return callback({
+      error: 500,
+    });
+  });
+
+  protocol.registerFileProtocol("gbs", async (req, callback) => {
     const { host, pathname } = new URL(req.url);
     if (host === "project") {
       // Load an asset from the current project
@@ -686,7 +774,17 @@ app.on("ready", async () => {
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
+    } else if (host === "global-plugin") {
+      // Load an asset from the GB Studio global plugins folder
+      const globalPluginsPath = getGlobalPluginsPath();
+      const filename = Path.join(globalPluginsPath, decodeURI(pathname));
+      // Check has permission to access this asset
+      guardAssetWithinProject(filename, globalPluginsPath);
+      return callback({ path: filename });
     }
+    return callback({
+      error: 500,
+    });
   });
 });
 
@@ -832,7 +930,12 @@ ipcMain.handle("open-external", async (_event, url) => {
     "https://github.com",
   ];
   const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
-  if (!match) throw new Error("URL not allowed");
+  if (!match) {
+    const cancel = confirmOpenURL(url);
+    if (cancel) {
+      return;
+    }
+  }
   shell.openExternal(url);
 });
 
@@ -1078,49 +1181,6 @@ ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   setMenuItemChecked("showNavigator", showNavigator);
 });
 
-ipcMain.on(
-  "set-menu-plugins",
-  (
-    _event,
-    plugins: Array<{
-      id: string;
-      plugin: string;
-      name: string;
-      accelerator: string;
-    }>
-  ) => {
-    const distinct = <T>(value: T, index: number, self: T[]) =>
-      self.indexOf(value) === index;
-
-    const pluginValues = Object.values(plugins);
-
-    const pluginNames = pluginValues
-      .map((plugin) => plugin.plugin)
-      .filter(distinct);
-
-    menu.buildMenu(
-      pluginNames.map((pluginName) => {
-        return {
-          label: pluginName,
-          submenu: pluginValues
-            .filter((plugin) => {
-              return plugin.plugin === pluginName;
-            })
-            .map((plugin) => {
-              return {
-                label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
-                accelerator: plugin.accelerator,
-                click() {
-                  sendToProjectWindow("menu:plugin-run", plugin.id);
-                },
-              };
-            }),
-        };
-      })
-    );
-  }
-);
-
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);
   sendToProjectWindow("setting:ui-scale:changed", scale);
@@ -1232,12 +1292,10 @@ ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
 });
 
 ipcMain.handle("get-l10n-strings", () => getL10NData());
+
 ipcMain.handle("get-theme", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  return themeId;
+  const themeId = ensureString(settings.get("theme"), "");
+  return themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
 });
 
 ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
@@ -1578,7 +1636,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   "tracker:new",
-  async (_event, assetPath: string): Promise<MusicAssetData> => {
+  async (_event, assetPath: string): Promise<MusicResourceAsset> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = Path.join(projectRoot, assetPath);
 
@@ -1589,7 +1647,7 @@ ipcMain.handle(
     const copy2 = async (
       oPath: string,
       path: string
-    ): Promise<MusicAssetData> => {
+    ): Promise<MusicResourceAsset> => {
       try {
         const exists = await pathExists(path);
         if (!exists) {
@@ -1761,6 +1819,59 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
+  return getGlobalPluginsList(force);
+});
+
+ipcMain.handle("plugins:list-repos", () => {
+  return getReposList();
+});
+
+ipcMain.handle("plugins:add-repo", async (_, url: string) => {
+  await addUserRepo(url);
+});
+
+ipcMain.handle("plugins:remove-repo", async (_, url: string) => {
+  await removeUserRepo(url);
+});
+
+ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
+  await addPluginToProject(projectPath, pluginId, repoId);
+});
+
+ipcMain.handle(
+  "plugins:remove",
+  async (_, pluginId: string, pluginType: PluginType) => {
+    if (isGlobalPluginType(pluginType)) {
+      await removeGlobalPlugin(pluginId);
+    } else {
+      if (!projectPath) {
+        dialog.showErrorBox(
+          l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
+          l10n("ERROR_NO_PROJECT_IS_OPEN")
+        );
+        return;
+      }
+      await removePluginFromProject(projectPath, pluginId);
+    }
+  }
+);
+
+ipcMain.handle("plugins:get-installed", async () => {
+  const plugins: InstalledPluginData[] = [];
+  if (projectPath) {
+    const projectPlugins = await getPluginsInProject(projectPath);
+    plugins.push(...projectPlugins);
+  }
+  const globalPlugins = await getPluginsInstalledGlobally();
+  plugins.push(...globalPlugins);
+  return plugins;
+});
+
+ipcMain.handle("templates:list", async () => {
+  return templateManager.getPluginTemplates();
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -1849,21 +1960,49 @@ menu.on("preferences", () => {
   }
 });
 
+menu.on("pluginManager", () => {
+  if (!pluginsWindow) {
+    createPluginsWindow();
+  } else {
+    pluginsWindow.show();
+  }
+});
+
+menu.on("globalPlugins", async () => {
+  const globalPluginsPath = await ensureGlobalPluginsPath();
+  shell.openPath(globalPluginsPath);
+});
+
+menu.on("projectPlugins", () => {
+  if (!projectPath) {
+    dialog.showErrorBox(l10n("ERROR_NO_PROJECT_IS_OPEN"), "");
+    return;
+  }
+  const projectRoot = Path.dirname(projectPath);
+  const pluginsPath = Path.join(projectRoot, "plugins");
+  shell.openPath(pluginsPath);
+});
+
 menu.on("updateTheme", (value) => {
+  const pluginThemes = themeManager.getPluginThemes();
   settings.set("theme", value as JsonValue);
   setMenuItemChecked("themeDefault", value === undefined);
   setMenuItemChecked("themeLight", value === "light");
   setMenuItemChecked("themeDark", value === "dark");
-  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
-  sendToSplashWindow("update-theme", newThemeId);
-  sendToProjectWindow("update-theme", newThemeId);
+  for (const pluginTheme of pluginThemes) {
+    setMenuItemChecked(`theme-${pluginTheme.id}`, value === pluginTheme.id);
+  }
+  refreshTheme();
 });
 
 menu.on("updateLocale", (value) => {
   settings.set("locale", value as JsonValue);
   setMenuItemChecked("localeDefault", value === undefined);
-  for (const locale of locales) {
-    setMenuItemChecked(`locale-${locale}`, value === locale);
+  for (const lang of l10nManager.getSystemL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
+  }
+  for (const lang of l10nManager.getPluginL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
   }
   switchLanguageDialog();
   initElectronL10N();
@@ -1898,13 +2037,58 @@ menu.on("updateShowNavigator", (value) => {
 });
 
 nativeTheme?.on("updated", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  sendToSplashWindow("update-theme", themeId);
-  sendToProjectWindow("update-theme", themeId);
+  refreshTheme();
 });
+
+watchGlobalPlugins({
+  onChangedThemePlugin: async (path: string) => {
+    await themeManager.loadPluginTheme(path);
+    refreshMenu();
+    refreshTheme();
+  },
+  onChangedLanguagePlugin: async (path: string) => {
+    await l10nManager.loadPlugin(path);
+    refreshMenu();
+  },
+  onChangedTemplatePlugin: async (path: string) => {
+    await templateManager.loadPlugin(path);
+    refreshTemplatesList();
+  },
+  onRemoveThemePlugin: async () => {
+    await themeManager.loadPluginThemes();
+    refreshMenu();
+    refreshTheme();
+  },
+  onRemoveLanguagePlugin: async () => {
+    await l10nManager.loadPlugins();
+    refreshMenu();
+  },
+  onRemoveTemplatePlugin: async () => {
+    await templateManager.loadPlugins();
+    refreshTemplatesList();
+  },
+});
+
+const refreshTheme = () => {
+  const themeId = ensureString(settings.get("theme"), "");
+  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", theme);
+  sendToProjectWindow("update-theme", theme);
+};
+
+const refreshTemplatesList = () => {
+  sendToSplashWindow(
+    "templates:list:changed",
+    templateManager.getPluginTemplates()
+  );
+};
+
+const refreshMenu = () => {
+  menu.buildMenu({
+    themeManager,
+    l10nManager,
+  });
+};
 
 const newProject = async () => {
   keepOpen = true;

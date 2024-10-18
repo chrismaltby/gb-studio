@@ -50,15 +50,15 @@ export const StyledSplashTab = styled.button<StyledSplashTabProps>`
 
 const styledSplashTabSelectedStyles = css`
   background: ${(props) => props.theme.colors.highlight};
-  color: #fff;
+  color: ${(props) => props.theme.colors.highlightText};
 
   &:hover {
     background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
+    color: ${(props) => props.theme.colors.highlightText};
   }
   &:active {
     background: ${(props) => props.theme.colors.highlight};
-    color: #fff;
+    color: ${(props) => props.theme.colors.highlightText};
   }
 `;
 

@@ -755,6 +755,24 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e2",
+    description: createDescription("Updates", [
+      "Update VM_PROJECTILE_LOAD_TYPE to allow setting both source and destination index",
+      "Flags for 'anim_once' and 'strong' moved into projectile_def_t rather than being defined at launch time",
+      "Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/projectiles.h",
+      "include/vm.i",
+      "include/vm_projectiles.h",
+      "src/core/projectiles.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+      "src/states/platform.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

@@ -1588,28 +1588,24 @@ OP_VM_RUMBLE             = 0x7F
 ; @section Projectiles
 
 OP_VM_PROJECTILE_LAUNCH  = 0x80
-.PROJECTILE_ANIM_ONCE    = 0x01
-.PROJECTILE_STRONG       = 0x02
 ;-- Launches an instance of a projectile loaded in a slot.
 ; @param TYPE Slot number of projectile to launch.
 ; @param IDX Points to the beginning of the pseudo-structure that contains these members:
 ;    `pos.x` - X position to launch from.
 ;    `pos.y` - Y position to launch from.
 ;    `angle` - Projectile angle or direction.
-;    `flags` - Flags:
-;       `.PROJECTILE_STRONG` - Do not destroy projectile on collision.
-;       `.PROJECTILE_ANIM_ONCE` - Do not loop projectile animation.
 .macro VM_PROJECTILE_LAUNCH TYPE, IDX
         .db OP_VM_PROJECTILE_LAUNCH, #>IDX, #<IDX, #<TYPE
 .endm
 
 OP_VM_PROJECTILE_LOAD_TYPE = 0x81
 ;-- Loads projectile into a slot for VM_PROJECTILE_LAUNCH.
-; @param TYPE Slot number to load into.
+; @param DEST_TYPE Slot number to load into.
+; @param SRC_TYPE Slot number to load from.
 ; @param BANK Bank number of projectile data to load.
 ; @param ADDR Projectile data to load.
-.macro VM_PROJECTILE_LOAD_TYPE TYPE, BANK, ADDR
-        .db OP_VM_PROJECTILE_LOAD_TYPE, #>ADDR, #<ADDR, #<BANK, #<TYPE
+.macro VM_PROJECTILE_LOAD_TYPE DEST_TYPE, SRC_TYPE, BANK, ADDR
+        .db OP_VM_PROJECTILE_LOAD_TYPE, #>ADDR, #<ADDR, #<BANK, #<SRC_TYPE, #<DEST_TYPE
 .endm
 
 ; --- MATH -------------------------------------------

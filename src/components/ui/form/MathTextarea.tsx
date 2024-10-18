@@ -499,6 +499,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
       </MentionsInput>
       {error.length > 0 && <MathError>{error}</MathError>}

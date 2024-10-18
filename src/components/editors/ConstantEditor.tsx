@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -45,6 +45,7 @@ import {
   SIGNED_16BIT_MIN,
 } from "shared/lib/helpers/8bit";
 import { WorldEditor } from "./WorldEditor";
+import useWindowSize from "ui/hooks/use-window-size";
 
 export const worker = new ConstantUsesWorker();
 
@@ -56,7 +57,7 @@ interface UsesWrapperProps {
 }
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
-  height: 100%;
+  flex-grow: 1;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
@@ -71,7 +72,8 @@ const EditableConstantName = styled(EditableText)`
 
 export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
-  const { observe, height } = useDimensions();
+  const { observe, entry } = useDimensions();
+  const { height: winHeight } = useWindowSize();
   const constant = useAppSelector((state) =>
     constantSelectors.selectById(state, id)
   );
@@ -116,6 +118,14 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
     },
     [id]
   );
+
+  const usesHeight = useMemo(() => {
+    const top = entry?.target.getBoundingClientRect().top;
+    if (top === undefined || winHeight === undefined) {
+      return 0;
+    }
+    return winHeight - top - 32;
+  }, [entry?.target, winHeight]);
 
   useEffect(() => {
     worker.addEventListener("message", onWorkerComplete);
@@ -282,7 +292,7 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
               {constantUses.length > 0 ? (
                 <FlatList
                   items={constantUses}
-                  height={height - 30}
+                  height={usesHeight}
                   setSelectedId={setSelectedId}
                   children={({ item }) => {
                     switch (item.type) {

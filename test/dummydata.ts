@@ -353,6 +353,7 @@ export const dummyProjectData: ProjectData = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 
@@ -544,6 +545,7 @@ export const dummyFontResource: FontResource = {
   filename: "font.png",
   width: 16,
   height: 16,
+  mapping: {},
 };
 
 export const dummySettingsResource: SettingsResource = {
@@ -622,6 +624,7 @@ export const dummySettingsResource: SettingsResource = {
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -730,6 +733,7 @@ export const dummyProjectResources: ProjectResources = {
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 

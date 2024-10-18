@@ -11,16 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add ability to define constant values, compared to variables these don't take any extra memory when used in game
 - Add ability to select all scenes with Ctrl/Cmd + A from Game World view
+- Add plugin manager for installing plugins from the official plugin repository, accessible from the menu at `Plugins / Plugin Manager`
+- Add support for theme, localization and project template plugins
+- Add ability to right click a scene to "Run From Here" allowing quick preview of a specific scene. Optionally can only include the selected scenes for faster build previews in large projects.
+- Add events "Load Projectile Into Slot" and "Launch Projectile In Slot" to allow more advanced control over setup and launch of projectiles and changing the loaded projectiles at run time
 
 ### Changed
 
 - Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
 - "Switch" event updated to allow use of constant values for each branch condition
 - Optimised compilation of backgrounds by reusing tileset data where possible if common tilesets are used [@Mico27](https://github.com/Mico27)
+- Moved `.gbsres` files for assets to the same folder as the asset files. Allows asset plugins to include `.gbsres` e.g sprite asset pack plugins can include animations
+- Optimised script editor by throttling the processing that was occuring on every key press
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below [@Steinbeuge](https://github.com/Steinbeuge)
 
 ### Fixed
 
 - Fix issue where errors in watched files could cause application to crash
+- Fix issue where quickly clicking "Create Project" button during project creation could prevent new project from opening
+- Fix issue where CLI tool was ignoring project's debugger enabled setting causing debugger comments to always be included in generated gbvm code
 
 ## [4.1.3] - 2024-09-16
 

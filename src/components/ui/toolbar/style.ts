@@ -42,9 +42,7 @@ export const StyledToolbar = styled.div<StyledToolbarProps>`
 
   ${StyledButton} {
     -webkit-app-region: no-drag;
-    border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
-    border-top: 1px solid
-      ${(props) => props.theme.colors.button.toolbar.borderTop};
+    border: 1px solid ${(props) => props.theme.colors.toolbar.button.border};
     height: 26px;
     padding: 0px 10px;
     flex-shrink: 0;
@@ -61,7 +59,6 @@ export const StyledToolbar = styled.div<StyledToolbarProps>`
 
 const blurStyles = css`
   background: ${(props) => props.theme.colors.toolbar.inactiveBackground};
-  opacity: 0.5;
 `;
 
 export const StyledToolbarTitle = styled.div`
