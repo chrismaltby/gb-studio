@@ -261,6 +261,7 @@ export const CollisionTileLabelsPicker = () => {
     <StyledCollisionTileLabelsPicker>
       {collisionTileLabels.map((layer) => (
         <CollisionTileLabelPicker
+          key={layer.key}
           value={layer}
           onChange={(newValue) => {
             const newCollisionTileLabels = collisionTileLabels.map((t) =>
