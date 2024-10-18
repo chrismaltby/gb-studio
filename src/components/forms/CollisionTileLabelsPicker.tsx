@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { CollisionTileLabel } from "shared/lib/resources/types";
@@ -22,7 +22,6 @@ import { Input } from "ui/form/Input";
 import l10n from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
 import { StyledInput } from "ui/form/style";
-import { debounce } from "lodash";
 
 const StyledCollisionTileLabelsPicker = styled.div`
   display: grid;
@@ -84,105 +83,67 @@ const CollisionTileLabelPicker = ({
   value,
   onChange,
 }: CollisionTileLabelPicker) => {
-  const [internalValue, setInternalValue] = useState(value);
-
-  const debouncedOnChange = useMemo(
-    () =>
-      // Debounce changes to reduce rerenders on settings page
-      debounce((newValue: CollisionTileLabel) => {
-        onChange(newValue);
-      }, 200),
-    [onChange]
-  );
-
-  const onInternalChange = useCallback(
-    (newValue: CollisionTileLabel) => {
-      setInternalValue(newValue);
-      debouncedOnChange(newValue);
-    },
-    [debouncedOnChange]
-  );
-
   let icon;
   let name =
-    internalValue.name && internalValue.name.trim().length > 0
-      ? internalValue.name
-      : undefined;
+    value.name && value.name.trim().length > 0 ? value.name : undefined;
   if (name)
-    icon = (
-      <BrushToolbarExtraTileIcon
-        $value={name[0]}
-        $color={internalValue.color}
-      />
-    );
+    icon = <BrushToolbarExtraTileIcon $value={name[0]} $color={value.color} />;
   else {
-    switch (internalValue.key) {
+    switch (value.key) {
       case "solid":
         name = l10n("FIELD_SOLID");
-        icon = <BrushToolbarTileSolidIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileSolidIcon $color={value.color} />;
         break;
       case "top":
         name = l10n("FIELD_COLLISION_TOP");
-        icon = <BrushToolbarTileTopIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileTopIcon $color={value.color} />;
         break;
       case "bottom":
         name = l10n("FIELD_COLLISION_BOTTOM");
-        icon = <BrushToolbarTileBottomIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileBottomIcon $color={value.color} />;
         break;
       case "left":
         name = l10n("FIELD_COLLISION_LEFT");
-        icon = <BrushToolbarTileLeftIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileLeftIcon $color={value.color} />;
         break;
       case "right":
         name = l10n("FIELD_COLLISION_RIGHT");
-        icon = <BrushToolbarTileRightIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileRightIcon $color={value.color} />;
         break;
       case "ladder":
         name = l10n("FIELD_LADDER");
-        icon = <BrushToolbarLadderTileIcon $color={internalValue.color} />;
+        icon = <BrushToolbarLadderTileIcon $color={value.color} />;
         break;
       case "slope_45_right":
         name = l10n("FIELD_COLLISION_SLOPE_45_RIGHT");
-        icon = (
-          <BrushToolbarTileSlope45RightIcon $color={internalValue.color} />
-        );
+        icon = <BrushToolbarTileSlope45RightIcon $color={value.color} />;
         break;
       case "slope_45_left":
         name = l10n("FIELD_COLLISION_SLOPE_45_LEFT");
-        icon = <BrushToolbarTileSlope45LeftIcon $color={internalValue.color} />;
+        icon = <BrushToolbarTileSlope45LeftIcon $color={value.color} />;
         break;
       case "slope_22_right_bot":
         name = l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT");
-        icon = (
-          <BrushToolbarTileSlope22RightBottomIcon
-            $color={internalValue.color}
-          />
-        );
+        icon = <BrushToolbarTileSlope22RightBottomIcon $color={value.color} />;
         break;
       case "slope_22_right_top":
         name = l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP");
-        icon = (
-          <BrushToolbarTileSlope22RightTopIcon $color={internalValue.color} />
-        );
+        icon = <BrushToolbarTileSlope22RightTopIcon $color={value.color} />;
         break;
       case "slope_22_left_top":
         name = l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP");
-        icon = (
-          <BrushToolbarTileSlope22LeftTopIcon $color={internalValue.color} />
-        );
+        icon = <BrushToolbarTileSlope22LeftTopIcon $color={value.color} />;
         break;
       case "slope_22_left_bot":
         name = l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT");
-        icon = (
-          <BrushToolbarTileSlope22LeftBottomIcon $color={internalValue.color} />
-        );
+        icon = <BrushToolbarTileSlope22LeftBottomIcon $color={value.color} />;
         break;
       case "spare_08":
         name = l10n("FIELD_COLLISION_SPARE", { tile: 8 });
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[0]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -191,7 +152,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[1]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -200,7 +161,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[2]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -209,7 +170,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[3]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -218,7 +179,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[4]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -227,7 +188,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[5]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -236,7 +197,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[6]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -245,7 +206,7 @@ const CollisionTileLabelPicker = ({
         icon = (
           <BrushToolbarExtraTileIcon
             $value={COLLISIONS_EXTRA_SYMBOLS[7]}
-            $color={internalValue.color}
+            $color={value.color}
           />
         );
         break;
@@ -258,31 +219,31 @@ const CollisionTileLabelPicker = ({
     <StyledCollisionTileLabelPicker>
       <StyledCollisionTileIcon>{icon}</StyledCollisionTileIcon>
       <Input
-        id={internalValue.key + ".name"}
-        value={internalValue.name ?? ""}
+        id={value.key + ".name"}
+        value={value.name ?? ""}
         placeholder={name}
         onChange={(e) => {
-          onInternalChange({
-            key: internalValue.key,
+          onChange({
+            key: value.key,
             name: e.currentTarget.value,
-            icon: internalValue.icon,
-            color: internalValue.color,
+            icon: value.icon,
+            color: value.color,
           });
         }}
       />
       <StyledColorInput
         type="color"
-        $color={internalValue.color}
-        id={internalValue.key + ".color"}
-        value={internalValue.color}
+        $color={value.color}
+        id={value.key + ".color"}
+        value={value.color}
         placeholder="#000000FF"
         style={{}}
         onChange={(e) => {
-          onInternalChange({
-            key: internalValue.key,
-            name: internalValue.name,
+          onChange({
+            key: value.key,
+            name: value.name,
             color: e.currentTarget.value,
-            icon: internalValue.icon,
+            icon: value.icon,
           });
         }}
       />
