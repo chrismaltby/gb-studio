@@ -44,6 +44,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { CollisionTileLabelsPicker } from "components/forms/CollisionTileLabelsPicker";
+import { defaultCollisionTileLabels } from "consts";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -665,6 +666,20 @@ const SettingsPage: FC = () => {
               <CollisionTileLabelsPicker />
             </SettingRowInput>
           </SearchableSettingRow>
+          {!searchTerm && (
+            <CardButtons>
+              <Button
+                onClick={() => {
+                  onChangeSettingProp(
+                    "collisionTileLabels",
+                    defaultCollisionTileLabels
+                  );
+                }}
+              >
+                {l10n("FIELD_RESTORE_DEFAULT")}
+              </Button>
+            </CardButtons>
+          )}
         </SearchableCard>
 
         <EngineFieldsEditor searchTerm={searchTerm} />
