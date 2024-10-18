@@ -20,7 +20,7 @@ const fields = [
   {
     key: "slot",
     label: l10n("FIELD_PROJECTILE_SLOT"),
-    description: l10n("FIELD_PROJECTILE_SLOT_DESC"),
+    description: l10n("FIELD_LOAD_PROJECTILE_SLOT_DESC"),
     type: "togglebuttons",
     options: [0, 1, 2, 3, 4].map((n) => [
       n,
