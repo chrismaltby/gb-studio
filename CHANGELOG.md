@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add plugin manager for installing plugins from the official plugin repository, accessible from the menu at `Plugins / Plugin Manager`
 - Add support for theme, localization and project template plugins
 - Add ability to right click a scene to "Run From Here" allowing quick preview of a specific scene. Optionally can only include the selected scenes for faster build previews in large projects.
+- Add events "Load Projectile Into Slot" and "Launch Projectile In Slot" to allow more advanced control over setup and launch of projectiles and changing the loaded projectiles at run time
 
 ### Changed
 
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised compilation of backgrounds by reusing tileset data where possible if common tilesets are used [@Mico27](https://github.com/Mico27)
 - Moved `.gbsres` files for assets to the same folder as the asset files. Allows asset plugins to include `.gbsres` e.g sprite asset pack plugins can include animations
 - Optimised script editor by throttling the processing that was occuring on every key press
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 
 ### Fixed
 
