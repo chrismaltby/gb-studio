@@ -31,6 +31,7 @@ import {
 import type { ScriptEventDefs } from "shared/lib/scripts/eventHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import { Value } from "@sinclair/typebox/value";
+import { defaultProjectSettings } from "consts";
 
 export const migrateLegacyProject = (
   project: ProjectData,
@@ -112,6 +113,7 @@ export const migrateLegacyProject = (
     }),
     settings: encodeResource(SettingsResource)({
       _resourceType: "settings",
+      ...defaultProjectSettings,
       ...migratedProject.settings,
     }),
     metadata: encodeResource(ProjectMetadataResource)({

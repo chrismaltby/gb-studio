@@ -1,6 +1,6 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { Settings } from "shared/lib/resources/types";
+import { CollisionTileLabel, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -138,6 +138,29 @@ export const EVENT_GROUP = "EVENT_GROUP";
 
 export const LYC_SYNC_VALUE = 150;
 
+export const defaultCollisionTileLabels: CollisionTileLabel[] = [
+  { key: "solid", color: "#FA2828" },
+  { key: "top", color: "#2828FA" },
+  { key: "bottom", color: "#FFFA28" },
+  { key: "left", color: "#FA28FA" },
+  { key: "right", color: "#28FAFA" },
+  { key: "ladder", color: "#008000" },
+  { key: "slope_45_right", color: "#0000FF" },
+  { key: "slope_45_left", color: "#0000FF" },
+  { key: "slope_22_right_bot", color: "#0000FF" },
+  { key: "slope_22_right_top", color: "#0000FF" },
+  { key: "slope_22_left_top", color: "#0000FF" },
+  { key: "slope_22_left_bot", color: "#0000FF" },
+  { key: "spare_08", color: "#008000" },
+  { key: "spare_09", color: "#008000" },
+  { key: "spare_10", color: "#800000" },
+  { key: "spare_11", color: "#800000" },
+  { key: "spare_12", color: "#000080" },
+  { key: "spare_13", color: "#000080" },
+  { key: "spare_14", color: "#800080" },
+  { key: "spare_15", color: "#800080" },
+];
+
 export const defaultProjectSettings: Settings = {
   startSceneId: "",
   startX: 0,
@@ -149,6 +172,8 @@ export const defaultProjectSettings: Settings = {
   showConnections: "selected",
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
+  collisionLayerOpacity: 50,
+  collisionTileLabels: defaultCollisionTileLabels,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
