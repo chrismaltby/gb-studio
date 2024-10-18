@@ -866,7 +866,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             <Slider
               value={collisionLayerOpacity}
               min={0}
-              max={255}
+              max={100}
               onChange={onCollisionAlphaChanged}
             ></Slider>
           </SliderWrapper>
