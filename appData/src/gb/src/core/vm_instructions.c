@@ -168,7 +168,7 @@ const SCRIPT_CMD script_cmds[] = {
 
     // projectiles instructions section
     {vm_projectile_launch,              BANK(VM_PROJECTILE),    3}, // 0x80
-    {vm_projectile_load_type,           BANK(VM_PROJECTILE),    4}, // 0x81
+    {vm_projectile_load_type,           BANK(VM_PROJECTILE),    5}, // 0x81
     {0, 0, 0},
 
     {vm_actor_get_anim_frame,           BANK(VM_ACTOR),         2}, // 0x83

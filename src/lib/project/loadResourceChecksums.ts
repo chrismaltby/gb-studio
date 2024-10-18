@@ -13,10 +13,9 @@ export const loadProjectResourceChecksums = async (
   projectPath: string
 ): Promise<Record<string, string>> => {
   const projectRoot = path.dirname(projectPath);
-  const projectResourcesRoot = path.join(projectRoot, "project");
 
   const projectResources = await globAsync(
-    path.join(projectResourcesRoot, "**/*.gbsres")
+    path.join(projectRoot, "**/*.gbsres")
   );
 
   const resources = await promiseLimit(

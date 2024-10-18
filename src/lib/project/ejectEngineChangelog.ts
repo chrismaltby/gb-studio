@@ -755,6 +755,22 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e2",
+    description: createDescription("Updates", [
+      "Update VM_PROJECTILE_LOAD_TYPE to allow setting both source and destination index",
+      "Flags for 'anim_once' and 'strong' moved into projectile_def_t rather than being defined at launch time",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/projectiles.h",
+      "include/vm.i",
+      "include/vm_projectiles.h",
+      "src/core/projectiles.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
