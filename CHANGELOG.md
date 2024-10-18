@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for theme, localization and project template plugins
 - Add ability to right click a scene to "Run From Here" allowing quick preview of a specific scene. Optionally can only include the selected scenes for faster build previews in large projects.
 - Add events "Load Projectile Into Slot" and "Launch Projectile In Slot" to allow more advanced control over setup and launch of projectiles and changing the loaded projectiles at run time
+- Add ability to hover over tiles in debugger VRAM preview to see tile memory address information [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
