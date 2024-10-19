@@ -1,4 +1,4 @@
-import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
+import type { MonoPalette, ObjPalette } from "shared/lib/entities/entitiesTypes";
 
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {
@@ -62,29 +62,23 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
-  if (g < 65) {
-    return 3;
-  }
-  if (g < 130) {
-    return objPalette === "OBP1" ? 2 : 3;
-  }
-  if (g < 205) {
-    return objPalette === "OBP1" ? 2 : 1;
-  }
-  return 0;
+//NOTE: this assumes GB Studio's sprite image requirements are met... https://www.gbstudio.dev/docs/assets/sprites#image-requirements
+export const indexSpriteColour = (g: number, objPalette: MonoPalette) => {
+  if (g < 130) return objPalette[3];
+  if (g < 205) return objPalette[2];
+  return objPalette[1];
 };
 
 export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
-  objPalette: ObjPalette | null,
+  objPalette: MonoPalette,
   palette: string[]
 ) => {
   const paletteRGB = palette.map(hex2GBCrgb);
   for (let index = 0; index < mutData.length; index += 4) {
     const colorIndex = indexSpriteColour(
       mutData[index + 1],
-      objPalette || "OBP0"
+      objPalette
     );
     const color = paletteRGB[colorIndex];
     const r = mutData[index];

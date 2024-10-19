@@ -12,6 +12,7 @@ export type SpriteAnimationType =
   | "platform_player"
   | "cursor";
 export type ObjPalette = "OBP0" | "OBP1";
+export type MonoPalette = [number, number, number, number];
 
 export type UnionVariableValue = {
   type: "variable";
@@ -434,6 +435,9 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
+  dmgBGP?: MonoPalette;
+  dmgOBP0?: MonoPalette;
+  dmgOBP1?: MonoPalette;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];

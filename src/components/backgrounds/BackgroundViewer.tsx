@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import {
@@ -84,6 +84,12 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
     (state) => state.project.present.settings.colorMode !== "mono"
   );
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);
+  const previewAsMono = useAppSelector((state) =>
+    !gbcEnabled || state.project.present.settings.previewAsMono
+  );
+  const defaultBGP = useAppSelector((state) =>
+    state.project.present.settings.defaultBGP
+  );
 
   useEffect(() => {
     setPalettes(
@@ -128,6 +134,8 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                   src={assetURL("backgrounds", background)}
                   tiles={background.tileColors}
                   palettes={palettes}
+                  previewAsMono={previewAsMono}
+                  monoPalette={defaultBGP}
                 />
               )}
             </ImageScale>
@@ -162,6 +170,8 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                 src={assetURL("tilesets", tileset)}
                 tiles={[]}
                 palettes={palettes}
+                previewAsMono={previewAsMono}
+                monoPalette={defaultBGP}
               />
             </ImageScale>
           </ImageContainer>
