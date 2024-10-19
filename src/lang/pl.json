@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1764241019",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1766241019",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -982,6 +982,8 @@
   "FIELD_TILE_INDEX": "Indeks tafli",
   "FIELD_MEMORY_BANK": "Bank",
   "FIELD_SHARED": "Wspólne",
+  "FIELD_LAYER_OPACITY": "Przejrzystość warstwy",
+  "FIELD_HIDE_OTHER_LAYERS": "Ukryj inne warstwy",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
