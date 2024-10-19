@@ -60,8 +60,8 @@ const StyledColorInput = styled.input<CollisionColorProps>`
   -webkit-appearance: none;
   padding: 0;
 
-  background: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
+  background: ${(props) => props.$color};
+  color: black;
   border: 1px solid ${(props) => props.theme.colors.input.border};
   border-radius: ${(props) => props.theme.borderRadius}px;
 
@@ -232,7 +232,7 @@ const CollisionTileLabelPicker = ({
         }}
       />
       <StyledColorInput
-        type="color"
+        // type="color" //truncates alpha value
         $color={value.color}
         id={value.key + ".color"}
         value={value.color}
