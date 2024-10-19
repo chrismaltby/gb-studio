@@ -2101,7 +2101,8 @@ const compile = async (
 
   output["game_globals.h"] = compileGameGlobalsHeader(
     variableAliasLookup,
-    projectData.variables.constants
+    projectData.variables.constants,
+	precompiled.stateReferences
   );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");

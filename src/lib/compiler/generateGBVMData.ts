@@ -1252,7 +1252,8 @@ export const compileGameGlobalsInclude = (
 
 export const compileGameGlobalsHeader = (
   variableAliasLookup: Record<string, VariableMapData>,
-  constants: Constant[]
+  constants: Constant[],
+  stateReferences: string[]
 ) => {
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
@@ -1269,6 +1270,11 @@ export const compileGameGlobalsHeader = (
         return `#define ${constant.symbol.toLocaleUpperCase()} ${
           constant.value
         }\n`;
+	  })
+      .join("") +
+	stateReferences
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
       })
       .join("") +
     `\n` +
