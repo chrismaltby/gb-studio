@@ -2,6 +2,7 @@ import migrateProject, {
   LATEST_LEGACY_PROJECT_VERSION,
   LATEST_LEGACY_PROJECT_MINOR_VERSION,
 } from "../../../src/lib/project/migration/legacy/migrateLegacyProjectVersions";
+import { migrateLegacyProject } from "../../../src/lib/project/migration/legacy/migrateLegacyProject";
 
 test("should migrate conditional events from 1.0.0 to latest release", () => {
   const oldProject = {
@@ -234,5 +235,22 @@ test("should migrate conditional events from 1.2.0 to latest release", () => {
       },
     ],
     variables: [],
+  });
+});
+
+test("should add missing settings when migrating to latest release", () => {
+  const oldProject = {
+    _version: "1.2.0",
+    settings: {},
+    scenes: [],
+    backgrounds: [],
+    spriteSheets: [],
+    variables: [],
+  };
+  const newProject = migrateLegacyProject(oldProject);
+  expect(newProject).toMatchObject({
+    settings: {
+      favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],
+    },
   });
 });
