@@ -43,10 +43,11 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { CollisionTileLabelsPicker } from "components/forms/CollisionTileLabelsPicker";
+import { defaultCollisionTileLabels } from "consts";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
-  const settings = useAppSelector((state) => state.project.present.settings);
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
@@ -75,19 +76,39 @@ const SettingsPage: FC = () => {
     }
   }, [scrollToId]);
 
-  const {
-    colorMode,
-    sgbEnabled,
-    customHead,
-    defaultBackgroundPaletteIds,
-    defaultSpritePaletteIds,
-    defaultFontId,
-    defaultPlayerSprites,
-    musicDriver,
-    openBuildLogOnWarnings,
-    generateDebugFilesEnabled,
-    compilerPreset,
-  } = settings;
+  const colorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode
+  );
+  const sgbEnabled = useAppSelector(
+    (state) => state.project.present.settings.sgbEnabled
+  );
+  const customHead = useAppSelector(
+    (state) => state.project.present.settings.customHead
+  );
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds
+  );
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds
+  );
+  const defaultFontId = useAppSelector(
+    (state) => state.project.present.settings.defaultFontId
+  );
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
+  );
+  const musicDriver = useAppSelector(
+    (state) => state.project.present.settings.musicDriver
+  );
+  const openBuildLogOnWarnings = useAppSelector(
+    (state) => state.project.present.settings.openBuildLogOnWarnings
+  );
+  const generateDebugFilesEnabled = useAppSelector(
+    (state) => state.project.present.settings.generateDebugFilesEnabled
+  );
+  const compilerPreset = useAppSelector(
+    (state) => state.project.present.settings.compilerPreset
+  );
 
   const colorEnabled = colorMode !== "mono";
 
@@ -257,6 +278,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
               {l10n("SETTINGS_MUSIC")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsCollisions")}>
+              {l10n("SETTINGS_COLLISIONS")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -622,6 +646,40 @@ const SettingsPage: FC = () => {
               </FormField>
             </SettingRowInput>
           </SearchableSettingRow>
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[l10n("SETTINGS_COLLISIONS")]}
+        >
+          <CardAnchor id="settingsCollisions" />
+          <CardHeading>{l10n("SETTINGS_COLLISIONS")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("SETTINGS_TILE_COLLISIONS")]}
+          >
+            <SettingRowLabel>
+              {l10n("SETTINGS_TILE_COLLISIONS")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <CollisionTileLabelsPicker />
+            </SettingRowInput>
+          </SearchableSettingRow>
+          {!searchTerm && (
+            <CardButtons>
+              <Button
+                onClick={() => {
+                  onChangeSettingProp(
+                    "collisionTileLabels",
+                    defaultCollisionTileLabels
+                  );
+                }}
+              >
+                {l10n("FIELD_RESTORE_DEFAULT")}
+              </Button>
+            </CardButtons>
+          )}
         </SearchableCard>
 
         <EngineFieldsEditor searchTerm={searchTerm} />
