@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import l10n from "shared/lib/lang/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import {
   PaintBucketIcon,
   WandIcon,
@@ -44,6 +44,7 @@ import {
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
   COLLISIONS_EXTRA_SYMBOLS,
+  defaultCollisionTileLabels,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
 import editorActions from "store/features/editor/editorActions";
@@ -84,6 +85,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { StyledButton } from "ui/buttons/style";
 import { Slider } from "ui/form/Slider";
+import { CollisionTileLabel } from "shared/lib/resources/types";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -98,6 +100,32 @@ const collisionDirectionFlags = [
   COLLISION_LEFT,
   COLLISION_RIGHT,
 ];
+
+export const getTileIcon = (t: CollisionTileLabel) => {
+  switch (t.key) {
+    case "solid": return <BrushToolbarTileSolidIcon $color={t.color}/>
+    case "top": return <BrushToolbarTileTopIcon $color={t.color}/>
+    case "bottom": return <BrushToolbarTileBottomIcon $color={t.color}/>
+    case "left": return <BrushToolbarTileLeftIcon $color={t.color}/>
+    case "right": return <BrushToolbarTileRightIcon $color={t.color}/>
+    case "ladder": return <BrushToolbarLadderTileIcon $color={t.color}/>
+    case "slope_45_right": return <BrushToolbarTileSlope45RightIcon $color={t.color}/>
+    case "slope_45_left": return <BrushToolbarTileSlope45LeftIcon $color={t.color}/>
+    case "slope_22_right_bot": return <BrushToolbarTileSlope22RightBottomIcon $color={t.color}/>
+    case "slope_22_right_top": return <BrushToolbarTileSlope22RightTopIcon $color={t.color}/>
+    case "slope_22_left_top": return <BrushToolbarTileSlope22LeftTopIcon $color={t.color}/>
+    case "slope_22_left_bot": return <BrushToolbarTileSlope22LeftBottomIcon $color={t.color}/>
+    case "spare_08": return <BrushToolbarExtraTileIcon $value={"8"} $color={t.color}/>
+    case "spare_09": return <BrushToolbarExtraTileIcon $value={"9"} $color={t.color}/>
+    case "spare_10": return <BrushToolbarExtraTileIcon $value={"A"} $color={t.color}/>
+    case "spare_11": return <BrushToolbarExtraTileIcon $value={"B"} $color={t.color}/>
+    case "spare_12": return <BrushToolbarExtraTileIcon $value={"C"} $color={t.color}/>
+    case "spare_13": return <BrushToolbarExtraTileIcon $value={"D"} $color={t.color}/>
+    case "spare_14": return <BrushToolbarExtraTileIcon $value={"E"} $color={t.color}/>
+    case "spare_15": return <BrushToolbarExtraTileIcon $value={"F"} $color={t.color}/>
+    default: return <BrushToolbarExtraTileIcon $value={""} $color={t.color}/>
+  }
+}
 
 function useHiglightPalette() {
   const hoverScene = useAppSelector((state) =>
@@ -187,294 +215,21 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     (state) => state.project.present.settings.collisionTileLabels
   );
 
-  const spareSymbols = useMemo(
-    () =>
-      ["08", "09", "10", "11", "12", "13", "14", "15"].map((i) => {
-        const setting = collisionTileLabels.find((s) => s.key === "spare_" + i);
-        return setting && setting.icon
-          ? setting.icon[0]
-          : COLLISIONS_EXTRA_SYMBOLS[+i - 8];
-      }),
-    [collisionTileLabels]
-  );
-
   const tileTypes = useMemo(
-    () =>
-      collisionTileLabels.map((t) => {
-        //defaultCollisionTileLabels
-        const name = t.name && t.name.trim().length > 0 ? t.name : undefined;
-        const letter = name ? name[0] : undefined;
-        switch (t.key) {
-          case "solid":
-            return {
-              key: t.key,
-              flag: COLLISION_ALL,
-              name: name ?? l10n("FIELD_SOLID"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSolidIcon $color={t.color} />
-              ),
-            };
-          case "top":
-            return {
-              key: t.key,
-              flag: COLLISION_TOP,
-              name: name ?? l10n("FIELD_COLLISION_TOP"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileTopIcon $color={t.color} />
-              ),
-            };
-          case "bottom":
-            return {
-              key: t.key,
-              flag: COLLISION_BOTTOM,
-              name: name ?? l10n("FIELD_COLLISION_BOTTOM"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileBottomIcon $color={t.color} />
-              ),
-            };
-          case "left":
-            return {
-              key: t.key,
-              flag: COLLISION_LEFT,
-              name: name ?? l10n("FIELD_COLLISION_LEFT"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileLeftIcon $color={t.color} />
-              ),
-            };
-          case "right":
-            return {
-              key: t.key,
-              flag: COLLISION_RIGHT,
-              name: name ?? l10n("FIELD_COLLISION_RIGHT"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileRightIcon $color={t.color} />
-              ),
-            };
-          case "ladder":
-            return {
-              key: t.key,
-              flag: TILE_PROP_LADDER,
-              name: name ?? l10n("FIELD_LADDER"),
-              color: t.color,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarLadderTileIcon $color={t.color} />
-              ),
-            };
-          case "slope_45_right":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_45_RIGHT,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
-              color: t.color,
-              extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope45RightIcon $color={t.color} />
-              ),
-            };
-          case "slope_45_left":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_45_LEFT,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
-              color: t.color,
-              extra: COLLISION_BOTTOM | COLLISION_LEFT,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope45LeftIcon $color={t.color} />
-              ),
-            };
-          case "slope_22_right_bot":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_22_RIGHT_BOT,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
-              color: t.color,
-              extra: COLLISION_BOTTOM,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope22RightBottomIcon $color={t.color} />
-              ),
-            };
-          case "slope_22_right_top":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_22_RIGHT_TOP,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
-              color: t.color,
-              extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope22RightTopIcon $color={t.color} />
-              ),
-            };
-          case "slope_22_left_top":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_22_LEFT_TOP,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
-              color: t.color,
-              extra: COLLISION_BOTTOM | COLLISION_LEFT,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope22LeftTopIcon $color={t.color} />
-              ),
-            };
-          case "slope_22_left_bot":
-            return {
-              key: t.key,
-              flag: COLLISION_SLOPE_22_LEFT_BOT,
-              name: name ?? l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
-              color: t.color,
-              extra: COLLISION_BOTTOM,
-              icon: letter ? (
-                <BrushToolbarExtraTileIcon $value={letter} $color={t.color} />
-              ) : (
-                <BrushToolbarTileSlope22LeftBottomIcon $color={t.color} />
-              ),
-            };
-          case "spare_08":
-            return {
-              key: t.key,
-              flag: 0x80,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[0]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_09":
-            return {
-              key: t.key,
-              flag: 0x90,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[1]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_10":
-            return {
-              key: t.key,
-              flag: 0xa0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[2]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_11":
-            return {
-              key: t.key,
-              flag: 0xb0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[3]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_12":
-            return {
-              key: t.key,
-              flag: 0xc0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[4]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_13":
-            return {
-              key: t.key,
-              flag: 0xd0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[5]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_14":
-            return {
-              key: t.key,
-              flag: 0xe0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[6]}
-                  $color={t.color}
-                />
-              ),
-            };
-          case "spare_15":
-            return {
-              key: t.key,
-              flag: 0xf0,
-              name: name ?? l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
-              color: t.color,
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[7]}
-                  $color={t.color}
-                />
-              ),
-            };
-          default:
-            return {
-              key: "none",
-              flag: 0,
-              name: "None",
-              color: "FFFFFFFF",
-              icon: (
-                <BrushToolbarExtraTileIcon
-                  $value={letter ?? spareSymbols[8]}
-                  $color={t.color}
-                />
-              ),
-            };
-        }
-      }),
-    [collisionTileLabels, spareSymbols]
+    () => collisionTileLabels.map((t) => {
+      const name = t.name && t.name.trim().length > 0 ? l10n(t.name as L10NKey) : undefined;
+      const icon = t.icon ? <BrushToolbarExtraTileIcon $value={t.icon[0]} $color={t.color}/> : getTileIcon(t);
+      
+      return {
+        key: t.key,
+        flag: t.flag,
+        mask: t.mask,
+        name: name,
+        color: t.color,
+        icon: icon,
+      };
+    }),
+    [collisionTileLabels]
   );
 
   const setBrush = (brush: Brush) => {
@@ -489,7 +244,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   const highlightPalette = useHiglightPalette();
 
-  const setSelectedPalette =
+  const setSelectedPalette = //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!
     (index: number) =>
     (e: KeyboardEvent | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (showPalettes) {
@@ -524,7 +279,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         ) {
           dispatch(
             editorActions.setSelectedTileType({
-              tileType: tileTypes[index].flag | (tileTypes[index].extra ?? 0),
+              tileType: tileTypes[index].flag,
             })
           );
         } else {
@@ -794,69 +549,25 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         {showPalettes && <FloatingPanelDivider />}
         {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
           <>
-            {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
-              <Button
-                variant="transparent"
-                key={tileType.name}
-                onClick={setSelectedPalette(tileTypeIndex)}
-                active={
-                  tileType.flag === COLLISION_ALL
-                    ? selectedTileType === tileType.flag
-                    : selectedTileType !== COLLISION_ALL &&
-                      !!(selectedTileType & tileType.flag)
-                }
-                title={`${tileType.name} (${tileTypeIndex + 1})`}
-              >
-                {tileType.icon}
-              </Button>
-            ))}
-            <FloatingPanelDivider />
-            {tileTypes.slice(5, 6).map((tileType, tileTypeIndex) => (
-              <Button
-                variant="transparent"
-                key={tileType.name}
-                onClick={setSelectedPalette(tileTypeIndex + 5)}
-                active={selectedTileType === tileType.flag}
-                title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
-              >
-                {tileType.icon}
-              </Button>
+            {tileTypes.map((tileType, tileTypeIndex) => (
+              <>
+                {tileTypeIndex > 0 && tileType.mask != tileTypes[tileTypeIndex-1].mask && <FloatingPanelDivider />}
+                <Button
+                  variant="transparent"
+                  key={tileType.name}
+                  onClick={setSelectedPalette(tileTypeIndex)}
+                  active={tileType.flag === selectedTileType}
+                  title={`${tileType.name} (${tileTypeIndex + 1})`}
+                >
+                  {tileType.icon}
+                </Button>
+              </>
             ))}
 
-            {showCollisionSlopeTiles && (
-              <>
-                <FloatingPanelDivider />
+            {/* {showCollisionSlopeTiles && ( */}
+             
+            {/* {showCollisionExtraTiles && ( */}
 
-                {tileTypes.slice(6, 12).map((tileType, tileTypeIndex) => (
-                  <Button
-                    variant="transparent"
-                    key={tileType.name}
-                    onClick={setSelectedPalette(tileTypeIndex + 6)}
-                    active={(selectedTileType & 0xf0) === tileType.flag}
-                    title={`${tileType.name}`}
-                  >
-                    {tileType.icon}
-                  </Button>
-                ))}
-              </>
-            )}
-
-            {showCollisionExtraTiles && (
-              <>
-                <FloatingPanelDivider />
-                {tileTypes.slice(12).map((tileType, tileTypeIndex) => (
-                  <Button
-                    variant="transparent"
-                    key={tileType.name}
-                    onClick={setSelectedPalette(tileTypeIndex + 12)}
-                    active={(selectedTileType & 0xf0) === tileType.flag}
-                    title={`${tileType.name}`}
-                  >
-                    {tileType.icon}
-                  </Button>
-                ))}
-              </>
-            )}
             <FloatingPanelDivider />
           </>
         )}

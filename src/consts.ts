@@ -149,14 +149,14 @@ export const defaultCollisionTileLabels: CollisionTileLabel[] = [
   { "key": "slope_22_right_top", "color": "#0000FFFF", "mask": 0xFF, "flag": COLLISION_SLOPE_22_RIGHT_TOP | COLLISION_BOTTOM | COLLISION_RIGHT, "name": "FIELD_COLLISION_SLOPE_22_RIGHT_TOP" },
   { "key": "slope_22_left_top", "color": "#0000FFFF", "mask": 0xFF, "flag": COLLISION_SLOPE_22_LEFT_TOP | COLLISION_BOTTOM | COLLISION_LEFT, "name": "FIELD_COLLISION_SLOPE_22_LEFT_TOP" },
   { "key": "slope_22_left_bot", "color": "#0000FFFF", "mask": 0xFF, "flag": COLLISION_SLOPE_22_LEFT_BOT | COLLISION_BOTTOM, "name": "FIELD_COLLISION_SLOPE_22_LEFT_BOT" },
-  { "key": "spare_08", "color": "#00800080", "mask": TILE_PROPS, "flag": 0x80, "name": "FIELD_COLLISION_SPARE", "icon": "8" },
-  { "key": "spare_09", "color": "#00800080", "mask": TILE_PROPS, "flag": 0x90, "name": "FIELD_COLLISION_SPARE", "icon": "9" },
-  { "key": "spare_10", "color": "#80000080", "mask": TILE_PROPS, "flag": 0xA0, "name": "FIELD_COLLISION_SPARE", "icon": "A" },
-  { "key": "spare_11", "color": "#80000080", "mask": TILE_PROPS, "flag": 0xB0, "name": "FIELD_COLLISION_SPARE", "icon": "B" },
-  { "key": "spare_12", "color": "#00008080", "mask": TILE_PROPS, "flag": 0xC0, "name": "FIELD_COLLISION_SPARE", "icon": "C" },
-  { "key": "spare_13", "color": "#00008080", "mask": TILE_PROPS, "flag": 0xD0, "name": "FIELD_COLLISION_SPARE", "icon": "D" },
-  { "key": "spare_14", "color": "#80008080", "mask": TILE_PROPS, "flag": 0xE0, "name": "FIELD_COLLISION_SPARE", "icon": "E" },
-  { "key": "spare_15", "color": "#80008080", "mask": TILE_PROPS, "flag": 0xF0, "name": "FIELD_COLLISION_SPARE", "icon": "F" }
+  { "key": "spare_08", "color": "#00800080", "mask": TILE_PROPS, "flag": 0x80, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_09", "color": "#00800080", "mask": TILE_PROPS, "flag": 0x90, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_10", "color": "#80000080", "mask": TILE_PROPS, "flag": 0xA0, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_11", "color": "#80000080", "mask": TILE_PROPS, "flag": 0xB0, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_12", "color": "#00008080", "mask": TILE_PROPS, "flag": 0xC0, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_13", "color": "#00008080", "mask": TILE_PROPS, "flag": 0xD0, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_14", "color": "#80008080", "mask": TILE_PROPS, "flag": 0xE0, "name": "FIELD_COLLISION_SPARE" },
+  { "key": "spare_15", "color": "#80008080", "mask": TILE_PROPS, "flag": 0xF0, "name": "FIELD_COLLISION_SPARE" }
 ]
 
 export const defaultProjectSettings: Settings = {

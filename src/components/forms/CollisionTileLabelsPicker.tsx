@@ -19,9 +19,10 @@ import {
   BrushToolbarExtraTileIcon,
 } from "components/world/BrushToolbarIcons";
 import { Input } from "ui/form/Input";
-import l10n from "shared/lib/lang/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
 import { StyledInput } from "ui/form/style";
+import { getTileIcon } from "components/world/BrushToolbar";
 
 const StyledCollisionTileLabelsPicker = styled.div`
   display: grid;
@@ -83,137 +84,9 @@ const CollisionTileLabelPicker = ({
   value,
   onChange,
 }: CollisionTileLabelPicker) => {
-  let icon;
-  let name =
-    value.name && value.name.trim().length > 0 ? value.name : undefined;
-  if (name)
-    icon = <BrushToolbarExtraTileIcon $value={name[0]} $color={value.color} />;
-  else {
-    switch (value.key) {
-      case "solid":
-        name = l10n("FIELD_SOLID");
-        icon = <BrushToolbarTileSolidIcon $color={value.color} />;
-        break;
-      case "top":
-        name = l10n("FIELD_COLLISION_TOP");
-        icon = <BrushToolbarTileTopIcon $color={value.color} />;
-        break;
-      case "bottom":
-        name = l10n("FIELD_COLLISION_BOTTOM");
-        icon = <BrushToolbarTileBottomIcon $color={value.color} />;
-        break;
-      case "left":
-        name = l10n("FIELD_COLLISION_LEFT");
-        icon = <BrushToolbarTileLeftIcon $color={value.color} />;
-        break;
-      case "right":
-        name = l10n("FIELD_COLLISION_RIGHT");
-        icon = <BrushToolbarTileRightIcon $color={value.color} />;
-        break;
-      case "ladder":
-        name = l10n("FIELD_LADDER");
-        icon = <BrushToolbarLadderTileIcon $color={value.color} />;
-        break;
-      case "slope_45_right":
-        name = l10n("FIELD_COLLISION_SLOPE_45_RIGHT");
-        icon = <BrushToolbarTileSlope45RightIcon $color={value.color} />;
-        break;
-      case "slope_45_left":
-        name = l10n("FIELD_COLLISION_SLOPE_45_LEFT");
-        icon = <BrushToolbarTileSlope45LeftIcon $color={value.color} />;
-        break;
-      case "slope_22_right_bot":
-        name = l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT");
-        icon = <BrushToolbarTileSlope22RightBottomIcon $color={value.color} />;
-        break;
-      case "slope_22_right_top":
-        name = l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP");
-        icon = <BrushToolbarTileSlope22RightTopIcon $color={value.color} />;
-        break;
-      case "slope_22_left_top":
-        name = l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP");
-        icon = <BrushToolbarTileSlope22LeftTopIcon $color={value.color} />;
-        break;
-      case "slope_22_left_bot":
-        name = l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT");
-        icon = <BrushToolbarTileSlope22LeftBottomIcon $color={value.color} />;
-        break;
-      case "spare_08":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 8 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[0]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_09":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 9 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[1]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_10":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 10 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[2]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_11":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 11 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[3]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_12":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 12 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[4]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_13":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 13 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[5]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_14":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 14 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[6]}
-            $color={value.color}
-          />
-        );
-        break;
-      case "spare_15":
-        name = l10n("FIELD_COLLISION_SPARE", { tile: 15 });
-        icon = (
-          <BrushToolbarExtraTileIcon
-            $value={COLLISIONS_EXTRA_SYMBOLS[7]}
-            $color={value.color}
-          />
-        );
-        break;
-      default:
-        icon = <div />;
-    }
-  }
+  
+  const icon = getTileIcon(value);
+  const name = value.name && value.name.trim().length > 0 ? l10n(value.name as L10NKey) : undefined;
 
   return (
     <StyledCollisionTileLabelPicker>
@@ -229,6 +102,7 @@ const CollisionTileLabelPicker = ({
             icon: value.icon,
             color: value.color,
             flag: value.flag,
+            mask: value.mask
           });
         }}
       />
@@ -246,6 +120,7 @@ const CollisionTileLabelPicker = ({
             color: e.currentTarget.value,
             icon: value.icon,
             flag: value.flag,
+            mask: value.mask
           });
         }}
       />
