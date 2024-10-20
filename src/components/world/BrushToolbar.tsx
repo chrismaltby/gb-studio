@@ -244,7 +244,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   const highlightPalette = useHiglightPalette();
 
-  const setSelectedPalette = //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!
+  const setSelectedPalette =
     (index: number) =>
     (e: KeyboardEvent | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (showPalettes) {

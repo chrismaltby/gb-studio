@@ -2,22 +2,7 @@ import React, { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { CollisionTileLabel } from "shared/lib/resources/types";
-import { COLLISIONS_EXTRA_SYMBOLS, defaultCollisionTileLabels } from "consts";
-import {
-  BrushToolbarTileSolidIcon,
-  BrushToolbarTileTopIcon,
-  BrushToolbarTileBottomIcon,
-  BrushToolbarTileLeftIcon,
-  BrushToolbarTileRightIcon,
-  BrushToolbarLadderTileIcon,
-  BrushToolbarTileSlope45RightIcon,
-  BrushToolbarTileSlope45LeftIcon,
-  BrushToolbarTileSlope22RightBottomIcon,
-  BrushToolbarTileSlope22RightTopIcon,
-  BrushToolbarTileSlope22LeftTopIcon,
-  BrushToolbarTileSlope22LeftBottomIcon,
-  BrushToolbarExtraTileIcon,
-} from "components/world/BrushToolbarIcons";
+import { defaultCollisionTileLabels } from "consts";
 import { Input } from "ui/form/Input";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
