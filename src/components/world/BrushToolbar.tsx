@@ -216,16 +216,16 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   );
 
   const tileTypes = useMemo(
-    () => collisionTileLabels.map((t) => {
-      const name = t.name && t.name.trim().length > 0 ? l10n(t.name as L10NKey) : undefined;
-      const icon = t.icon ? <BrushToolbarExtraTileIcon $value={t.icon[0]} $color={t.color}/> : getTileIcon(t);
+    () => collisionTileLabels.map((tile, index) => {
+      const name = tile.name && tile.name.trim().length > 0 ? l10n(tile.name as L10NKey, {tile: index+1}) : undefined; //NOTE: do I need to put a default value here? -NB
+      const icon = tile.icon ? <BrushToolbarExtraTileIcon $value={tile.icon[0]} $color={tile.color}/> : getTileIcon(tile);
       
       return {
-        key: t.key,
-        flag: t.flag,
-        mask: t.mask,
+        key: tile.key,
+        flag: tile.flag,
+        mask: tile.mask,
         name: name,
-        color: t.color,
+        color: tile.color,
         icon: icon,
       };
     }),
@@ -549,25 +549,23 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         {showPalettes && <FloatingPanelDivider />}
         {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
           <>
-            {tileTypes.map((tileType, tileTypeIndex) => (
-              <>
+            {tileTypes.map((tileType, tileTypeIndex) => {
+              if (!showCollisionSlopeTiles && tileType.key?.startsWith("slope_")) return ( <></> );
+              if (!showCollisionExtraTiles && tileType.key?.startsWith("spare_")) return ( <></> );
+              return ( <>
                 {tileTypeIndex > 0 && tileType.mask != tileTypes[tileTypeIndex-1].mask && <FloatingPanelDivider />}
                 <Button
                   variant="transparent"
-                  key={tileType.name}
+                  key={tileType.key}
                   onClick={setSelectedPalette(tileTypeIndex)}
                   active={tileType.flag === selectedTileType}
-                  title={`${tileType.name} (${tileTypeIndex + 1})`}
+                  title={tileTypeIndex < 6 ? `${tileType.name} (${tileTypeIndex + 1})` : tileType.name}
                 >
                   {tileType.icon}
                 </Button>
-              </>
-            ))}
-
-            {/* {showCollisionSlopeTiles && ( */}
-             
-            {/* {showCollisionExtraTiles && ( */}
-
+                </>
+              );
+            })}
             <FloatingPanelDivider />
           </>
         )}

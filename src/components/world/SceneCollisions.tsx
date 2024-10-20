@@ -133,7 +133,7 @@ const SceneCollisions = ({
   const letters = useMemo(
     () =>
       collisionTileLabels.map((s) =>
-        s.name && s.name.length > 0 ? s.name[0] : undefined
+        s.icon && s.icon.length > 0 ? s.icon[0] : undefined
       ),
     [collisionTileLabels]
   );
