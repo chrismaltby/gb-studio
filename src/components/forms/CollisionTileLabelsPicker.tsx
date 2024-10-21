@@ -228,6 +228,7 @@ const CollisionTileLabelPicker = ({
             name: e.currentTarget.value,
             icon: value.icon,
             color: value.color,
+            flag: value.flag,
           });
         }}
       />
@@ -244,6 +245,7 @@ const CollisionTileLabelPicker = ({
             name: value.name,
             color: e.currentTarget.value,
             icon: value.icon,
+            flag: value.flag,
           });
         }}
       />
