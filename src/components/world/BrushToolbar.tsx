@@ -33,17 +33,9 @@ import {
   COLLISION_LEFT,
   COLLISION_RIGHT,
   COLLISION_ALL,
-  TILE_PROP_LADDER,
   TILE_COLOR_PROP_PRIORITY,
-  COLLISION_SLOPE_45_RIGHT,
-  COLLISION_SLOPE_22_RIGHT_BOT,
-  COLLISION_SLOPE_22_RIGHT_TOP,
-  COLLISION_SLOPE_45_LEFT,
-  COLLISION_SLOPE_22_LEFT_BOT,
-  COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
-  COLLISIONS_EXTRA_SYMBOLS,
   defaultCollisionTileLabels,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
@@ -211,10 +203,13 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const collisionLayerOpacity = useAppSelector(
     (state) => state.project.present.settings.collisionLayerOpacity
   );
-  const collisionTileLabels = useAppSelector(
-    (state) => state.project.present.settings.collisionTileLabels
-  );
-
+  const collisionTileLabels = useAppSelector((state) => {
+    if (!scene || !scene.type || !state.engine.sceneTypes) return defaultCollisionTileLabels;
+    const key =  scene.type || "";
+    const sceneType = state.engine.sceneTypes.find(s => s.key == key); 
+    if (sceneType && sceneType.collisionTileLabels) return sceneType.collisionTileLabels;
+    return defaultCollisionTileLabels;
+  });
   const tileTypes = useMemo(
     () => collisionTileLabels.map((tile, index) => {
       const name = tile.name && tile.name.trim().length > 0 ? l10n(tile.name as L10NKey, {tile: index+1}) : undefined; //NOTE: do I need to put a default value here? -NB

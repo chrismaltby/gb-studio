@@ -691,6 +691,7 @@ const SceneView = memo(
                 width={scene.width}
                 height={scene.height}
                 collisions={scene.collisions}
+                sceneTypeKey={scene.type}
               />
               {selected && slopePreview && (
                 <SceneSlopePreview

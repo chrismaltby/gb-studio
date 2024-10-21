@@ -158,8 +158,8 @@ const CollisionTileLabelPicker = ({
 
 export const CollisionTileLabelsPicker = () => {
   const dispatch = useAppDispatch();
-  const collisionTileLabels = useAppSelector(
-    (state) => state.project.present.settings.collisionTileLabels
+  const collisionTileLabels = useAppSelector(//TODO: replace with engine settings
+    (state) => defaultCollisionTileLabels//state.project.present.settings.collisionTileLabels
   );
 
   return (
@@ -173,11 +173,11 @@ export const CollisionTileLabelsPicker = () => {
             const newCollisionTileLabels = collisionTileLabels.map((t) =>
               t.key === newValue.key ? newValue : t
             );
-            dispatch(
-              settingsActions.editSettings({
-                collisionTileLabels: newCollisionTileLabels,
-              })
-            );
+            // dispatch(
+            //   settingsActions.editSettings({
+            //     collisionTileLabels: newCollisionTileLabels,
+            //   })
+            // );
           }}
         />
       ))}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useAppSelector } from "store/hooks";
 import { CollisionTileLabel } from "shared/lib/resources/types";
+import { defaultCollisionTileLabels } from "consts";
 
 const TILE_SIZE = 8;
 
@@ -8,12 +9,14 @@ interface SceneCollisionsProps {
   width: number;
   height: number;
   collisions: number[];
+  sceneTypeKey: string;
 }
 
 const SceneCollisions = ({
   width,
   height,
   collisions,
+  sceneTypeKey,
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -22,9 +25,11 @@ const SceneCollisions = ({
       Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
   );
 
-  const collisionTileLabels = useAppSelector(
-    (state) => state.project.present.settings.collisionTileLabels
-  );
+  const collisionTileLabels = useAppSelector((state) => {
+    const sceneType = state.engine.sceneTypes.find(s => s.key == sceneTypeKey); 
+    if (sceneType && sceneType.collisionTileLabels) return sceneType.collisionTileLabels;
+    return defaultCollisionTileLabels;
+  });
 
   const drawLetter = (
     letter: string,
@@ -32,10 +37,10 @@ const SceneCollisions = ({
     x: number,
     y: number
   ) => {
-    ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    const c = ctx.fillStyle as string;
-    const tileAlpha = c.length < 8 ? 1.0 : Number("0x" + c.slice(7, 9)) / 255.0;
-    ctx.fillStyle = tileAlpha < 0.5 ? c.slice(0, 7) + "FF" : "#FFFFFFFF";
+    // ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    // const c = ctx.fillStyle as string;
+    // const tileAlpha = c.length < 8 ? 1.0 : Number("0x" + c.slice(7, 9)) / 255.0;
+    // ctx.fillStyle = tileAlpha < 0.5 ? c.slice(0, 7) + "FF" : "#FFFFFFFF";
     ctx.fillText(letter, x * TILE_SIZE, (y + 0.9) * TILE_SIZE);
   };
 

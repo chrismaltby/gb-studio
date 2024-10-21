@@ -171,7 +171,6 @@ export const defaultProjectSettings: Settings = {
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
   collisionLayerOpacity: 50,
-  collisionTileLabels: defaultCollisionTileLabels,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
