@@ -71,7 +71,7 @@ const main = async (
     sceneTypes,
     tmpPath,
     outputRoot,
-    debugEnabled: true,
+    debugEnabled: project.settings.debuggerEnabled,
     make: command !== "export",
     progress,
     warnings,

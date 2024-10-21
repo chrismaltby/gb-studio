@@ -52,7 +52,7 @@ void projectiles_update(void) NONBANKED {
             projectile->frame++;
             // Check reached end of animation
             if (projectile->frame == projectile->frame_end) {
-                if (!projectile->anim_noloop) {
+                if (!projectile->def.anim_noloop) {
                     projectile->frame = projectile->frame_start;
                 } else {
                     projectile->frame--;
@@ -71,7 +71,7 @@ void projectiles_update(void) NONBANKED {
                 if ((hit_actor->script.bank) && (hit_actor->hscript_hit & SCRIPT_TERMINATED)) {
                     script_execute(hit_actor->script.bank, hit_actor->script.ptr, &(hit_actor->hscript_hit), 1, (UWORD)(projectile->def.collision_group));
                 }
-                if (!projectile->strong) {
+                if (!projectile->def.strong) {
                     // Remove projectile
                     next = projectile->next;
                     LL_REMOVE_ITEM(projectiles_active_head, projectile, prev_projectile);
@@ -149,7 +149,7 @@ void projectiles_render(void) NONBANKED {
     SWITCH_ROM(_save_bank);
 }
 
-void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle, UBYTE flags) BANKED {
+void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle) BANKED {
     projectile_t *projectile = projectiles_inactive_head;
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));
@@ -165,10 +165,6 @@ void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle, UBYTE flags) BA
                 dir = DIR_RIGHT;
             }
         }
-
-        // set projectile flags
-        projectile->anim_noloop = (flags & PROJECTILE_ANIM_NOLOOP);
-        projectile->strong = (flags & PROJECTILE_STRONG);
 
         // set animation
         projectile->frame = projectile->def.animations[dir].start;

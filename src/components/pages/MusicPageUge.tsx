@@ -40,7 +40,7 @@ const ContentWrapper = styled.div`
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
-  background: ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
   color: ${(props) => props.theme.colors.text};
   position: relative;
   display: flex;
@@ -327,7 +327,7 @@ const MusicPageUge = () => {
               flex: "1 1 0",
               minWidth: 0,
               overflow: "hidden",
-              background: themeContext?.colors.document.background,
+              background: themeContext?.colors.background,
               color: themeContext?.colors.text,
               height: windowHeight - 38,
               position: "relative",

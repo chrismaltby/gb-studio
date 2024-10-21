@@ -46,6 +46,7 @@ import {
   CreditsSubHeading,
   CreditsTitle,
 } from "ui/splash/credits/Credits";
+import type { TemplatePlugin } from "lib/templates/templateManager";
 
 declare const DOCS_URL: string;
 
@@ -118,6 +119,7 @@ export const Splash = () => {
   const [section, setSection] = useState<SplashTabSection>();
   const [openCredits, setOpenCredits] = useState(false);
   const [recentProjects, setRecentProjects] = useState<RecentProjectData[]>([]);
+  const [templatePlugins, setTemplatePlugins] = useState<TemplatePlugin[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
   const [path, setPath] = useState<string>("");
   const [nameError, setNameError] = useState("");
@@ -131,6 +133,7 @@ export const Splash = () => {
     async function fetchData() {
       setRecentProjects((await API.project.getRecentProjects()).reverse());
       setPath(await getLastUsedPath());
+      setTemplatePlugins(await API.templates.getTemplatesList());
       const urlParams = new URLSearchParams(window.location.search);
       const forceTab = urlParams.get("tab");
       const initialTab = toSplashTab(forceTab || (await getLastUsedTab()));
@@ -143,6 +146,13 @@ export const Splash = () => {
   useEffect(() => {
     API.app.getPatrons().then(setPatrons);
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = API.events.templates.templatesListChanged.subscribe(
+      (_, templatePlugins) => setTemplatePlugins(templatePlugins)
+    );
+    return unsubscribe;
+  });
 
   const templates: TemplateInfo[] = useMemo(
     () => [
@@ -211,6 +221,11 @@ export const Splash = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (creating) {
+      return;
+    }
+
     if (!name) {
       setNameError(l10n("ERROR_PLEASE_ENTER_PROJECT_NAME"));
       return;
@@ -319,7 +334,7 @@ export const Splash = () => {
 
         {section === "new" && (
           <SplashContent>
-            <SplashForm onSubmit={!creating ? onSubmit : undefined}>
+            <SplashForm onSubmit={onSubmit}>
               <FormRow>
                 <TextField
                   name="name"
@@ -353,6 +368,7 @@ export const Splash = () => {
                   <SplashTemplateSelect
                     name="template"
                     templates={templates}
+                    templatePlugins={templatePlugins}
                     value={templateId}
                     onChange={setTemplateId}
                   />

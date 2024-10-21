@@ -35,7 +35,7 @@ const FlexWrapper = styled.div`
 
 const UsesCollapsedWrapper = styled.div`
   position: sticky;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};

@@ -30,6 +30,7 @@ import {
   PrecompiledEmote,
   PrecompiledTilesetData,
   PrecompiledBackground,
+  PrecompiledProjectile,
 } from "./generateGBVMData";
 import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
 import {
@@ -134,6 +135,11 @@ interface ScriptBuilderFunctionArgLookup {
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
+export interface GlobalProjectiles {
+  symbol: string;
+  projectiles: PrecompiledProjectile[];
+}
+
 export interface ScriptBuilderOptions {
   scriptEventHandlers: ScriptEventHandlers;
   context: ScriptEditorCtxType;
@@ -178,6 +184,7 @@ export interface ScriptBuilderOptions {
     }
   >;
   symbols: Record<string, string>;
+  globalProjectiles: GlobalProjectiles[];
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
   compiledCustomEventScriptCache: Record<
@@ -413,15 +420,6 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
   );
 };
 
-const toProjectileFlags = (destroyOnHit: boolean, loopAnim: boolean) => {
-  return unionFlags(
-    ([] as string[]).concat(
-      !destroyOnHit ? ".PROJECTILE_STRONG" : [],
-      !loopAnim ? ".PROJECTILE_ANIM_ONCE" : []
-    )
-  );
-};
-
 const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
   if (priority === "low") {
     return ".SFX_PRIORITY_MINIMAL";
@@ -598,8 +596,10 @@ export const toProjectileHash = ({
   spriteStateId,
   speed,
   animSpeed,
+  loopAnim,
   lifeTime,
   initialOffset,
+  destroyOnHit,
   collisionGroup,
   collisionMask,
 }: {
@@ -607,8 +607,10 @@ export const toProjectileHash = ({
   spriteStateId: string;
   speed: number;
   animSpeed: number;
+  loopAnim: boolean;
   lifeTime: number;
   initialOffset: number;
+  destroyOnHit: boolean;
   collisionGroup: string;
   collisionMask: string[];
 }) =>
@@ -618,8 +620,10 @@ export const toProjectileHash = ({
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask: [...collisionMask].sort(),
     })
@@ -687,6 +691,7 @@ class ScriptBuilder {
       additionalScripts: options.additionalScripts || {},
       additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
+      globalProjectiles: options.globalProjectiles || [],
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
@@ -1843,6 +1848,16 @@ class ScriptBuilder {
 
   _projectileLaunch = (index: number, addr: string) => {
     this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
+  };
+
+  _projectileLoad = (destIndex: number, srcIndex: number, symbol: string) => {
+    this._addCmd(
+      "VM_PROJECTILE_LOAD_TYPE",
+      destIndex,
+      srcIndex,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
   };
 
   _spritesHide = () => {
@@ -3650,8 +3665,10 @@ extern void __mute_mask_${symbol};
     spriteStateId: string,
     speed: number,
     animSpeed: number,
+    loopAnim: boolean,
     lifeTime: number,
     initialOffset: number,
+    destroyOnHit: boolean,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -3661,14 +3678,94 @@ extern void __mute_mask_${symbol};
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask,
     });
     const projectileHashes = scene.projectiles.map((p) => p.hash);
     const projectileIndex = projectileHashes.indexOf(projectileHash);
     return projectileIndex;
+  };
+
+  getGlobalProjectile = (
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    loopAnim: boolean,
+    lifeTime: number,
+    initialOffset: number,
+    destroyOnHit: boolean,
+    collisionGroup: string,
+    collisionMask: string[]
+  ): { symbol: string; index: number } => {
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask,
+    });
+
+    // Check cached projectiles first
+    for (const projectiles of this.options.globalProjectiles) {
+      const index = projectiles.projectiles.findIndex(
+        (p) => p.hash === projectileHash
+      );
+      if (index > -1) {
+        return {
+          symbol: projectiles.symbol,
+          index,
+        };
+      }
+    }
+
+    // Not found add to existing
+    const lastGlobalProjectiles =
+      this.options.globalProjectiles[this.options.globalProjectiles.length - 1];
+
+    const projectile: PrecompiledProjectile = {
+      hash: projectileHash,
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask,
+    };
+
+    if (lastGlobalProjectiles && lastGlobalProjectiles.projectiles.length < 5) {
+      lastGlobalProjectiles.projectiles.push(projectile);
+      return {
+        symbol: lastGlobalProjectiles.symbol,
+        index: lastGlobalProjectiles.projectiles.length - 1,
+      };
+    }
+
+    // No existing global projectiles array to add to, make a new one
+
+    const symbol = this._getAvailableSymbol(
+      `global_projectiles_${this.options.globalProjectiles.length}`
+    );
+
+    this.options.globalProjectiles.push({
+      symbol,
+      projectiles: [projectile],
+    });
+
+    return { symbol, index: 0 };
   };
 
   _rpnProjectilePosArgs = (actorRef: string, x = 0, y = 0) => {
@@ -3689,19 +3786,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    direction: string,
-    destroyOnHit = false,
-    loopAnim = false
+    direction: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(dirToAngle(direction))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(dirToAngle(direction)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3709,19 +3801,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number,
-    destroyOnHit = false,
-    loopAnim = false
+    angle: number
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(Math.round(angle % 256))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(Math.round(angle % 256)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3729,39 +3816,31 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string,
-    destroyOnHit = false,
-    loopAnim = false
+    angleVariable: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .refVariable(angleVariable)
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.refVariable(angleVariable).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
   launchProjectileInSourceActorDirection = (
     projectileIndex: number,
     x = 0,
-    y = 0,
-    destroyOnHit = false,
-    loopAnim = false
+    y = 0
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
     this._actorGetAngle(actorRef, ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3769,21 +3848,18 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    actorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
     this.setActorId(".ARG1", actorId);
     this._actorGetAngle(".ARG1", ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3791,9 +3867,7 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    otherActorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    otherActorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -3813,10 +3887,39 @@ extern void __mute_mask_${symbol};
       .int16(8 * 16)
       .operator(".DIV")
       .operator(".ATAN2")
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+    this._addNL();
+  };
+
+  loadProjectile = (
+    index: number,
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    loopAnim: boolean,
+    lifeTime: number,
+    initialOffset: number,
+    destroyOnHit: boolean,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { symbol, index: srcIndex } = this.getGlobalProjectile(
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask
+    );
+    this._addComment("Load Projectile Into Slot");
+    this._projectileLoad(index, srcIndex, symbol);
     this._addNL();
   };
 

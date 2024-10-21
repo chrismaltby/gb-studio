@@ -10,17 +10,15 @@ const lightThemeWin: ThemeInterface = {
       background: "#ffffff",
       inactiveBackground: "#ffffff",
       border: "#dddddd",
+      button: {
+        ...lightTheme.colors.toolbar.button,
+        border: "#bbbbbb",
+      },
     },
     button: {
       ...lightTheme.colors.button,
-      toolbar: {
-        ...lightTheme.colors.button.toolbar,
-        border: "#bbbbbb",
-        borderTop: "#bbbbbb",
-      },
       background: "#fafafa",
       border: "#bbbbbb",
-      borderTop: "#bbbbbb",
     },
     menu: {
       ...lightTheme.colors.menu,

@@ -245,7 +245,7 @@ const SceneCollisions = ({
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
-          
+
           let bitsUsed = 0;
           for (var tileLabel of sortedTiles) {
             const mask = tileLabel.mask ? tileLabel.mask : tileLabel.flag;

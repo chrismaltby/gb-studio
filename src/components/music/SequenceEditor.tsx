@@ -26,7 +26,7 @@ interface SequenceItemProps {
 }
 
 const Wrapper = styled.div`
-  background-color: ${(props) => props.theme.colors.tracker.background};
+  background-color: ${(props) => props.theme.colors.sidebar.background};
 
   .CustomSelect {
     min-width: 0;

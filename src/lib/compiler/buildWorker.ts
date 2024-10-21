@@ -58,6 +58,7 @@ const buildProject = async ({
   outputRoot,
   buildType,
   make,
+  debugEnabled,
   l10nData,
 }: BuildWorkerData) => {
   // Initialise l10n
@@ -72,7 +73,7 @@ const buildProject = async ({
     scriptEventHandlers,
     sceneTypes,
     tmpPath,
-    debugEnabled: true,
+    debugEnabled,
     progress,
     warnings,
   });

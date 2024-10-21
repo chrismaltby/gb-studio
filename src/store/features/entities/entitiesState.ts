@@ -91,6 +91,7 @@ import {
   updateAllCustomEventsArgs,
   normalizeEntityResources,
   localVariableCodes,
+  normalizeSprite,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -100,10 +101,23 @@ import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
-import { decompressProjectResources } from "shared/lib/resources/compression";
+import {
+  decompress8bitNumberString,
+  decompressProjectResources,
+} from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import { isEqual } from "lodash";
-import { Constant } from "shared/lib/resources/types";
+import {
+  AvatarResourceAsset,
+  CompressedBackgroundResourceAsset,
+  Constant,
+  EmoteResourceAsset,
+  FontResourceAsset,
+  MusicResourceAsset,
+  SoundResourceAsset,
+  SpriteResourceAsset,
+  TilesetResourceAsset,
+} from "shared/lib/resources/types";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -323,14 +337,17 @@ const loadProject: CaseReducer<
 const loadBackground: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Background;
+    data: CompressedBackgroundResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(
     state.backgrounds,
     backgroundsAdapter,
-    action.payload.data,
-    ["id", "symbol"]
+    {
+      ...action.payload.data,
+      tileColors: decompress8bitNumberString(action.payload.data.tileColors),
+    },
+    ["id", "symbol", "autoColor", "tileColors"]
   );
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
@@ -415,13 +432,17 @@ const renamedAsset: CaseReducer<
 const loadSprite: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: SpriteSheetNormalized;
+    data: SpriteResourceAsset;
   }>
 > = (state, action) => {
-  upsertAssetEntity(
+  const normalizedSpriteData = normalizeSprite(action.payload.data);
+  const normalizedSprite =
+    normalizedSpriteData.entities.spriteSheets[normalizedSpriteData.result];
+
+  const didInsert = upsertAssetEntity(
     state.spriteSheets,
     spriteSheetsAdapter,
-    action.payload.data,
+    normalizedSprite,
     [
       "id",
       "symbol",
@@ -436,6 +457,27 @@ const loadSprite: CaseReducer<
       "numTiles",
     ]
   );
+
+  if (didInsert) {
+    // If inserted also insert metasprite + animation data
+    metaspriteTilesAdapter.addMany(
+      state.metaspriteTiles,
+      normalizedSpriteData.entities.metaspriteTiles ?? {}
+    );
+    metaspritesAdapter.addMany(
+      state.metasprites,
+      normalizedSpriteData.entities.metasprites ?? {}
+    );
+    spriteAnimationsAdapter.addMany(
+      state.spriteAnimations,
+      normalizedSpriteData.entities.spriteAnimations ?? {}
+    );
+    spriteStatesAdapter.addMany(
+      state.spriteStates,
+      normalizedSpriteData.entities.spriteStates ?? {}
+    );
+  }
+
   fixAllSpritesWithMissingStates(state);
   ensureSymbolsUnique(state);
 };
@@ -489,7 +531,7 @@ const loadDetectedSprite: CaseReducer<
 const loadMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Music;
+    data: MusicResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.music, musicAdapter, action.payload.data, [
@@ -538,7 +580,7 @@ const setMusicSymbol: CaseReducer<
 const loadSound: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Sound;
+    data: SoundResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.sounds, soundsAdapter, action.payload.data, [
@@ -581,7 +623,7 @@ const setFontSymbol: CaseReducer<
 const loadFont: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Font;
+    data: FontResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.fonts, fontsAdapter, action.payload.data, [
@@ -608,7 +650,7 @@ const removeFont: CaseReducer<
 const loadAvatar: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Avatar;
+    data: AvatarResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, ["id"]);
@@ -645,7 +687,7 @@ const setEmoteSymbol: CaseReducer<
 const loadEmote: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Emote;
+    data: EmoteResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.emotes, emotesAdapter, action.payload.data, [
@@ -685,7 +727,7 @@ const setTilesetSymbol: CaseReducer<
 const loadTileset: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Tileset;
+    data: TilesetResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [

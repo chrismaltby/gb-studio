@@ -2,6 +2,9 @@
 /* eslint-disable camelcase */
 import "@testing-library/jest-dom";
 import APIMock from "./__mocks__/apiMock";
+import * as matchers from "jest-extended";
+
+expect.extend(matchers);
 
 const mockGlobal = global as any;
 

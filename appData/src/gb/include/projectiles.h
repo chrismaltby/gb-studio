@@ -16,9 +16,6 @@ void projectiles_init(void) BANKED;
 void projectiles_update(void) NONBANKED;
 void projectiles_render(void) NONBANKED;
 
-#define PROJECTILE_ANIM_NOLOOP 0x01
-#define PROJECTILE_STRONG 0x02
-
-void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle, UBYTE flags) BANKED;
+void projectile_launch(UBYTE index, point16_t *pos, UBYTE angle) BANKED;
 
 #endif

@@ -89,7 +89,7 @@ const Label = styled.label`
   }
 
   ${Input}:checked + & {
-    color: #fff;
+    color: ${(props) => props.theme.colors.highlightText};
     background: ${(props) => props.theme.colors.highlight};
     z-index: 1;
   }
@@ -106,7 +106,7 @@ const Label = styled.label`
   }
 
   ${Input}:checked + & svg {
-    fill: #fff;
+    fill: ${(props) => props.theme.colors.highlightText};
   }
 `;
 
