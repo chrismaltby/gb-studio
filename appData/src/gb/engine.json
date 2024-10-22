@@ -218,7 +218,14 @@
     {
       "key": "TOPDOWN",
       "label": "GAMETYPE_TOP_DOWN",
-      "files": ["include/states/topdown.h", "src/states/topdown.c"]
+      "files": ["include/states/topdown.h", "src/states/topdown.c"],
+      "collisionTileLabels": [
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID" },
+        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP" },
+        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM" },
+        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT" },
+        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT" }
+      ]
     },
     {
       "key": "PLATFORM",
@@ -228,22 +235,38 @@
     {
       "key": "ADVENTURE",
       "label": "GAMETYPE_ADVENTURE",
-      "files": ["include/states/adventure.h", "src/states/adventure.c"]
+      "files": ["include/states/adventure.h", "src/states/adventure.c"],
+      "collisionTileLabels": [
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID" },
+        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP" },
+        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM" },
+        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT" },
+        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT" }
+      ]
     },
     {
       "key": "SHMUP",
       "label": "GAMETYPE_SHMUP",
-      "files": ["include/states/shmup.h", "src/states/shmup.c"]
+      "files": ["include/states/shmup.h", "src/states/shmup.c"],
+      "collisionTileLabels": [
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID" },
+        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP" },
+        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM" },
+        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT" },
+        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT" }
+      ]
     },
     {
       "key": "POINTNCLICK",
       "label": "GAMETYPE_POINT_N_CLICK",
-      "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"]
+      "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"],
+      "collisionTileLabels": []
     },
     {
       "key": "LOGO",
       "label": "GAMETYPE_LOGO",
-      "files": ["include/states/logo.h", "src/states/logo.c"]
+      "files": ["include/states/logo.h", "src/states/logo.c"],
+      "collisionTileLabels": []
     }
   ]
 }
