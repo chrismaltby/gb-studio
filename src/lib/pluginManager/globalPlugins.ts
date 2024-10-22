@@ -9,6 +9,7 @@ import { readJSON } from "fs-extra";
 import { guardAssetWithinProject } from "lib/helpers/assets";
 import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
 import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
+import { pathToPosix } from "shared/lib/helpers/path";
 
 const rmdir = promisify(rimraf);
 
@@ -37,7 +38,7 @@ export const getPluginsInstalledGlobally = async () => {
       const pluginJSON = await readJSON(pluginPath);
       if ("version" in pluginJSON && typeof pluginJSON.version === "string") {
         plugins.push({
-          path: relative(globalPluginsPath, pluginPath),
+          path: pathToPosix(relative(globalPluginsPath, pluginPath)),
           version: pluginJSON.version,
         });
       }
