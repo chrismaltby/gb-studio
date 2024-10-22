@@ -242,12 +242,13 @@ export const BrushToolbarExtraTileIcon = styled.div<BrushToolbarExtraTileIconPro
     align-items: center;
     justify-content: center;
     font: 16px "Public Pixel";
-    background-color: ${(props) => props.$color};
-    color: ${(props) => {
+    background-color: ${(props) => {
       const c = props.$color;
       const a = c.length <= 7 ? 1.0 : Number("0x" + c.slice(7, 9)) / 255.0;
-      return a < 0.8 ? c.slice(0, 7) + "FF" : "#FFFFFFFF";
+      const aHex = Math.floor(a * 128).toString(16);
+      return c.slice(0, 7) + aHex;
     }};
+    color: ${(props) => props.$color};
   }
   ${brushToolbarCollisionTileStyles};
 `;
