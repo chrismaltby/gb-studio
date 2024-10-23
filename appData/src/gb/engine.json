@@ -220,11 +220,11 @@
       "label": "GAMETYPE_TOP_DOWN",
       "files": ["include/states/topdown.h", "src/states/topdown.c"],
       "collisionTileLabels": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID" },
-        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP" },
-        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM" },
-        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT" },
-        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT" }
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
+        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000" },
+        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF" },
+        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT", "icon": "E0E0E0E0E0E0E0E0" },
+        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT",  "icon": "0707070707070707" }
       ]
     },
     {

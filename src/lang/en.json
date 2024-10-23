@@ -592,6 +592,7 @@
   "FIELD_COLLISION_RIGHT": "Collision Right",
   "FIELD_COLLISION_SPARE": "Spare {tile}",
   "FIELD_COLLISION_LADDER": "Ladder",
+  "FIELD_COLLISION_TILE_N": "Collision Tile {tile}",
   "FIELD_RESET_PALETTE": "Reset Palette",
   "FIELD_REMOVE_PALETTE": "Remove Palette",
   "FIELD_DEFAULT_BACKGROUND_PALETTES": "Default Background Palettes",

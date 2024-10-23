@@ -58,28 +58,13 @@ import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
-import {
-  BrushToolbarExtraTileIcon,
-  BrushToolbarLadderTileIcon,
-  BrushToolbarTileBottomIcon,
-  BrushToolbarTileLeftIcon,
-  BrushToolbarTileRightIcon,
-  BrushToolbarTileSlope22LeftBottomIcon,
-  BrushToolbarTileSlope22LeftTopIcon,
-  BrushToolbarTileSlope22RightBottomIcon,
-  BrushToolbarTileSlope22RightTopIcon,
-  BrushToolbarTileSlope45LeftIcon,
-  BrushToolbarTileSlope45RightIcon,
-  BrushToolbarTileSolidIcon,
-  BrushToolbarTileTopIcon,
-} from "./BrushToolbarIcons";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { StyledButton } from "ui/buttons/style";
 import { Slider } from "ui/form/Slider";
-import { CollisionTileLabel } from "shared/lib/resources/types";
 import { StyledFloatingPanel } from "ui/panels/style";
+import { CollisionTileIcon } from "components/collisions/CollisionTileIcon";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -94,32 +79,6 @@ const collisionDirectionFlags = [
   COLLISION_LEFT,
   COLLISION_RIGHT,
 ];
-
-export const getTileIcon = (t: CollisionTileLabel) => {
-  switch (t.key) {
-    case "solid": return <BrushToolbarTileSolidIcon $color={t.color}/>
-    case "top": return <BrushToolbarTileTopIcon $color={t.color}/>
-    case "bottom": return <BrushToolbarTileBottomIcon $color={t.color}/>
-    case "left": return <BrushToolbarTileLeftIcon $color={t.color}/>
-    case "right": return <BrushToolbarTileRightIcon $color={t.color}/>
-    case "ladder": return <BrushToolbarLadderTileIcon $color={t.color}/>
-    case "slope_45_right": return <BrushToolbarTileSlope45RightIcon $color={t.color}/>
-    case "slope_45_left": return <BrushToolbarTileSlope45LeftIcon $color={t.color}/>
-    case "slope_22_right_bot": return <BrushToolbarTileSlope22RightBottomIcon $color={t.color}/>
-    case "slope_22_right_top": return <BrushToolbarTileSlope22RightTopIcon $color={t.color}/>
-    case "slope_22_left_top": return <BrushToolbarTileSlope22LeftTopIcon $color={t.color}/>
-    case "slope_22_left_bot": return <BrushToolbarTileSlope22LeftBottomIcon $color={t.color}/>
-    case "spare_08": return <BrushToolbarExtraTileIcon $value={"8"} $color={t.color}/>
-    case "spare_09": return <BrushToolbarExtraTileIcon $value={"9"} $color={t.color}/>
-    case "spare_10": return <BrushToolbarExtraTileIcon $value={"A"} $color={t.color}/>
-    case "spare_11": return <BrushToolbarExtraTileIcon $value={"B"} $color={t.color}/>
-    case "spare_12": return <BrushToolbarExtraTileIcon $value={"C"} $color={t.color}/>
-    case "spare_13": return <BrushToolbarExtraTileIcon $value={"D"} $color={t.color}/>
-    case "spare_14": return <BrushToolbarExtraTileIcon $value={"E"} $color={t.color}/>
-    case "spare_15": return <BrushToolbarExtraTileIcon $value={"F"} $color={t.color}/>
-    default: return <BrushToolbarExtraTileIcon $value={""} $color={t.color}/>
-  }
-}
 
 function useHiglightPalette() {
   const hoverScene = useAppSelector((state) =>
@@ -239,26 +198,30 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     (state) => state.project.present.settings.collisionLayerOpacity
   );
   const collisionTileLabels = useAppSelector((state) => {
-    if (!scene || !scene.type || !state.engine.sceneTypes) return defaultCollisionTileLabels;
-    const key =  scene.type || "";
-    const sceneType = state.engine.sceneTypes.find(s => s.key == key); 
-    if (sceneType && sceneType.collisionTileLabels) return sceneType.collisionTileLabels;
+    if (!scene || !scene.type || !state.engine.sceneTypes)
+      return defaultCollisionTileLabels;
+    const key = scene.type || "";
+    const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
+    if (sceneType && sceneType.collisionTileLabels)
+      return sceneType.collisionTileLabels;
     return defaultCollisionTileLabels;
   });
   const tileTypes = useMemo(
-    () => collisionTileLabels.map((tile, index) => {
-      const name = tile.name && tile.name.trim().length > 0 ? l10n(tile.name as L10NKey, {tile: index+1}) : undefined; //NOTE: do I need to put a default value here? -NB
-      const icon = tile.icon ? <BrushToolbarExtraTileIcon $value={tile.icon[0]} $color={tile.color}/> : getTileIcon(tile);
-      
-      return {
-        key: tile.key,
-        flag: tile.flag,
-        mask: tile.mask,
-        name: name,
-        color: tile.color,
-        icon: icon,
-      };
-    }),
+    () =>
+      collisionTileLabels.map((tile, index) => {
+        const name =
+          tile.name && tile.name.trim().length > 0
+            ? l10n(tile.name as L10NKey, { tile: index + 1 })
+            : l10n("FIELD_COLLISION_TILE_N", { tile: index + 1 });
+        return {
+          key: tile.key,
+          flag: tile.flag,
+          mask: tile.mask,
+          name: name,
+          color: tile.color,
+          icon: tile.icon,
+        };
+      }),
     [collisionTileLabels]
   );
 
@@ -394,7 +357,6 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     },
     [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId]
   );
-
 
   const onChangeCollisionLayerOpacity = useCallback(
     (opacity?: number) => {
@@ -589,19 +551,38 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
             <>
               {tileTypes.map((tileType, tileTypeIndex) => {
-                if (!showCollisionSlopeTiles && tileType.key?.startsWith("slope_")) return ( <></> );
-                if (!showCollisionExtraTiles && tileType.key?.startsWith("spare_")) return ( <></> );
-                return ( <>
-                  {tileTypeIndex > 0 && tileType.mask != tileTypes[tileTypeIndex-1].mask && <FloatingPanelDivider />}
-                  <Button
-                    variant="transparent"
-                    key={tileType.key}
-                    onClick={setSelectedPalette(tileTypeIndex)}
-                    active={tileType.flag === selectedTileType}
-                    title={tileTypeIndex < 6 ? `${tileType.name} (${tileTypeIndex + 1})` : tileType.name}
-                  >
-                    {tileType.icon}
-                  </Button>
+                if (
+                  !showCollisionSlopeTiles &&
+                  tileType.key?.startsWith("slope_")
+                )
+                  return <></>;
+                if (
+                  !showCollisionExtraTiles &&
+                  tileType.key?.startsWith("spare_")
+                )
+                  return <></>;
+                return (
+                  <>
+                    {tileTypeIndex > 0 &&
+                      tileType.mask !== tileTypes[tileTypeIndex - 1].mask && (
+                        <FloatingPanelDivider />
+                      )}
+                    <Button
+                      variant="transparent"
+                      key={tileType.key}
+                      onClick={setSelectedPalette(tileTypeIndex)}
+                      active={tileType.flag === selectedTileType}
+                      title={
+                        tileTypeIndex < 6
+                          ? `${tileType.name} (${tileTypeIndex + 1})`
+                          : tileType.name
+                      }
+                    >
+                      <CollisionTileIcon
+                        icon={tileType.icon}
+                        color={tileType.color}
+                      />
+                    </Button>
                   </>
                 );
               })}
