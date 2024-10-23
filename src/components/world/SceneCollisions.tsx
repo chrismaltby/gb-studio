@@ -7,8 +7,9 @@ import {
   defaultCollisionTileLabels,
 } from "consts";
 import { renderCollisionTileIcon } from "shared/lib/collisions/collisionTileIcon";
+import { decHexVal } from "shared/lib/helpers/8bit";
 
-const TILE_SIZE = 8;
+const TILE_SIZE = 16;
 
 interface SceneCollisionsProps {
   width: number;
@@ -49,7 +50,33 @@ const SceneCollisions = ({
       tile.icon ?? defaultCollisionTileIcon,
       tile.color ?? defaultCollisionTileColor
     );
-    ctx.drawImage(tileIcon, xi * TILE_SIZE, yi * TILE_SIZE);
+    ctx.drawImage(
+      tileIcon,
+      0,
+      0,
+      8,
+      8,
+      xi * TILE_SIZE,
+      yi * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE
+    );
+  };
+
+  const drawLetter = (
+    letter: string,
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number
+  ) => {
+    ctx.textBaseline = "middle";
+    const tx = x * TILE_SIZE;
+    const ty = (y + 0.5) * TILE_SIZE;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1;
+    ctx.strokeText(letter, tx, ty);
+    ctx.fillStyle = "white";
+    ctx.fillText(letter, tx, ty);
   };
 
   useEffect(() => {
@@ -59,6 +86,9 @@ const SceneCollisions = ({
       const ctx = canvas.current.getContext("2d");
 
       if (!ctx) return;
+
+      ctx.font = "8px Public Pixel";
+      ctx.imageSmoothingEnabled = false;
 
       const sortedTiles = collisionTileLabels.map((t) => t);
       sortedTiles.sort((a, b) => {
@@ -90,6 +120,9 @@ const SceneCollisions = ({
               bitsUsed |= mask;
             }
           }
+          if (tile !== 0 && tile !== undefined) {
+            drawLetter(decHexVal(tile), ctx, xi, yi);
+          }
         }
       }
     }
@@ -102,6 +135,8 @@ const SceneCollisions = ({
       height={height * TILE_SIZE}
       style={{
         opacity: collisionLayerOpacity,
+        width: width * TILE_SIZE * 0.5,
+        imageRendering: "pixelated",
       }}
     />
   );
