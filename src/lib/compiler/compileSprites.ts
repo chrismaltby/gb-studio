@@ -146,6 +146,9 @@ export const compileSprite = async (
           state.animationType,
           state.flipLeft,
           (animation, flip) => {
+            if (!animation) {
+              return [];
+            }
             return animation.frames.map((frame) => {
               let currentX = 0;
               let currentY = 0;

@@ -11,7 +11,10 @@ import {
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { detectClassic } from "renderer/lib/sprites/detect";
-import { denormalizeSprite } from "shared/lib/entities/entitiesHelpers";
+import {
+  denormalizeSprite,
+  matchAssetEntity,
+} from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
@@ -114,12 +117,37 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
     if (entitiesActions.loadSprite.match(action)) {
       const state = store.getState();
+
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
         action.payload.data.id
       );
+
       if (spriteSheet) {
-        if (action.payload.data.states.length === 0) {
+        const spriteStateLookup = spriteStateSelectors.selectEntities(state);
+        const spriteAnimationLookup =
+          spriteAnimationSelectors.selectEntities(state);
+        const spriteFrameLookup = metaspriteSelectors.selectEntities(state);
+
+        const spriteStates = spriteSheet.states
+          .map((id) => spriteStateLookup[id])
+          .filter((i) => i);
+        const spriteAnimationIds = spriteStates.map((s) => s.animations).flat();
+        const spriteAnimations = spriteAnimationIds
+          .map((id) => spriteAnimationLookup[id])
+          .filter((i) => i);
+        const spriteFrameIds = spriteAnimations.map((s) => s.frames).flat();
+        const spriteFrames = spriteFrameIds
+          .map((id) => spriteFrameLookup[id])
+          .filter((i) => i);
+
+        const hasNoDefinedTiles = spriteFrames.every(
+          (a) => a.tiles.length === 0
+        );
+
+        // If this is a newly added sprite with no detected animations
+        // then try auto detecting the tile data
+        if (hasNoDefinedTiles) {
           store.dispatch(
             actions.detectSprite({ spriteSheetId: spriteSheet.id })
           );
@@ -127,6 +155,16 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         store.dispatch(
           actions.compileSprite({ spriteSheetId: spriteSheet.id })
         );
+      } else {
+        // Sprite may have been modified with no .gbsres file created yet, try matching on filename
+        // to recompile based on updated image ensuring unique tile count values are accurate
+        const allSprites = spriteSheetSelectors.selectAll(state);
+        const spriteSheet = matchAssetEntity(action.payload.data, allSprites);
+        if (spriteSheet) {
+          store.dispatch(
+            actions.compileSprite({ spriteSheetId: spriteSheet.id })
+          );
+        }
       }
     }
   };

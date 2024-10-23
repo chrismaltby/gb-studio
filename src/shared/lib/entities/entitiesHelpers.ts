@@ -795,6 +795,16 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.sounds, symbols);
 };
 
+export const matchAssetEntity = <
+  A extends Asset & { inode: string },
+  T extends Asset & { inode: string }
+>(
+  entity: A,
+  existingEntities: T[]
+) => {
+  return existingEntities.find(matchAsset(entity));
+};
+
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
   entities: EntityState<T, string>,
   entity: T,
