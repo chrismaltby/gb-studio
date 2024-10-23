@@ -212,6 +212,7 @@ export const defaultCollisionTileLabels: CollisionTileLabel[] = [
     mask: 0xff,
     flag: COLLISION_SLOPE_22_RIGHT_BOT,
     name: "FIELD_COLLISION_SLOPE_22_RIGHT_BOT",
+    icon: "00000000030F3FFF",
   },
   {
     key: "slope_22_right_top",
@@ -219,6 +220,7 @@ export const defaultCollisionTileLabels: CollisionTileLabel[] = [
     mask: 0xff,
     flag: COLLISION_SLOPE_22_RIGHT_TOP,
     name: "FIELD_COLLISION_SLOPE_22_RIGHT_TOP",
+    icon: "030F3FFF00000000",
   },
   {
     key: "slope_22_left_top",
@@ -226,6 +228,7 @@ export const defaultCollisionTileLabels: CollisionTileLabel[] = [
     mask: 0xff,
     flag: COLLISION_SLOPE_22_LEFT_TOP,
     name: "FIELD_COLLISION_SLOPE_22_LEFT_TOP",
+    icon: "C0F0FCFF00000000",
   },
   {
     key: "slope_22_left_bot",
@@ -233,6 +236,7 @@ export const defaultCollisionTileLabels: CollisionTileLabel[] = [
     mask: 0xff,
     flag: COLLISION_SLOPE_22_LEFT_BOT,
     name: "FIELD_COLLISION_SLOPE_22_LEFT_BOT",
+    icon: "00000000C0F0FCFF",
   },
   {
     key: "spare_08",
