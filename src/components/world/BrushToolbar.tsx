@@ -219,8 +219,19 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           icon: tile.icon,
           extra: tile.extra ?? 0,
           multi: tile.multi,
+          group: tile.group,
         };
       }),
+    [collisionTileLabels]
+  );
+
+  const slopesAvailable = useMemo(
+    () => collisionTileLabels.some((tile) => tile.group === "slope"),
+    [collisionTileLabels]
+  );
+
+  const spareAvailable = useMemo(
+    () => collisionTileLabels.some((tile) => tile.group === "spare"),
     [collisionTileLabels]
   );
 
@@ -498,7 +509,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               <SlopeIcon />
             </Button>
           )}
-          {(showPalettes || showTileTypes) && <FloatingPanelDivider />}
+          {(showPalettes ||
+            (showTileTypes && selectedBrush !== BRUSH_SLOPE)) && (
+            <FloatingPanelDivider />
+          )}
           {showPalettes &&
             !background?.autoColor &&
             paletteIndexes.map((paletteIndex) => (
@@ -548,64 +562,87 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           )}
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
             <>
-              {tileTypes.map((tileType, tileTypeIndex) => {
-                const mask = tileType.mask || tileType.flag;
+              {tileTypes
+                .filter((tileType) => {
+                  if (!showCollisionSlopeTiles && tileType.group === "slope") {
+                    return false;
+                  }
+                  if (!showCollisionExtraTiles && tileType.group === "spare") {
+                    return false;
+                  }
+                  return true;
+                })
+                .map((tileType, tileTypeIndex) => {
+                  const mask = tileType.mask || tileType.flag;
 
-                const selected = isCollisionTileActive(
-                  selectedTileType,
-                  mask,
-                  tileType.flag,
-                  tileType.multi
-                );
+                  const selected = isCollisionTileActive(
+                    selectedTileType,
+                    mask,
+                    tileType.flag,
+                    tileType.multi
+                  );
 
-                return (
-                  <Fragment key={tileTypeIndex}>
-                    {tileTypeIndex > 0 &&
-                      tileType.mask !== tileTypes[tileTypeIndex - 1].mask && (
-                        <FloatingPanelDivider />
-                      )}
-                    <Button
-                      variant="transparent"
-                      key={tileType.key}
-                      onClick={setSelectedPalette(tileTypeIndex)}
-                      active={selected}
-                      title={
-                        tileTypeIndex < 6
-                          ? `${tileType.name} (${tileTypeIndex + 1})`
-                          : tileType.name
-                      }
-                    >
-                      <CollisionTileIcon
-                        icon={tileType.icon}
-                        color={tileType.color}
-                      />
-                    </Button>
-                  </Fragment>
-                );
-              })}
-              <FloatingPanelDivider />
+                  return (
+                    <Fragment key={tileTypeIndex}>
+                      {tileTypeIndex > 0 &&
+                        tileType.group !==
+                          tileTypes[tileTypeIndex - 1].group && (
+                          <FloatingPanelDivider />
+                        )}
+                      <Button
+                        variant="transparent"
+                        key={tileType.key}
+                        onClick={setSelectedPalette(tileTypeIndex)}
+                        active={selected}
+                        title={
+                          tileTypeIndex < 6
+                            ? `${tileType.name} (${tileTypeIndex + 1})`
+                            : tileType.name
+                        }
+                      >
+                        <CollisionTileIcon
+                          icon={tileType.icon}
+                          color={tileType.color}
+                        />
+                      </Button>
+                    </Fragment>
+                  );
+                })}
             </>
           )}
-          {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-            >
-              <MenuItem
-                onClick={onToggleViewSlopeTiles}
-                icon={showCollisionSlopeTiles ? <CheckIcon /> : <BlankIcon />}
-              >
-                {l10n("FIELD_VIEW_SLOPE_TILES")}
-              </MenuItem>
-              <MenuItem
-                onClick={onToggleViewExtraTiles}
-                icon={showCollisionExtraTiles ? <CheckIcon /> : <BlankIcon />}
-              >
-                {l10n("FIELD_VIEW_EXTRA_TILES")}
-              </MenuItem>
-            </DropdownButton>
-          )}
+          {selectedBrush !== BRUSH_SLOPE &&
+            showTileTypes &&
+            (slopesAvailable || spareAvailable) && (
+              <>
+                <FloatingPanelDivider />
+                <DropdownButton
+                  size="small"
+                  variant="transparent"
+                  menuDirection="right"
+                >
+                  {slopesAvailable && (
+                    <MenuItem
+                      onClick={onToggleViewSlopeTiles}
+                      icon={
+                        showCollisionSlopeTiles ? <CheckIcon /> : <BlankIcon />
+                      }
+                    >
+                      {l10n("FIELD_VIEW_SLOPE_TILES")}
+                    </MenuItem>
+                  )}
+                  {spareAvailable && (
+                    <MenuItem
+                      onClick={onToggleViewExtraTiles}
+                      icon={
+                        showCollisionExtraTiles ? <CheckIcon /> : <BlankIcon />
+                      }
+                    >
+                      {l10n("FIELD_VIEW_EXTRA_TILES")}
+                    </MenuItem>
+                  )}
+                </DropdownButton>
+              </>
+            )}
         </FloatingPanel>
         <LayerVisibilityPanel>
           {selectedTool === TOOL_COLLISIONS && (

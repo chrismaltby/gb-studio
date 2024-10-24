@@ -592,6 +592,7 @@ export const CollisionTileLabel = Type.Object({
   mask: Type.Optional(Type.Number()),
   extra: Type.Optional(Type.Number()),
   multi: Type.Optional(Type.Boolean()),
+  group: Type.Optional(Type.String()),
 });
 
 export type CollisionTileLabel = Static<typeof CollisionTileLabel>;

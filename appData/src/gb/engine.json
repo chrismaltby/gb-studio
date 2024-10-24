@@ -260,13 +260,17 @@
       "key": "POINTNCLICK",
       "label": "GAMETYPE_POINT_N_CLICK",
       "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"],
-      "collisionTileLabels": []
+      "collisionTileLabels": [
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
+      ]
     },
     {
       "key": "LOGO",
       "label": "GAMETYPE_LOGO",
       "files": ["include/states/logo.h", "src/states/logo.c"],
-      "collisionTileLabels": []
+      "collisionTileLabels": [
+        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
+      ]
     }
   ]
 }
