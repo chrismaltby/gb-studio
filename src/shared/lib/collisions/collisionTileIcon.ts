@@ -1,4 +1,5 @@
 import { TILE_SIZE } from "consts";
+import { CollisionTileDef } from "shared/lib/resources/types";
 
 const collisonTileMaskCache: Record<string, ImageData> = {};
 const collisonTileCache: Record<string, HTMLCanvasElement> = {};
@@ -58,19 +59,18 @@ export const renderCollisionTileIcon = (
 
 export const isCollisionTileActive = (
   value: number,
-  mask: number,
-  flag: number,
-  multi?: boolean
+  tileDef: CollisionTileDef
 ): boolean => {
+  const mask = tileDef.mask || tileDef.flag;
   const maskedValue = value & mask;
-  if (multi) {
+  if (tileDef.multi) {
     return (
       // Full mask not selected
       maskedValue !== mask &&
       // But flag bits are
-      (maskedValue & flag) !== 0
+      (maskedValue & tileDef.flag) !== 0
     );
   } else {
-    return maskedValue === flag;
+    return maskedValue === tileDef.flag;
   }
 };

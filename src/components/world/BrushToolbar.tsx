@@ -202,7 +202,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
     return defaultCollisionTileDefs;
   });
-  const tileTypes = useMemo(
+  const namedCollisionTileDefs = useMemo(
     () =>
       collisionTileDefs.map((tile, index) => {
         const name =
@@ -210,15 +210,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             ? l10n(tile.name as L10NKey, { tile: index + 1 })
             : l10n("FIELD_COLLISION_TILE_N", { tile: index + 1 });
         return {
-          key: tile.key,
-          flag: tile.flag,
-          mask: tile.mask,
+          ...tile,
           name: name,
-          color: tile.color,
-          icon: tile.icon,
-          extra: tile.extra ?? 0,
-          multi: tile.multi,
-          group: tile.group,
         };
       }),
     [collisionTileDefs]
@@ -252,8 +245,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       if (showPalettes) {
         dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
       }
-      if (showTileTypes && tileTypes[index]) {
-        const selectedTile = tileTypes[index];
+      if (showTileTypes && namedCollisionTileDefs[index]) {
+        const selectedTile = namedCollisionTileDefs[index];
         if (!selectedTile) {
           return;
         }
@@ -270,11 +263,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             ) {
               newValue = selectedTileType & mask & ~selectedTile.flag;
             } else {
-              newValue = (selectedTileType & mask) | tileTypes[index].flag;
+              newValue =
+                (selectedTileType & mask) | namedCollisionTileDefs[index].flag;
             }
           }
           // If extra tiles defined also set them on shift click
-          newValue = newValue | selectedTile.extra;
+          if (selectedTile.extra !== undefined) {
+            newValue = newValue | selectedTile.extra;
+          }
         }
 
         dispatch(
@@ -561,47 +557,42 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           )}
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
             <>
-              {tileTypes
-                .filter((tileType) => {
-                  if (!showCollisionSlopeTiles && tileType.group === "slope") {
+              {namedCollisionTileDefs
+                .filter((tileDef) => {
+                  if (!showCollisionSlopeTiles && tileDef.group === "slope") {
                     return false;
                   }
-                  if (!showCollisionExtraTiles && tileType.group === "spare") {
+                  if (!showCollisionExtraTiles && tileDef.group === "spare") {
                     return false;
                   }
                   return true;
                 })
-                .map((tileType, tileTypeIndex) => {
-                  const mask = tileType.mask || tileType.flag;
-
+                .map((tileDef, tileTypeIndex) => {
                   const selected = isCollisionTileActive(
                     selectedTileType,
-                    mask,
-                    tileType.flag,
-                    tileType.multi
+                    tileDef
                   );
-
                   return (
                     <Fragment key={tileTypeIndex}>
                       {tileTypeIndex > 0 &&
-                        tileType.group !==
-                          tileTypes[tileTypeIndex - 1].group && (
+                        tileDef.group !==
+                          namedCollisionTileDefs[tileTypeIndex - 1].group && (
                           <FloatingPanelDivider />
                         )}
                       <Button
                         variant="transparent"
-                        key={tileType.key}
+                        key={tileDef.key}
                         onClick={setSelectedPalette(tileTypeIndex)}
                         active={selected}
                         title={
                           tileTypeIndex < 6
-                            ? `${tileType.name} (${tileTypeIndex + 1})`
-                            : tileType.name
+                            ? `${tileDef.name} (${tileTypeIndex + 1})`
+                            : tileDef.name
                         }
                       >
                         <CollisionTileIcon
-                          icon={tileType.icon}
-                          color={tileType.color}
+                          icon={tileDef.icon}
+                          color={tileDef.color}
                         />
                       </Button>
                     </Fragment>

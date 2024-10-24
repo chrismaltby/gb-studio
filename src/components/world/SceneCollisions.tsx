@@ -96,8 +96,8 @@ const SceneCollisions = ({
       ctx.font = "8px Public Pixel";
       ctx.imageSmoothingEnabled = false;
 
-      const sortedTiles = collisionTileDefs.map((t) => t);
-      sortedTiles.sort((a, b) => {
+      const sortedTileDefs = collisionTileDefs.map((t) => t);
+      sortedTileDefs.sort((a, b) => {
         if (a.mask) {
           if (b.mask) {
             const aCount = a.mask.toString(2).split("1").length - 1;
@@ -118,14 +118,11 @@ const SceneCollisions = ({
           const tile = collisions[collisionIndex] ?? 0;
           let unknownTile = tile !== 0;
 
-          for (const tileLabel of sortedTiles) {
-            const mask = tileLabel.mask ? tileLabel.mask : tileLabel.flag;
-            if (
-              isCollisionTileActive(tile, mask, tileLabel.flag, tileLabel.multi)
-            ) {
-              ctx.fillStyle = tileLabel.color;
-              drawCollisionTile(tileLabel, ctx, xi, yi);
-              if (tileLabel.icon) {
+          for (const tileDef of sortedTileDefs) {
+            if (isCollisionTileActive(tile, tileDef)) {
+              ctx.fillStyle = tileDef.color;
+              drawCollisionTile(tileDef, ctx, xi, yi);
+              if (tileDef.icon) {
                 unknownTile = false;
               }
             }
