@@ -45,7 +45,15 @@ const loadSpriteData =
             name: "",
             animationType: "multi_movement",
             flipLeft: true,
-            animations: [],
+            animations: Array.from(Array(8)).map(() => ({
+              id: uuidv4(),
+              frames: [
+                {
+                  id: uuidv4(),
+                  tiles: [],
+                },
+              ],
+            })),
           },
         ],
         numTiles: 0,

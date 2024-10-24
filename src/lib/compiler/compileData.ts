@@ -1021,7 +1021,7 @@ export const precompileScenes = (
     warnings: (msg: string) => void;
   }
 ) => {
-  const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
+  const scenesData: PrecompiledScene[] = scenes.map((scene) => {
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
@@ -2102,7 +2102,7 @@ const compile = async (
   output["game_globals.h"] = compileGameGlobalsHeader(
     variableAliasLookup,
     projectData.variables.constants,
-	precompiled.stateReferences
+    precompiled.stateReferences
   );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
