@@ -6,7 +6,10 @@ import {
   defaultCollisionTileIcon,
   defaultCollisionTileLabels,
 } from "consts";
-import { renderCollisionTileIcon } from "shared/lib/collisions/collisionTileIcon";
+import {
+  isCollisionTileActive,
+  renderCollisionTileIcon,
+} from "shared/lib/collisions/collisionTileIcon";
 import { decHexVal } from "shared/lib/helpers/8bit";
 
 const TILE_SIZE = 16;
@@ -113,18 +116,25 @@ const SceneCollisions = ({
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
-          const tile = collisions[collisionIndex];
+          const tile = collisions[collisionIndex] ?? 0;
+          let unknownTile = tile !== 0;
 
-          let bitsUsed = 0;
           for (const tileLabel of sortedTiles) {
             const mask = tileLabel.mask ? tileLabel.mask : tileLabel.flag;
-            if ((bitsUsed & mask) === 0 && (tile & mask) === tileLabel.flag) {
+            if (
+              isCollisionTileActive(tile, mask, tileLabel.flag, tileLabel.multi)
+            ) {
               ctx.fillStyle = tileLabel.color;
               drawCollisionTile(tileLabel, ctx, xi, yi);
-              bitsUsed |= mask;
+              if (tileLabel.icon) {
+                unknownTile = false;
+              }
             }
           }
-          if (showCollisionTileValues && tile !== 0 && tile !== undefined) {
+          if (
+            unknownTile ||
+            (showCollisionTileValues && tile !== 0 && tile !== undefined)
+          ) {
             drawLetter(decHexVal(tile), ctx, xi, yi);
           }
         }

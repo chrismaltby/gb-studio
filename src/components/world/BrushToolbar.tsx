@@ -30,13 +30,7 @@ import {
   BRUSH_FILL,
   BRUSH_MAGIC,
   DMG_PALETTE,
-  COLLISION_TOP,
-  COLLISION_BOTTOM,
-  COLLISION_LEFT,
-  COLLISION_RIGHT,
-  COLLISION_ALL,
   TILE_COLOR_PROP_PRIORITY,
-  COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
   defaultCollisionTileLabels,
   defaultProjectSettings,
@@ -67,6 +61,7 @@ import { StyledButton } from "ui/buttons/style";
 import { Slider } from "ui/form/Slider";
 import { StyledFloatingPanel } from "ui/panels/style";
 import { CollisionTileIcon } from "components/collisions/CollisionTileIcon";
+import { isCollisionTileActive } from "shared/lib/collisions/collisionTileIcon";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -74,13 +69,6 @@ interface BrushToolbarProps {
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
-
-const collisionDirectionFlags = [
-  COLLISION_TOP,
-  COLLISION_BOTTOM,
-  COLLISION_LEFT,
-  COLLISION_RIGHT,
-];
 
 function useHiglightPalette() {
   const hoverScene = useAppSelector((state) =>
@@ -229,6 +217,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           name: name,
           color: tile.color,
           icon: tile.icon,
+          extra: tile.extra ?? 0,
+          multi: tile.multi,
         };
       }),
     [collisionTileLabels]
@@ -253,44 +243,35 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
       }
       if (showTileTypes && tileTypes[index]) {
-        if (
-          e.shiftKey &&
-          collisionDirectionFlags.includes(tileTypes[index].flag)
-        ) {
-          if (
-            selectedTileType !== tileTypes[index].flag &&
-            selectedTileType & tileTypes[index].flag
-          ) {
-            dispatch(
-              editorActions.setSelectedTileType({
-                tileType:
-                  selectedTileType & COLLISION_ALL & ~tileTypes[index].flag,
-              })
-            );
-          } else {
-            dispatch(
-              editorActions.setSelectedTileType({
-                tileType:
-                  (selectedTileType & COLLISION_ALL) | tileTypes[index].flag,
-              })
-            );
-          }
-        } else if (
-          e.shiftKey &&
-          COLLISION_SLOPE_VALUES.includes(tileTypes[index].flag)
-        ) {
-          dispatch(
-            editorActions.setSelectedTileType({
-              tileType: tileTypes[index].flag,
-            })
-          );
-        } else {
-          dispatch(
-            editorActions.setSelectedTileType({
-              tileType: tileTypes[index].flag,
-            })
-          );
+        const selectedTile = tileTypes[index];
+        if (!selectedTile) {
+          return;
         }
+
+        let newValue = selectedTile.flag;
+
+        if (e.shiftKey) {
+          if (selectedTile.multi) {
+            // If multi selectable tile toggle on/off when shift clicking
+            const mask = selectedTile.mask ?? 0xff;
+            if (
+              selectedTileType !== selectedTile.flag &&
+              selectedTileType & selectedTile.flag
+            ) {
+              newValue = selectedTileType & mask & ~selectedTile.flag;
+            } else {
+              newValue = (selectedTileType & mask) | tileTypes[index].flag;
+            }
+          }
+          // If extra tiles defined also set them on shift click
+          newValue = newValue | selectedTile.extra;
+        }
+
+        dispatch(
+          editorActions.setSelectedTileType({
+            tileType: newValue,
+          })
+        );
       }
     };
 
@@ -568,16 +549,15 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
             <>
               {tileTypes.map((tileType, tileTypeIndex) => {
-                if (
-                  !showCollisionSlopeTiles &&
-                  tileType.key?.startsWith("slope_")
-                )
-                  return null;
-                if (
-                  !showCollisionExtraTiles &&
-                  tileType.key?.startsWith("spare_")
-                )
-                  return null;
+                const mask = tileType.mask || tileType.flag;
+
+                const selected = isCollisionTileActive(
+                  selectedTileType,
+                  mask,
+                  tileType.flag,
+                  tileType.multi
+                );
+
                 return (
                   <Fragment key={tileTypeIndex}>
                     {tileTypeIndex > 0 &&
@@ -588,7 +568,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                       variant="transparent"
                       key={tileType.key}
                       onClick={setSelectedPalette(tileTypeIndex)}
-                      active={tileType.flag === selectedTileType}
+                      active={selected}
                       title={
                         tileTypeIndex < 6
                           ? `${tileType.name} (${tileTypeIndex + 1})`

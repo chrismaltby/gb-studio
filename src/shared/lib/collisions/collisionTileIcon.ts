@@ -55,3 +55,22 @@ export const renderCollisionTileIcon = (
 
   return canvas;
 };
+
+export const isCollisionTileActive = (
+  value: number,
+  mask: number,
+  flag: number,
+  multi?: boolean
+): boolean => {
+  const maskedValue = value & mask;
+  if (multi) {
+    return (
+      // Full mask not selected
+      maskedValue !== mask &&
+      // But flag bits are
+      (maskedValue & flag) !== 0
+    );
+  } else {
+    return maskedValue === flag;
+  }
+};
