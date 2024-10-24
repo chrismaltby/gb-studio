@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import AutoColorizedImageWorker, {
   AutoColorizedImageResult,
 } from "./AutoColorizedImage.worker";
+import { MonoPalette } from "shared/lib/entities/entitiesTypes";
 
 const workerPool: AutoColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -14,6 +15,7 @@ interface AutoColorizedImageProps {
   src: string;
   tilesSrc?: string;
   previewAsMono?: boolean;
+  monoPalette?: MonoPalette;
 }
 
 const AutoColorizedImage = ({
@@ -22,6 +24,7 @@ const AutoColorizedImage = ({
   src,
   tilesSrc,
   previewAsMono,
+  monoPalette
 }: AutoColorizedImageProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
@@ -65,10 +68,11 @@ const AutoColorizedImage = ({
         width,
         height,
         previewAsMono,
+        monoPalette,
         id: workerId.current,
       });
     }
-  }, [height, src, tilesSrc, width, previewAsMono]);
+  }, [height, src, tilesSrc, width, previewAsMono, monoPalette]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };

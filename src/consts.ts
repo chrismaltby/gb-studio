@@ -115,7 +115,7 @@ export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",
   colors: ["E8F8E0", "B0F088", "509878", "202850"],
-} as Palette;
+} as Palette; //TODO: make this configurable via preferences -NB
 
 export const FLAG_VRAM_BANK_1 = 0x8;
 
@@ -354,6 +354,9 @@ export const defaultProjectSettings: Settings = {
   zoom: 100,
   sgbEnabled: false,
   customHead: "",
+  defaultBGP: [0, 1, 2, 3],
+  defaultOBP0: [0, 0, 1, 3],
+  defaultOBP1: [0, 0, 2, 3],
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",
