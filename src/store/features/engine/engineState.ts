@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import keyBy from "lodash/keyBy";
+import { CollisionTileDef } from "shared/lib/resources/types";
 import projectActions from "store/features/project/projectActions";
 
 export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
@@ -24,6 +25,7 @@ export type SceneTypeSchema = {
   key: string;
   label: string;
   files?: string[];
+  collisionTiles?: CollisionTileDef[];
 };
 
 export interface EngineState {

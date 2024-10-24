@@ -67,6 +67,16 @@ export const AngleIcon = () => (
   </svg>
 );
 
+export const TileValueIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M3 7C3 4.79086 4.79086 3 7 3H17C19.2091 3 21 4.79086 21 7V17C21 19.2091 19.2091 21 17 21H7C4.79086 21 3 19.2091 3 17V7ZM12.5 15.5V8.5H19.5V9.5H14.5V11.5H17.5V12.5H14.5V15.5H12.5ZM5.5 14.5V15.5H11.5V14.5H9.5V8.5H5.5V9.5H7.5V14.5H5.5Z"
+    />
+  </svg>
+);
+
 export const SquareRootIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path

@@ -1,41 +1,89 @@
 import React, { useEffect, useRef } from "react";
-import {
-  COLLISION_TOP,
-  COLLISION_ALL,
-  COLLISION_BOTTOM,
-  COLLISION_LEFT,
-  COLLISION_RIGHT,
-  TILE_PROP_LADDER,
-  TILE_PROPS,
-  COLLISION_SLOPE_45_RIGHT,
-  COLLISION_SLOPE_22_RIGHT_BOT,
-  COLLISION_SLOPE_22_RIGHT_TOP,
-  COLLISION_SLOPE_45_LEFT,
-  COLLISION_SLOPE_22_LEFT_TOP,
-  COLLISION_SLOPE_22_LEFT_BOT,
-  COLLISIONS_EXTRA_SYMBOLS,
-} from "consts";
 import { useAppSelector } from "store/hooks";
+import { CollisionTileDef } from "shared/lib/resources/types";
+import {
+  defaultCollisionTileColor,
+  defaultCollisionTileIcon,
+  defaultCollisionTileDefs,
+} from "consts";
+import {
+  isCollisionTileActive,
+  renderCollisionTileIcon,
+} from "shared/lib/collisions/collisionTiles";
+import { decHexVal } from "shared/lib/helpers/8bit";
 
-const TILE_SIZE = 8;
+const TILE_SIZE = 16;
 
 interface SceneCollisionsProps {
   width: number;
   height: number;
   collisions: number[];
+  sceneTypeKey: string;
 }
 
 const SceneCollisions = ({
   width,
   height,
   collisions,
+  sceneTypeKey,
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
+
+  const showCollisionTileValues = useAppSelector(
+    (state) => state.project.present.settings.showCollisionTileValues
+  );
 
   const collisionLayerOpacity = useAppSelector(
     (state) =>
       Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
   );
+
+  const collisionTileDefs = useAppSelector((state) => {
+    const sceneType = state.engine.sceneTypes.find(
+      (s) => s.key === sceneTypeKey
+    );
+    if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
+    return defaultCollisionTileDefs;
+  });
+
+  const drawCollisionTile = (
+    tile: CollisionTileDef,
+    ctx: CanvasRenderingContext2D,
+    xi: number,
+    yi: number
+  ) => {
+    const tileIcon = renderCollisionTileIcon(
+      tile.icon ?? defaultCollisionTileIcon,
+      tile.color ?? defaultCollisionTileColor
+    );
+    ctx.drawImage(
+      tileIcon,
+      0,
+      0,
+      8,
+      8,
+      xi * TILE_SIZE,
+      yi * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE
+    );
+  };
+
+  const drawLetter = (
+    letter: string,
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number
+  ) => {
+    ctx.textBaseline = "middle";
+    const tx = x * TILE_SIZE;
+    const ty = (y + 0.5) * TILE_SIZE;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.strokeText(letter, tx, ty);
+    ctx.fillStyle = "white";
+    ctx.fillText(letter, tx, ty);
+  };
 
   useEffect(() => {
     if (canvas.current) {
@@ -46,157 +94,49 @@ const SceneCollisions = ({
       if (!ctx) return;
 
       ctx.font = "8px Public Pixel";
+      ctx.imageSmoothingEnabled = false;
+
+      const sortedTileDefs = collisionTileDefs.map((t) => t);
+      sortedTileDefs.sort((a, b) => {
+        if (a.mask) {
+          if (b.mask) {
+            const aCount = a.mask.toString(2).split("1").length - 1;
+            const bCount = b.mask.toString(2).split("1").length - 1;
+            if (aCount > bCount) return -1;
+            else if (bCount > aCount) return 1;
+          } else return 1;
+        } else if (b.mask) return -1;
+
+        const aCount = a.flag.toString(2).split("1").length - 1;
+        const bCount = b.flag.toString(2).split("1").length - 1;
+        return bCount - aCount;
+      });
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
-          const tile = collisions[collisionIndex];
-          const tileprop = tile & TILE_PROPS;
-          if ((tile & COLLISION_ALL) === COLLISION_ALL) {
-            ctx.fillStyle = "rgba(250,40,40,1)";
-            ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-          } else if (tile !== 0) {
-            if (tile & COLLISION_TOP) {
-              ctx.fillStyle = "rgba(40,40,250,1)";
-              ctx.fillRect(
-                xi * TILE_SIZE,
-                yi * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE * 0.4
-              );
-            }
-            if (tile & COLLISION_BOTTOM) {
-              ctx.fillStyle = "rgba(255,250,40,1)";
-              ctx.fillRect(
-                xi * TILE_SIZE,
-                (yi + 0.6) * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE * 0.4
-              );
-            }
-            if (tile & COLLISION_LEFT) {
-              ctx.fillStyle = "rgba(250,40,250,1)";
-              ctx.fillRect(
-                xi * TILE_SIZE,
-                yi * TILE_SIZE,
-                TILE_SIZE * 0.4,
-                TILE_SIZE
-              );
-            }
-            if (tile & COLLISION_RIGHT) {
-              ctx.fillStyle = "rgba(40,250,250,1)";
-              ctx.fillRect(
-                (xi + 0.6) * TILE_SIZE,
-                yi * TILE_SIZE,
-                TILE_SIZE * 0.4,
-                TILE_SIZE
-              );
+          const tile = collisions[collisionIndex] ?? 0;
+          let unknownTile = tile !== 0;
+
+          for (const tileDef of sortedTileDefs) {
+            if (isCollisionTileActive(tile, tileDef)) {
+              ctx.fillStyle = tileDef.color;
+              drawCollisionTile(tileDef, ctx, xi, yi);
+              if (tileDef.icon) {
+                unknownTile = false;
+              }
             }
           }
-          if (tileprop) {
-            switch (tileprop) {
-              case TILE_PROP_LADDER: // Ladder
-                ctx.fillStyle = "rgba(0,128,0,1)";
-                ctx.fillRect(
-                  (xi + 0.0) * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE * 0.2,
-                  TILE_SIZE
-                );
-                ctx.fillRect(
-                  (xi + 0.8) * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE * 0.2,
-                  TILE_SIZE
-                );
-                ctx.fillRect(
-                  xi * TILE_SIZE,
-                  (yi + 0.4) * TILE_SIZE,
-                  TILE_SIZE,
-                  TILE_SIZE * 0.2
-                );
-                break;
-              case COLLISION_SLOPE_45_RIGHT: // slope right
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case COLLISION_SLOPE_22_RIGHT_BOT: // slope right shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case COLLISION_SLOPE_22_RIGHT_TOP: // slope right shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case COLLISION_SLOPE_45_LEFT: // slope left
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case COLLISION_SLOPE_22_LEFT_BOT: // slope left shalow BOT
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case COLLISION_SLOPE_22_LEFT_TOP: // slope left shalow TOP
-                ctx.strokeStyle = "rgba(0,0,255,1)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              default:
-                const tilepropValue = (tileprop >> 4) - 7;
-                switch (tilepropValue) {
-                  case 1:
-                  case 2:
-                    ctx.fillStyle = `rgba(0,128,0,1)`;
-                    break;
-                  case 3:
-                  case 4:
-                    ctx.fillStyle = `rgba(128,0,0,1)`;
-                    break;
-                  case 5:
-                  case 6:
-                    ctx.fillStyle = `rgba(0,0,128,1)`;
-                    break;
-                  case 7:
-                  case 8:
-                    ctx.fillStyle = `rgba(128,0,128,1)`;
-                    break;
-                }
-                ctx.fillRect(
-                  xi * TILE_SIZE,
-                  yi * TILE_SIZE,
-                  TILE_SIZE,
-                  TILE_SIZE
-                );
-                ctx.fillStyle = "rgba(255,255,255,1)";
-                ctx.fillText(
-                  COLLISIONS_EXTRA_SYMBOLS[tilepropValue - 1],
-                  xi * TILE_SIZE,
-                  (yi + 0.9) * TILE_SIZE
-                );
-                break;
-            }
+          if (
+            unknownTile ||
+            (showCollisionTileValues && tile !== 0 && tile !== undefined)
+          ) {
+            drawLetter(decHexVal(tile), ctx, xi, yi);
           }
         }
       }
     }
-  }, [collisions, height, width]);
+  }, [collisionTileDefs, collisions, height, showCollisionTileValues, width]);
 
   return (
     <canvas
@@ -205,6 +145,8 @@ const SceneCollisions = ({
       height={height * TILE_SIZE}
       style={{
         opacity: collisionLayerOpacity,
+        width: width * TILE_SIZE * 0.5,
+        imageRendering: "pixelated",
       }}
     />
   );

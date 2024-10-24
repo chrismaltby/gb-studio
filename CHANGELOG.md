@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to hover over tiles in debugger VRAM preview to see tile memory address information [@pau-tomas](https://github.com/pau-tomas)
 - Add animation states to generated `game_globals.h` allowing use from engine code [@Mico27](https://github.com/Mico27)
 - Add ability to change collision layer opacity in World view when collision tool is selected [@Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
+- Add ability for engine plugins to define new, per scene, collision tile types in `engine.json` file [@Q-Bert-Reynolds]
+- Add ability to show the raw collision tile values when editing collisions in world view
 
 ### Changed
 
@@ -28,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised script editor by throttling the processing that was occuring on every key press
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below [@Steinbeuge](https://github.com/Steinbeuge)
+- Ladder collision tile now only visible on Platform scenes by default, edit `engine.json` to add per scene collision tile types
 
 ### Fixed
 
