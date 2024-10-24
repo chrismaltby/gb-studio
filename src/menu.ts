@@ -7,7 +7,7 @@ import {
   MenuItemConstructorOptions,
   shell,
 } from "electron";
-import { assetsRoot } from "./consts";
+import { assetsRoot, LOCALE_SETTING_KEY, THEME_SETTING_KEY } from "./consts";
 import l10n from "shared/lib/lang/l10n";
 import { ThemeManager } from "lib/themes/themeManager";
 import { L10nManager } from "lib/lang/l10nManager";
@@ -381,7 +381,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
               id: "themeDefault",
               label: l10n("MENU_THEME_DEFAULT"),
               type: "checkbox",
-              checked: settings.get("theme") === undefined,
+              checked: settings.get(THEME_SETTING_KEY) === undefined,
               click() {
                 notifyListeners("updateTheme", undefined);
               },
@@ -391,7 +391,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
               id: "themeLight",
               label: l10n("MENU_THEME_LIGHT"),
               type: "checkbox",
-              checked: settings.get("theme") === "light",
+              checked: settings.get(THEME_SETTING_KEY) === "light",
               click() {
                 notifyListeners("updateTheme", "light");
               },
@@ -400,7 +400,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
               id: "themeDark",
               label: l10n("MENU_THEME_DARK"),
               type: "checkbox",
-              checked: settings.get("theme") === "dark",
+              checked: settings.get(THEME_SETTING_KEY) === "dark",
               click() {
                 notifyListeners("updateTheme", "dark");
               },
@@ -413,7 +413,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 id: `theme-${theme.id}`,
                 label: theme.name,
                 type: "checkbox",
-                checked: settings.get("theme") === theme.id,
+                checked: settings.get(THEME_SETTING_KEY) === theme.id,
                 click() {
                   notifyListeners("updateTheme", theme.id);
                 },
@@ -429,7 +429,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 id: "localeDefault",
                 label: l10n("MENU_LANGUAGE_DEFAULT"),
                 type: "checkbox",
-                checked: settings.get("locale") === undefined,
+                checked: settings.get(LOCALE_SETTING_KEY) === undefined,
                 click() {
                   notifyListeners("updateLocale", undefined);
                 },
@@ -441,7 +441,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 id: `locale-${language.id}`,
                 label: language.name,
                 type: "checkbox",
-                checked: settings.get("locale") === language.id,
+                checked: settings.get(LOCALE_SETTING_KEY) === language.id,
                 click() {
                   notifyListeners("updateLocale", language.id);
                 },
@@ -455,7 +455,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 id: `locale-${language.id}`,
                 label: language.name,
                 type: "checkbox",
-                checked: settings.get("locale") === language.id,
+                checked: settings.get(LOCALE_SETTING_KEY) === language.id,
                 click() {
                   notifyListeners("updateLocale", language.id);
                 },

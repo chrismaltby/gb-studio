@@ -26,6 +26,10 @@ const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
 export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";
 
+// Electron Settings
+export const THEME_SETTING_KEY = "themeId";
+export const LOCALE_SETTING_KEY = "locale";
+
 const MAX_ACTORS = 20;
 const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;

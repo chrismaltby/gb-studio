@@ -4,7 +4,7 @@ import fs from "fs";
 import glob from "glob";
 import Path from "path";
 import en from "lang/en.json";
-import { localesRoot } from "consts";
+import { LOCALE_SETTING_KEY, localesRoot } from "consts";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import mapValues from "lodash/mapValues";
@@ -16,7 +16,7 @@ export const locales = glob
   .map((path) => Path.basename(path, ".json"));
 
 export const getAppLocale = () => {
-  const settingsLocale = app && settings.get("locale");
+  const settingsLocale = app && settings.get(LOCALE_SETTING_KEY);
   const systemLocale = app ? app.getLocale() : "en";
   return String(settingsLocale || systemLocale);
 };

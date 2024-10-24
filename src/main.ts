@@ -42,7 +42,13 @@ import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDial
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
-import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
+import {
+  assetsRoot,
+  buildUUID,
+  LOCALE_SETTING_KEY,
+  projectTemplatesRoot,
+  THEME_SETTING_KEY,
+} from "consts";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
@@ -1294,7 +1300,7 @@ ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 
 ipcMain.handle("get-theme", () => {
-  const themeId = ensureString(settings.get("theme"), "");
+  const themeId = ensureString(settings.get(THEME_SETTING_KEY), "");
   return themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
 });
 
@@ -1985,7 +1991,7 @@ menu.on("projectPlugins", () => {
 
 menu.on("updateTheme", (value) => {
   const pluginThemes = themeManager.getPluginThemes();
-  settings.set("theme", value as JsonValue);
+  settings.set(THEME_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("themeDefault", value === undefined);
   setMenuItemChecked("themeLight", value === "light");
   setMenuItemChecked("themeDark", value === "dark");
@@ -1996,7 +2002,7 @@ menu.on("updateTheme", (value) => {
 });
 
 menu.on("updateLocale", (value) => {
-  settings.set("locale", value as JsonValue);
+  settings.set(LOCALE_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("localeDefault", value === undefined);
   for (const lang of l10nManager.getSystemL10Ns()) {
     setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
@@ -2070,7 +2076,7 @@ watchGlobalPlugins({
 });
 
 const refreshTheme = () => {
-  const themeId = ensureString(settings.get("theme"), "");
+  const themeId = ensureString(settings.get(THEME_SETTING_KEY), "");
   const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
   sendToSplashWindow("update-theme", theme);
   sendToProjectWindow("update-theme", theme);
