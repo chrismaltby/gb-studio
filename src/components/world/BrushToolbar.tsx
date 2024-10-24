@@ -1,4 +1,5 @@
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -571,14 +572,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   !showCollisionSlopeTiles &&
                   tileType.key?.startsWith("slope_")
                 )
-                  return <></>;
+                  return null;
                 if (
                   !showCollisionExtraTiles &&
                   tileType.key?.startsWith("spare_")
                 )
-                  return <></>;
+                  return null;
                 return (
-                  <>
+                  <Fragment key={tileTypeIndex}>
                     {tileTypeIndex > 0 &&
                       tileType.mask !== tileTypes[tileTypeIndex - 1].mask && (
                         <FloatingPanelDivider />
@@ -599,7 +600,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                         color={tileType.color}
                       />
                     </Button>
-                  </>
+                  </Fragment>
                 );
               })}
               <FloatingPanelDivider />
