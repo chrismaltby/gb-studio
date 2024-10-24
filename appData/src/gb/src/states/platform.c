@@ -413,7 +413,7 @@ void platform_update(void) BANKED {
             tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
             while (tile_start != tile_end) {
                 // only snap to the top of a platform if feet are above the line
-                if (tile_at(tile_start, tile_y) & COLLISION_TOP && ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) < (tile_y << 3) ) {
+                if (tile_at(tile_start, tile_y) & COLLISION_TOP && ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom - 2) < (tile_y << 3) ) {
                     new_y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
                     grounded = TRUE;
                     pl_vel_y = 0;
