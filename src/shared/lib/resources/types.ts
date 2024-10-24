@@ -583,7 +583,7 @@ export const ScriptEventPreset = Type.Object({
 
 export type ScriptEventPreset = Static<typeof ScriptEventPreset>;
 
-export const CollisionTileLabel = Type.Object({
+export const CollisionTileDef = Type.Object({
   key: Type.String(),
   name: Type.Optional(Type.String()),
   color: Type.String(),
@@ -595,7 +595,7 @@ export const CollisionTileLabel = Type.Object({
   group: Type.Optional(Type.String()),
 });
 
-export type CollisionTileLabel = Static<typeof CollisionTileLabel>;
+export type CollisionTileDef = Static<typeof CollisionTileDef>;
 
 export const SettingsResource = Type.Object({
   _resourceType: Type.Literal("settings"),

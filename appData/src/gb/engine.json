@@ -219,7 +219,7 @@
       "key": "TOPDOWN",
       "label": "GAMETYPE_TOP_DOWN",
       "files": ["include/states/topdown.h", "src/states/topdown.c"],
-      "collisionTileLabels": [
+      "collisionTiles": [
         { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
         { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
         { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
@@ -236,7 +236,7 @@
       "key": "ADVENTURE",
       "label": "GAMETYPE_ADVENTURE",
       "files": ["include/states/adventure.h", "src/states/adventure.c"],
-      "collisionTileLabels": [
+      "collisionTiles": [
         { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
         { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
         { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
@@ -248,7 +248,7 @@
       "key": "SHMUP",
       "label": "GAMETYPE_SHMUP",
       "files": ["include/states/shmup.h", "src/states/shmup.c"],
-      "collisionTileLabels": [
+      "collisionTiles": [
         { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
         { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
         { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
@@ -260,7 +260,7 @@
       "key": "POINTNCLICK",
       "label": "GAMETYPE_POINT_N_CLICK",
       "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"],
-      "collisionTileLabels": [
+      "collisionTiles": [
         { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
       ]
     },
@@ -268,7 +268,7 @@
       "key": "LOGO",
       "label": "GAMETYPE_LOGO",
       "files": ["include/states/logo.h", "src/states/logo.c"],
-      "collisionTileLabels": [
+      "collisionTiles": [
         { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
       ]
     }

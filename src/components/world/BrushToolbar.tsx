@@ -32,7 +32,7 @@ import {
   DMG_PALETTE,
   TILE_COLOR_PROP_PRIORITY,
   BRUSH_SLOPE,
-  defaultCollisionTileLabels,
+  defaultCollisionTileDefs,
   defaultProjectSettings,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
@@ -194,18 +194,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const collisionLayerOpacity = useAppSelector(
     (state) => state.project.present.settings.collisionLayerOpacity
   );
-  const collisionTileLabels = useAppSelector((state) => {
+  const collisionTileDefs = useAppSelector((state) => {
     if (!scene || !scene.type || !state.engine.sceneTypes)
-      return defaultCollisionTileLabels;
+      return defaultCollisionTileDefs;
     const key = scene.type || "";
     const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
-    if (sceneType && sceneType.collisionTileLabels)
-      return sceneType.collisionTileLabels;
-    return defaultCollisionTileLabels;
+    if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
+    return defaultCollisionTileDefs;
   });
   const tileTypes = useMemo(
     () =>
-      collisionTileLabels.map((tile, index) => {
+      collisionTileDefs.map((tile, index) => {
         const name =
           tile.name && tile.name.trim().length > 0
             ? l10n(tile.name as L10NKey, { tile: index + 1 })
@@ -222,17 +221,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           group: tile.group,
         };
       }),
-    [collisionTileLabels]
+    [collisionTileDefs]
   );
 
   const slopesAvailable = useMemo(
-    () => collisionTileLabels.some((tile) => tile.group === "slope"),
-    [collisionTileLabels]
+    () => collisionTileDefs.some((tile) => tile.group === "slope"),
+    [collisionTileDefs]
   );
 
   const spareAvailable = useMemo(
-    () => collisionTileLabels.some((tile) => tile.group === "spare"),
-    [collisionTileLabels]
+    () => collisionTileDefs.some((tile) => tile.group === "spare"),
+    [collisionTileDefs]
   );
 
   const setBrush = (brush: Brush) => {

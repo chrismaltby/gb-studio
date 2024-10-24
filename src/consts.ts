@@ -1,6 +1,6 @@
 import path from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { CollisionTileLabel, Settings } from "shared/lib/resources/types";
+import { CollisionTileDef, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -141,7 +141,7 @@ export const LYC_SYNC_VALUE = 150;
 export const defaultCollisionTileIcon = "FFFFFFFFFFFFFFFF";
 export const defaultCollisionTileColor = "#FF0000FF";
 
-export const defaultCollisionTileLabels: CollisionTileLabel[] = [
+export const defaultCollisionTileDefs: CollisionTileDef[] = [
   {
     key: "solid",
     color: "#FA2828FF",

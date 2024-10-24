@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { useAppSelector } from "store/hooks";
-import { CollisionTileLabel } from "shared/lib/resources/types";
+import { CollisionTileDef } from "shared/lib/resources/types";
 import {
   defaultCollisionTileColor,
   defaultCollisionTileIcon,
-  defaultCollisionTileLabels,
+  defaultCollisionTileDefs,
 } from "consts";
 import {
   isCollisionTileActive,
@@ -38,17 +38,16 @@ const SceneCollisions = ({
       Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
   );
 
-  const collisionTileLabels = useAppSelector((state) => {
+  const collisionTileDefs = useAppSelector((state) => {
     const sceneType = state.engine.sceneTypes.find(
       (s) => s.key === sceneTypeKey
     );
-    if (sceneType && sceneType.collisionTileLabels)
-      return sceneType.collisionTileLabels;
-    return defaultCollisionTileLabels;
+    if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
+    return defaultCollisionTileDefs;
   });
 
   const drawCollisionTile = (
-    tile: CollisionTileLabel,
+    tile: CollisionTileDef,
     ctx: CanvasRenderingContext2D,
     xi: number,
     yi: number
@@ -97,7 +96,7 @@ const SceneCollisions = ({
       ctx.font = "8px Public Pixel";
       ctx.imageSmoothingEnabled = false;
 
-      const sortedTiles = collisionTileLabels.map((t) => t);
+      const sortedTiles = collisionTileDefs.map((t) => t);
       sortedTiles.sort((a, b) => {
         if (a.mask) {
           if (b.mask) {
@@ -140,7 +139,7 @@ const SceneCollisions = ({
         }
       }
     }
-  }, [collisionTileLabels, collisions, height, showCollisionTileValues, width]);
+  }, [collisionTileDefs, collisions, height, showCollisionTileValues, width]);
 
   return (
     <canvas
