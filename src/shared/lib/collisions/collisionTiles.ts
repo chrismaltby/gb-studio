@@ -61,7 +61,7 @@ export const isCollisionTileActive = (
   value: number,
   tileDef: CollisionTileDef
 ): boolean => {
-  const mask = tileDef.mask || tileDef.flag;
+  const mask = tileDef.mask || 0xff;
   const maskedValue = value & mask;
   if (tileDef.multi) {
     return (

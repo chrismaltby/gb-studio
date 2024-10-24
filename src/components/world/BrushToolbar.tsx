@@ -61,7 +61,7 @@ import { StyledButton } from "ui/buttons/style";
 import { Slider } from "ui/form/Slider";
 import { StyledFloatingPanel } from "ui/panels/style";
 import { CollisionTileIcon } from "components/collisions/CollisionTileIcon";
-import { isCollisionTileActive } from "shared/lib/collisions/collisionTileIcon";
+import { isCollisionTileActive } from "shared/lib/collisions/collisionTiles";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;

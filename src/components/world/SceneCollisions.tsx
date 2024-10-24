@@ -9,7 +9,7 @@ import {
 import {
   isCollisionTileActive,
   renderCollisionTileIcon,
-} from "shared/lib/collisions/collisionTileIcon";
+} from "shared/lib/collisions/collisionTiles";
 import { decHexVal } from "shared/lib/helpers/8bit";
 
 const TILE_SIZE = 16;

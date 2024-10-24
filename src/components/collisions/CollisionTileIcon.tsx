@@ -1,6 +1,6 @@
 import { defaultCollisionTileColor, defaultCollisionTileIcon } from "consts";
 import React, { useEffect, useRef } from "react";
-import { renderCollisionTileIcon } from "shared/lib/collisions/collisionTileIcon";
+import { renderCollisionTileIcon } from "shared/lib/collisions/collisionTiles";
 import styled from "styled-components";
 
 interface CollisionTileIconProps {
