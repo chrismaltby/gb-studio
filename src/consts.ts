@@ -307,6 +307,7 @@ export const defaultProjectSettings: Settings = {
   showConnections: "selected",
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
+  showCollisionTileValues: false,
   collisionLayerOpacity: 50,
   worldScrollX: 0,
   worldScrollY: 0,
