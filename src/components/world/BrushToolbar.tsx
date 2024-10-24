@@ -18,6 +18,7 @@ import {
   AutoColorIcon,
   CheckIcon,
   BlankIcon,
+  TileValueIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -141,8 +142,12 @@ const LayerVisibilityPanel = styled(FloatingPanel)`
   }
   ${StyledButton} {
     height: 22px;
-    svg {
-      margin-right: 5px;
+    width: auto;
+    min-width: 20px;
+    padding: 2px;
+
+    svg ~ span {
+      margin-left: 5px;
     }
   }
 `;
@@ -193,6 +198,9 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   );
   const showCollisionExtraTiles = useAppSelector(
     (state) => state.project.present.settings.showCollisionExtraTiles
+  );
+  const showCollisionTileValues = useAppSelector(
+    (state) => state.project.present.settings.showCollisionTileValues
   );
   const collisionLayerOpacity = useAppSelector(
     (state) => state.project.present.settings.collisionLayerOpacity
@@ -392,6 +400,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       })
     );
   }, [dispatch, showCollisionExtraTiles]);
+
+  const onToggleViewTileValues = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        showCollisionTileValues: !showCollisionTileValues,
+      })
+    );
+  }, [dispatch, showCollisionTileValues]);
 
   const onToggleAutoColor = useCallback(() => {
     scene?.backgroundId &&
@@ -636,9 +652,21 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               <FloatingPanelDivider />
             </>
           )}
+          {selectedTool === TOOL_COLLISIONS && (
+            <>
+              <Button
+                variant="transparent"
+                onClick={onToggleViewTileValues}
+                active={showCollisionTileValues}
+                title={l10n("FIELD_SHOW_TILE_VALUES")}
+              >
+                <TileValueIcon />
+              </Button>
+              <FloatingPanelDivider />
+            </>
+          )}
 
           <Button
-            style={{ width: "auto" }}
             variant="transparent"
             onClick={toggleShowLayers}
             active={!showLayers}
@@ -647,7 +675,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             } (-)`}
           >
             {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
-            {l10n("FIELD_HIDE_OTHER_LAYERS")}
+            <span>{l10n("FIELD_HIDE_OTHER_LAYERS")}</span>
           </Button>
         </LayerVisibilityPanel>
       </BrushToolbarWrapper>

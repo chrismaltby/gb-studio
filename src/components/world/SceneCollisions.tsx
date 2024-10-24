@@ -26,6 +26,10 @@ const SceneCollisions = ({
 }: SceneCollisionsProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
+  const showCollisionTileValues = useAppSelector(
+    (state) => state.project.present.settings.showCollisionTileValues
+  );
+
   const collisionLayerOpacity = useAppSelector(
     (state) =>
       Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
@@ -73,7 +77,7 @@ const SceneCollisions = ({
     const tx = x * TILE_SIZE;
     const ty = (y + 0.5) * TILE_SIZE;
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.strokeText(letter, tx, ty);
     ctx.fillStyle = "white";
     ctx.fillText(letter, tx, ty);
@@ -120,13 +124,13 @@ const SceneCollisions = ({
               bitsUsed |= mask;
             }
           }
-          if (tile !== 0 && tile !== undefined) {
+          if (showCollisionTileValues && tile !== 0 && tile !== undefined) {
             drawLetter(decHexVal(tile), ctx, xi, yi);
           }
         }
       }
     }
-  }, [collisionTileLabels, collisions, height, width]);
+  }, [collisionTileLabels, collisions, height, showCollisionTileValues, width]);
 
   return (
     <canvas

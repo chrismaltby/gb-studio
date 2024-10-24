@@ -985,6 +985,7 @@
   "FIELD_SHARED": "Shared",
   "FIELD_LAYER_OPACITY": "Layer Opacity",
   "FIELD_HIDE_OTHER_LAYERS": "Hide Other Layers",
+  "FIELD_SHOW_TILE_VALUES": "Show Tile Values",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
