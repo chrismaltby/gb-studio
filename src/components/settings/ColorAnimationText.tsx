@@ -21,7 +21,6 @@ const colorAnimation = keyframes`
 `;
 
 const Wrapper = styled.span<{ $animate: boolean }>`
-  {
   ${(props) =>
     props.$animate
       ? css`
