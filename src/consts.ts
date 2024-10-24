@@ -25,6 +25,9 @@ const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
 export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";
+export const OFFICIAL_REPO_GITHUB =
+  "https://github.com/gb-studio-dev/gb-studio-plugins";
+export const OFFICIAL_REPO_GITHUB_SUBMIT = `${OFFICIAL_REPO_GITHUB}#submitting-plugins`;
 
 // Electron Settings
 export const THEME_SETTING_KEY = "themeId";

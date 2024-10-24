@@ -15,7 +15,7 @@ import { PluginTypeSelect } from "components/forms/PluginTypeSelect";
 import { BlankIcon, CheckIcon, SettingsIcon, UpdateIcon } from "ui/icons/Icons";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   StyledPluginItemRow,
   StyledPluginItemRowName,
@@ -43,6 +43,7 @@ import {
 } from "shared/lib/plugins/pluginHelpers";
 import { PillButton } from "ui/buttons/PillButton";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
+import { OFFICIAL_REPO_GITHUB_SUBMIT } from "consts";
 
 export type PluginItem = {
   id: string;
@@ -205,6 +206,12 @@ const PluginsManagerPlugins = ({
             </MenuItem>
             <MenuItem onClick={() => refreshData(true)}>
               {l10n("FIELD_REFRESH_REPOSITORIES")}
+            </MenuItem>
+            <MenuDivider />
+            <MenuItem
+              onClick={() => API.app.openExternal(OFFICIAL_REPO_GITHUB_SUBMIT)}
+            >
+              {l10n("FIELD_SUBMIT_PLUGIN")}
             </MenuItem>
           </DropdownButton>
         </StyledPluginManagerSearch>
