@@ -1,28 +1,30 @@
-import path from "path";
+import { normalize } from "path";
 import type { Palette } from "shared/lib/entities/entitiesTypes";
 import { CollisionTileDef, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
 
-let rootDir = __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
+let rootDir = __dirname.substring(0, __dirname.lastIndexOf("node_modules"));
 if (isDist) {
-  rootDir = __dirname.substr(0, __dirname.lastIndexOf(".webpack"));
+  rootDir = __dirname.substring(0, __dirname.lastIndexOf(".webpack"));
 } else if (isCli) {
-  rootDir = __dirname.substr(0, __dirname.lastIndexOf("out/cli"));
+  rootDir = __dirname.substring(0, __dirname.lastIndexOf("out/cli"));
 } else if (process.env.NODE_ENV === "test") {
-  rootDir = path.normalize(`${__dirname}/../`);
+  rootDir = normalize(`${__dirname}/../`);
 }
 
+// Paths
 export const buildUUID = "_gbsbuild";
-const engineRoot = path.normalize(`${rootDir}/appData/src`);
-const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
-const binjgbRoot = path.normalize(`${rootDir}/appData/wasm/binjgb`);
-const projectTemplatesRoot = path.normalize(`${rootDir}/appData/templates`);
-const localesRoot = path.normalize(`${rootDir}/src/lang`);
-const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
-const assetsRoot = path.normalize(`${rootDir}/src/assets`);
+export const engineRoot = normalize(`${rootDir}/appData/src`);
+export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
+export const binjgbRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
+export const projectTemplatesRoot = normalize(`${rootDir}/appData/templates`);
+export const localesRoot = normalize(`${rootDir}/src/lang`);
+export const eventsRoot = normalize(`${rootDir}/src/lib/events`);
+export const assetsRoot = normalize(`${rootDir}/src/assets`);
 
+// Plugin Manager
 export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";
 export const OFFICIAL_REPO_GITHUB =
   "https://github.com/gb-studio-dev/gb-studio-plugins";
@@ -32,26 +34,36 @@ export const OFFICIAL_REPO_GITHUB_SUBMIT = `${OFFICIAL_REPO_GITHUB}#submitting-p
 export const THEME_SETTING_KEY = "themeId";
 export const LOCALE_SETTING_KEY = "locale";
 
-const MAX_ACTORS = 20;
-const MAX_ACTORS_SMALL = 10;
-const MAX_TRIGGERS = 30;
-const MAX_FRAMES = 25;
-const MAX_SPRITE_TILES = 64;
+// Scene Limits
+export const MAX_ACTORS = 20;
+export const MAX_ACTORS_SMALL = 10;
+export const MAX_TRIGGERS = 30;
+export const MAX_ONSCREEN = 10;
+export const MAX_PROJECTILES = 5;
 
+// Background Limits
 export const MAX_BACKGROUND_TILES = 16 * 12;
 export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
 
-const SCREEN_WIDTH = 20;
-const SCREEN_HEIGHT = 18;
-const MAX_ONSCREEN = 10;
-const MAX_NESTED_SCRIPT_DEPTH = 5;
-export const MAX_PROJECTILES = 5;
+// Screen
+export const SCREEN_WIDTH = 20;
+export const SCREEN_HEIGHT = 18;
 export const TILE_SIZE = 8;
 
-const MIDDLE_MOUSE = 2;
+// Scripts
+export const MAX_NESTED_SCRIPT_DEPTH = 5;
 
+// Input
+export const MIDDLE_MOUSE = 2;
+
+// IDE UI
 export const NAVIGATOR_MIN_WIDTH = 200;
+export const DRAG_PLAYER = "DRAG_PLAYER";
+export const DRAG_DESTINATION = "DRAG_DESTINATION";
+export const DRAG_ACTOR = "DRAG_ACTOR";
+export const DRAG_TRIGGER = "DRAG_TRIGGER";
 
+// Tools
 export const TOOL_SELECT = "select";
 export const TOOL_ACTORS = "actors";
 export const TOOL_COLLISIONS = "collisions";
@@ -60,28 +72,26 @@ export const TOOL_SCENE = "scene";
 export const TOOL_TRIGGERS = "triggers";
 export const TOOL_ERASER = "eraser";
 
+// Brushes
 export const BRUSH_8PX = "8px";
 export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
 export const BRUSH_MAGIC = "magic";
 export const BRUSH_SLOPE = "slope";
 
+// Collisions
 export const COLLISIONS_EXTRA_SYMBOLS = "89ABCDEF";
-
 export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
 export const COLLISION_LEFT = 0x4;
 export const COLLISION_RIGHT = 0x8;
-
 export const COLLISION_ALL = 0xf;
 export const TILE_PROP_LADDER = 0x10;
 export const TILE_PROPS = 0xf0;
-
 export const TILE_PROP_SLOPE_45 = 0x20;
 export const TILE_PROP_SLOPE_22_BOT = 0x40;
 export const TILE_PROP_SLOPE_22_TOP = 0x60;
 export const TILE_PROP_SLOPE_LEFT = 0x10;
-
 export const COLLISION_SLOPE_45_RIGHT = TILE_PROP_SLOPE_45;
 export const COLLISION_SLOPE_22_RIGHT_BOT = TILE_PROP_SLOPE_22_BOT;
 export const COLLISION_SLOPE_22_RIGHT_TOP = TILE_PROP_SLOPE_22_TOP;
@@ -91,7 +101,6 @@ export const COLLISION_SLOPE_22_LEFT_BOT =
   TILE_PROP_SLOPE_22_BOT | TILE_PROP_SLOPE_LEFT;
 export const COLLISION_SLOPE_22_LEFT_TOP =
   TILE_PROP_SLOPE_22_TOP | TILE_PROP_SLOPE_LEFT;
-
 export const COLLISION_SLOPE_VALUES = [
   COLLISION_SLOPE_45_RIGHT,
   COLLISION_SLOPE_22_RIGHT_BOT,
@@ -101,31 +110,32 @@ export const COLLISION_SLOPE_VALUES = [
   COLLISION_SLOPE_22_LEFT_TOP,
 ];
 
+// Colors
 export const TILE_COLOR_PALETTE = 0x7;
 export const TILE_COLOR_PROPS = 0xf8;
 export const TILE_COLOR_PROP_PRIORITY = 0x80;
-
-export const DRAG_PLAYER = "DRAG_PLAYER";
-export const DRAG_DESTINATION = "DRAG_DESTINATION";
-export const DRAG_ACTOR = "DRAG_ACTOR";
-export const DRAG_TRIGGER = "DRAG_TRIGGER";
-
 export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",
   colors: ["E8F8E0", "B0F088", "509878", "202850"],
 } as Palette;
 
+// DMG Hardware
 export const FLAG_VRAM_BANK_1 = 0x8;
+export const LYC_SYNC_VALUE = 150;
 
+// Variables
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
 
+// Music Editor
 export const TRACKER_UNDO = "TRACKER_UNDO";
 export const TRACKER_REDO = "TRACKER_REDO";
 
+// Errors
 export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
+// Script Event Commands
 // @TODO Check if any uses of these hard coded event types can be made more generic to not need to know the specific event used
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
@@ -141,8 +151,6 @@ export const EVENT_SOUND_PLAY_EFFECT = "EVENT_SOUND_PLAY_EFFECT";
 export const EVENT_FADE_IN = "EVENT_FADE_IN";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_GROUP = "EVENT_GROUP";
-
-export const LYC_SYNC_VALUE = 150;
 
 export const defaultCollisionTileIcon = "FFFFFFFFFFFFFFFF";
 export const defaultCollisionTileColor = "#FF0000FF";
@@ -461,23 +469,3 @@ export const defaultPalettes: Palette[] = [
   name: string;
   colors: [string, string, string, string];
 }[];
-
-export {
-  engineRoot,
-  buildToolsRoot,
-  binjgbRoot,
-  projectTemplatesRoot,
-  localesRoot,
-  eventsRoot,
-  assetsRoot,
-  MAX_ACTORS,
-  MAX_ACTORS_SMALL,
-  MAX_TRIGGERS,
-  MAX_FRAMES,
-  MAX_SPRITE_TILES,
-  MAX_ONSCREEN,
-  SCREEN_WIDTH,
-  SCREEN_HEIGHT,
-  MIDDLE_MOUSE,
-  MAX_NESTED_SCRIPT_DEPTH,
-};
