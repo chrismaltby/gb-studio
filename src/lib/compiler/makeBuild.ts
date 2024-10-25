@@ -224,6 +224,9 @@ export const cancelBuildCommandsInProgress = async () => {
   // Kill all spawned commands and any commands that were spawned by those
   // e.g lcc spawns sdcc, etc.
   for (const child of childSet) {
+    if (child.pid === undefined) {
+      continue;
+    }
     const spawnedChildren = await psTreeAsync(child.pid);
     for (const childChild of spawnedChildren) {
       try {

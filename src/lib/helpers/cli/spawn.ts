@@ -44,7 +44,7 @@ const spawn = (
 
   child.on("close", async (childCode) => {
     complete = true;
-    code = childCode;
+    code = childCode ?? 0;
   });
 
   return {

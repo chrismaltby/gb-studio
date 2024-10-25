@@ -5909,13 +5909,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/classnames@npm:^2.2.10":
-  version: 2.2.10
-  resolution: "@types/classnames@npm:2.2.10"
-  checksum: 10c0/bbe772aab837c8df97a2b7bb0de5b7487f74ee55da9062dcb378465efd6e4ced983882faac1b624fe384b07eadf9d7cbedba28eff480f490eb49debdf5b73a26
-  languageName: node
-  linkType: hard
-
 "@types/color-name@npm:^1.1.1":
   version: 1.1.1
   resolution: "@types/color-name@npm:1.1.1"
@@ -8570,13 +8563,6 @@ __metadata:
   version: 1.4.0
   resolution: "cjs-module-lexer@npm:1.4.0"
   checksum: 10c0/b5ef03e10297c24f0db56b13d7d2f92e377499c83d7bf9352ec73df544b5310e024dfb1779a6b810e7a06eb18caa6a0e2da5f11df8116af73306f362e67fb61a
-  languageName: node
-  linkType: hard
-
-"classnames@npm:^2.2.5":
-  version: 2.2.6
-  resolution: "classnames@npm:2.2.6"
-  checksum: 10c0/04fe84deb40e4f4fcee688494ced342b048a6992506cd3da81efb773b03f6d8120f9b893e6eb8a0bc7c6fb38edd66b4751e413ab4672ed93b2c59a4e2bd1068a
   languageName: node
   linkType: hard
 
@@ -11904,7 +11890,6 @@ __metadata:
     "@testing-library/react": "npm:^16.0.1"
     "@types/adm-zip": "npm:^0.5.5"
     "@types/chroma-js": "npm:^2.4.4"
-    "@types/classnames": "npm:^2.2.10"
     "@types/electron-devtools-installer": "npm:^2.2.0"
     "@types/electron-settings": "npm:^3.1.1"
     "@types/fs-extra": "npm:^9.0.8"
@@ -11935,7 +11920,6 @@ __metadata:
     babel-eslint: "npm:^10.1.0"
     chokidar: "npm:^3.6.0"
     chroma-js: "npm:^2.4.2"
-    classnames: "npm:^2.2.5"
     commander: "npm:^6.2.0"
     copy-webpack-plugin: "npm:^9.0.0"
     cross-env: "npm:^7.0.3"

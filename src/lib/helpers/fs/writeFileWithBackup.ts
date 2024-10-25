@@ -21,8 +21,8 @@ export const backupFile = (
 
 export const writeFileWithBackup = (
   path: string,
-  data: unknown,
-  options: WriteFileAndFlushOptions | string,
+  data: string | NodeJS.ArrayBufferView,
+  options: WriteFileAndFlushOptions | BufferEncoding,
   callback: (err?: NodeJS.ErrnoException | unknown | null) => void
 ) => {
   return backupFile(path, (backupError) => {
@@ -50,8 +50,8 @@ export const writeFileWithBackup = (
 
 export const writeFileWithBackupAsync = (
   path: string,
-  data: unknown,
-  options: WriteFileAndFlushOptions | string = "utf8"
+  data: string | NodeJS.ArrayBufferView,
+  options: WriteFileAndFlushOptions | BufferEncoding = "utf8"
 ) => {
   return new Promise<void>((resolve, reject) => {
     writeFileWithBackup(path, data, options, (err) => {
