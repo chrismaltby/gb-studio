@@ -1044,8 +1044,20 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
+  // Set default name based on prefab if provided
+  let name = "";
+  if (action.payload.defaults?.prefabId) {
+    const prefab = localActorPrefabSelectById(
+      state,
+      action.payload.defaults.prefabId
+    );
+    if (prefab && prefab.name.length > 0) {
+      name = prefab.name;
+    }
+  }
+
   const newActor: ActorNormalized = {
-    name: "",
+    name,
     frame: 0,
     animate: false,
     spriteSheetId,
@@ -1527,8 +1539,20 @@ const addTrigger: CaseReducer<
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
+  // Set default name based on prefab if provided
+  let name = "";
+  if (action.payload.defaults?.prefabId) {
+    const prefab = localTriggerPrefabSelectById(
+      state,
+      action.payload.defaults.prefabId
+    );
+    if (prefab && prefab.name.length > 0) {
+      name = prefab.name;
+    }
+  }
+
   const newTrigger: TriggerNormalized = {
-    name: "",
+    name,
     prefabId: "",
     ...(action.payload.defaults || {}),
     id: action.payload.triggerId,
