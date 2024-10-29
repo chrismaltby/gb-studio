@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where quickly clicking "Create Project" button during project creation could prevent new project from opening
 - Fix issue where CLI tool was ignoring project's debugger enabled setting causing debugger comments to always be included in generated gbvm code
 - Fix tileset preview in dropdowns for 16px tiles
+- Fix issue where instanced prefabs where showing incorrect icons in actor select inputs
 
 ## [4.1.3] - 2024-09-16
 

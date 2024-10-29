@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   ActorNormalized,
@@ -87,6 +87,21 @@ export const ActorSelect = ({
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
+  const getActorSpriteId = useCallback(
+    (actorId: string): string => {
+      const actor = actorsLookup[actorId];
+      if (!actor) {
+        return "";
+      }
+      const prefab = actorPrefabsLookup[actor.prefabId];
+      if (!prefab) {
+        return actor.spriteSheetId;
+      }
+      return prefab.spriteSheetId;
+    },
+    [actorPrefabsLookup, actorsLookup]
+  );
+
   useEffect(() => {
     if (context.type === "script" && customEvent) {
       setOptions([
@@ -120,7 +135,7 @@ export const ActorSelect = ({
                   sceneActorIndex
                 )})`,
                 value: "$self$",
-                spriteSheetId: sceneActor.spriteSheetId,
+                spriteSheetId: getActorSpriteId(sceneActor.id),
                 direction: sceneActor.direction,
               },
             ]
@@ -135,7 +150,7 @@ export const ActorSelect = ({
           return {
             label: actorName(actor, actorIndex),
             value: actor.id,
-            spriteSheetId: actor.spriteSheetId,
+            spriteSheetId: getActorSpriteId(actor.id),
             direction: actor.direction,
           };
         }),
@@ -182,6 +197,7 @@ export const ActorSelect = ({
     sceneActorIndex,
     selfPrefab,
     selfPrefabIndex,
+    getActorSpriteId,
   ]);
 
   useEffect(() => {
