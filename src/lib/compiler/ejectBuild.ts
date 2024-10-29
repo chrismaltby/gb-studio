@@ -130,7 +130,7 @@ const ejectBuild = async ({
   progress(
     l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" })
   );
-  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     progress(
       l10n("COMPILER_USING_ENGINE_PLUGIN", {

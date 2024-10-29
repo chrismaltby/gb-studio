@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where CLI tool was ignoring project's debugger enabled setting causing debugger comments to always be included in generated gbvm code
 - Fix tileset preview in dropdowns for 16px tiles
 - Fix issue where instanced prefabs were showing incorrect icons in actor select inputs
+- Fix issue preventing engine plugins stored in subfolders from being included in project
 
 ## [4.1.3] - 2024-09-16
 
