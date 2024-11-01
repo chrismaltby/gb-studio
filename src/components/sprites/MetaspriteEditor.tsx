@@ -209,6 +209,9 @@ const MetaspriteEditor = ({
   const defaultSpritePaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultSpritePaletteIds
   );
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds
+  );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
@@ -601,12 +604,18 @@ const MetaspriteEditor = ({
   }, [dispatch, selectedTileIds]);
 
   const onCopyMetasprite = useCallback(() => {
+    const selectionIds =
+      selectedAdditionalMetaspriteIds.length === 0
+        ? [metaspriteId]
+        : selectedAdditionalMetaspriteIds;
+
     dispatch(
       clipboardActions.copyMetasprites({
-        metaspriteIds: [metaspriteId],
+        metaspriteIds: selectionIds,
+        spriteAnimationId: animationId,
       })
     );
-  }, [dispatch, metaspriteId]);
+  }, [animationId, dispatch, metaspriteId, selectedAdditionalMetaspriteIds]);
 
   const onCopy = useCallback(() => {
     if (selectedTileIds.length > 0) {

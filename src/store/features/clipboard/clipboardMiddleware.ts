@@ -71,6 +71,7 @@ import {
   walkTriggerScriptsKeys,
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
+import { sortSubsetStringArray } from "shared/lib/helpers/array";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -515,7 +516,21 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const metaspriteTilesLookup =
         metaspriteTileSelectors.selectEntities(state);
 
-      const metasprites = action.payload.metaspriteIds
+      const spriteAnimation = spriteAnimationSelectors.selectById(
+        state,
+        action.payload.spriteAnimationId
+      );
+
+      if (!spriteAnimation) {
+        return;
+      }
+
+      const sortedMetaspriteIds = sortSubsetStringArray(
+        action.payload.metaspriteIds,
+        spriteAnimation.frames
+      );
+
+      const metasprites = sortedMetaspriteIds
         .map((id) => {
           return metaspritesLookup[id];
         })
@@ -1190,6 +1205,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             return entitiesActions.addMetasprite({
               spriteSheetId: action.payload.spriteSheetId,
               spriteAnimationId: animationId,
+              afterMetaspriteId: "",
             });
           });
 
@@ -1234,10 +1250,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       } else if (clipboard.format === ClipboardTypeMetasprites) {
         const data = clipboard.data;
 
-        const newActions = data.metasprites.map(() => {
+        const newActions = data.metasprites.reverse().map(() => {
           return entitiesActions.addMetasprite({
             spriteSheetId: action.payload.spriteSheetId,
             spriteAnimationId: action.payload.spriteAnimationId,
+            afterMetaspriteId: action.payload.metaspriteId,
           });
         });
 

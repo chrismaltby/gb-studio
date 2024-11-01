@@ -31,6 +31,7 @@ const copyScenes = createAction<{
 }>("clipboard/copyScenes");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
+  spriteAnimationId: string;
 }>("clipboard/copyMetasprites");
 const copyMetaspriteTiles = createAction<{
   metaspriteTileIds: string[];

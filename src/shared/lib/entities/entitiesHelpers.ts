@@ -450,26 +450,6 @@ export const sortByFilename = (a: Asset, b: Asset) => {
 export const swapArrayElement = <T>(x: number, y: number, [...xs]: T[]): T[] =>
   xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
 
-export const moveArrayElement = <T>(
-  x: number,
-  y: number,
-  [...xs]: T[]
-): T[] => {
-  if (
-    xs.length <= 1 ||
-    x === y ||
-    x < 0 ||
-    x >= xs.length ||
-    y < 0 ||
-    y >= xs.length
-  ) {
-    return xs;
-  }
-  const [element] = xs.splice(x, 1);
-  xs.splice(y, 0, element);
-  return xs;
-};
-
 export const isUnionValue = (input: unknown): input is UnionValue => {
   if (typeof input !== "object") {
     return false;
