@@ -773,6 +773,13 @@ const changes: EngineChange[] = [
       "src/states/platform.c",
     ],
   },
+  {
+    version: "4.2.0-e3",
+    description: createDescription("Fixes", [
+      "Fix bottom margins on GB Printer",
+    ]),
+    modifiedFiles: ["src/core/gbprinter.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

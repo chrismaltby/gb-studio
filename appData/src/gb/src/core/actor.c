@@ -82,7 +82,7 @@ void actors_update(void) NONBANKED {
 
     // Convert scroll pos to 16px tile coordinates
     // allowing full range of scene to be represented in 7 bits
-    // offset by 64 to allow signed comparisions on
+    // offset by 64 to allow signed comparisons on
     // unsigned int values (is faster)
     screen_tile16_x = (draw_scroll_x >> 4) + TILE16_OFFSET;
     screen_tile16_y = (draw_scroll_y >> 4) + TILE16_OFFSET;

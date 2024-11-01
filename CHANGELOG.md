@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix tileset preview in dropdowns for 16px tiles
 - Fix issue where instanced prefabs were showing incorrect icons in actor select inputs
 - Fix issue preventing engine plugins stored in subfolders from being included in project
+- Fix bottom margins when using GB Printer [@untoxa](https://github.com/untoxa)
 
 ## [4.1.3] - 2024-09-16
 

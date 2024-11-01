@@ -113,7 +113,7 @@ uint8_t gbprinter_print_overlay(uint8_t start, uint8_t rows, uint8_t margins) BA
             if (pkt_count == 9) {
                 pkt_count = 0;
                 PRINTER_SEND_COMMAND(PRN_PKT_EOF);
-                gbprinter_set_print_params((y == (rows - 1)) ? margins : PRN_NO_MARGINS, PRN_PALETTE_NORMAL, PRN_EXPOSURE_DARK);
+                gbprinter_set_print_params((y == 1) ? (margins & 0x0f) : PRN_NO_MARGINS, PRN_PALETTE_NORMAL, PRN_EXPOSURE_DARK);
                 PRINTER_SEND_COMMAND(PRN_PKT_START);
                 // query printer status
                 if ((error = printer_wait(PRN_BUSY_TIMEOUT, PRN_STATUS_BUSY, PRN_STATUS_BUSY)) & PRN_STATUS_MASK_ERRORS) return error;
@@ -129,7 +129,7 @@ uint8_t gbprinter_print_overlay(uint8_t start, uint8_t rows, uint8_t margins) BA
     if (pkt_count) {
         PRINTER_SEND_COMMAND(PRN_PKT_EOF);
         // setup printing if required
-        gbprinter_set_print_params(margins, PRN_PALETTE_NORMAL, PRN_EXPOSURE_DARK);
+        gbprinter_set_print_params(margins & 0x0f, PRN_PALETTE_NORMAL, PRN_EXPOSURE_DARK);
         PRINTER_SEND_COMMAND(PRN_PKT_START);
         // query printer status
         if ((error = printer_wait(PRN_BUSY_TIMEOUT, PRN_STATUS_BUSY, PRN_STATUS_BUSY)) & PRN_STATUS_MASK_ERRORS) return error;
