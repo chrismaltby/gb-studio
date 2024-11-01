@@ -153,9 +153,13 @@ export const ScriptEventBranchHeader = ({
       </StyledScriptEventHeaderCaret>
       <FixedSpacer width={5} />
       {label}
-      <StyledScriptEventBranchHeaderFields onClick={(e) => e.stopPropagation()}>
-        {children}
-      </StyledScriptEventBranchHeaderFields>
+      {children && (
+        <StyledScriptEventBranchHeaderFields
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </StyledScriptEventBranchHeaderFields>
+      )}
       <FlexGrow />
     </StyledScriptEventBranchHeader>
   );
