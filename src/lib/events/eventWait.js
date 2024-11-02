@@ -18,62 +18,56 @@ const autoLabel = (fetchArg, input) => {
 
 const fields = [
   {
-    type: "group",
-    fields: [
+    key: "time",
+    label: l10n("FIELD_DURATION"),
+    description: l10n("FIELD_DURATION_WAIT_DESC"),
+    type: "value",
+    min: 0,
+    max: 60,
+    step: 0.1,
+    unitsField: "units",
+    unitsDefault: "time",
+    unitsAllowed: ["time", "frames"],
+    defaultValue: {
+      type: "number",
+      value: 0.5,
+    },
+    conditions: [
       {
-        key: "time",
-        type: "number",
-        label: l10n("FIELD_DURATION"),
-        description: l10n("FIELD_DURATION_WAIT_DESC"),
-        min: 0,
-        max: 60,
-        step: 0.1,
-        defaultValue: 0.5,
-        unitsField: "units",
-        unitsDefault: "time",
-        unitsAllowed: ["time", "frames"],
-        conditions: [
-          {
-            key: "units",
-            ne: "frames",
-          },
-        ],
+        key: "units",
+        ne: "frames",
       },
+    ],
+  },
+  {
+    key: "frames",
+    label: l10n("FIELD_DURATION"),
+    description: l10n("FIELD_DURATION_WAIT_DESC"),
+    type: "value",
+    min: 0,
+    max: 3600,
+    width: "50%",
+    unitsField: "units",
+    unitsDefault: "time",
+    unitsAllowed: ["time", "frames"],
+    defaultValue: {
+      type: "number",
+      value: 1,
+    },
+    conditions: [
       {
-        key: "frames",
-        label: l10n("FIELD_DURATION"),
-        description: l10n("FIELD_DURATION_WAIT_DESC"),
-        type: "number",
-        min: 0,
-        max: 3600,
-        width: "50%",
-        defaultValue: 30,
-        unitsField: "units",
-        unitsDefault: "time",
-        unitsAllowed: ["time", "frames"],
-        conditions: [
-          {
-            key: "units",
-            eq: "frames",
-          },
-        ],
+        key: "units",
+        eq: "frames",
       },
     ],
   },
 ];
 
 const compile = (input, helpers) => {
-  const { wait } = helpers;
-  let frames = 0;
-  if (input.units === "frames") {
-    frames = typeof input.frames === "number" ? input.frames : 30;
-  } else {
-    const seconds = typeof input.time === "number" ? input.time : 0.5;
-    frames = Math.ceil(seconds * 60);
-  }
-  if (frames > 0) {
-    wait(frames);
-  }
+  const { waitScriptValue } = helpers;
+  const duration =
+    input.units === "frames" ? input.frames ?? 1 : input.time ?? 0.5;
+  waitScriptValue(duration, input.units ?? "time");
 };
 
 module.exports = {
