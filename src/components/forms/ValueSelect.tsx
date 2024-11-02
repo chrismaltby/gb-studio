@@ -45,6 +45,7 @@ import ScriptEventFormMathArea from "components/script/ScriptEventFormMatharea";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import {
   castEventToBool,
+  castEventToFloat,
   castEventToInt,
 } from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
@@ -944,7 +945,10 @@ const ValueSelect = ({
                 onChange={(e) => {
                   onChange({
                     type: "number",
-                    value: castEventToInt(e, 0),
+                    value:
+                      (step ?? 1) % 1 === 0
+                        ? castEventToInt(e, 0)
+                        : castEventToFloat(e, 0),
                   });
                 }}
                 onKeyDown={onKeyDown}
