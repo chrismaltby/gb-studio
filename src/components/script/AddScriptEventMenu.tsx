@@ -20,9 +20,11 @@ import {
   ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
+  CustomEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  customEventSelectors,
   emoteSelectors,
   musicSelectors,
   sceneSelectors,
@@ -32,7 +34,7 @@ import {
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import { EVENT_COMMENT, EVENT_TEXT } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -42,6 +44,7 @@ import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
 import { StyledMenu, StyledMenuItem } from "ui/menu/style";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -58,6 +61,7 @@ type MenuElement = HTMLDivElement & {
 
 interface EventOption {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
   value: string;
   group?: string;
   groupLabel?: string;
@@ -70,6 +74,7 @@ interface EventOption {
 
 interface EventOptGroup {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
   groupLabel?: string;
   options: EventOption[];
 }
@@ -242,6 +247,21 @@ const eventToOption =
       isFavorite: favorites.includes(event.id),
       subGroup,
     };
+  };
+
+const customEventToOption =
+  (scriptEventDefs: ScriptEventDefs) =>
+  (event: CustomEventNormalized): EventOption => {
+    return {
+      label: event.name,
+      displayLabel: `${l10n(EVENT_CALL_CUSTOM_EVENT)} "${event.name}"`,
+      value: `call_script_${event.id}`,
+      isFavorite: false,
+      event: scriptEventDefs[EVENT_CALL_CUSTOM_EVENT] as ScriptEventDef,
+      defaultArgs: {
+        customEventId: event.id,
+      },
+    } as EventOption;
   };
 
 const SelectMenu = styled.div`
@@ -520,6 +540,9 @@ const AddScriptEventMenu = ({
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefsWithPresets(state)
   );
+  const customEventsLookup = useAppSelector((state) =>
+    customEventSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -531,7 +554,13 @@ const AddScriptEventMenu = ({
     const eventList = (
       Object.values(scriptEventDefs).filter(identity) as ScriptEventDef[]
     ).filter(notDeprecated);
-    fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
+
+    const allEvents = ([] as EventOption[]).concat(
+      eventList.map(eventToOption(favoriteEvents)),
+      customEventsLookup.map(customEventToOption(scriptEventDefs))
+    );
+
+    fuseRef.current = new Fuse(allEvents, {
       includeScore: true,
       includeMatches: true,
       ignoreLocation: true,
@@ -613,7 +642,7 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [favoriteEvents, favoritesCache, scriptEventDefs]);
+  }, [customEventsLookup, favoriteEvents, favoritesCache, scriptEventDefs]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
@@ -871,6 +900,7 @@ const AddScriptEventMenu = ({
     return null;
   }
 
+  console.log(options);
   return (
     <SelectMenu>
       <Menu style={{ height: menuHeight }}>
@@ -925,11 +955,11 @@ const AddScriptEventMenu = ({
                 >
                   {searchTerm.length > 0 && highlightWords.length > 0 ? (
                     <HighlightWords
-                      text={option.label}
+                      text={option.displayLabel ?? option.label}
                       words={highlightWords}
                     />
                   ) : (
-                    option.label
+                    option.displayLabel ?? option.label
                   )}
 
                   {"options" in option ? (
@@ -985,7 +1015,7 @@ const AddScriptEventMenu = ({
                       onClick={() => onSelectOption(childOptionIndex)}
                       title={childOption.event.description}
                     >
-                      {childOption.label}
+                      {childOption.displayLabel ?? childOption.label}
                       <FlexGrow />
                       <MenuItemFavorite
                         $visible={
