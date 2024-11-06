@@ -32,7 +32,7 @@ import {
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import { EVENT_TEXT } from "consts";
+import { EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -634,9 +634,18 @@ const AddScriptEventMenu = ({
           ? searchOptions
           : [
               {
-                value: "",
+                value: "fallback_option_0",
                 label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
                 event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
+                defaultArgs: {
+                  text: [searchTerm],
+                },
+                isFavorite: false,
+              },
+              {
+                value: "fallback_option_1",
+                label: `${l10n(EVENT_COMMENT)} "${searchTerm}"`,
+                event: scriptEventDefs[EVENT_COMMENT] as ScriptEventDef,
                 defaultArgs: {
                   text: [searchTerm],
                 },
