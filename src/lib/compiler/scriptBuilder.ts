@@ -588,6 +588,10 @@ const textCodeGotoRel = (x: number, y: number): string => {
   return `\\004\\${decOct(x)}\\${decOct(y)}`;
 };
 
+const textCodeInput = (mask: number): string => {
+  return `\\006\\${decOct(mask)}`;
+};
+
 const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };
@@ -1956,6 +1960,8 @@ class ScriptBuilder {
         text += textCodeGotoRel(token.x, token.y);
       } else if (token.type === "gotoxy" && !token.relative) {
         text += textCodeGoto(token.x, token.y);
+      } else if (token.type === "input") {
+        text += textCodeInput(token.mask);
       }
     });
 

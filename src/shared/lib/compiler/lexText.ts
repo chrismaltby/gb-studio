@@ -36,6 +36,10 @@ export type Token =
       x: number;
       y: number;
       relative?: boolean;
+    }
+  | {
+      type: "input";
+      mask: number;
     };
 
 export const lexText = (inputText: string): Token[] => {
@@ -278,6 +282,25 @@ export const lexText = (inputText: string): Token[] => {
         relative: true,
       });
       i += 11;
+      continue;
+    }
+
+    // Check for gbvm wait for input
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "0" &&
+      inputText[i + 3] === "6" &&
+      inputText[i + 4] === "\\" &&
+      inputText[i + 5]?.match(/[0-7]/) &&
+      inputText[i + 6]?.match(/[0-7]/) &&
+      inputText[i + 7]?.match(/[0-7]/)
+    ) {
+      tokens.push({
+        type: "input",
+        mask: fromSigned8Bit(parseInt(inputText.substring(i + 5, i + 8), 8)),
+      });
+      i += 7;
       continue;
     }
 

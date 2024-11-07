@@ -199,7 +199,7 @@ export const getAutoLabel = (
             return `||variable:${t.variableId}||`;
           } else if (t.type === "char") {
             return `%c||variable:${t.variableId}||`;
-          } else if (t.type === "gotoxy") {
+          } else if (t.type === "gotoxy" || t.type === "input") {
             return " ";
           }
           return "";
