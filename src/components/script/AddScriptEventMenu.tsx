@@ -900,7 +900,6 @@ const AddScriptEventMenu = ({
     return null;
   }
 
-  console.log(options);
   return (
     <SelectMenu>
       <Menu style={{ height: menuHeight }}>
