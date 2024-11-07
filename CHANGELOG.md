@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add right click context menu to frames in Sprite Editor allowing copy/paste/clone/delete to be performed on all selected frames
 - Add ability to search and add scripts by name when adding events instead of needing to add a "Call Script" event and selecting the script manually from the dropdown each time [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to quickly create "Comment" events by typing the comment text in the Add Event search field and choosing "Comment" menu item [@pau-tomas](https://github.com/pau-tomas)
+- Add text code `!Wait` to allow pausing dialogue until a selected button has been pressed
 
 ### Changed
 

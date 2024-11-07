@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 
 export type ToggleButtonGroupOption<T> = {
@@ -10,6 +10,7 @@ export type ToggleButtonGroupOption<T> = {
 export type ToggleButtonGroupProps<T> = {
   name: string;
   options: ToggleButtonGroupOption<T>[];
+  autoFocus?: boolean;
 } & (
   | {
       multiple: true;
@@ -113,6 +114,7 @@ const Label = styled.label`
 export const ToggleButtonGroup = <T,>({
   name,
   options,
+  autoFocus,
   ...props
 }: ToggleButtonGroupProps<T>) => {
   const onChange = useCallback(
@@ -129,9 +131,21 @@ export const ToggleButtonGroup = <T,>({
     },
     [props]
   );
+
+  const autoFocusIndex = useMemo(() => {
+    if (!autoFocus) {
+      return 0;
+    }
+    const firstSelectedValue = props.multiple ? props.value[0] : props.value;
+    const firstSelectedIndex = options.findIndex(
+      (o) => o.value === firstSelectedValue
+    );
+    return firstSelectedIndex > -1 ? firstSelectedIndex : 0;
+  }, [autoFocus, options, props.multiple, props.value]);
+
   return (
     <ToggleButtonGroupWrapper>
-      {options.map((option) => (
+      {options.map((option, index) => (
         <Option key={String(option.value)}>
           <Input
             id={`${name}__${option.value}`}
@@ -143,6 +157,7 @@ export const ToggleButtonGroup = <T,>({
                 : option.value === props.value
             }
             onChange={() => onChange(option.value)}
+            autoFocus={autoFocus && index === autoFocusIndex}
           />
           <Label htmlFor={`${name}__${option.value}`} title={option.title}>
             {option.label}

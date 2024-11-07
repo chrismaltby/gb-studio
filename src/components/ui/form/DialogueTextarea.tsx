@@ -22,11 +22,14 @@ import { portalRoot } from "ui/layout/Portal";
 import { TextGotoSelect } from "components/forms/TextGotoSelect";
 import { decOct, fromSigned8Bit } from "shared/lib/helpers/8bit";
 import { ensureNumber } from "shared/types";
+import InputPicker from "components/forms/InputPicker";
+import { TextWaitInputSelect } from "components/forms/TextWaitInputSelect";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
 const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
+const inputRegex = /(\\006\\[0-7][0-7][0-7])/g;
 
 interface DialogueTextareaWrapperProps {
   $singleLine?: boolean;
@@ -197,6 +200,24 @@ const extractGotoCoords = (code: string): [number, number] => {
   ];
 };
 
+const buttons = ["right", "left", "up", "down", "a", "b", "select", "start"];
+
+const extractInputMask = (code: string) => {
+  const parts = code.split("\\");
+  const mask = fromSigned8Bit(parseInt(parts[2], 8));
+  return buttons.filter((_, index) => (mask & (1 << index)) !== 0);
+};
+
+const createMaskFromInput = (input: string[]): number => {
+  return input.reduce((mask, key) => {
+    const index = buttons.indexOf(key);
+    if (index !== -1) {
+      mask |= 1 << index;
+    }
+    return mask;
+  }, 0);
+};
+
 export interface DialogueTextareaProps {
   id?: string;
   value: string;
@@ -224,6 +245,14 @@ type EditModeOptions =
       offsetX: number;
       offsetY: number;
       relative: boolean;
+      x: number;
+      y: number;
+    }
+  | {
+      type: "input";
+      id: string;
+      index: number;
+      input: string[];
       x: number;
       y: number;
     }
@@ -291,6 +320,17 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         id: "\\004\\002\\002",
         display: l10n("FIELD_MOVE_CURSOR_POSITION_BY"),
         searchName: `cursormove ${l10n("FIELD_MOVE_CURSOR_POSITION_BY")}`,
+      },
+    ],
+    []
+  );
+
+  const waitCodes: ExtendedSuggestionDataItem[] = useMemo(
+    () => [
+      {
+        id: "\\006\\020",
+        display: l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED"),
+        searchName: `wait ${l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")}`,
       },
     ],
     []
@@ -374,6 +414,17 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       return searchLocalisedSuggestions(moveCodes, searchTermLowerCase);
     },
     [moveCodes, searchLocalisedSuggestions]
+  );
+
+  const searchWaitCodes = useCallback(
+    (searchTerm: string): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      if ("wait".includes(searchTermLowerCase)) {
+        return waitCodes;
+      }
+      return searchLocalisedSuggestions(waitCodes, searchTermLowerCase);
+    },
+    [waitCodes, searchLocalisedSuggestions]
   );
 
   return (
@@ -493,6 +544,34 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                   });
                   onChange(newValue);
                   setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+              />
+            )}
+            {editMode.type === "input" && (
+              <TextWaitInputSelect
+                value={editMode.input}
+                onChange={(v) => {
+                  if (v.length === 0) {
+                    return;
+                  }
+                  const mask = createMaskFromInput(v);
+                  let matches = 0;
+                  const newValue = value.replace(inputRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `\\006\\${decOct(mask).padStart(3, "0")}`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  setEditMode({
+                    ...editMode,
+                    input: v,
+                  });
+                  onChange(newValue);
                 }}
                 onBlur={() => {
                   setEditMode(undefined);
@@ -664,6 +743,38 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               offsetX,
               offsetY,
               relative: code[3] === "4",
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
+          isLoading={false}
+        />
+        <CustomMention
+          className="Mentions__TokenGoto"
+          trigger={/(!([\p{L}0-9]+))$/u}
+          data={searchWaitCodes}
+          markup={`__id__`}
+          regex={/(\\006\\[0-7][0-7][0-7])/}
+          displayTransform={(code: string) => {
+            const buttons = extractInputMask(code);
+            return `Ｗ(${buttons.join()})`;
+          }}
+          hoverTransform={(_code: string) =>
+            l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")
+          }
+          onClick={(e, code, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            const buttons = extractInputMask(code);
+            setEditMode({
+              type: "input",
+              id: code,
+              input: buttons,
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,

@@ -988,6 +988,7 @@
   "FIELD_HIDE_OTHER_LAYERS": "Hide Other Layers",
   "FIELD_SHOW_TILE_VALUES": "Show Tile Values",
   "FIELD_SUBMIT_PLUGIN": "Submit Plugin",
+  "FIELD_WAIT_UNTIL_BUTTON_PRESSED": "Wait Until Button Pressed",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
