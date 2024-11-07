@@ -28,6 +28,10 @@ import {
 } from "shared/lib/scripts/walk";
 import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  variableInDialogueText,
+  variableInExpressionText,
+} from "shared/lib/variables/variablesInText";
 
 export type VariableUse = {
   id: string;
@@ -132,25 +136,11 @@ workerCtx.onmessage = async (evt) => {
       const allText = String(
         Array.isArray(argValue) ? argValue.join("|") : argValue
       );
-      const textTokens = lexText(allText);
-      if (
-        textTokens.some(
-          (token) =>
-            token.type === "variable" &&
-            token.variableId.replace(/^0+/, "") === variableId
-        )
-      ) {
+      if (variableInDialogueText(variableId, allText)) {
         return true;
       }
     } else if (field.type === "matharea" && typeof argValue === "string") {
-      const expressionTokens = tokenizer(argValue);
-      if (
-        expressionTokens.some(
-          (token) =>
-            token.type === "VAR" &&
-            token.symbol.replace(/\$/g, "").replace(/^0/g, "") === variableId
-        )
-      ) {
+      if (variableInExpressionText(variableId, argValue)) {
         return true;
       }
     }

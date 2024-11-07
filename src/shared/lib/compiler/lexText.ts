@@ -1,6 +1,6 @@
 import { fromSigned8Bit } from "shared/lib/helpers/8bit";
 
-type Token =
+export type Token =
   | {
       type: "text";
       value: string;
