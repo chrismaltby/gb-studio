@@ -1,38 +1,52 @@
 import { compile } from "../../src/lib/events/eventWait";
 
 test("Should be able to wait for a second", () => {
-  const mockWait = jest.fn();
+  const mockWaitScriptValues = jest.fn();
   compile(
     {
       time: 1,
     },
     {
-      wait: mockWait,
+      waitScriptValue: mockWaitScriptValues,
     }
   );
-  expect(mockWait).toBeCalledWith(60);
+  expect(mockWaitScriptValues).toBeCalledWith(1, "time");
 });
 
 test("Should wait for half a second if time not set", () => {
-  const mockWait = jest.fn();
+  const mockWaitScriptValues = jest.fn();
   compile(
     {},
     {
-      wait: mockWait,
+      waitScriptValue: mockWaitScriptValues,
     }
   );
-  expect(mockWait).toBeCalledWith(30);
+  expect(mockWaitScriptValues).toBeCalledWith(0.5, "time");
 });
 
 test("Should be able to wait for one and a half seconds", () => {
-  const mockWait = jest.fn();
+  const mockWaitScriptValues = jest.fn();
   compile(
     {
       time: 1.5,
     },
     {
-      wait: mockWait,
+      waitScriptValue: mockWaitScriptValues,
     }
   );
-  expect(mockWait).toBeCalledWith(90);
+  expect(mockWaitScriptValues).toBeCalledWith(1.5, "time");
+});
+
+test("Should be able to wait for one frame", () => {
+  const mockWaitScriptValues = jest.fn();
+  compile(
+    {
+      frames: 1,
+      units: "frames",
+    },
+    {
+      waitScriptValue: mockWaitScriptValues,
+    }
+  );
+  expect(mockWaitScriptValues).toBeCalledWith(1, "frames");
 });

@@ -16,6 +16,7 @@ import type {
   ScriptEvent,
   CustomEvent,
   SoundData,
+  TimeUnitType,
 } from "shared/lib/entities/entitiesTypes";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -3949,6 +3950,40 @@ extern void __mute_mask_${symbol};
       this._invoke("wait_frames", 0, waitArgsRef);
       this._assertStackNeutral(stackPtr);
     }
+    this._addNL();
+  };
+
+  waitScriptValue = (duration: ScriptValue, units: TimeUnitType) => {
+    const waitArgsRef = this._declareLocal("wait_args", 1, true);
+    const stackPtr = this.stackPtr;
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(duration)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      const frames =
+        units === "time" ? Math.ceil(rpnOps[0].value * 60) : rpnOps[0].value;
+      this._addComment(`Wait ${frames} frames`);
+      if (frames < 5) {
+        for (let i = 0; i < frames; i++) {
+          this._idle();
+        }
+      } else {
+        this._setConst(waitArgsRef, Math.round(frames));
+        this._invoke("wait_frames", 0, waitArgsRef);
+      }
+    } else {
+      this._addComment(`Wait frames ${units}`);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      if (units === "time") {
+        rpn.int16(60);
+        rpn.operator(".MUL");
+      }
+      rpn.refSetVariable(waitArgsRef).stop();
+      this._invoke("wait_frames", 0, waitArgsRef);
+    }
+    this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 

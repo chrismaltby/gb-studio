@@ -3,11 +3,12 @@ import {
   ProjectResourcesMigration,
   applyProjectResourcesMigration,
 } from "./helpers";
-import { migrate410r1To420r1 } from "./versions/410to420";
+import { migrate410r1To420r1, migrate420r1To420r2 } from "./versions/410to420";
 
 const migrations: ProjectResourcesMigration[] = [
   // 4.1.0 to 4.2.0
   migrate410r1To420r1,
+  migrate420r1To420r2,
 ];
 
 const lastMigration = migrations[migrations.length - 1];
