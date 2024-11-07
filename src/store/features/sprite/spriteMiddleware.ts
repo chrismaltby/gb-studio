@@ -46,7 +46,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
     // Trigger recompile if sprite animations or tiles have changed
     if (
       entitiesActions.addMetasprite.match(action) ||
-      entitiesActions.cloneMetasprite.match(action) ||
+      entitiesActions.cloneMetasprites.match(action) ||
       entitiesActions.sendMetaspriteTilesToFront.match(action) ||
       entitiesActions.sendMetaspriteTilesToBack.match(action) ||
       entitiesActions.removeMetasprite.match(action) ||

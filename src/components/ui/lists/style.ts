@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 // #region EntityListItem
 
@@ -74,3 +74,40 @@ export const StyledEntityLabelColor = styled.div.attrs<StyledEntityLabelColorPro
 `;
 
 // #endregion EntityListItem
+
+// #region SortableList
+
+interface StyledSortableListProps {
+  $orientation?: "horizontal" | "vertical";
+  $gap: number;
+  $padding: number;
+}
+
+export const StyledSortableList = styled.div<StyledSortableListProps>`
+  display: flex;
+  gap: ${(props) => props.$gap}px;
+  padding: ${(props) => props.$padding}px;
+  ${(props) =>
+    props.$orientation === "vertical"
+      ? css`
+          flex-direction: column;
+          overflow: auto;
+          max-width: 100%;
+          max-height: 100%;
+          overflow-y: scroll;
+          overflow-y: auto;
+        `
+      : css`
+          overflow: auto;
+          max-width: 100%;
+          max-height: 100%;
+          overflow-x: scroll;
+          overflow-x: auto;
+        `};
+
+  & > * {
+    flex-shrink: 0;
+  }
+`;
+
+// #endregion SortableList

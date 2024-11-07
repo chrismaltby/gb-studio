@@ -89,10 +89,12 @@ export const MetaspriteCanvas = memo(
     }, [width, height, onWorkerComplete]);
 
     useEffect(() => {
-      if (tiles.length === 0) {
+      if (!canvasRef.current || !spriteSheet) {
         return;
       }
-      if (!canvasRef.current || !spriteSheet) {
+      if (tiles.length === 0) {
+        // eslint-disable-next-line no-self-assign
+        canvasRef.current.width = canvasRef.current.width;
         return;
       }
       const ctx = canvasRef.current.getContext("2d");

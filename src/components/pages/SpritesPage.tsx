@@ -93,6 +93,9 @@ const SpritesPage = () => {
   const metaspriteId = useAppSelector(
     (state) => state.editor.selectedMetaspriteId
   );
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds
+  );
   const precisionTileMode = useAppSelector(
     (state) => state.editor.precisionTileMode
   );
@@ -427,6 +430,7 @@ const SpritesPage = () => {
             spriteSheetId={viewSpriteId}
             animationId={selectedAnimation?.id || ""}
             metaspriteId={selectedMetaspriteId}
+            additionalMetaspriteIds={selectedAdditionalMetaspriteIds}
           />
         )}
       </div>

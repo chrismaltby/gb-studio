@@ -140,6 +140,7 @@ export interface EditorState {
   selectedSpriteStateId: string;
   selectedAnimationId: string;
   selectedMetaspriteId: string;
+  selectedAdditionalMetaspriteIds: string[];
   selectedMetaspriteTileIds: string[];
   showSpriteGrid: boolean;
   showOnionSkin: boolean;
@@ -211,6 +212,7 @@ export const initialState: EditorState = {
   selectedSpriteStateId: "",
   selectedAnimationId: "",
   selectedMetaspriteId: "",
+  selectedAdditionalMetaspriteIds: [],
   selectedMetaspriteTileIds: [],
   showSpriteGrid: true,
   showOnionSkin: false,
@@ -688,6 +690,7 @@ const editorSlice = createSlice({
       state.selectedSpriteStateId = "";
       state.selectedAnimationId = "";
       state.selectedMetaspriteId = "";
+      state.selectedAdditionalMetaspriteIds = [];
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
       state.replaceSpriteTileMode = false;
@@ -704,15 +707,67 @@ const editorSlice = createSlice({
       state.selectedAnimationId = action.payload.animationId;
       state.selectedSpriteStateId = action.payload.stateId;
       state.selectedMetaspriteId = "";
+      state.selectedAdditionalMetaspriteIds = [];
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
       state.replaceSpriteTileMode = false;
     },
 
     setSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
+      if (!state.selectedAdditionalMetaspriteIds.includes(action.payload)) {
+        state.selectedAdditionalMetaspriteIds = [action.payload];
+      }
       state.selectedMetaspriteId = action.payload;
+
       state.selectedMetaspriteTileIds = [];
       state.replaceSpriteTileMode = false;
+    },
+
+    toggleMultiSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
+      // Don't remove if this is the current metasprite
+      if (action.payload === state.selectedMetaspriteId) {
+        return;
+      }
+      if (state.selectedAdditionalMetaspriteIds.indexOf(action.payload) > -1) {
+        state.selectedAdditionalMetaspriteIds =
+          state.selectedAdditionalMetaspriteIds.filter(
+            (id) => id !== action.payload
+          );
+      } else {
+        if (state.selectedAdditionalMetaspriteIds.length === 0) {
+          // If no multiselection currently set selected metasprite to this
+          // fixes issue when making a multi selection when when no frame selected
+          // e.g when IDE is defaulting to first frame after selecting sprite
+          state.selectedMetaspriteId = action.payload;
+        }
+        state.selectedAdditionalMetaspriteIds.push(action.payload);
+      }
+      state.playSpriteAnimation = false;
+    },
+
+    addMetaspriteIdsToMultiSelection: (
+      state,
+      action: PayloadAction<string[]>
+    ) => {
+      for (const frame of action.payload) {
+        if (state.selectedAdditionalMetaspriteIds.indexOf(frame) === -1) {
+          if (state.selectedAdditionalMetaspriteIds.length === 0) {
+            // If no multiselection currently set selected metasprite to this
+            // fixes issue when making a multi selection when when no frame selected
+            // e.g when IDE is defaulting to first frame after selecting sprite
+            state.selectedMetaspriteId = frame;
+          }
+          state.selectedAdditionalMetaspriteIds.push(frame);
+        }
+      }
+      state.playSpriteAnimation = false;
+    },
+
+    clearMultiSelectedMetaspriteId: (state) => {
+      state.selectedAdditionalMetaspriteIds = state.selectedMetaspriteId
+        ? [state.selectedMetaspriteId]
+        : [];
+      state.playSpriteAnimation = false;
     },
 
     setSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
@@ -936,10 +991,14 @@ const editorSlice = createSlice({
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;
+        state.selectedAdditionalMetaspriteIds = [action.payload.metaspriteId];
         state.selectedMetaspriteTileIds = [];
       })
-      .addCase(entitiesActions.cloneMetasprite, (state, action) => {
-        state.selectedMetaspriteId = action.payload.newMetaspriteId;
+      .addCase(entitiesActions.cloneMetasprites, (state, action) => {
+        state.selectedMetaspriteId = action.payload.newMetaspriteIds[0];
+        state.selectedAdditionalMetaspriteIds = [
+          action.payload.newMetaspriteIds[0],
+        ];
         state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.addMetaspriteTile, (state, _action) => {
@@ -990,12 +1049,14 @@ const editorSlice = createSlice({
       })
       .addCase(entitiesActions.removeMetasprite, (state, _action) => {
         state.selectedMetaspriteId = "";
+        state.selectedAdditionalMetaspriteIds = [];
         state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.removeSpriteState, (state, _action) => {
         state.selectedSpriteStateId = "";
         state.selectedAnimationId = "";
         state.selectedMetaspriteId = "";
+        state.selectedAdditionalMetaspriteIds = [];
         state.selectedMetaspriteTileIds = [];
       })
       // Set to world editor when moving player start position
@@ -1040,6 +1101,7 @@ const editorSlice = createSlice({
         state.selectedAnimationId = action.payload.spriteAnimations[0].id;
         state.selectedMetaspriteId =
           action.payload.spriteAnimations[0].frames[0];
+        state.selectedAdditionalMetaspriteIds = [state.selectedMetaspriteId];
       })
       // When painting slope stop slope preview
       .addCase(entitiesActions.paintSlopeCollision, (state) => {

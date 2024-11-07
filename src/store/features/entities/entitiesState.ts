@@ -86,7 +86,6 @@ import {
   renameAssetEntity,
   defaultLocalisedCustomEventName,
   paletteName,
-  moveArrayElement,
   updateCustomEventArgs,
   updateAllCustomEventsArgs,
   normalizeEntityResources,
@@ -118,6 +117,12 @@ import {
   SpriteResourceAsset,
   TilesetResourceAsset,
 } from "shared/lib/resources/types";
+import {
+  insertAfterElement,
+  moveArrayElement,
+  moveArrayElements,
+  sortSubsetStringArray,
+} from "shared/lib/helpers/array";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2231,6 +2236,7 @@ const addMetasprite: CaseReducer<
   PayloadAction<{
     metaspriteId: string;
     spriteAnimationId: string;
+    afterMetaspriteId: string;
   }>
 > = (state, action) => {
   const spriteAnimation =
@@ -2245,110 +2251,78 @@ const addMetasprite: CaseReducer<
     tiles: [],
   };
 
-  // Add to sprite animation
-  spriteAnimation.frames = ([] as string[]).concat(
+  spriteAnimation.frames = insertAfterElement(
     spriteAnimation.frames,
-    newMetasprite.id
+    newMetasprite.id,
+    action.payload.afterMetaspriteId
   );
+
   metaspritesAdapter.addOne(state.metasprites, newMetasprite);
 };
 
-const cloneMetasprite: CaseReducer<
+const cloneMetasprites: CaseReducer<
   EntitiesState,
   PayloadAction<{
     spriteAnimationId: string;
-    metaspriteId: string;
-    newMetaspriteId: string;
+    metaspriteIds: string[];
+    newMetaspriteIds: string[];
   }>
 > = (state, action) => {
   const spriteAnimation =
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
 
-  if (!spriteAnimation || !metasprite) {
+  if (!spriteAnimation) {
     return;
   }
 
-  const metaspriteTiles = metasprite.tiles
-    .map((id) => state.metaspriteTiles.entities[id])
-    .filter((i) => i) as MetaspriteTile[];
-
-  const newMetaspriteTiles = metaspriteTiles.map((tile) => ({
-    ...tile,
-    id: uuid(),
-  }));
-
-  const newMetasprite = {
-    ...metasprite,
-    id: action.payload.newMetaspriteId,
-    tiles: newMetaspriteTiles.map((tile) => tile.id),
-  };
-
-  // Add to sprite animation
-  spriteAnimation.frames = ([] as string[]).concat(
-    spriteAnimation.frames,
-    newMetasprite.id
+  const sortedMetaspriteIds = sortSubsetStringArray(
+    action.payload.metaspriteIds,
+    spriteAnimation.frames
   );
-  metaspritesAdapter.addOne(state.metasprites, newMetasprite);
-  metaspriteTilesAdapter.addMany(state.metaspriteTiles, newMetaspriteTiles);
-};
 
-const sendMetaspriteTilesToFront: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    metaspriteId: string;
-    metaspriteTileIds: string[];
-    spriteSheetId: string;
-  }>
-> = (state, action) => {
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
-
-  if (!metasprite) {
+  if (sortedMetaspriteIds.length > action.payload.newMetaspriteIds.length) {
     return;
   }
 
-  const newTiles = ([] as string[]).concat(
-    metasprite.tiles.filter(
-      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
-    ),
-    action.payload.metaspriteTileIds
-  );
+  for (let i = 0; i < sortedMetaspriteIds.length; i++) {
+    const fromMetaspriteId = sortedMetaspriteIds[i];
+    const toMetaspriteId = action.payload.newMetaspriteIds[i];
 
-  metaspritesAdapter.updateOne(state.metasprites, {
-    id: action.payload.metaspriteId,
-    changes: {
-      tiles: newTiles,
-    },
-  });
-};
+    const metasprite = state.metasprites.entities[fromMetaspriteId];
 
-const sendMetaspriteTilesToBack: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    metaspriteId: string;
-    metaspriteTileIds: string[];
-    spriteSheetId: string;
-  }>
-> = (state, action) => {
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+    if (!spriteAnimation || !metasprite) {
+      continue;
+    }
 
-  if (!metasprite) {
-    return;
+    const metaspriteTiles = metasprite.tiles
+      .map((id) => state.metaspriteTiles.entities[id])
+      .filter((i) => i) as MetaspriteTile[];
+
+    const newMetaspriteTiles = metaspriteTiles.map((tile) => ({
+      ...tile,
+      id: uuid(),
+    }));
+
+    const newMetasprite = {
+      ...metasprite,
+      id: toMetaspriteId,
+      tiles: newMetaspriteTiles.map((tile) => tile.id),
+    };
+
+    const insertAfterId =
+      i === 0
+        ? sortedMetaspriteIds[sortedMetaspriteIds.length - 1]
+        : action.payload.newMetaspriteIds[i - 1];
+
+    spriteAnimation.frames = insertAfterElement(
+      spriteAnimation.frames,
+      newMetasprite.id,
+      insertAfterId
+    );
+
+    metaspritesAdapter.addOne(state.metasprites, newMetasprite);
+    metaspriteTilesAdapter.addMany(state.metaspriteTiles, newMetaspriteTiles);
   }
-
-  const newTiles = ([] as string[]).concat(
-    action.payload.metaspriteTileIds,
-    metasprite.tiles.filter(
-      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
-    )
-  );
-
-  metaspritesAdapter.updateOne(state.metasprites, {
-    id: action.payload.metaspriteId,
-    changes: {
-      tiles: newTiles,
-    },
-  });
 };
 
 const removeMetasprite: CaseReducer<
@@ -2378,6 +2352,48 @@ const removeMetasprite: CaseReducer<
   );
 
   metaspritesAdapter.removeOne(state.metasprites, action.payload.metaspriteId);
+};
+
+const removeMetasprites: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimationId: string;
+    metaspriteIds: string[];
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newFrames = spriteAnimation.frames.filter(
+    (frameId) => !action.payload.metaspriteIds.includes(frameId)
+  );
+
+  if (newFrames.length > 0) {
+    spriteAnimation.frames = newFrames;
+    metaspritesAdapter.removeMany(
+      state.metasprites,
+      action.payload.metaspriteIds
+    );
+  } else if (newFrames.length === 0 && spriteAnimation.frames[0]) {
+    // if frames list would be empty keep first frame but clear tiles
+    const keepId = spriteAnimation.frames[0];
+    spriteAnimation.frames = [keepId];
+    metaspritesAdapter.updateOne(state.metasprites, {
+      id: keepId,
+      changes: {
+        tiles: [],
+      },
+    });
+    metaspritesAdapter.removeMany(
+      state.metasprites,
+      action.payload.metaspriteIds.filter((id) => id !== keepId)
+    );
+  }
 };
 
 /**************************************************************************
@@ -2578,6 +2594,64 @@ const editMetaspriteTiles: CaseReducer<
   );
 };
 
+const sendMetaspriteTilesToFront: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileIds: string[];
+    spriteSheetId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    metasprite.tiles.filter(
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
+    ),
+    action.payload.metaspriteTileIds
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
+const sendMetaspriteTilesToBack: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileIds: string[];
+    spriteSheetId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    action.payload.metaspriteTileIds,
+    metasprite.tiles.filter(
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
+    )
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
 const removeMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -2686,6 +2760,36 @@ const moveSpriteAnimationFrame: CaseReducer<
 
   const newFrames = moveArrayElement(
     action.payload.fromIndex,
+    action.payload.toIndex,
+    spriteAnimation.frames
+  );
+
+  spriteAnimationsAdapter.updateOne(state.spriteAnimations, {
+    id: action.payload.spriteAnimationId,
+    changes: {
+      frames: newFrames,
+    },
+  });
+};
+
+const moveSpriteAnimationFrames: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimationId: string;
+    fromIndexes: number[];
+    toIndex: number;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newFrames = moveArrayElements(
+    action.payload.fromIndexes,
     action.payload.toIndex,
     spriteAnimation.frames
   );
@@ -4284,6 +4388,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         spriteAnimationId: string;
         spriteSheetId: string;
+        afterMetaspriteId: string;
       }) => {
         return {
           payload: {
@@ -4294,17 +4399,17 @@ const entitiesSlice = createSlice({
       },
     },
 
-    cloneMetasprite: {
-      reducer: cloneMetasprite,
+    cloneMetasprites: {
+      reducer: cloneMetasprites,
       prepare: (payload: {
         spriteSheetId: string;
         spriteAnimationId: string;
-        metaspriteId: string;
+        metaspriteIds: string[];
       }) => {
         return {
           payload: {
             ...payload,
-            newMetaspriteId: uuid(),
+            newMetaspriteIds: payload.metaspriteIds.map(() => uuid()),
           },
         };
       },
@@ -4313,6 +4418,7 @@ const entitiesSlice = createSlice({
     sendMetaspriteTilesToFront,
     sendMetaspriteTilesToBack,
     removeMetasprite,
+    removeMetasprites,
 
     /**************************************************************************
      * Metasprite Tiles
@@ -4357,6 +4463,7 @@ const entitiesSlice = createSlice({
 
     editSpriteAnimation,
     moveSpriteAnimationFrame,
+    moveSpriteAnimationFrames,
 
     /**************************************************************************
      * Sprite States

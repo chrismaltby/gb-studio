@@ -310,9 +310,10 @@ export const SpriteEditor = ({
     dispatch(
       clipboardActions.copyMetasprites({
         metaspriteIds: [metaspriteId],
+        spriteAnimationId: animationId,
       })
     );
-  }, [dispatch, metaspriteId]);
+  }, [animationId, dispatch, metaspriteId]);
 
   const onCopySpriteState = useCallback(() => {
     dispatch(
