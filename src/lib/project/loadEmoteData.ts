@@ -59,7 +59,7 @@ const loadAllEmoteData = async (
     `${projectRoot}/assets/emotes/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/emotes/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/emotes/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(

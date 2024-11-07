@@ -237,7 +237,7 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/events/event*.js`
+    `${projectRoot}/plugins/*/**/events/event*.js`
   );
 
   const eventHandlers: ScriptEventHandlers = {};

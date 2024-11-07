@@ -66,7 +66,7 @@ const loadAllBackgroundData = async (projectRoot: string) => {
     `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/backgrounds/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/backgrounds/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(
