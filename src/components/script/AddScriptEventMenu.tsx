@@ -62,6 +62,7 @@ type MenuElement = HTMLDivElement & {
 interface EventOption {
   label: string;
   displayLabel?: string; // non searchable label, used only to display in the menu
+  description?: string; // override tooltip
   value: string;
   group?: string;
   groupLabel?: string;
@@ -255,6 +256,7 @@ const customEventToOption =
     return {
       label: event.name,
       displayLabel: `${l10n(EVENT_CALL_CUSTOM_EVENT)} "${event.name}"`,
+      description: event.description.trim(),
       value: `call_script_${event.id}`,
       isFavorite: false,
       event: scriptEventDefs[EVENT_CALL_CUSTOM_EVENT] as ScriptEventDef,
@@ -263,6 +265,25 @@ const customEventToOption =
       },
     } as EventOption;
   };
+
+const titleForOption = (
+  option: EventOption | EventOptGroup
+): string | undefined => {
+  // If option description is provided with a non-empty
+  // string then use that as the title for menu item
+  if (
+    "description" in option &&
+    option.description &&
+    option.description.length > 0
+  ) {
+    return option.description;
+  }
+  // Otherwise use event description if available
+  if ("event" in option) {
+    return option.event.description;
+  }
+  return undefined;
+};
 
 const SelectMenu = styled.div`
   width: 300px;
@@ -948,9 +969,7 @@ const AddScriptEventMenu = ({
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
                   onClick={() => onSelectOption(optionIndex)}
-                  title={
-                    "event" in option ? option.event.description : undefined
-                  }
+                  title={titleForOption(option)}
                 >
                   {searchTerm.length > 0 && highlightWords.length > 0 ? (
                     <HighlightWords
@@ -1012,7 +1031,7 @@ const AddScriptEventMenu = ({
                       selected={selectedIndex === childOptionIndex}
                       onMouseOver={() => setSelectedIndex(childOptionIndex)}
                       onClick={() => onSelectOption(childOptionIndex)}
-                      title={childOption.event.description}
+                      title={titleForOption(childOption)}
                     >
                       {childOption.displayLabel ?? childOption.label}
                       <FlexGrow />
