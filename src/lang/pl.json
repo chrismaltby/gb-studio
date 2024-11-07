@@ -513,7 +513,7 @@
   "FIELD_ENABLED": "włączone",
   "FIELD_ADD_FRAME": "Dodaj klatkę",
   "FIELD_CLONE_FRAME": "Klonuj klatkę",
-  "FIELD_CLONE_FRAMES": "Klonuj klatki"
+  "FIELD_CLONE_FRAMES": "Klonuj klatki",
   "FIELD_ANIMATION_STATE": "Stan animacji",
   "FIELD_ANIMATION_STATE_DESC": "Ustawienie stanu animacji do użycia.",
   "FIELD_ADD_ANIMATION_STATE": "Dodaj stan animacji",
