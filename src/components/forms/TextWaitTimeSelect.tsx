@@ -1,13 +1,18 @@
-import InputPicker from "components/forms/InputPicker";
+import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 import React, { useEffect, useRef } from "react";
 import { useCallback } from "react";
+import { TimeUnitType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
+import { ensureNumber } from "shared/types";
 import styled from "styled-components";
 import { FormField, FormRow } from "ui/form/layout/FormLayout";
+import { NumberInput } from "ui/form/NumberInput";
 
-interface TextWaitInputSelectProps {
-  value: string[];
-  onChange: (newValue: string[]) => void;
+interface TextWaitTimeSelectProps {
+  value: number;
+  units: "frames" | "time";
+  onChange: (newValue: number) => void;
+  onChangeUnits: (newUnits: "frames" | "time") => void;
   onBlur: () => void;
 }
 
@@ -16,11 +21,13 @@ const Form = styled.form`
   padding-top: 5px;
 `;
 
-export const TextWaitInputSelect = ({
+export const TextWaitTimeSelect = ({
   value,
+  units,
   onChange,
+  onChangeUnits,
   onBlur,
-}: TextWaitInputSelectProps) => {
+}: TextWaitTimeSelectProps) => {
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const debouncedLeave = useCallback(() => {
@@ -61,15 +68,28 @@ export const TextWaitInputSelect = ({
     <Form onFocus={onFocus} onBlur={onFocusOut}>
       <FormRow>
         <FormField
-          name="replaceInput"
-          label={l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")}
+          name="replaceWaitTime"
+          label={
+            <>
+              {l10n("EVENT_WAIT")}
+              <UnitSelectLabelButton
+                value={units}
+                allowedValues={["time", "frames"]}
+                onChange={(value) => {
+                  onChangeUnits(value as TimeUnitType);
+                }}
+              />
+            </>
+          }
         >
-          <InputPicker
-            id="replaceInput"
+          <NumberInput
+            id="replaceWaitTime"
             value={value}
-            onChange={onChange}
+            onChange={(e) => {
+              const value = ensureNumber(parseFloat(e.currentTarget.value), 0);
+              onChange(value);
+            }}
             autoFocus
-            multiple
           />
         </FormField>
       </FormRow>

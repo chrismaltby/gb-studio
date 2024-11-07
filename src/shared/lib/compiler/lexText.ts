@@ -1,4 +1,5 @@
 import { fromSigned8Bit } from "shared/lib/helpers/8bit";
+import { ensureNumber } from "shared/types";
 
 export type Token =
   | {
@@ -40,6 +41,10 @@ export type Token =
   | {
       type: "input";
       mask: number;
+    }
+  | {
+      type: "wait";
+      time: number;
     };
 
 export const lexText = (inputText: string): Token[] => {
@@ -301,6 +306,21 @@ export const lexText = (inputText: string): Token[] => {
         mask: fromSigned8Bit(parseInt(inputText.substring(i + 5, i + 8), 8)),
       });
       i += 7;
+      continue;
+    }
+
+    // Check for wait time
+    if (
+      inputText[i] === "!" &&
+      inputText[i + 1] === "W" &&
+      inputText[i + 2] === ":"
+    ) {
+      const time = inputText.substring(i + 3, i + 8).replace(/!.*/, "");
+      i += time.length + 3;
+      tokens.push({
+        type: "wait",
+        time: ensureNumber(parseInt(time, 10), 30),
+      });
       continue;
     }
 

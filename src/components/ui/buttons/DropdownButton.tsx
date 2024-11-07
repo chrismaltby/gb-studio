@@ -533,6 +533,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           tabIndex={0}
           ref={buttonRef}
           role={"button"}
+          type="button"
           aria-haspopup={true}
           aria-expanded={isOpen}
           onMouseDown={onMouseDown}

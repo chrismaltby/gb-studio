@@ -81,6 +81,10 @@ import keyBy from "lodash/keyBy";
 import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
+import {
+  parseWaitCodeFrames,
+  splitTextOnWaitCodes,
+} from "shared/lib/text/textCodes";
 
 export type ScriptOutput = string[];
 
@@ -1876,11 +1880,63 @@ class ScriptBuilder {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
 
-  _loadStructuredText = (
-    inputText: string,
-    avatarIndex?: number,
-    scrollHeight?: number
-  ) => {
+  _injectScrollCode = (inputText: string, scrollHeight?: number) => {
+    let text = inputText;
+    // Replace newlines with scroll code if larger than max dialogue size
+    if (scrollHeight) {
+      let numNewlines = 0;
+      text = text.replace(/(\\012|\n)/g, (newline) => {
+        numNewlines++;
+        if (numNewlines > scrollHeight - 1) {
+          return "\\015";
+        }
+        return newline;
+      });
+    }
+    return text;
+  };
+
+  _getAvatarCode = (avatarIndex?: number) => {
+    if (avatarIndex === undefined) {
+      return "";
+    }
+    const { fonts } = this.options;
+    const avatarFontSize = 16;
+    const fontIndex = fonts.length + Math.floor(avatarIndex / avatarFontSize);
+    const baseCharCode = ((avatarIndex * 4) % (avatarFontSize * 4)) + 64;
+    return `${textCodeSetSpeed(0)}${textCodeSetFont(
+      fontIndex
+    )}${String.fromCharCode(baseCharCode)}${String.fromCharCode(
+      baseCharCode + 1
+    )}\\n${String.fromCharCode(baseCharCode + 2)}${String.fromCharCode(
+      baseCharCode + 3
+    )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(0)}`;
+  };
+
+  _loadAndDisplayChunkedStructuredText = (inputText: string) => {
+    const waitArgsRef = this._declareLocal("wait_args", 1, true);
+    let lastWait = -1;
+    // Split into chunks where wait frames code is found
+    const textParts = splitTextOnWaitCodes(inputText);
+    for (let tp = 0; tp < textParts.length; tp++) {
+      const textPart = textParts[tp];
+      const waitFrames = parseWaitCodeFrames(textPart);
+      // Replace wait codes with calls to wait_frames function
+      if (waitFrames !== undefined) {
+        this._overlayWait(true, [".UI_WAIT_TEXT"]);
+        if (lastWait !== waitFrames) {
+          this._setConst(waitArgsRef, Math.round(waitFrames));
+          lastWait = waitFrames;
+        }
+        this._invoke("wait_frames", 0, waitArgsRef);
+      } else {
+        this._loadStructuredText(textPart);
+        this._displayText(tp !== 0);
+      }
+    }
+  };
+
+  _loadStructuredText = (inputText: string) => {
     const { fonts, defaultFontId } = this.options;
     let font = fonts.find((f) => f.id === defaultFontId);
 
@@ -1964,18 +2020,6 @@ class ScriptBuilder {
       }
     });
 
-    // Replace newlines with scroll code if larger than max dialogue size
-    if (scrollHeight) {
-      let numNewlines = 0;
-      text = text.replace(/\\012/g, (newline) => {
-        numNewlines++;
-        if (numNewlines > scrollHeight - 1) {
-          return "\\015";
-        }
-        return newline;
-      });
-    }
-
     if (indirectVars.length > 0) {
       for (const indirectVar of indirectVars) {
         this._getInd(indirectVar.local, indirectVar.arg);
@@ -1988,28 +2032,19 @@ class ScriptBuilder {
       this._dw(...usedVariableAliases);
     }
 
-    // Add avatar
-    if (avatarIndex !== undefined) {
-      const { fonts } = this.options;
-      const avatarFontSize = 16;
-      const fontIndex = fonts.length + Math.floor(avatarIndex / avatarFontSize);
-      const baseCharCode = ((avatarIndex * 4) % (avatarFontSize * 4)) + 64;
-      text = `${textCodeSetSpeed(0)}${textCodeSetFont(
-        fontIndex
-      )}${String.fromCharCode(baseCharCode)}${String.fromCharCode(
-        baseCharCode + 1
-      )}\\n${String.fromCharCode(baseCharCode + 2)}${String.fromCharCode(
-        baseCharCode + 3
-      )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(
-        0
-      )}${text}`;
-    }
-
     this._string(text);
   };
 
-  _displayText = () => {
-    this._addCmd("VM_DISPLAY_TEXT");
+  _displayText = (preservePos?: boolean, startTile?: number) => {
+    if (preservePos || startTile !== undefined) {
+      this._addCmd(
+        "VM_DISPLAY_TEXT_EX",
+        preservePos ? ".DISPLAY_PRESERVE_POS" : ".DISPLAY_DEFAULT",
+        startTile ?? ".TEXT_TILE_CONTINUE"
+      );
+    } else {
+      this._addCmd("VM_DISPLAY_TEXT");
+    }
   };
 
   _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
@@ -4060,11 +4095,6 @@ extern void __mute_mask_${symbol};
         }
       }
 
-      this._loadStructuredText(
-        `${textPosSequence}${text}`,
-        avatarIndex,
-        textHeight
-      );
       if (clearPrevious) {
         this._overlayClear(
           0,
@@ -4095,7 +4125,11 @@ extern void __mute_mask_${symbol};
         );
       }
 
-      this._displayText();
+      const decoratedText = `${this._getAvatarCode(
+        avatarIndex
+      )}${textPosSequence}${this._injectScrollCode(text, textHeight)}`;
+
+      this._loadAndDisplayChunkedStructuredText(decoratedText);
 
       if (isModal) {
         const waitFlags: ScriptBuilderOverlayWaitFlag[] = [
@@ -4179,8 +4213,10 @@ extern void __mute_mask_${symbol};
       this._setTextLayer(".TEXT_LAYER_BKG");
     }
 
-    this._loadStructuredText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
-    this._displayText();
+    this._loadAndDisplayChunkedStructuredText(
+      `\\003\\${drawX}\\${drawY}\\001\\001${inputText}`
+    );
+
     this._overlayWait(false, [".UI_WAIT_TEXT"]);
 
     if (location === "background") {
@@ -4230,10 +4266,9 @@ extern void __mute_mask_${symbol};
       dest = menuResultRef;
     }
 
-    this._loadStructuredText(choiceText);
     this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
-    this._displayText();
+    this._loadAndDisplayChunkedStructuredText(choiceText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
     this._menuItem(1, 1, 0, 0, 0, 2);
@@ -4292,13 +4327,12 @@ extern void __mute_mask_${symbol};
       dest = menuResultRef;
     }
 
-    this._loadStructuredText(menuText);
     this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true, true);
     if (layout === "menu") {
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_IN_SPEED");
-    this._displayText();
+    this._loadAndDisplayChunkedStructuredText(menuText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, choiceFlags, numLines);
 

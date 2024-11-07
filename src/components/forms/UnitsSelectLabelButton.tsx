@@ -70,6 +70,7 @@ export const UnitSelectLabelButton = ({
           showArrow={false}
           size="small"
           variant="transparent"
+          type="button"
         >
           {allValues.map((item) => (
             <MenuItem
@@ -82,7 +83,7 @@ export const UnitSelectLabelButton = ({
           ))}
         </DropdownButton>
       ) : (
-        <Button size="small" variant="transparent">
+        <Button size="small" variant="transparent" type="button">
           {currentValue}
         </Button>
       )}

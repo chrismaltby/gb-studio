@@ -94,7 +94,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
       0
     );
     return (
-      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>
         <PreviewWrapper>
           {Array.isArray(text) ? (
             text.map((text: string, index) => (
@@ -146,7 +146,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
       0
     );
     return (
-      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>
         <PreviewWrapper>
           <DialoguePreview
             text={text}
@@ -175,7 +175,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     ].splice(0, toInt(event.args?.items));
 
     return (
-      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>
         <MenuPreview
           items={items}
           layout={event.args?.layout === "dialogue" ? "dialogue" : "menu"}
@@ -191,7 +191,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     ];
 
     return (
-      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>
         <MenuPreview items={items} layout="dialogue" />
       </RelativePortal>
     );
