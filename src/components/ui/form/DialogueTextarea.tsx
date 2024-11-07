@@ -159,7 +159,8 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     }
   }
 
-  .Mentions__TokenGoto {
+  .Mentions__TokenGoto,
+  .Mentions__TokenInput {
     position: relative;
     z-index: 1;
     cursor: pointer;
@@ -722,7 +723,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             const [offsetX, offsetY] = extractGotoCoords(code);
             return `${code[3] === "3" ? "Ｐ" : "Ｍ"}(${
               code[3] === "3" || offsetX < 0 ? offsetX : `+${offsetX}`
-            },${code[3] === "3" || offsetY < 0 ? offsetY : `+${offsetY}`})`;
+            }﹐${code[3] === "3" || offsetY < 0 ? offsetY : `+${offsetY}`})`;
           }}
           hoverTransform={(code) =>
             code[3] === "3"
@@ -751,14 +752,14 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           isLoading={false}
         />
         <CustomMention
-          className="Mentions__TokenGoto"
+          className="Mentions__TokenInput"
           trigger={/(!([\p{L}0-9]+))$/u}
           data={searchWaitCodes}
           markup={`__id__`}
           regex={/(\\006\\[0-7][0-7][0-7])/}
           displayTransform={(code: string) => {
             const buttons = extractInputMask(code);
-            return `Ｗ(${buttons.join()})`;
+            return `Ｗ(${buttons.join("﹐")})`;
           }}
           hoverTransform={(_code: string) =>
             l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")
