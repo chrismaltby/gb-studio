@@ -41,20 +41,15 @@ export const migrateFrom420r1To420r2Event: ScriptEventMigrationFn = (
   if (scriptEvent.args && scriptEvent.command === "EVENT_WAIT") {
     const args: Record<string, unknown> = { ...scriptEvent.args };
     // Convert to constvalue
-    console.log(">>", args);
-    if (args["frames"]) {
-      args["frames"] = {
-        type: "number",
-        value: args["frames"],
-      };
-    }
-    if (args["time"]) {
-      args["time"] = {
-        type: "number",
-        value: args["time"],
-      };
-    }
-    console.log("<<", args);
+    args["frames"] = {
+      type: "number",
+      value: typeof args["frames"] === "number" ? args["frames"] : 30,
+    };
+    args["time"] = {
+      type: "number",
+      value: typeof args["time"] === "number" ? args["time"] : 0.5,
+    };
+
     return {
       ...scriptEvent,
       args,

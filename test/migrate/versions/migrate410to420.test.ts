@@ -108,6 +108,50 @@ describe("migrateFrom420r1To420r2Event", () => {
     expect(output.args?.units).toEqual("frames");
   });
 
+  test("Should convert EVENT_WAIT both frames and time fields to const values", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_WAIT",
+      args: {
+        units: "frames",
+        time: 10.4,
+        frames: 12,
+      },
+    };
+    const output = migrateFrom420r1To420r2Event(input);
+    expect(output.id).toEqual(input.id);
+    expect(output.args?.frames).toEqual({
+      type: "number",
+      value: 12,
+    });
+    expect(output.args?.time).toEqual({
+      type: "number",
+      value: 10.4,
+    });
+    expect(output.args?.units).toEqual("frames");
+  });
+
+  test("Should convert EVENT_WAIT using default values if missing", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_WAIT",
+      args: {
+        units: "frames",
+      },
+    };
+    const output = migrateFrom420r1To420r2Event(input);
+    expect(output.id).toEqual(input.id);
+    expect(output.args?.frames).toEqual({
+      type: "number",
+      value: 30,
+    });
+    expect(output.args?.time).toEqual({
+      type: "number",
+      value: 0.5,
+    });
+    expect(output.args?.units).toEqual("frames");
+  });
+
   test("Should not mutate input", () => {
     const input: ScriptEvent = {
       id: "event1",
@@ -122,7 +166,7 @@ describe("migrateFrom420r1To420r2Event", () => {
     expect(input).toEqual(inputClone);
   });
 
-  test("Should not modify non-switch events", () => {
+  test("Should not modify non-wait events", () => {
     const input: ScriptEvent = {
       id: "event1",
       command: "EVENT_FOO",
