@@ -20,9 +20,11 @@ import {
   ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
+  CustomEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  customEventSelectors,
   emoteSelectors,
   musicSelectors,
   sceneSelectors,
@@ -32,7 +34,7 @@ import {
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import { EVENT_TEXT } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -42,6 +44,7 @@ import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
 import { StyledMenu, StyledMenuItem } from "ui/menu/style";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -58,6 +61,8 @@ type MenuElement = HTMLDivElement & {
 
 interface EventOption {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
+  description?: string; // override tooltip
   value: string;
   group?: string;
   groupLabel?: string;
@@ -70,6 +75,7 @@ interface EventOption {
 
 interface EventOptGroup {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
   groupLabel?: string;
   options: EventOption[];
 }
@@ -243,6 +249,41 @@ const eventToOption =
       subGroup,
     };
   };
+
+const customEventToOption =
+  (scriptEventDefs: ScriptEventDefs) =>
+  (event: CustomEventNormalized): EventOption => {
+    return {
+      label: event.name,
+      displayLabel: `${l10n(EVENT_CALL_CUSTOM_EVENT)} "${event.name}"`,
+      description: event.description.trim(),
+      value: `call_script_${event.id}`,
+      isFavorite: false,
+      event: scriptEventDefs[EVENT_CALL_CUSTOM_EVENT] as ScriptEventDef,
+      defaultArgs: {
+        customEventId: event.id,
+      },
+    } as EventOption;
+  };
+
+const titleForOption = (
+  option: EventOption | EventOptGroup
+): string | undefined => {
+  // If option description is provided with a non-empty
+  // string then use that as the title for menu item
+  if (
+    "description" in option &&
+    option.description &&
+    option.description.length > 0
+  ) {
+    return option.description;
+  }
+  // Otherwise use event description if available
+  if ("event" in option) {
+    return option.event.description;
+  }
+  return undefined;
+};
 
 const SelectMenu = styled.div`
   width: 300px;
@@ -520,6 +561,9 @@ const AddScriptEventMenu = ({
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefsWithPresets(state)
   );
+  const customEventsLookup = useAppSelector((state) =>
+    customEventSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -531,7 +575,13 @@ const AddScriptEventMenu = ({
     const eventList = (
       Object.values(scriptEventDefs).filter(identity) as ScriptEventDef[]
     ).filter(notDeprecated);
-    fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
+
+    const allEvents = ([] as EventOption[]).concat(
+      eventList.map(eventToOption(favoriteEvents)),
+      customEventsLookup.map(customEventToOption(scriptEventDefs))
+    );
+
+    fuseRef.current = new Fuse(allEvents, {
       includeScore: true,
       includeMatches: true,
       ignoreLocation: true,
@@ -613,7 +663,7 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [favoriteEvents, favoritesCache, scriptEventDefs]);
+  }, [customEventsLookup, favoriteEvents, favoritesCache, scriptEventDefs]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
@@ -634,9 +684,18 @@ const AddScriptEventMenu = ({
           ? searchOptions
           : [
               {
-                value: "",
+                value: "fallback_option_0",
                 label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
                 event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
+                defaultArgs: {
+                  text: [searchTerm],
+                },
+                isFavorite: false,
+              },
+              {
+                value: "fallback_option_1",
+                label: `${l10n(EVENT_COMMENT)} "${searchTerm}"`,
+                event: scriptEventDefs[EVENT_COMMENT] as ScriptEventDef,
                 defaultArgs: {
                   text: [searchTerm],
                 },
@@ -910,17 +969,15 @@ const AddScriptEventMenu = ({
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
                   onClick={() => onSelectOption(optionIndex)}
-                  title={
-                    "event" in option ? option.event.description : undefined
-                  }
+                  title={titleForOption(option)}
                 >
                   {searchTerm.length > 0 && highlightWords.length > 0 ? (
                     <HighlightWords
-                      text={option.label}
+                      text={option.displayLabel ?? option.label}
                       words={highlightWords}
                     />
                   ) : (
-                    option.label
+                    option.displayLabel ?? option.label
                   )}
 
                   {"options" in option ? (
@@ -974,9 +1031,9 @@ const AddScriptEventMenu = ({
                       selected={selectedIndex === childOptionIndex}
                       onMouseOver={() => setSelectedIndex(childOptionIndex)}
                       onClick={() => onSelectOption(childOptionIndex)}
-                      title={childOption.event.description}
+                      title={titleForOption(childOption)}
                     >
-                      {childOption.label}
+                      {childOption.displayLabel ?? childOption.label}
                       <FlexGrow />
                       <MenuItemFavorite
                         $visible={
