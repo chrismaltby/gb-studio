@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1773241107",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1774241107",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -988,6 +988,7 @@
   "FIELD_HIDE_OTHER_LAYERS": "Ukryj inne warstwy",
   "FIELD_SHOW_TILE_VALUES": "Pokaż wartości tafli",
   "FIELD_SUBMIT_PLUGIN": "Zgłoś wtyczkę",
+  "FIELD_WAIT_UNTIL_BUTTON_PRESSED": "Czekaj na naciśnięcie przycisku",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
