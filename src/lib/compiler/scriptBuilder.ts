@@ -1,7 +1,6 @@
 import SparkMD5 from "spark-md5";
 import { inputDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
-import trimlines from "shared/lib/helpers/trimlines";
 import { is16BitCType } from "shared/lib/engineFields/engineFieldToCType";
 import {
   globalVariableDefaultName,
@@ -4215,8 +4214,8 @@ extern void __mute_mask_${symbol};
     args: { trueText: string; falseText: string }
   ) => {
     const variableAlias = this.getVariableAlias(variable);
-    const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
-    const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
+    const trueText = args.trueText || "Choice A";
+    const falseText = args.falseText || "Choice B";
     const speedInstant = textCodeSetSpeed(0);
     const gotoFirstLine = textCodeGoto(3, 2);
     const gotoSecondLine = textCodeGoto(3, 3);

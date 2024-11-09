@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bottom margins when using GB Printer [@untoxa](https://github.com/untoxa)
 - Fix variable uses list which wasn't including variable "0"'s uses in text fields
 - Fix issue where "Set Animation Frame" event wouldn't allow frame values greater than 25
+- Fix issue causing "Dialogue Multiple Choice" event to cut off menu items early
 
 ## [4.1.3] - 2024-09-16
 
