@@ -45,6 +45,8 @@ export type Token =
   | {
       type: "wait";
       time: number;
+      units: "frames" | "time";
+      frames: number;
     };
 
 export const lexText = (inputText: string): Token[] => {
@@ -315,11 +317,18 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "W" &&
       inputText[i + 2] === ":"
     ) {
-      const time = inputText.substring(i + 3, i + 8).replace(/!.*/, "");
-      i += time.length + 3;
+      const timeString = inputText
+        .substring(i + 3, i + 8)
+        .replace(/[sf]![\s\S]*/, "");
+      i += timeString.length + 4;
+      const units = inputText[i - 1] === "s" ? "time" : "frames";
+      const time = ensureNumber(parseInt(timeString, 10), 30);
+      const frames = units === "time" ? time * 60 : time;
       tokens.push({
         type: "wait",
-        time: ensureNumber(parseInt(time, 10), 30),
+        time,
+        units,
+        frames,
       });
       continue;
     }

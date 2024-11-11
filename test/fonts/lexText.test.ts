@@ -135,3 +135,41 @@ test("should support font tokens", () => {
     },
   ]);
 });
+
+test("should support wait code tokens", () => {
+  expect(lexText("Before!W:5f!After")).toEqual([
+    {
+      type: "text",
+      value: "Before",
+    },
+    {
+      type: "wait",
+      time: 5,
+      units: "frames",
+      frames: 5,
+    },
+    {
+      type: "text",
+      value: "After",
+    },
+  ]);
+});
+
+test("should preserve newlines after wait code tokens", () => {
+  expect(lexText("Before!W:5f!\nAfter")).toEqual([
+    {
+      type: "text",
+      value: "Before",
+    },
+    {
+      type: "wait",
+      time: 5,
+      units: "frames",
+      frames: 5,
+    },
+    {
+      type: "text",
+      value: "\nAfter",
+    },
+  ]);
+});

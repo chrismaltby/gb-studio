@@ -48,7 +48,7 @@ import {
   isVariableTemp,
   toVariableNumber,
 } from "shared/lib/entities/entitiesHelpers";
-import { lexText } from "shared/lib/compiler/lexText";
+import { lexText, Token } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
@@ -82,6 +82,7 @@ import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 import {
+  chunkTextOnWaitCodes,
   parseWaitCodeFrames,
   splitTextOnWaitCodes,
 } from "shared/lib/text/textCodes";
@@ -1913,27 +1914,124 @@ class ScriptBuilder {
     )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(0)}`;
   };
 
-  _loadAndDisplayChunkedStructuredText = (inputText: string) => {
+  _loadAndDisplayText = (inputText: string) => {
     const waitArgsRef = this._declareLocal("wait_args", 1, true);
     let lastWait = -1;
     // Split into chunks where wait frames code is found
-    const textParts = splitTextOnWaitCodes(inputText);
-    for (let tp = 0; tp < textParts.length; tp++) {
-      const textPart = textParts[tp];
-      const waitFrames = parseWaitCodeFrames(textPart);
-      // Replace wait codes with calls to wait_frames function
-      if (waitFrames !== undefined) {
+    const chunks = chunkTextOnWaitCodes(inputText);
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+
+      this._loadTokens(chunk.tokens);
+      this._displayText(i !== 0);
+
+      if (chunk.action?.type === "wait") {
+        const waitFrames = chunk.action.frames;
         this._overlayWait(true, [".UI_WAIT_TEXT"]);
         if (lastWait !== waitFrames) {
           this._setConst(waitArgsRef, Math.round(waitFrames));
           lastWait = waitFrames;
         }
         this._invoke("wait_frames", 0, waitArgsRef);
-      } else {
-        this._loadStructuredText(textPart);
-        this._displayText(tp !== 0);
       }
     }
+  };
+
+  _loadTokens = (textTokens: Token[]) => {
+    const { fonts, defaultFontId } = this.options;
+    let font = fonts.find((f) => f.id === defaultFontId);
+
+    if (!font) {
+      font = fonts[0];
+    }
+
+    if (!font) {
+      this._loadText(0);
+      this._string("UNABLE TO LOAD FONT");
+      return;
+    }
+
+    let text = "";
+    const indirectVars: { arg: string; local: string }[] = [];
+    const usedVariableAliases: string[] = [];
+
+    textTokens.forEach((token) => {
+      if (token.type === "text") {
+        text += encodeString(token.value, font?.mapping);
+      } else if (token.type === "font") {
+        const newFont = fonts.find((f) => f.id === token.fontId);
+        if (newFont) {
+          const fontIndex = this._getFontIndex(token.fontId);
+          font = newFont;
+          text += textCodeSetFont(fontIndex);
+        }
+      } else if (
+        token.type === "variable" ||
+        token.type === "char" ||
+        token.type === "speedVariable" ||
+        token.type === "fontVariable"
+      ) {
+        const variable = token.variableId;
+        if (variable.match(/^V[0-9]$/)) {
+          const key = variable;
+          const arg = this.options.argLookup.variable.get(key);
+          if (!arg) {
+            throw new Error("Cant find arg");
+          }
+          if (this._isIndirectVariable(arg)) {
+            const localRef = this._declareLocal(
+              `text_arg${indirectVars.length}`,
+              1,
+              true
+            );
+            indirectVars.unshift({
+              local: localRef,
+              arg: arg.symbol,
+            });
+            usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
+          } else {
+            usedVariableAliases.push(this._rawOffsetStackAddr(arg.symbol));
+          }
+        } else {
+          usedVariableAliases.push(
+            this.getVariableAlias(variable.replace(/^0/g, ""))
+          );
+        }
+        if (token.type === "variable" && token.fixedLength !== undefined) {
+          text += `%D${token.fixedLength}`;
+        } else if (token.type === "variable") {
+          text += "%d";
+        } else if (token.type === "char") {
+          text += "%c";
+        } else if (token.type === "speedVariable") {
+          text += "%t";
+        } else if (token.type === "fontVariable") {
+          text += "%f";
+        }
+      } else if (token.type === "speed") {
+        text += textCodeSetSpeed(token.speed);
+      } else if (token.type === "gotoxy" && token.relative) {
+        text += textCodeGotoRel(token.x, token.y);
+      } else if (token.type === "gotoxy" && !token.relative) {
+        text += textCodeGoto(token.x, token.y);
+      } else if (token.type === "input") {
+        text += textCodeInput(token.mask);
+      }
+    });
+
+    if (indirectVars.length > 0) {
+      for (const indirectVar of indirectVars) {
+        this._getInd(indirectVar.local, indirectVar.arg);
+      }
+    }
+
+    this._loadText(usedVariableAliases.length);
+
+    if (usedVariableAliases.length > 0) {
+      this._dw(...usedVariableAliases);
+    }
+
+    this._string(text);
   };
 
   _loadStructuredText = (inputText: string) => {
@@ -4129,7 +4227,7 @@ extern void __mute_mask_${symbol};
         avatarIndex
       )}${textPosSequence}${this._injectScrollCode(text, textHeight)}`;
 
-      this._loadAndDisplayChunkedStructuredText(decoratedText);
+      this._loadAndDisplayText(decoratedText);
 
       if (isModal) {
         const waitFlags: ScriptBuilderOverlayWaitFlag[] = [
@@ -4213,9 +4311,7 @@ extern void __mute_mask_${symbol};
       this._setTextLayer(".TEXT_LAYER_BKG");
     }
 
-    this._loadAndDisplayChunkedStructuredText(
-      `\\003\\${drawX}\\${drawY}\\001\\001${inputText}`
-    );
+    this._loadAndDisplayText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
 
     this._overlayWait(false, [".UI_WAIT_TEXT"]);
 
@@ -4268,7 +4364,7 @@ extern void __mute_mask_${symbol};
 
     this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
-    this._loadAndDisplayChunkedStructuredText(choiceText);
+    this._loadAndDisplayText(choiceText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
     this._menuItem(1, 1, 0, 0, 0, 2);
@@ -4332,7 +4428,7 @@ extern void __mute_mask_${symbol};
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_IN_SPEED");
-    this._loadAndDisplayChunkedStructuredText(menuText);
+    this._loadAndDisplayText(menuText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, choiceFlags, numLines);
 
