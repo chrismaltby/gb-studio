@@ -81,11 +81,7 @@ import keyBy from "lodash/keyBy";
 import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
-import {
-  chunkTextOnWaitCodes,
-  parseWaitCodeFrames,
-  splitTextOnWaitCodes,
-} from "shared/lib/text/textCodes";
+import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 
 export type ScriptOutput = string[];
 
