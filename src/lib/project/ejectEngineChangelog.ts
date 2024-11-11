@@ -780,6 +780,19 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/gbprinter.c"],
   },
+  {
+    version: "4.2.0-e4",
+    description: createDescription("Fixes", [
+      "Fix text draw position when using VM_DISPLAY_TEXT_EX with .DISPLAY_PRESERVE_POS flag",
+      "Fix vm_music_setpos() being interrupted by the music ISR",
+      "Remove unused members of projectile_t struct",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "src/core/ui.c",
+      "src/core/vm_music.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

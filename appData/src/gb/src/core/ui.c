@@ -296,9 +296,9 @@ UBYTE ui_draw_text_buffer_char(void) BANKED {
             if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;  // right_to_left initial pos correction
             // initialize current pointer with corrected base value
             ui_dest_ptr = ui_dest_base;
+            // tileno destination
+            ui_print_reset();
         }
-        // tileno destination
-        ui_print_reset();
     }
 
     // normally runs once, but if control code encountered, then process them until printable symbol or terminator

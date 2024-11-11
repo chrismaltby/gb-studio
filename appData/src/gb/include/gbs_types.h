@@ -133,8 +133,6 @@ typedef struct projectile_def_t
 
 typedef struct projectile_t
 {
-    bool anim_noloop          : 1;
-    bool strong               : 1;
     point16_t pos;
     point16_t delta_pos;
     uint8_t frame;

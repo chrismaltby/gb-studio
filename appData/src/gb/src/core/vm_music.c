@@ -31,7 +31,9 @@ void vm_music_routine(SCRIPT_CTX * THIS, UBYTE routine, UBYTE bank, UBYTE * pc) 
 
 void vm_music_setpos(SCRIPT_CTX * THIS, UBYTE pattern, UBYTE row) OLDCALL BANKED {
     THIS;
-    music_setpos(pattern, row);
+    CRITICAL {
+        music_setpos(pattern, row);
+    }
 }
 
 void vm_sound_mastervol(SCRIPT_CTX * THIS, UBYTE volume) OLDCALL BANKED {
