@@ -2034,7 +2034,12 @@ class ScriptBuilder {
     this._string(text);
   };
 
-  _loadStructuredText = (inputText: string) => {
+  // @deprecated Replace with _loadAndDisplayText which supports wait codes
+  _loadStructuredText = (
+    inputText: string,
+    avatarIndex?: number,
+    scrollHeight?: number
+  ) => {
     const { fonts, defaultFontId } = this.options;
     let font = fonts.find((f) => f.id === defaultFontId);
 
@@ -2118,6 +2123,18 @@ class ScriptBuilder {
       }
     });
 
+    // Replace newlines with scroll code if larger than max dialogue size
+    if (scrollHeight) {
+      let numNewlines = 0;
+      text = text.replace(/\\012/g, (newline) => {
+        numNewlines++;
+        if (numNewlines > scrollHeight - 1) {
+          return "\\015";
+        }
+        return newline;
+      });
+    }
+
     if (indirectVars.length > 0) {
       for (const indirectVar of indirectVars) {
         this._getInd(indirectVar.local, indirectVar.arg);
@@ -2128,6 +2145,23 @@ class ScriptBuilder {
 
     if (usedVariableAliases.length > 0) {
       this._dw(...usedVariableAliases);
+    }
+
+    // Add avatar
+    if (avatarIndex !== undefined) {
+      const { fonts } = this.options;
+      const avatarFontSize = 16;
+      const fontIndex = fonts.length + Math.floor(avatarIndex / avatarFontSize);
+      const baseCharCode = ((avatarIndex * 4) % (avatarFontSize * 4)) + 64;
+      text = `${textCodeSetSpeed(0)}${textCodeSetFont(
+        fontIndex
+      )}${String.fromCharCode(baseCharCode)}${String.fromCharCode(
+        baseCharCode + 1
+      )}\\n${String.fromCharCode(baseCharCode + 2)}${String.fromCharCode(
+        baseCharCode + 3
+      )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(
+        0
+      )}${text}`;
     }
 
     this._string(text);
