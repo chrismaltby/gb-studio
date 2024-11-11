@@ -248,12 +248,12 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "Hello World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "Hello World"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -407,12 +407,12 @@ _MY_SCRIPT::
         ; If Variable True
         VM_IF_CONST             .GT, VAR_VARIABLE_0, 0, 1$, 0
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "Goodbye World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "Goodbye World"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -421,12 +421,12 @@ _MY_SCRIPT::
         VM_JUMP                 2$
 1$:
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "Hello World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "Hello World"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -508,12 +508,12 @@ _MY_SCRIPT::
         ; If Variable True
         VM_IF_CONST             .GT, VAR_VARIABLE_2, 0, 3$, 0
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "0=FALSE 2=FALSE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "0=FALSE 2=FALSE"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -522,12 +522,12 @@ _MY_SCRIPT::
         VM_JUMP                 4$
 3$:
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "0=FALSE 2=TRUE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "0=FALSE 2=TRUE"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -540,12 +540,12 @@ _MY_SCRIPT::
         ; If Variable True
         VM_IF_CONST             .GT, VAR_VARIABLE_1, 0, 5$, 0
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "0=TRUE 1=FALSE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "0=TRUE 1=FALSE"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
@@ -554,12 +554,12 @@ _MY_SCRIPT::
         VM_JUMP                 6$
 5$:
         ; Text Dialogue
-        VM_LOAD_TEXT            0
-        .asciz "0=TRUE 1=TRUE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "0=TRUE 1=TRUE"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
