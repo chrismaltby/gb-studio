@@ -64,8 +64,13 @@ export const TextWaitTimeSelect = ({
     [debouncedLeave]
   );
 
+  const blockSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
   return (
-    <Form onFocus={onFocus} onBlur={onFocusOut}>
+    <Form onFocus={onFocus} onBlur={onFocusOut} onSubmit={blockSubmit}>
       <FormRow>
         <FormField
           name="replaceWaitTime"
@@ -86,7 +91,10 @@ export const TextWaitTimeSelect = ({
             id="replaceWaitTime"
             value={value}
             onChange={(e) => {
-              const value = ensureNumber(parseFloat(e.currentTarget.value), 0);
+              const value = Math.max(
+                0,
+                ensureNumber(parseFloat(e.currentTarget.value), 0)
+              );
               onChange(value);
             }}
             autoFocus
