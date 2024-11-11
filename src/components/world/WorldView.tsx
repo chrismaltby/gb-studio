@@ -53,14 +53,6 @@ const WorldContent = styled.div`
   left: 0;
 `;
 
-const SelectionWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
-
 const NewSceneCursor = styled.div`
   position: absolute;
   cursor: pointer;
@@ -110,7 +102,6 @@ const WorldView = () => {
     scrollY: 0,
   });
   const isMouseOver = useRef(false);
-  const [addToSelection, setAddToSelection] = useState(false);
   const [selectionStart, setSelectionStart] = useState<Point>();
   const [selectionEnd, setSelectionEnd] = useState<Point>();
   const selection = useRef<SelectionRect>();
@@ -221,7 +212,6 @@ const WorldView = () => {
       if (e.shiftKey && tool === "select") {
         setSelectionStart(undefined);
         setSelectionEnd(undefined);
-        setAddToSelection(true);
       }
       if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
@@ -248,9 +238,6 @@ const WorldView = () => {
     (e: KeyboardEvent) => {
       if (dragMode && (e.code === "Space" || e.key === "Alt")) {
         setDragMode(false);
-      }
-      if (!e.shiftKey) {
-        setAddToSelection(false);
       }
     },
     [dragMode]
@@ -600,8 +587,8 @@ const WorldView = () => {
   );
 
   const onStartMultiSelection = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (scrollRef.current) {
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (e.shiftKey && scrollRef.current) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -632,7 +619,6 @@ const WorldView = () => {
 
   const onWindowBlur = useCallback(() => {
     setDragMode(false);
-    setAddToSelection(false);
   }, []);
 
   //#endregion Window Blur
@@ -679,6 +665,7 @@ const WorldView = () => {
       onMouseLeave={onMouseLeave}
       onMouseMove={onMouseMove}
       onMouseDown={startWorldDragIfAltOrMiddleClick}
+      onMouseDownCapture={onStartMultiSelection}
       onScroll={onScroll}
       style={
         dragMode
@@ -697,20 +684,12 @@ const WorldView = () => {
           onMouseDown={startWorldDrag}
         />
 
-        {addToSelection && (
-          <SelectionWrapper
-            style={{ width: scrollWidth, height: scrollHeight }}
-            onMouseDown={onStartMultiSelection}
-          ></SelectionWrapper>
-        )}
-
         {scenes.map((sceneId, index) => (
           <SceneView
             key={sceneId}
             id={sceneId}
             index={index}
             editable={!dragMode}
-            addToSelection={addToSelection}
           />
         ))}
 

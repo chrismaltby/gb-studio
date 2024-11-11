@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ladder collision tile now only visible on Platform scenes by default, edit `engine.json` to add per scene collision tile types
 - New instances of prefabs use prefab's name by default
 - Update "Wait" event to support using variable values for wait time [@pau-tomas](https://github.com/pau-tomas))
+- Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 

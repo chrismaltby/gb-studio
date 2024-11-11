@@ -58,7 +58,6 @@ interface SceneViewProps {
   id: string;
   index: number;
   editable?: boolean;
-  addToSelection?: boolean;
 }
 
 const SceneName = styled.div`
@@ -199,16 +198,8 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
       : ""}
 `;
 
-const SelectionWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
-
 const SceneView = memo(
-  ({ id, index, editable, addToSelection }: SceneViewProps) => {
+  ({ id, index, editable }: SceneViewProps) => {
     const dispatch = useAppDispatch();
     const scene = useAppSelector((state) =>
       sceneSelectors.selectById(state, id)
@@ -620,9 +611,16 @@ const SceneView = memo(
       [renderContextMenu, tool]
     );
 
-    const onToggleSelection = useCallback(() => {
-      dispatch(editorActions.toggleSceneSelectedId(id));
-    }, [dispatch, id]);
+    const onToggleSelection = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          dispatch(editorActions.toggleSceneSelectedId(id));
+        }
+      },
+      [dispatch, id]
+    );
 
     if (!scene || !visible) {
       return <></>;
@@ -638,6 +636,7 @@ const SceneView = memo(
           top: scene.y,
         }}
         onContextMenu={onContextMenu}
+        onMouseDownCapture={onToggleSelection}
       >
         <SceneMetadata
           onMouseDown={onStartDrag}
@@ -818,8 +817,6 @@ const SceneView = memo(
             {contextMenu.menu}
           </ContextMenu>
         )}
-
-        {addToSelection && <SelectionWrapper onMouseDown={onToggleSelection} />}
       </Wrapper>
     );
   }
