@@ -78,7 +78,7 @@ const loadAllFontData = async (
     `${projectRoot}/assets/fonts/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/fonts/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/fonts/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(

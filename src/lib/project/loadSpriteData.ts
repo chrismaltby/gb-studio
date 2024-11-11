@@ -82,7 +82,7 @@ const loadAllSpriteData = async (projectRoot: string) => {
     `${projectRoot}/assets/sprites/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/sprites/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/sprites/**/@(*.png|*.PNG)`
   );
   const spriteData = (
     await Promise.all(

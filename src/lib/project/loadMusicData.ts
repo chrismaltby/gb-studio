@@ -38,7 +38,7 @@ const loadAllMusicData = async (projectRoot: string) => {
     `${projectRoot}/assets/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
+    `${projectRoot}/plugins/*/**/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
   );
   const musicData = await Promise.all(
     ([] as Promise<MusicResourceAsset>[]).concat(
