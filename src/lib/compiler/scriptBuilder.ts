@@ -1911,7 +1911,7 @@ class ScriptBuilder {
   };
 
   _loadAndDisplayText = (inputText: string) => {
-    const waitArgsRef = this._declareLocal("wait_args", 1, true);
+    let waitArgsRef = "";
     let lastWait = -1;
     // Split into chunks where wait frames code is found
     const chunks = chunkTextOnWaitCodes(inputText);
@@ -1922,6 +1922,10 @@ class ScriptBuilder {
       this._displayText(i !== 0);
 
       if (chunk.action?.type === "wait") {
+        if (waitArgsRef === "") {
+          // Declare wait args variable on first call to wait
+          waitArgsRef = this._declareLocal("wait_args", 1, true);
+        }
         const waitFrames = chunk.action.frames;
         this._overlayWait(true, [".UI_WAIT_TEXT"]);
         if (lastWait !== waitFrames) {
