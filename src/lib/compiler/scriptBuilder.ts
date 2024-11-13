@@ -4011,7 +4011,7 @@ extern void __mute_mask_${symbol};
     rpn
       .int16(0) // Save space for direction
       .stop();
-    this._actorGetAngle(actorRef, ".ARG1");
+    this._actorGetAngle(actorRef, ".ARG0");
     this._projectileLaunch(projectileIndex, ".ARG2");
     this._stackPop(3);
     this._addNL();
@@ -4029,8 +4029,8 @@ extern void __mute_mask_${symbol};
     rpn
       .int16(0) // Save space for direction
       .stop();
-    this.setActorId(".ARG1", actorId);
-    this._actorGetAngle(".ARG1", ".ARG1");
+    this.setActorId(".ARG0", actorId);
+    this._actorGetAngle(".ARG0", ".ARG0");
     this._projectileLaunch(projectileIndex, ".ARG2");
     this._stackPop(3);
     this._addNL();
