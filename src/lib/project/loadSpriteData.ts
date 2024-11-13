@@ -37,8 +37,6 @@ const loadSpriteData =
         plugin,
         name,
         symbol: toValidSymbol(`sprite_${name}`),
-        width: size.width,
-        height: size.height,
         states: [
           {
             id: uuidv4(),
@@ -68,6 +66,8 @@ const loadSpriteData =
         _resourceType: "sprite",
         ...resource,
         filename: file,
+        width: size.width,
+        height: size.height,
         inode,
         checksum,
       };

@@ -240,6 +240,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       id: resource?.id ?? asset.id,
       symbol: resource?.symbol ?? asset.symbol,
       filename: asset.filename,
+      width: asset.width,
+      height: asset.height,
       name: resource?.name ?? asset.name,
       canvasWidth: resource?.canvasWidth || 32,
       canvasHeight: resource?.canvasHeight || 32,
