@@ -1,5 +1,4 @@
-import React, { useMemo } from "react";
-import Editor from "react-simple-code-editor";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { highlight, Grammar } from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
@@ -10,6 +9,14 @@ import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import ScriptEventTitle from "components/script/ScriptEventTitle";
 import l10n from "shared/lib/lang/l10n";
 import { ScrollTo } from "ui/util/ScrollTo";
+import { Editor, loader } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
+
+loader.config({
+  paths: {
+    vs: "node_modules/monaco-editor/min/vs",
+  },
+});
 
 interface CodeEditorProps {
   value: string;
@@ -155,29 +162,55 @@ const hightlightWithLineNumbers = (
 
 const noop = () => {};
 
+const lineHeight = 19;
+
 export const CodeEditor = ({
   value,
   currentLineNum,
   onChange,
 }: CodeEditorProps) => {
+  const ideRef = useRef<editor.IStandaloneCodeEditor>();
+
+  const [editorHeight, setEditorHeight] = useState<number>(0);
+
+  const handleMountIde = (editor: editor.IStandaloneCodeEditor) => {
+    ideRef.current = editor;
+    setEditorHeight(
+      Math.max(ideRef.current?.getModel()?.getLineCount() || 0, 5) * lineHeight
+    );
+  };
+
+  const onChangeValue = useCallback(
+    (e: string | undefined) => {
+      onChange?.(e || "");
+      setEditorHeight(
+        Math.max(ideRef.current?.getModel()?.getLineCount() || 0, 5) *
+          lineHeight
+      );
+    },
+    [onChange]
+  );
+
   return (
     <Wrapper>
       <Editor
-        className="editor"
+        height={editorHeight}
+        defaultLanguage="javascript"
+        options={{
+          roundedSelection: true,
+          lineHeight,
+          scrollBeyondLastLine: false,
+          minimap: {
+            enabled: false,
+          },
+          scrollbar: {
+            alwaysConsumeMouseWheel: false,
+            vertical: "hidden",
+          },
+        }}
         value={value}
-        onValueChange={onChange ?? noop}
-        highlight={(code) => {
-          return hightlightWithLineNumbers(
-            code,
-            currentLineNum ?? -1,
-            gbvmGrammar
-          );
-        }}
-        padding={0}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 11,
-        }}
+        onMount={handleMountIde}
+        onChange={onChangeValue ?? noop}
       />
     </Wrapper>
   );

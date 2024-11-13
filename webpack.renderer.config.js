@@ -5,6 +5,7 @@ const plugins = require("./webpack.plugins");
 const Path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const ReactRefreshTypeScript = require("react-refresh-typescript");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -56,6 +57,11 @@ const rendererRules = [
 
 const rendererPlugins = [
   ...plugins,
+  new CopyPlugin({
+    patterns: [
+      { from: "node_modules/monaco-editor", to: "node_modules/monaco-editor" },
+    ],
+  }),
   new webpack.ProvidePlugin({
     Buffer: ["buffer", "Buffer"],
   }),

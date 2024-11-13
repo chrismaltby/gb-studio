@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "3x3-equation-solver": "^1.2.18",
+    "@monaco-editor/react": "^4.6.0",
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^2.2.7",
     "@sinclair/typebox": "^0.32.35",
@@ -77,6 +78,7 @@
     "image-size": "^1.0.0",
     "json-loader": "^0.5.7",
     "lodash": "^4.17.21",
+    "monaco-editor": "^0.52.0",
     "node-fetch": "^3.3.2",
     "node-gzip": "^1.1.2",
     "normalizr": "^3.6.2",
