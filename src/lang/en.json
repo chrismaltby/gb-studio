@@ -989,6 +989,9 @@
   "FIELD_SHOW_TILE_VALUES": "Show Tile Values",
   "FIELD_SUBMIT_PLUGIN": "Submit Plugin",
   "FIELD_WAIT_UNTIL_BUTTON_PRESSED": "Wait Until Button Pressed",
+  "FIELD_CAMERA": "Camera",
+  "FIELD_DEADZONE_X": "Deadzone X",
+  "FIELD_DEADZONE_Y": "Deadzone Y",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -166,6 +166,10 @@ const validProperties = [
   "pypos",
   "direction",
   "frame",
+  "xdeadzone",
+  "ydeadzone",
+  "xoffset",
+  "yoffset",
 ];
 
 export const isScriptValue = (value: unknown): value is ScriptValue => {
