@@ -588,7 +588,7 @@ const WorldView = () => {
 
   const onStartMultiSelection = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (e.shiftKey && scrollRef.current) {
+      if (e.shiftKey && tool === "select" && scrollRef.current) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -605,7 +605,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndMultiSelection);
       }
     },
-    [onEndMultiSelection, onMoveMultiSelection, scrollRef, zoomRatio]
+    [onEndMultiSelection, onMoveMultiSelection, scrollRef, tool, zoomRatio]
   );
 
   useEffect(() => {
