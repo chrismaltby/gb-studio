@@ -36,8 +36,8 @@ const createProject = async (options: CreateProjectInput) => {
     .replace(/___PROJECT_NAME___/g, projectFolderName)
     .replace(/___AUTHOR___/g, username);
 
-  await fs.writeFile(projectDataPath, dataFile);
   await fs.unlink(projectTmpDataPath);
+  await fs.writeFile(projectDataPath, dataFile);
   return projectDataPath;
 };
 
