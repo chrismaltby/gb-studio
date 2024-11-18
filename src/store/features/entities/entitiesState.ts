@@ -4171,7 +4171,7 @@ const editEngineFieldValue: CaseReducer<
   EntitiesState,
   PayloadAction<{
     engineFieldId: string;
-    value: string | number | boolean | undefined;
+    value: string | number | undefined;
   }>
 > = (state, action) => {
   engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {

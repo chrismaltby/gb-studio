@@ -333,7 +333,7 @@ export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
 
 export type EngineFieldValue = {
   id: string;
-  value?: number | string | boolean | undefined;
+  value?: number | string | undefined;
 };
 
 export type MetaspriteTile = {
