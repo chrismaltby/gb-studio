@@ -793,6 +793,13 @@ const changes: EngineChange[] = [
       "src/core/vm_music.c",
     ],
   },
+  {
+    version: "4.2.0-e5",
+    description: createDescription("Fixes", [
+      "Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator",
+    ]),
+    modifiedFiles: ["src/core/ui.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
