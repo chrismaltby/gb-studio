@@ -59,6 +59,8 @@ import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEdito
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
+const MODE = "8x8";
+
 interface SpriteEditorProps {
   id: string;
   metaspriteId: string;
@@ -384,7 +386,8 @@ export const SpriteEditor = ({
   }
 
   const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
-  const showAutodetect = isDefaultState && sprite.height === 16;
+  const showAutodetect =
+    MODE !== "8x8" && isDefaultState && sprite.height === 16;
 
   return (
     <Sidebar onClick={selectSidebar}>

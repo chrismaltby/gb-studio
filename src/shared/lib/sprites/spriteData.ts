@@ -300,7 +300,7 @@ const trimWhitespace = (inData: IndexedImage): SliceDef => {
 const toNumNonEmptyTiles = (inData: IndexedImage): number => {
   let count = 0;
   const tW = 8;
-  const tH = 16;
+  const tH = 8;
   const width = inData.width;
   const height = inData.height;
   const tileWidth = Math.ceil(width / tW);
@@ -360,7 +360,7 @@ export const indexedImageToSprites = (data: IndexedImage): SliceDef[] => {
 
   const snappedBoxes = boxes.map((box) => {
     const boxHeight = box.bottom - box.top;
-    const roundedHeight = roundUp16(boxHeight);
+    const roundedHeight = roundUp8(boxHeight);
     return {
       left: roundDown8(box.left),
       right: roundUp8(box.right),
@@ -614,7 +614,7 @@ const removeHint = (
 
   for (let y = 0; y <= scanHeight; y++) {
     for (let x = 0; x <= scanWidth; x++) {
-      const subImage = sliceIndexedImage(data, x, y, 8, 16);
+      const subImage = sliceIndexedImage(data, x, y, 8, 8);
       if (isContained(hintData, subImage)) {
         data = subtractData(data, hintData, x, y);
         locations.push({ x, y, flipX: false, flipY: false });
@@ -645,19 +645,19 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
   // Merge horizontal
   for (let y = 0; y <= tileHeight - 2; y++) {
     for (let x = 0; x <= tileWidth - 2; x++) {
-      const sliced = sliceIndexedImage(inData, x * 8, y * 8, 16, 16);
+      const sliced = sliceIndexedImage(inData, x * 8, y * 8, 8, 8);
       const numTiles = toNumNonEmptyTiles(sliced);
       const trimmed = trimWhitespace(sliced);
       const trimmedNumTiles = toNumNonEmptyTiles(trimmed.data);
       if (trimmedNumTiles < numTiles) {
-        const hint = sliceIndexedImage(trimmed.data, 0, 0, 8, 16);
+        const hint = sliceIndexedImage(trimmed.data, 0, 0, 8, 8);
         hintDefs.push({
           data: hint,
           coordinates: {
             x: x * 8 + trimmed.coordinates.x,
             y: y * 8 + trimmed.coordinates.y,
             width: 8,
-            height: 16,
+            height: 8,
           },
         });
       }
@@ -671,14 +671,14 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
       const trimmed = trimWhitespace(sliced);
       const trimmedNumTiles = toNumNonEmptyTiles(trimmed.data);
       if (trimmedNumTiles < numTiles) {
-        const hint = sliceIndexedImage(trimmed.data, 0, 0, 8, 16);
+        const hint = sliceIndexedImage(trimmed.data, 0, 0, 8, 8);
         hintDefs.push({
           data: hint,
           coordinates: {
             x: x * 8 + trimmed.coordinates.x,
             y: y * 8 + trimmed.coordinates.y,
             width: 8,
-            height: 16,
+            height: 8,
           },
         });
       }
@@ -688,9 +688,9 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
   const dividerY = getHintDividerY(inData);
 
   if (dividerY) {
-    for (let y = dividerY; y < height; y += 16) {
+    for (let y = dividerY; y < height; y += 8) {
       for (let x = 0; x < width; x += 8) {
-        const sliced = sliceIndexedImage(inData, x, y, 8, 16);
+        const sliced = sliceIndexedImage(inData, x, y, 8, 8);
         if (!isBlankIndexedImage(sliced)) {
           hintDefs.push({
             data: sliced,
@@ -698,7 +698,7 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
               x,
               y,
               width: 8,
-              height: 16,
+              height: 8,
             },
           });
         }
@@ -777,10 +777,10 @@ export const spritesToTiles2 = (
   for (let si = 0; si < hintRemovedSprites.length; si++) {
     const inData = hintRemovedSprites[si];
     const tileWidth = Math.max(inData.width / 8);
-    const tileHeight = Math.max(inData.height / 16) + 1;
+    const tileHeight = Math.max(inData.height / 8) + 1;
     for (let ty = 0; ty < tileHeight; ty++) {
       for (let tx = 0; tx < tileWidth; tx++) {
-        const slice = sliceIndexedImage(inData, tx * 8, ty * 16, 8, 16);
+        const slice = sliceIndexedImage(inData, tx * 8, ty * 8, 8, 8);
         if (!isBlankIndexedImage(slice)) {
           let found = false;
           for (const tileDef of tileDefs) {
@@ -795,7 +795,7 @@ export const spritesToTiles2 = (
               locations[tileIndex].push({
                 spriteIndex: si,
                 x: tx * 8,
-                y: ty * 16,
+                y: ty * 8,
                 flipX: false,
                 flipY: false,
               });
@@ -807,7 +807,7 @@ export const spritesToTiles2 = (
               locations[tileIndex].push({
                 spriteIndex: si,
                 x: tx * 8,
-                y: ty * 16,
+                y: ty * 8,
                 flipX: true,
                 flipY: false,
               });
@@ -819,7 +819,7 @@ export const spritesToTiles2 = (
               locations[tileIndex].push({
                 spriteIndex: si,
                 x: tx * 8,
-                y: ty * 16,
+                y: ty * 8,
                 flipX: false,
                 flipY: true,
               });
@@ -831,7 +831,7 @@ export const spritesToTiles2 = (
               locations[tileIndex].push({
                 spriteIndex: si,
                 x: tx * 8,
-                y: ty * 16,
+                y: ty * 8,
                 flipX: true,
                 flipY: true,
               });
@@ -843,7 +843,7 @@ export const spritesToTiles2 = (
               {
                 spriteIndex: si,
                 x: tx * 8,
-                y: ty * 16,
+                y: ty * 8,
                 flipX: false,
                 flipY: false,
               },
@@ -852,9 +852,9 @@ export const spritesToTiles2 = (
               data: slice,
               coordinates: {
                 x: spriteDefs[si].coordinates.x + tx * 8,
-                y: spriteDefs[si].coordinates.y + ty * 16,
+                y: spriteDefs[si].coordinates.y + ty * 8,
                 width: 8,
-                height: 16,
+                height: 8,
               },
             });
           }

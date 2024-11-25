@@ -2,6 +2,8 @@ import { DMG_PALETTE } from "consts";
 import { colorizeSpriteData, chromaKeyData } from "shared/lib/helpers/color";
 import { ObjPalette } from "shared/lib/entities/entitiesTypes";
 
+let MODE = "8x8";
+
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
 
@@ -147,11 +149,11 @@ workerCtx.onmessage = async (evt) => {
       tile.sliceX,
       tile.sliceY,
       8,
-      16,
+      MODE === "8x8" ? 8 : 16,
       Math.max(0, width / 2 - 8) + tile.x * (tile.flipX ? -1 : 1),
-      height - 16 - tile.y * (tile.flipY ? -1 : 1),
+      height - (MODE === "8x8" ? 8 : 16) - tile.y * (tile.flipY ? -1 : 1),
       8,
-      16,
+      MODE === "8x8" ? 8 : 16,
     );
     ctx.restore();
   }
