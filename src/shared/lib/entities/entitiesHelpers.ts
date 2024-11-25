@@ -714,52 +714,58 @@ export const defaultLocalisedPaletteName = (paletteIndex: number) =>
 
 const extractEntitySymbols = (
   entities: EntityState<{ symbol?: string }, string>
-) => {
-  return Object.values(entities.entities).map(
-    (entity) => entity?.symbol
-  ) as string[];
+): Set<string> => {
+  return new Set(
+    Object.values(entities.entities).map((entity) => entity?.symbol ?? "")
+  );
 };
 
-const extractEntityStateSymbols = (state: EntitiesState) => {
-  return [
-    ...extractEntitySymbols(state.scenes),
-    ...extractEntitySymbols(state.actors),
-    ...extractEntitySymbols(state.triggers),
-    ...extractEntitySymbols(state.backgrounds),
-    ...extractEntitySymbols(state.spriteSheets),
-    ...extractEntitySymbols(state.emotes),
-    ...extractEntitySymbols(state.tilesets),
-    ...extractEntitySymbols(state.fonts),
-    ...extractEntitySymbols(state.variables),
-    ...extractEntitySymbols(state.constants),
-    ...extractEntitySymbols(state.customEvents),
-    ...extractEntitySymbols(state.music),
-    ...extractEntitySymbols(state.sounds),
-  ];
+const extractEntityStateSymbols = (state: EntitiesState): Set<string> => {
+  const allSymbols = new Set<string>();
+
+  const addSymbols = (symbols: Set<string>) => {
+    symbols.forEach((symbol) => allSymbols.add(symbol));
+  };
+
+  addSymbols(extractEntitySymbols(state.scenes));
+  addSymbols(extractEntitySymbols(state.actors));
+  addSymbols(extractEntitySymbols(state.triggers));
+  addSymbols(extractEntitySymbols(state.backgrounds));
+  addSymbols(extractEntitySymbols(state.spriteSheets));
+  addSymbols(extractEntitySymbols(state.emotes));
+  addSymbols(extractEntitySymbols(state.tilesets));
+  addSymbols(extractEntitySymbols(state.fonts));
+  addSymbols(extractEntitySymbols(state.variables));
+  addSymbols(extractEntitySymbols(state.constants));
+  addSymbols(extractEntitySymbols(state.customEvents));
+  addSymbols(extractEntitySymbols(state.music));
+  addSymbols(extractEntitySymbols(state.sounds));
+
+  return allSymbols;
 };
 
 export const genEntitySymbol = (state: EntitiesState, name: string) => {
   return genSymbol(name, extractEntityStateSymbols(state));
 };
 
-const ensureEntitySymbolsUnique = (
+export const ensureEntitySymbolsUnique = (
   entities: EntityState<{ symbol?: string }, string>,
-  seenSymbols: string[]
+  seenSymbols: Set<string>
 ) => {
   for (const entity of Object.values(entities.entities)) {
-    if (entity && entity.symbol) {
-      entity.symbol = toValidSymbol(entity.symbol);
-      if (seenSymbols.includes(entity.symbol)) {
+    if (entity) {
+      entity.symbol = toValidSymbol(entity.symbol ?? "");
+      if (seenSymbols.has(entity.symbol)) {
         const newSymbol = genSymbol(entity.symbol, seenSymbols);
         entity.symbol = newSymbol;
       }
-      seenSymbols.push(entity.symbol);
+      seenSymbols.add(entity.symbol);
     }
   }
 };
 
 export const ensureSymbolsUnique = (state: EntitiesState) => {
-  const symbols: string[] = [];
+  const symbols: Set<string> = new Set();
   ensureEntitySymbolsUnique(state.scenes, symbols);
   ensureEntitySymbolsUnique(state.actors, symbols);
   ensureEntitySymbolsUnique(state.triggers, symbols);
