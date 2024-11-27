@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing the dimensions of a sprite png image could cause the sprite editor's tile palette to display incorrectly
 - Fix line numbers in code editor for GBVM scripts with more than 999 lines
 - Fix issue preventing projects being created with the name "project"
+- Fix issue preventing checkbox type working in engine fields [@pau-tomas](https://github.com/pau-tomas)
 - Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator [@untoxa](https://github.com/untoxa)
 - Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
 
