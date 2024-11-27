@@ -36,18 +36,18 @@ test("Should crop to 27 characters total", () => {
 
 test("Should return input name if valid and not already in use", () => {
   const input = "actor_0";
-  const existing: string[] = [];
+  const existing: Set<string> = new Set();
   expect(genSymbol(input, existing)).toBe(input);
 });
 
 test("Should return input incremented if already exists", () => {
   const input = "actor_0";
-  const existing: string[] = ["actor_0"];
+  const existing: Set<string> = new Set(["actor_0"]);
   expect(genSymbol(input, existing)).toBe("actor_1");
 });
 
 test("Should convert input to valid name before checking for existance", () => {
   const input = "Actor|0";
-  const existing: string[] = ["actor_0"];
+  const existing: Set<string> = new Set(["actor_0"]);
   expect(genSymbol(input, existing)).toBe("actor_1");
 });
