@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 
 ### Fixed
 
