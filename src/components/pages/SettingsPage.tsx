@@ -9,6 +9,7 @@ import {
   ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
+  SpriteModeSetting,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -45,6 +46,7 @@ import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -90,6 +92,7 @@ const SettingsPage: FC = () => {
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
     compilerPreset,
+    spriteMode,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -133,6 +136,11 @@ const SettingsPage: FC = () => {
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("sgbEnabled", castEventToBool(e)),
     [onChangeSettingProp],
+  );
+
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting) => onChangeSettingProp("spriteMode", e),
+    [onChangeSettingProp]
   );
 
   const onChangeDefaultFontId = useCallback(
@@ -538,6 +546,36 @@ const SettingsPage: FC = () => {
               </SearchableSettingRow>
             </>
           )}
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[
+            l10n("FIELD_EXPORT_IN_COLOR"),
+            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
+            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+          ]}
+        >
+          <CardAnchor id="settingsSpriteMode" />
+          <CardHeading>
+            <ColorAnimationText>
+              {l10n("SETTINGS_SPRITE_MODE")}
+            </ColorAnimationText>
+          </CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("SETTINGS_SPRITE_MODE")]}
+          >
+            <SettingRowLabel>{l10n("SETTINGS_SPRITE_MODE")}</SettingRowLabel>
+            <SettingRowInput>
+              <SpriteModeSelect
+                name="spriteMode"
+                value={spriteMode}
+                onChange={onChangeSpriteMode}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
         </SearchableCard>
 
         <SearchableCard

@@ -361,6 +361,7 @@ export const dummyProjectData: ProjectData = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
   },
 };
 
@@ -637,6 +638,7 @@ export const dummySettingsResource: SettingsResource = {
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
+  spriteMode: "8x16",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -749,6 +751,7 @@ export const dummyProjectResources: ProjectResources = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
   },
 };
 

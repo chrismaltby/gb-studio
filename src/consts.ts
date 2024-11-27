@@ -433,6 +433,7 @@ export const defaultProjectSettings: Settings = {
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
+  spriteMode: "8x16",
 };
 
 export const defaultPalettes: Palette[] = [

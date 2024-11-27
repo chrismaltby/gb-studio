@@ -1225,6 +1225,10 @@
   "FIELD_BLANK_ANIM_STATE": "Blank Animation State",
   "FIELD_BLANK_ANIM_STATE_DESC": "The animation state to use when the player is in the blank state.",
   "FIELD_CAMERA_BOUNDS": "Camera Bounds",
+  "FIELD_SPRITE_MODE_8x8": "8x8",
+  "FIELD_SPRITE_MODE_8x16": "8x16",
+  "FIELD_SPRITE_MODE_8x8_INFO": "8x8",
+  "FIELD_SPRITE_MODE_8x16_INFO": "8x16",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1968,6 +1972,7 @@
   "SETTINGS_MUSIC": "Music",
   "SETTINGS_COLOR": "Color Options",
   "SETTINGS_BUILD": "Build Options",
+  "SETTINGS_SPRITE_MODE": "Sprite Mode",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

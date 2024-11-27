@@ -83,6 +83,8 @@ import {
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SceneEditorProps {
   id: string;
@@ -190,6 +192,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const defaultPlayerSprites = useAppSelector(
     (state) => state.project.present.settings.defaultPlayerSprites,
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
@@ -353,6 +358,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [onChangeSettingProp],
   );
 
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting) => onChangeSceneProp("spriteMode", e),
+    [onChangeSceneProp],
+  );
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
   };
@@ -1011,25 +1020,43 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
               </SidebarColumn>
             )}
             {scene.type !== "LOGO" && (
-              <SidebarColumn>
-                <FormRow>
-                  <FormField
-                    name="playerSpriteSheetId"
-                    label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-                  >
-                    <SpriteSheetSelectButton
+              <>
+                <SidebarColumn>
+                  <FormRow>
+                    <FormField
                       name="playerSpriteSheetId"
-                      value={scene.playerSpriteSheetId}
-                      direction={isStartingScene ? startDirection : "down"}
-                      onChange={onChangePlayerSpriteSheetId}
-                      includeInfo
-                      optional
-                      optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
-                      optionalValue={defaultPlayerSprites[scene.type]}
-                    />
-                  </FormField>
-                </FormRow>
-              </SidebarColumn>
+                      label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
+                    >
+                      <SpriteSheetSelectButton
+                        name="playerSpriteSheetId"
+                        value={scene.playerSpriteSheetId}
+                        direction={isStartingScene ? startDirection : "down"}
+                        onChange={onChangePlayerSpriteSheetId}
+                        includeInfo
+                        optional
+                        optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                        optionalValue={defaultPlayerSprites[scene.type]}
+                      />
+                    </FormField>
+                  </FormRow>
+                </SidebarColumn>
+                <SidebarColumn>
+                  <FormContainer>
+                    <FormRow>
+                      <FormField
+                        name="spriteMode"
+                        label={l10n("SETTINGS_SPRITE_MODE")}
+                      >
+                        <SpriteModeSelect
+                          name={"spriteMode"}
+                          onChange={onChangeSpriteMode}
+                          value={scene.spriteMode ?? defaultSpriteMode}
+                        />
+                      </FormField>
+                    </FormRow>
+                  </FormContainer>
+                </SidebarColumn>
+              </>
             )}
             {isStartingScene && (
               <SidebarColumn>
