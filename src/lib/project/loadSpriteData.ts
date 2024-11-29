@@ -37,6 +37,7 @@ const loadSpriteData =
         plugin,
         name,
         symbol: toValidSymbol(`sprite_${name}`),
+        spriteMode: "8x16",
         states: [
           {
             id: uuidv4(),

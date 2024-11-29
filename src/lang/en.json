@@ -1229,6 +1229,7 @@
   "FIELD_SPRITE_MODE_8x16": "8x16",
   "FIELD_SPRITE_MODE_8x8_INFO": "8x8",
   "FIELD_SPRITE_MODE_8x16_INFO": "8x16",
+  "FIELD_SPRITE_MODE_PROJECT_DEFAULT": "Project Default ({default})",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

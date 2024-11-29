@@ -359,9 +359,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
 
   const onChangeSpriteMode = useCallback(
-    (e: SpriteModeSetting) => onChangeSceneProp("spriteMode", e),
+    (e: SpriteModeSetting | undefined) => onChangeSceneProp("spriteMode", e),
     [onChangeSceneProp],
   );
+
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
   };
@@ -1039,22 +1040,19 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       />
                     </FormField>
                   </FormRow>
-                </SidebarColumn>
-                <SidebarColumn>
-                  <FormContainer>
-                    <FormRow>
-                      <FormField
-                        name="spriteMode"
-                        label={l10n("SETTINGS_SPRITE_MODE")}
-                      >
-                        <SpriteModeSelect
-                          name={"spriteMode"}
-                          onChange={onChangeSpriteMode}
-                          value={scene.spriteMode ?? defaultSpriteMode}
-                        />
-                      </FormField>
-                    </FormRow>
-                  </FormContainer>
+                  <FormRow>
+                    <FormField
+                      name="spriteMode"
+                      label={l10n("SETTINGS_SPRITE_MODE")}
+                    >
+                      <SpriteModeSelect
+                        name={"spriteMode"}
+                        onChange={onChangeSpriteMode}
+                        allowDefault={true}
+                        value={scene.spriteMode}
+                      />
+                    </FormField>
+                  </FormRow>
                 </SidebarColumn>
               </>
             )}

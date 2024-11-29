@@ -58,8 +58,8 @@ import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-
-const MODE = "8x8";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SpriteEditorProps {
   id: string;
@@ -208,6 +208,12 @@ export const SpriteEditor = ({
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsHeight", castEventToInt(e, 16)),
     [onChangeSpriteSheetProp],
+  );
+
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting | undefined) =>
+      onChangeSpriteSheetProp("spriteMode", e),
+    [onChangeSpriteSheetProp]
   );
 
   const onChangeStateName = useCallback(
@@ -387,7 +393,7 @@ export const SpriteEditor = ({
 
   const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
   const showAutodetect =
-    MODE !== "8x8" && isDefaultState && sprite.height === 16;
+    sprite.spriteMode !== "8x8" && isDefaultState && sprite.height === 16;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -684,6 +690,22 @@ export const SpriteEditor = ({
                   />
                 </FormRow>
               </div>
+
+              <FormRow>
+                <FormField
+                  name="spriteMode"
+                  label={l10n("SETTINGS_SPRITE_MODE")}
+                >
+                  <SpriteModeSelect
+                    name={"spriteMode"}
+                    onChange={onChangeSpriteMode}
+                    allowDefault={true}
+                    value={sprite.spriteMode}
+                  />
+                </FormField>
+              </FormRow>
+
+              <FormDivider />
               <FormSectionTitle>
                 {l10n("FIELD_ANIMATION_SETTINGS")}
               </FormSectionTitle>

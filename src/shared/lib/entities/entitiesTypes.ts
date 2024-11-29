@@ -411,6 +411,7 @@ export type SpriteSheet = {
   boundsHeight: number;
   animSpeed: number | null;
   states: SpriteStateData[];
+  spriteMode?: SpriteModeSetting;
 };
 
 export type SpriteSheetNormalized = Omit<SpriteSheet, "states"> & {

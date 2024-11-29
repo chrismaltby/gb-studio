@@ -94,7 +94,10 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       });
 
       const res = await API.sprite.compileSprite(spriteData);
-      const numTiles = res.tiles.length / 2;
+      const numTiles =
+        spriteSheet.spriteMode === "8x16"
+          ? res.tiles.length / 2
+          : res.tiles.length;
 
       if (numTiles !== spriteSheet.numTiles) {
         store.dispatch(

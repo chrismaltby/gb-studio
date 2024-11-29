@@ -1,25 +1,32 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { SpriteModeSetting } from "store/features/settings/settingsState";
 import { OptionLabelWithInfo, Select, SelectCommonProps } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
+import { useAppSelector } from "store/hooks";
 
 interface SpriteModeSelectProps extends SelectCommonProps {
   name: string;
   value?: SpriteModeSetting;
-  onChange?: (newId: SpriteModeSetting) => void;
+  allowDefault?: boolean;
+  onChange?: (newId: SpriteModeSetting | undefined) => void;
 }
 
 export interface SpriteModeOption {
-  value: SpriteModeSetting;
+  value: SpriteModeSetting | undefined;
   label: string;
 }
 
 export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
   value,
+  allowDefault,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] = useState<SpriteModeOption>();
+  const [currentValue, setCurrentValue] =
+    useState<SpriteModeOption | undefined>();
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode
+  );
   const spriteModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       "8x8": l10n("FIELD_SPRITE_MODE_8x8_INFO"),
@@ -28,8 +35,19 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
     []
   );
 
-  const spriteModeOptions: SpriteModeOption[] = useMemo(
-    () => [
+  const spriteModeOptions: SpriteModeOption[] = useMemo(() => {
+    const options = allowDefault
+      ? [
+          {
+            value: undefined,
+            label: l10n("FIELD_SPRITE_MODE_PROJECT_DEFAULT", {
+              default: spriteModeOptionsInfo[defaultSpriteMode],
+            }),
+          },
+        ]
+      : ([] as SpriteModeOption[]);
+
+    return options.concat([
       {
         value: "8x16",
         label: l10n("FIELD_SPRITE_MODE_8x16"),
@@ -38,41 +56,33 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
         value: "8x8",
         label: l10n("FIELD_SPRITE_MODE_8x8"),
       },
-    ],
-    []
-  );
+    ]);
+  }, [allowDefault, defaultSpriteMode, spriteModeOptionsInfo]);
 
   useEffect(() => {
     const currentSpriteMode = spriteModeOptions.find((e) => e.value === value);
-    if (currentSpriteMode) {
-      setCurrentValue(currentSpriteMode);
-    }
+    setCurrentValue(currentSpriteMode);
   }, [spriteModeOptions, value]);
-
-  const onSelectChange = useCallback(
-    (newValue: SingleValue<SpriteModeOption>) => {
-      if (newValue) {
-        onChange?.(newValue.value);
-      }
-    },
-    [onChange]
-  );
 
   return (
     <Select
       value={currentValue}
       options={spriteModeOptions}
-      onChange={onSelectChange}
+      onChange={(newValue: SingleValue<SpriteModeOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
+      }}
       formatOptionLabel={(
-        option: Option,
+        option: SpriteModeOption,
         { context }: { context: "menu" | "value" }
       ) => {
+        let info = "";
+        if (context === "menu") {
+          info = option.value ?? spriteModeOptionsInfo[defaultSpriteMode];
+        }
         return (
-          <OptionLabelWithInfo
-            info={context === "menu" ? spriteModeOptionsInfo[option.value] : ""}
-          >
-            {option.label}
-          </OptionLabelWithInfo>
+          <OptionLabelWithInfo info={info}>{option.label}</OptionLabelWithInfo>
         );
       }}
     />

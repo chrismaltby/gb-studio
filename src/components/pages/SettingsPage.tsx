@@ -572,7 +572,9 @@ const SettingsPage: FC = () => {
               <SpriteModeSelect
                 name="spriteMode"
                 value={spriteMode}
-                onChange={onChangeSpriteMode}
+                onChange={(value) => {
+                  onChangeSpriteMode(value ?? "8x16");
+                }}
               />
             </SettingRowInput>
           </SearchableSettingRow>

@@ -12,6 +12,7 @@ import MetaspriteCanvasWorker, {
 } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -19,6 +20,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  spriteMode?: SpriteModeSetting;
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -30,6 +32,7 @@ export const MetaspriteCanvas = memo(
     flipX = false,
     palettes,
     previewAsMono,
+    spriteMode,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
     const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
@@ -120,6 +123,7 @@ export const MetaspriteCanvas = memo(
         palettes: paletteColors,
         previewAsMono,
         colorCorrection,
+        spriteMode: spriteMode ?? spriteSheet.spriteMode ?? "8x16",
       });
     }, [
       canvasRef,
@@ -132,6 +136,7 @@ export const MetaspriteCanvas = memo(
       workerId,
       previewAsMono,
       colorCorrection,
+      spriteMode,
     ]);
 
     return (

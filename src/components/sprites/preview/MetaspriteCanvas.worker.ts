@@ -2,8 +2,6 @@ import { DMG_PALETTE } from "consts";
 import { colorizeSpriteData, chromaKeyData } from "shared/lib/helpers/color";
 import { ObjPalette } from "shared/lib/entities/entitiesTypes";
 
-let MODE = "8x8";
-
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
 
@@ -31,6 +29,7 @@ workerCtx.onmessage = async (evt) => {
   const previewAsMono = evt.data.previewAsMono;
   const colorCorrection = evt.data.colorCorrection;
   const key = JSON.stringify({ src, palettes, previewAsMono, colorCorrection });
+  const spriteMode = evt.data.spriteMode ?? "8x16";
 
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;
@@ -149,11 +148,11 @@ workerCtx.onmessage = async (evt) => {
       tile.sliceX,
       tile.sliceY,
       8,
-      MODE === "8x8" ? 8 : 16,
+      spriteMode === "8x8" ? 8 : 16,
       Math.max(0, width / 2 - 8) + tile.x * (tile.flipX ? -1 : 1),
-      height - (MODE === "8x8" ? 8 : 16) - tile.y * (tile.flipY ? -1 : 1),
+      height - (spriteMode === "8x8" ? 8 : 16) - tile.y * (tile.flipY ? -1 : 1),
       8,
-      MODE === "8x8" ? 8 : 16,
+      spriteMode === "8x8" ? 8 : 16,
     );
     ctx.restore();
   }
