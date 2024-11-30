@@ -54,7 +54,6 @@ export type ImageTileAllocationStrategy = (
  * Allocates an image tile for to default DMG location.
  *
  * @param {number} tileIndex - The index of the tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
 export const imageTileAllocationDefault: ImageTileAllocationStrategy = (
@@ -70,12 +69,11 @@ export const imageTileAllocationDefault: ImageTileAllocationStrategy = (
  * Allocates an image tile for color-only mode and adjusts the tile index based on VRAM bank allocation.
  *
  * @param {number} tileIndex - The index of the tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
 export const imageTileAllocationColorOnly: ImageTileAllocationStrategy = (
-  tileIndex,
-) => {
+  tileIndex: number,
+): { tileIndex: number; inVRAM2: boolean } => {
   // First 128 tiles go into vram bank 1
   if (tileIndex < 128) {
     return {

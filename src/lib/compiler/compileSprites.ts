@@ -134,19 +134,13 @@ export const compileSprite = async (
     })
     .flat();
 
-  console.log("SHEET:", spriteSheet);
-  console.log("METASPRITES:", metasprites);
-
   const { tiles, lookup } = await optimiseTiles(
     filename,
     spriteSheet.canvasWidth,
     spriteSheet.canvasHeight,
     metasprites,
+    spriteSheet.spriteMode ?? "8x16",
   );
-
-  // console.log(tiles);
-  // console.log(lookup);
-  console.log("---------");
 
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
     .map((state) =>

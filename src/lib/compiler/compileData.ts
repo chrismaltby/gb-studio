@@ -1486,6 +1486,14 @@ const compile = async (
       };
 
       const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
+        scene.script.unshift({
+          id: "",
+          command: "INTERNAL_SET_SPRITE_MODE",
+          args: {
+            mode: scene.spriteMode ?? projectData.settings.spriteMode ?? "8x16",
+          },
+        });
+
         // Merge start scripts for actors with scene start script
         const initScript = ([] as ScriptEvent[]).concat(
           scene.actors

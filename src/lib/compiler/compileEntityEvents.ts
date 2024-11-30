@@ -113,6 +113,12 @@ const compileEntityEvents = (
           args?.value as number,
           subInput[i]?.children?.true,
         );
+      } else if (command === "INTERNAL_SET_SPRITE_MODE") {
+        const args = subInput[i].args;
+        scriptBuilder.appendRaw(`VM_SET_SPRITE_MODE ${
+          args?.mode === "8x8" ? `.MODE_8X8` : `.MODE_8X16`
+        }    
+          `);
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(

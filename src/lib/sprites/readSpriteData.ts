@@ -19,8 +19,7 @@ import {
   sliceIndexedImage,
 } from "shared/lib/tiles/indexedImage";
 import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
-
-let MODE = "8x8";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 /**
  * Read an image filename into a GB 2bpp data array
@@ -59,6 +58,7 @@ export const optimiseTiles = async (
   spriteWidth: number,
   spriteHeight: number,
   metasprites: MetaspriteTile[][],
+  spriteMode: SpriteModeSetting,
 ): Promise<{
   tiles: IndexedImage[];
   lookup: Record<string, OptimisedTile | undefined>;
@@ -83,7 +83,7 @@ export const optimiseTiles = async (
         tileDef.sliceX,
         tileDef.sliceY,
         8,
-        MODE === "8x8" ? 8 : 16,
+        spriteMode === "8x8" ? 8 : 16,
       );
       if (tileDef.flipX) {
         slicedTile = flipIndexedImageX(slicedTile);
@@ -96,14 +96,14 @@ export const optimiseTiles = async (
         slicedTile,
         mask,
         spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - (MODE === "8x8" ? 8 : 16) - tileDef.y,
+        spriteHeight - (spriteMode === "8x8" ? 8 : 16) - tileDef.y,
       );
 
       mask = blitIndexedImageData(
         mask,
         slicedTile,
         spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - (MODE === "8x8" ? 8 : 16) - tileDef.y,
+        spriteHeight - (spriteMode === "8x8" ? 8 : 16) - tileDef.y,
       );
 
       tileLookup[tileDef.id] = allTiles.length;
@@ -135,7 +135,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tile);
         optimisedLookup2[id] = {
-          tile: ui * (MODE === "8x8" ? 1 : 2),
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: false,
           flipY: false,
         };
@@ -145,7 +145,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFX);
         optimisedLookup2[id] = {
-          tile: ui * (MODE === "8x8" ? 1 : 2),
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: true,
           flipY: false,
         };
@@ -155,7 +155,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFY);
         optimisedLookup2[id] = {
-          tile: ui * (MODE === "8x8" ? 1 : 2),
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: false,
           flipY: true,
         };
@@ -165,7 +165,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFXY);
         optimisedLookup2[id] = {
-          tile: ui * (MODE === "8x8" ? 1 : 2),
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: true,
           flipY: true,
         };
@@ -176,7 +176,7 @@ export const optimiseTiles = async (
     if (!found) {
       const id = tileIds[i];
       optimisedLookup2[id] = {
-        tile: uniqTiles.length * (MODE === "8x8" ? 1 : 2),
+        tile: uniqTiles.length * (spriteMode === "8x8" ? 1 : 2),
         flipX: false,
         flipY: false,
       };
@@ -188,7 +188,7 @@ export const optimiseTiles = async (
     uniqTileData.push(
       indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 0, 8, 8)),
     );
-    if (MODE !== "8x8") {
+    if (spriteMode !== "8x8") {
       uniqTileData.push(
         indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 8, 8, 8)),
       );
