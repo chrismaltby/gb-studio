@@ -5553,16 +5553,20 @@ extern void __mute_mask_${symbol};
   getActorIndex = (id: string): number => {
     const { entity, entityType, scene } = this.options;
 
+    // Actor == player
     if (id === "player" || (id === "$self$" && entityType !== "actor")) {
       return 0;
     }
 
+    // Actor == Self
     if (id === "$self$" && entity) {
       return getActorIndex(entity.id, scene);
     }
 
+    // Find actor in current scene
     const index = getActorIndex(id, scene);
 
+    // Actor id not found but entity was set, fall back to Self
     if (entity && index === 0) {
       return getActorIndex(entity.id, scene);
     }
