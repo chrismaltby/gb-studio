@@ -10,6 +10,7 @@ import {
 } from "./generateGBVMData";
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
+import { gbvmSetConstForCType } from "shared/lib/engineFields/engineFieldToCType";
 
 interface InitialState {
   startX: number;
@@ -88,12 +89,16 @@ ${usedEngineFields
 _script_engine_init::
 ${usedEngineFields
   .map((engineField) => {
+    if (engineField.cType === "define") {
+      return "";
+    }
     const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
     const value =
       engineValue && engineValue.value !== undefined
         ? engineValue.value
         : engineField.defaultValue;
-    return `        VM_SET_CONST_INT16      _${engineField.key}, ${value}`;
+    const gbvmSetConstInstruction = gbvmSetConstForCType(engineField.cType);
+    return `        ${gbvmSetConstInstruction}      _${engineField.key}, ${value}`;
   })
   .join("\n")}
 
