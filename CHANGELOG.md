@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing the dimensions of a sprite png image could cause the sprite editor's tile palette to display incorrectly
 - Fix line numbers in code editor for GBVM scripts with more than 999 lines
 - Fix issue preventing projects being created with the name "project"
+- Fix issue without-of-bounds memory writes on 8-bit values in engine field initialisation [@michel-iwaniec](https://github.com/michel-iwaniec)
 
 ## [4.1.3] - 2024-09-16
 
