@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
+- Updated German localisation. [@gonzoMD](https://github.com/gonzoMD)
 
 ### Fixed
 
@@ -58,6 +60,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix line numbers in code editor for GBVM scripts with more than 999 lines
 - Fix issue preventing projects being created with the name "project"
 - Fix issue without-of-bounds memory writes on 8-bit values in engine field initialisation [@michel-iwaniec](https://github.com/michel-iwaniec)
+- Fix issue preventing checkbox type working in engine fields [@pau-tomas](https://github.com/pau-tomas)
+- Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator [@untoxa](https://github.com/untoxa)
+- Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
+- Fix issue where sprites could end up with empty state id values
+- Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
 
 ## [4.1.3] - 2024-09-16
 

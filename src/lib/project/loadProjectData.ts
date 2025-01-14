@@ -248,6 +248,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       states: (resource?.states || asset.states).map((oldState) => {
         return {
           ...oldState,
+          id: oldState.id || uuid(),
           animations: Array.from(Array(8)).map((_, animationIndex) => ({
             id:
               (oldState.animations &&

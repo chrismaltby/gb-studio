@@ -715,9 +715,7 @@ export type VariablesResource = Static<typeof VariablesResource>;
 
 export const EngineFieldValueData = Type.Object({
   id: Type.String(),
-  value: Type.Optional(
-    Type.Union([Type.String(), Type.Boolean(), Type.Number()])
-  ),
+  value: Type.Optional(Type.Union([Type.String(), Type.Number()])),
 });
 
 export type EngineFieldValueData = Static<typeof EngineFieldValueData>;

@@ -124,14 +124,12 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
     );
   }
   if (field.type === "checkbox") {
-    const theValue =
-      typeof value === "boolean" ? Boolean(value) : Boolean(field.defaultValue);
     return (
       <Checkbox
         id={field.key}
         name={field.key}
-        checked={theValue}
-        onChange={(e) => onChange(e.currentTarget.checked)}
+        checked={value === 1 ? true : false}
+        onChange={(e) => onChange(e.currentTarget.checked === true ? 1 : 0)}
       />
     );
   }

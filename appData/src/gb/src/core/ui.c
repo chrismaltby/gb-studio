@@ -389,7 +389,7 @@ UBYTE ui_draw_text_buffer_char(void) BANKED {
                 if (vwf_current_offset) ui_print_reset();
                 break;
             case 0x0b:
-                text_palette = (*++ui_text_ptr & 0x07);
+                text_palette = (((*++ui_text_ptr) - 1u) & 0x07u);
                 break;
             case '\r':  // 0x0d
                 // line feed

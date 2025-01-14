@@ -128,6 +128,12 @@ export const useScriptEventTitle = (
               / /g,
               ""
             );
+          } else if (
+            actorsLookup[entityId] &&
+            sceneActorIds &&
+            sceneActorIds.indexOf(entityId) > -1
+          ) {
+            return l10n("FIELD_SELF");
           } else if (entityType === "actorPrefab") {
             return l10n("FIELD_SELF");
           } else {
