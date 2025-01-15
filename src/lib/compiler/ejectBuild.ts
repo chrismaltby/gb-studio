@@ -218,6 +218,7 @@ const ejectBuild = async ({
   await fs.ensureDir(`${outputRoot}/include/data`);
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/src/data/music`);
+  await fs.ensureDir(`${outputRoot}/src/data/sounds`);
   await fs.ensureDir(`${outputRoot}/obj`);
   await fs.ensureDir(`${outputRoot}/build/rom`);
 

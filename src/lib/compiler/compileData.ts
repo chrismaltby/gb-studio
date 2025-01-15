@@ -74,8 +74,10 @@ import {
   compileGameGlobalsHeader,
   compileGlobalProjectilesHeader,
   compileGlobalProjectiles,
+  emptySpriteSheetHeader,
+  emptySpriteSheet,
 } from "./generateGBVMData";
-import compileSGBImage from "./sgb";
+import compileSGBImage, { sgbImageHeader } from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import {
   compileMusicTracks,
@@ -1516,7 +1518,11 @@ const compile = async (
       warnings,
     });
     output["border.c"] = await compileSGBImage(sgbPath);
+    output["border.h"] = sgbImageHeader;
   }
+
+  output["spritesheet_none.h"] = emptySpriteSheetHeader;
+  output["spritesheet_none.c"] = emptySpriteSheet;
 
   progress(`${l10n("COMPILING_EVENTS")}...`);
 

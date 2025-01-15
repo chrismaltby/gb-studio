@@ -1270,9 +1270,9 @@ export const compileGameGlobalsHeader = (
         return `#define ${constant.symbol.toLocaleUpperCase()} ${
           constant.value
         }\n`;
-	  })
+      })
       .join("") +
-	stateReferences
+    stateReferences
       .map((string, stringIndex) => {
         return `#define ${string} ${stringIndex}\n`;
       })
@@ -1366,3 +1366,38 @@ export const compileStateDefines = (
     `#endif\n`
   );
 };
+
+export const emptySpriteSheet = `#pragma bank 255
+
+// SpriteSheet: None
+
+#include "gbs_types.h"
+
+const void __at(255) __bank_spritesheet_none;
+
+const metasprite_t spritesheet_none_metasprite[]  = {
+    {metasprite_end}
+};
+
+const metasprite_t * const spritesheet_none_metasprites[] = {
+    spritesheet_none_metasprite
+};
+
+const struct spritesheet_t spritesheet_none = {
+    .n_metasprites = 1,
+    .metasprites = spritesheet_none_metasprites,
+};
+`;
+
+export const emptySpriteSheetHeader = `#ifndef SPRITESHEET_NONE_H
+#define SPRITESHEET_NONE_H
+
+// SpriteSheet: None
+
+#include "gbs_types.h"
+
+extern const void __bank_spritesheet_none;
+extern const struct spritesheet_t spritesheet_none;
+
+#endif
+`;
