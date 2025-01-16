@@ -16,7 +16,9 @@ if (isDist) {
 
 // Paths
 export const buildUUID = "_gbsbuild";
-export const engineRoot = normalize(`${rootDir}/appData/src`);
+export const enginesRoot = normalize(`${rootDir}/appData/engine`);
+export const defaultEngineRoot = normalize(`${enginesRoot}/gbvm`);
+export const defaultEngineMetaPath = normalize(`${enginesRoot}/engine.json`);
 export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
 export const binjgbRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
 export const projectTemplatesRoot = normalize(`${rootDir}/appData/templates`);

@@ -6,6 +6,7 @@ interface CopyOptions {
   overwrite?: boolean;
   errorOnExist?: boolean;
   mode?: number | undefined;
+  ignore?: (path: string) => boolean;
 }
 
 const copyFile = async (
@@ -13,7 +14,10 @@ const copyFile = async (
   dest: string,
   options: CopyOptions = {}
 ) => {
-  const { overwrite = true, errorOnExist = false, mode } = options;
+  const { overwrite = true, errorOnExist = false, mode, ignore } = options;
+  if (ignore?.(src)) {
+    return;
+  }
   let throwAlreadyExists = false;
   if (!overwrite) {
     try {
@@ -49,6 +53,10 @@ const copyDir = async (
   dest: string,
   options: CopyOptions = {}
 ) => {
+  const { ignore } = options;
+  if (ignore?.(src)) {
+    return;
+  }
   const filePaths = await fs.readdir(src);
   await fs.ensureDir(dest);
   for (const fileName of filePaths) {

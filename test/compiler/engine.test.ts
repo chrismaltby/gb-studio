@@ -1,11 +1,9 @@
-import { engineRoot } from "consts";
+import { defaultEngineMetaPath } from "consts";
 import { isKnownEngineVersion } from "lib/project/ejectEngineChangelog";
 import { readEngineVersion } from "lib/project/engine";
 
 test("should recognise current engine version", async () => {
-  const corePath = `${engineRoot}/gb`;
-  const engineMetaPath = `${corePath}/engine.json`;
-  const latestEngineVersion = await readEngineVersion(engineMetaPath);
+  const latestEngineVersion = await readEngineVersion(defaultEngineMetaPath);
   expect(isKnownEngineVersion(latestEngineVersion)).toBe(true);
 });
 
