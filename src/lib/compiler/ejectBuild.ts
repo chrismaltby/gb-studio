@@ -23,6 +23,7 @@ import { ProjectResources } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 
 const engineIgnore = [
+  ".git",
   "examples",
   "test",
   "obj",
