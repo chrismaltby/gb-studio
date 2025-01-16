@@ -31,6 +31,7 @@
     "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start",
     "dead-code": "knip",
     "repl": "ts-node",
+    "fetch-deps": "git submodule update --init --recursive && ts-node src/scripts/fetchDependencies.ts",
     "fetch-contributors": "ts-node src/scripts/fetchContributors.ts",
     "fetch-patrons": "ts-node src/scripts/fetchPatrons.ts",
     "storybook": "storybook dev -p 6006",

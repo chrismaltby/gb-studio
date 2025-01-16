@@ -26,17 +26,17 @@ Or to run from source, clone this repo then:
 
 ```bash
 > cd gb-studio
-> git submodule update --init --recursive
 > corepack enable
 > yarn
+> npm run fetch-deps
 > npm start
 ```
 
-After checking out a new version you may also need to update git submodules to ensure you have the latest version of GBVM
+After checking out a new version you may also need to fetch dependencies again to ensure you have the latest version of GBVM + GBDK etc.
 
 ```bash
 > cd gb-studio
-> git submodule update --init --recursive
+> npm run fetch-deps
 ```
 
 GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
