@@ -43,10 +43,14 @@ const dependencies = {
 
 type Arch = keyof typeof dependencies;
 
-const fetchAll = process.argv.includes("--all");
-
 const archs = Object.keys(dependencies) as Array<Arch>;
 const localArch = `${process.platform}-${process.arch}`;
+
+const fetchAll = process.argv.includes("--all");
+const fetchArch =
+  process.argv
+    .find((arg) => arg.startsWith("--arch="))
+    ?.replace("--arch=", "") ?? localArch;
 
 const extractTarGz = async (
   archivePath: string,
@@ -85,7 +89,7 @@ export const fetchGBDKDependency = async (arch: Arch) => {
 
 const main = async () => {
   for (const arch of archs) {
-    if (fetchAll || arch === localArch) {
+    if (fetchAll || arch === fetchArch) {
       await fetchGBDKDependency(arch);
     }
   }
