@@ -26,19 +26,27 @@ Or to run from source, clone this repo then:
 
 ```bash
 > cd gb-studio
+> git submodule update --init --recursive
 > corepack enable
 > yarn
 > npm start
 ```
 
-GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version. 
+After checking out a new version you may also need to update git submodules to ensure you have the latest version of GBVM
+
+```bash
+> cd gb-studio
+> git submodule update --init --recursive
+```
+
+GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
 
 ```bash
 > cd gb-studio
 > nvm use
 ```
 
-## GB Studio CLI 
+## GB Studio CLI
 
 Install GB Studio from source as above then
 
@@ -63,33 +71,38 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 - **Export Project**
 
-    ```bash
-    > $(yarn bin gb-studio-cli) export path/to/project.gbsproj out/
-    ```
-    Export GBDK project from gbsproj to out directory
+  ```bash
+  > $(yarn bin gb-studio-cli) export path/to/project.gbsproj out/
+  ```
+
+  Export GBDK project from gbsproj to out directory
 
 - **Export Data**
-    ```bash
-    > $(yarn bin gb-studio-cli) export -d path/to/project.gbsproj out/
-    ```
-    Export only src/data and include/data from gbsproj to out directory
+  ```bash
+  > $(yarn bin gb-studio-cli) export -d path/to/project.gbsproj out/
+  ```
+  Export only src/data and include/data from gbsproj to out directory
 - **Make ROM**
-    ```bash
-    > $(yarn bin gb-studio-cli) make:rom path/to/project.gbsproj out/game.gb
-    ```
-    Make a ROM file from gbsproj
+
+  ```bash
+  > $(yarn bin gb-studio-cli) make:rom path/to/project.gbsproj out/game.gb
+  ```
+
+  Make a ROM file from gbsproj
 
 - **Make Pocket**
-    ```bash
-    > $(yarn bin gb-studio-cli) make:pocket path/to/project.gbsproj out/game.pocket
-    ```
-    Make a Pocket file from gbsproj
+
+  ```bash
+  > $(yarn bin gb-studio-cli) make:pocket path/to/project.gbsproj out/game.pocket
+  ```
+
+  Make a Pocket file from gbsproj
 
 - **Make Web**
-    ```bash
-    > $(yarn bin gb-studio-cli) make:web path/to/project.gbsproj out/
-    ```
-    Make a Web build from gbsproj
+  ```bash
+  > $(yarn bin gb-studio-cli) make:web path/to/project.gbsproj out/
+  ```
+  Make a Web build from gbsproj
 
 ## Documentation
 
