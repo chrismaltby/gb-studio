@@ -5,7 +5,7 @@ import { IndexedImage } from "shared/lib/tiles/indexedImage";
 
 test("Should reduce the palettes to a maximum of 8", async () => {
   const filename = `${__dirname}/_files/test/color_town.png`;
-  const paletteData = await readFileToPalettes(filename);
+  const paletteData = await readFileToPalettes(filename, "default");
   writeIndexedImagePNG(
     `${__dirname}/_tmp/color_town_tiles.png`,
     paletteData.indexedImage
@@ -14,7 +14,7 @@ test("Should reduce the palettes to a maximum of 8", async () => {
 
 test("Should reduce the palettes to a maximum of 8", async () => {
   const filename = `${__dirname}/_files/test/parallax_color.png`;
-  const paletteData = await readFileToPalettes(filename);
+  const paletteData = await readFileToPalettes(filename, "default");
   writeIndexedImagePNG(
     `${__dirname}/_tmp/parallax_color_tiles.png`,
     paletteData.indexedImage

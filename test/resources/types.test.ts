@@ -628,6 +628,7 @@ describe("TypeBox Schemas", () => {
       debuggerBreakpoints: [],
       debuggerWatchedVariables: [],
       colorMode: "mono",
+      colorCorrection: "default",
       previewAsMono: false,
       openBuildLogOnWarnings: true,
       generateDebugFilesEnabled: false,

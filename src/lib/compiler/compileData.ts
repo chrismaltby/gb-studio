@@ -130,7 +130,10 @@ import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
-import { ProjectResources } from "shared/lib/resources/types";
+import {
+  ColorCorrectionSetting,
+  ProjectResources,
+} from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 
 type CompiledTilemapData = {
@@ -222,6 +225,7 @@ export const precompileBackgrounds = async (
   tilesets: TilesetData[],
   customEventsLookup: Record<string, CustomEvent>,
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectRoot: string,
   tmpPath: string,
   {
@@ -304,6 +308,7 @@ export const precompileBackgrounds = async (
     forceGenerateTilesetIds,
     generate360Ids,
     colorMode,
+    colorCorrection,
     projectRoot,
     {
       warnings,
@@ -1284,6 +1289,7 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorMode = projectData.settings.colorMode;
+  const colorCorrection = projectData.settings.colorCorrection;
   const cgbOnly = colorMode === "color";
 
   const usedAssets = determineUsedAssets({
@@ -1308,6 +1314,7 @@ const precompile = async (
     projectData.tilesets,
     customEventsLookup,
     colorMode,
+    colorCorrection,
     projectRoot,
     tmpPath,
     { warnings }

@@ -497,6 +497,13 @@ export const ColorModeSetting = Type.Union([
 
 export type ColorModeSetting = Static<typeof ColorModeSetting>;
 
+export const ColorCorrectionSetting = Type.Union([
+  Type.Literal("none"),
+  Type.Literal("default"),
+]);
+
+export type ColorCorrectionSetting = Static<typeof ColorCorrectionSetting>;
+
 export const ShowConnectionsSetting = Type.Union([
   Type.Literal("all"),
   Type.Literal("selected"),
@@ -669,6 +676,7 @@ export const SettingsResource = Type.Object({
   debuggerBreakpoints: Type.Array(BreakpointData),
   debuggerWatchedVariables: Type.Array(Type.String()),
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   previewAsMono: Type.Boolean(),
   openBuildLogOnWarnings: Type.Boolean(),
   generateDebugFilesEnabled: Type.Boolean(),

@@ -989,6 +989,11 @@
   "FIELD_SHOW_TILE_VALUES": "Show Tile Values",
   "FIELD_SUBMIT_PLUGIN": "Submit Plugin",
   "FIELD_WAIT_UNTIL_BUTTON_PRESSED": "Wait Until Button Pressed",
+  "FIELD_COLOR_CORRECTION": "Color Correction",
+  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "Enabled (Default)",
+  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Corrects colors to closer match how they would appear on original hardware.",
+  "FIELD_COLOR_CORRECTION_NONE": "None",
+  "FIELD_COLOR_CORRECTION_NONE_INFO": "Disables all in-built color correction, allowing a wider range of colors when using modern hardware and emulators.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -7,18 +7,22 @@ const rgbToGBCCache: Record<string, string> = {};
 /**
  * Convert hex to closest GBC compatible hex
  */
-export const GBCHexToClosestHex = (hex: string) => {
+export const GBCHexToColorCorrectedHex = (hex: string) => {
   if (hex.toLowerCase() === "ff0000") return hex; // otherwise comes back as 31,3,0
   const r = Math.floor(hexDec(hex.substring(0, 2)));
   const g = Math.floor(hexDec(hex.substring(2, 4)));
   const b = Math.floor(hexDec(hex.substring(4)));
-  return rgbToClosestGBCHex(r, g, b);
+  return rgbToColorCorrectedHex(r, g, b);
 };
 
 /**
  * Convert rgb values to closest GBC compatible hex
  */
-export const rgbToClosestGBCHex = (r: number, g: number, b: number): string => {
+export const rgbToColorCorrectedHex = (
+  r: number,
+  g: number,
+  b: number
+): string => {
   const key = `${r}_${g}_${b}`;
   if (rgbToGBCCache[key]) {
     return rgbToGBCCache[key];

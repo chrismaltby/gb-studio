@@ -64,6 +64,8 @@ const buildProject = async (
 
   if (buildType === "web") {
     const colorOnly = project.settings.colorMode === "color";
+    const colorCorrection =
+      project.settings.colorCorrection === "default" ? 2 : 0;
     const gameFile = colorOnly ? "game.gbc" : "game.gb";
     await copy(binjgbRoot, `${outputRoot}/build/web`);
     await copy(
@@ -99,7 +101,12 @@ const buildProject = async (
 
     const scriptJs = (
       await fs.readFile(`${outputRoot}/build/web/js/script.js`, "utf8")
-    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`);
+    )
+      .replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`)
+      .replace(
+        /CGB_COLOR_CURVE = [0-9]+/g,
+        `CGB_COLOR_CURVE = ${colorCorrection}`
+      );
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
     await fs.writeFile(`${outputRoot}/build/web/js/script.js`, scriptJs);

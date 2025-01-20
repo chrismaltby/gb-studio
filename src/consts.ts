@@ -416,6 +416,7 @@ export const defaultProjectSettings: Settings = {
   debuggerBreakpoints: [],
   debuggerWatchedVariables: [],
   colorMode: "mixed",
+  colorCorrection: "default",
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,

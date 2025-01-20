@@ -24,6 +24,7 @@ import {
 import type { ColorModeSetting } from "store/features/settings/settingsState";
 import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -137,6 +138,7 @@ const compileImage = async (
   commonTileset: TilesetData | undefined,
   is360: boolean,
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData> => {
@@ -166,7 +168,7 @@ const compileImage = async (
   let autoPalettes: Palette[] | undefined = undefined;
   if (autoColorMode === ImageColorMode.AUTO_COLOR) {
     // Extract both tiles and colors from color PNG
-    const paletteData = await readFileToPalettes(filename);
+    const paletteData = await readFileToPalettes(filename, colorCorrection);
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
@@ -292,6 +294,7 @@ const compileImages = async (
   forceGenerateTilesetIds: Set<string>,
   generate360Ids: Set<string>,
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData[]> => {
@@ -315,6 +318,7 @@ const compileImages = async (
                     undefined,
                     generate360Ids.has(img.id),
                     colorMode,
+                    colorCorrection,
                     projectPath,
                     { warnings }
                   ),
@@ -328,6 +332,7 @@ const compileImages = async (
                 commonTileset,
                 generate360Ids.has(img.id),
                 colorMode,
+                colorCorrection,
                 projectPath,
                 { warnings }
               );
