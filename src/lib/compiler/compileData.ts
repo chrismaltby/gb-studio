@@ -2143,7 +2143,7 @@ const compile = async (
 
   output[`scene_types.h`] = compileSceneTypes(usedSceneTypes);
 
-  output[`../states/states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
+  output[`states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
 
   output[`states_defines.h`] = compileStateDefines(
     engineFields,

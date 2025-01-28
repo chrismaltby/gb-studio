@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
 - Fix issue where sprites could end up with empty state id values
 - Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
+- Fix issue where migrating older projects to the latest version would sometimes cause auto generated gbvm symbols to change
 
 ## [4.1.3] - 2024-09-16
 
