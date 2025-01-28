@@ -39,10 +39,11 @@ workerCtx.onmessage = async (evt) => {
   const tiles = evt.data.tiles;
   const previewAsMono = evt.data.previewAsMono;
   const palettes = evt.data.palettes;
+  const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
   const palettesRGB = palettes.map((colors: string[]) =>
-    colors.map(hex2GBCrgb)
+    colors.map(colorCorrectionFn)
   );
-  const dmgPalette = DMG_PALETTE.colors.map(hex2GBCrgb);
+  const dmgPalette = DMG_PALETTE.colors.map(colorCorrectionFn);
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;

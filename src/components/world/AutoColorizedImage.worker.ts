@@ -28,6 +28,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tilesSrc = evt.data.tilesSrc as string | undefined;
   const previewAsMono = evt.data.previewAsMono;
+  const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
@@ -120,13 +121,13 @@ workerCtx.onmessage = async (evt) => {
     paletteData = autoPaletteUsingTiles(width, height, data, indexedImage);
   } else {
     // If only one image provided extract tiles and color from same image
-    paletteData = autoPalette(width, height, data);
+    paletteData = autoPalette(width, height, data, evt.data.colorCorrection);
   }
 
   const palettesRGB = paletteData.palettes.map((colors: string[]) =>
-    colors.map(hex2GBCrgb)
+    colors.map(colorCorrectionFn)
   );
-  const dmgPalette = DMG_PALETTE.colors.map(hex2GBCrgb);
+  const dmgPalette = DMG_PALETTE.colors.map(colorCorrectionFn);
 
   const tiles = paletteData.map;
   const indexedImage = paletteData.indexedImage;

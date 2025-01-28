@@ -19,6 +19,7 @@ test("should compile images", async () => {
     new Set(),
     new Set(),
     "mixed",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -39,6 +40,7 @@ test("should compile split large images into two tilesets for CGB mode", async (
     new Set(),
     new Set(),
     "color",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -60,6 +62,7 @@ test("should compile large images into one overflowing bank when not in color on
     new Set(),
     new Set(),
     "mixed",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -80,6 +83,7 @@ test("should split tiles into two banks when in color only mode, filling first 1
     new Set(),
     new Set(),
     "color",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -144,6 +148,7 @@ test("should handle overflow correctly for DMG mode", async () => {
     new Set(),
     new Set(),
     "mono",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );
@@ -171,6 +176,7 @@ test("should handle overflow correctly for color only mode", async () => {
     new Set(),
     new Set(),
     "color",
+    "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
   );

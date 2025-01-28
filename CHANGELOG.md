@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to search and add scripts by name when adding events instead of needing to add a "Call Script" event and selecting the script manually from the dropdown each time [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to quickly create "Comment" events by typing the comment text in the Add Event search field and choosing "Comment" menu item [@pau-tomas](https://github.com/pau-tomas)
 - Add text code `!Wait` to allow pausing dialogue until an amount of time/frames has elapsed or a selected button has been pressed
+- Add setting to toggle GBC color correction. Disable color correction to closer match how colors will appear on modern hardware
 
 ### Changed
 
@@ -65,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
 - Fix issue where sprites could end up with empty state id values
 - Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
+- Fix issue where migrating older projects to the latest version would sometimes cause auto generated gbvm symbols to change
 
 ## [4.1.3] - 2024-09-16
 

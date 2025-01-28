@@ -32,6 +32,12 @@ import type { ScriptEventDefs } from "shared/lib/scripts/eventHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import { Value } from "@sinclair/typebox/value";
 import { defaultProjectSettings } from "consts";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
+
+const chain =
+  <T, U>(fn1: (input: T) => T, fn2: (input: T) => U) =>
+  (input: T) =>
+    fn2(fn1(input));
 
 export const migrateLegacyProject = (
   project: ProjectData,
@@ -89,19 +95,52 @@ export const migrateLegacyProject = (
     return arr.filter(identity).map(mapFn);
   };
 
+  const fixMissingSymbols =
+    <T extends { name: string; symbol: string }>(prefix: string) =>
+    (resource: T): T => {
+      if (!resource.symbol) {
+        return {
+          ...resource,
+          symbol: toValidSymbol(`${prefix}_${resource.name}`),
+        };
+      }
+      return resource;
+    };
+
   return {
     scenes: map(migratedProject.scenes, encodeScene),
     actorPrefabs: [],
     triggerPrefabs: [],
     scripts: map(migratedProject.customEvents, encodeResource(ScriptResource)),
-    sprites: map(migratedProject.spriteSheets, encodeResource(SpriteResource)),
-    backgrounds: map(migratedProject.backgrounds, encodeBackground),
-    emotes: map(migratedProject.emotes, encodeResource(EmoteResource)),
+    sprites: map(
+      migratedProject.spriteSheets,
+      chain(fixMissingSymbols("sprite"), encodeResource(SpriteResource))
+    ),
+    backgrounds: map(
+      migratedProject.backgrounds,
+      chain(fixMissingSymbols("bg"), encodeBackground)
+    ),
+    emotes: map(
+      migratedProject.emotes,
+      chain(fixMissingSymbols("emote"), encodeResource(EmoteResource))
+    ),
     avatars: map(migratedProject.avatars, encodeResource(AvatarResource)),
-    tilesets: map(migratedProject.tilesets, encodeResource(TilesetResource)),
-    fonts: map(migratedProject.fonts, encodeResource(FontResource)),
-    sounds: map(migratedProject.sounds, encodeResource(SoundResource)),
-    music: map(migratedProject.music, encodeResource(MusicResource)),
+    tilesets: map(
+      migratedProject.tilesets,
+      chain(fixMissingSymbols("tileset"), encodeResource(TilesetResource))
+    ),
+    fonts: map(
+      migratedProject.fonts,
+      chain(fixMissingSymbols("font"), encodeResource(FontResource))
+    ),
+    sounds: map(
+      migratedProject.sounds,
+      chain(fixMissingSymbols("sound"), encodeResource(SoundResource))
+    ),
+    music: map(
+      migratedProject.music,
+      chain(fixMissingSymbols("song"), encodeResource(MusicResource))
+    ),
     palettes: map(migratedProject.palettes, encodeResource(PaletteResource)),
     variables: encodeResource(VariablesResource)({
       _resourceType: "variables",

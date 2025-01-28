@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef } from "react";
 import AutoColorizedImageWorker, {
   AutoColorizedImageResult,
 } from "./AutoColorizedImage.worker";
+import { getSettings } from "store/features/settings/settingsState";
+import { useAppSelector } from "store/hooks";
 
 const workerPool: AutoColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -23,6 +25,10 @@ const AutoColorizedImage = ({
   tilesSrc,
   previewAsMono,
 }: AutoColorizedImageProps) => {
+  const colorCorrection = useAppSelector(
+    (state) => getSettings(state).colorCorrection
+  );
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
   const worker = useRef(
@@ -65,10 +71,11 @@ const AutoColorizedImage = ({
         width,
         height,
         previewAsMono,
+        colorCorrection,
         id: workerId.current,
       });
     }
-  }, [height, src, tilesSrc, width, previewAsMono]);
+  }, [height, src, tilesSrc, width, previewAsMono, colorCorrection]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };
