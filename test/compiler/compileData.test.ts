@@ -454,6 +454,7 @@ test("should precompile image data", async () => {
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -605,6 +606,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -701,6 +703,7 @@ test("should include tileset for background when also used without common tilese
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -783,6 +786,7 @@ test("should share tilesets if possible when multiple backgrounds include common
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -869,6 +873,7 @@ test("should generate unique tileset for background if used without common tiles
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -968,6 +973,7 @@ test("should generate unique tileset for background if referenced from script ev
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -1041,6 +1047,7 @@ test("should generate unique tileset for identical backgrounds if used without c
     [],
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }
@@ -1119,6 +1126,7 @@ test("should allow reusing tileset for identical backgrounds if used with common
     tilesets,
     {},
     "mono",
+    "default",
     `${__dirname}/_files`,
     `${__dirname}/_tmp`,
     { warnings: () => {} }

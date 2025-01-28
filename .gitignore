@@ -12,6 +12,7 @@ coverage
 /dist
 .DS_Store
 test/projects/*/build
+buildTools/*/gbdk
 
 # Webpack
 .webpack/

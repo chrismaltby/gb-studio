@@ -1,4 +1,5 @@
 import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
 
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {
@@ -24,19 +25,33 @@ export const hex2rgb = (hex: string) => {
   };
 };
 
-export const hex2GBCrgb = (hex: string) => {
-  const gbcHex = hex2GBChex(hex);
-  const r = Math.floor(hexStringToDecimal(gbcHex.substring(0, 2)));
-  const g = Math.floor(hexStringToDecimal(gbcHex.substring(2, 4)));
-  const b = Math.floor(hexStringToDecimal(gbcHex.substring(4)));
-  return {
-    r,
-    g,
-    b,
-  };
+export const rgb2hex = (r: number, g: number, b: number): string => {
+  const hexR = r.toString(16).padStart(2, "0");
+  const hexG = g.toString(16).padStart(2, "0");
+  const hexB = b.toString(16).padStart(2, "0");
+  return `${hexR}${hexG}${hexB}`;
 };
 
-export const hex2GBChex = (hex: string): string => {
+export const hex2GBCrgb =
+  (colorCorrection: ColorCorrectionSetting) => (hex: string) => {
+    const gbcHex = hex2GBChex(hex, colorCorrection);
+    const r = Math.floor(hexStringToDecimal(gbcHex.substring(0, 2)));
+    const g = Math.floor(hexStringToDecimal(gbcHex.substring(2, 4)));
+    const b = Math.floor(hexStringToDecimal(gbcHex.substring(4)));
+    return {
+      r,
+      g,
+      b,
+    };
+  };
+
+export const hex2GBChex = (
+  hex: string,
+  colorCorrection: ColorCorrectionSetting
+): string => {
+  if (colorCorrection === "none") {
+    return hex;
+  }
   const r = clamp31(Math.floor(hexStringToDecimal(hex.substring(0, 2)) / 8));
   const g = clamp31(Math.floor(hexStringToDecimal(hex.substring(2, 4)) / 8));
   const b = clamp31(Math.floor(hexStringToDecimal(hex.substring(4)) / 8));
@@ -78,9 +93,11 @@ export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
 export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
   objPalette: ObjPalette | null,
-  palette: string[]
+  palette: string[],
+  colorCorrection: ColorCorrectionSetting
 ) => {
-  const paletteRGB = palette.map(hex2GBCrgb);
+  const colorCorrectionFn = hex2GBCrgb(colorCorrection);
+  const paletteRGB = palette.map(colorCorrectionFn);
   for (let index = 0; index < mutData.length; index += 4) {
     const colorIndex = indexSpriteColour(
       mutData[index + 1],

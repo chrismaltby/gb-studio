@@ -79,7 +79,6 @@ const buildProject = async ({
   });
 
   await ejectBuild({
-    projectType: "gb",
     projectRoot,
     tmpPath,
     projectData: project,

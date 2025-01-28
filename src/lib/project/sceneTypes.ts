@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
 import type { SceneTypeSchema } from "store/features/engine/engineState";
-import { engineRoot } from "consts";
+import { defaultEngineMetaPath } from "consts";
 import glob from "glob";
 import uniqBy from "lodash/uniqBy";
 
@@ -46,7 +46,6 @@ const defaultSceneTypes = [
 export const loadSceneTypes = async (
   projectRoot: string
 ): Promise<SceneTypeSchema[]> => {
-  const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
@@ -61,7 +60,7 @@ export const loadSceneTypes = async (
   try {
     localEngine = await readJSON(localEngineJsonPath);
   } catch (e) {
-    defaultEngine = await readJSON(defaultEngineJsonPath);
+    defaultEngine = await readJSON(defaultEngineMetaPath);
   }
 
   let sceneTypes: SceneTypeSchema[] = [];

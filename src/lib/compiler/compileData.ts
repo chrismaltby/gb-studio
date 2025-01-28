@@ -74,8 +74,10 @@ import {
   compileGameGlobalsHeader,
   compileGlobalProjectilesHeader,
   compileGlobalProjectiles,
+  emptySpriteSheetHeader,
+  emptySpriteSheet,
 } from "./generateGBVMData";
-import compileSGBImage from "./sgb";
+import compileSGBImage, { sgbImageHeader } from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import {
   compileMusicTracks,
@@ -128,7 +130,10 @@ import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
-import { ProjectResources } from "shared/lib/resources/types";
+import {
+  ColorCorrectionSetting,
+  ProjectResources,
+} from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 
 type CompiledTilemapData = {
@@ -220,6 +225,7 @@ export const precompileBackgrounds = async (
   tilesets: TilesetData[],
   customEventsLookup: Record<string, CustomEvent>,
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectRoot: string,
   tmpPath: string,
   {
@@ -302,6 +308,7 @@ export const precompileBackgrounds = async (
     forceGenerateTilesetIds,
     generate360Ids,
     colorMode,
+    colorCorrection,
     projectRoot,
     {
       warnings,
@@ -1282,6 +1289,7 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorMode = projectData.settings.colorMode;
+  const colorCorrection = projectData.settings.colorCorrection;
   const cgbOnly = colorMode === "color";
 
   const usedAssets = determineUsedAssets({
@@ -1306,6 +1314,7 @@ const precompile = async (
     projectData.tilesets,
     customEventsLookup,
     colorMode,
+    colorCorrection,
     projectRoot,
     tmpPath,
     { warnings }
@@ -1516,7 +1525,11 @@ const compile = async (
       warnings,
     });
     output["border.c"] = await compileSGBImage(sgbPath);
+    output["border.h"] = sgbImageHeader;
   }
+
+  output["spritesheet_none.h"] = emptySpriteSheetHeader;
+  output["spritesheet_none.c"] = emptySpriteSheet;
 
   progress(`${l10n("COMPILING_EVENTS")}...`);
 
@@ -2130,7 +2143,7 @@ const compile = async (
 
   output[`scene_types.h`] = compileSceneTypes(usedSceneTypes);
 
-  output[`../states/states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
+  output[`states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
 
   output[`states_defines.h`] = compileStateDefines(
     engineFields,

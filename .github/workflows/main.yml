@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:
@@ -58,6 +60,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:
@@ -100,6 +104,7 @@ jobs:
           APPLE_ID_PASSWORD: ${{ secrets.MAC_NOTARIZE_PWD }}
           APPLE_TEAM_ID: ${{ secrets.MAC_NOTARIZE_TEAM }}
         run: |
+          yarn fetch-deps -- --arch=darwin-arm64
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
@@ -114,6 +119,7 @@ jobs:
           APPLE_ID_PASSWORD: ${{ secrets.MAC_NOTARIZE_PWD }}
           APPLE_TEAM_ID: ${{ secrets.MAC_NOTARIZE_TEAM }}
         run: |
+          yarn fetch-deps -- --arch=darwin-x64
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
@@ -124,6 +130,7 @@ jobs:
       - name: Build Linux
         if: matrix.name == 'linux'
         run: |
+          yarn fetch-deps -- --arch=linux-x64
           yarn make:linux
           mkdir -p ./out/keep
           mv ./out/make/deb/x64/*.deb ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.deb
@@ -136,6 +143,8 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get -y update
           sudo apt-get -y install wine wine64 mono-devel
+          export PATH=$PATH:/usr/lib/wine
+          yarn fetch-deps -- --arch=win32-ia32
           yarn make:win32
           mkdir -p ./out/keep
           mv ./out/make/zip/win32/ia32/*.zip ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
@@ -147,6 +156,8 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get -y update
           sudo apt-get -y install wine wine64 mono-devel
+          export PATH=$PATH:/usr/lib/wine
+          yarn fetch-deps -- --arch=win32-x64
           yarn make:win
           mkdir -p ./out/keep
           mv ./out/make/zip/win32/x64/*.zip ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip

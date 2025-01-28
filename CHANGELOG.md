@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to search and add scripts by name when adding events instead of needing to add a "Call Script" event and selecting the script manually from the dropdown each time [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to quickly create "Comment" events by typing the comment text in the Add Event search field and choosing "Comment" menu item [@pau-tomas](https://github.com/pau-tomas)
 - Add text code `!Wait` to allow pausing dialogue until an amount of time/frames has elapsed or a selected button has been pressed
+- Add setting to toggle GBC color correction. Disable color correction to closer match how colors will appear on modern hardware
 
 ### Changed
 
@@ -42,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
+- Updated German localisation. [@gonzoMD](https://github.com/gonzoMD)
 
 ### Fixed
 
@@ -58,11 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing the dimensions of a sprite png image could cause the sprite editor's tile palette to display incorrectly
 - Fix line numbers in code editor for GBVM scripts with more than 999 lines
 - Fix issue preventing projects being created with the name "project"
+- Fix issue without-of-bounds memory writes on 8-bit values in engine field initialisation [@michel-iwaniec](https://github.com/michel-iwaniec)
 - Fix issue preventing checkbox type working in engine fields [@pau-tomas](https://github.com/pau-tomas)
 - Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator [@untoxa](https://github.com/untoxa)
 - Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
 - Fix issue where sprites could end up with empty state id values
 - Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
+- Fix issue where migrating older projects to the latest version would sometimes cause auto generated gbvm symbols to change
 
 ## [4.1.3] - 2024-09-16
 
