@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to quickly create "Comment" events by typing the comment text in the Add Event search field and choosing "Comment" menu item [@pau-tomas](https://github.com/pau-tomas)
 - Add text code `!Wait` to allow pausing dialogue until an amount of time/frames has elapsed or a selected button has been pressed
 - Add setting to toggle GBC color correction. Disable color correction to closer match how colors will appear on modern hardware
+- Add ability to read camera properties (tile/pixel position, deadzone and offset) within script values [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
