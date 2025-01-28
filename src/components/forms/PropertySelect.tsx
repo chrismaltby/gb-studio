@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   ActorDirection,
@@ -26,6 +26,7 @@ import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { components, SingleValue } from "react-select";
+import { CameraIcon } from "ui/icons/Icons";
 
 interface PropertySelectProps {
   name: string;
@@ -36,13 +37,15 @@ interface PropertySelectProps {
   onChangeUnits?: (newUnits: UnitType) => void;
 }
 
-type ActorOption = Option & {
+type PropertyOption = Option & {
   spriteSheetId?: string;
   menuSpriteSheetId?: string;
+  icon?: ReactElement;
+  menuIcon?: ReactElement;
 };
 
-type ActorOptGroup = OptGroup & {
-  options: ActorOption[];
+type PropertyOptGroup = OptGroup & {
+  options: PropertyOption[];
 };
 
 const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
@@ -56,6 +59,19 @@ export const PropertySelectWrapper = styled.div`
   min-width: 78px;
 `;
 
+const IconWrapper = styled.div`
+  display: inline;
+  align-items: center;
+  font-weight: bold;
+
+  svg {
+    width: 15px;
+    margin-right: 3px;
+    margin-top: 3px;
+    fill: ${(props) => props.theme.colors.secondaryText};
+  }
+`;
+
 export const PropertySelect = ({
   name,
   value,
@@ -65,8 +81,8 @@ export const PropertySelect = ({
   onChangeUnits,
 }: PropertySelectProps) => {
   const context = useContext(ScriptEditorContext);
-  const [options, setOptions] = useState<ActorOptGroup[]>([]);
-  const [currentValue, setCurrentValue] = useState<ActorOption>();
+  const [options, setOptions] = useState<PropertyOptGroup[]>([]);
+  const [currentValue, setCurrentValue] = useState<PropertyOption>();
 
   const sceneType = useAppSelector(
     (state) => sceneSelectors.selectById(state, context.sceneId)?.type
@@ -153,80 +169,132 @@ export const PropertySelect = ({
       };
     };
 
+    let actorOptions: PropertyOptGroup[] = [];
     if (context.entityType === "customEvent" && customEvent) {
-      setOptions(
-        [
-          {
-            label: "Player",
-            value: "player",
-          },
-          ...allCustomEventActors.map((actor) => {
-            return {
-              label: customEvent.actors[actor.id]?.name ?? actor.name,
-              value: actor.id,
-            };
-          }),
-        ].map(actorToOptions)
-      );
+      actorOptions = [
+        {
+          label: "Player",
+          value: "player",
+        },
+        ...allCustomEventActors.map((actor) => {
+          return {
+            label: customEvent.actors[actor.id]?.name ?? actor.name,
+            value: actor.id,
+          };
+        }),
+      ].map(actorToOptions);
     } else if (sceneActorIds) {
-      setOptions(
-        [
-          ...((context.entityType === "actor" ||
-            context.entityType === "actorPrefab") &&
-          sceneActor &&
-          sceneActorIndex !== undefined
-            ? [
-                {
-                  label: `${l10n("FIELD_SELF")} (${actorName(
-                    sceneActor,
-                    sceneActorIndex
-                  )})`,
-                  value: "$self$",
-                  spriteSheetId: sceneActor.spriteSheetId,
-                },
-              ]
-            : []),
-          {
-            label: "Player",
-            value: "player",
-            spriteSheetId: playerSpriteSheetId,
-          },
-          ...sceneActorIds.map((actorId, actorIndex) => {
-            const actor = actorsLookup[actorId] as ActorNormalized;
-            return {
-              label: actorName(actor, actorIndex),
-              value: actor.id,
-              spriteSheetId: actor.spriteSheetId,
-            };
-          }),
-        ].map(actorToOptions)
-      );
+      actorOptions = [
+        ...((context.entityType === "actor" ||
+          context.entityType === "actorPrefab") &&
+        sceneActor &&
+        sceneActorIndex !== undefined
+          ? [
+              {
+                label: `${l10n("FIELD_SELF")} (${actorName(
+                  sceneActor,
+                  sceneActorIndex
+                )})`,
+                value: "$self$",
+                spriteSheetId: sceneActor.spriteSheetId,
+              },
+            ]
+          : []),
+        {
+          label: "Player",
+          value: "player",
+          spriteSheetId: playerSpriteSheetId,
+        },
+        ...sceneActorIds.map((actorId, actorIndex) => {
+          const actor = actorsLookup[actorId] as ActorNormalized;
+          return {
+            label: actorName(actor, actorIndex),
+            value: actor.id,
+            spriteSheetId: actor.spriteSheetId,
+          };
+        }),
+      ].map(actorToOptions);
     } else if (context.type === "prefab") {
-      setOptions(
-        [
-          ...(context.entityType === "actorPrefab" &&
-          selfPrefab &&
-          selfPrefabIndex !== undefined
-            ? [
-                {
-                  label: `${l10n("FIELD_SELF")} (${actorName(
-                    selfPrefab,
-                    selfPrefabIndex
-                  )})`,
-                  value: "$self$",
-                  spriteSheetId: selfPrefab.spriteSheetId,
-                  direction: "down" as ActorDirection,
-                },
-              ]
-            : []),
-          {
-            label: l10n("FIELD_PLAYER"),
-            value: "player",
-            spriteSheetId: playerSpriteSheetId,
-          },
-        ].map(actorToOptions)
-      );
+      actorOptions = [
+        ...(context.entityType === "actorPrefab" &&
+        selfPrefab &&
+        selfPrefabIndex !== undefined
+          ? [
+              {
+                label: `${l10n("FIELD_SELF")} (${actorName(
+                  selfPrefab,
+                  selfPrefabIndex
+                )})`,
+                value: "$self$",
+                spriteSheetId: selfPrefab.spriteSheetId,
+                direction: "down" as ActorDirection,
+              },
+            ]
+          : []),
+        {
+          label: l10n("FIELD_PLAYER"),
+          value: "player",
+          spriteSheetId: playerSpriteSheetId,
+        },
+      ].map(actorToOptions);
     }
+
+    const cameraOptions = {
+      label: l10n("FIELD_CAMERA"),
+      options: [
+        {
+          label: l10n("FIELD_X_POSITION"),
+          value: "camera:xpos",
+          icon: <CameraIcon />,
+          menuIcon: <CameraIcon />,
+        },
+        {
+          label: l10n("FIELD_Y_POSITION"),
+          value: "camera:ypos",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_PX_POSITION"),
+          value: "camera:pxpos",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_PY_POSITION"),
+          value: "camera:pypos",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_DEADZONE_X"),
+          value: "camera:xdeadzone",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_DEADZONE_Y"),
+          value: "camera:ydeadzone",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_OFFSET_X"),
+          value: "camera:xoffset",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
+          label: l10n("FIELD_OFFSET_Y"),
+          value: "camera:yoffset",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+      ],
+    } as PropertyOptGroup;
+
+    const allOptions: PropertyOptGroup[] = actorOptions.concat([cameraOptions]);
+    setOptions(allOptions);
   }, [
     actorsLookup,
     context.entityType,
@@ -259,17 +327,23 @@ export const PropertySelect = ({
         name={name}
         value={currentValue}
         options={options}
-        onChange={(newValue: SingleValue<ActorOption>) => {
+        onChange={(newValue: SingleValue<PropertyOption>) => {
           if (newValue) {
             onChange?.(newValue.value);
           }
         }}
-        formatOptionLabel={(option: ActorOption) => {
+        formatOptionLabel={(option: PropertyOption) => {
           return option.menuSpriteSheetId !== undefined ? (
             <OptionLabelWithPreview
               preview={
                 <SpriteSheetCanvas spriteSheetId={option.menuSpriteSheetId} />
               }
+            >
+              {option.label}
+            </OptionLabelWithPreview>
+          ) : option?.menuIcon !== undefined ? (
+            <OptionLabelWithPreview
+              preview={<IconWrapper>{option.menuIcon}</IconWrapper>}
             >
               {option.label}
             </OptionLabelWithPreview>
@@ -286,6 +360,12 @@ export const PropertySelect = ({
                     spriteSheetId={currentValue.spriteSheetId}
                   />
                 }
+              >
+                {currentValue?.label}
+              </SingleValueWithPreview>
+            ) : currentValue?.icon ? (
+              <SingleValueWithPreview
+                preview={<IconWrapper>{currentValue.icon}</IconWrapper>}
               >
                 {currentValue?.label}
               </SingleValueWithPreview>

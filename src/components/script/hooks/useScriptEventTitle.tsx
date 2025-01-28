@@ -108,6 +108,9 @@ export const useScriptEventTitle = (
     async function fetchAutoLabel() {
       if (scriptEventDefs[command]?.hasAutoLabel) {
         const actorNameForId = (value: unknown) => {
+          if (value === "camera") {
+            return l10n("FIELD_CAMERA");
+          }
           if (context.type === "script" && customEvent) {
             return (
               customEvent.actors[value as string]?.name ||

@@ -992,7 +992,7 @@ export const updateCustomEventArgs = (
         };
         const addPropertyActor = (property: string) => {
           const actor = property && property.replace(/:.*/, "");
-          if (actor !== "player" && actor !== "$self$") {
+          if (actor !== "player" && actor !== "$self$" && actor !== "camera") {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(actor)
             );

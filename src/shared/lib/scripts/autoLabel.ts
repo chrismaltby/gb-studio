@@ -81,6 +81,18 @@ export const getAutoLabel = (
       if (value === "frame") {
         return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
       }
+      if (value === "xdeadzone") {
+        return l10n("FIELD_DEADZONE_X").replace(/ /g, "");
+      }
+      if (value === "ydeadzone") {
+        return l10n("FIELD_DEADZONE_Y").replace(/ /g, "");
+      }
+      if (value === "xoffset") {
+        return l10n("FIELD_OFFSET_X").replace(/ /g, "");
+      }
+      if (value === "yoffset") {
+        return l10n("FIELD_OFFSET_Y").replace(/ /g, "");
+      }
       return value;
     };
 

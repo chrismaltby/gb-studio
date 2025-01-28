@@ -126,6 +126,8 @@ type ScriptBuilderVariable =
   | ScriptBuilderFunctionArg;
 
 type CameraProperty =
+  | "camera_x"
+  | "camera_y"
   | "camera_deadzone_x"
   | "camera_deadzone_y"
   | "camera_offset_x"
@@ -309,6 +311,8 @@ type RPNHandler = {
   operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
   stop: () => void;
 };
+
+type RPNMemType = ".MEM_I8" | ".MEM_U8" | ".MEM_I16";
 
 const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
   ".ABS",
@@ -1445,6 +1449,10 @@ class ScriptBuilder {
           return rpn.refSet(variableAlias);
         }
       },
+      refMem: (type: RPNMemType, address: string) => {
+        rpnCmd(".R_REF_MEM", type, `_${address}`);
+        return rpn;
+      },
       int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
@@ -1497,92 +1505,148 @@ class ScriptBuilder {
       const localVar = this._declareLocal("local", 1, true);
       localsLookup[fetchOp.local] = localVar;
       switch (fetchOp.value.type) {
-        case "property": {
-          const actorValue = fetchOp.value.target || "player";
-          const propertyValue = fetchOp.value.property || "xpos";
+        case "property":
+          if (fetchOp.value.target === "camera") {
+            const propertyValue = fetchOp.value.property || "xpos";
+            this._addComment(`-- Fetch Camera ${propertyValue}`);
 
-          if (
-            actorValue === currentActor &&
-            propertyValue === currentProperty &&
-            prevLocalVar
-          ) {
-            // If requested prop was fetched previously, reuse local var, don't fetch again
-            localsLookup[fetchOp.local] = prevLocalVar;
-            delete this.localsLookup[localVar];
-            continue;
-          }
-
-          this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
-          if (currentActor !== actorValue) {
-            this.actorSetById(actorValue);
-            currentActor = actorValue;
-            currentPropData = "";
-          }
-          if (propertyValue === "xpos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
+            if (propertyValue === "xpos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_x")
+                .int16(8 * 16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ypos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_y")
+                .int16(8 * 16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pxpos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_x")
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pypos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_y")
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "xdeadzone") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_deadzone_x")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ydeadzone") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_deadzone_y")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "xoffset") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_offset_x")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "yoffset") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_offset_y")
+                .refSet(localVar)
+                .stop();
+            } else {
+              throw new Error(`Unsupported property type "${propertyValue}"`);
             }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 1))
-              .int16(8 * 16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "ypos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 2))
-              .int16(8 * 16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "pxpos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 1))
-              .int16(16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "pypos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 2))
-              .int16(16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "direction") {
-            const actorRef = this._declareLocal("actor", 4);
-            this._actorGetDirection(actorRef, localVar);
-          } else if (propertyValue === "frame") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "frame") {
-              this._actorGetAnimFrame(actorRef);
-              currentPropData = "frame";
-            }
-            this._set(localVar, this._localRef(actorRef, 1));
           } else {
-            throw new Error(`Unsupported property type "${propertyValue}"`);
+            const actorValue = fetchOp.value.target || "player";
+            const propertyValue = fetchOp.value.property || "xpos";
+
+            if (
+              actorValue === currentActor &&
+              propertyValue === currentProperty &&
+              prevLocalVar
+            ) {
+              // If requested prop was fetched previously, reuse local var, don't fetch again
+              localsLookup[fetchOp.local] = prevLocalVar;
+              delete this.localsLookup[localVar];
+              continue;
+            }
+
+            this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
+            if (currentActor !== actorValue) {
+              this.actorSetById(actorValue);
+              currentActor = actorValue;
+              currentPropData = "";
+            }
+            if (propertyValue === "xpos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 1))
+                .int16(8 * 16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ypos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 2))
+                .int16(8 * 16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pxpos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 1))
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pypos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 2))
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "direction") {
+              const actorRef = this._declareLocal("actor", 4);
+              this._actorGetDirection(actorRef, localVar);
+            } else if (propertyValue === "frame") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "frame") {
+                this._actorGetAnimFrame(actorRef);
+                currentPropData = "frame";
+              }
+              this._set(localVar, this._localRef(actorRef, 1));
+            } else {
+              throw new Error(`Unsupported property type "${propertyValue}"`);
+            }
+            currentProperty = propertyValue;
+            prevLocalVar = localVar;
           }
-          currentProperty = propertyValue;
-          prevLocalVar = localVar;
           break;
-        }
         case "expression": {
           this._addComment(
             `-- Evaluate expression ${this._expressionToHumanReadable(
@@ -5316,7 +5380,7 @@ extern void __mute_mask_${symbol};
                       value: getArg("variable", val.value),
                     };
                   }
-                } else if (val.type === "property") {
+                } else if (val.type === "property" && val.target === "actor") {
                   const scriptArg = getArg("actor", val.target);
                   if (scriptArg && typeof scriptArg === "string") {
                     return {
