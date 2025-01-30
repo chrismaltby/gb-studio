@@ -122,7 +122,9 @@ export const migrateActorPrefabsTestProject2: CompressedProjectResources = {
           prefabScriptOverrides: {
             event1: {
               id: "event1",
-              args: {},
+              args: {
+                value3: "BAR",
+              },
             },
             event2: {
               id: "event2",

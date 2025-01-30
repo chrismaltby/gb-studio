@@ -50,6 +50,11 @@ describe("migrateEvents", () => {
       ].args?.value
     ).toBeUndefined();
     expect(
+      migrated.scenes[0].actors[0].prefabScriptOverrides[
+        migrated.actorPrefabs[0].script[0].id
+      ].args?.value3
+    ).toEqual("BAR");
+    expect(
       migrated.scenes[0].actors[0].prefabScriptOverrides["event2"].args?.value
     ).toEqual("FIND");
   });
