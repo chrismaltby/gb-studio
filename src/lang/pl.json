@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1782250129",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1784250130",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1533,6 +1533,8 @@
   "MENU_PLUGIN_MANAGER": "Zarządzanie wtyczkami",
   "MENU_GLOBAL_PLUGINS": "Globalne wtyczki",
   "MENU_PROJECT_PLUGINS": "Wtyczki projektowe",
+  "MENU_PLAY_WINDOW": "Okno gry",
+  "MENU_MUTE_AUDIO": "Wycisz audio",
   
   "// 11": "Warnings -----------------------------------------------------",
 
