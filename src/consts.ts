@@ -35,6 +35,7 @@ export const OFFICIAL_REPO_GITHUB_SUBMIT = `${OFFICIAL_REPO_GITHUB}#submitting-p
 // Electron Settings
 export const THEME_SETTING_KEY = "themeId";
 export const LOCALE_SETTING_KEY = "locale";
+export const EMULATOR_MUTED_SETTING_KEY = "emulatorMuted";
 
 // Scene Limits
 export const MAX_ACTORS = 20;

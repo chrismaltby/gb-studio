@@ -45,6 +45,7 @@ import type { ProjectExportType } from "store/features/buildGame/buildGameAction
 import {
   assetsRoot,
   buildUUID,
+  EMULATOR_MUTED_SETTING_KEY,
   LOCALE_SETTING_KEY,
   projectTemplatesRoot,
   THEME_SETTING_KEY,
@@ -185,6 +186,7 @@ let playWindowSgb = false;
 let hasCheckedForUpdate = false;
 let documentEdited = false;
 let documentName = "";
+let playWindowTitle = "";
 let projectWindowCloseCancelled = false;
 let keepOpen = false;
 let projectPath = "";
@@ -632,6 +634,10 @@ export const createPlay = async (
       },
     });
     playWindow.setAlwaysOnTop(true);
+    const isMuted = settings.get(EMULATOR_MUTED_SETTING_KEY) === true;
+    if (isMuted) {
+      playWindow.webContents.setAudioMuted(true);
+    }
     playWindowSgb = sgb;
   } else {
     playWindow.show();
@@ -643,6 +649,16 @@ export const createPlay = async (
       !!debugEnabled && !!debuggerInitData ? "true" : "false"
     }`
   );
+
+  let firstLoad = true;
+  playWindow.webContents.on("did-finish-load", () => {
+    if (firstLoad) {
+      playWindowTitle = playWindow?.getTitle() ?? "";
+      firstLoad = false;
+    }
+    const isMuted = settings.get(EMULATOR_MUTED_SETTING_KEY) === true;
+    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+  });
 
   playWindow.on("closed", () => {
     playWindow = null;
@@ -2040,6 +2056,15 @@ menu.on("updateShowConnections", (value) => {
 menu.on("updateShowNavigator", (value) => {
   settings.set("showNavigator", value as JsonValue);
   sendToProjectWindow("setting:changed", "showNavigator", value);
+});
+
+menu.on("updateEmulatorMuted", (value) => {
+  const isMuted = value === true;
+  settings.set(EMULATOR_MUTED_SETTING_KEY, isMuted);
+  if (playWindow) {
+    playWindow.webContents.setAudioMuted(isMuted);
+    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+  }
 });
 
 nativeTheme?.on("updated", () => {
