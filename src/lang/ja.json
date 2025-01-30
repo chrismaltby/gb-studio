@@ -1521,6 +1521,8 @@
   "MENU_PLUGIN_MANAGER": "プラグインマネージャー",
   "MENU_GLOBAL_PLUGINS": "グローバルプラグイン...",
   "MENU_PROJECT_PLUGINS": "プロジェクトプラグイン...",
+  "MENU_PLAY_WINDOW": "実行ウィンドウ",
+  "MENU_MUTE_AUDIO": "音声をミュート",
   "// 11": "Warnings -----------------------------------------------------",
   "WARNING_BACKGROUND_TOO_SMALL": "背景サイズが小さすぎます。最小サイズは 160px x 144px です。",
   "WARNING_BACKGROUND_TOO_LARGE": "背景サイズが大きすぎます。最大サイズは 256px x 256px です。",
