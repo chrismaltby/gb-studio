@@ -5,6 +5,8 @@ import {
   mapActorsScript,
   mapTriggersScript,
   mapCustomScriptsScript,
+  walkActorScripts,
+  walkTriggerScripts,
 } from "shared/lib/scripts/walk";
 
 export type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
@@ -37,13 +39,35 @@ export const applyProjectResourcesMigration = (
   };
 };
 
+export const buildPrefabEventsLookup = (
+  resources: CompressedProjectResources
+): Record<string, ScriptEvent> => {
+  const prefabEventsLookup: Record<string, ScriptEvent> = {};
+  resources.actorPrefabs.forEach((actorPrefab) => {
+    walkActorScripts(actorPrefab, undefined, (e) => {
+      prefabEventsLookup[e.id] = e;
+    });
+  });
+  resources.triggerPrefabs.forEach((triggerPrefab) => {
+    walkTriggerScripts(triggerPrefab, undefined, (e) => {
+      prefabEventsLookup[e.id] = e;
+    });
+  });
+  return prefabEventsLookup;
+};
+
 export const migrateEvents = (
   resources: CompressedProjectResources,
   migrateFn: ScriptEventMigrationFn
 ): CompressedProjectResources => {
+  const prefabEventsLookup = buildPrefabEventsLookup(resources);
   return {
     ...resources,
-    scenes: mapScenesScript(resources.scenes, migrateFn),
+    scenes: mapScenesScript(
+      resources.scenes,
+      { includePrefabOverrides: true, prefabEventsLookup },
+      migrateFn
+    ),
     actorPrefabs: mapActorsScript(resources.actorPrefabs, migrateFn),
     triggerPrefabs: mapTriggersScript(resources.triggerPrefabs, migrateFn),
     scripts: mapCustomScriptsScript(resources.scripts, migrateFn),

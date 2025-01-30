@@ -99,7 +99,7 @@ const applyEventsMigration = (
 ): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, fn),
+    scenes: mapScenesScript(data.scenes, {}, fn),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -339,7 +339,7 @@ export const migrateFrom110To120Event = (
 const migrateFrom110To120Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom110To120Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom110To120Event),
   };
 };
 
@@ -590,7 +590,7 @@ export const migrateFrom120To200Event = (event: ScriptEvent): ScriptEvent => {
 const migrateFrom120To200Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom120To200Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom120To200Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -679,7 +679,7 @@ export const migrateFrom200r1To200r2Event = (
 const migrateFrom200r1To200r2Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r1To200r2Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r1To200r2Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -715,7 +715,7 @@ export const migrateFrom200r2To200r3Event = (
 const migrateFrom200r2To200r3Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r2To200r3Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r2To200r3Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -753,7 +753,7 @@ export const migrateFrom200r3To200r4Event = (
 const migrateFrom200r3To200r4Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r3To200r4Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r3To200r4Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -849,7 +849,7 @@ export const migrateFrom200r4To200r5Event = (
 const migrateFrom200r4To200r5Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r4To200r5Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r4To200r5Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1024,7 +1024,7 @@ export const migrateFrom200r6To200r7Event = (
 const migrateFrom200r6To200r7Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r6To200r7Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r6To200r7Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1300,7 +1300,7 @@ export const migrateFrom200r10To200r11Event = (
 const migrateFrom200r10To200r11Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r10To200r11Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r10To200r11Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1348,7 +1348,7 @@ export const migrateFrom200r11To200r12Event = (
 const migrateFrom200r11To200r12Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r11To200r12Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r11To200r12Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1386,7 +1386,7 @@ export const migrateFrom200r12To200r13Event = (
 const migrateFrom200r12To200r13Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r12To200r13Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r12To200r13Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1426,7 +1426,7 @@ export const migrateFrom200r13To200r14Event = (
 const migrateFrom200r13To200r14Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom200r13To200r14Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom200r13To200r14Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1495,6 +1495,7 @@ const migrateFrom200r14Tor15Emotes = (
     emotes: emotesData,
     scenes: mapScenesScript(
       data.scenes,
+      {},
       migrateFrom200r14To200r15Event(emotesData)
     ),
     customEvents: (data.customEvents || []).map((customEvent) => {
@@ -1592,6 +1593,7 @@ const migrateFrom200r15Tor16Avatars = (
     avatars: avatarsData.filter((i) => i),
     scenes: mapScenesScript(
       data.scenes,
+      {},
       migrateFrom200r15To200r16Event(avatarsIdLookup)
     ),
     customEvents: (data.customEvents || []).map((customEvent) => {
@@ -1666,7 +1668,7 @@ export const migrateFrom300r1To300r2Event = (
 const migrateFrom300r1To300r2Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom300r1To300r2Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom300r1To300r2Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1813,7 +1815,7 @@ export const migrateFrom300r3To310r1 = (
 ): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, (e) =>
+    scenes: mapScenesScript(data.scenes, {}, (e) =>
       migrateFrom300r3To310r1Event(e, data.customEvents)
     ),
     customEvents: data.customEvents.map((customEvent) => {
@@ -1867,7 +1869,7 @@ export const migrateFrom310r1To310r2Event = (
 const migrateFrom310r1To310r2Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom310r1To310r2Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom310r1To310r2Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1900,7 +1902,7 @@ export const migrateFrom310r2To310r3Event = (
 const migrateFrom310r2To310r3Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom310r2To310r3Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom310r2To310r3Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1936,7 +1938,7 @@ export const migrateFrom310r3To311r1Event = (
 const migrateFrom310r3To311r1Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom310r3To311r1Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom310r3To311r1Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -1972,7 +1974,7 @@ export const migrateFrom320r1To320r2Event = (
 const migrateFrom320r1To320r2Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom320r1To320r2Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom320r1To320r2Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -2189,7 +2191,7 @@ export const migrateFrom330r2To330r3Event = (
 const migrateFrom330r2To330r3Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom330r2To330r3Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom330r2To330r3Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -2229,7 +2231,7 @@ export const migrateFrom330r3To330r4Event = (
 const migrateFrom330r3To330r4Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom330r3To330r4Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom330r3To330r4Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -2380,7 +2382,7 @@ export const migrateFrom330r4To330r5Event = (
 const migrateFrom330r4To330r5Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom330r4To330r5Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom330r4To330r5Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
@@ -2449,7 +2451,7 @@ export const migrateFrom330r6To330r7Event = (
 const migrateFrom330r6To330r7Events = (data: ProjectData): ProjectData => {
   return {
     ...data,
-    scenes: mapScenesScript(data.scenes, migrateFrom330r6To330r7Event),
+    scenes: mapScenesScript(data.scenes, {}, migrateFrom330r6To330r7Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,

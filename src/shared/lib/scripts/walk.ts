@@ -28,6 +28,16 @@ import type {
   ScriptResource,
 } from "shared/lib/resources/types";
 
+type ScriptMapOptions =
+  | undefined
+  | {
+      includePrefabOverrides: true;
+      prefabEventsLookup: Record<string, ScriptEvent>;
+    }
+  | {
+      includePrefabOverrides?: never;
+    };
+
 //#region Script Events
 
 //#region Map Script Events
@@ -59,6 +69,48 @@ export const mapScript = (
     }
     return callback(scriptEvent);
   });
+};
+
+export const mapPrefabOverrides = (
+  overrides: Record<string, ScriptEventArgsOverride>,
+  prefabEventsLookup: Record<string, ScriptEvent>,
+  callback: (e: ScriptEvent) => ScriptEvent
+): Record<string, ScriptEventArgsOverride> => {
+  return Object.fromEntries(
+    Object.entries(overrides).map(([key, value]) => {
+      const prefabEvent = prefabEventsLookup[key] as ScriptEvent | undefined;
+      if (!prefabEvent) {
+        return [key, value];
+      }
+
+      // Merge event and overrides to get mapped data
+      const mappedEvent = callback({
+        ...prefabEvent,
+        args: {
+          ...prefabEvent.args,
+          ...value.args,
+        },
+      });
+
+      // Update any mapped data in override
+      const migratedOverrideArgs = Object.fromEntries(
+        Object.keys(value.args).map((key) => [
+          key,
+          mappedEvent.args && key in mappedEvent.args
+            ? mappedEvent.args[key]
+            : value.args[key],
+        ])
+      );
+
+      return [
+        key,
+        {
+          ...value,
+          args: migratedOverrideArgs,
+        },
+      ];
+    })
+  );
 };
 
 /**
@@ -107,6 +159,7 @@ export const mapSceneScript = <
   T extends Scene | SceneResource | CompressedSceneResourceWithChildren
 >(
   scene: T,
+  options: ScriptMapOptions,
   callback: (e: ScriptEvent) => ScriptEvent
 ): T => {
   const newScene = {
@@ -116,6 +169,13 @@ export const mapSceneScript = <
       walkActorScriptsKeys((key) => {
         newActor[key] = mapScript(actor[key], callback);
       });
+      if (options?.includePrefabOverrides && newActor.prefabId) {
+        newActor.prefabScriptOverrides = mapPrefabOverrides(
+          newActor.prefabScriptOverrides,
+          options.prefabEventsLookup,
+          callback
+        );
+      }
       return newActor;
     }),
     triggers: scene.triggers.map((trigger) => {
@@ -123,6 +183,13 @@ export const mapSceneScript = <
       walkTriggerScriptsKeys((key) => {
         newTrigger[key] = mapScript(trigger[key], callback);
       });
+      if (options?.includePrefabOverrides && newTrigger.prefabId) {
+        newTrigger.prefabScriptOverrides = mapPrefabOverrides(
+          newTrigger.prefabScriptOverrides,
+          options.prefabEventsLookup,
+          callback
+        );
+      }
       return newTrigger;
     }),
   };
@@ -143,10 +210,11 @@ export const mapScenesScript = <
   T extends Scene | SceneResource | CompressedSceneResourceWithChildren
 >(
   scenes: T[],
+  options: ScriptMapOptions,
   callback: (e: ScriptEvent) => ScriptEvent
 ): T[] => {
   return scenes.map((scene) => {
-    return mapSceneScript(scene, callback);
+    return mapSceneScript(scene, options, callback);
   });
 };
 
@@ -352,7 +420,7 @@ export const walkSceneSpecificScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkActorScripts = (
-  actor: Actor,
+  actor: Actor | ActorPrefab,
   options: WalkOptions,
   callback: (e: ScriptEvent) => void
 ) => {
@@ -368,7 +436,7 @@ export const walkActorScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkTriggerScripts = (
-  trigger: Trigger,
+  trigger: Trigger | TriggerPrefab,
   options: WalkOptions,
   callback: (e: ScriptEvent) => void
 ) => {

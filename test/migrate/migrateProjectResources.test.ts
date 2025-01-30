@@ -5,6 +5,7 @@ import {
   migrateProjectResources,
 } from "lib/project/migration/migrateProjectResources";
 import { migrationTestProject } from "./data/migrationTestProject";
+import { migrateEvents } from "lib/project/migration/helpers";
 
 describe("migrateProjectResources", () => {
   // Keep a clone before any migrations take place to allow
