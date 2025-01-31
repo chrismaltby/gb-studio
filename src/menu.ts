@@ -7,7 +7,12 @@ import {
   MenuItemConstructorOptions,
   shell,
 } from "electron";
-import { assetsRoot, LOCALE_SETTING_KEY, THEME_SETTING_KEY } from "./consts";
+import {
+  assetsRoot,
+  EMULATOR_MUTED_SETTING_KEY,
+  LOCALE_SETTING_KEY,
+  THEME_SETTING_KEY,
+} from "./consts";
 import l10n from "shared/lib/lang/l10n";
 import { ThemeManager } from "lib/themes/themeManager";
 import { L10nManager } from "lib/lang/l10nManager";
@@ -37,6 +42,7 @@ type MenuListenerKey =
   | "updateShowConnections"
   | "updateShowNavigator"
   | "updateCheckSpelling"
+  | "updateEmulatorMuted"
   | "run"
   | "build"
   | "ejectEngine"
@@ -69,6 +75,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateShowConnections: [],
   updateShowNavigator: [],
   updateCheckSpelling: [],
+  updateEmulatorMuted: [],
   run: [],
   build: [],
   ejectEngine: [],
@@ -546,6 +553,20 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
       label: l10n("MENU_WINDOW"),
       submenu: [
         {
+          label: l10n("MENU_PLAY_WINDOW"),
+          submenu: [
+            {
+              label: l10n("MENU_MUTE_AUDIO"),
+              type: "checkbox",
+              checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
+              click: (item: MenuItem) => {
+                notifyListeners("updateEmulatorMuted", item.checked);
+              },
+            },
+          ],
+        },
+        { type: "separator" },
+        {
           label: l10n("MENU_MINIMIZE"),
           role: "minimize",
         },
@@ -641,6 +662,20 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
 
     // Window menu
     template[template.length - 2].submenu = [
+      {
+        label: l10n("MENU_PLAY_WINDOW"),
+        submenu: [
+          {
+            label: l10n("MENU_MUTE_AUDIO"),
+            type: "checkbox",
+            checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
+            click: (item: MenuItem) => {
+              notifyListeners("updateEmulatorMuted", item.checked);
+            },
+          },
+        ],
+      },
+      { type: "separator" },
       { label: l10n("MENU_MINIMIZE"), role: "minimize" },
       { role: "zoom" },
       { type: "separator" },

@@ -1533,6 +1533,8 @@
   "MENU_PLUGIN_MANAGER": "Plugin Manager",
   "MENU_GLOBAL_PLUGINS": "Global Plugins...",
   "MENU_PROJECT_PLUGINS": "Project Plugins...",
+  "MENU_PLAY_WINDOW": "Play Window",
+  "MENU_MUTE_AUDIO": "Mute Audio",
 
   "// 11": "Warnings -----------------------------------------------------",
 
