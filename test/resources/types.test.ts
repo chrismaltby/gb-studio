@@ -178,6 +178,7 @@ describe("TypeBox Schemas", () => {
       height: 40,
       backgroundId: "background1",
       tilesetId: "tileset1",
+      colorModeOverride: "none",
       paletteIds: ["palette1", "palette2"],
       spritePaletteIds: ["spritePalette1"],
       autoFadeSpeed: 1,

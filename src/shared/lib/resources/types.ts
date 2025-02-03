@@ -34,6 +34,21 @@ export const CollisionGroup = Type.Union(
 
 export type CollisionGroup = Static<typeof CollisionGroup>;
 
+export const ColorModeSetting = Type.Union([
+  Type.Literal("mono"),
+  Type.Literal("mixed"),
+  Type.Literal("color"),
+]);
+
+export type ColorModeSetting = Static<typeof ColorModeSetting>;
+
+export const ColorModeOverrideSetting = Type.Union([
+  Type.Literal("none"),
+  ColorModeSetting,
+]);
+
+export type ColorModeOverrideSetting = Static<typeof ColorModeOverrideSetting>;
+
 export const MinimalResource = Type.Object({
   _resourceType: Type.String(),
 });
@@ -178,6 +193,7 @@ export const CompressedSceneResource = Type.Object({
   height: Type.Number(),
   backgroundId: Type.String(),
   tilesetId: Type.String(),
+  colorModeOverride: ColorModeOverrideSetting,
   paletteIds: Type.Array(Type.String()),
   spritePaletteIds: Type.Array(Type.String()),
   autoFadeSpeed: Type.Union([Type.Number(), Type.Null()], { default: 1 }),
@@ -488,14 +504,6 @@ export const PaletteResource = Type.Object({
 });
 
 export type PaletteResource = Static<typeof PaletteResource>;
-
-export const ColorModeSetting = Type.Union([
-  Type.Literal("mono"),
-  Type.Literal("mixed"),
-  Type.Literal("color"),
-]);
-
-export type ColorModeSetting = Static<typeof ColorModeSetting>;
 
 export const ColorCorrectionSetting = Type.Union([
   Type.Literal("none"),

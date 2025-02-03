@@ -11,6 +11,7 @@ import type {
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
+import { SpriteReference } from "./precompile/determineUsedAssets";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -118,6 +119,7 @@ export const compileSprite = async (
   projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
+  console.log({ filename, cgbOnly });
 
   const tileAllocationStrategy = cgbOnly
     ? spriteTileAllocationColorOnly
@@ -258,7 +260,7 @@ export const compileSprite = async (
 };
 
 const compileSprites = async (
-  spriteSheets: SpriteSheetData[],
+  spriteSheets: SpriteReference[],
   cgbOnly: boolean,
   projectRoot: string
 ): Promise<{
@@ -269,7 +271,16 @@ const compileSprites = async (
   const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
-      (spriteSheet) => () => compileSprite(spriteSheet, cgbOnly, projectRoot)
+      (spriteSheet) => () =>
+        compileSprite(
+          {
+            ...spriteSheet.data,
+            id: spriteSheet.id,
+            symbol: spriteSheet.symbol,
+          },
+          spriteSheet.colorMode === "color",
+          projectRoot
+        )
     )
   );
   const stateNames = spritesData

@@ -1,5 +1,9 @@
 import type { EntityState } from "@reduxjs/toolkit";
-import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
+import type {
+  ColorModeOverrideSetting,
+  Constant,
+  ScriptEditorCtxType,
+} from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
@@ -434,6 +438,7 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
+  colorModeOverride: ColorModeOverrideSetting;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];

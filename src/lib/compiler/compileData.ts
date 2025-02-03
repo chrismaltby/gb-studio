@@ -98,7 +98,10 @@ import {
 import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
-import { determineUsedAssets } from "./precompile/determineUsedAssets";
+import {
+  determineUsedAssets,
+  SpriteReference,
+} from "./precompile/determineUsedAssets";
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
@@ -662,6 +665,7 @@ export const precompileUIImages = async (
 };
 
 export const precompileSprites = async (
+  spriteReferences: SpriteReference[],
   spriteSheets: SpriteSheetData[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
@@ -669,57 +673,57 @@ export const precompileSprites = async (
   cgbOnly: boolean,
   projectRoot: string
 ) => {
-  const usedSprites: SpriteSheetData[] = [];
+  // const usedSprites: SpriteSheetData[] = [];
   const usedTilesets: CompiledTilesetData[] = [];
 
-  const usedSpriteLookup: Record<string, SpriteSheetData> = {};
-  const spriteLookup = indexById(spriteSheets);
+  // const usedSpriteLookup: Record<string, SpriteSheetData> = {};
+  // const spriteLookup = indexById(spriteSheets);
 
-  const addSprite = (spriteSheetId: string) => {
-    if (!usedSpriteLookup[spriteSheetId] && spriteLookup[spriteSheetId]) {
-      const spriteSheet = spriteLookup[spriteSheetId];
-      usedSprites.push(spriteSheet);
-      usedSpriteLookup[spriteSheetId] = spriteSheet;
-    }
-  };
+  // const addSprite = (spriteSheetId: string) => {
+  //   if (!usedSpriteLookup[spriteSheetId] && spriteLookup[spriteSheetId]) {
+  //     const spriteSheet = spriteLookup[spriteSheetId];
+  //     usedSprites.push(spriteSheet);
+  //     usedSpriteLookup[spriteSheetId] = spriteSheet;
+  //   }
+  // };
 
-  walkScenesScripts(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (cmd.args) {
-        if (cmd.args.spriteSheetId) {
-          addSprite(ensureString(cmd.args.spriteSheetId, ""));
-        }
-      }
-      if (eventHasArg(cmd, "references")) {
-        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-          .filter((ref) => ref.type === "sprite")
-          .map((ref) => ref.id);
-        for (const id of referencedIds) {
-          addSprite(id);
-        }
-      }
-    }
-  );
+  // walkScenesScripts(
+  //   scenes,
+  //   {
+  //     customEvents: {
+  //       lookup: customEventsLookup,
+  //       maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+  //     },
+  //   },
+  //   (cmd) => {
+  //     if (cmd.args) {
+  //       if (cmd.args.spriteSheetId) {
+  //         addSprite(ensureString(cmd.args.spriteSheetId, ""));
+  //       }
+  //     }
+  //     if (eventHasArg(cmd, "references")) {
+  //       const referencedIds = ensureReferenceArray(cmd.args?.references, [])
+  //         .filter((ref) => ref.type === "sprite")
+  //         .map((ref) => ref.id);
+  //       for (const id of referencedIds) {
+  //         addSprite(id);
+  //       }
+  //     }
+  //   }
+  // );
 
-  for (let i = 0; i < scenes.length; i++) {
-    const scene = scenes[i];
-    addSprite(ensureString(scene.playerSpriteSheetId, ""));
-    addSprite(defaultPlayerSprites[scene.type]);
-    for (let a = 0; a < scene.actors.length; a++) {
-      const actor = scene.actors[a];
-      addSprite(actor.spriteSheetId);
-    }
-  }
+  // for (let i = 0; i < scenes.length; i++) {
+  //   const scene = scenes[i];
+  //   addSprite(ensureString(scene.playerSpriteSheetId, ""));
+  //   addSprite(defaultPlayerSprites[scene.type]);
+  //   for (let a = 0; a < scene.actors.length; a++) {
+  //     const actor = scene.actors[a];
+  //     addSprite(actor.spriteSheetId);
+  //   }
+  // }
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
-    usedSprites,
+    spriteReferences,
     cgbOnly,
     projectRoot
   );
@@ -759,7 +763,7 @@ export const precompileSprites = async (
     usedTilesets,
     statesOrder,
     stateReferences,
-    spriteLookup,
+    // spriteLookup,
   };
 };
 
@@ -1019,7 +1023,7 @@ export const precompileScenes = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
-  colorMode: ColorModeSetting,
+  projectColorMode: ColorModeSetting,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
   {
@@ -1079,14 +1083,39 @@ export const precompileScenes = (
       );
     }
 
+    const getSceneColorMode = (scene: Scene): ColorModeSetting => {
+      if (scene.colorModeOverride === "none") {
+        return projectColorMode;
+      }
+      return scene.colorModeOverride;
+    };
+
+    const sceneColorMode = getSceneColorMode(scene);
+
+    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
+      if (sceneColorMode === projectColorMode) {
+        return "";
+      }
+      if (sceneColorMode === "color") {
+        return "_color";
+      }
+      return "_mono";
+    };
+
     const actors = scene.actors.slice(0, MAX_ACTORS).filter((actor) => {
-      return usedSprites.find((s) => s.id === actor.spriteSheetId);
+      return usedSprites.find(
+        (s) => s.id === actor.spriteSheetId + getIdPostfix(sceneColorMode)
+      );
     });
 
     const eventSpriteIds: string[] = [];
-    const playerSpriteSheetId = scene.playerSpriteSheetId
-      ? scene.playerSpriteSheetId
-      : defaultPlayerSprites[scene.type];
+    const playerSpriteSheetId =
+      (scene.playerSpriteSheetId
+        ? scene.playerSpriteSheetId
+        : defaultPlayerSprites[scene.type]) + getIdPostfix(sceneColorMode);
+
+    console.log({ playerSpriteSheetId });
+    console.log({ usedSpritesIds: usedSprites.map((id) => id.symbol) });
 
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
 
@@ -1120,9 +1149,12 @@ export const precompileScenes = (
       }
     };
 
+    console.log({ name: scene.name, id: scene.id, sceneColorMode });
+
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
       const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
-      if (colorMode === "color") {
+      console.log("sceneColorMode::", sceneColorMode ? "T" : "F");
+      if (sceneColorMode === "color") {
         return Math.ceil(count / 4) * 2;
       }
       return count;
@@ -1239,13 +1271,27 @@ export const precompileScenes = (
         background.autoPalettes
     );
 
+    console.log("ACTORS", JSON.stringify(actors));
+
     return {
       ...scene,
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
-      actors,
+      actors: actors.map((actor) => {
+        return {
+          ...actor,
+          spriteSheetId: actor.spriteSheetId + getIdPostfix(sceneColorMode),
+        };
+      }),
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
-        const sprite = usedSprites.find((s) => s.id === spriteId);
+        console.log(
+          "LOOKING FOR",
+          spriteId + getIdPostfix(sceneColorMode),
+          usedSprites.map((s) => s.id)
+        );
+        const sprite = usedSprites.find(
+          (s) => s.id === spriteId + getIdPostfix(sceneColorMode)
+        );
         if (sprite && memo.indexOf(sprite) === -1) {
           memo.push(sprite);
         }
@@ -1345,6 +1391,7 @@ const precompile = async (
     statesOrder,
     stateReferences,
   } = await precompileSprites(
+    usedAssets.referencedSprites,
     projectData.sprites,
     projectData.scenes,
     customEventsLookup,

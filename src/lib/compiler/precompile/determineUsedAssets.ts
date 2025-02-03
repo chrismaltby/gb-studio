@@ -2,17 +2,36 @@ import type { Reference } from "components/forms/ReferencesSelect";
 import { MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
+  BackgroundData,
   CustomEvent,
   FontData,
+  Scene,
   // Scene,
   SoundData,
+  SpriteSheetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import keyBy from "lodash/keyBy";
-import { ProjectResources } from "shared/lib/resources/types";
+import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
+import { ensureString } from "shared/types";
+
+export type BackgroundReference = {
+  data: BackgroundData;
+  is360: boolean;
+  colorMode: ColorModeSetting;
+  id: string;
+  symbol: string;
+};
+
+export type SpriteReference = {
+  data: SpriteSheetData;
+  colorMode: ColorModeSetting;
+  id: string;
+  symbol: string;
+};
 
 export const determineUsedAssets = ({
   projectData,
@@ -26,10 +45,34 @@ export const determineUsedAssets = ({
   const variablesLookup = keyBy(projectData.variables.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
   const fontsLookup = keyBy(projectData.fonts, "id");
+  const backgroundsLookup = keyBy(projectData.backgrounds, "id");
+  const spritesLookup = keyBy(projectData.sprites, "id");
+  const defaultPlayerSprites = projectData.settings.defaultPlayerSprites;
 
   const usedVariablesLookup: Record<string, Variable> = {};
   const usedSoundsLookup: Record<string, SoundData> = {};
   const usedFontsLookup: Record<string, FontData> = {};
+  const usedBackgroundsLookup: Record<string, BackgroundReference> = {};
+  const usedSpritesLookup: Record<string, SpriteReference> = {};
+
+  const projectColorMode = projectData.settings.colorMode;
+
+  const getSceneColorMode = (scene: Scene): ColorModeSetting => {
+    if (scene.colorModeOverride === "none") {
+      return projectData.settings.colorMode;
+    }
+    return scene.colorModeOverride;
+  };
+
+  const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
+    if (sceneColorMode === projectColorMode) {
+      return "";
+    }
+    if (sceneColorMode === "color") {
+      return "_color";
+    }
+    return "_mono";
+  };
 
   const addAssetById =
     <T>(assetLookup: Record<string, T>, usedLookup: Record<string, T>) =>
@@ -85,6 +128,73 @@ export const determineUsedAssets = ({
     }
   }
 
+  const defaultBackgroundId = projectData.backgrounds[0]?.id ?? "";
+  const defaultSpriteId = projectData.sprites[0]?.id ?? "";
+
+  const addBackgroundById = (
+    backgroundId: string,
+    is360: boolean,
+    colorMode: ColorModeSetting
+  ) => {
+    const id = ensureString(backgroundId, defaultBackgroundId);
+    const asset = backgroundsLookup[id];
+    const writeId = id + getIdPostfix(colorMode);
+    console.log({
+      id,
+      writeId,
+      colorMode,
+      projectColorMode,
+      writePostfix: getIdPostfix(colorMode),
+    });
+    if (asset && !usedBackgroundsLookup[writeId]) {
+      usedBackgroundsLookup[writeId] = {
+        data: asset,
+        is360,
+        colorMode,
+        id: writeId,
+        symbol: asset.symbol + getIdPostfix(colorMode),
+      };
+    }
+  };
+
+  const addSpriteById = (spriteId: string, colorMode: ColorModeSetting) => {
+    const id = ensureString(spriteId, defaultSpriteId);
+    const asset = spritesLookup[id];
+    const writeId = id + getIdPostfix(colorMode);
+    console.log({
+      id,
+      writeId,
+      colorMode,
+      projectColorMode,
+      writePostfix: getIdPostfix(colorMode),
+    });
+    if (asset && !usedSpritesLookup[writeId]) {
+      usedSpritesLookup[writeId] = {
+        data: asset,
+        colorMode,
+        id: writeId,
+        symbol: asset.symbol + getIdPostfix(colorMode),
+      };
+    }
+  };
+
+  projectData.scenes.forEach((scene) => {
+    const colorMode = getSceneColorMode(scene);
+
+    addBackgroundById(
+      ensureString(scene.backgroundId, defaultBackgroundId),
+      scene.type === "LOGO",
+      colorMode
+    );
+
+    addSpriteById(ensureString(scene.playerSpriteSheetId, ""), colorMode);
+    addSpriteById(defaultPlayerSprites[scene.type], colorMode);
+    for (let a = 0; a < scene.actors.length; a++) {
+      const actor = scene.actors[a];
+      addSpriteById(actor.spriteSheetId, colorMode);
+    }
+  });
+
   walkScenesScripts(
     projectData.scenes,
     {
@@ -93,13 +203,29 @@ export const determineUsedAssets = ({
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
       },
     },
-    (cmd) => {
+    (cmd, scene) => {
       // Add Referenced Assets
       if (eventHasArg(cmd, "references") && cmd.args?.references) {
         const references = cmd.args?.references as Reference[];
         addReferences(references, "variable", addVariableById);
         addReferences(references, "sound", addSoundById);
         addReferences(references, "font", addFontById);
+        addReferences(references, "background", (id: string) => {
+          const colorMode = getSceneColorMode(scene);
+          addBackgroundById(id, false, colorMode);
+        });
+      }
+
+      if (eventHasArg(cmd, "backgroundId")) {
+        const id = ensureString(cmd.args?.backgroundId, "");
+        const colorMode = getSceneColorMode(scene);
+        addBackgroundById(id, false, colorMode);
+      }
+
+      if (eventHasArg(cmd, "spriteSheetId")) {
+        const id = ensureString(cmd.args?.spriteSheetId, "");
+        const colorMode = getSceneColorMode(scene);
+        addSpriteById(id, colorMode);
       }
 
       // Sounds
@@ -130,9 +256,19 @@ export const determineUsedAssets = ({
     }
   );
 
+  console.log("usedBackgroundsLookup");
+  console.log(Object.keys(usedBackgroundsLookup));
+
+  console.log("usedSpriteLookup");
+  console.log(Object.keys(usedSpritesLookup));
+
   return {
     referencedVariables: Object.values(usedVariablesLookup) as Variable[],
     referencedSounds: Object.values(usedSoundsLookup) as SoundData[],
     referencedFonts: Object.values(usedFontsLookup) as FontData[],
+    referencedBackgrounds: Object.values(
+      usedBackgroundsLookup
+    ) as BackgroundReference[],
+    referencedSprites: Object.values(usedSpritesLookup) as SpriteReference[],
   };
 };

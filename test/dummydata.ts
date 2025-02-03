@@ -79,6 +79,7 @@ export const dummySceneNormalized: SceneNormalized = {
   height: 18,
   type: "0",
   autoFadeSpeed: 1,
+  colorModeOverride: "none",
   paletteIds: [],
   spritePaletteIds: [],
   collisions: [0],

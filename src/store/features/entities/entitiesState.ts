@@ -819,6 +819,7 @@ const addScene: CaseReducer<
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
     type: "TOPDOWN",
+    colorModeOverride: "none",
     paletteIds: [],
     spritePaletteIds: [],
     collisions: [],
