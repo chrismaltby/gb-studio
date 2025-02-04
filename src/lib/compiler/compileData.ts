@@ -622,54 +622,7 @@ export const precompileSprites = async (
   cgbOnly: boolean,
   projectRoot: string
 ) => {
-  // const usedSprites: SpriteSheetData[] = [];
   const usedTilesets: CompiledTilesetData[] = [];
-
-  // const usedSpriteLookup: Record<string, SpriteSheetData> = {};
-  // const spriteLookup = indexById(spriteSheets);
-
-  // const addSprite = (spriteSheetId: string) => {
-  //   if (!usedSpriteLookup[spriteSheetId] && spriteLookup[spriteSheetId]) {
-  //     const spriteSheet = spriteLookup[spriteSheetId];
-  //     usedSprites.push(spriteSheet);
-  //     usedSpriteLookup[spriteSheetId] = spriteSheet;
-  //   }
-  // };
-
-  // walkScenesScripts(
-  //   scenes,
-  //   {
-  //     customEvents: {
-  //       lookup: customEventsLookup,
-  //       maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-  //     },
-  //   },
-  //   (cmd) => {
-  //     if (cmd.args) {
-  //       if (cmd.args.spriteSheetId) {
-  //         addSprite(ensureString(cmd.args.spriteSheetId, ""));
-  //       }
-  //     }
-  //     if (eventHasArg(cmd, "references")) {
-  //       const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-  //         .filter((ref) => ref.type === "sprite")
-  //         .map((ref) => ref.id);
-  //       for (const id of referencedIds) {
-  //         addSprite(id);
-  //       }
-  //     }
-  //   }
-  // );
-
-  // for (let i = 0; i < scenes.length; i++) {
-  //   const scene = scenes[i];
-  //   addSprite(ensureString(scene.playerSpriteSheetId, ""));
-  //   addSprite(defaultPlayerSprites[scene.type]);
-  //   for (let a = 0; a < scene.actors.length; a++) {
-  //     const actor = scene.actors[a];
-  //     addSprite(actor.spriteSheetId);
-  //   }
-  // }
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
@@ -712,7 +665,6 @@ export const precompileSprites = async (
     usedTilesets,
     statesOrder,
     stateReferences,
-    // spriteLookup,
   };
 };
 
