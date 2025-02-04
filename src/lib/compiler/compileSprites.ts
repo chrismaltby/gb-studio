@@ -119,7 +119,6 @@ export const compileSprite = async (
   projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
-  console.log({ filename, cgbOnly });
 
   const tileAllocationStrategy = cgbOnly
     ? spriteTileAllocationColorOnly
