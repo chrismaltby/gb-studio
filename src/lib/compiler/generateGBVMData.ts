@@ -18,7 +18,7 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import { Constant } from "shared/lib/resources/types";
+import { ColorModeSetting, Constant } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
 import { GlobalProjectiles } from "./scriptBuilder";
 
@@ -34,6 +34,7 @@ export interface PrecompiledBackground {
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
   autoPalettes?: Palette[];
+  colorMode: ColorModeSetting;
 }
 
 export interface ProjectileData {
@@ -962,7 +963,7 @@ export const compileSpriteSheetHeader = (spriteSheet: PrecompiledSprite) =>
   );
 
 export const compileBackground = (background: PrecompiledBackground) => {
-  const isColor = !!background.cgbTileset;
+  const isColor = background.colorMode !== "mono";
   return toStructDataFile(
     BACKGROUND_TYPE,
     background.symbol,

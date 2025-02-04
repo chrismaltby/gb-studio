@@ -25,7 +25,7 @@ import type { ColorModeSetting } from "store/features/settings/settingsState";
 import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
-import { BackgroundReference } from "./precompile/determineUsedAssets";
+import { ReferencedBackground } from "./precompile/determineUsedAssets";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -37,6 +37,7 @@ type PrecompiledBackgroundData = BackgroundData & {
   attr: number[];
   autoPalettes?: Palette[];
   is360: boolean;
+  colorMode: ColorModeSetting;
 };
 
 type CompileImageOptions = {
@@ -217,6 +218,7 @@ const compileImage = async (
       attr,
       autoPalettes,
       is360,
+      colorMode,
     };
   }
 
@@ -289,11 +291,12 @@ const compileImage = async (
     attr,
     autoPalettes,
     is360,
+    colorMode,
   };
 };
 
 const compileImages = async (
-  imgs: BackgroundReference[],
+  imgs: ReferencedBackground[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
   colorCorrection: ColorCorrectionSetting,
   projectPath: string,
@@ -315,11 +318,7 @@ const compileImages = async (
             ? [
                 () =>
                   compileImage(
-                    {
-                      ...img.data,
-                      id: img.id,
-                      symbol: img.symbol,
-                    },
+                    img,
                     undefined,
                     img.is360,
                     img.colorMode,
@@ -333,11 +332,7 @@ const compileImages = async (
           ...commonTilesets.map((commonTileset) => {
             return () =>
               compileImage(
-                {
-                  ...img.data,
-                  id: img.id,
-                  symbol: img.symbol,
-                },
+                img,
                 commonTileset,
                 img.is360,
                 img.colorMode,

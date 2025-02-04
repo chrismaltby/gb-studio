@@ -186,6 +186,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
     symbol: "ta_1",
     data: new Uint8Array(),
   },
+  colorMode: "mixed",
 };
 
 export const dummyBackground: Background = {

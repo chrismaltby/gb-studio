@@ -2,7 +2,7 @@ import compileImages, {
   imageTileAllocationColorOnly,
   imageTileAllocationDefault,
 } from "lib/compiler/compileImages";
-import { BackgroundReference } from "lib/compiler/precompile/determineUsedAssets";
+import { ReferencedBackground } from "lib/compiler/precompile/determineUsedAssets";
 import { BackgroundData } from "shared/lib/entities/entitiesTypes";
 
 const BYTES_PER_TILE = 16;
@@ -10,13 +10,10 @@ const BYTES_PER_TILE = 16;
 test("should compile images", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "boss.png",
-      },
       id: "img1",
+      filename: "boss.png",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
@@ -31,14 +28,11 @@ test("should compile images", async () => {
 test("should compile split large images into two tilesets for CGB mode", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "scribble.png",
-      },
       id: "img1",
+      filename: "scribble.png",
       colorMode: "color",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
@@ -54,13 +48,10 @@ test("should compile split large images into two tilesets for CGB mode", async (
 test("should compile large images into one overflowing bank when not in color only mode", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "scribble.png",
-      },
       id: "img1",
+      filename: "scribble.png",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
@@ -75,14 +66,11 @@ test("should compile large images into one overflowing bank when not in color on
 test("should split tiles into two banks when in color only mode, filling first 128 tiles of vram bank 1 first", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "parallax.png",
-      },
       id: "img1",
+      filename: "parallax.png",
       colorMode: "color",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
@@ -97,14 +85,11 @@ test("should split tiles into two banks when in color only mode, filling first 1
 
 test("Should allocate all tiles to VRAM1 in original order by default", () => {
   const backgroundData = {
-    data: {
-      id: "img1",
-      filename: "parallax.png",
-    },
     id: "img1",
-  } as BackgroundReference;
+    filename: "parallax.png",
+  } as ReferencedBackground;
   for (let i = 0; i < 192; i++) {
-    expect(imageTileAllocationDefault(i, 192, backgroundData.data)).toEqual({
+    expect(imageTileAllocationDefault(i, 192, backgroundData)).toEqual({
       tileIndex: i,
       inVRAM2: false,
     });
@@ -142,14 +127,11 @@ test("Should allocate first 128 tiles to vram1, next 128 to vram2 and split the 
 test("should handle overflow correctly for DMG mode", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "tiles-194.png",
-      },
       id: "img1",
+      filename: "tiles-194.png",
       colorMode: "mono",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
@@ -171,14 +153,11 @@ test("should handle overflow correctly for DMG mode", async () => {
 test("should handle overflow correctly for color only mode", async () => {
   const backgroundData = [
     {
-      data: {
-        id: "img1",
-        filename: "tiles-386.png",
-      },
       id: "img1",
+      filename: "tiles-386.png",
       colorMode: "color",
     },
-  ] as BackgroundReference[];
+  ] as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},

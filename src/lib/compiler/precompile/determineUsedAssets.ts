@@ -19,12 +19,9 @@ import keyBy from "lodash/keyBy";
 import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 
-export type BackgroundReference = {
-  data: BackgroundData;
+export type ReferencedBackground = BackgroundData & {
   is360: boolean;
   colorMode: ColorModeSetting;
-  id: string;
-  symbol: string;
   forceTilesetGeneration: boolean;
 };
 
@@ -59,12 +56,12 @@ export const determineUsedAssets = ({
   const usedVariablesLookup: Record<string, Variable> = {};
   const usedSoundsLookup: Record<string, SoundData> = {};
   const usedFontsLookup: Record<string, FontData> = {};
-  const usedBackgroundsLookup: Record<string, BackgroundReference> = {};
+  const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
   const usedSpritesLookup: Record<string, SpriteReference> = {};
   const usedEmotesLookup: Record<string, ReferencedEmote> = {};
 
   const getSceneColorMode = (scene: Scene): ColorModeSetting => {
-    if (scene.colorModeOverride === "none") {
+    if (scene.colorModeOverride === "none" || projectColorMode === "mono") {
       return projectColorMode;
     }
     return scene.colorModeOverride;
@@ -137,32 +134,28 @@ export const determineUsedAssets = ({
   ) => {
     const id = ensureString(backgroundId, defaultBackgroundId);
     const asset = backgroundsLookup[id];
-    const writeId = id;
-    if (asset && !usedBackgroundsLookup[writeId]) {
+    if (asset && !usedBackgroundsLookup[id]) {
       console.log("addBackgroundById", { id, symbol: asset.symbol, colorMode });
-      usedBackgroundsLookup[writeId] = {
-        data: asset,
+      usedBackgroundsLookup[id] = {
+        ...asset,
         is360,
         colorMode,
-        id: writeId,
-        symbol: asset.symbol,
         forceTilesetGeneration,
       };
     }
     if (asset && forceTilesetGeneration) {
-      usedBackgroundsLookup[writeId].forceTilesetGeneration = true;
+      usedBackgroundsLookup[id].forceTilesetGeneration = true;
     }
   };
 
   const addSpriteById = (spriteId: string, colorMode: ColorModeSetting) => {
     const id = ensureString(spriteId, defaultSpriteId);
     const asset = spritesLookup[id];
-    const writeId = id;
-    if (asset && !usedSpritesLookup[writeId]) {
-      usedSpritesLookup[writeId] = {
+    if (asset && !usedSpritesLookup[id]) {
+      usedSpritesLookup[id] = {
         data: asset,
         colorMode,
-        id: writeId,
+        id,
         symbol: asset.symbol,
       };
     }
@@ -178,8 +171,13 @@ export const determineUsedAssets = ({
       !scene.tilesetId
     );
 
-    addSpriteById(ensureString(scene.playerSpriteSheetId, ""), colorMode);
-    addSpriteById(defaultPlayerSprites[scene.type], colorMode);
+    addSpriteById(
+      ensureString(
+        scene.playerSpriteSheetId || defaultPlayerSprites[scene.type],
+        ""
+      ),
+      colorMode
+    );
     for (let a = 0; a < scene.actors.length; a++) {
       const actor = scene.actors[a];
       addSpriteById(actor.spriteSheetId, colorMode);
@@ -259,7 +257,7 @@ export const determineUsedAssets = ({
     referencedFonts: Object.values(usedFontsLookup) as FontData[],
     referencedBackgrounds: Object.values(
       usedBackgroundsLookup
-    ) as BackgroundReference[],
+    ) as ReferencedBackground[],
     referencedSprites: Object.values(usedSpritesLookup) as SpriteReference[],
     referencedEmotes: Object.values(usedEmotesLookup) as ReferencedEmote[],
   };

@@ -99,7 +99,7 @@ import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
 import {
-  BackgroundReference,
+  ReferencedBackground,
   determineUsedAssets,
   ReferencedEmote,
   SpriteReference,
@@ -223,7 +223,7 @@ const ensureProjectAsset = async (
 // #region precompile
 
 export const precompileBackgrounds = async (
-  backgroundReferences: BackgroundReference[],
+  backgroundReferences: ReferencedBackground[],
   scenes: Scene[],
   tilesets: TilesetData[],
   customEventsLookup: Record<string, CustomEvent>,
@@ -896,7 +896,7 @@ export const precompileScenes = (
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene) => {
     const getSceneColorMode = (scene: Scene): ColorModeSetting => {
-      if (scene.colorModeOverride === "none") {
+      if (scene.colorModeOverride === "none" || projectColorMode === "mono") {
         return projectColorMode;
       }
       return scene.colorModeOverride;
