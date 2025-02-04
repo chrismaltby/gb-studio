@@ -115,7 +115,6 @@ import {
   Palette,
   Scene,
   ScriptEvent,
-  SpriteSheetData,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import type {
@@ -615,10 +614,6 @@ export const precompileUIImages = async (
 
 export const precompileSprites = async (
   spriteReferences: SpriteReference[],
-  spriteSheets: SpriteSheetData[],
-  scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
-  defaultPlayerSprites: Record<string, string>,
   cgbOnly: boolean,
   projectRoot: string
 ) => {
@@ -904,17 +899,17 @@ export const precompileScenes = (
 
     const sceneColorMode = getSceneColorMode(scene);
 
-    const backgroundId = scene.backgroundId;
-
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
-        background.id === backgroundId &&
+        background.id === scene.backgroundId &&
         (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
     );
 
     const background =
       backgroundWithCommonTileset ??
-      usedBackgrounds.find((background) => background.id === backgroundId);
+      usedBackgrounds.find(
+        (background) => background.id === scene.backgroundId
+      );
 
     if (!background) {
       throw new Error(
@@ -975,13 +970,10 @@ export const precompileScenes = (
     const projectiles: PrecompiledProjectile[] = [];
     const actorsExclusiveLookup: Record<string, number> = {};
     const addProjectile = (data: ProjectileData) => {
-      const spriteSheetId = data.spriteSheetId;
-
       const projectile = {
         ...data,
-        spriteSheetId,
         hash: toProjectileHash({
-          spriteSheetId,
+          spriteSheetId: data.spriteSheetId,
           spriteStateId: data.spriteStateId,
           speed: data.speed,
           animSpeed: data.animSpeed,
@@ -1111,8 +1103,6 @@ export const precompileScenes = (
         "_" +
         scene.type +
         "_" +
-        scene.colorModeOverride +
-        "_" +
         scene.paletteIds +
         "_" +
         scene.spritePaletteIds +
@@ -1124,12 +1114,7 @@ export const precompileScenes = (
       ...scene,
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
-      actors: actors.map((actor) => {
-        return {
-          ...actor,
-          spriteSheetId: actor.spriteSheetId,
-        };
-      }),
+      actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
         const sprite = usedSprites.find((s) => s.id === spriteId);
         if (sprite && memo.indexOf(sprite) === -1) {
@@ -1232,10 +1217,6 @@ const precompile = async (
     stateReferences,
   } = await precompileSprites(
     usedAssets.referencedSprites,
-    projectData.sprites,
-    projectData.scenes,
-    customEventsLookup,
-    projectData.settings.defaultPlayerSprites,
     cgbOnly,
     projectRoot
   );
