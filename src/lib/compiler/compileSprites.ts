@@ -11,7 +11,7 @@ import type {
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
-import { SpriteReference } from "./precompile/determineUsedAssets";
+import { ReferencedSprite } from "./precompile/determineUsedAssets";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -260,8 +260,7 @@ export const compileSprite = async (
 };
 
 const compileSprites = async (
-  spriteSheets: SpriteReference[],
-  cgbOnly: boolean,
+  spriteSheets: ReferencedSprite[],
   projectRoot: string
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
@@ -273,11 +272,7 @@ const compileSprites = async (
     spriteSheets.map(
       (spriteSheet) => () =>
         compileSprite(
-          {
-            ...spriteSheet.data,
-            id: spriteSheet.id,
-            symbol: spriteSheet.symbol,
-          },
+          spriteSheet,
           spriteSheet.colorMode === "color",
           projectRoot
         )

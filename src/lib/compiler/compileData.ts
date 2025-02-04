@@ -102,7 +102,7 @@ import {
   ReferencedBackground,
   determineUsedAssets,
   ReferencedEmote,
-  SpriteReference,
+  ReferencedSprite,
 } from "./precompile/determineUsedAssets";
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
@@ -613,15 +613,13 @@ export const precompileUIImages = async (
 };
 
 export const precompileSprites = async (
-  spriteReferences: SpriteReference[],
-  cgbOnly: boolean,
+  spriteReferences: ReferencedSprite[],
   projectRoot: string
 ) => {
   const usedTilesets: CompiledTilesetData[] = [];
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
-    cgbOnly,
     projectRoot
   );
 
@@ -1161,7 +1159,6 @@ const precompile = async (
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorMode = projectData.settings.colorMode;
   const colorCorrection = projectData.settings.colorCorrection;
-  const cgbOnly = colorMode === "color";
 
   const usedAssets = determineUsedAssets({
     projectData,
@@ -1215,11 +1212,7 @@ const precompile = async (
     usedTilesets: usedSpriteTilesets,
     statesOrder,
     stateReferences,
-  } = await precompileSprites(
-    usedAssets.referencedSprites,
-    cgbOnly,
-    projectRoot
-  );
+  } = await precompileSprites(usedAssets.referencedSprites, projectRoot);
 
   progress(`${l10n("COMPILER_PREPARING_AVATARS")}...`);
   const { usedAvatars } = await precompileAvatars(

@@ -25,11 +25,8 @@ export type ReferencedBackground = BackgroundData & {
   forceTilesetGeneration: boolean;
 };
 
-export type SpriteReference = {
-  data: SpriteSheetData;
+export type ReferencedSprite = SpriteSheetData & {
   colorMode: ColorModeSetting;
-  id: string;
-  symbol: string;
 };
 
 export type ReferencedEmote = EmoteData;
@@ -57,7 +54,7 @@ export const determineUsedAssets = ({
   const usedSoundsLookup: Record<string, SoundData> = {};
   const usedFontsLookup: Record<string, FontData> = {};
   const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
-  const usedSpritesLookup: Record<string, SpriteReference> = {};
+  const usedSpritesLookup: Record<string, ReferencedSprite> = {};
   const usedEmotesLookup: Record<string, ReferencedEmote> = {};
 
   const getSceneColorMode = (scene: Scene): ColorModeSetting => {
@@ -152,10 +149,8 @@ export const determineUsedAssets = ({
     const asset = spritesLookup[id];
     if (asset && !usedSpritesLookup[id]) {
       usedSpritesLookup[id] = {
-        data: asset,
+        ...asset,
         colorMode,
-        id,
-        symbol: asset.symbol,
       };
     }
   };
