@@ -52,11 +52,7 @@ import { lexText, Token } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import type {
-  ColorModeSetting,
-  Constant,
-  ScriptEditorCtxType,
-} from "shared/lib/resources/types";
+import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
@@ -3913,31 +3909,9 @@ extern void __mute_mask_${symbol};
     collisionGroup: string,
     collisionMask: string[]
   ) => {
-    const { scene, settings } = this.options;
-
-    const projectColorMode = settings.colorMode;
-
-    const getSceneColorMode = (scene: PrecompiledScene): ColorModeSetting => {
-      if (scene.colorModeOverride === "none") {
-        return projectColorMode;
-      }
-      return scene.colorModeOverride;
-    };
-
-    const sceneColorMode = getSceneColorMode(scene);
-
-    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
-      if (sceneColorMode === projectColorMode) {
-        return "";
-      }
-      if (sceneColorMode === "color") {
-        return "_color";
-      }
-      return "_mono";
-    };
-
+    const { scene } = this.options;
     const projectileHash = toProjectileHash({
-      spriteSheetId: spriteSheetId + getIdPostfix(sceneColorMode),
+      spriteSheetId,
       spriteStateId,
       speed,
       animSpeed,
@@ -3965,31 +3939,8 @@ extern void __mute_mask_${symbol};
     collisionGroup: string,
     collisionMask: string[]
   ): { symbol: string; index: number } => {
-    const { scene, settings } = this.options;
-
-    const projectColorMode = settings.colorMode;
-
-    const getSceneColorMode = (scene: PrecompiledScene): ColorModeSetting => {
-      if (scene.colorModeOverride === "none") {
-        return projectColorMode;
-      }
-      return scene.colorModeOverride;
-    };
-
-    const sceneColorMode = getSceneColorMode(scene);
-
-    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
-      if (sceneColorMode === projectColorMode) {
-        return "";
-      }
-      if (sceneColorMode === "color") {
-        return "_color";
-      }
-      return "_mono";
-    };
-
     const projectileHash = toProjectileHash({
-      spriteSheetId: spriteSheetId + getIdPostfix(sceneColorMode),
+      spriteSheetId,
       spriteStateId,
       speed,
       animSpeed,

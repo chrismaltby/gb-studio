@@ -65,19 +65,9 @@ export const determineUsedAssets = ({
 
   const getSceneColorMode = (scene: Scene): ColorModeSetting => {
     if (scene.colorModeOverride === "none") {
-      return projectData.settings.colorMode;
+      return projectColorMode;
     }
     return scene.colorModeOverride;
-  };
-
-  const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
-    if (sceneColorMode === projectColorMode) {
-      return "";
-    }
-    if (sceneColorMode === "color") {
-      return "_color";
-    }
-    return "_mono";
   };
 
   const addAssetById =
@@ -147,14 +137,15 @@ export const determineUsedAssets = ({
   ) => {
     const id = ensureString(backgroundId, defaultBackgroundId);
     const asset = backgroundsLookup[id];
-    const writeId = id + getIdPostfix(colorMode);
+    const writeId = id;
     if (asset && !usedBackgroundsLookup[writeId]) {
+      console.log("addBackgroundById", { id, symbol: asset.symbol, colorMode });
       usedBackgroundsLookup[writeId] = {
         data: asset,
         is360,
         colorMode,
         id: writeId,
-        symbol: asset.symbol + getIdPostfix(colorMode),
+        symbol: asset.symbol,
         forceTilesetGeneration,
       };
     }
@@ -166,20 +157,13 @@ export const determineUsedAssets = ({
   const addSpriteById = (spriteId: string, colorMode: ColorModeSetting) => {
     const id = ensureString(spriteId, defaultSpriteId);
     const asset = spritesLookup[id];
-    const writeId = id + getIdPostfix(colorMode);
-    console.log({
-      id,
-      writeId,
-      colorMode,
-      projectColorMode,
-      writePostfix: getIdPostfix(colorMode),
-    });
+    const writeId = id;
     if (asset && !usedSpritesLookup[writeId]) {
       usedSpritesLookup[writeId] = {
         data: asset,
         colorMode,
         id: writeId,
-        symbol: asset.symbol + getIdPostfix(colorMode),
+        symbol: asset.symbol,
       };
     }
   };

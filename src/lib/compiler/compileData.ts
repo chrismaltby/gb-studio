@@ -952,17 +952,7 @@ export const precompileScenes = (
 
     const sceneColorMode = getSceneColorMode(scene);
 
-    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
-      if (sceneColorMode === projectColorMode) {
-        return "";
-      }
-      if (sceneColorMode === "color") {
-        return "_color";
-      }
-      return "_mono";
-    };
-
-    const backgroundId = scene.backgroundId + getIdPostfix(sceneColorMode);
+    const backgroundId = scene.backgroundId;
 
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
@@ -1013,16 +1003,13 @@ export const precompileScenes = (
     }
 
     const actors = scene.actors.slice(0, MAX_ACTORS).filter((actor) => {
-      return usedSprites.find(
-        (s) => s.id === actor.spriteSheetId + getIdPostfix(sceneColorMode)
-      );
+      return usedSprites.find((s) => s.id === actor.spriteSheetId);
     });
 
     const eventSpriteIds: string[] = [];
-    const playerSpriteSheetId =
-      (scene.playerSpriteSheetId
-        ? scene.playerSpriteSheetId
-        : defaultPlayerSprites[scene.type]) + getIdPostfix(sceneColorMode);
+    const playerSpriteSheetId = scene.playerSpriteSheetId
+      ? scene.playerSpriteSheetId
+      : defaultPlayerSprites[scene.type];
 
     console.log({ playerSpriteSheetId });
     console.log({ usedSpritesIds: usedSprites.map((id) => id.symbol) });
@@ -1039,7 +1026,7 @@ export const precompileScenes = (
     const projectiles: PrecompiledProjectile[] = [];
     const actorsExclusiveLookup: Record<string, number> = {};
     const addProjectile = (data: ProjectileData) => {
-      const spriteSheetId = data.spriteSheetId + getIdPostfix(sceneColorMode);
+      const spriteSheetId = data.spriteSheetId;
 
       const projectile = {
         ...data,
@@ -1193,18 +1180,16 @@ export const precompileScenes = (
       actors: actors.map((actor) => {
         return {
           ...actor,
-          spriteSheetId: actor.spriteSheetId + getIdPostfix(sceneColorMode),
+          spriteSheetId: actor.spriteSheetId,
         };
       }),
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
         console.log(
           "LOOKING FOR",
-          spriteId + getIdPostfix(sceneColorMode),
+          spriteId,
           usedSprites.map((s) => s.id)
         );
-        const sprite = usedSprites.find(
-          (s) => s.id === spriteId + getIdPostfix(sceneColorMode)
-        );
+        const sprite = usedSprites.find((s) => s.id === spriteId);
         if (sprite && memo.indexOf(sprite) === -1) {
           memo.push(sprite);
         }
@@ -1461,7 +1446,6 @@ const compile = async (
     }
   );
 
-  const colorEnabled = projectData.settings.colorMode !== "mono";
   const isCGBOnly = projectData.settings.colorMode === "color";
   const isSGB = projectData.settings.sgbEnabled && !isCGBOnly;
   const precompiledEngineFields = keyBy(engineFields, "key");
@@ -1889,9 +1873,7 @@ const compile = async (
 
   // Add background map data
   precompiled.usedBackgrounds.forEach((background) => {
-    output[`${background.symbol}.c`] = compileBackground(background, {
-      color: colorEnabled,
-    });
+    output[`${background.symbol}.c`] = compileBackground(background);
     output[`${background.symbol}.h`] = compileBackgroundHeader(background);
   });
 
@@ -1900,12 +1882,10 @@ const compile = async (
     output[`${tilemap.symbol}.h`] = compileTilemapHeader(tilemap);
   });
 
-  if (colorEnabled) {
-    precompiled.usedTilemapAttrs.forEach((tilemapAttr) => {
-      output[`${tilemapAttr.symbol}.c`] = compileTilemapAttr(tilemapAttr);
-      output[`${tilemapAttr.symbol}.h`] = compileTilemapAttrHeader(tilemapAttr);
-    });
-  }
+  precompiled.usedTilemapAttrs.forEach((tilemapAttr) => {
+    output[`${tilemapAttr.symbol}.c`] = compileTilemapAttr(tilemapAttr);
+    output[`${tilemapAttr.symbol}.h`] = compileTilemapAttrHeader(tilemapAttr);
+  });
 
   // Add sprite data
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {

@@ -961,15 +961,9 @@ export const compileSpriteSheetHeader = (spriteSheet: PrecompiledSprite) =>
     `// SpriteSheet: ${spriteSheet.name}`
   );
 
-export const compileBackground = (
-  background: PrecompiledBackground,
-  {
-    color,
-  }: {
-    color: boolean;
-  }
-) =>
-  toStructDataFile(
+export const compileBackground = (background: PrecompiledBackground) => {
+  const isColor = !!background.cgbTileset;
+  return toStructDataFile(
     BACKGROUND_TYPE,
     background.symbol,
     `// Background: ${background.name}`,
@@ -980,11 +974,11 @@ export const compileBackground = (
         ? toFarPtr(background.tileset.symbol)
         : "{ NULL, NULL }",
       cgb_tileset:
-        color && background.cgbTileset
+        isColor && background.cgbTileset
           ? toFarPtr(background.cgbTileset.symbol)
           : "{ NULL, NULL }",
       tilemap: toFarPtr(background.tilemap.symbol),
-      cgb_tilemap_attr: color
+      cgb_tilemap_attr: isColor
         ? toFarPtr(background.tilemapAttr.symbol)
         : "{ NULL, NULL }",
     },
@@ -992,9 +986,10 @@ export const compileBackground = (
       background.tileset?.symbol ?? [],
       background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
-      color ? background.tilemapAttr.symbol : []
+      isColor ? background.tilemapAttr.symbol : []
     )
   );
+};
 
 export const compileBackgroundHeader = (background: PrecompiledBackground) =>
   toDataHeader(
