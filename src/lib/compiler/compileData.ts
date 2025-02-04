@@ -99,6 +99,7 @@ import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
 import {
+  BackgroundReference,
   determineUsedAssets,
   SpriteReference,
 } from "./precompile/determineUsedAssets";
@@ -107,7 +108,6 @@ import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
 import {
   AvatarData,
-  BackgroundData,
   CustomEvent,
   EmoteData,
   FontData,
@@ -223,7 +223,7 @@ const ensureProjectAsset = async (
 // #region precompile
 
 export const precompileBackgrounds = async (
-  backgrounds: BackgroundData[],
+  backgroundReferences: BackgroundReference[],
   scenes: Scene[],
   tilesets: TilesetData[],
   customEventsLookup: Record<string, CustomEvent>,
@@ -239,32 +239,6 @@ export const precompileBackgrounds = async (
 ) => {
   const usedTilemaps: CompiledTilemapData[] = [];
   const usedTilemapAttrs: CompiledTilemapData[] = [];
-
-  const eventImageIds: string[] = [];
-  walkScenesScripts(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (eventHasArg(cmd, "backgroundId")) {
-        eventImageIds.push(ensureString(cmd.args?.backgroundId, ""));
-      } else if (eventHasArg(cmd, "references")) {
-        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-          .filter((ref) => ref.type === "background")
-          .map((ref) => ref.id);
-        eventImageIds.push(...referencedIds);
-      }
-    }
-  );
-  const usedBackgrounds = backgrounds.filter(
-    (background) =>
-      eventImageIds.indexOf(background.id) > -1 ||
-      scenes.find((scene) => scene.backgroundId === background.id)
-  );
 
   const tilesetLookup = keyBy(tilesets, "id");
 
@@ -283,34 +257,9 @@ export const precompileBackgrounds = async (
     return memo;
   }, {} as Record<string, TilesetData[]>);
 
-  const forceGenerateTilesetIds = scenes.reduce((memo, scene) => {
-    if (!scene.backgroundId) {
-      return memo;
-    }
-    if (!scene.tilesetId && !memo.has(scene.backgroundId)) {
-      memo.add(scene.backgroundId);
-    }
-    return memo;
-  }, new Set<string>(eventImageIds));
-
-  // List of ids to generate 360 tiles
-  const generate360Ids = new Set(
-    usedBackgrounds
-      .filter((background) =>
-        scenes.find(
-          (scene) =>
-            scene.backgroundId === background.id && scene.type === "LOGO"
-        )
-      )
-      .map((background) => background.id)
-  );
-
   const backgroundsData = await compileImages(
-    usedBackgrounds,
+    backgroundReferences,
     commonTilesetsLookup,
-    forceGenerateTilesetIds,
-    generate360Ids,
-    colorMode,
     colorCorrection,
     projectRoot,
     {
@@ -390,7 +339,7 @@ export const precompileBackgrounds = async (
         usedTilemaps.push({
           symbol: `${background.symbol}_tilemap`,
           data: background.tilemap,
-          is360: generate360Ids.has(background.id),
+          is360: background.is360,
         });
       }
 
@@ -400,7 +349,7 @@ export const precompileBackgrounds = async (
         usedTilemapAttrs.push({
           symbol: `${background.symbol}_tilemap_attr`,
           data: background.attr,
-          is360: generate360Ids.has(background.id),
+          is360: background.is360,
         });
       }
 
@@ -1033,17 +982,36 @@ export const precompileScenes = (
   }
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene) => {
+    const getSceneColorMode = (scene: Scene): ColorModeSetting => {
+      if (scene.colorModeOverride === "none") {
+        return projectColorMode;
+      }
+      return scene.colorModeOverride;
+    };
+
+    const sceneColorMode = getSceneColorMode(scene);
+
+    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
+      if (sceneColorMode === projectColorMode) {
+        return "";
+      }
+      if (sceneColorMode === "color") {
+        return "_color";
+      }
+      return "_mono";
+    };
+
+    const backgroundId = scene.backgroundId + getIdPostfix(sceneColorMode);
+
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
-        background.id === scene.backgroundId &&
+        background.id === backgroundId &&
         (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
     );
 
     const background =
       backgroundWithCommonTileset ??
-      usedBackgrounds.find(
-        (background) => background.id === scene.backgroundId
-      );
+      usedBackgrounds.find((background) => background.id === backgroundId);
 
     if (!background) {
       throw new Error(
@@ -1083,25 +1051,6 @@ export const precompileScenes = (
       );
     }
 
-    const getSceneColorMode = (scene: Scene): ColorModeSetting => {
-      if (scene.colorModeOverride === "none") {
-        return projectColorMode;
-      }
-      return scene.colorModeOverride;
-    };
-
-    const sceneColorMode = getSceneColorMode(scene);
-
-    const getIdPostfix = (sceneColorMode: ColorModeSetting): string => {
-      if (sceneColorMode === projectColorMode) {
-        return "";
-      }
-      if (sceneColorMode === "color") {
-        return "_color";
-      }
-      return "_mono";
-    };
-
     const actors = scene.actors.slice(0, MAX_ACTORS).filter((actor) => {
       return usedSprites.find(
         (s) => s.id === actor.spriteSheetId + getIdPostfix(sceneColorMode)
@@ -1129,10 +1078,13 @@ export const precompileScenes = (
     const projectiles: PrecompiledProjectile[] = [];
     const actorsExclusiveLookup: Record<string, number> = {};
     const addProjectile = (data: ProjectileData) => {
+      const spriteSheetId = data.spriteSheetId + getIdPostfix(sceneColorMode);
+
       const projectile = {
         ...data,
+        spriteSheetId,
         hash: toProjectileHash({
-          spriteSheetId: data.spriteSheetId,
+          spriteSheetId,
           spriteStateId: data.spriteStateId,
           speed: data.speed,
           animSpeed: data.animSpeed,
@@ -1148,8 +1100,6 @@ export const precompileScenes = (
         projectiles.push(projectile);
       }
     };
-
-    console.log({ name: scene.name, id: scene.id, sceneColorMode });
 
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
       const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
@@ -1264,6 +1214,8 @@ export const precompileScenes = (
         "_" +
         scene.type +
         "_" +
+        scene.colorModeOverride +
+        "_" +
         scene.paletteIds +
         "_" +
         scene.spritePaletteIds +
@@ -1355,7 +1307,7 @@ const precompile = async (
     usedTilemaps,
     usedTilemapAttrs,
   } = await precompileBackgrounds(
-    projectData.backgrounds,
+    usedAssets.referencedBackgrounds,
     projectData.scenes,
     projectData.tilesets,
     customEventsLookup,

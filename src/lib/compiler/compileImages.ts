@@ -25,6 +25,7 @@ import type { ColorModeSetting } from "store/features/settings/settingsState";
 import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { BackgroundReference } from "./precompile/determineUsedAssets";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -35,6 +36,7 @@ type PrecompiledBackgroundData = BackgroundData & {
   tilemap: number[];
   attr: number[];
   autoPalettes?: Palette[];
+  is360: boolean;
 };
 
 type CompileImageOptions = {
@@ -214,6 +216,7 @@ const compileImage = async (
       tilemap,
       attr,
       autoPalettes,
+      is360,
     };
   }
 
@@ -285,15 +288,13 @@ const compileImage = async (
     tilemap,
     attr,
     autoPalettes,
+    is360,
   };
 };
 
 const compileImages = async (
-  imgs: BackgroundData[],
+  imgs: BackgroundReference[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
-  forceGenerateTilesetIds: Set<string>,
-  generate360Ids: Set<string>,
-  colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
@@ -307,17 +308,21 @@ const compileImages = async (
         // or has been referenced without a common tileset at any point
         // it's tiles should always be generated
         const forceGenerateTileset =
-          commonTilesets.length === 0 || forceGenerateTilesetIds.has(img.id);
+          commonTilesets.length === 0 || img.forceTilesetGeneration;
         return [
           // Generate background with no common tilesets applied
           ...(forceGenerateTileset
             ? [
                 () =>
                   compileImage(
-                    img,
+                    {
+                      ...img.data,
+                      id: img.id,
+                      symbol: img.symbol,
+                    },
                     undefined,
-                    generate360Ids.has(img.id),
-                    colorMode,
+                    img.is360,
+                    img.colorMode,
                     colorCorrection,
                     projectPath,
                     { warnings }
@@ -328,10 +333,14 @@ const compileImages = async (
           ...commonTilesets.map((commonTileset) => {
             return () =>
               compileImage(
-                img,
+                {
+                  ...img.data,
+                  id: img.id,
+                  symbol: img.symbol,
+                },
                 commonTileset,
-                generate360Ids.has(img.id),
-                colorMode,
+                img.is360,
+                img.colorMode,
                 colorCorrection,
                 projectPath,
                 { warnings }

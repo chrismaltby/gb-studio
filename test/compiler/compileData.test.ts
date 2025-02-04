@@ -13,11 +13,7 @@ import { EVENT_TEXT, EVENT_IF_TRUE } from "../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { ProjectResources } from "shared/lib/resources/types";
-import {
-  BackgroundData,
-  Scene,
-  TilesetData,
-} from "shared/lib/entities/entitiesTypes";
+import { Scene, TilesetData } from "shared/lib/entities/entitiesTypes";
 import {
   dummyActor,
   dummyBackground,
@@ -25,6 +21,7 @@ import {
   dummyScriptEvent,
 } from "../dummydata";
 import os from "os";
+import { BackgroundReference } from "lib/compiler/precompile/determineUsedAssets";
 
 test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene as unknown as PrecompiledScene;
@@ -419,24 +416,34 @@ test("should compile simple project into files object", async () => {
 test("should precompile image data", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "test_img",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img.png",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -538,26 +545,34 @@ test("should precompile script", async () => {});
 test("should include extra backgrounds when using common tilesets", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "test_img",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img.png",
-      symbol: "bg2",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
-      symbol: "bg3",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -627,26 +642,34 @@ test("should include extra backgrounds when using common tilesets", async () => 
 test("should include tileset for background when also used without common tileset", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "test_img",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img.png",
-      symbol: "bg2",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
-      symbol: "bg3",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -728,26 +751,34 @@ test("should include tileset for background when also used without common tilese
 test("should share tilesets if possible when multiple backgrounds include common tileset", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "bg_ad",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "bg_bc",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_bc.png",
-      symbol: "bg_bc",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -807,26 +838,34 @@ test("should share tilesets if possible when multiple backgrounds include common
 test("should generate unique tileset for background if used without common tileset even if a match in common tilesets could be found", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "bg_ad",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "bg_bc",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_bc.png",
-      symbol: "bg_bc",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -902,26 +941,34 @@ test("should generate unique tileset for background if used without common tiles
 test("should generate unique tileset for background if referenced from script even if a match in common tilesets could be found", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "test_img",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img.png",
+      },
+      is360: false,
       id: "2b",
-      name: "bg_ad",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "test_img2",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "test_img2.png",
+      },
+      is360: false,
       id: "3b",
-      name: "bg_bc",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_bc.png",
-      symbol: "bg_bc",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -1003,26 +1050,36 @@ test("should generate unique tileset for background if referenced from script ev
 test("should generate unique tileset for identical backgrounds if used without common tileset", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "bg_ad",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "bg_ad.png",
+        symbol: "bg_ad",
+      },
+      is360: false,
       id: "2b",
-      name: "bg_ad",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "bg_ad_copy",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "bg_ad.png",
+        symbol: "bg_ad_copy",
+      },
+      is360: false,
       id: "3b",
-      name: "bg_ad_copy",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad_copy",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,
@@ -1068,26 +1125,36 @@ test("should generate unique tileset for identical backgrounds if used without c
 test("should allow reusing tileset for identical backgrounds if used with common tileset", async () => {
   const backgrounds = [
     {
+      data: {
+        id: "2b",
+        name: "bg_ad",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "bg_ad.png",
+        symbol: "bg_ad",
+      },
+      is360: false,
       id: "2b",
-      name: "bg_ad",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad",
+      symbol: "test_img",
     },
     {
+      data: {
+        id: "3b",
+        name: "bg_ad_copy",
+        width: 20,
+        height: 18,
+        imageWidth: 160,
+        imageHeight: 144,
+        filename: "bg_ad.png",
+        symbol: "bg_ad_copy",
+      },
+      is360: false,
       id: "3b",
-      name: "bg_ad_copy",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "bg_ad.png",
-      symbol: "bg_ad_copy",
+      symbol: "test_img2",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const scenes = [
     {
       ...dummyScene,

@@ -2,6 +2,7 @@ import compileImages, {
   imageTileAllocationColorOnly,
   imageTileAllocationDefault,
 } from "lib/compiler/compileImages";
+import { BackgroundReference } from "lib/compiler/precompile/determineUsedAssets";
 import { BackgroundData } from "shared/lib/entities/entitiesTypes";
 
 const BYTES_PER_TILE = 16;
@@ -9,16 +10,16 @@ const BYTES_PER_TILE = 16;
 test("should compile images", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "boss.png",
+      },
       id: "img1",
-      filename: "boss.png",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "mixed",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -30,16 +31,17 @@ test("should compile images", async () => {
 test("should compile split large images into two tilesets for CGB mode", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "scribble.png",
+      },
       id: "img1",
-      filename: "scribble.png",
+      colorMode: "color",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "color",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -52,16 +54,16 @@ test("should compile split large images into two tilesets for CGB mode", async (
 test("should compile large images into one overflowing bank when not in color only mode", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "scribble.png",
+      },
       id: "img1",
-      filename: "scribble.png",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "mixed",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -73,16 +75,17 @@ test("should compile large images into one overflowing bank when not in color on
 test("should split tiles into two banks when in color only mode, filling first 128 tiles of vram bank 1 first", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "parallax.png",
+      },
       id: "img1",
-      filename: "parallax.png",
+      colorMode: "color",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "color",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -93,14 +96,15 @@ test("should split tiles into two banks when in color only mode, filling first 1
 });
 
 test("Should allocate all tiles to VRAM1 in original order by default", () => {
-  const backgroundData = [
-    {
+  const backgroundData = {
+    data: {
       id: "img1",
       filename: "parallax.png",
     },
-  ] as unknown as BackgroundData;
+    id: "img1",
+  } as BackgroundReference;
   for (let i = 0; i < 192; i++) {
-    expect(imageTileAllocationDefault(i, 192, backgroundData)).toEqual({
+    expect(imageTileAllocationDefault(i, 192, backgroundData.data)).toEqual({
       tileIndex: i,
       inVRAM2: false,
     });
@@ -138,16 +142,17 @@ test("Should allocate first 128 tiles to vram1, next 128 to vram2 and split the 
 test("should handle overflow correctly for DMG mode", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "tiles-194.png",
+      },
       id: "img1",
-      filename: "tiles-194.png",
+      colorMode: "mono",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "mono",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
@@ -166,16 +171,17 @@ test("should handle overflow correctly for DMG mode", async () => {
 test("should handle overflow correctly for color only mode", async () => {
   const backgroundData = [
     {
+      data: {
+        id: "img1",
+        filename: "tiles-386.png",
+      },
       id: "img1",
-      filename: "tiles-386.png",
+      colorMode: "color",
     },
-  ] as BackgroundData[];
+  ] as BackgroundReference[];
   const res = await compileImages(
     backgroundData,
     {},
-    new Set(),
-    new Set(),
-    "color",
     "default",
     `${__dirname}/_files/`,
     { warnings: () => {} }
