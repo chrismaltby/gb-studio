@@ -51,6 +51,8 @@ export const determineUsedAssets = ({
   const fontsLookup = keyBy(projectData.fonts, "id");
   const backgroundsLookup = keyBy(projectData.backgrounds, "id");
   const spritesLookup = keyBy(projectData.sprites, "id");
+  const emotesLookup = keyBy(projectData.emotes, "id");
+
   const defaultPlayerSprites = projectData.settings.defaultPlayerSprites;
   const projectColorMode = projectData.settings.colorMode;
 
@@ -59,7 +61,7 @@ export const determineUsedAssets = ({
   const usedFontsLookup: Record<string, FontData> = {};
   const usedBackgroundsLookup: Record<string, BackgroundReference> = {};
   const usedSpritesLookup: Record<string, SpriteReference> = {};
-  const usedEmotes: Record<string, ReferencedEmote> = {};
+  const usedEmotesLookup: Record<string, ReferencedEmote> = {};
 
   const getSceneColorMode = (scene: Scene): ColorModeSetting => {
     if (scene.colorModeOverride === "none") {
@@ -105,6 +107,8 @@ export const determineUsedAssets = ({
   const addSoundById = addAssetById(soundsLookup, usedSoundsLookup);
 
   const addFontById = addAssetById(fontsLookup, usedFontsLookup);
+
+  const addEmoteById = addAssetById(emotesLookup, usedEmotesLookup);
 
   const addFontsFromString = (s: string) => {
     (s.match(/(!F:[0-9a-f-]+!)/g) || [])
@@ -213,6 +217,7 @@ export const determineUsedAssets = ({
         addReferences(references, "variable", addVariableById);
         addReferences(references, "sound", addSoundById);
         addReferences(references, "font", addFontById);
+        addReferences(references, "emote", addEmoteById);
         addReferences(references, "background", (id: string) => {
           const colorMode = getSceneColorMode(scene);
           addBackgroundById(id, false, colorMode, true);
@@ -229,6 +234,11 @@ export const determineUsedAssets = ({
         const id = ensureString(cmd.args?.spriteSheetId, "");
         const colorMode = getSceneColorMode(scene);
         addSpriteById(id, colorMode);
+      }
+
+      if (eventHasArg(cmd, "emoteId")) {
+        const id = ensureString(cmd.args?.emoteId, "");
+        addEmoteById(id);
       }
 
       // Sounds
@@ -267,5 +277,6 @@ export const determineUsedAssets = ({
       usedBackgroundsLookup
     ) as BackgroundReference[],
     referencedSprites: Object.values(usedSpritesLookup) as SpriteReference[],
+    referencedEmotes: Object.values(usedEmotesLookup) as ReferencedEmote[],
   };
 };

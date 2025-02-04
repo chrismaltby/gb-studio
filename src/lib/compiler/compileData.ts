@@ -101,6 +101,7 @@ import Path from "path";
 import {
   BackgroundReference,
   determineUsedAssets,
+  ReferencedEmote,
   SpriteReference,
 } from "./precompile/determineUsedAssets";
 import { compileSound } from "./sounds/compileSound";
@@ -109,7 +110,6 @@ import l10n from "shared/lib/lang/l10n";
 import {
   AvatarData,
   CustomEvent,
-  EmoteData,
   FontData,
   MusicData,
   Palette,
@@ -762,9 +762,7 @@ export const precompileAvatars = async (
 };
 
 export const precompileEmotes = async (
-  emotes: EmoteData[],
-  scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  referencedEmotes: ReferencedEmote[],
   projectRoot: string,
   {
     warnings,
@@ -772,48 +770,11 @@ export const precompileEmotes = async (
     warnings: (msg: string) => void;
   }
 ) => {
-  const usedEmotes: EmoteData[] = [];
-  const usedEmoteLookup: Record<string, EmoteData> = {};
-  const emoteLookup = indexById(emotes);
-
-  const addEmote = (id: string) => {
-    const emote = emoteLookup[id];
-    if (!usedEmoteLookup[id] && emote) {
-      usedEmotes.push(emote);
-      usedEmoteLookup[id] = emote;
-    }
-  };
-
-  walkScenesScripts(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (cmd.args && cmd.args.emoteId) {
-        addEmote(ensureString(cmd.args.emoteId, ""));
-      }
-      if (eventHasArg(cmd, "references")) {
-        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-          .filter((ref) => ref.type === "emote")
-          .map((ref) => ref.id);
-        for (const id of referencedIds) {
-          addEmote(id);
-        }
-      }
-    }
-  );
-
-  const emoteData = await compileEmotes(usedEmotes, projectRoot, {
+  const emoteData = await compileEmotes(referencedEmotes, projectRoot, {
     warnings,
   });
-
   return {
     usedEmotes: emoteData,
-    emoteLookup,
   };
 };
 
@@ -1366,8 +1327,6 @@ const precompile = async (
   progress(`${l10n("COMPILER_PREPARING_EMOTES")}...`);
   const { usedEmotes } = await precompileEmotes(
     projectData.emotes || [],
-    projectData.scenes,
-    customEventsLookup,
     projectRoot,
     {
       warnings,
