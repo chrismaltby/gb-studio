@@ -544,6 +544,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img.png",
+      symbol: "bg2",
       is360: false,
     },
     {
@@ -554,6 +555,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img2.png",
+      symbol: "bg3",
       is360: false,
     },
   ] as ReferencedBackground[];
@@ -633,6 +635,7 @@ test("should include tileset for background when also used without common tilese
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img.png",
+      symbol: "bg2",
       is360: false,
     },
     {
@@ -643,6 +646,7 @@ test("should include tileset for background when also used without common tilese
       imageWidth: 160,
       imageHeight: 144,
       filename: "test_img2.png",
+      symbol: "bg3",
       is360: false,
     },
   ] as ReferencedBackground[];
@@ -728,22 +732,24 @@ test("should share tilesets if possible when multiple backgrounds include common
   const backgrounds = [
     {
       id: "2b",
-      name: "test_img",
+      name: "bg_ad",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img.png",
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
       is360: false,
     },
     {
       id: "3b",
-      name: "test_img2",
+      name: "bg_bc",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img2.png",
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
       is360: false,
     },
   ] as ReferencedBackground[];
@@ -807,22 +813,24 @@ test("should generate unique tileset for background if used without common tiles
   const backgrounds = [
     {
       id: "2b",
-      name: "test_img",
+      name: "bg_ad",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img.png",
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
       is360: false,
     },
     {
       id: "3b",
-      name: "test_img2",
+      name: "bg_bc",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img2.png",
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
       is360: false,
     },
   ] as ReferencedBackground[];
@@ -902,22 +910,24 @@ test("should generate unique tileset for background if referenced from script ev
   const backgrounds = [
     {
       id: "2b",
-      name: "test_img",
+      name: "bg_ad",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img.png",
+      filename: "bg_ad.png",
+      symbol: "bg_ad",
       is360: false,
     },
     {
       id: "3b",
-      name: "test_img2",
+      name: "bg_bc",
       width: 20,
       height: 18,
       imageWidth: 160,
       imageHeight: 144,
-      filename: "test_img2.png",
+      filename: "bg_bc.png",
+      symbol: "bg_bc",
       is360: false,
     },
   ] as ReferencedBackground[];
