@@ -136,6 +136,8 @@ export const determineUsedAssets = ({
     );
   };
 
+  const incompatibleWarnedIds = new Set<string>();
+
   const addBackgroundById = (
     backgroundId: string,
     is360: boolean,
@@ -159,11 +161,14 @@ export const determineUsedAssets = ({
             usedBackgroundsLookup[id].colorMode
           )
         ) {
-          warnings(
-            l10n("WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES", {
-              filename: asset.filename,
-            })
-          );
+          if (!incompatibleWarnedIds.has(asset.id)) {
+            warnings(
+              l10n("WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES", {
+                filename: asset.filename,
+              })
+            );
+            incompatibleWarnedIds.add(asset.id);
+          }
           usedBackgroundsLookup[id].colorMode = projectColorMode;
         }
       }
@@ -186,11 +191,14 @@ export const determineUsedAssets = ({
         if (
           isIncompatibleColorMode(colorMode, usedSpritesLookup[id].colorMode)
         ) {
-          warnings(
-            l10n("WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES", {
-              filename: asset.filename,
-            })
-          );
+          if (!incompatibleWarnedIds.has(asset.id)) {
+            warnings(
+              l10n("WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES", {
+                filename: asset.filename,
+              })
+            );
+            incompatibleWarnedIds.add(asset.id);
+          }
           usedSpritesLookup[id].colorMode = projectColorMode;
         }
       }
