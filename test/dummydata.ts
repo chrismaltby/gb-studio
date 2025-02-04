@@ -256,6 +256,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   height: 32,
   animSpeed: 15,
   vramData: [[], []],
+  colorMode: "mixed",
 };
 
 export const dummyMusic: Music = {

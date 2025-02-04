@@ -33,6 +33,7 @@ test("should include default font when provided", async () => {
     projectData,
     customEventsLookup,
     scriptEventHandlers,
+    warnings: () => {},
   });
   expect(usedAssets.referencedFonts).toHaveLength(1);
   expect(usedAssets.referencedFonts[0].id).toBe("font2");
@@ -59,6 +60,7 @@ test("should include first font when default not provided", async () => {
     projectData,
     customEventsLookup,
     scriptEventHandlers,
+    warnings: () => {},
   });
   expect(usedAssets.referencedFonts).toHaveLength(1);
   expect(usedAssets.referencedFonts[0].id).toBe("font1");
@@ -106,6 +108,7 @@ test("should include fonts referenced in gbvm script blocks", async () => {
     projectData,
     customEventsLookup,
     scriptEventHandlers,
+    warnings: () => {},
   });
   expect(usedAssets.referencedFonts).toHaveLength(2);
   expect(usedAssets.referencedFonts[0].id).toBe("font1");
@@ -149,6 +152,7 @@ test("should include fonts referenced in dialogue", async () => {
     projectData,
     customEventsLookup,
     scriptEventHandlers,
+    warnings: () => {},
   });
   expect(usedAssets.referencedFonts).toHaveLength(2);
   expect(usedAssets.referencedFonts[0].id).toBe(

@@ -1564,6 +1564,8 @@
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Plugin \"{pluginName}\" is based on an unknown engine version and may not work correctly. Plugin authors can fix this issue by making sure `engine/engine.json` exists in the plugin containing at least `{\"version\": \"{expectedEngineVersion}\"}`.",
   "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Background contains too many unique four color palettes ({paletteLength} where limit is {maxPaletteLength}) meaning it may not display correctly. Consider reducing the amount of colors used in this image.",
   "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "Background \"{filename}\" is not a valid PNG file",
+  "WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES": "Background \"{filename}\" is being used in multiple color modes so may not appear correctly on all devices. When overriding a scene's color mode, do not reuse sprites or backgrounds from scenes without an override. Duplicate the files if necessary",
+  "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Sprite \"{filename}\" is being used in multiple color modes so may not appear correctly on all devices. When overriding a scene's color mode, do not reuse sprites or backgrounds from scenes without an override. Duplicate the files if necessary",
 
   "// 12": "Errors -------------------------------------------------------",
 

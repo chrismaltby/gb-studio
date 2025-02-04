@@ -878,7 +878,6 @@ export const precompileScenes = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
-  projectColorMode: ColorModeSetting,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
   {
@@ -888,15 +887,6 @@ export const precompileScenes = (
   }
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene) => {
-    const getSceneColorMode = (scene: Scene): ColorModeSetting => {
-      if (scene.colorModeOverride === "none" || projectColorMode === "mono") {
-        return projectColorMode;
-      }
-      return scene.colorModeOverride;
-    };
-
-    const sceneColorMode = getSceneColorMode(scene);
-
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
@@ -990,8 +980,7 @@ export const precompileScenes = (
 
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
       const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
-      console.log("sceneColorMode::", sceneColorMode ? "T" : "F");
-      if (sceneColorMode === "color") {
+      if (sprite?.colorMode === "color") {
         return Math.ceil(count / 4) * 2;
       }
       return count;
@@ -1164,6 +1153,7 @@ const precompile = async (
     projectData,
     customEventsLookup,
     scriptEventHandlers,
+    warnings,
   });
 
   progress(`${l10n("COMPILER_PREPARING_VARIABLES")}...`);
@@ -1259,7 +1249,6 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
-    colorMode,
     usedBackgrounds,
     usedSprites,
     {

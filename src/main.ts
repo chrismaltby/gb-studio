@@ -1807,7 +1807,11 @@ ipcMain.handle(
     const filename = assetFilename(projectRoot, "sprites", spriteData);
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    return compileSprite(spriteData, false, projectRoot);
+    return compileSprite(
+      { ...spriteData, colorMode: "mixed" },
+      false,
+      projectRoot
+    );
   }
 );
 

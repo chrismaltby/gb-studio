@@ -123,6 +123,7 @@ export type PrecompiledSprite = {
   symbol: string;
   tileset: PrecompiledTileData;
   cgbTileset?: PrecompiledTileData;
+  colorMode: ColorModeSetting;
 } & PrecompiledSpriteSheetData;
 
 export type PrecompiledFontData = {

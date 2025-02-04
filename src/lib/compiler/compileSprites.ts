@@ -12,6 +12,7 @@ import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
 import { ReferencedSprite } from "./precompile/determineUsedAssets";
+import { ColorModeSetting } from "shared/lib/resources/types";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -37,6 +38,7 @@ export type PrecompiledSpriteSheetData = SpriteSheetData & {
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
   metaspritesOrder: number[];
+  colorMode: ColorModeSetting;
 };
 
 interface SpriteTileData {
@@ -114,7 +116,7 @@ const makeProps = (
 };
 
 export const compileSprite = async (
-  spriteSheet: SpriteSheetData,
+  spriteSheet: ReferencedSprite,
   cgbOnly: boolean,
   projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {

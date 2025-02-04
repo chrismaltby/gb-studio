@@ -18,6 +18,7 @@ import keyBy from "lodash/keyBy";
 import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
+import l10n from "shared/lib/lang/l10n";
 
 export type ReferencedBackground = BackgroundData & {
   is360: boolean;
@@ -35,10 +36,12 @@ export const determineUsedAssets = ({
   projectData,
   customEventsLookup,
   scriptEventHandlers,
+  warnings,
 }: {
   projectData: ProjectResources;
   customEventsLookup: Record<string, CustomEvent>;
   scriptEventHandlers: ScriptEventHandlers;
+  warnings: (msg: string) => void;
 }) => {
   const variablesLookup = keyBy(projectData.variables.variables, "id");
   const soundsLookup = keyBy(projectData.sounds, "id");
@@ -123,6 +126,16 @@ export const determineUsedAssets = ({
   const defaultBackgroundId = projectData.backgrounds[0]?.id ?? "";
   const defaultSpriteId = projectData.sprites[0]?.id ?? "";
 
+  const isIncompatibleColorMode = (
+    colorModeA: string,
+    colorModeB: string
+  ): boolean => {
+    return (
+      colorModeA !== colorModeB &&
+      (colorModeA === "color" || colorModeB === "color")
+    );
+  };
+
   const addBackgroundById = (
     backgroundId: string,
     is360: boolean,
@@ -131,27 +144,56 @@ export const determineUsedAssets = ({
   ) => {
     const id = ensureString(backgroundId, defaultBackgroundId);
     const asset = backgroundsLookup[id];
-    if (asset && !usedBackgroundsLookup[id]) {
-      usedBackgroundsLookup[id] = {
-        ...asset,
-        is360,
-        colorMode,
-        forceTilesetGeneration,
-      };
-    }
-    if (asset && forceTilesetGeneration) {
-      usedBackgroundsLookup[id].forceTilesetGeneration = true;
+    if (asset) {
+      if (!usedBackgroundsLookup[id]) {
+        usedBackgroundsLookup[id] = {
+          ...asset,
+          is360,
+          colorMode,
+          forceTilesetGeneration,
+        };
+      } else {
+        if (
+          isIncompatibleColorMode(
+            colorMode,
+            usedBackgroundsLookup[id].colorMode
+          )
+        ) {
+          warnings(
+            l10n("WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES", {
+              filename: asset.filename,
+            })
+          );
+          usedBackgroundsLookup[id].colorMode = projectColorMode;
+        }
+      }
+      if (forceTilesetGeneration) {
+        usedBackgroundsLookup[id].forceTilesetGeneration = true;
+      }
     }
   };
 
   const addSpriteById = (spriteId: string, colorMode: ColorModeSetting) => {
     const id = ensureString(spriteId, defaultSpriteId);
     const asset = spritesLookup[id];
-    if (asset && !usedSpritesLookup[id]) {
-      usedSpritesLookup[id] = {
-        ...asset,
-        colorMode,
-      };
+    if (asset) {
+      if (!usedSpritesLookup[id]) {
+        usedSpritesLookup[id] = {
+          ...asset,
+          colorMode,
+        };
+      } else {
+        if (
+          isIncompatibleColorMode(colorMode, usedSpritesLookup[id].colorMode)
+        ) {
+          warnings(
+            l10n("WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES", {
+              filename: asset.filename,
+            })
+          );
+          usedSpritesLookup[id].colorMode = projectColorMode;
+        }
+      }
     }
   };
 
