@@ -963,9 +963,6 @@ export const precompileScenes = (
       ? scene.playerSpriteSheetId
       : defaultPlayerSprites[scene.type];
 
-    console.log({ playerSpriteSheetId });
-    console.log({ usedSpritesIds: usedSprites.map((id) => id.symbol) });
-
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
 
     if (!playerSprite && scene.type !== "LOGO") {
@@ -1123,8 +1120,6 @@ export const precompileScenes = (
         background.autoPalettes
     );
 
-    console.log("ACTORS", JSON.stringify(actors));
-
     return {
       ...scene,
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
@@ -1136,11 +1131,6 @@ export const precompileScenes = (
         };
       }),
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
-        console.log(
-          "LOOKING FOR",
-          spriteId,
-          usedSprites.map((s) => s.id)
-        );
         const sprite = usedSprites.find((s) => s.id === spriteId);
         if (sprite && memo.indexOf(sprite) === -1) {
           memo.push(sprite);

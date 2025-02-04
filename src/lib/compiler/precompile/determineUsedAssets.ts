@@ -7,7 +7,6 @@ import type {
   EmoteData,
   FontData,
   Scene,
-  // Scene,
   SoundData,
   SpriteSheetData,
   Variable,
@@ -18,6 +17,7 @@ import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import keyBy from "lodash/keyBy";
 import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
+import { valuesOf } from "shared/lib/helpers/record";
 
 export type ReferencedBackground = BackgroundData & {
   is360: boolean;
@@ -135,7 +135,6 @@ export const determineUsedAssets = ({
     const id = ensureString(backgroundId, defaultBackgroundId);
     const asset = backgroundsLookup[id];
     if (asset && !usedBackgroundsLookup[id]) {
-      console.log("addBackgroundById", { id, symbol: asset.symbol, colorMode });
       usedBackgroundsLookup[id] = {
         ...asset,
         is360,
@@ -252,13 +251,11 @@ export const determineUsedAssets = ({
   );
 
   return {
-    referencedVariables: Object.values(usedVariablesLookup) as Variable[],
-    referencedSounds: Object.values(usedSoundsLookup) as SoundData[],
-    referencedFonts: Object.values(usedFontsLookup) as FontData[],
-    referencedBackgrounds: Object.values(
-      usedBackgroundsLookup
-    ) as ReferencedBackground[],
-    referencedSprites: Object.values(usedSpritesLookup) as SpriteReference[],
-    referencedEmotes: Object.values(usedEmotesLookup) as ReferencedEmote[],
+    referencedVariables: valuesOf(usedVariablesLookup),
+    referencedSounds: valuesOf(usedSoundsLookup),
+    referencedFonts: valuesOf(usedFontsLookup),
+    referencedBackgrounds: valuesOf(usedBackgroundsLookup),
+    referencedSprites: valuesOf(usedSpritesLookup),
+    referencedEmotes: valuesOf(usedEmotesLookup),
   };
 };
