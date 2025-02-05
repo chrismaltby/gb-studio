@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add setting to toggle GBC color correction. Disable color correction to closer match how colors will appear on modern hardware
 - Add ability to read camera properties (tile/pixel position, deadzone and offset) within script values [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to mute audio of inbuilt emulator from menu "Window / Play Window / Mute Audio"
+- Add ability to override "Color Only" setting per scene in color projects, allowing "Color Only" scenes in a mixed project or monochrome compatible scenes in a "Color Only" project. Right click on a scene and select "Color Mode Override"
 
 ### Changed
 
