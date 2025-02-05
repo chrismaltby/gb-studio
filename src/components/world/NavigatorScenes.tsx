@@ -65,6 +65,9 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const runSceneSelectionOnly = useAppSelector(
     (state) => state.project.present.settings.runSceneSelectionOnly
   );
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
   const [folderId, setFolderId] = useState("");
 
   const dispatch = useAppDispatch();
@@ -241,6 +244,8 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           startDirection,
           hoverX: 0,
           hoverY: 0,
+          colorsEnabled,
+          colorModeOverride: item.scene.colorModeOverride,
           onRename: () => setRenameId(item.id),
           runSceneSelectionOnly,
           onClose,
@@ -275,6 +280,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
       scenes,
       startDirection,
       startSceneId,
+      colorsEnabled,
     ]
   );
 

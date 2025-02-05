@@ -997,6 +997,8 @@
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Corrects colors to closer match how they would appear on original hardware.",
   "FIELD_COLOR_CORRECTION_NONE": "None",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Disables all in-built color correction, allowing a wider range of colors when using modern hardware and emulators.",
+  "FIELD_COLOR_MODE_OVERRIDE": "Color Mode Override",
+  "FIELD_SET_COLOR_MODE_OVERRIDE": "Set Color Mode Override",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -128,7 +128,12 @@ const SceneInfo = () => {
     (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const isCGBOnly = useAppSelector(
-    (state) => state.project.present.settings.colorMode === "color"
+    (state) =>
+      (state.project.present.settings.colorMode !== "mono" &&
+      scene?.colorModeOverride &&
+      scene?.colorModeOverride !== "none"
+        ? scene?.colorModeOverride
+        : state.project.present.settings.colorMode) === "color"
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);

@@ -44,7 +44,8 @@ export type ColorModeSetting = Static<typeof ColorModeSetting>;
 
 export const ColorModeOverrideSetting = Type.Union([
   Type.Literal("none"),
-  ColorModeSetting,
+  Type.Literal("mixed"),
+  Type.Literal("color"),
 ]);
 
 export type ColorModeOverrideSetting = Static<typeof ColorModeOverrideSetting>;

@@ -73,6 +73,8 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
+import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
+import { ColorModeOverrideSetting } from "shared/lib/resources/types";
 
 interface SceneEditorProps {
   id: string;
@@ -146,10 +148,16 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
+  const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
+    scene?.colorModeOverride && scene?.colorModeOverride !== "none"
+  );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId
   );
 
+  const projectColorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode
+  );
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
   );
@@ -286,6 +294,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [onChangeSceneProp]
   );
 
+  const onChangeColorModeOverride = useCallback(
+    (e: ColorModeOverrideSetting) => onChangeSceneProp("colorModeOverride", e),
+    [onChangeSceneProp]
+  );
+
   const onChangeBackgroundId = useCallback(
     (e: string) => onChangeSceneProp("backgroundId", e),
     [onChangeSceneProp]
@@ -346,6 +359,15 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
   const onAddNotes = () => {
     setNotesOpen(true);
+  };
+
+  const onOverrideColorMode = () => {
+    if (projectColorMode === "mixed") {
+      onChangeColorModeOverride("color");
+    } else {
+      onChangeColorModeOverride("mixed");
+    }
+    setColorModeOverrideOpen(true);
   };
 
   const onToggleCommonTileset = useCallback(() => {
@@ -453,6 +475,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   }
 
   const showNotes = scene.notes || notesOpen;
+  const showColorModeOverride =
+    (scene.colorModeOverride && scene.colorModeOverride !== "none") ||
+    colorModeOverrideOpen;
 
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
@@ -563,6 +588,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
                   </MenuItem>
                 )}
+                {!showColorModeOverride && colorsEnabled && (
+                  <MenuItem onClick={onOverrideColorMode}>
+                    {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
                 {clipboardFormat === ClipboardTypeScenes && (
                   <MenuItem onClick={onPaste}>
@@ -741,6 +772,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
             {colorsEnabled && (
               <SidebarColumn>
+                {showColorModeOverride && (
+                  <FormRow>
+                    <FormField
+                      name="colorModeOverride"
+                      label={l10n("FIELD_COLOR_MODE_OVERRIDE")}
+                    >
+                      <ColorModeOverrideSelect
+                        name="colorModeOverride"
+                        value={scene.colorModeOverride}
+                        onChange={onChangeColorModeOverride}
+                      />
+                    </FormField>
+                  </FormRow>
+                )}
+
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
