@@ -37,5 +37,4 @@ module.exports = {
   subGroups,
   fields,
   compile,
-  waitUntilAfterInitFade: true,
 };

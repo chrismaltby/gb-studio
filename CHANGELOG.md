@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
 - Fix issue where migrating older projects to the latest version would sometimes cause auto generated gbvm symbols to change
 - Fix issue where project migrations were not being applied to prefab script overrides
+- Fix issue where scene change and projectile load events within a scene init script couldn't occur before the auto fade in event
 
 ## [4.1.3] - 2024-09-16
 

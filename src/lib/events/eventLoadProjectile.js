@@ -242,5 +242,4 @@ module.exports = {
   compile,
   userPresetsGroups,
   userPresetsIgnore,
-  waitUntilAfterInitFade: true,
 };
