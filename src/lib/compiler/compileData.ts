@@ -1217,7 +1217,7 @@ const precompile = async (
 
   progress(`${l10n("COMPILER_PREPARING_EMOTES")}...`);
   const { usedEmotes } = await precompileEmotes(
-    projectData.emotes || [],
+    usedAssets.referencedEmotes,
     projectRoot,
     {
       warnings,
