@@ -123,7 +123,6 @@ import type {
 } from "store/features/engine/engineState";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
-  ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
 } from "store/features/settings/settingsState";
@@ -225,11 +224,8 @@ export const precompileBackgrounds = async (
   backgroundReferences: ReferencedBackground[],
   scenes: Scene[],
   tilesets: TilesetData[],
-  customEventsLookup: Record<string, CustomEvent>,
-  colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
   projectRoot: string,
-  tmpPath: string,
   {
     warnings,
   }: {
@@ -1146,7 +1142,6 @@ const precompile = async (
   }
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
-  const colorMode = projectData.settings.colorMode;
   const colorCorrection = projectData.settings.colorCorrection;
 
   const usedAssets = determineUsedAssets({
@@ -1170,11 +1165,8 @@ const precompile = async (
     usedAssets.referencedBackgrounds,
     projectData.scenes,
     projectData.tilesets,
-    customEventsLookup,
-    colorMode,
     colorCorrection,
     projectRoot,
-    tmpPath,
     { warnings }
   );
 

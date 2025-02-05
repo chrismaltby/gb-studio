@@ -425,16 +425,6 @@ test("should precompile image data", async () => {
       filename: "test_img.png",
       is360: false,
     },
-    {
-      id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
-      is360: false,
-    },
   ] as ReferencedBackground[];
   const scenes = [
     {
@@ -451,11 +441,8 @@ test("should precompile image data", async () => {
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(1);
@@ -546,17 +533,6 @@ test("should include extra backgrounds when using common tilesets", async () => 
       symbol: "bg2",
       is360: false,
     },
-    {
-      id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
-      symbol: "bg3",
-      is360: false,
-    },
   ] as ReferencedBackground[];
   const scenes = [
     {
@@ -604,11 +580,8 @@ test("should include extra backgrounds when using common tilesets", async () => 
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(2);
@@ -636,17 +609,7 @@ test("should include tileset for background when also used without common tilese
       filename: "test_img.png",
       symbol: "bg2",
       is360: false,
-    },
-    {
-      id: "3b",
-      name: "test_img2",
-      width: 20,
-      height: 18,
-      imageWidth: 160,
-      imageHeight: 144,
-      filename: "test_img2.png",
-      symbol: "bg3",
-      is360: false,
+      forceTilesetGeneration: true,
     },
   ] as ReferencedBackground[];
   const scenes = [
@@ -703,11 +666,8 @@ test("should include tileset for background when also used without common tilese
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(3);
@@ -788,11 +748,8 @@ test("should share tilesets if possible when multiple backgrounds include common
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(2);
@@ -831,6 +788,7 @@ test("should generate unique tileset for background if used without common tiles
       filename: "bg_bc.png",
       symbol: "bg_bc",
       is360: false,
+      forceTilesetGeneration: true,
     },
   ] as ReferencedBackground[];
   const scenes = [
@@ -877,11 +835,8 @@ test("should generate unique tileset for background if used without common tiles
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(3);
@@ -917,6 +872,7 @@ test("should generate unique tileset for background if referenced from script ev
       filename: "bg_ad.png",
       symbol: "bg_ad",
       is360: false,
+      forceTilesetGeneration: true,
     },
     {
       id: "3b",
@@ -979,11 +935,8 @@ test("should generate unique tileset for background if referenced from script ev
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
 
@@ -1055,11 +1008,8 @@ test("should generate unique tileset for identical backgrounds if used without c
     backgrounds,
     scenes,
     [],
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
 
@@ -1136,11 +1086,8 @@ test("should allow reusing tileset for identical backgrounds if used with common
     backgrounds,
     scenes,
     tilesets,
-    {},
-    "mono",
     "default",
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
 

@@ -123,8 +123,8 @@ export const determineUsedAssets = ({
     }
   }
 
-  const defaultBackgroundId = projectData.backgrounds[0]?.id ?? "";
-  const defaultSpriteId = projectData.sprites[0]?.id ?? "";
+  const defaultBackgroundId = projectData.backgrounds?.[0]?.id ?? "";
+  const defaultSpriteId = projectData.sprites?.[0]?.id ?? "";
 
   const isIncompatibleColorMode = (
     colorModeA: string,
