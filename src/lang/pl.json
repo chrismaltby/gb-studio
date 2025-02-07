@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1784250130",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1788250207",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -997,6 +997,8 @@
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Koryguje kolory, aby bardziej przypominały te wyświetlane na oryginalnym sprzęcie.",
   "FIELD_COLOR_CORRECTION_NONE": "Brak",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Wyłącza wbudowaną korektę kolorów, umożliwiając szerszy zakres barw na nowoczesnym sprzęcie i emulatorach.",
+  "FIELD_COLOR_MODE_OVERRIDE": "Nadpisanie trybu kolorów",
+  "FIELD_SET_COLOR_MODE_OVERRIDE": "Ustaw nadpisanie trybu kolorów",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1564,7 +1566,9 @@
   "WARNING_ENGINE_PLUGIN_MISSING_MANIFEST": "Wtyczka \"{pluginName}\" bazuje na nieznanej wersji silnika i może nie działać poprawnie. Autorzy wtyczki mogą naprawić ten problem, sprawdzając, czy plik `engine/engine.json`  istnieje w folderze wtyczki i zawiera przynajmniej wpis `{\"version\": \"{expectedEngineVersion}\"}`.",
   "WARNING_BACKGROUND_TOO_MANY_PALETTES": "Tło zawiera zbyt wiele unikalnych 4-kolorowych palet ({paletteLength} gdzie limit wynosi {maxPaletteLength}) co oznacza, że tło może zostać nie wyświetlone poprawnie. Rozważ ograniczenie ilości użytych kolorów na tym obrazie.",
   "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "Tło \"{filename}\" nie jest prawidłowym plikiem PNG.",
-	
+  "WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES": "Tło \"{filename}\" jest używane w kilku trybach kolorów, więc może nie być wyświetlane poprawnie na wszystkich urządzeniach. Podczas nadpisywania trybu kolorów sceny, nie używaj ponownie grafik (spritów lub tła) ze scen bez nadpisania. W razie potrzeby duplikuj pliki.",
+  "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Sprite \"{filename}\" jest używany w kilku trybach kolorów, więc może nie być wyświetlany poprawnie na wszystkich urządzeniach. Podczas nadpisywania trybu kolorów sceny, nie używaj ponownie grafik (spritów lub tła) ze scen bez nadpisania. W razie potrzeby duplikuj pliki.",
+  
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
