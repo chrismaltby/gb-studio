@@ -1396,6 +1396,10 @@
   "EVENT_THREAD_START_DESC": "Run a script in another thread.",
   "EVENT_THREAD_STOP": "Stop Thread",
   "EVENT_THREAD_STOP_DESC": "Stop a thread based on the selected thread handle.",
+  "EVENT_SCENE_UPDATE_PAUSE": "Pause Logic For Scene Type",
+  "EVENT_SCENE_UPDATE_PAUSE_DESC": "Prevent the current scene's game engine update function from running until resumed. Allows preventing player control during multi-threaded scripts",
+  "EVENT_SCENE_UPDATE_RESUME": "Resume Logic For Scene Type",
+  "EVENT_SCENE_UPDATE_RESUME_DESC": "Resume the game engine update function for the current scene.",
 
   "// 10": "Menu -----------------------------------------------------",
 
