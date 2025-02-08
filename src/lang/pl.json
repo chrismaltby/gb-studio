@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1788250207",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1792250208",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1396,6 +1396,10 @@
   "EVENT_THREAD_START_DESC": "Uruchom skrypt w innym wątku.",
   "EVENT_THREAD_STOP": "Skrypt: zatrzymaj wątek",
   "EVENT_THREAD_STOP_DESC": "Zatrzymaj wątek na podstawie wybranego uchwytu wątku.",
+  "EVENT_SCENE_UPDATE_PAUSE": "Pauza: wstrzymaj logikę dla typu sceny",
+  "EVENT_SCENE_UPDATE_PAUSE_DESC": "Zatrzymuje działanie funkcji aktualizacji silnika gry dla bieżącej sceny do momentu jej wznowienia. Pozwala to na uniemożliwienie sterowania postacią podczas wykonywania skryptów wielowątkowych.",
+  "EVENT_SCENE_UPDATE_RESUME": "Pauza: wznów logikę dla typu sceny",
+  "EVENT_SCENE_UPDATE_RESUME_DESC": "Wznawia działanie funkcji aktualizacji silnika gry dla bieżącej sceny.",
   
   "// 10": "Menu -----------------------------------------------------",
 
