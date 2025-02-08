@@ -8131,6 +8131,18 @@ extern void __mute_mask_${symbol};
     this._vmUnlock();
   };
 
+  sceneUpdatePause = () => {
+    this._addComment(`Pause Scene Type Update`);
+    this._setConstMemInt8("pause_state_update", 1);
+    this._addNL();
+  };
+
+  sceneUpdateResume = () => {
+    this._addComment(`Resume Scene Type Update`);
+    this._setConstMemInt8("pause_state_update", 0);
+    this._addNL();
+  };
+
   scriptEnd = () => {
     this._stop();
   };

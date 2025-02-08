@@ -800,6 +800,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/ui.c"],
   },
+  {
+    version: "4.2.0-e6",
+    description: createDescription("Updates", [
+      "Add pause_state_update boolean which when set to true will cause the current state_update function to not be called in the run loop",
+    ]),
+    modifiedFiles: ["include/states_caller.h", "src/core/core.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
