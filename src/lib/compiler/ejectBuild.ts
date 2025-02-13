@@ -139,6 +139,15 @@ const ejectBuild = async ({
     }
   }
 
+  // Remove old states_ptrs.h if in ejected engine
+  const legacyFiles = [`src/states/states_ptrs.s`];
+  for (const filename of legacyFiles) {
+    const legacyFilePath = Path.join(outputRoot, filename);
+    if (isFilePathWithinFolder(legacyFilePath, outputRoot)) {
+      await fs.remove(legacyFilePath);
+    }
+  }
+
   progress(
     l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" })
   );
