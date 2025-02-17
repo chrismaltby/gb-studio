@@ -2,7 +2,7 @@
   "goldTier": [
     {
       "attributes": {
-        "full_name": "Brandon Morris"
+        "full_name": "BMo"
       },
       "id": "483773",
       "type": "user"
@@ -67,6 +67,13 @@
     },
     {
       "attributes": {
+        "full_name": "Erik Rogers"
+      },
+      "id": "7794289",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "evan niedojadlo"
       },
       "id": "7767557",
@@ -74,9 +81,9 @@
     },
     {
       "attributes": {
-        "full_name": "Goosifer"
+        "full_name": "Greg"
       },
-      "id": "2840872",
+      "id": "25608244",
       "type": "user"
     },
     {
@@ -84,6 +91,13 @@
         "full_name": "Gumpy Function"
       },
       "id": "93658267",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Johndo"
+      },
+      "id": "74199063",
       "type": "user"
     },
     {
@@ -102,16 +116,16 @@
     },
     {
       "attributes": {
-        "full_name": "MsRiaCayde"
+        "full_name": "mloukhiyye"
       },
-      "id": "64844487",
+      "id": "134643376",
       "type": "user"
     },
     {
       "attributes": {
-        "full_name": "npckc"
+        "full_name": "MsRiaCayde"
       },
-      "id": "14825686",
+      "id": "64844487",
       "type": "user"
     }
   ],
@@ -121,6 +135,13 @@
         "full_name": "Diante Clark"
       },
       "id": "111731287",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Goosifer"
+      },
+      "id": "2840872",
       "type": "user"
     },
     {
@@ -142,6 +163,13 @@
         "full_name": "Martin Gauer"
       },
       "id": "3319189",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "npckc"
+      },
+      "id": "14825686",
       "type": "user"
     },
     {
