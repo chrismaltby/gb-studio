@@ -807,6 +807,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/states_caller.h", "src/core/core.c"],
   },
+  {
+    version: "4.2.0-e7",
+    description: createDescription("Updates", [
+      "Optimize input processing through persistent storage of pressed buttons",
+    ]),
+    modifiedFiles: ["include/input.h", "src/core/input.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
