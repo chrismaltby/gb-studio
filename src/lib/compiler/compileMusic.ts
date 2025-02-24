@@ -5,7 +5,7 @@ import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { exportToC, loadUGESong } from "shared/lib/uge/ugeHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { mergeEnv, getDefaultEnv, envWith } from "lib/helpers/cli/env";
+import { envWith } from "lib/helpers/cli/env";
 
 export interface PrecompiledMusicTrack {
   id: string;
