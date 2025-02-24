@@ -352,8 +352,8 @@ const loadBackground: CaseReducer<
     (existingBackground.width !== action.payload.data.width ||
       existingBackground.height !== action.payload.data.height);
 
-  const originalWidth = existingBackground.width;
-  const originalHeight = existingBackground.width;
+  const originalWidth = existingBackground?.width ?? 0;
+  const originalHeight = existingBackground?.width ?? 0;
 
   upsertAssetEntity(
     state.backgrounds,
