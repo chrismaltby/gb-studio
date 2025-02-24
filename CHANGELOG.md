@@ -75,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where scene change and projectile load events within a scene init script couldn't occur before the auto fade in event
 - Fix default template PNG assets to only contain valid colors as defined in the GB Studio documentation [@mxashlynn](https://github.com/mxashlynn)
 - Fix "spawn cmd.exe" issue on Windows when "%SystemRoot%\system32" is missing from Path environment variable
+- Fix issue where changing the size of a background image would cause the collision and color tiles to be reset
 
 ## [4.1.3] - 2024-09-16
 

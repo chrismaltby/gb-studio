@@ -100,10 +100,7 @@ import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
-import {
-  decompress8bitNumberString,
-  decompressProjectResources,
-} from "shared/lib/resources/compression";
+import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import { isEqual } from "lodash";
 import {
@@ -123,6 +120,7 @@ import {
   moveArrayElements,
   sortSubsetStringArray,
 } from "shared/lib/helpers/array";
+import { resizeTiles } from "shared/lib/helpers/tiles";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -345,15 +343,43 @@ const loadBackground: CaseReducer<
     data: CompressedBackgroundResourceAsset;
   }>
 > = (state, action) => {
+  const existingBackground = localBackgroundSelectById(
+    state,
+    action.payload.data.id
+  );
+  const modifiedSize =
+    existingBackground &&
+    (existingBackground.width !== action.payload.data.width ||
+      existingBackground.height !== action.payload.data.height);
+
+  const originalWidth = existingBackground.width;
+  const originalHeight = existingBackground.width;
+
   upsertAssetEntity(
     state.backgrounds,
     backgroundsAdapter,
     {
       ...action.payload.data,
-      tileColors: decompress8bitNumberString(action.payload.data.tileColors),
+      tileColors: [],
     },
     ["id", "symbol", "autoColor", "tileColors"]
   );
+
+  if (modifiedSize) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: existingBackground.id,
+      changes: {
+        tileColors: resizeTiles(
+          existingBackground.tileColors,
+          originalWidth,
+          originalHeight,
+          action.payload.data.width,
+          action.payload.data.height
+        ),
+      },
+    });
+  }
+
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
@@ -755,9 +781,17 @@ const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
       scene.width !== background.width ||
       scene.height !== background.height
     ) {
-      scene.width = background ? background.width : 32;
-      scene.height = background ? background.height : 32;
-      scene.collisions = [];
+      const newWidth = background ? background.width : 32;
+      const newHeight = background ? background.height : 32;
+      scene.collisions = resizeTiles(
+        scene.collisions,
+        scene.width,
+        scene.height,
+        newWidth,
+        newHeight
+      );
+      scene.width = newWidth;
+      scene.height = newHeight;
     }
   }
 };

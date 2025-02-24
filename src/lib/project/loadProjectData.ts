@@ -41,6 +41,11 @@ import { loadProjectResources } from "./loadProjectResources";
 import { readJson } from "lib/helpers/fs/readJson";
 import type { ProjectData } from "store/features/project/projectActions";
 import { migrateProjectResources } from "./migration/migrateProjectResources";
+import { resizeTiles } from "shared/lib/helpers/tiles";
+import {
+  compress8bitNumberArray,
+  decompress8bitNumberString,
+} from "shared/lib/resources/compression";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
@@ -210,14 +215,28 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     CompressedBackgroundResourceAsset
   >(backgrounds, resources.backgrounds, (asset, resource) => {
     if (resource) {
+      let tileColors =
+        resource?.tileColors !== undefined
+          ? resource.tileColors
+          : asset.tileColors;
+
+      if (resource.width !== asset.width || resource.height !== asset.height) {
+        tileColors = compress8bitNumberArray(
+          resizeTiles(
+            decompress8bitNumberString(resource.tileColors),
+            resource.width,
+            resource.height,
+            asset.width,
+            asset.height
+          )
+        );
+      }
+
       return {
         ...asset,
         id: resource.id,
         symbol: resource?.symbol !== undefined ? resource.symbol : asset.symbol,
-        tileColors:
-          resource?.tileColors !== undefined
-            ? resource.tileColors
-            : asset.tileColors,
+        tileColors,
         autoColor:
           resource?.autoColor !== undefined
             ? resource.autoColor

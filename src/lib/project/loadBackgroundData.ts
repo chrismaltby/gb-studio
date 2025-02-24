@@ -37,22 +37,24 @@ const loadBackgroundData =
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
       const name = file.replace(/.png/i, "");
-      const width = size?.width ?? 160;
-      const height = size?.height ?? 144;
+      const imageWidth = size?.width ?? 160;
+      const imageHeight = size?.height ?? 144;
+      const tileWidth = Math.min(Math.floor(imageWidth / TILE_SIZE), 255);
+      const tileHeight = Math.min(Math.floor(imageHeight / TILE_SIZE), 255);
       return {
         _resourceType: "background",
         id: uuid(),
         plugin,
         name,
         symbol: toValidSymbol(`bg_${name}`),
-        width: Math.min(Math.floor(width / TILE_SIZE), 255),
-        height: Math.min(Math.floor(height / TILE_SIZE), 255),
-        imageWidth: width,
-        imageHeight: height,
-        tileColors: "",
         _v: Date.now(),
+        tileColors: "",
         ...resource,
         filename: file,
+        width: tileWidth,
+        height: tileHeight,
+        imageWidth,
+        imageHeight,
         inode,
       };
     } catch (e) {
