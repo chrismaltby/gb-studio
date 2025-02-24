@@ -15,6 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
 import psTree from "ps-tree";
 import { promisify } from "util";
+import { envWith } from "lib/helpers/cli/env";
 
 const psTreeAsync = promisify(psTree);
 
@@ -56,10 +57,7 @@ const makeBuild = async ({
     "utf8"
   );
 
-  env.PATH = [
-    Path.join(buildToolsPath, "gbdk", "bin"),
-    env.PATH ?? env.Path,
-  ].join(Path.delimiter);
+  env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
 
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;

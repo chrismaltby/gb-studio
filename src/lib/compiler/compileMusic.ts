@@ -5,6 +5,7 @@ import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { exportToC, loadUGESong } from "shared/lib/uge/ugeHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { mergeEnv, getDefaultEnv, envWith } from "lib/helpers/cli/env";
 
 export interface PrecompiledMusicTrack {
   id: string;
@@ -55,9 +56,8 @@ const compileModTrack = async (
   }: CompileModTrackOptions
 ): Promise<string> => {
   const env = { ...process.env };
-  env.PATH = [Path.join(buildToolsPath, "mod2gbt"), env.PATH ?? env.Path].join(
-    Path.delimiter
-  );
+
+  env.PATH = envWith([Path.join(buildToolsPath, "mod2gbt")]);
 
   const command =
     process.platform === "win32"
