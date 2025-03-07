@@ -119,11 +119,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
 
   const enableNavigator = useCallback(() => {
     dispatch(editorActions.resizeNavigatorSidebar(NAVIGATOR_MIN_WIDTH));
-    dispatch(
-      settingsActions.editSettings({
-        showNavigator: true,
-      })
-    );
+    dispatch(settingsActions.setShowNavigator(true));
   }, [dispatch]);
 
   return (
