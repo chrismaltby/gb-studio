@@ -11,6 +11,7 @@ import {
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
 import { gbvmSetConstForCType } from "shared/lib/engineFields/engineFieldToCType";
+import { NUM_SUBPIXEL_BITS } from "consts";
 
 interface InitialState {
   startX: number;
@@ -54,15 +55,15 @@ export const compileScriptEngineInit = ({
 .area _CODE
 
 _start_scene_x:: 
-        .dw ${(startX || 0) * 8 * 16}
+        .dw ${(startX || 0) * 8 * (1 << NUM_SUBPIXEL_BITS)}
 _start_scene_y:: 
-        .dw ${(startY || 0) * 8 * 16} 
+        .dw ${(startY || 0) * 8 * (1 << NUM_SUBPIXEL_BITS)} 
 _start_scene_dir:: 
         .db .${dirEnum(startDirection)}
 _start_scene::
         IMPORT_FAR_PTR_DATA _${startScene.symbol}
 _start_player_move_speed:: 
-        .db ${Math.round(startMoveSpeed * 16)}
+        .db ${Math.round(startMoveSpeed * (1 << NUM_SUBPIXEL_BITS))}
 _start_player_anim_tick:: 
         .db ${startAnimSpeed}
 _ui_fonts:: 

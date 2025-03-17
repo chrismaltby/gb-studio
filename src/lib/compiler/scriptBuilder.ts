@@ -32,7 +32,7 @@ import {
   PrecompiledBackground,
   PrecompiledProjectile,
 } from "./generateGBVMData";
-import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
+import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings, NUM_SUBPIXEL_BITS } from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -644,7 +644,7 @@ const scriptValueToSubpixels = (
   value: ScriptValue,
   units: DistanceUnitType
 ) => {
-  return shiftLeftScriptValueConst(value, units === "tiles" ? 0x7 : 0x4);
+  return shiftLeftScriptValueConst(value, units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS);
 };
 
 // ------------------------
@@ -1513,14 +1513,14 @@ class ScriptBuilder {
             if (propertyValue === "xpos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_x")
-                .int16(8 * 16)
+                .int16(8  * (1 << NUM_SUBPIXEL_BITS))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "ypos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_y")
-                .int16(8 * 16)
+                .int16(8  * (1 << NUM_SUBPIXEL_BITS))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -1590,7 +1590,7 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 1))
-                .int16(8 * 16)
+                .int16(8  * (1 << NUM_SUBPIXEL_BITS))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -1602,7 +1602,7 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 2))
-                .int16(8 * 16)
+                .int16(8  * (1 << NUM_SUBPIXEL_BITS))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -2937,11 +2937,11 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Move To");
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      x * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      y * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS)
     );
     this._setConst(
       this._localRef(actorRef, 3),
@@ -2965,11 +2965,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -3048,13 +3048,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -3158,11 +3158,11 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      x * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      y * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS)
     );
     this._actorSetPosition(actorRef);
 
@@ -3180,11 +3180,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -3248,13 +3248,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -3344,11 +3344,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int8(units === "tiles" ? 0x7 : 0x4)
+      .int8(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHR")
       .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
-      .int8(units === "tiles" ? 0x7 : 0x4)
+      .int8(units === "tiles" ? (NUM_SUBPIXEL_BITS + 3) : NUM_SUBPIXEL_BITS)
       .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
@@ -3366,7 +3366,7 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16((units === "tiles" ? 8 : 1) * 16)
+      .int16((units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".DIV")
       .refSetVariable(variableX)
       .stop();
@@ -3384,7 +3384,7 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
-      .int16((units === "tiles" ? 8 : 1) * 16)
+      .int16((units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".DIV")
       .refSetVariable(variableY)
       .stop();
@@ -3416,7 +3416,7 @@ extern void __mute_mask_${symbol};
     const rightLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
 
-    const offset = continueUntilCollision ? 128 * 100 : 128 * 2;
+    const offset = continueUntilCollision ? (1 << (3 + NUM_SUBPIXEL_BITS)) * 100 : (1 << (3 + NUM_SUBPIXEL_BITS)) * 2;
 
     this._addComment("Actor Push");
     this._setConst(actorRef, 0);
@@ -3671,7 +3671,7 @@ extern void __mute_mask_${symbol};
   actorSetMovementSpeed = (speed = 1) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Movement Speed");
-    this._actorSetMoveSpeed(actorRef, Math.round(speed * 16));
+    this._actorSetMoveSpeed(actorRef, Math.round(speed * (1 << NUM_SUBPIXEL_BITS)));
     this._addNL();
   };
 
@@ -3739,11 +3739,11 @@ extern void __mute_mask_${symbol};
     const { scene } = this.options;
     if (scene.type === "PLATFORM") {
       this._addComment("Player Bounce");
-      let value = -0x4000;
+      let value = -0x400 << NUM_SUBPIXEL_BITS;
       if (height === "low") {
-        value = -0x2000;
+        value = -0x200 << NUM_SUBPIXEL_BITS;
       } else if (height === "high") {
-        value = -0x6000;
+        value = -0x600 << NUM_SUBPIXEL_BITS;
       }
       this._setConstMemInt16("pl_vel_y", value);
       this._addNL();
@@ -3767,7 +3767,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const pixelDistance = distance * (units === "tiles" ? 8 : 1);
     const steps = Math.floor(pixelDistance / speed);
-    const subpixelDistance = pixelDistance * 16;
+    const subpixelDistance = pixelDistance * (1 << NUM_SUBPIXEL_BITS);
 
     const actorRef = this._declareLocal("actor", 4);
     const loopVarRef = this._declareLocal("loop", 1, true);
@@ -3818,7 +3818,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const pixelDistance = distance * (units === "tiles" ? 8 : 1);
     const steps = Math.floor(pixelDistance / speed);
-    const subpixelDistance = pixelDistance * 16;
+    const subpixelDistance = pixelDistance * (1 << NUM_SUBPIXEL_BITS);
 
     const actorRef = this._declareLocal("actor", 4);
     const loopVarRef = this._declareLocal("loop", 1, true);
@@ -4010,11 +4010,11 @@ extern void __mute_mask_${symbol};
     const rpn = this._rpn();
     rpn.ref(this._localRef(actorRef, 1));
     if (x) {
-      rpn.int16(x * 16).operator(".ADD");
+      rpn.int16(x * (1 << NUM_SUBPIXEL_BITS)).operator(".ADD");
     }
     rpn.ref(this._localRef(actorRef, 2));
     if (y) {
-      rpn.int16(-y * 16).operator(".ADD");
+      rpn.int16(-y * (1 << NUM_SUBPIXEL_BITS)).operator(".ADD");
     }
     return rpn;
   };
@@ -4116,12 +4116,12 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(otherActorRef, 2))
       .ref(this._localRef(actorRef, 2))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(8 * (1 << NUM_SUBPIXEL_BITS))
       .operator(".DIV")
       .ref(this._localRef(otherActorRef, 1))
       .ref(this._localRef(actorRef, 1))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(8 * (1 << NUM_SUBPIXEL_BITS))
       .operator(".DIV")
       .operator(".ATAN2")
       .stop();
@@ -4706,18 +4706,18 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       cameraMoveArgsRef,
-      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * 16
+      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * (1 << NUM_SUBPIXEL_BITS)
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * 16
+      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * (1 << NUM_SUBPIXEL_BITS)
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        Math.round(speed * (1 << NUM_SUBPIXEL_BITS)),
         ".CAMERA_UNLOCK"
       );
     }
@@ -4736,28 +4736,28 @@ extern void __mute_mask_${symbol};
         .refVariable(variableX)
         .int16(0x7) // Multiply 128
         .operator(".SHL")
-        .int16(80 * 16)
+        .int16(80 * (1 << NUM_SUBPIXEL_BITS))
         .operator(".ADD")
         .refVariable(variableY)
         .int16(0x7) // Multiply 128
         .operator(".SHL")
-        .int16(72 * 16)
+        .int16(72 * (1 << NUM_SUBPIXEL_BITS))
         .operator(".ADD")
         .stop();
     } else {
       this._rpn() //
         .refVariable(variableX)
-        .int16(80 * 16)
+        .int16(80 * (1 << NUM_SUBPIXEL_BITS))
         .operator(".ADD")
         .refVariable(variableY)
-        .int16(72 * 16)
+        .int16(72 * (1 << NUM_SUBPIXEL_BITS))
         .operator(".ADD")
         .stop();
     }
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", Math.round(speed * 16), ".CAMERA_UNLOCK");
+      this._cameraMoveTo(".ARG1", Math.round(speed * (1 << NUM_SUBPIXEL_BITS)), ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -4769,8 +4769,8 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
-    const xOffset = 80 * 16;
-    const yOffset = 72 * 16;
+    const xOffset = 80 * (1 << NUM_SUBPIXEL_BITS);
+    const yOffset = 72 * (1 << NUM_SUBPIXEL_BITS);
 
     const stackPtr = this.stackPtr;
     this._addComment("Camera Move To");
@@ -4813,7 +4813,7 @@ extern void __mute_mask_${symbol};
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        Math.round(speed * (1 << NUM_SUBPIXEL_BITS)),
         ".CAMERA_UNLOCK"
       );
     }
@@ -4829,16 +4829,16 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16(8 * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16(8 * (1 << NUM_SUBPIXEL_BITS))
       .operator(".ADD")
       .stop();
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     }
-    this._cameraMoveTo(".ARG1", Math.round(speed * 16), toASMCameraLock(axis));
+    this._cameraMoveTo(".ARG1", Math.round(speed * (1 << NUM_SUBPIXEL_BITS)), toASMCameraLock(axis));
     this._stackPop(2);
   };
 
@@ -5491,8 +5491,8 @@ extern void __mute_mask_${symbol};
         this._fadeOut(true);
       }
       this._setConst(actorRef, 0);
-      this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-      this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+      this._setConst(this._localRef(actorRef, 1), x * 8  * (1 << NUM_SUBPIXEL_BITS));
+      this._setConst(this._localRef(actorRef, 2), y * 8  * (1 << NUM_SUBPIXEL_BITS));
       this._actorSetPosition(actorRef);
       const asmDir = toASMDir(direction);
       if (asmDir) {
@@ -7416,10 +7416,10 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn()
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".EQ")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * (1 << NUM_SUBPIXEL_BITS))
       .operator(".EQ")
       .operator(".AND")
       .stop();
@@ -7471,7 +7471,7 @@ extern void __mute_mask_${symbol};
     // X Value EQ
     rpn.ref(this._localRef(actorRef, 1));
     // Convert to chosen units
-    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.int8(units === "tiles" ? (3 + NUM_SUBPIXEL_BITS) : NUM_SUBPIXEL_BITS);
     rpn.operator(".SHR");
     // Get value to compare X with
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
@@ -7480,7 +7480,7 @@ extern void __mute_mask_${symbol};
     // Y Value EQ
     rpn.ref(this._localRef(actorRef, 2));
     // Convert to chosen units
-    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.int8(units === "tiles" ? (3 + NUM_SUBPIXEL_BITS) : NUM_SUBPIXEL_BITS);
     rpn.operator(".SHR");
     // Get value to compare Y with
     this._performValueRPN(rpn, rpnOpsY, localsLookup);

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH } from "consts";
+import { SCREEN_WIDTH, NUM_SUBPIXEL_BITS } from "consts";
 import type {
   Actor,
   EngineFieldValue,
@@ -612,13 +612,13 @@ export const compileSceneActors = (
         return {
           __comment: actorName(actor, actorIndex),
           pos: {
-            x: `${actor.x * 8} * 16`,
-            y: `${actor.y * 8} * 16`,
+            x: `${actor.x * 8} * ${1 << NUM_SUBPIXEL_BITS}`,
+            y: `${actor.y * 8} * ${1 << NUM_SUBPIXEL_BITS}`,
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(actor.moveSpeed * 16),
+          move_speed: Math.round(actor.moveSpeed * (1 << NUM_SUBPIXEL_BITS)),
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
           persistent: actor.persistent ? "TRUE" : "FALSE",
@@ -737,7 +737,7 @@ export const compileSceneProjectiles = (
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(projectile.speed * 16),
+          move_speed: Math.round(projectile.speed * (1 << NUM_SUBPIXEL_BITS)),
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
@@ -746,7 +746,7 @@ export const compileSceneProjectiles = (
           anim_tick: projectile.animSpeed,
           anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
-          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
+          initial_offset: Math.round((projectile.initialOffset || 0) * (1 << NUM_SUBPIXEL_BITS)),
         };
       })
     ),
