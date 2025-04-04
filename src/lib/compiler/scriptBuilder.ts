@@ -4725,6 +4725,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  // @deprecated - Replace used with cameraMoveToScriptValues
   cameraMoveToVariables = (
     variableX: string,
     variableY: string,
@@ -4732,29 +4733,20 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     this._addComment("Camera Move To Variables");
-    if (units === "tiles") {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(pxToSubpx(80))
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(pxToSubpx(72))
-        .operator(".ADD")
-        .stop();
-    } else {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(pxToSubpx(80))
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(pxToSubpx(72))
-        .operator(".ADD")
-        .stop();
-    }
+
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(80))
+      .operator(".ADD")
+      .refVariable(variableY)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(72))
+      .operator(".ADD")
+      .stop();
+
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
