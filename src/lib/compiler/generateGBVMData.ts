@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH, NUM_SUBPIXEL_BITS } from "consts";
+import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
   EngineFieldValue,
@@ -21,6 +21,7 @@ import type {
 import { ColorModeSetting, Constant } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
 import { GlobalProjectiles } from "./scriptBuilder";
+import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 export interface PrecompiledBackground {
   id: string;
@@ -612,13 +613,13 @@ export const compileSceneActors = (
         return {
           __comment: actorName(actor, actorIndex),
           pos: {
-            x: `${actor.x * 8} * ${1 << NUM_SUBPIXEL_BITS}`,
-            y: `${actor.y * 8} * ${1 << NUM_SUBPIXEL_BITS}`,
+            x: tileToSubpx(actor.x),
+            y: tileToSubpx(actor.y),
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(actor.moveSpeed * (1 << NUM_SUBPIXEL_BITS)),
+          move_speed: pxToSubpx(actor.moveSpeed),
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
           persistent: actor.persistent ? "TRUE" : "FALSE",
@@ -737,7 +738,7 @@ export const compileSceneProjectiles = (
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(projectile.speed * (1 << NUM_SUBPIXEL_BITS)),
+          move_speed: pxToSubpx(projectile.speed),
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
@@ -746,7 +747,7 @@ export const compileSceneProjectiles = (
           anim_tick: projectile.animSpeed,
           anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
-          initial_offset: Math.round((projectile.initialOffset || 0) * (1 << NUM_SUBPIXEL_BITS)),
+          initial_offset: pxToSubpx(projectile.initialOffset || 0),
         };
       })
     ),
@@ -790,7 +791,7 @@ export const compileGlobalProjectiles = (
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(projectile.speed * 16),
+          move_speed: pxToSubpx(projectile.speed),
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
@@ -799,7 +800,7 @@ export const compileGlobalProjectiles = (
           anim_tick: projectile.animSpeed,
           anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
-          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
+          initial_offset: pxToSubpx(projectile.initialOffset || 0),
         };
       })
     ),
