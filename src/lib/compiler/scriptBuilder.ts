@@ -7708,6 +7708,7 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     const distanceSquared = distance * distance;
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor ${operator} ${distance} tiles from Actor`);
     this._actorGetPosition(actorRef);
@@ -7717,32 +7718,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -7772,6 +7773,7 @@ extern void __mute_mask_${symbol};
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(
       `If Actor ${operator} ${distanceVariable} tiles from Actor`
@@ -7783,32 +7785,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -7842,6 +7844,7 @@ extern void __mute_mask_${symbol};
     const distanceRef = this._declareLocal("distance", 1, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor Distance from Actor`);
 
@@ -7864,32 +7867,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
