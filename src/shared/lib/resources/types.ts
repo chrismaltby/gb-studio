@@ -441,7 +441,10 @@ export const FontResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   plugin: Type.Optional(Type.String()),
-  mapping: Type.Record(Type.String(), Type.Number()),
+  mapping: Type.Record(
+    Type.String(),
+    Type.Union([Type.Number(), Type.Array(Type.Number())]),
+  ),
 });
 
 export type FontResource = Static<typeof FontResource>;

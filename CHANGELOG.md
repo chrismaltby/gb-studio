@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add events "Pause Logic For Scene Type" and "Resume Logic For Scene Type" allowing manual control of if the scene's update function should be running or not. You can use this when running multi-threaded scripts (such as a cutscene with multiple actors moving at once) to prevent player input while the script is running.
 - Add support for characters outside of the basic multilingual plane in font mappings (such as emoji) e.g. `"😊": 34`
 - Add support for multiple character sequences to be replaced in font mappings e.g. `"EURO": 128`
+- Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
 
 ### Changed
 

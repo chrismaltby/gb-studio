@@ -1,15 +1,13 @@
-export const encodeChar = (
+export const resolveMapping = (
   input: string,
-  mapping?: Record<string, number>,
-): { code: number; length: number } => {
+  mapping?: Record<string, number | number[]>,
+): { codes: number[]; length: number } => {
   if (!mapping) {
     const code = input.codePointAt(0) ?? 0;
-    const length = code > 0xffff ? 2 : 1; // surrogate pair = 2 units
-    return { code, length };
+    const length = code > 0xffff ? 2 : 1;
+    return { codes: [code], length };
   }
 
-  // Find longest match in mapping
-  // to allow multi character values in left side of mapping
   let longestMatch = "";
   for (const key of Object.keys(mapping)) {
     if (input.startsWith(key) && key.length > longestMatch.length) {
@@ -18,20 +16,19 @@ export const encodeChar = (
   }
 
   if (longestMatch) {
-    return {
-      code: mapping[longestMatch] ?? 1,
-      length: longestMatch.length,
-    };
+    const raw = mapping[longestMatch];
+    const codes = Array.isArray(raw) ? raw : [raw];
+    return { codes, length: longestMatch.length };
   }
 
   const code = input.codePointAt(0) ?? 0;
   const length = code > 0xffff ? 2 : 1;
-  return { code, length };
+  return { codes: [code], length };
 };
 
 export const encodeString = (
   inStr: string,
-  mapping?: Record<string, number>,
+  mapping?: Record<string, number | number[]>,
 ): string => {
   let output = "";
 
@@ -44,12 +41,14 @@ export const encodeString = (
   let i = 0;
   while (i < decodedStr.length) {
     const slice = decodedStr.slice(i);
-    const { code, length } = encodeChar(slice, mapping);
+    const { codes, length } = resolveMapping(slice, mapping);
 
-    if (code < 32 || code > 127 || code === 34) {
-      output += "\\" + (code & 0xff).toString(8).padStart(3, "0");
-    } else {
-      output += String.fromCharCode(code);
+    for (const code of codes) {
+      if (code < 32 || code > 127 || code === 34) {
+        output += "\\" + (code & 0xff).toString(8).padStart(3, "0");
+      } else {
+        output += String.fromCharCode(code);
+      }
     }
 
     i += length;

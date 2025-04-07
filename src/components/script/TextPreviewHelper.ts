@@ -1,6 +1,6 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
 import { lexText } from "shared/lib/compiler/lexText";
-import { encodeChar } from "shared/lib/helpers/fonts";
+import { resolveMapping } from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
 
@@ -9,7 +9,7 @@ export interface FontData {
   img: HTMLImageElement;
   isMono: boolean;
   widths: number[];
-  mapping: Record<string, number>;
+  mapping: Record<string, number | number[]>;
 }
 
 const DOLLAR_CHAR = 4;
@@ -184,9 +184,12 @@ export const drawText = (
           continue;
         }
 
-        const { code, length } = encodeChar(slice, font.mapping);
-        const char = (code - 32) % font.widths.length;
-        drawCharCode(char);
+        const { codes, length } = resolveMapping(slice, font.mapping);
+
+        for (const code of codes) {
+          const char = (code - 32) % font.widths.length;
+          drawCharCode(char);
+        }
 
         i += length;
       }
