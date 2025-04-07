@@ -167,21 +167,28 @@ export const drawText = (
   textTokens.forEach((token) => {
     if (token.type === "text" && !token.hideInPreview) {
       const string = token.value;
-      for (let i = 0; i < string.length; i++) {
-        if (string[i] === "\n") {
-          drawX = leftX;
-          drawY += 8;
-          continue;
-        }
-        if (string[i] === "\\" && string[i + 1] === "n") {
+      let i = 0;
+      while (i < string.length) {
+        const slice = string.slice(i);
+
+        if (slice[0] === "\n") {
           drawX = leftX;
           drawY += 8;
           i++;
           continue;
         }
-        const char =
-          (encodeChar(string[i], font.mapping) - 32) % font.widths.length;
+        if (slice[0] === "\\" && slice[1] === "n") {
+          drawX = leftX;
+          drawY += 8;
+          i += 2;
+          continue;
+        }
+
+        const { code, length } = encodeChar(slice, font.mapping);
+        const char = (code - 32) % font.widths.length;
         drawCharCode(char);
+
+        i += length;
       }
     } else if (token.type === "variable" && token.fixedLength !== undefined) {
       for (let c = 0; c < token.fixedLength - 1; c++) {
