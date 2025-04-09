@@ -112,28 +112,28 @@ describe("encodeString", () => {
 describe("resolveMapping", () => {
   test("should return codes and length for basic ASCII character", () => {
     const result = resolveMapping("A");
-    expect(result).toEqual({ codes: [65], isMapped: false, length: 1 });
+    expect(result).toEqual({ codes: [65], length: 1 });
   });
 
   test("should return codes and length for emoji character", () => {
     const code = "😊".codePointAt(0) ?? 0;
     const result = resolveMapping("😊");
-    expect(result).toEqual({ codes: [code], isMapped: false, length: 2 });
+    expect(result).toEqual({ codes: [code], length: 2 });
   });
 
   test("should return mapped code array for single-character mapping", () => {
     const result = resolveMapping("a", { a: 100 });
-    expect(result).toEqual({ codes: [100], isMapped: true, length: 1 });
+    expect(result).toEqual({ codes: [100], length: 1 });
   });
 
   test("should return mapped code array for emoji character", () => {
     const result = resolveMapping("😊", { "😊": 200 });
-    expect(result).toEqual({ codes: [200], isMapped: true, length: 2 });
+    expect(result).toEqual({ codes: [200], length: 2 });
   });
 
   test("should return mapped code array for long string key", () => {
     const result = resolveMapping("euro coin", { euro: 162 });
-    expect(result).toEqual({ codes: [162], isMapped: true, length: 4 });
+    expect(result).toEqual({ codes: [162], length: 4 });
   });
 
   test("should prefer longest matching key", () => {
@@ -142,38 +142,38 @@ describe("resolveMapping", () => {
       eu: 102,
       euro: 103,
     });
-    expect(result).toEqual({ codes: [103], isMapped: true, length: 4 });
+    expect(result).toEqual({ codes: [103], length: 4 });
   });
 
   test("should fallback to first character if no mapping exists", () => {
     const code = "x".codePointAt(0) ?? 0;
     const result = resolveMapping("xyz");
-    expect(result).toEqual({ codes: [code], isMapped: false, length: 1 });
+    expect(result).toEqual({ codes: [code], length: 1 });
   });
 
   test("should fallback safely if input is empty string", () => {
     const result = resolveMapping("");
-    expect(result).toEqual({ codes: [0], isMapped: false, length: 1 });
+    expect(result).toEqual({ codes: [0], length: 1 });
   });
 
   test("should return multiple codes for emoji when mapped to array", () => {
     const result = resolveMapping("😊", {
       "😊": [200, 201],
     });
-    expect(result).toEqual({ codes: [200, 201], isMapped: true, length: 2 });
+    expect(result).toEqual({ codes: [200, 201], length: 2 });
   });
 
   test("should return multiple codes for long key when mapped to array", () => {
     const result = resolveMapping("MULTI test", {
       MULTI: [38, 39, 51],
     });
-    expect(result).toEqual({ codes: [38, 39, 51], isMapped: true, length: 5 });
+    expect(result).toEqual({ codes: [38, 39, 51], length: 5 });
   });
 
   test("should still return single code if mapped to number", () => {
     const result = resolveMapping("a", {
       a: 70,
     });
-    expect(result).toEqual({ codes: [70], isMapped: true, length: 1 });
+    expect(result).toEqual({ codes: [70], length: 1 });
   });
 });
