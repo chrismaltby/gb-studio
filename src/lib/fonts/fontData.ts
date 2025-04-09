@@ -106,9 +106,9 @@ export const readFileToFontData = async (
   const uniqueTiles = Object.values(uniqueTilesLookup);
 
   // Construct output data
-  const table = (Array.from(Array(FIRST_CHAR)) as number[])
-    .fill(0)
-    .concat(charKeys.map((key) => uniqueTileKeys.indexOf(key)));
+  const table = (
+    tileHeight < 16 ? (Array.from(Array(FIRST_CHAR)) as number[]).fill(0) : []
+  ).concat(charKeys.map((key) => uniqueTileKeys.indexOf(key)));
   const widths = uniqueTiles.map((tile) => tile.width);
   const data = charLookupToTileData(uniqueTilesLookup);
 

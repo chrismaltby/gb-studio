@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New instances of prefabs use prefab's name by default
 - Update "Wait" event to support using variable values for wait time [@pau-tomas](https://github.com/pau-tomas))
 - Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
+- Font PNGs that are at least 128px tall (16 tile rows) now map tiles starting from ASCII code 0 instead of 32, enabling support for drawing control characters (ASCII 0–31)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)

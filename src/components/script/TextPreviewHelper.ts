@@ -186,8 +186,10 @@ export const drawText = (
 
         const { codes, length } = resolveMapping(slice, font.mapping);
 
+        const tileHeight = Math.floor(font.img.height / 8);
+
         for (const code of codes) {
-          const char = (code - 32) % font.widths.length;
+          const char = (code - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
           drawCharCode(char);
         }
 
