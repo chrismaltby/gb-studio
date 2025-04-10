@@ -5,7 +5,7 @@ export type Token =
   | {
       type: "text";
       value: string;
-      hideInPreview?: boolean;
+      previewValue?: string;
     }
   | {
       type: "font";
@@ -243,6 +243,44 @@ export const lexText = (inputText: string): Token[] => {
       continue;
     }
 
+    // Check for escaped octal character
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "0" &&
+      inputText[i + 3] === "5" &&
+      inputText[i + 4] === "\\" &&
+      inputText[i + 5]?.match(/[0-7]/) &&
+      inputText[i + 6]?.match(/[0-7]/) &&
+      inputText[i + 7]?.match(/[0-7]/)
+    ) {
+      tokens.push({
+        type: "text",
+        value: inputText.slice(i, i + 8),
+        previewValue: String.fromCharCode(
+          parseInt(inputText.substring(i + 5, i + 8), 8),
+        ),
+      });
+      i += 7;
+      continue;
+    }
+
+    // Check for escaped regular character
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "0" &&
+      inputText[i + 3] === "5"
+    ) {
+      tokens.push({
+        type: "text",
+        value: inputText.slice(i, i + 5),
+        previewValue: inputText.substring(i + 4, i + 5),
+      });
+      i += 4;
+      continue;
+    }
+
     // Check for gbvm gotoxy
     if (
       inputText[i] === "\\" &&
@@ -333,6 +371,21 @@ export const lexText = (inputText: string): Token[] => {
       continue;
     }
 
+    // Check for newline
+    if (
+      inputText[i] === "\\" &&
+      inputText[i + 1] === "0" &&
+      inputText[i + 2] === "1" &&
+      inputText[i + 3] === "2"
+    ) {
+      tokens.push({
+        type: "text",
+        value: "\\012",
+      });
+      i += 3;
+      continue;
+    }
+
     // Ignore unmatched GBVM octal in previews
     if (inputText[i] === "\\" && inputText[i + 1]?.match(/[0-7]/)) {
       let len = 1;
@@ -345,7 +398,7 @@ export const lexText = (inputText: string): Token[] => {
       tokens.push({
         type: "text",
         value: inputText.slice(i, i + len + 1),
-        hideInPreview: true,
+        previewValue: "",
       });
       i += len;
       continue;
@@ -353,7 +406,7 @@ export const lexText = (inputText: string): Token[] => {
 
     // Add as text token
     const lastToken = tokens[tokens.length - 1];
-    if (lastToken?.type === "text" && !lastToken.hideInPreview) {
+    if (lastToken?.type === "text" && lastToken.previewValue === undefined) {
       lastToken.value += inputText[i];
     } else {
       tokens.push({
