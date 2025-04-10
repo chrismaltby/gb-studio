@@ -34,12 +34,12 @@ describe("encodeString", () => {
     ).toBe("\\276ello\\012World");
   });
 
-  test("should remap ascii non-printable characters below 32 as escaped octal", () => {
+  test("should remap ascii control characters as octal", () => {
     expect(
       encodeString("Hello\nWorld", {
         H: 17,
       }),
-    ).toBe("\\005\\021ello\\012World");
+    ).toBe("\\021ello\\012World");
   });
 
   test("should remap characters beyond ascii range as octal", () => {
