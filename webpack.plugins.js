@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+// const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const { GitRevisionPlugin } = require("git-revision-webpack-plugin");
@@ -25,15 +25,15 @@ if (process.env.ANALYZE_BUNDLE) {
   plugins.push(new BundleAnalyzerPlugin());
 }
 
-if (!process.env.NO_TYPE_CHECKING) {
-  plugins.push(
-    new ForkTsCheckerWebpackPlugin({
-      async: false,
-      typescript: {
-        memoryLimit: 4096,
-      },
-    })
-  );
-}
+// if (!process.env.NO_TYPE_CHECKING) {
+//   plugins.push(
+//     new ForkTsCheckerWebpackPlugin({
+//       async: false,
+//       typescript: {
+//         memoryLimit: 4096,
+//       },
+//     })
+//   );
+// }
 
 module.exports = plugins;
