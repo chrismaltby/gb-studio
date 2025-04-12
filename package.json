@@ -9,6 +9,7 @@
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "scripts": {
+    "prepare": "webpack --config webpack.cli.config.js",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make:win": "electron-forge make --arch=x64 --platform=win32",
