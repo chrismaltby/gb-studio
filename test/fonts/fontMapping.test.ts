@@ -1,4 +1,15 @@
-import { encodeString, resolveMapping } from "shared/lib/helpers/fonts";
+import { Token } from "shared/lib/compiler/lexText";
+import {
+  encodeString,
+  FontData,
+  lexTextWithMapping,
+  resolveMapping,
+} from "shared/lib/helpers/fonts";
+
+const makeFont = (mapping: Record<string, number | number[]>): FontData =>
+  ({
+    mapping,
+  }) as FontData;
 
 describe("encodeString", () => {
   test("should encode newlines as \\012", () => {
@@ -175,5 +186,78 @@ describe("resolveMapping", () => {
       a: 70,
     });
     expect(result).toEqual({ codes: [70], length: 1 });
+  });
+});
+
+describe("lexTextWithMapping", () => {
+  const monoFont = makeFont({ H: 74, e: 101 });
+  const emojiFont = makeFont({ "😊": [200, 201] });
+
+  const fontsData = {
+    mono: monoFont,
+    emoji: emojiFont,
+  };
+
+  test("should apply mapping to a single text token", () => {
+    const tokens = lexTextWithMapping("Hello", fontsData, "mono");
+
+    const textTokens = tokens.filter((t) => t.type === "text") as Extract<
+      Token,
+      { type: "text" }
+    >[];
+
+    expect(textTokens.map((t) => t.value).join("")).toBe("Jello");
+  });
+
+  test("should switch font when font token is encountered", () => {
+    const tokens = lexTextWithMapping("Hi!F:emoji!😊", fontsData, "mono");
+
+    const joined = tokens
+      .map((t) => (t.type === "text" ? t.value : ""))
+      .join("");
+
+    // mono: H → J (74)
+    // emoji: 😊 → \310\311 (200, 201)
+    expect(joined).toEqual("Ji\\310\\311");
+  });
+
+  test("should preserve font token in output", () => {
+    const tokens = lexTextWithMapping("!F:emoji!Hello", fontsData, "mono");
+    const fontToken = tokens.find((t) => t.type === "font");
+    const textToken = tokens.find((t) => t.type === "text");
+    expect(fontToken).toBeTruthy();
+    expect(fontToken?.fontId).toBe("emoji");
+    expect(textToken).toBeTruthy();
+    expect(textToken?.value).toEqual("Hello");
+  });
+
+  test("should fallback to original font if font token is unknown", () => {
+    const tokens = lexTextWithMapping(
+      "!F:doesnotexist!Hello",
+      fontsData,
+      "mono",
+    );
+
+    const textToken = tokens.find((t) => t.type === "text");
+
+    expect(textToken).toBeTruthy();
+    expect(textToken?.value).toEqual("Jello"); // mapped using mono
+  });
+
+  test("should use previewValue if preferPreviewValue is true", () => {
+    const tokens = lexTextWithMapping(
+      "A",
+      {
+        mono: makeFont({
+          A: 2,
+        }),
+      },
+      "mono",
+      true,
+    );
+    const textToken = tokens.find((t) => t.type === "text");
+    expect(textToken).toBeTruthy();
+    expect(textToken?.value).toEqual("\\002");
+    expect(textToken?.previewValue).toEqual("");
   });
 });

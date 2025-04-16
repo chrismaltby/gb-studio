@@ -1,16 +1,11 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
-import { lexText } from "shared/lib/compiler/lexText";
-import { encodeString, resolveMapping } from "shared/lib/helpers/fonts";
+import {
+  encodeString,
+  FontData,
+  lexTextWithMapping,
+} from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
-
-export interface FontData {
-  id: string;
-  img: HTMLImageElement;
-  isMono: boolean;
-  widths: number[];
-  mapping: Record<string, number | number[]>;
-}
 
 const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
@@ -163,7 +158,7 @@ export const drawText = (
     drawX += font.widths[char] ?? 0;
   };
 
-  const textTokens = lexText(encodeString(text, font?.mapping));
+  const textTokens = lexTextWithMapping(text, fontsData, font.id, false);
 
   textTokens.forEach((token) => {
 

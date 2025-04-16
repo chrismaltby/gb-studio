@@ -1,6 +1,8 @@
 import { fromSigned8Bit } from "shared/lib/helpers/8bit";
 import { ensureNumber } from "shared/types";
 
+const CONTROL_CODE_END = 16;
+
 export type Token =
   | {
       type: "text";
@@ -395,10 +397,14 @@ export const lexText = (inputText: string): Token[] => {
           len++;
         }
       }
+
+      const octalCode = parseInt(inputText.substring(i + 1, i + len + 1), 8);
+
       tokens.push({
         type: "text",
         value: inputText.slice(i, i + len + 1),
-        previewValue: "",
+        previewValue:
+          octalCode > CONTROL_CODE_END ? String.fromCharCode(octalCode) : "",
       });
       i += len;
       continue;

@@ -1,3 +1,13 @@
+import { lexText, Token } from "shared/lib/compiler/lexText";
+
+export interface FontData {
+  id: string;
+  img: HTMLImageElement;
+  isMono: boolean;
+  widths: number[];
+  mapping: Record<string, number | number[]>;
+}
+
 export const resolveMapping = (
   input: string,
   mapping?: Record<string, number | number[]>,
@@ -55,4 +65,42 @@ export const encodeString = (
   }
 
   return output;
+};
+
+export const lexTextWithMapping = (
+  text: string,
+  fontsData: Record<string, FontData>,
+  fontId: string,
+  preferPreviewValue?: boolean,
+): Token[] => {
+  const rawTokens = lexText(text);
+  const result: Token[] = [];
+
+  let font = fontsData[fontId];
+
+  for (const token of rawTokens) {
+    if (token.type === "font") {
+      const newFont = fontsData[token.fontId];
+      if (newFont) {
+        font = newFont;
+      }
+      result.push(token);
+      continue;
+    }
+
+    if (token.type === "text") {
+      const value =
+        preferPreviewValue && token.previewValue !== undefined
+          ? token.previewValue
+          : token.value;
+
+      const encoded = encodeString(value, font?.mapping);
+      const encodedTokens = lexText(encoded);
+      result.push(...encodedTokens);
+    } else {
+      result.push(token);
+    }
+  }
+
+  return result;
 };
