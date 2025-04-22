@@ -5,7 +5,7 @@ import { localesRoot } from "consts";
 
 interface EncodingData {
   name: string;
-  mapping: Record<string, number | undefined>;
+  mapping: Record<string, number | number[]>;
 }
 
 type EncodingDef = EncodingData & {

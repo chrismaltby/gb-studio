@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to mute audio of inbuilt emulator from menu "Window / Play Window / Mute Audio"
 - Add ability to override "Color Only" setting per scene in color projects, allowing "Color Only" scenes in a mixed project or monochrome compatible scenes in a "Color Only" project. Right click on a scene and select "Color Mode Override"
 - Add events "Pause Logic For Scene Type" and "Resume Logic For Scene Type" allowing manual control of if the scene's update function should be running or not. You can use this when running multi-threaded scripts (such as a cutscene with multiple actors moving at once) to prevent player input while the script is running.
+- Add support for characters outside of the basic multilingual plane in font mappings (such as emoji) e.g. `"😊": 34`
+- Add support for multiple character sequences to be replaced in font mappings e.g. `"EURO": 128`
+- Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
 
 ### Changed
 
@@ -44,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New instances of prefabs use prefab's name by default
 - Update "Wait" event to support using variable values for wait time [@pau-tomas](https://github.com/pau-tomas))
 - Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
+- Font PNGs that are 128px tall (16 tile rows) now map tiles starting from ASCII code 0 instead of 32, enabling support for drawing control characters (ASCII 0–31). To draw characters with codes less than 32 they must be escaped with `\005` e.g. to draw character code 7 use `\005\007` (note: this is octal so code 19 would be `\005\023`)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
@@ -77,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix "spawn cmd.exe" issue on Windows when "%SystemRoot%\system32" is missing from Path environment variable
 - Fix issue where changing the size of a background image would cause the collision and color tiles to be reset
 - Fix issue where clicking "Show Navigator" toolbar button would not cause "Show Navigator" option in menu to be checked
+- Fix issue where font mappings were not being displayed in app text previews
 
 ## [4.1.3] - 2024-09-16
 

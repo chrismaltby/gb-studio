@@ -7,15 +7,10 @@ import {
   avatarSelectors,
   fontSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  loadFont,
-  drawFrame,
-  drawFill,
-  drawText,
-  FontData,
-} from "./TextPreviewHelper";
+import { loadFont, drawFrame, drawFill, drawText } from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
+import { FontData } from "shared/lib/helpers/fonts";
 
 interface DialoguePreviewProps {
   text: string;

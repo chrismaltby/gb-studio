@@ -57,11 +57,11 @@ const loadFontData =
         plugin,
         name,
         symbol: toValidSymbol(`font_${name}`),
+        _v: Date.now(),
+        ...resource,
         width: size.width,
         height: size.height,
         mapping,
-        _v: Date.now(),
-        ...resource,
         filename: file,
         inode,
       };

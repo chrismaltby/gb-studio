@@ -37,6 +37,9 @@ export const THEME_SETTING_KEY = "themeId";
 export const LOCALE_SETTING_KEY = "locale";
 export const EMULATOR_MUTED_SETTING_KEY = "emulatorMuted";
 
+// Subpixel bits
+export const NUM_SUBPIXEL_BITS = 4;
+
 // Scene Limits
 export const MAX_ACTORS = 20;
 export const MAX_ACTORS_SMALL = 10;

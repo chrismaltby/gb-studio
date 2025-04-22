@@ -214,7 +214,7 @@ export type Font = {
   height: number;
   plugin?: string;
   inode: string;
-  mapping: Record<string, number>;
+  mapping: Record<string, number | number[]>;
   _v: number;
 };
 

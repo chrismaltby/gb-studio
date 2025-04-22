@@ -82,6 +82,7 @@ import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
+import { pxToSubpx, subpxShiftForUnits, tileToSubpx, unitsValueToSubpx } from "shared/lib/helpers/subpixels";
 
 export type ScriptOutput = string[];
 
@@ -644,7 +645,7 @@ const scriptValueToSubpixels = (
   value: ScriptValue,
   units: DistanceUnitType
 ) => {
-  return shiftLeftScriptValueConst(value, units === "tiles" ? 0x7 : 0x4);
+  return shiftLeftScriptValueConst(value, subpxShiftForUnits(units));
 };
 
 // ------------------------
@@ -1513,14 +1514,14 @@ class ScriptBuilder {
             if (propertyValue === "xpos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_x")
-                .int16(8 * 16)
+                .int16(tileToSubpx(1))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "ypos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_y")
-                .int16(8 * 16)
+                .int16(tileToSubpx(1))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -1590,7 +1591,7 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 1))
-                .int16(8 * 16)
+                .int16(tileToSubpx(1))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -1602,7 +1603,7 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 2))
-                .int16(8 * 16)
+                .int16(tileToSubpx(1))
                 .operator(".DIV")
                 .refSet(localVar)
                 .stop();
@@ -2937,11 +2938,11 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Move To");
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(y, units)
     );
     this._setConst(
       this._localRef(actorRef, 3),
@@ -2965,11 +2966,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -3048,13 +3049,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -3158,11 +3159,11 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(y, units)
     );
     this._actorSetPosition(actorRef);
 
@@ -3180,11 +3181,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -3248,13 +3249,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -3344,11 +3345,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int8(units === "tiles" ? 0x7 : 0x4)
+      .int8(subpxShiftForUnits(units))
       .operator(".SHR")
       .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
-      .int8(units === "tiles" ? 0x7 : 0x4)
+      .int8(subpxShiftForUnits(units))
       .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
@@ -3366,8 +3367,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableX)
       .stop();
 
@@ -3384,8 +3385,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
 
@@ -3416,7 +3417,7 @@ extern void __mute_mask_${symbol};
     const rightLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
 
-    const offset = continueUntilCollision ? 128 * 100 : 128 * 2;
+    const offset = tileToSubpx(continueUntilCollision ? 100 : 2);
 
     this._addComment("Actor Push");
     this._setConst(actorRef, 0);
@@ -3671,7 +3672,7 @@ extern void __mute_mask_${symbol};
   actorSetMovementSpeed = (speed = 1) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Movement Speed");
-    this._actorSetMoveSpeed(actorRef, Math.round(speed * 16));
+    this._actorSetMoveSpeed(actorRef, pxToSubpx(speed));
     this._addNL();
   };
 
@@ -3739,11 +3740,11 @@ extern void __mute_mask_${symbol};
     const { scene } = this.options;
     if (scene.type === "PLATFORM") {
       this._addComment("Player Bounce");
-      let value = -0x4000;
+      let value = pxToSubpx(-0x400);
       if (height === "low") {
-        value = -0x2000;
+        value = pxToSubpx(-0x200);
       } else if (height === "high") {
-        value = -0x6000;
+        value = pxToSubpx(-0x600);
       }
       this._setConstMemInt16("pl_vel_y", value);
       this._addNL();
@@ -3767,7 +3768,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const pixelDistance = distance * (units === "tiles" ? 8 : 1);
     const steps = Math.floor(pixelDistance / speed);
-    const subpixelDistance = pixelDistance * 16;
+    const subpixelDistance = pxToSubpx(pixelDistance);
 
     const actorRef = this._declareLocal("actor", 4);
     const loopVarRef = this._declareLocal("loop", 1, true);
@@ -3818,7 +3819,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const pixelDistance = distance * (units === "tiles" ? 8 : 1);
     const steps = Math.floor(pixelDistance / speed);
-    const subpixelDistance = pixelDistance * 16;
+    const subpixelDistance = pxToSubpx(pixelDistance);
 
     const actorRef = this._declareLocal("actor", 4);
     const loopVarRef = this._declareLocal("loop", 1, true);
@@ -4010,11 +4011,11 @@ extern void __mute_mask_${symbol};
     const rpn = this._rpn();
     rpn.ref(this._localRef(actorRef, 1));
     if (x) {
-      rpn.int16(x * 16).operator(".ADD");
+      rpn.int16(pxToSubpx(x)).operator(".ADD");
     }
     rpn.ref(this._localRef(actorRef, 2));
     if (y) {
-      rpn.int16(-y * 16).operator(".ADD");
+      rpn.int16(pxToSubpx(-y)).operator(".ADD");
     }
     return rpn;
   };
@@ -4116,12 +4117,12 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(otherActorRef, 2))
       .ref(this._localRef(actorRef, 2))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".DIV")
       .ref(this._localRef(otherActorRef, 1))
       .ref(this._localRef(actorRef, 1))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".DIV")
       .operator(".ATAN2")
       .stop();
@@ -4701,29 +4702,30 @@ extern void __mute_mask_${symbol};
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
     this._addComment("Camera Move To");
-    const xOffset = 80;
-    const yOffset = 72;
+    const xOffsetSubpx = pxToSubpx(80);
+    const yOffsetSubpx = pxToSubpx(72);
 
     this._setConst(
       cameraMoveArgsRef,
-      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * 16
+      xOffsetSubpx + unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * 16
+      yOffsetSubpx + unitsValueToSubpx(y, units)
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        pxToSubpx(speed),
         ".CAMERA_UNLOCK"
       );
     }
     this._addNL();
   };
 
+  // @deprecated - Replace used with cameraMoveToScriptValues
   cameraMoveToVariables = (
     variableX: string,
     variableY: string,
@@ -4731,33 +4733,24 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     this._addComment("Camera Move To Variables");
-    if (units === "tiles") {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(80 * 16)
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(72 * 16)
-        .operator(".ADD")
-        .stop();
-    } else {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(80 * 16)
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(72 * 16)
-        .operator(".ADD")
-        .stop();
-    }
+
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(80))
+      .operator(".ADD")
+      .refVariable(variableY)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(72))
+      .operator(".ADD")
+      .stop();
+
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", Math.round(speed * 16), ".CAMERA_UNLOCK");
+      this._cameraMoveTo(".ARG1", pxToSubpx(speed), ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -4769,8 +4762,8 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
-    const xOffset = 80 * 16;
-    const yOffset = 72 * 16;
+    const xOffset = pxToSubpx(80);
+    const yOffset = pxToSubpx(72);
 
     const stackPtr = this.stackPtr;
     this._addComment("Camera Move To");
@@ -4813,7 +4806,7 @@ extern void __mute_mask_${symbol};
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        pxToSubpx(speed),
         ".CAMERA_UNLOCK"
       );
     }
@@ -4829,16 +4822,16 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".ADD")
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".ADD")
       .stop();
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     }
-    this._cameraMoveTo(".ARG1", Math.round(speed * 16), toASMCameraLock(axis));
+    this._cameraMoveTo(".ARG1", pxToSubpx(speed), toASMCameraLock(axis));
     this._stackPop(2);
   };
 
@@ -5491,8 +5484,8 @@ extern void __mute_mask_${symbol};
         this._fadeOut(true);
       }
       this._setConst(actorRef, 0);
-      this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-      this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+      this._setConst(this._localRef(actorRef, 1), tileToSubpx(x));
+      this._setConst(this._localRef(actorRef, 2), tileToSubpx(y));
       this._actorSetPosition(actorRef);
       const asmDir = toASMDir(direction);
       if (asmDir) {
@@ -7416,10 +7409,10 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn()
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".EQ")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".EQ")
       .operator(".AND")
       .stop();
@@ -7471,7 +7464,7 @@ extern void __mute_mask_${symbol};
     // X Value EQ
     rpn.ref(this._localRef(actorRef, 1));
     // Convert to chosen units
-    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.int8(subpxShiftForUnits(units));
     rpn.operator(".SHR");
     // Get value to compare X with
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
@@ -7480,7 +7473,7 @@ extern void __mute_mask_${symbol};
     // Y Value EQ
     rpn.ref(this._localRef(actorRef, 2));
     // Convert to chosen units
-    rpn.int8(units === "tiles" ? 0x7 : 0x4);
+    rpn.int8(subpxShiftForUnits(units));
     rpn.operator(".SHR");
     // Get value to compare Y with
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
@@ -7707,6 +7700,7 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     const distanceSquared = distance * distance;
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor ${operator} ${distance} tiles from Actor`);
     this._actorGetPosition(actorRef);
@@ -7716,32 +7710,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -7771,6 +7765,7 @@ extern void __mute_mask_${symbol};
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(
       `If Actor ${operator} ${distanceVariable} tiles from Actor`
@@ -7782,32 +7777,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -7841,6 +7836,7 @@ extern void __mute_mask_${symbol};
     const distanceRef = this._declareLocal("distance", 1, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor Distance from Actor`);
 
@@ -7863,32 +7859,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
