@@ -71,8 +71,8 @@ const sizes = [
   { bytes: 4 * 1024 * 1024 }, // 4 MiB
 ];
 
-const renderSize = (bytes: number) => {
-  if (bytes < 1024) {
+const renderSize = (bytes: number, showBytes: boolean) => {
+  if (bytes < 1024 || showBytes) {
     return `${bytes} bytes`;
   } else if (bytes < 1024 * 1024) {
     const kb = bytes / 1024;
@@ -89,6 +89,7 @@ const DebuggerUsageData = ({
 }: DebuggerUsageDataProps) => {
   const usageData = useAppSelector((state) => state.debug.usageData);
   const status = useAppSelector((state) => state.console.status);
+  const [showBytes, setShowBytes] = useState(false);
 
   const [zoom, setZoom] = useState(false);
 
@@ -109,6 +110,10 @@ const DebuggerUsageData = ({
 
   const toggleZoom = () => {
     setZoom(!zoom);
+  };
+
+  const toggleShowBytes = () => {
+    setShowBytes(!showBytes);
   };
 
   const maxSize =
@@ -140,23 +145,27 @@ const DebuggerUsageData = ({
                       i <= romSizeIndex ? (
                         <>
                           <strong>
-                            {renderSize(sizes[romSizeIndex].bytes)}
+                            {renderSize(sizes[romSizeIndex].bytes, showBytes)}
                           </strong>
                           <div>
                             {l10n("FIELD_CURRENT_ROM_SIZE_TOOLTIP", {
                               freeSpace: renderSize(
-                                sizes[romSizeIndex].bytes - totalUsage
+                                sizes[romSizeIndex].bytes - totalUsage,
+                                showBytes,
                               ),
                             })}
                           </div>
                         </>
                       ) : (
                         <>
-                          <strong>{renderSize(sizes[i].bytes)}</strong>
+                          <strong>
+                            {renderSize(sizes[i].bytes, showBytes)}
+                          </strong>
                           <div>
                             {l10n("FIELD_NEXT_ROM_SIZE_TOOLTIP", {
                               freeSpace: renderSize(
-                                sizes[i - 1].bytes - totalUsage
+                                sizes[i - 1].bytes - totalUsage,
+                                showBytes,
                               ),
                             })}
                           </div>
@@ -172,10 +181,10 @@ const DebuggerUsageData = ({
             <Used style={{ width: `${usedPercent}%` }}></Used>
           </Total>
           {!hideLabels && (
-            <div>
+            <div onClick={toggleShowBytes}>
               {l10n("FIELD_ROM_USAGE_LABEL", {
-                totalUsage: renderSize(totalUsage),
-                romSize: renderSize(sizes[romSizeIndex].bytes),
+                totalUsage: renderSize(totalUsage, showBytes),
+                romSize: renderSize(sizes[romSizeIndex].bytes, showBytes),
               })}
             </div>
           )}
