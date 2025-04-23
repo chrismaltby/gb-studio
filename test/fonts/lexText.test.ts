@@ -263,3 +263,40 @@ test("should provide previewValue for characters with codes beyond 128", () => {
     },
   ]);
 });
+
+test("should match previewValue for double '%' to match in game behaviour", () => {
+  expect(lexText("A=% B=%% C=%%% D=%%%%")).toEqual([
+    {
+      type: "text",
+      value: "A=% B=",
+    },
+    {
+      type: "text",
+      value: "%%",
+      previewValue: "%",
+    },
+    {
+      type: "text",
+      value: " C=",
+    },
+    {
+      type: "text",
+      value: "%%",
+      previewValue: "%",
+    },
+    {
+      type: "text",
+      value: "% D=",
+    },
+    {
+      type: "text",
+      value: "%%",
+      previewValue: "%",
+    },
+    {
+      type: "text",
+      value: "%%",
+      previewValue: "%",
+    },
+  ]);
+});

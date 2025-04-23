@@ -388,6 +388,17 @@ export const lexText = (inputText: string): Token[] => {
       continue;
     }
 
+    // Check for double % to make sure preview matches in game behaviour
+    if (inputText[i] === "%" && inputText[i + 1] === "%") {
+      tokens.push({
+        type: "text",
+        value: inputText.substring(i, i + 2),
+        previewValue: inputText[i],
+      });
+      i += 1;
+      continue;
+    }
+
     // Ignore unmatched GBVM octal in previews
     if (inputText[i] === "\\" && inputText[i + 1]?.match(/[0-7]/)) {
       let len = 1;
