@@ -153,7 +153,7 @@ const makeBuild = async ({
   }
 
   progress(`${l10n("COMPILER_PACKING")}...`);
-  const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
+  const { cartSize, report } = await gbspack(await getPackFiles(buildRoot), {
     bankOffset: 1,
     filter: 255,
     extension: "rel",
@@ -166,6 +166,9 @@ const makeBuild = async ({
           }
         : {},
   });
+
+  const packReportFilePath = `${buildRoot}/build/rom/bank_usage.txt`;
+  await fs.writeFile(packReportFilePath, report);
 
   // Link ROM ---
 

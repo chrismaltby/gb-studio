@@ -98,7 +98,7 @@ A _CODE_15 size 55 flags 0 addr 0
 S _SCRIPT_3 Def000000`;
 
     expect(replaceBank(replaceBank(input, 5, 14), 255, 15)).toEqual(
-      expectedOutput
+      expectedOutput,
     );
   });
 
@@ -187,7 +187,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    const output = packObjectData(input, 255, 0, true, {});
+    const { patches: output } = packObjectData(input, 255, 0, true, {});
     expect(output[0].filename).toEqual("a.o");
     expect(output[1].filename).toEqual("b.o");
     expect(output[0].replacements[0].from).toEqual(1);
@@ -231,7 +231,9 @@ describe("Pack", () => {
         ],
       },
     ];
-    const output = packObjectData(input, 255, 0, true, { 1: 16300 });
+    const { patches: output } = packObjectData(input, 255, 0, true, {
+      1: 16300,
+    });
     expect(output[0].filename).toEqual("a.o");
     expect(output[1].filename).toEqual("b.o");
     expect(output[0].replacements[0].from).toEqual(1);
@@ -275,7 +277,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    const output = packObjectData(input, 255, 31, true, {});
+    const { patches: output } = packObjectData(input, 255, 31, true, {});
     expect(output[0].filename).toEqual("a.o");
     expect(output[1].filename).toEqual("b.o");
     expect(output[0].replacements[0].from).toEqual(1);
@@ -319,7 +321,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    const output = packObjectData(input, 255, 35, true, {});
+    const { patches: output } = packObjectData(input, 255, 35, true, {});
     expect(getPatchMaxBank(output)).toEqual(37);
   });
 });

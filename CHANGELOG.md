@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for multiple character sequences to be replaced in font mappings e.g. `"EURO": 128`
 - Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
 - Add ability to click label to the right of ROM usage bar to toggle between showing ROM usage values as byte values rather than rounding to KiB/MiB
+- Generate file `bank_usage.txt` when exporting ROM giving a breakdown of which assets were assigned to each memory bank and how many bytes were used
 
 ### Changed
 
