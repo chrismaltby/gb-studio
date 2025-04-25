@@ -569,6 +569,7 @@
   "WARNING_BACKGROUND_TOO_TALL": "A imagem de fundo é muito alta, tem {height}px de altura quando o máximo é {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "A imagem de fundo contém muitos pixels, {numPixels} ({width}px * {height}px) quando o máximo é {maxPixels}",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "A imagem de fundo contém muitos tiles únicos de 8x8px ({tilesetLength} onde o limite é {maxTilesetLength}), o que significa que pode não ser exibido corretamente. Considere reduzir a quantidade de detalhes nesta imagem.",
+  "WARNING_BACKGROUND_LOGO_REUSED": "A imagem de fundo já está sendo usada na cena de logo (\"{name}\") e pode não ser exibido corretamente. Considere escolher uma imagem de fundo diferente.",
   "WARNING_MUSIC_TOO_LARGE": "A faixa de música {filename} é muito grande para caber na memória tendo ({bytes} bytes quando o máximo é {maxBytes}). Considere reduzir o número de padrões no arquivo.",
   "WARNING_ENGINE_OUT_OF_DATE": "O motor ejetado está desatualizado (foi encontrado \"{ejectedEngineVersion}\" quando o mais recente é \"{expectedEngineVersion}\").\nVocê pode encontrar problemas se não ejetar o motor novamente.",
   "WARNING_MISSING_UPDATES": "Atualizações ausentes",
@@ -773,5 +774,5 @@
   "MESSAGE_WHAT_ABOUT_UGE": "E quanto aos arquivos .uge?",
   "MESSAGE_USE_UGE_FILES": "Para usar arquivos .uge no seu projeto, altere o formato de música de MOD para UGE em 'Configurações'. Você pode fazer isso a qualquer momento em 'Configurações'.",
   "MESSAGE_ENABLE_HUGE": "Ativar formato de arquivo UGE",
-  "MESSAGE_NOT_PREVIEW_SUBPATTERN": "A visualização de instrumentos e notas pode não ser precisa quando o subpadrão está ativado.",
+  "MESSAGE_NOT_PREVIEW_SUBPATTERN": "A visualização de instrumentos e notas pode não ser precisa quando o subpadrão está ativado."
 }
