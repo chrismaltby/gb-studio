@@ -1122,7 +1122,7 @@
   "EVENT_ACTOR_GET_POSITION": "Store Actor Position In Variables",
   "EVENT_ACTOR_GET_POSITION_DESC": "Store the current position of an actor within two variables, one to store the horizontal position and another to store the vertical position.",
   "EVENT_ACTOR_GET_DIRECTION": "Store Actor Direction In Variable",
-  "EVENT_ACTOR_GET_DIRECTION_DESC": "Store the current direction of an actor within a variable.",
+  "EVENT_ACTOR_GET_DIRECTION_DESC": "Store the current direction of an actor within a variable.\nDown: 0\nRight: 1\nUp: 2\nLeft: 3",
   "EVENT_ACTOR_SET_POSITION_TO_VALUE": "Set Actor Position Using Variables",
   "EVENT_ACTOR_MOVE_TO": "Actor Move To",
   "EVENT_ACTOR_MOVE_TO_DESC": "Move an actor to a new position.",
