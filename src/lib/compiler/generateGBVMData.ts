@@ -11,7 +11,12 @@ import type {
   Trigger,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
-import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
+import {
+  decHex32Val,
+  hexDec,
+  wrap8Bit,
+  wrapSigned8Bit,
+} from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 import type {
@@ -447,6 +452,14 @@ ${data}
 };`;
 };
 
+export const parallaxStep = (
+  startRow: number,
+  endRow: number,
+  speed: number,
+): string => {
+  return `PARALLAX_STEP(${startRow}, ${endRow}, ${wrapSigned8Bit(speed)})`;
+};
+
 export const compileParallax = (
   parallax: SceneParallaxLayer[] | undefined
 ): string[] | undefined => {
@@ -460,24 +473,22 @@ export const compileParallax = (
         layerIndex === parallax.length - 1 &&
         layer.speed !== 0
       ) {
-        return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
+        return parallaxStep(row, 18, layer.speed);
       }
       if (layerIndex === parallax.length - 1) {
-        return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
+        return parallaxStep(row, 0, layer.speed);
       }
-      const str = `PARALLAX_STEP(${row}, ${row + layer.height}, ${
-        layer.speed
-      })`;
+      const str = parallaxStep(row, row + layer.height, layer.speed);
       row += layer.height;
       return str;
     });
     // For num layers = 1 or 2 append parallax terminator
     if (parallax.length < 3) {
-      layers.push("PARALLAX_STEP(18, 0, 0)");
+      layers.push(parallaxStep(18, 0, 0));
     }
     return layers;
   }
-  return [`PARALLAX_STEP(0,0,0)`];
+  return [parallaxStep(0, 0, 0)];
 };
 
 export const compileScene = (

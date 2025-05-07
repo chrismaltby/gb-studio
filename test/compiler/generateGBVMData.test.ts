@@ -1,4 +1,7 @@
-import { compileGameGlobalsHeader } from "lib/compiler/generateGBVMData";
+import {
+  compileGameGlobalsHeader,
+  parallaxStep,
+} from "lib/compiler/generateGBVMData";
 
 describe("compileGameGlobalsHeader", () => {
   test("should include variables, constants and state references in global header", () => {
@@ -37,7 +40,7 @@ describe("compileGameGlobalsHeader", () => {
           value: 64,
         },
       ],
-      ["STATE_DEFAULT", "STATE_EXPLODE", "STATE_OPEN"]
+      ["STATE_DEFAULT", "STATE_EXPLODE", "STATE_OPEN"],
     );
     expect(output).toInclude("VAR_1 0");
     expect(output).toInclude("VAR_2 1");
@@ -47,5 +50,15 @@ describe("compileGameGlobalsHeader", () => {
     expect(output).toInclude("STATE_DEFAULT 0");
     expect(output).toInclude("STATE_EXPLODE 1");
     expect(output).toInclude("STATE_OPEN 2");
+  });
+});
+
+describe("parallaxStep", () => {
+  test("should convert parallax inputs to gbvm macro string", () => {
+    expect(parallaxStep(0, 5, 5)).toBe("PARALLAX_STEP(0, 5, 5)");
+  });
+
+  test("should wrap parallax speeds to within signed 8-bit range", () => {
+    expect(parallaxStep(4, 8, 128)).toBe("PARALLAX_STEP(4, 8, -128)");
   });
 });

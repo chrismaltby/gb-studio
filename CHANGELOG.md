@@ -84,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing the size of a background image would cause the collision and color tiles to be reset
 - Fix issue where clicking "Show Navigator" toolbar button would not cause "Show Navigator" option in menu to be checked
 - Fix issue where font mappings were not being displayed in app text previews
+- Fix overflow warning when using "Fixed Position" parallax layers
 
 ## [4.1.3] - 2024-09-16
 
