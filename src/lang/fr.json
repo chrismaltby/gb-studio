@@ -597,7 +597,7 @@
   "FIELD_COPIED_TO_CLIPBOARD": "Copier dans le presse-papiers",
   "FIELD_VIEW_GBVM_SYMBOLS": "Voir les symboles GBVM",
   "FIELD_SOUND_EFFECT": "Effet sonore",
-  "FIELD_SOUND_EFFECT_PLAY_DESC": " L'effet sonore à jouer. Vous pouvez choisir parmi les fichiers dans `/assets/sounds` ou parmi les sons prédéfinis comme `Bip`, `Tonalité`  et `Crash`.",
+  "FIELD_SOUND_EFFECT_PLAY_DESC": "L'effet sonore à jouer. Vous pouvez choisir parmi les fichiers dans `/assets/sounds` ou parmi les sons prédéfinis comme `bip`, `tonalité`  et `crash`.",
   "FIELD_FILES": "Fichiers",
   "FIELD_BASIC": "Basique",
   "FIELD_EFFECT_INDEX": "Index de l'effet",
