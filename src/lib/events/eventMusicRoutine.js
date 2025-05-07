@@ -29,7 +29,7 @@ const fields = [
     label: l10n("FIELD_ON_CALL"),
     description: l10n("FIELD_ON_CALL_ROUTINE_DESC"),
     type: "events",
-    allowedContexts: ["global", "entity"],
+    allowedContexts: ["global", "entity", "prefab"],
     conditions: [
       {
         key: "__scriptTabs",

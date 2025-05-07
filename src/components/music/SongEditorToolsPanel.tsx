@@ -13,7 +13,7 @@ import {
   StopIcon,
   PlayStartIcon,
 } from "ui/icons/Icons";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import { Music } from "shared/lib/entities/entitiesTypes";
@@ -25,6 +25,7 @@ import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -277,7 +278,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const themeContext = useContext(ThemeContext);
 
   const themePianoIcon =
-    themeContext.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
+    themeContext?.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
 
   return (
     <>
@@ -372,8 +373,10 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             <Select
               value={octaveOffsetOptions.find((i) => i.value === octaveOffset)}
               options={octaveOffsetOptions}
-              onChange={(newValue: OctaveOffsetOptions) => {
-                setOctaveOffset(newValue.value);
+              onChange={(newValue: SingleValue<OctaveOffsetOptions>) => {
+                if (newValue) {
+                  setOctaveOffset(newValue.value);
+                }
               }}
             />
           </>

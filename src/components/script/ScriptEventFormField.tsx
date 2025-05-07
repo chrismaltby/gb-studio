@@ -1,35 +1,68 @@
-import React, { memo, useCallback } from "react";
-import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ScriptEventFieldSchema,
+  ScriptEventNormalized,
+  ScriptEventParentType,
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
+import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
-import { FormField, ToggleableFormField } from "ui/form/FormLayout";
+import {
+  FormField,
+  FormFieldProps,
+  ToggleableFormField,
+} from "ui/form/layout/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
-  ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
-import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
-import { TabBar } from "ui/tabs/Tabs";
+import { FlexBreak } from "ui/spacing/Spacing";
+import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
+import {
+  actorSelectors,
+  triggerSelectors,
+} from "store/features/entities/entitiesState";
+import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
+import { throttle, isEqual } from "lodash";
 
 interface ScriptEventFormFieldProps {
-  scriptEventId: string;
+  scriptEvent: ScriptEventNormalized;
   field: ScriptEventFieldSchema;
   nestLevel: number;
   altBg: boolean;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
 }
 
 const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
+
+const isScriptEventInitializationData = (
+  data: unknown
+): data is { id: string; values?: Record<string, unknown> } => {
+  return (
+    !!data &&
+    typeof data === "object" &&
+    "id" in data &&
+    (!("values" in data) || typeof data.values === "object")
+  );
+};
 
 // @TODO This MultiInputButton functionality only seems to be used by eventTextDialogue
 // and likely should become part of DialogueTextarea
@@ -50,7 +83,7 @@ const MultiInputButton = styled.button`
     height: 8px;
   }
 
-  :hover {
+  &:hover {
     opacity: 1;
   }
 
@@ -71,65 +104,160 @@ const InputRow = styled.div`
   position: relative;
   margin-bottom: 3px;
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 
-  :hover ${MultiInputButton} {
+  &:hover ${MultiInputButton} {
     opacity: 1;
   }
 `;
 
 const ScriptEventFormField = memo(
   ({
-    scriptEventId,
+    scriptEvent,
     field,
     entityId,
+    parentId,
+    parentKey,
+    parentType,
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
     const dispatch = useAppDispatch();
-    const scriptEvent = useAppSelector((state) =>
-      scriptEventSelectors.selectById(state, scriptEventId)
-    );
+
+    const context = useContext(ScriptEditorContext);
+
+    const lastUpdateSource = useRef<"user" | "store">("store");
+
+    const overrides = useAppSelector((state) => {
+      if (context.entityType === "actorPrefab" && context.instanceId) {
+        const instance = actorSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[scriptEvent.id];
+      } else if (context.entityType === "triggerPrefab" && context.instanceId) {
+        const instance = triggerSelectors.selectById(state, context.instanceId);
+        return instance?.prefabScriptOverrides?.[scriptEvent.id];
+      }
+    });
 
     const args = scriptEvent?.args;
-    const value: unknown = field.multiple
-      ? ([] as unknown[]).concat([], args?.[field.key || ""])
-      : args?.[field.key || ""];
 
-    const setArgValue = useCallback(
-      (key: string, value: unknown) => {
-        dispatch(
-          entitiesActions.editScriptEventArg({
-            scriptEventId,
-            key,
-            value,
-          })
-        );
-        if (scriptEvent && field.key && field.hasPostUpdateFn) {
+    const [value, setValue] = useState(
+      field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""]
+    );
+
+    const setArgsValues = useCallback(
+      (newArgs: Record<string, unknown>) => {
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: newArgs,
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEvent({
+              scriptEventId: scriptEvent.id,
+              changes: {
+                args: newArgs,
+              },
+            })
+          );
+        }
+      },
+      [context.entityType, context.instanceId, dispatch, scriptEvent.id]
+    );
+
+    const latestArgs = useRef(args);
+
+    useEffect(() => {
+      latestArgs.current = args;
+    }, [args]);
+
+    const throttledPublishArgValue = useMemo(() => {
+      return throttle((key: string, value: unknown) => {
+        if (context.entityType === "actorPrefab" && context.instanceId) {
+          dispatch(
+            entitiesActions.editActorPrefabScriptEventOverride({
+              actorId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else if (
+          context.entityType === "triggerPrefab" &&
+          context.instanceId
+        ) {
+          dispatch(
+            entitiesActions.editTriggerPrefabScriptEventOverride({
+              triggerId: context.instanceId,
+              scriptEventId: scriptEvent.id,
+              args: {
+                [key]: value,
+              },
+            })
+          );
+        } else {
+          dispatch(
+            entitiesActions.editScriptEventArg({
+              scriptEventId: scriptEvent.id,
+              key,
+              value,
+            })
+          );
+        }
+        if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
           API.script
             .scriptEventPostUpdateFn(
               scriptEvent.command,
               field.key,
-              { ...scriptEvent.args, [key]: value },
-              scriptEvent.args || {}
+              { ...latestArgs.current, [key]: value },
+              latestArgs.current || {}
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
-                dispatch(
-                  entitiesActions.editScriptEvent({
-                    scriptEventId,
-                    changes: {
-                      args: updatedArgs,
-                    },
-                  })
-                );
+                setArgsValues(updatedArgs);
               }
             });
         }
+        lastUpdateSource.current = "store";
+      }, 64);
+    }, [
+      context.entityType,
+      context.instanceId,
+      dispatch,
+      field.hasPostUpdateFn,
+      field.key,
+      scriptEvent.command,
+      scriptEvent.id,
+      setArgsValues,
+    ]);
+
+    // Set local state value + queue a store update
+    const setArgValue = useCallback(
+      (key: string, value: unknown) => {
+        lastUpdateSource.current = "user";
+        setValue(value);
+        throttledPublishArgValue(key, value);
       },
-      [dispatch, field, scriptEvent, scriptEventId]
+      [throttledPublishArgValue]
     );
 
     const onChange = useCallback(
@@ -151,6 +279,20 @@ const ScriptEventFormField = memo(
       },
       [field.key, setArgValue, value]
     );
+
+    // Handle value updating from store (only if not currently updating due to user input)
+    useEffect(() => {
+      if (lastUpdateSource.current !== "store") {
+        return;
+      }
+      const storeValue = field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""];
+
+      if (!isEqual(value, storeValue)) {
+        setValue(storeValue);
+      }
+    }, [value, throttledPublishArgValue, field.key, field.multiple, args]);
 
     const onAddValue = useCallback(
       (valueIndex: number) => {
@@ -183,11 +325,39 @@ const ScriptEventFormField = memo(
       [field.key, setArgValue, value]
     );
 
+    const onInsertEventAfter = useCallback(() => {
+      const eventData = field.defaultValue;
+      if (!isScriptEventInitializationData(eventData)) {
+        return;
+      }
+      dispatch(
+        entitiesActions.addScriptEvents({
+          entityId: parentId,
+          type: parentType,
+          key: parentKey,
+          insertId: scriptEvent.id,
+          data: [
+            {
+              command: eventData.id,
+              args: eventData.values,
+            },
+          ],
+        })
+      );
+    }, [
+      dispatch,
+      field.defaultValue,
+      parentId,
+      parentKey,
+      parentType,
+      scriptEvent.id,
+    ]);
+
     let label = field.label;
     if (typeof label === "string" && label.replace) {
       label = label.replace(
         /\$\$([^$]*)\$\$/g,
-        (match, key) => (args?.[key] || "") as string
+        (_match, key) => (args?.[key] ?? "") as string
       );
     }
 
@@ -216,25 +386,29 @@ const ScriptEventFormField = memo(
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
-          conditional={true}
-          onClick={() => onChange(!value)}
+          onToggle={() => onChange(!value)}
           nestLevel={nestLevel}
           altBg={altBg}
-          open={!value}
+          isOpen={!value}
         >
-          <ScriptEventHeaderCaret open={!value}>
-            <ArrowIcon />
-          </ScriptEventHeaderCaret>
-          <FixedSpacer width={5} />
           {label || ""}
         </ScriptEventBranchHeader>
+      );
+    }
+
+    if (field.type === "presets") {
+      return (
+        <ScriptEventUserPresets
+          scriptEvent={scriptEvent}
+          onChange={setArgsValues}
+        />
       );
     }
 
     if (field.type === "tabs") {
       return (
         <TabBar
-          variant="scriptEvent"
+          variant={(field.variant || "scriptEvent") as TabBarVariant}
           value={String(value || Object.keys(field.values || {})[0])}
           values={field.values || {}}
           onChange={onChange}
@@ -245,7 +419,7 @@ const ScriptEventFormField = memo(
     const inputField =
       field.multiple && Array.isArray(value) ? (
         value.map((_, valueIndex) => {
-          const fieldId = genKey(scriptEventId, field.key || "", valueIndex);
+          const fieldId = genKey(scriptEvent.id, field.key || "", valueIndex);
           return (
             <InputRow key={fieldId}>
               <ScriptEventFormInput
@@ -258,7 +432,7 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
-                onChangeArg={setArgValue}
+                onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
                 {valueIndex !== 0 && (
@@ -275,7 +449,7 @@ const ScriptEventFormField = memo(
         })
       ) : (
         <ScriptEventFormInput
-          id={genKey(scriptEventId, field.key || "")}
+          id={genKey(scriptEvent.id, field.key || "")}
           entityId={entityId}
           type={field.type}
           field={field}
@@ -283,7 +457,7 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
-          onChangeArg={setArgValue}
+          onInsertEventAfter={onInsertEventAfter}
         />
       );
 
@@ -291,17 +465,16 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{
-            flexBasis: field.flexBasis,
-            flexGrow: field.flexGrow,
-            minWidth: field.minWidth,
-          }}
+          flexBasis={field.flexBasis}
+          flexGrow={field.flexGrow}
+          minWidth={field.minWidth}
         >
           <ToggleableFormField
-            name={genKey(scriptEventId, field.key || "")}
+            name={genKey(scriptEvent.id, field.key || "")}
             disabledLabel={field.toggleLabel}
             label={label || ""}
             enabled={!!value}
+            hasOverride={overrides?.args?.[field.key || ""] !== undefined}
           >
             {inputField}
           </ToggleableFormField>
@@ -312,16 +485,14 @@ const ScriptEventFormField = memo(
     return (
       <ScriptEventField
         halfWidth={field.width === "50%"}
-        inline={field.inline}
         alignBottom={field.alignBottom || field.type === "checkbox"}
-        style={{
-          flexBasis: field.flexBasis,
-          flexGrow: field.flexGrow,
-          minWidth: field.minWidth,
-        }}
+        inline={field.inline}
+        flexBasis={field.flexBasis}
+        flexGrow={field.flexGrow}
+        minWidth={field.minWidth}
       >
         <FormField
-          name={genKey(scriptEventId, field.key || "")}
+          name={genKey(scriptEvent.id, field.key || "")}
           label={
             label &&
             field.type !== "checkbox" &&
@@ -332,6 +503,8 @@ const ScriptEventFormField = memo(
               : ""
           }
           title={field.description}
+          variant={field.labelVariant as FormFieldProps["variant"]}
+          hasOverride={overrides?.args?.[field.key || ""] !== undefined}
         >
           {inputField}
         </FormField>

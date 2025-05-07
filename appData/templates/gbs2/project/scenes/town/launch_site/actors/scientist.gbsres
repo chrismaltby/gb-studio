@@ -3,6 +3,7 @@
   "id": "685ffbff-21f7-4d22-9a61-7cf2c20d8125",
   "_index": 1,
   "symbol": "actor_scientist",
+  "prefabId": "",
   "name": "Scientist",
   "x": 8,
   "y": 12,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "29251383-06c9-45b4-ab62-ac34947a076f",

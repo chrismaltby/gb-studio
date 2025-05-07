@@ -6,6 +6,7 @@ import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 
 type InputPickerProps = {
   id: string;
+  autoFocus?: boolean;
 } & (
   | {
       multiple: true;

@@ -1,24 +1,17 @@
 import * as React from "react";
-import { findDOMNode } from "react-dom";
-import {
-  DragSource,
-  DropTarget,
-  ConnectDropTarget,
-  ConnectDragSource,
-  DropTargetMonitor,
-  DropTargetConnector,
-  DragSourceConnector,
-  DragSourceMonitor,
-} from "react-dnd";
 import styled, { css } from "styled-components";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
+import renderSpriteFrameContextMenu from "components/sprites/renderSpriteFrameContextMenu";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useCallback, useState } from "react";
+import { ContextMenu } from "ui/menu/ContextMenu";
+import { pasteAny } from "store/features/clipboard/clipboardHelpers";
 
 interface CardWrapperProps {
-  selected: boolean;
-  isDragging?: boolean;
+  $selected: boolean;
+  $multiSelected: boolean;
+  $isDragging?: boolean;
 }
-
-const ItemType = "frame";
 
 export const CardWrapper = styled.div<CardWrapperProps>`
   width: 50px;
@@ -33,13 +26,21 @@ export const CardWrapper = styled.div<CardWrapperProps>`
   position: relative;
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
         `
       : ""}
+
   ${(props) =>
-    props.isDragging
+    props.$multiSelected && !props.$selected
+      ? css`
+          box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight};
+        `
+      : ""}
+
+  ${(props) =>
+    props.$isDragging
       ? css`
           opacity: 0;
         `
@@ -61,133 +62,89 @@ const FrameIndex = styled.div`
   border-radius: 4px;
 `;
 
-const cardSource = {
-  beginDrag(props: CardProps) {
-    return {
-      id: props.id,
-      index: props.index,
-    };
-  },
-};
-
-const cardTarget = {
-  hover(props: CardProps, monitor: DropTargetMonitor, component: Card | null) {
-    if (!component) {
-      return null;
-    }
-    const dragIndex = (monitor.getItem() as { index: number }).index;
-    const hoverIndex = props.index;
-
-    // Don't replace items with themselves
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-
-    // Determine rectangle on screen
-    const hoverBoundingRect = (
-      findDOMNode(component) as Element
-    ).getBoundingClientRect();
-    // ).getBoundingClientRect();
-
-    // Get horizontal middle
-    const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    if (!clientOffset) {
-      return;
-    }
-
-    // Get pixels to the left
-    const hoverClientX = clientOffset.x - hoverBoundingRect.left;
-
-    // Only perform the move when the mouse has crossed half of the items height
-    // When dragging downwards, only move when the cursor is below 50%
-    // When dragging upwards, only move when the cursor is above 50%
-
-    // Dragging downwards
-    if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
-      return;
-    }
-
-    // Dragging upwards
-    if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
-      return;
-    }
-
-    // Time to actually perform the action
-    props.moveCard(dragIndex, hoverIndex);
-
-    // Note: we're mutating the monitor item here!
-    // Generally it's better to avoid mutations,
-    // but it's good here for the sake of performance
-    // to avoid expensive index searches.
-    (monitor.getItem() as { index: number }).index = hoverIndex;
-  },
-};
-
-export interface CardProps {
+interface SpriteAnimationTimelineFrameProps {
+  selected: boolean;
+  multiSelected: boolean;
+  isDragging: boolean;
   id: string;
   spriteSheetId: string;
-  text: string;
+  animationId: string;
   index: number;
-  selected: boolean;
-  isDragging?: boolean;
-  onSelect: (id: string) => void;
-  connectDragSource?: ConnectDragSource;
-  connectDropTarget?: ConnectDropTarget;
-  moveCard: (dragIndex: number, hoverIndex: number) => void;
 }
 
-class Card extends React.Component<CardProps> {
-  render() {
-    const {
-      id,
+export const SpriteAnimationTimelineFrame = ({
+  selected,
+  multiSelected,
+  isDragging,
+  id,
+  spriteSheetId,
+  animationId,
+  index,
+}: SpriteAnimationTimelineFrameProps) => {
+  const dispatch = useAppDispatch();
+
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds
+  );
+
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
+  const renderContextMenu = useCallback(async () => {
+    const clipboard = await pasteAny();
+    return renderSpriteFrameContextMenu({
+      dispatch,
       spriteSheetId,
-      index,
-      selected,
-      isDragging,
-      onSelect,
-      connectDragSource,
-      connectDropTarget,
-    } = this.props;
+      spriteAnimationId: animationId,
+      metaspriteId: id,
+      selectedMetaspriteIds: selectedAdditionalMetaspriteIds,
+      clipboard,
+    });
+  }, [
+    selectedAdditionalMetaspriteIds,
+    animationId,
+    dispatch,
+    id,
+    spriteSheetId,
+  ]);
 
-    return (
-      connectDragSource &&
-      connectDropTarget &&
-      connectDragSource(
-        connectDropTarget(
-          <div onClick={() => onSelect(id)}>
-            <CardWrapper selected={selected} isDragging={isDragging}>
-              <MetaspriteCanvas
-                metaspriteId={id}
-                spriteSheetId={spriteSheetId}
-              />
-              <FrameIndex>{index}</FrameIndex>
-            </CardWrapper>
-          </div>
-        )
-      )
-    );
-  }
-}
+  const onContextMenu = useCallback(
+    async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const menu = await renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu]
+  );
 
-const DraggableCard = DropTarget(
-  ItemType,
-  cardTarget,
-  (connect: DropTargetConnector) => ({
-    connectDropTarget: connect.dropTarget(),
-  })
-)(
-  DragSource(
-    ItemType,
-    cardSource,
-    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-      connectDragSource: connect.dragSource(),
-      isDragging: monitor.isDragging(),
-    })
-  )(Card)
-);
-
-export default DraggableCard;
+  return (
+    <CardWrapper
+      $selected={selected}
+      $multiSelected={multiSelected}
+      $isDragging={isDragging}
+      onContextMenu={onContextMenu}
+    >
+      <MetaspriteCanvas metaspriteId={id} spriteSheetId={spriteSheetId} />
+      <FrameIndex>{index}</FrameIndex>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
+    </CardWrapper>
+  );
+};

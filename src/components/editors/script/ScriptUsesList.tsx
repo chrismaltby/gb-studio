@@ -1,9 +1,11 @@
-import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -45,7 +47,7 @@ const UseMessage = styled.div`
 
 export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const [fetching, setFetching] = useState(true);
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const [scriptUses, setScriptUses] = useState<ScriptUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -60,7 +62,12 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
-
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
+  );
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
@@ -92,6 +99,8 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
       scenes,
       actorsLookup,
       triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
       scriptEventsLookup,
       scriptEventDefs,
       customEventsLookup,
@@ -105,6 +114,8 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
     scriptEventsLookup,
     scriptEventDefs,
     customEventsLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
   ]);
 
   const setSelectedId = (id: string, item: ScriptUse) => {
@@ -127,7 +138,7 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   };
 
   return (
-    <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
+    <UsesWrapper ref={observe}>
       <SplitPaneHeader
         collapsed={false}
         onToggle={onClose}

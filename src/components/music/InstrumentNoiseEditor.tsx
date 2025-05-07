@@ -4,14 +4,14 @@ import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
-import { FormDivider, FormRow } from "ui/form/FormLayout";
+import { FormDivider, FormRow } from "ui/form/layout/FormLayout";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 import { Button } from "ui/buttons/Button";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import { useAppDispatch } from "store/hooks";
 

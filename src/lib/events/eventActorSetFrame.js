@@ -27,7 +27,6 @@ const fields = [
     description: l10n("FIELD_ANIMATION_FRAME_DESC"),
     type: "value",
     min: 0,
-    max: 25,
     defaultValue: {
       type: "number",
       value: 0,

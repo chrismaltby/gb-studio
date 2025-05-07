@@ -145,6 +145,11 @@
       "id": "94c18861-b352-4f49-a64d-52f2e3415077__L2",
       "name": "Flower Tile",
       "symbol": "var_flower_tile"
+    },
+    {
+      "id": "5fa52cd0-57cd-414c-8b93-5601c6e9636f__L0",
+      "name": "Defeated",
+      "symbol": ""
     }
   ]
 }

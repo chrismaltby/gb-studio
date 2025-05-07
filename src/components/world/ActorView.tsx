@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
@@ -21,8 +22,8 @@ interface ActorViewProps {
 }
 
 interface WrapperProps {
-  selected?: boolean;
-  halfWidth: boolean;
+  $selected?: boolean;
+  $halfWidth: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -33,7 +34,7 @@ const Wrapper = styled.div<WrapperProps>`
   -webkit-transform: translate3d(0, 0, 0);
 
   ${(props) =>
-    props.halfWidth
+    props.$halfWidth
       ? css`
           width: 8px;
         `
@@ -42,7 +43,7 @@ const Wrapper = styled.div<WrapperProps>`
         `}
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           background-color: rgba(247, 45, 220, 0.8);
           outline: 1px solid rgba(140, 0, 177, 1);
@@ -69,11 +70,19 @@ const CanvasWrapper = styled.div`
 const ActorView = memo(
   ({ id, sceneId, palettes, editable }: ActorViewProps) => {
     const dispatch = useAppDispatch();
+
     const actor = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );
+    const prefab = useAppSelector((state) =>
+      actorPrefabSelectors.selectById(state, actor?.prefabId ?? "")
+    );
+
     const sprite = useAppSelector((state) =>
-      spriteSheetSelectors.selectById(state, actor?.spriteSheetId ?? "")
+      spriteSheetSelectors.selectById(
+        state,
+        prefab?.spriteSheetId ?? actor?.spriteSheetId ?? ""
+      )
     );
     const selected = useAppSelector(
       (state) =>
@@ -163,8 +172,8 @@ const ActorView = memo(
       <>
         {selected && actor.isPinned && <PinScreenPreview />}
         <Wrapper
-          selected={selected}
-          halfWidth={sprite?.canvasWidth === 8}
+          $selected={selected}
+          $halfWidth={sprite?.canvasWidth === 8}
           onMouseDown={onMouseDown}
           onContextMenu={onContextMenu}
           style={{
@@ -175,7 +184,7 @@ const ActorView = memo(
           {showSprite && (
             <CanvasWrapper>
               <SpriteSheetCanvas
-                spriteSheetId={actor.spriteSheetId}
+                spriteSheetId={sprite?.id ?? ""}
                 direction={actor.direction}
                 frame={0}
                 palettes={palettes}

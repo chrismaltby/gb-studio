@@ -19,14 +19,14 @@ const Color = styled.div`
   height: 32px;
   border: 1px solid transparent;
 
-  :first-of-type {
+  &:first-of-type {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
     min-width: 5px;
     flex-shrink: 0;
   }
 
-  :nth-last-of-type(2) {
+  &:nth-last-of-type(2) {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
     min-width: 5px;

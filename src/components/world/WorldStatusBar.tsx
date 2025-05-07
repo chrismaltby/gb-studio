@@ -18,14 +18,14 @@ const Wrapper = styled.div`
 `;
 
 interface ContainerProps {
-  hide?: boolean;
+  $hide?: boolean;
 }
 
 const Container = styled.div<ContainerProps>`
   color: ${(props) => props.theme.colors.text};
-  background: ${(props) => props.theme.colors.document.background};
   font-size: ${(props) => props.theme.typography.fontSize};
-  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.background};
   border-radius: 16px;
   margin-right: 15px;
   height: 19px;
@@ -36,7 +36,7 @@ const Container = styled.div<ContainerProps>`
   opacity: 1;
 
   ${(props) =>
-    props.hide
+    props.$hide
       ? css`
           opacity: 0;
         `
@@ -110,7 +110,7 @@ const WorldStatusBar = () => {
           </PillButton>
         </Container>
       )}
-      <Container hide={!hoverSceneName}>
+      <Container $hide={!hoverSceneName}>
         <Text>
           {hoverLabel.sceneName}
           {" : "}

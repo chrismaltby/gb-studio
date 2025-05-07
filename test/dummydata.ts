@@ -10,6 +10,11 @@ import {
   Scene,
   Actor,
   Trigger,
+  ActorPrefabNormalized,
+  TriggerPrefabNormalized,
+  Variable,
+  ScriptEventNormalized,
+  ScriptEvent,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -39,6 +44,7 @@ import {
   PrecompiledSprite,
 } from "../src/lib/compiler/generateGBVMData";
 import {
+  ActorPrefabResource,
   ActorResource,
   AvatarResource,
   CompressedBackgroundResource,
@@ -55,6 +61,7 @@ import {
   SoundResource,
   SpriteResource,
   TilesetResource,
+  TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
@@ -72,6 +79,7 @@ export const dummySceneNormalized: SceneNormalized = {
   height: 18,
   type: "0",
   autoFadeSpeed: 1,
+  colorModeOverride: "none",
   paletteIds: [],
   spritePaletteIds: [],
   collisions: [0],
@@ -97,11 +105,24 @@ export const dummyCompressedSceneResource: CompressedSceneResourceWithChildren =
     collisions: "",
   } as unknown as CompressedSceneResourceWithChildren;
 
+export const dummyScriptEvent: ScriptEvent = {
+  id: "event1",
+  command: "CMD",
+  args: {},
+};
+
+export const dummyScriptEventNormalized: ScriptEventNormalized = {
+  id: "event1",
+  command: "CMD",
+  args: {},
+};
+
 export const dummyActorNormalized: ActorNormalized = {
   id: "dummyActor1",
   name: "",
   symbol: "actor_0",
   spriteSheetId: "",
+  prefabId: "",
   x: 0,
   y: 0,
   frame: 0,
@@ -113,6 +134,7 @@ export const dummyActorNormalized: ActorNormalized = {
   isPinned: false,
   persistent: false,
   collisionGroup: "",
+  prefabScriptOverrides: {},
   script: [],
   startScript: [],
   updateScript: [],
@@ -127,10 +149,12 @@ export const dummyTriggerNormalized: TriggerNormalized = {
   id: "",
   name: "",
   symbol: "trigger_0",
+  prefabId: "",
   x: 0,
   y: 0,
   width: 0,
   height: 0,
+  prefabScriptOverrides: {},
   script: [],
   leaveScript: [],
 };
@@ -162,6 +186,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
     symbol: "ta_1",
     data: new Uint8Array(),
   },
+  colorMode: "mixed",
 };
 
 export const dummyBackground: Background = {
@@ -231,6 +256,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   height: 32,
   animSpeed: 15,
   vramData: [[], []],
+  colorMode: "mixed",
 };
 
 export const dummyMusic: Music = {
@@ -265,6 +291,7 @@ export const dummyProjectData: ProjectData = {
   palettes: [],
   customEvents: [],
   variables: [],
+  constants: [],
   music: [],
   fonts: [],
   avatars: [],
@@ -282,6 +309,7 @@ export const dummyProjectData: ProjectData = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
@@ -302,6 +330,7 @@ export const dummyProjectData: ProjectData = {
     favoriteEvents: [],
     showCollisionSlopeTiles: false,
     showCollisionExtraTiles: false,
+    showCollisionTileValues: false,
     customColorsWhite: "E8F8E0",
     customColorsLight: "B0F088",
     customColorsDark: "509878",
@@ -323,11 +352,14 @@ export const dummyProjectData: ProjectData = {
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
     colorMode: "mono",
+    colorCorrection: "default",
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
-    compilerOptimisation: "none",
     compilerPreset: 3000,
+    scriptEventPresets: {},
+    scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 
@@ -336,6 +368,7 @@ export const dummyActorResource: ActorResource = {
   _index: 0,
   id: "actor1",
   symbol: "symbol",
+  prefabId: "",
   name: "Actor 1",
   x: 10,
   y: 20,
@@ -349,6 +382,7 @@ export const dummyActorResource: ActorResource = {
   isPinned: false,
   persistent: true,
   collisionGroup: "",
+  prefabScriptOverrides: {},
   script: [],
   startScript: [],
   updateScript: [],
@@ -363,10 +397,12 @@ export const dummyTriggerResource: TriggerResource = {
   id: "trigger1",
   symbol: "symbol",
   name: "Trigger 1",
+  prefabId: "",
   x: 10,
   y: 20,
   width: 30,
   height: 40,
+  prefabScriptOverrides: {},
   script: [],
   leaveScript: [],
 };
@@ -423,6 +459,40 @@ export const dummyScriptResource: ScriptResource = {
   actors: { actor1: { id: "actor1", name: "Actor 1" } },
   script: [],
 };
+
+export const dummyActorPrefabResource: ActorPrefabResource = {
+  _resourceType: "actorPrefab",
+  script: [],
+  id: "",
+  name: "",
+  startScript: [],
+  updateScript: [],
+  hit1Script: [],
+  hit2Script: [],
+  hit3Script: [],
+  spriteSheetId: "",
+  paletteId: "",
+  frame: 0,
+  moveSpeed: 0,
+  animSpeed: 0,
+  animate: false,
+  persistent: false,
+  collisionGroup: "",
+};
+
+export const dummyActorPrefabNormalized: ActorPrefabNormalized =
+  dummyActorPrefabResource as unknown as ActorPrefabNormalized;
+
+export const dummyTriggerPrefabResource: TriggerPrefabResource = {
+  script: [],
+  id: "",
+  name: "",
+  _resourceType: "triggerPrefab",
+  leaveScript: [],
+};
+
+export const dummyTriggerPrefabNormalized: TriggerPrefabNormalized =
+  dummyTriggerPrefabResource as unknown as TriggerPrefabNormalized;
 
 export const dummyMusicResource: MusicResource = {
   _resourceType: "music",
@@ -481,6 +551,7 @@ export const dummyFontResource: FontResource = {
   filename: "font.png",
   width: 16,
   height: 16,
+  mapping: {},
 };
 
 export const dummySettingsResource: SettingsResource = {
@@ -495,6 +566,8 @@ export const dummySettingsResource: SettingsResource = {
   showConnections: "all",
   showCollisionSlopeTiles: true,
   showCollisionExtraTiles: true,
+  showCollisionTileValues: false,
+  collisionLayerOpacity: 50,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 1,
@@ -553,16 +626,26 @@ export const dummySettingsResource: SettingsResource = {
   debuggerBreakpoints: [],
   debuggerWatchedVariables: [],
   colorMode: "mono",
+  colorCorrection: "default",
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
-  compilerOptimisation: "none",
   compilerPreset: 3000,
+  scriptEventPresets: {},
+  scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
   variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+  constants: [],
+};
+
+export const dummyVariable: Variable = {
+  id: "var1",
+  name: "Variable 1",
+  symbol: "symbol",
 };
 
 export const dummyEngineFieldValuesResource: EngineFieldValuesResource = {
@@ -583,10 +666,13 @@ export const dummyProjectResources: ProjectResources = {
   backgrounds: [],
   sprites: [],
   palettes: [],
+  actorPrefabs: [],
+  triggerPrefabs: [],
   scripts: [],
   variables: {
     _resourceType: "variables",
     variables: [],
+    constants: [],
   },
   music: [],
   fonts: [],
@@ -609,6 +695,7 @@ export const dummyProjectResources: ProjectResources = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
@@ -629,6 +716,7 @@ export const dummyProjectResources: ProjectResources = {
     favoriteEvents: [],
     showCollisionSlopeTiles: false,
     showCollisionExtraTiles: false,
+    showCollisionTileValues: false,
     customColorsWhite: "E8F8E0",
     customColorsLight: "B0F088",
     customColorsDark: "509878",
@@ -650,11 +738,14 @@ export const dummyProjectResources: ProjectResources = {
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
     colorMode: "mono",
+    colorCorrection: "default",
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
-    compilerOptimisation: "none",
     compilerPreset: 3000,
+    scriptEventPresets: {},
+    scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 

@@ -1,6 +1,6 @@
 import type RendererAPI from "./setup";
 
-type WindowWithAPI = {
+export type WindowWithAPI = {
   API: typeof RendererAPI;
 };
 

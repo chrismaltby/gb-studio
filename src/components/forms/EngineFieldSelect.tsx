@@ -5,6 +5,7 @@ import { Select, Option, OptGroup } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
+import { SingleValue } from "react-select";
 
 interface EngineFieldSelectProps {
   name: string;
@@ -48,8 +49,8 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(e: Option) => {
-        if (onChange) {
+      onChange={(e: SingleValue<Option>) => {
+        if (e && onChange) {
           onChange(e.value);
         }
       }}
@@ -60,11 +61,6 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
 EngineFieldSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
-};
-
-EngineFieldSelect.defaultProps = {
-  value: undefined,
-  onChange: undefined,
 };
 
 export default EngineFieldSelect;

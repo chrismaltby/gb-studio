@@ -3,13 +3,13 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { FormRow, FormField } from "ui/form/FormLayout";
+import { FormRow, FormField } from "ui/form/layout/FormLayout";
 import { ThemeContext } from "styled-components";
 import { WaveEditorInput } from "components/music/WaveEditorInput";
 
 interface WaveEditorFormProps {
   waveId: number;
-  onChange: (newValue: { value: string; label: string }) => void;
+  onChange: (newValue: { value: number; label: string }) => void;
 }
 
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
@@ -50,7 +50,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
 
     const ctx = canvas.getContext("2d");
 
-    const defaultColor = themeContext.colors.highlight;
+    const defaultColor = themeContext?.colors.highlight ?? "black";
 
     // eslint-disable-next-line no-self-assign
     canvas.width = canvas.width;
@@ -172,7 +172,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
             name="wave_index"
             value={selectedWave}
             options={waveOptions}
-            onChange={onChange}
+            onChange={(e) => e && onChange(e)}
           />
         </FormField>
       </FormRow>

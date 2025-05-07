@@ -27,27 +27,33 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
-import { toThemeId } from "shared/lib/theme";
-import { isString, isStringArray, JsonValue } from "shared/types";
+import { ensureString, isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
 import createProject, { CreateProjectInput } from "lib/project/createProject";
 import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type { BuildOptions, RecentProjectData } from "renderer/lib/api/setup";
-import buildProject from "lib/compiler/buildProject";
+import buildProject, {
+  cancelCompileStepsInProgress,
+} from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
 import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
-import { assetsRoot, buildUUID, projectTemplatesRoot } from "consts";
+import {
+  assetsRoot,
+  buildUUID,
+  EMULATOR_MUTED_SETTING_KEY,
+  LOCALE_SETTING_KEY,
+  projectTemplatesRoot,
+  THEME_SETTING_KEY,
+} from "consts";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import compileData from "lib/compiler/compileData";
-import ejectBuild from "lib/compiler/ejectBuild";
 import type {
   Background,
   SpriteSheetData,
@@ -80,15 +86,12 @@ import loadProjectData, {
 import saveProjectData from "lib/project/saveProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
-import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
-import initElectronL10N, {
-  getAppLocale,
-  locales,
-} from "lib/lang/initElectronL10N";
+import l10n, { getL10NData } from "shared/lib/lang/l10n";
+import initElectronL10N, { getAppLocale } from "lib/lang/initElectronL10N";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
-import { MusicAssetData, loadMusicData } from "lib/project/loadMusicData";
+import { loadMusicData } from "lib/project/loadMusicData";
 import { loadSoundData } from "lib/project/loadSoundData";
 import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
@@ -113,10 +116,42 @@ import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
+  MusicResourceAsset,
   ProjectResources,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
+import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
+import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
+import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
+import romUsage from "lib/compiler/romUsage";
+import { msToHumanTime } from "shared/lib/helpers/time";
+import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
+import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
+import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
+import {
+  addPluginToProject,
+  addUserRepo,
+  getGlobalPluginsList,
+  getReposList,
+  getRepoUrlById,
+  removePluginFromProject,
+  removeUserRepo,
+} from "lib/pluginManager/repo";
+import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
+import { getPluginsInProject } from "lib/pluginManager/project";
+import {
+  ensureGlobalPluginsPath,
+  getGlobalPluginsPath,
+  getPluginsInstalledGlobally,
+  removeGlobalPlugin,
+} from "lib/pluginManager/globalPlugins";
+import { InstalledPluginData, PluginType } from "lib/pluginManager/types";
+import watchGlobalPlugins from "lib/pluginManager/watchGlobalPlugins";
+import { ThemeManager } from "lib/themes/themeManager";
+import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
+import { L10nManager } from "lib/lang/l10nManager";
+import { TemplateManager } from "lib/templates/templateManager";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -124,6 +159,8 @@ declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const PLUGINS_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
 declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -141,6 +178,7 @@ if (require("electron-squirrel-startup")) {
 let projectWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
 let preferencesWindow: BrowserWindow | null = null;
+let pluginsWindow: BrowserWindow | null = null;
 let playWindow: BrowserWindow | null = null;
 let musicWindow: BrowserWindow | null;
 
@@ -148,14 +186,18 @@ let playWindowSgb = false;
 let hasCheckedForUpdate = false;
 let documentEdited = false;
 let documentName = "";
+let playWindowTitle = "";
 let projectWindowCloseCancelled = false;
 let keepOpen = false;
 let projectPath = "";
-let cancelBuild = false;
 let musicWindowInitialized = false;
 let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
+
+const themeManager = new ThemeManager(process.platform);
+const l10nManager = new L10nManager();
+const templateManager = new TemplateManager();
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -240,6 +282,36 @@ export const createPreferences = async () => {
   });
 };
 
+export const createPluginsWindow = async () => {
+  pluginsWindow = new BrowserWindow({
+    width: 600,
+    height: 700,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      devTools: isDevMode,
+      preload: PLUGINS_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  pluginsWindow.setMenu(null);
+  pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
+
+  pluginsWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
+      pluginsWindow?.show();
+    }, 40);
+  });
+
+  pluginsWindow.on("closed", () => {
+    pluginsWindow = null;
+  });
+};
+
 export const createProjectWindow = async () => {
   const projectWindowState = windowStateKeeper({
     defaultWidth: 1000,
@@ -261,7 +333,7 @@ export const createProjectWindow = async () => {
       contextIsolation: true,
       nodeIntegration: false,
       nodeIntegrationInWorker: false,
-      webSecurity: process.env.NODE_ENV !== "development",
+      webSecurity: true,
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -279,9 +351,6 @@ export const createProjectWindow = async () => {
   projectWindow.webContents.on("did-finish-load", () => {
     refreshSpellCheck();
     sendToProjectWindow("open-project", projectPath);
-    setTimeout(() => {
-      projectWindow?.show();
-    }, 40);
   });
 
   projectWindow.on("enter-full-screen", () => {
@@ -337,8 +406,8 @@ export const createProjectWindow = async () => {
 
   projectWindow.on("closed", () => {
     projectWindow = null;
-    menu.buildMenu([]);
-
+    projectPath = "";
+    refreshMenu();
     if (musicWindow) {
       musicWindow.destroy();
     }
@@ -355,6 +424,7 @@ export const createProjectWindow = async () => {
       const data = await loadSpriteData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:sprite:changed", filename, data);
     },
@@ -362,6 +432,7 @@ export const createProjectWindow = async () => {
       const data = await loadBackgroundData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:background:changed", filename, data);
     },
@@ -372,6 +443,7 @@ export const createProjectWindow = async () => {
       const data = await loadMusicData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:music:changed", filename, data);
     },
@@ -379,6 +451,7 @@ export const createProjectWindow = async () => {
       const data = await loadSoundData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:sound:changed", filename, data);
     },
@@ -386,6 +459,7 @@ export const createProjectWindow = async () => {
       const data = await loadFontData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:font:changed", filename, data);
     },
@@ -393,6 +467,7 @@ export const createProjectWindow = async () => {
       const data = await loadAvatarData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:avatar:changed", filename, data);
     },
@@ -400,6 +475,7 @@ export const createProjectWindow = async () => {
       const data = await loadEmoteData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:emote:changed", filename, data);
     },
@@ -407,6 +483,7 @@ export const createProjectWindow = async () => {
       const data = await loadTilesetData(projectRoot)(filename);
       if (!data) {
         console.error(`Unable to load asset ${filename}`);
+        return;
       }
       sendToProjectWindow("watch:tileset:changed", filename, data);
     },
@@ -552,11 +629,15 @@ export const createPlay = async (
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
-        webSecurity: process.env.NODE_ENV !== "development",
+        webSecurity: true,
         preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
     playWindow.setAlwaysOnTop(true);
+    const isMuted = settings.get(EMULATOR_MUTED_SETTING_KEY) === true;
+    if (isMuted) {
+      playWindow.webContents.setAudioMuted(true);
+    }
     playWindowSgb = sgb;
   } else {
     playWindow.show();
@@ -568,6 +649,16 @@ export const createPlay = async (
       !!debugEnabled && !!debuggerInitData ? "true" : "false"
     }`
   );
+
+  let firstLoad = true;
+  playWindow.webContents.on("did-finish-load", () => {
+    if (firstLoad) {
+      playWindowTitle = playWindow?.getTitle() ?? "";
+      firstLoad = false;
+    }
+    const isMuted = settings.get(EMULATOR_MUTED_SETTING_KEY) === true;
+    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+  });
 
   playWindow.on("closed", () => {
     playWindow = null;
@@ -591,7 +682,7 @@ export const createMusic = async (
         contextIsolation: true,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
-        webSecurity: process.env.NODE_ENV !== "development",
+        webSecurity: true,
         devTools: isDevMode,
         preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
@@ -599,9 +690,7 @@ export const createMusic = async (
   }
 
   musicWindow.setMenu(null);
-  musicWindow.loadURL(
-    `${MUSIC_WINDOW_WEBPACK_ENTRY}#${encodeURIComponent(sfx ?? "")}`
-  );
+  musicWindow.loadURL(MUSIC_WINDOW_WEBPACK_ENTRY);
 
   musicWindow.on("closed", () => {
     musicWindow = null;
@@ -630,6 +719,15 @@ protocol.registerSchemesAsPrivileged([
       bypassCSP: true,
     },
   },
+  {
+    scheme: "gbshttp",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
 ]);
 
 // This method will be called when Electron has finished
@@ -638,7 +736,11 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", async () => {
   initElectronL10N();
 
-  menu.buildMenu([]);
+  await themeManager.loadPluginThemes();
+  await l10nManager.loadPlugins();
+  await templateManager.loadPlugins();
+
+  refreshMenu();
 
   // Enable DevTools.
   if (isDevMode) {
@@ -661,7 +763,25 @@ app.on("ready", async () => {
     createSplash();
   }
 
-  protocol.registerFileProtocol("gbs", (req, callback) => {
+  protocol.registerHttpProtocol("gbshttp", async (req, callback) => {
+    const { host, pathname } = new URL(req.url);
+    if (host === "plugin-repo-asset") {
+      const [_, repoId, ...pathParts] = pathname.split("/");
+      const repoUrl = getRepoUrlById(repoId);
+      if (repoUrl) {
+        const repoRoot = Path.dirname(repoUrl);
+        const repoPath = pathParts.join("/");
+        return callback({
+          url: Path.join(repoRoot, repoPath),
+        });
+      }
+    }
+    return callback({
+      error: 500,
+    });
+  });
+
+  protocol.registerFileProtocol("gbs", async (req, callback) => {
     const { host, pathname } = new URL(req.url);
     if (host === "project") {
       // Load an asset from the current project
@@ -676,7 +796,17 @@ app.on("ready", async () => {
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
+    } else if (host === "global-plugin") {
+      // Load an asset from the GB Studio global plugins folder
+      const globalPluginsPath = getGlobalPluginsPath();
+      const filename = Path.join(globalPluginsPath, decodeURI(pathname));
+      // Check has permission to access this asset
+      guardAssetWithinProject(filename, globalPluginsPath);
+      return callback({ path: filename });
     }
+    return callback({
+      error: 500,
+    });
   });
 });
 
@@ -704,9 +834,17 @@ app.on("activate", () => {
   }
 });
 
+ipcMain.handle("app:show-project-window", () => {
+  projectWindow?.show();
+});
+
 ipcMain.handle("project:open", async (_event, arg) => {
-  const { projectPath } = arg;
-  openProject(projectPath);
+  try {
+    const { projectPath } = arg;
+    return await openProject(projectPath);
+  } catch (e) {
+    dialog.showErrorBox(l10n("ERROR_TITLE"), String(e));
+  }
 });
 
 ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
@@ -727,9 +865,29 @@ ipcMain.handle("get-recent-projects", async (): Promise<
   });
 });
 
+const removeRecentProject = (removePath: string) => {
+  const recentProjects = settings.get("recentProjects");
+  const newRecents = isStringArray(recentProjects)
+    ? recentProjects.filter((path) => path !== removePath)
+    : [];
+  settings.set("recentProjects", newRecents);
+  // Rebuild OS level recent projects
+  app.clearRecentDocuments();
+  newRecents
+    .slice(0)
+    .reverse()
+    .forEach((path) => {
+      app.addRecentDocument(path);
+    });
+};
+
 ipcMain.handle("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
+});
+
+ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
+  removeRecentProject(removePath);
 });
 
 ipcMain.handle("open-help", async (_event, helpPage) => {
@@ -794,7 +952,12 @@ ipcMain.handle("open-external", async (_event, url) => {
     "https://github.com",
   ];
   const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
-  if (!match) throw new Error("URL not allowed");
+  if (!match) {
+    const cancel = confirmOpenURL(url);
+    if (cancel) {
+      return;
+    }
+  }
   shell.openExternal(url);
 });
 
@@ -847,6 +1010,39 @@ ipcMain.handle(
 );
 
 ipcMain.handle(
+  "dialog:confirm-delete-prefab",
+  async (_event, name: string, count: number) => {
+    return confirmDeletePrefab(name, count);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-replace-prefab",
+  async (_event, name: string) => {
+    return confirmReplacePrefab(name);
+  }
+);
+
+ipcMain.handle("dialog:confirm-unpack-prefab", async (_event) => {
+  return confirmUnpackPrefab();
+});
+
+ipcMain.handle("dialog:confirm-delete-preset", async (_event, name: string) => {
+  return confirmDeletePreset(name);
+});
+
+ipcMain.handle("dialog:confirm-apply-preset", async () => {
+  return confirmApplyPreset();
+});
+
+ipcMain.handle(
+  "dialog:confirm-delete-constant",
+  async (_event, name: string, usesNames: string[]) => {
+    return confirmDeleteConstant(name, usesNames);
+  }
+);
+
+ipcMain.handle(
   "dialog:confirm-tracker-unsaved",
   async (_event, name: string) => {
     return confirmUnsavedChangesTrackerDialog(name);
@@ -854,7 +1050,16 @@ ipcMain.handle(
 );
 
 ipcMain.handle("dialog:migrate-warning", async (_event, path: string) => {
-  return migrateWarning(path);
+  try {
+    return await migrateWarning(path);
+  } catch (e) {
+    if (e instanceof Error) {
+      dialog.showErrorBox(l10n("ERROR_INVALID_FILE_TYPE"), e.stack ?? "");
+    } else {
+      dialog.showErrorBox(l10n("ERROR_INVALID_FILE_TYPE"), String(e));
+    }
+    return false;
+  }
 });
 
 ipcMain.handle("close-project", () => {
@@ -998,49 +1203,6 @@ ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   setMenuItemChecked("showNavigator", showNavigator);
 });
 
-ipcMain.on(
-  "set-menu-plugins",
-  (
-    _event,
-    plugins: Array<{
-      id: string;
-      plugin: string;
-      name: string;
-      accelerator: string;
-    }>
-  ) => {
-    const distinct = <T>(value: T, index: number, self: T[]) =>
-      self.indexOf(value) === index;
-
-    const pluginValues = Object.values(plugins);
-
-    const pluginNames = pluginValues
-      .map((plugin) => plugin.plugin)
-      .filter(distinct);
-
-    menu.buildMenu(
-      pluginNames.map((pluginName) => {
-        return {
-          label: pluginName,
-          submenu: pluginValues
-            .filter((plugin) => {
-              return plugin.plugin === pluginName;
-            })
-            .map((plugin) => {
-              return {
-                label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
-                accelerator: plugin.accelerator,
-                click() {
-                  sendToProjectWindow("menu:plugin-run", plugin.id);
-                },
-              };
-            }),
-        };
-      })
-    );
-  }
-);
-
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);
   sendToProjectWindow("setting:ui-scale:changed", scale);
@@ -1152,12 +1314,10 @@ ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
 });
 
 ipcMain.handle("get-l10n-strings", () => getL10NData());
+
 ipcMain.handle("get-theme", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  return themeId;
+  const themeId = ensureString(settings.get(THEME_SETTING_KEY), "");
+  return themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
 });
 
 ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
@@ -1222,8 +1382,6 @@ ipcMain.handle("project:get-resource-checksums", async (): Promise<
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectResources, options: BuildOptions) => {
-    cancelBuild = false;
-
     const { exportBuild, buildType, sceneTypes } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
@@ -1235,6 +1393,19 @@ ipcMain.handle(
       options.debugEnabled || project.settings.debuggerEnabled;
     const colorOnly = project.settings.colorMode === "color";
     const gameFile = colorOnly ? "game.gbc" : "game.gb";
+    const progress = (message: string) => {
+      if (
+        message !== "'" &&
+        message.indexOf("unknown or unsupported #pragma") === -1
+      ) {
+        buildLog(message);
+      }
+    };
+    const warnings = (message: string) => {
+      if (message && !message.includes("SIGTERM")) {
+        buildErr(message);
+      }
+    };
 
     try {
       const compiledData = await buildProject(project, {
@@ -1242,23 +1413,10 @@ ipcMain.handle(
         projectRoot,
         sceneTypes,
         outputRoot,
-        scriptEventHandlers,
         tmpPath: getTmp(),
         debugEnabled: debuggerEnabled,
-        progress: (message) => {
-          if (cancelBuild) {
-            throw new Error("BUILD_CANCELLED");
-          }
-          if (
-            message !== "'" &&
-            message.indexOf("unknown or unsupported #pragma") === -1
-          ) {
-            buildLog(message);
-          }
-        },
-        warnings: (message) => {
-          buildErr(message);
-        },
+        progress,
+        warnings,
       });
 
       if (exportBuild) {
@@ -1269,25 +1427,38 @@ ipcMain.handle(
         shell.openPath(Path.join(projectRoot, "build", buildType));
         buildLog(`-`);
         buildLog(
-          `Success! ${
+          `${l10n("COMPILER_BUILD_SUCCESS")} ${
             buildType === "web"
-              ? `Site is ready at ${Path.normalize(
+              ? `${l10n("COMPILER_SITE_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/web/index.html`
                 )}`
               : buildType === "pocket"
-              ? `ROM is ready at ${Path.normalize(
+              ? `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/pocket/game.pocket`
                 )}`
-              : `ROM is ready at ${Path.normalize(
+              : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/rom/${gameFile}`
                 )}`
           }`
         );
       }
 
+      const usageData = await romUsage({
+        buildRoot: outputRoot,
+        tmpPath: getTmp(),
+        progress,
+        warnings,
+      });
+
+      sendToProjectWindow("debugger:romusage", usageData);
+
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
-        buildLog(`Success! Starting emulator...`);
+        buildLog(
+          `${l10n("COMPILER_BUILD_SUCCESS")} ${l10n(
+            "COMPILER_STARTING_EMULATOR"
+          )}...`
+        );
         if (debuggerEnabled) {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot
@@ -1321,11 +1492,15 @@ ipcMain.handle(
       }
 
       const buildTime = Date.now() - buildStartTime;
-      buildLog(`Build Time: ${buildTime}ms`);
+      buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
-      } else if (e instanceof Error && e.message === "BUILD_CANCELLED") {
+      } else if (
+        e === null ||
+        typeof e === "number" ||
+        (e instanceof Error && e.message === "BUILD_CANCELLED")
+      ) {
         buildLog(l10n("BUILD_CANCELLED"));
       } else if (e instanceof Error) {
         buildErr(e.toString());
@@ -1336,7 +1511,7 @@ ipcMain.handle(
 );
 
 ipcMain.handle("project:build-cancel", () => {
-  cancelBuild = true;
+  cancelCompileStepsInProgress();
 });
 
 ipcMain.handle("project:engine-eject", () => {
@@ -1396,29 +1571,15 @@ ipcMain.handle(
         buildErr(message);
       };
 
-      const tmpPath = getTmp();
-
-      // Compile project data
-      const compiledData = await compileData(project, {
+      await buildProject(project, {
         projectRoot,
-        engineFields,
-        sceneTypes,
-        scriptEventHandlers,
-        tmpPath,
-        progress,
-        warnings,
-      });
-
-      // Export compiled data to a folder
-      await ejectBuild({
-        projectType: "gb",
-        projectRoot,
-        tmpPath,
-        projectData: project,
-        engineFields,
         sceneTypes,
         outputRoot,
-        compiledData,
+        tmpPath: getTmp(),
+        buildType: "rom",
+        engineFields,
+        debugEnabled: false,
+        make: false,
         progress,
         warnings,
       });
@@ -1439,7 +1600,7 @@ ipcMain.handle(
       }
 
       const buildTime = Date.now() - buildStartTime;
-      buildLog(`Build Time: ${buildTime}ms`);
+      buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
 
       shell.openPath(exportRoot);
     } catch (e) {
@@ -1497,7 +1658,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   "tracker:new",
-  async (_event, assetPath: string): Promise<MusicAssetData> => {
+  async (_event, assetPath: string): Promise<MusicResourceAsset> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = Path.join(projectRoot, assetPath);
 
@@ -1508,7 +1669,7 @@ ipcMain.handle(
     const copy2 = async (
       oPath: string,
       path: string
-    ): Promise<MusicAssetData> => {
+    ): Promise<MusicResourceAsset> => {
       try {
         const exists = await pathExists(path);
         if (!exists) {
@@ -1531,14 +1692,7 @@ ipcMain.handle(
             newFilename = filename.replace(/\d+$/, `${number}`);
           }
           const newPath = `${newFilename}.uge`;
-          await copy2(oPath, newPath);
-
-          const data = await loadMusicData(projectRoot)(newPath);
-          if (!data) {
-            console.error(`Unable to load asset ${filename}`);
-          }
-
-          return data;
+          return await copy2(oPath, newPath);
         }
       } catch (e) {
         console.error(e);
@@ -1581,7 +1735,8 @@ ipcMain.handle("sfx:play-wav", async (_event, assetPath: string) => {
   guardAssetWithinProject(filename, projectRoot);
   const sfx = await compileWav(filename, "asm");
   createMusic(sfx, {
-    action: "play-sound",
+    action: "load-sound",
+    sound: sfx,
   });
 });
 
@@ -1593,7 +1748,8 @@ ipcMain.handle("sfx:play-vgm", async (_event, assetPath: string) => {
   guardAssetWithinProject(filename, projectRoot);
   const { output: sfx } = await compileVGM(filename, "asm");
   createMusic(sfx, {
-    action: "play-sound",
+    action: "load-sound",
+    sound: sfx,
   });
 });
 
@@ -1605,14 +1761,20 @@ ipcMain.handle(
 
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    const { output: sfx } = await compileFXHammerSingle(
-      filename,
-      effectIndex,
-      "asm"
-    );
-    createMusic(sfx, {
-      action: "play-sound",
-    });
+
+    try {
+      const { output: sfx } = await compileFXHammerSingle(
+        filename,
+        effectIndex,
+        "asm"
+      );
+      createMusic(sfx, {
+        action: "load-sound",
+        sound: sfx,
+      });
+    } catch (e) {
+      console.error("Unable to play FX Hammer SFX", filename, effectIndex);
+    }
   }
 );
 
@@ -1645,7 +1807,11 @@ ipcMain.handle(
     const filename = assetFilename(projectRoot, "sprites", spriteData);
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
-    return compileSprite(spriteData, false, projectRoot);
+    return compileSprite(
+      { ...spriteData, colorMode: "mixed" },
+      false,
+      projectRoot
+    );
   }
 );
 
@@ -1678,6 +1844,59 @@ ipcMain.handle(
     };
   }
 );
+
+ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
+  return getGlobalPluginsList(force);
+});
+
+ipcMain.handle("plugins:list-repos", () => {
+  return getReposList();
+});
+
+ipcMain.handle("plugins:add-repo", async (_, url: string) => {
+  await addUserRepo(url);
+});
+
+ipcMain.handle("plugins:remove-repo", async (_, url: string) => {
+  await removeUserRepo(url);
+});
+
+ipcMain.handle("plugins:add", async (_, pluginId: string, repoId: string) => {
+  await addPluginToProject(projectPath, pluginId, repoId);
+});
+
+ipcMain.handle(
+  "plugins:remove",
+  async (_, pluginId: string, pluginType: PluginType) => {
+    if (isGlobalPluginType(pluginType)) {
+      await removeGlobalPlugin(pluginId);
+    } else {
+      if (!projectPath) {
+        dialog.showErrorBox(
+          l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
+          l10n("ERROR_NO_PROJECT_IS_OPEN")
+        );
+        return;
+      }
+      await removePluginFromProject(projectPath, pluginId);
+    }
+  }
+);
+
+ipcMain.handle("plugins:get-installed", async () => {
+  const plugins: InstalledPluginData[] = [];
+  if (projectPath) {
+    const projectPlugins = await getPluginsInProject(projectPath);
+    plugins.push(...projectPlugins);
+  }
+  const globalPlugins = await getPluginsInstalledGlobally();
+  plugins.push(...globalPlugins);
+  return plugins;
+});
+
+ipcMain.handle("templates:list", async () => {
+  return templateManager.getPluginTemplates();
+});
 
 menu.on("new", async () => {
   newProject();
@@ -1767,21 +1986,49 @@ menu.on("preferences", () => {
   }
 });
 
+menu.on("pluginManager", () => {
+  if (!pluginsWindow) {
+    createPluginsWindow();
+  } else {
+    pluginsWindow.show();
+  }
+});
+
+menu.on("globalPlugins", async () => {
+  const globalPluginsPath = await ensureGlobalPluginsPath();
+  shell.openPath(globalPluginsPath);
+});
+
+menu.on("projectPlugins", () => {
+  if (!projectPath) {
+    dialog.showErrorBox(l10n("ERROR_NO_PROJECT_IS_OPEN"), "");
+    return;
+  }
+  const projectRoot = Path.dirname(projectPath);
+  const pluginsPath = Path.join(projectRoot, "plugins");
+  shell.openPath(pluginsPath);
+});
+
 menu.on("updateTheme", (value) => {
-  settings.set("theme", value as JsonValue);
+  const pluginThemes = themeManager.getPluginThemes();
+  settings.set(THEME_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("themeDefault", value === undefined);
   setMenuItemChecked("themeLight", value === "light");
   setMenuItemChecked("themeDark", value === "dark");
-  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
-  sendToSplashWindow("update-theme", newThemeId);
-  sendToProjectWindow("update-theme", newThemeId);
+  for (const pluginTheme of pluginThemes) {
+    setMenuItemChecked(`theme-${pluginTheme.id}`, value === pluginTheme.id);
+  }
+  refreshTheme();
 });
 
 menu.on("updateLocale", (value) => {
-  settings.set("locale", value as JsonValue);
+  settings.set(LOCALE_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("localeDefault", value === undefined);
-  for (const locale of locales) {
-    setMenuItemChecked(`locale-${locale}`, value === locale);
+  for (const lang of l10nManager.getSystemL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
+  }
+  for (const lang of l10nManager.getPluginL10Ns()) {
+    setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
   }
   switchLanguageDialog();
   initElectronL10N();
@@ -1815,14 +2062,68 @@ menu.on("updateShowNavigator", (value) => {
   sendToProjectWindow("setting:changed", "showNavigator", value);
 });
 
-nativeTheme?.on("updated", () => {
-  const themeId = toThemeId(
-    settings.get?.("theme"),
-    nativeTheme.shouldUseDarkColors
-  );
-  sendToSplashWindow("update-theme", themeId);
-  sendToProjectWindow("update-theme", themeId);
+menu.on("updateEmulatorMuted", (value) => {
+  const isMuted = value === true;
+  settings.set(EMULATOR_MUTED_SETTING_KEY, isMuted);
+  if (playWindow) {
+    playWindow.webContents.setAudioMuted(isMuted);
+    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+  }
 });
+
+nativeTheme?.on("updated", () => {
+  refreshTheme();
+});
+
+watchGlobalPlugins({
+  onChangedThemePlugin: async (path: string) => {
+    await themeManager.loadPluginTheme(path);
+    refreshMenu();
+    refreshTheme();
+  },
+  onChangedLanguagePlugin: async (path: string) => {
+    await l10nManager.loadPlugin(path);
+    refreshMenu();
+  },
+  onChangedTemplatePlugin: async (path: string) => {
+    await templateManager.loadPlugin(path);
+    refreshTemplatesList();
+  },
+  onRemoveThemePlugin: async () => {
+    await themeManager.loadPluginThemes();
+    refreshMenu();
+    refreshTheme();
+  },
+  onRemoveLanguagePlugin: async () => {
+    await l10nManager.loadPlugins();
+    refreshMenu();
+  },
+  onRemoveTemplatePlugin: async () => {
+    await templateManager.loadPlugins();
+    refreshTemplatesList();
+  },
+});
+
+const refreshTheme = () => {
+  const themeId = ensureString(settings.get(THEME_SETTING_KEY), "");
+  const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
+  sendToSplashWindow("update-theme", theme);
+  sendToProjectWindow("update-theme", theme);
+};
+
+const refreshTemplatesList = () => {
+  sendToSplashWindow(
+    "templates:list:changed",
+    templateManager.getPluginTemplates()
+  );
+};
+
+const refreshMenu = () => {
+  menu.buildMenu({
+    themeManager,
+    l10nManager,
+  });
+};
 
 const newProject = async () => {
   keepOpen = true;
@@ -1875,14 +2176,15 @@ const switchProject = async () => {
   keepOpen = false;
 };
 
-const openProject = async (newProjectPath: string) => {
+const openProject = async (newProjectPath: string): Promise<boolean> => {
   const ext = Path.extname(newProjectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
       l10n("ERROR_OPEN_GBSPROJ_FILE")
     );
-    return;
+    removeRecentProject(newProjectPath);
+    return false;
   }
 
   try {
@@ -1892,7 +2194,8 @@ const openProject = async (newProjectPath: string) => {
       l10n("ERROR_MISSING_PROJECT"),
       l10n("ERROR_MOVED_OR_DELETED")
     );
-    return;
+    removeRecentProject(newProjectPath);
+    return false;
   }
 
   projectPath = newProjectPath;
@@ -1913,6 +2216,7 @@ const openProject = async (newProjectPath: string) => {
   }
 
   keepOpen = false;
+  return true;
 };
 
 const addRecentProject = (projectPath: string) => {

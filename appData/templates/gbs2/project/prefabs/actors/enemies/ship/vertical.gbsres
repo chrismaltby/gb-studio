@@ -1,0 +1,233 @@
+{
+  "_resourceType": "actorPrefab",
+  "id": "8d9d0f7c-2757-441c-9111-403634dcb6c9",
+  "_index": 1,
+  "name": "Enemies/Ship/Vertical",
+  "frame": 0,
+  "animate": false,
+  "spriteSheetId": "954ffda3-81b7-40ea-a338-3b11ad4b75fb",
+  "paletteId": "",
+  "moveSpeed": 1,
+  "animSpeed": 15,
+  "persistent": false,
+  "collisionGroup": "1",
+  "script": [
+    {
+      "id": "133ffbca-60f2-41aa-8089-d8789331dfc0",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "e9f494a1-aabf-421b-a7b2-40211e77d9de",
+        "__name": "Enemy Ship Hit Player",
+        "__collapse": false
+      },
+      "children": {
+        "script": [
+          {
+            "id": "76c48310-1a46-4b6f-91d9-297bf21d8430",
+            "command": "EVENT_CAMERA_SHAKE",
+            "args": {
+              "time": 0.5,
+              "magnitude": {
+                "type": "number",
+                "value": 5
+              }
+            },
+            "children": {}
+          },
+          {
+            "id": "a03caa04-c308-4ef9-8d3d-398c5e79ec60",
+            "command": "EVENT_SOUND_PLAY_EFFECT",
+            "args": {
+              "type": "crash",
+              "pitch": 4,
+              "frequency": 200,
+              "duration": 0.5,
+              "wait": false
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "startScript": [],
+  "updateScript": [
+    {
+      "id": "d8eca49c-5703-4d60-9d72-718a62476d8f",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "d6bb5d0f-9c04-44a8-9f5d-b7f62db8805a",
+        "__name": "Enemy Ship Movement Vertical"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "4ce902c1-10ab-4530-b050-0faedbd57e06",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": -2
+              },
+              "moveType": "vertical",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "42eb6fd6-b7ad-49e1-b193-bd53bb8c214f",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": 2
+              },
+              "moveType": "vertical",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "a5ad8292-fc81-40ba-9f6f-803f75312501",
+            "command": "EVENT_LAUNCH_PROJECTILE",
+            "args": {
+              "spriteSheetId": "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
+              "actorId": "0",
+              "direction": "left",
+              "speed": 1,
+              "collisionGroup": "1",
+              "collisionMask": [
+                "player"
+              ],
+              "animSpeed": 7,
+              "lifeTime": 1,
+              "directionType": "direction",
+              "angleVariable": "0",
+              "angle": 0,
+              "otherActorId": "$self$",
+              "loopAnim": true,
+              "destroyOnHit": true
+            },
+            "children": {}
+          },
+          {
+            "id": "50c5068f-d8ea-4ca9-a439-496fc3035ce7",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": 2
+              },
+              "moveType": "vertical",
+              "useCollisions": false
+            },
+            "children": {}
+          },
+          {
+            "id": "878f683d-e9e3-43f5-b428-fe21d75ef085",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "0",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": -2
+              },
+              "moveType": "vertical",
+              "useCollisions": false
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "hit1Script": [
+    {
+      "id": "76da6451-c2cf-47fb-bdb9-658830932296",
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "2fe3aa9b-1ada-4d85-91f0-b1f4f9dcc910",
+        "__name": "Enemy Ship Destroy"
+      },
+      "children": {
+        "script": [
+          {
+            "id": "f007f858-50a5-47af-9405-1830a1cf940e",
+            "command": "EVENT_ACTOR_COLLISIONS_DISABLE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "6e52a57c-f8aa-4455-a25a-caaedb5a94fb",
+            "command": "EVENT_ACTOR_STOP_UPDATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          },
+          {
+            "id": "a8288ad5-af6a-407b-9e66-20a349895549",
+            "command": "EVENT_SOUND_PLAY_EFFECT",
+            "args": {
+              "type": "crash",
+              "pitch": 4,
+              "frequency": 200,
+              "duration": 0.5,
+              "wait": false
+            },
+            "children": {}
+          },
+          {
+            "id": "47117590-73e5-42cf-bd20-ae4f3faa896a",
+            "command": "",
+            "children": {}
+          },
+          {
+            "id": "e74fd49c-aeb4-49cc-91e0-aeb952574336",
+            "command": "",
+            "children": {}
+          },
+          {
+            "id": "05d0c4ff-d963-4bf8-8a7d-3a293c6f3633",
+            "command": "EVENT_WAIT",
+            "args": {
+              "time": 0.5
+            },
+            "children": {}
+          },
+          {
+            "id": "7700e9aa-05aa-4a26-b580-ffac0aa2c699",
+            "command": "EVENT_ACTOR_DEACTIVATE",
+            "args": {
+              "actorId": "0"
+            },
+            "children": {}
+          }
+        ]
+      }
+    }
+  ],
+  "hit2Script": [],
+  "hit3Script": []
+}

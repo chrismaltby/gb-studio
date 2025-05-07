@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   ActorNormalized,
   SceneNormalized,
@@ -67,8 +66,8 @@ export const scenesInFolder = (
 
 export const buildSceneNavigatorItems = (
   scenes: SceneNormalized[],
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
+  actorsLookup: Record<string, ActorNormalized>,
+  triggersLookup: Record<string, TriggerNormalized>,
   openFolders: string[],
   searchTerm: string
 ): SceneNavigatorItem[] => {

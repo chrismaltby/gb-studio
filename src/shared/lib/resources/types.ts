@@ -1,5 +1,7 @@
 import { Type, Static } from "@sinclair/typebox";
 
+export type ExtractResource<T> = Omit<T, "_resourceType">;
+
 export const ActorDirection = Type.Union(
   [
     Type.Literal("up"),
@@ -11,13 +13,6 @@ export const ActorDirection = Type.Union(
 );
 
 export type ActorDirection = Static<typeof ActorDirection>;
-
-export const CompilerOptimisation = Type.Union(
-  [Type.Literal("none"), Type.Literal("speed"), Type.Literal("size")],
-  { default: "none" }
-);
-
-export type CompilerOptimisation = Static<typeof CompilerOptimisation>;
 
 export const SceneParallaxLayer = Type.Object({
   height: Type.Number(),
@@ -39,6 +34,22 @@ export const CollisionGroup = Type.Union(
 
 export type CollisionGroup = Static<typeof CollisionGroup>;
 
+export const ColorModeSetting = Type.Union([
+  Type.Literal("mono"),
+  Type.Literal("mixed"),
+  Type.Literal("color"),
+]);
+
+export type ColorModeSetting = Static<typeof ColorModeSetting>;
+
+export const ColorModeOverrideSetting = Type.Union([
+  Type.Literal("none"),
+  Type.Literal("mixed"),
+  Type.Literal("color"),
+]);
+
+export type ColorModeOverrideSetting = Static<typeof ColorModeOverrideSetting>;
+
 export const MinimalResource = Type.Object({
   _resourceType: Type.String(),
 });
@@ -56,12 +67,15 @@ const MetadataResource = Type.Object({
 
 export type MetadataResource = Static<typeof MetadataResource>;
 
+export const ScriptEventArgs = Type.Record(Type.String(), Type.Unknown());
+
+export type ScriptEventArgs = Static<typeof ScriptEventArgs>;
+
 const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
-    symbol: Type.Optional(Type.String()), // Include symbol property to match TypeScript
-    args: Type.Optional(Type.Record(Type.String(), Type.Unknown())), // Matches ScriptEventArgs
+    args: Type.Optional(ScriptEventArgs), // Matches ScriptEventArgs
     children: Type.Optional(
       Type.Record(
         Type.String(),
@@ -72,11 +86,19 @@ const ScriptEvent = Type.Recursive((This) =>
 );
 type ScriptEvent = Static<typeof ScriptEvent>;
 
+const ScriptEventArgsOverride = Type.Object({
+  id: Type.String(),
+  args: Type.Record(Type.String(), Type.Unknown()),
+});
+
+type ScriptEventArgsOverride = Static<typeof ScriptEventArgsOverride>;
+
 export const ActorResource = Type.Object({
   _resourceType: Type.Literal("actor"),
   _index: Type.Number(),
   id: Type.String(),
   symbol: Type.String(),
+  prefabId: Type.String(),
   name: Type.String(),
   x: Type.Number(),
   y: Type.Number(),
@@ -90,6 +112,7 @@ export const ActorResource = Type.Object({
   isPinned: Type.Boolean(),
   persistent: Type.Boolean(),
   collisionGroup: CollisionGroup,
+  prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   startScript: Type.Array(ScriptEvent),
   updateScript: Type.Array(ScriptEvent),
@@ -100,24 +123,65 @@ export const ActorResource = Type.Object({
 
 export type ActorResource = Static<typeof ActorResource>;
 
+export const ActorPrefabResource = Type.Composite([
+  Type.Omit(ActorResource, [
+    "_resourceType",
+    "_index",
+    "prefabId",
+    "x",
+    "y",
+    "direction",
+    "isPinned",
+    "symbol",
+    "prefabScriptOverrides",
+  ]),
+  Type.Object({
+    _resourceType: Type.Literal("actorPrefab"),
+  }),
+]);
+
+export type ActorPrefabResource = Static<typeof ActorPrefabResource>;
+
 export const TriggerResource = Type.Object({
   _resourceType: Type.Literal("trigger"),
   _index: Type.Number(),
   id: Type.String(),
   symbol: Type.String(),
+  prefabId: Type.String(),
   name: Type.String(),
   x: Type.Number(),
   y: Type.Number(),
   width: Type.Number(),
   height: Type.Number(),
+  prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   leaveScript: Type.Array(ScriptEvent),
 });
 
 export type TriggerResource = Static<typeof TriggerResource>;
 
+export const TriggerPrefabResource = Type.Composite([
+  Type.Omit(TriggerResource, [
+    "_resourceType",
+    "_index",
+    "prefabId",
+    "x",
+    "y",
+    "width",
+    "height",
+    "symbol",
+    "prefabScriptOverrides",
+  ]),
+  Type.Object({
+    _resourceType: Type.Literal("triggerPrefab"),
+  }),
+]);
+
+export type TriggerPrefabResource = Static<typeof TriggerPrefabResource>;
+
 export const CompressedSceneResource = Type.Object({
   _resourceType: Type.Literal("scene"),
+  _index: Type.Number(),
   id: Type.String(),
   type: Type.String(),
   name: Type.String(),
@@ -130,6 +194,7 @@ export const CompressedSceneResource = Type.Object({
   height: Type.Number(),
   backgroundId: Type.String(),
   tilesetId: Type.String(),
+  colorModeOverride: ColorModeOverrideSetting,
   paletteIds: Type.Array(Type.String()),
   spritePaletteIds: Type.Array(Type.String()),
   autoFadeSpeed: Type.Union([Type.Number(), Type.Null()], { default: 1 }),
@@ -198,14 +263,8 @@ export const ScriptResource = Type.Object({
   name: Type.String(),
   symbol: Type.String(),
   description: Type.String(),
-  variables: Type.Record(
-    Type.String(),
-    Type.Union([ScriptVariable, Type.Undefined()])
-  ),
-  actors: Type.Record(
-    Type.String(),
-    Type.Union([ScriptActor, Type.Undefined()])
-  ),
+  variables: Type.Record(Type.String(), ScriptVariable),
+  actors: Type.Record(Type.String(), ScriptActor),
   script: Type.Array(ScriptEvent),
 });
 
@@ -231,6 +290,9 @@ export type CompressedBackgroundResource = Static<
   typeof CompressedBackgroundResource
 >;
 
+export type CompressedBackgroundResourceAsset = CompressedBackgroundResource &
+  AssetMetadata;
+
 export const BackgroundResource = Type.Composite([
   Type.Omit(CompressedBackgroundResource, ["tileColors"]),
   Type.Object({
@@ -254,6 +316,8 @@ export const TilesetResource = Type.Object({
 });
 
 export type TilesetResource = Static<typeof TilesetResource>;
+
+export type TilesetResourceAsset = TilesetResource & AssetMetadata;
 
 export const ObjPalette = Type.Union([
   Type.Literal("OBP0"),
@@ -330,6 +394,15 @@ export const SpriteResource = Type.Object({
 
 export type SpriteResource = Static<typeof SpriteResource>;
 
+export const AssetMetadata = Type.Object({
+  _v: Type.Number(),
+  inode: Type.String(),
+});
+
+export type AssetMetadata = Static<typeof AssetMetadata>;
+
+export type SpriteResourceAsset = SpriteResource & AssetMetadata;
+
 export const EmoteResource = Type.Object({
   _resourceType: Type.Literal("emote"),
   id: Type.String(),
@@ -343,6 +416,8 @@ export const EmoteResource = Type.Object({
 
 export type EmoteResource = Static<typeof EmoteResource>;
 
+export type EmoteResourceAsset = EmoteResource & AssetMetadata;
+
 export const AvatarResource = Type.Object({
   _resourceType: Type.Literal("avatar"),
   id: Type.String(),
@@ -355,6 +430,8 @@ export const AvatarResource = Type.Object({
 
 export type AvatarResource = Static<typeof AvatarResource>;
 
+export type AvatarResourceAsset = AvatarResource & AssetMetadata;
+
 export const FontResource = Type.Object({
   _resourceType: Type.Literal("font"),
   id: Type.String(),
@@ -364,9 +441,15 @@ export const FontResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   plugin: Type.Optional(Type.String()),
+  mapping: Type.Record(
+    Type.String(),
+    Type.Union([Type.Number(), Type.Array(Type.Number())]),
+  ),
 });
 
 export type FontResource = Static<typeof FontResource>;
+
+export type FontResourceAsset = FontResource & AssetMetadata;
 
 export const SoundType = Type.Union([
   Type.Literal("wav"),
@@ -382,9 +465,12 @@ export const SoundResource = Type.Object({
   filename: Type.String(),
   plugin: Type.Optional(Type.String()),
   type: SoundType,
+  numEffects: Type.Optional(Type.Number()),
 });
 
 export type SoundResource = Static<typeof SoundResource>;
+
+export type SoundResourceAsset = SoundResource & AssetMetadata;
 
 export const MusicSettings = Type.Object({
   disableSpeedConversion: Type.Optional(Type.Boolean()),
@@ -402,6 +488,8 @@ export const MusicResource = Type.Object({
 });
 
 export type MusicResource = Static<typeof MusicResource>;
+
+export type MusicResourceAsset = MusicResource & AssetMetadata;
 
 export const PaletteResource = Type.Object({
   _resourceType: Type.Literal("palette"),
@@ -421,13 +509,12 @@ export const PaletteResource = Type.Object({
 
 export type PaletteResource = Static<typeof PaletteResource>;
 
-export const ColorModeSetting = Type.Union([
-  Type.Literal("mono"),
-  Type.Literal("mixed"),
-  Type.Literal("color"),
+export const ColorCorrectionSetting = Type.Union([
+  Type.Literal("none"),
+  Type.Literal("default"),
 ]);
 
-export type ColorModeSetting = Static<typeof ColorModeSetting>;
+export type ColorCorrectionSetting = Static<typeof ColorCorrectionSetting>;
 
 export const ShowConnectionsSetting = Type.Union([
   Type.Literal("all"),
@@ -455,6 +542,7 @@ export type CartType = Static<typeof CartType>;
 export const ScriptEditorCtxType = Type.Union([
   Type.Literal("entity"),
   Type.Literal("script"),
+  Type.Literal("prefab"),
   Type.Literal("global"),
 ]);
 
@@ -465,6 +553,8 @@ export const EntityType = Type.Union([
   Type.Literal("actor"),
   Type.Literal("trigger"),
   Type.Literal("customEvent"),
+  Type.Literal("actorPrefab"),
+  Type.Literal("triggerPrefab"),
 ]);
 
 export const DebuggerScriptType = Type.Union([
@@ -503,6 +593,29 @@ export const BreakpointData = Type.Object({
 
 export type BreakpointData = Static<typeof BreakpointData>;
 
+export const ScriptEventPreset = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  groups: Type.Array(Type.String()),
+  args: ScriptEventArgs,
+});
+
+export type ScriptEventPreset = Static<typeof ScriptEventPreset>;
+
+export const CollisionTileDef = Type.Object({
+  key: Type.String(),
+  name: Type.Optional(Type.String()),
+  color: Type.String(),
+  icon: Type.Optional(Type.String()),
+  flag: Type.Number(),
+  mask: Type.Optional(Type.Number()),
+  extra: Type.Optional(Type.Number()),
+  multi: Type.Optional(Type.Boolean()),
+  group: Type.Optional(Type.String()),
+});
+
+export type CollisionTileDef = Static<typeof CollisionTileDef>;
+
 export const SettingsResource = Type.Object({
   _resourceType: Type.Literal("settings"),
   startSceneId: Type.String(),
@@ -515,6 +628,8 @@ export const SettingsResource = Type.Object({
   showConnections: ShowConnectionsSetting,
   showCollisionSlopeTiles: Type.Boolean(),
   showCollisionExtraTiles: Type.Boolean(),
+  showCollisionTileValues: Type.Boolean(),
+  collisionLayerOpacity: Type.Number(),
   worldScrollX: Type.Number(),
   worldScrollY: Type.Number(),
   zoom: Type.Number(),
@@ -573,14 +688,22 @@ export const SettingsResource = Type.Object({
   debuggerBreakpoints: Type.Array(BreakpointData),
   debuggerWatchedVariables: Type.Array(Type.String()),
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   previewAsMono: Type.Boolean(),
   openBuildLogOnWarnings: Type.Boolean(),
   generateDebugFilesEnabled: Type.Boolean(),
-  compilerOptimisation: CompilerOptimisation,
   compilerPreset: Type.Number({ default: 3000 }),
+  scriptEventPresets: Type.Record(
+    Type.String(),
+    Type.Record(Type.String(), ScriptEventPreset)
+  ),
+  scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
+  runSceneSelectionOnly: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
+
+export type Settings = ExtractResource<SettingsResource>;
 
 export const VariableData = Type.Object({
   id: Type.String(),
@@ -591,18 +714,28 @@ export const VariableData = Type.Object({
 
 export type VariableData = Static<typeof VariableData>;
 
+export const ConstantData = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  symbol: Type.String(),
+  value: Type.Number(),
+});
+
+export type ConstantData = Static<typeof ConstantData>;
+
+export type Constant = ExtractResource<ConstantData>;
+
 export const VariablesResource = Type.Object({
   _resourceType: Type.Literal("variables"),
   variables: Type.Array(VariableData),
+  constants: Type.Array(ConstantData),
 });
 
 export type VariablesResource = Static<typeof VariablesResource>;
 
 export const EngineFieldValueData = Type.Object({
   id: Type.String(),
-  value: Type.Optional(
-    Type.Union([Type.String(), Type.Boolean(), Type.Number()])
-  ),
+  value: Type.Optional(Type.Union([Type.String(), Type.Number()])),
 });
 
 export type EngineFieldValueData = Static<typeof EngineFieldValueData>;
@@ -648,6 +781,8 @@ export type Resource =
 
 export type CompressedProjectResources = {
   scenes: CompressedSceneResourceWithChildren[];
+  actorPrefabs: ActorPrefabResource[];
+  triggerPrefabs: TriggerPrefabResource[];
   scripts: ScriptResource[];
   sprites: SpriteResource[];
   backgrounds: CompressedBackgroundResource[];

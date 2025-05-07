@@ -38,13 +38,14 @@ export const buildEntityNavigatorItems = <T extends Entity>(
   entities: T[],
   openFolders: string[],
   searchTerm: string,
-  customSort?: (a: T, b: T) => number
+  customSort?: (a: T, b: T) => number,
+  nestOffset = 0
 ): EntityNavigatorItem<T>[] => {
   const result: EntityNavigatorItem<T>[] = [];
   const uniqueFolders = new Set<string>();
 
   const isVisible = (filename: string, nestLevel?: number): boolean => {
-    if (nestLevel === undefined || nestLevel === 0) return true;
+    if (nestLevel === undefined || nestLevel === nestOffset) return true;
     const pathSegments = filename.split(/[\\/]/);
     pathSegments.pop();
     let pathCheck = "";
@@ -65,7 +66,7 @@ export const buildEntityNavigatorItems = <T extends Entity>(
           type: "entity",
           name: entity.name,
           filename: entity.name.replace(/.*[/\\]/, ""),
-          nestLevel: 0,
+          nestLevel: nestOffset,
           entity,
         });
       });
@@ -84,7 +85,8 @@ export const buildEntityNavigatorItems = <T extends Entity>(
         const isLast = index === parts.length - 1;
         currentPath += (currentPath ? "/" : "") + part;
         if (isLast) {
-          const nestLevel = parts.length > 1 ? parts.length - 1 : 0;
+          const nestLevel =
+            nestOffset + (parts.length > 1 ? parts.length - 1 : 0);
           if (!isVisible(currentPath, nestLevel)) {
             return;
           }
@@ -97,7 +99,7 @@ export const buildEntityNavigatorItems = <T extends Entity>(
             entity,
           });
         } else if (!uniqueFolders.has(currentPath)) {
-          if (!isVisible(currentPath, index)) {
+          if (!isVisible(currentPath, index + nestOffset)) {
             return;
           }
           uniqueFolders.add(currentPath);
@@ -106,7 +108,7 @@ export const buildEntityNavigatorItems = <T extends Entity>(
             type: "folder",
             name: currentPath,
             filename: part,
-            nestLevel: index,
+            nestLevel: index + nestOffset,
           });
         }
       });

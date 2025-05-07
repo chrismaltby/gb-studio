@@ -61,7 +61,7 @@ export const NavigatorSounds = ({
   const [renameId, setRenameId] = useState("");
 
   const listenForRenameStart = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
       }
@@ -101,7 +101,7 @@ export const NavigatorSounds = ({
             dispatch(projectActions.removeSoundAsset({ soundId: item.id }))
           }
         >
-          {l10n("MENU_DELETE_SONG")}
+          {l10n("MENU_DELETE_SOUND_EFFECT")}
         </MenuItem>,
       ];
     },

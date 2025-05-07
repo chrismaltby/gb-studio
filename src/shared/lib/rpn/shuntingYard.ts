@@ -22,7 +22,11 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
 
   for (const token of input) {
     // If the current Token is a value or a variable, put them into the output stream.
-    if (token.type === "VAL" || token.type === "VAR") {
+    if (
+      token.type === "VAL" ||
+      token.type === "VAR" ||
+      token.type === "CONST"
+    ) {
       output.push(token);
       prevToken = token;
       continue;
@@ -119,6 +123,9 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
       if (prevToken?.type === "VAL") {
         throw new Error(`${prevToken.value}() is not a function`);
       }
+      if (prevToken?.type === "CONST") {
+        throw new Error(`Const ${prevToken.symbol}() is not a function`);
+      }
       operatorStack.push(token);
       prevToken = token;
       continue;
@@ -202,7 +209,11 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
   let stackCount = 0;
   let lastOp = "";
   for (const token of output) {
-    if (token.type === "VAL" || token.type === "VAR") {
+    if (
+      token.type === "VAL" ||
+      token.type === "VAR" ||
+      token.type === "CONST"
+    ) {
       stackCount++;
     } else if (token.type === "FUN") {
       lastOp = token.function;

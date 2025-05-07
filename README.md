@@ -1,22 +1,20 @@
 # GB Studio
 
+[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop) [![Storybook](https://img.shields.io/badge/Storybook-FF4785?logo=storybook&logoColor=white)](https://chrismaltby.github.io/gb-studio/storybook) [![Code Coverage](https://img.shields.io/badge/Coverage-blue?logo=jest&logoColor=white)](https://chrismaltby.github.io/gb-studio/coverage)
 
-[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop)
+Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
-Copyright (c) 2021 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
-
-Twitter: [@maltby](https://www.twitter.com/maltby) 
-
+Patreon: [gbstudiodev](https://www.patreon.com/gbstudiodev)  
+Twitter: [@maltby](https://www.twitter.com/maltby)  
 Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)  
 Discord: [Join Chat](https://discord.gg/bxerKnc)
-
 
 GB Studio is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
 For more information see the [GB Studio](https://www.gbstudio.dev) site
 
 ![GB Studio](gbstudio.gif)
 
-GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/), music is provided by [GBT Player](https://github.com/AntonioND/gbt-player)
+GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
 
 ## Installation
 
@@ -24,23 +22,31 @@ Download a release for your operating system from the [GB Studio Downloads](http
 
 Or to run from source, clone this repo then:
 
-- Install [NodeJS](https://nodejs.org/)
-- Install [Yarn](https://yarnpkg.com/)
+- Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nvmrc))
 
 ```bash
 > cd gb-studio
+> corepack enable
 > yarn
+> npm run fetch-deps
 > npm start
 ```
 
-GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version. 
+After checking out a new version you may also need to fetch dependencies again to ensure you have the latest version of GBVM + GBDK etc.
+
+```bash
+> cd gb-studio
+> npm run fetch-deps
+```
+
+GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
 
 ```bash
 > cd gb-studio
 > nvm use
 ```
 
-## GB Studio CLI 
+## GB Studio CLI
 
 Install GB Studio from source as above then
 
@@ -48,9 +54,9 @@ Install GB Studio from source as above then
 > npm run make:cli
 > yarn link
 # From any folder you can now run gb-studio-cli
-> gb-studio-cli -V
-3.0.0
-> gb-studio-cli --help
+> $(yarn bin gb-studio-cli) -V
+4.1.2
+> $(yarn bin gb-studio-cli) --help
 ```
 
 ### Update the CLI
@@ -65,33 +71,38 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 - **Export Project**
 
-    ```bash
-    > gb-studio-cli export path/to/project.gbsproj out/
-    ```
-    Export GBDK project from gbsproj to out directory
+  ```bash
+  > $(yarn bin gb-studio-cli) export path/to/project.gbsproj out/
+  ```
+
+  Export GBDK project from gbsproj to out directory
 
 - **Export Data**
-    ```bash
-    > gb-studio-cli export -d path/to/project.gbsproj out/
-    ```
-    Export only src/data and include/data from gbsproj to out directory
+  ```bash
+  > $(yarn bin gb-studio-cli) export -d path/to/project.gbsproj out/
+  ```
+  Export only src/data and include/data from gbsproj to out directory
 - **Make ROM**
-    ```bash
-    > gb-studio-cli make:rom path/to/project.gbsproj out/game.gb
-    ```
-    Make a ROM file from gbsproj
+
+  ```bash
+  > $(yarn bin gb-studio-cli) make:rom path/to/project.gbsproj out/game.gb
+  ```
+
+  Make a ROM file from gbsproj
 
 - **Make Pocket**
-    ```bash
-    > gb-studio-cli make:pocket path/to/project.gbsproj out/game.pocket
-    ```
-    Make a Pocket file from gbsproj
+
+  ```bash
+  > $(yarn bin gb-studio-cli) make:pocket path/to/project.gbsproj out/game.pocket
+  ```
+
+  Make a Pocket file from gbsproj
 
 - **Make Web**
-    ```bash
-    > gb-studio-cli make:web path/to/project.gbsproj out/
-    ```
-    Make a Web build from gbsproj
+  ```bash
+  > $(yarn bin gb-studio-cli) make:web path/to/project.gbsproj out/
+  ```
+  Make a Web build from gbsproj
 
 ## Documentation
 

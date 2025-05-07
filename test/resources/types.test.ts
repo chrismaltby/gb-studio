@@ -75,7 +75,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate ActorResource", () => {
-    const validActor = {
+    const validActor: ActorResource = {
       _resourceType: "actor",
       _index: 0,
       id: "actor1",
@@ -93,6 +93,8 @@ describe("TypeBox Schemas", () => {
       isPinned: false,
       persistent: true,
       collisionGroup: "",
+      prefabId: "",
+      prefabScriptOverrides: {},
       script: [],
       startScript: [],
       updateScript: [],
@@ -131,7 +133,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate TriggerResource", () => {
-    const validTrigger = {
+    const validTrigger: TriggerResource = {
       _resourceType: "trigger",
       _index: 0,
       id: "trigger1",
@@ -141,6 +143,8 @@ describe("TypeBox Schemas", () => {
       y: 20,
       width: 30,
       height: 40,
+      prefabId: "",
+      prefabScriptOverrides: {},
       script: [],
       leaveScript: [],
     };
@@ -161,8 +165,9 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate CompressedSceneResource", () => {
-    const validScene = {
+    const validScene: CompressedSceneResource = {
       _resourceType: "scene",
+      _index: 0,
       id: "scene1",
       type: "someType",
       name: "Scene 1",
@@ -173,6 +178,7 @@ describe("TypeBox Schemas", () => {
       height: 40,
       backgroundId: "background1",
       tilesetId: "tileset1",
+      colorModeOverride: "none",
       paletteIds: ["palette1", "palette2"],
       spritePaletteIds: ["spritePalette1"],
       autoFadeSpeed: 1,
@@ -454,7 +460,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate FontResource", () => {
-    const validFont = {
+    const validFont: FontResource = {
       _resourceType: "font",
       id: "font1",
       name: "Font 1",
@@ -462,6 +468,7 @@ describe("TypeBox Schemas", () => {
       filename: "filename",
       width: 16,
       height: 16,
+      mapping: {},
     };
     const invalidFont = {
       _resourceType: "font",
@@ -562,6 +569,8 @@ describe("TypeBox Schemas", () => {
       showConnections: "all",
       showCollisionSlopeTiles: true,
       showCollisionExtraTiles: true,
+      showCollisionTileValues: false,
+      collisionLayerOpacity: 50,
       worldScrollX: 0,
       worldScrollY: 0,
       zoom: 1,
@@ -620,11 +629,14 @@ describe("TypeBox Schemas", () => {
       debuggerBreakpoints: [],
       debuggerWatchedVariables: [],
       colorMode: "mono",
+      colorCorrection: "default",
       previewAsMono: false,
       openBuildLogOnWarnings: true,
       generateDebugFilesEnabled: false,
-      compilerOptimisation: "none",
       compilerPreset: 3000,
+      scriptEventPresets: {},
+      scriptEventDefaultPresets: {},
+      runSceneSelectionOnly: false,
     };
     const invalidSettings = {
       _resourceType: "settings",
@@ -635,9 +647,11 @@ describe("TypeBox Schemas", () => {
       startAnimSpeed: null,
       startDirection: "down",
       showCollisions: true,
+      collisionLayerOpacity: 50,
       showConnections: "all",
       showCollisionSlopeTiles: true,
       showCollisionExtraTiles: true,
+      showCollisionTileValues: false,
       worldScrollX: 0,
       worldScrollY: 0,
       zoom: 1,
@@ -716,10 +730,12 @@ describe("TypeBox Schemas", () => {
     const validVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+      constants: [],
     };
     const invalidVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1" }],
+      constants: [],
     };
 
     expect(() => Value.Decode(VariablesResource, validVariables)).not.toThrow();

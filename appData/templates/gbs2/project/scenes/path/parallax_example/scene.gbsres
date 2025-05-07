@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "896aee79-9b53-4ac1-b41f-b1ddf96da7ff",
+  "_index": 4,
   "type": "PLATFORM",
   "name": "path/Parallax Example",
   "symbol": "scene_parallax_example",

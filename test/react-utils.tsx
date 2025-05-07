@@ -1,31 +1,37 @@
-import React from "react";
-import { render } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { AnyAction, Store } from "@reduxjs/toolkit";
-import { RootState } from "../src/store/configureStore";
+import { render, RenderOptions } from "@testing-library/react";
+import React, { ReactNode, ReactElement } from "react";
 import ThemeProvider from "../src/components/ui/theme/ThemeProvider";
+import type { AppStore } from "../src/store/configureStore";
+import { Provider } from "react-redux";
 
-type RenderParameters = Parameters<typeof render>;
+interface ProvidersProps {
+  children: ReactNode;
+  store?: AppStore;
+}
+
+const AllTheProviders = ({ children, store }: ProvidersProps) => {
+  return store ? (
+    <Provider store={store}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </Provider>
+  ) : (
+    <ThemeProvider>{children}</ThemeProvider>
+  );
+};
 
 const customRender = (
-  ui: RenderParameters[0],
-  store?: Store<RootState, AnyAction>,
-  options?: RenderParameters[1]
-) => {
-  return render(ui, {
-    wrapper: store
-      ? ({ children }) => (
-          <Provider store={store}>
-            <ThemeProvider>{children}</ThemeProvider>
-          </Provider>
-        )
-      : ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
+  ui: ReactElement,
+  store?: AppStore,
+  options?: Omit<RenderOptions, "wrapper">
+) =>
+  render(ui, {
+    wrapper: ({ children }) => (
+      <AllTheProviders store={store}>{children}</AllTheProviders>
+    ),
     ...options,
   });
-};
 
 // re-export everything
 export * from "@testing-library/react";
 
-// override render method
 export { customRender as render };

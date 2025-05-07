@@ -17,6 +17,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "baseUrl": "src",
+    "sourceMap": true,
     "paths": {
       "store/*": [ "./store/*" ],
       "lib/*": [ "./lib/*" ],
@@ -25,6 +26,7 @@
       "lang/*": [ "./lang/*" ],
       "wasm/*": ["../appData/wasm/*" ],
       "contributors.json": ["../contributors.json"],
+      "contributors-external.json": ["../contributors-external.json"],
       "patrons.json": ["../patrons.json"]
     }
   },

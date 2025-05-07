@@ -6,10 +6,10 @@ import * as eventHelpers from "lib/events/helpers";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
 import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
+import * as scriptValueTypes from "shared/lib/scriptValue/types";
 
 const globAsync = promisify(glob);
 
@@ -37,6 +37,12 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       color?: string;
+      units?: string;
+    }
+  | {
+      type: "scanline";
+      y: string;
+      units?: string;
     }
   | {
       type: "distance";
@@ -51,6 +57,25 @@ export type ScriptEventHelperDef =
       y: string;
       width: string;
       height: string;
+    }
+  | {
+      type: "text";
+      text: string;
+      avatarId: string;
+      minHeight: string;
+      maxHeight: string;
+      showFrame: string;
+      clearPrevious: string;
+      textX: string;
+      textY: string;
+      textHeight: string;
+    }
+  | {
+      type: "textdraw";
+      text: string;
+      x: string;
+      y: string;
+      location: string;
     };
 
 export type ScriptEventPresetValue = {
@@ -60,6 +85,13 @@ export type ScriptEventPresetValue = {
   groups?: string[] | string;
   subGroups?: Record<string, string>;
   values: Record<string, unknown>;
+};
+
+export type UserPresetsGroup = {
+  id: string;
+  label: string;
+  fields: string[];
+  selected?: boolean;
 };
 
 export interface ScriptEventDef {
@@ -77,6 +109,8 @@ export interface ScriptEventDef {
   hasAutoLabel: boolean;
   helper?: ScriptEventHelperDef;
   presets?: ScriptEventPresetValue[];
+  userPresetsGroups?: UserPresetsGroup[];
+  userPresetsIgnore?: string[];
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 
@@ -97,10 +131,11 @@ export type ScriptEventHandler = ScriptEventDef & {
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
-export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
+export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
+  console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
   sandbox: {},
   compiler: (code: string) => {
     // Convert es6 style modules to commonjs
@@ -124,6 +159,7 @@ const vm = new NodeVM({
       "../helpers/trimlines": trimLines,
       "shared/lib/helpers/trimlines": trimLines,
       "shared/lib/scriptValue/helpers": scriptValueHelpers,
+      "shared/lib/scriptValue/types": scriptValueTypes,
     },
   },
 });
@@ -132,7 +168,18 @@ const loadScriptEventHandler = async (
   path: string
 ): Promise<ScriptEventHandler> => {
   const handlerCode = await readFile(path, "utf8");
-  const handler = vm.run(handlerCode) as ScriptEventHandler;
+
+  let handler: ScriptEventHandler;
+  try {
+    handler = vm.run(handlerCode) as ScriptEventHandler;
+  } catch (error) {
+    throw new Error(
+      `Failed to load script event handler at ${path}: ${
+        (error as Error).message
+      }`
+    );
+  }
+
   if (!handler.id) {
     throw new Error(`Event handler ${path} is missing id`);
   }
@@ -161,6 +208,28 @@ const loadScriptEventHandler = async (
   };
   buildFieldsLookup(handler.fields);
 
+  if (handler.userPresetsGroups) {
+    // If an script event supports user presets
+    // validate that all fields have been accounted for
+    const allFields = Object.keys(handler.fieldsLookup);
+
+    const presetFields = handler.userPresetsGroups
+      .map((group) => group.fields)
+      .flat()
+      .concat(handler.userPresetsIgnore ?? []);
+
+    const missingFields = allFields.filter(
+      (key) => !presetFields.includes(key)
+    );
+
+    if (missingFields.length > 0) {
+      console.error(
+        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`
+      );
+      console.error("Missing fields: " + missingFields.join(", "));
+    }
+  }
+
   return handler;
 };
 
@@ -168,7 +237,7 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/events/event*.js`
+    `${projectRoot}/plugins/*/**/events/event*.js`
   );
 
   const eventHandlers: ScriptEventHandlers = {};

@@ -36,13 +36,15 @@ import {
   CustomEvent,
   Trigger,
   SpriteSheet,
+  ActorPrefab,
+  ActorPrefabNormalized,
+  ActorScriptKey,
+  TriggerPrefab,
+  TriggerPrefabNormalized,
+  TriggerScriptKey,
+  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
-import {
-  Dictionary,
-  EntityAdapter,
-  EntityId,
-  EntityState,
-} from "@reduxjs/toolkit";
+import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
@@ -57,14 +59,20 @@ import {
   isScriptValueField,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
-import { walkNormalizedScript } from "shared/lib/scripts/walk";
+import {
+  filterEvents,
+  walkActorScriptsKeys,
+  walkNormalizedScript,
+  walkSceneScriptsKeys,
+  walkTriggerScriptsKeys,
+} from "shared/lib/scripts/walk";
 import {
   extractScriptValueActorIds,
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { ProjectEntityResources } from "shared/lib/resources/types";
+import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
 
 export interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -84,8 +92,11 @@ export interface NormalizedEntities {
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
   tilesets: Record<EntityId, Tileset>;
+  actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
+  triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
+  constants: Record<EntityId, Constant>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
@@ -96,6 +107,8 @@ export interface NormalizedResult {
   backgrounds: EntityId[];
   spriteSheets: EntityId[];
   palettes: EntityId[];
+  actorPrefabs: EntityId[];
+  triggerPrefabs: EntityId[];
   scripts: EntityId[];
   music: EntityId[];
   sounds: EntityId[];
@@ -104,6 +117,7 @@ export interface NormalizedResult {
   emotes: EntityId[];
   tilesets: EntityId[];
   variables: EntityId[];
+  constants: EntityId[];
   variableResources: EntityId[];
   engineFieldValues: EntityId[];
 }
@@ -133,11 +147,14 @@ export interface DenormalizedEntities {
   tilesets: Tileset[];
   triggers: Trigger[];
   variables: {
+    constants: Constant[];
     variables: Variable[];
   };
+  actorPrefabs: ActorPrefab[];
+  triggerPrefabs: TriggerPrefab[];
 }
 
-const inodeToAssetCache: Dictionary<Asset> = {};
+const inodeToAssetCache: Record<string, Asset> = {};
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
@@ -163,6 +180,18 @@ const triggerSchema = new schema.Entity("triggers", {
   script: [scriptEventSchema],
   leaveScript: [scriptEventSchema],
 });
+const actorPrefabSchema = new schema.Entity("actorPrefabs", {
+  script: [scriptEventSchema],
+  startScript: [scriptEventSchema],
+  updateScript: [scriptEventSchema],
+  hit1Script: [scriptEventSchema],
+  hit2Script: [scriptEventSchema],
+  hit3Script: [scriptEventSchema],
+});
+const triggerPrefabSchema = new schema.Entity("triggerPrefabs", {
+  script: [scriptEventSchema],
+  leaveScript: [scriptEventSchema],
+});
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
   tiles: [metaspriteTilesSchema],
@@ -180,8 +209,10 @@ const spritesSchema = new schema.Entity("sprites", {
   states: [spriteStatesSchema],
 });
 const variablesSchema = new schema.Entity("variables");
+const constantsSchema = new schema.Entity("constants");
 const variablesResourceSchema = new schema.Entity("variableResources", {
   variables: [variablesSchema],
+  constants: [constantsSchema],
 });
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
@@ -207,6 +238,8 @@ const resourcesSchema = {
   scenes: [sceneSchema],
   actors: [actorSchema],
   triggers: [triggerSchema],
+  actorPrefabs: [actorPrefabSchema],
+  triggerPrefabs: [triggerPrefabSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   sounds: [soundSchema],
@@ -234,6 +267,8 @@ export const denormalizeEntities = (
     scenes: state.scenes.ids,
     actors: state.actors.ids,
     triggers: state.triggers.ids,
+    actorPrefabs: state.actorPrefabs.ids,
+    triggerPrefabs: state.triggerPrefabs.ids,
     backgrounds: state.backgrounds.ids,
     sprites: state.spriteSheets.ids,
     palettes: state.palettes.ids,
@@ -251,6 +286,14 @@ export const denormalizeEntities = (
     actors: state.actors.entities as Record<EntityId, ActorNormalized>,
     triggers: state.triggers.entities as Record<EntityId, TriggerNormalized>,
     scenes: state.scenes.entities as Record<EntityId, SceneNormalized>,
+    actorPrefabs: state.actorPrefabs.entities as Record<
+      EntityId,
+      ActorPrefabNormalized
+    >,
+    triggerPrefabs: state.triggerPrefabs.entities as Record<
+      EntityId,
+      TriggerPrefabNormalized
+    >,
     scriptEvents: state.scriptEvents.entities as Record<
       EntityId,
       ScriptEventNormalized
@@ -281,8 +324,14 @@ export const denormalizeEntities = (
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
     tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
-    variableResources: { variables: { variables: state.variables.ids } },
+    variableResources: {
+      variables: {
+        variables: state.variables.ids,
+        constants: state.constants.ids,
+      },
+    },
     variables: state.variables.entities as Record<EntityId, Variable>,
+    constants: state.constants.entities as Record<EntityId, Constant>,
     engineFieldValueResources: {
       engineFieldValues: { engineFieldValues: state.engineFieldValues.ids },
     },
@@ -300,30 +349,39 @@ export const denormalizeEntities = (
   const entityToResource =
     <R extends string>(resourceType: R) =>
     <T>(entity: T): T & { _resourceType: R } => ({
-      _resourceType: resourceType,
       ...entity,
+      _resourceType: resourceType,
       inode: undefined,
       _v: undefined,
     });
 
   const denormalizedEntityResources: ProjectEntityResources = {
-    scenes: denormalizedEntities.scenes.map((scene) => ({
-      ...entityToResource("scene")(scene),
+    scenes: denormalizedEntities.scenes.map((scene, sceneIndex) => ({
+      _index: sceneIndex,
+      ...entityToResource("scene")(sceneFixNulls(scene)),
       actors: scene.actors.map((actor, actorIndex) => ({
-        ...entityToResource("actor")(actor),
+        ...entityToResource("actor")(actorFixNulls(actor)),
         _index: actorIndex,
       })),
       triggers: scene.triggers.map((trigger, triggerIndex) => ({
-        ...entityToResource("trigger")(trigger),
+        ...entityToResource("trigger")(triggerFixNulls(trigger)),
         _index: triggerIndex,
       })),
     })),
+    actorPrefabs: denormalizedEntities.actorPrefabs.map((actorPrefab) =>
+      entityToResource("actorPrefab")(actorFixNulls(actorPrefab))
+    ),
+    triggerPrefabs: denormalizedEntities.triggerPrefabs.map((triggerPrefab) =>
+      entityToResource("triggerPrefab")(triggerFixNulls(triggerPrefab))
+    ),
     backgrounds: denormalizedEntities.backgrounds.map(
       entityToResource("background")
     ),
     sprites: denormalizedEntities.sprites.map(entityToResource("sprite")),
     music: denormalizedEntities.music.map(entityToResource("music")),
-    scripts: denormalizedEntities.scripts.map(entityToResource("script")),
+    scripts: denormalizedEntities.scripts.map((script) =>
+      entityToResource("script")(scriptFixNulls(script))
+    ),
     palettes: denormalizedEntities.palettes.map(entityToResource("palette")),
     emotes: denormalizedEntities.emotes.map(entityToResource("emote")),
     avatars: denormalizedEntities.avatars.map(entityToResource("avatar")),
@@ -347,10 +405,10 @@ export const denormalizeSprite = ({
   spriteStates,
 }: {
   sprite: SpriteSheetNormalized;
-  metasprites: Dictionary<Metasprite>;
-  metaspriteTiles: Dictionary<MetaspriteTile>;
-  spriteAnimations: Dictionary<SpriteAnimation>;
-  spriteStates: Dictionary<SpriteState>;
+  metasprites: Record<string, Metasprite>;
+  metaspriteTiles: Record<string, MetaspriteTile>;
+  spriteAnimations: Record<string, SpriteAnimation>;
+  spriteStates: Record<string, SpriteState>;
 }): SpriteSheetData => {
   const entities = {
     metasprites,
@@ -359,6 +417,21 @@ export const denormalizeSprite = ({
     spriteStates,
   };
   return denormalize(sprite, spriteSheetsSchema, entities);
+};
+
+export const normalizeSprite = (
+  sprite: SpriteSheet
+): {
+  entities: {
+    spriteSheets: Record<string, SpriteSheetNormalized>;
+    metasprites: Record<string, Metasprite> | undefined;
+    metaspriteTiles: Record<string, MetaspriteTile> | undefined;
+    spriteAnimations: Record<string, SpriteAnimation> | undefined;
+    spriteStates: Record<string, SpriteState> | undefined;
+  };
+  result: string;
+} => {
+  return normalize(sprite, spriteSheetsSchema);
 };
 
 export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
@@ -376,26 +449,6 @@ export const sortByFilename = (a: Asset, b: Asset) => {
 
 export const swapArrayElement = <T>(x: number, y: number, [...xs]: T[]): T[] =>
   xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
-
-export const moveArrayElement = <T>(
-  x: number,
-  y: number,
-  [...xs]: T[]
-): T[] => {
-  if (
-    xs.length <= 1 ||
-    x === y ||
-    x < 0 ||
-    x >= xs.length ||
-    y < 0 ||
-    y >= xs.length
-  ) {
-    return xs;
-  }
-  const [element] = xs.splice(x, 1);
-  xs.splice(y, 0, element);
-  return xs;
-};
 
 export const isUnionValue = (input: unknown): input is UnionValue => {
   if (typeof input !== "object") {
@@ -459,8 +512,10 @@ export const toVariableNumber = (variable: string) => {
   return variable.replace(/[^0-9]/g, "");
 };
 
+export const localVariableCodes = ["L0", "L1", "L2", "L3", "L4", "L5"];
+
 export const isVariableLocal = (variable: string) => {
-  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
+  return localVariableCodes.indexOf(variable) > -1;
 };
 
 export const isVariableTemp = (variable: string) => {
@@ -477,9 +532,9 @@ export const isVariableCustomEvent = (variable: string) => {
 
 export const isCustomEventEqual = (
   customEventA: CustomEventNormalized,
-  lookupA: Dictionary<ScriptEventNormalized>,
+  lookupA: Record<string, ScriptEventNormalized>,
   customEventB: CustomEventNormalized,
-  lookupB: Dictionary<ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>
 ) => {
   const compareA = {
     ...customEventA,
@@ -502,6 +557,92 @@ export const isCustomEventEqual = (
   );
 };
 
+export const isActorPrefabEqual = (
+  prefabA: ActorPrefabNormalized,
+  lookupA: Record<string, ScriptEventNormalized>,
+  prefabB: ActorPrefabNormalized,
+  lookupB: Record<string, ScriptEventNormalized>
+) => {
+  type CompareType = Omit<ActorPrefabNormalized, ActorScriptKey | "id"> &
+    Record<ActorScriptKey | "id", undefined>;
+
+  const compareA: CompareType = {
+    ...prefabA,
+    id: undefined,
+    script: undefined,
+    startScript: undefined,
+    updateScript: undefined,
+    hit1Script: undefined,
+    hit2Script: undefined,
+    hit3Script: undefined,
+  };
+  const compareB: CompareType = {
+    ...prefabB,
+    id: undefined,
+    script: undefined,
+    startScript: undefined,
+    updateScript: undefined,
+    hit1Script: undefined,
+    hit2Script: undefined,
+    hit3Script: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  let scriptMatch = true;
+  walkActorScriptsKeys((key) => {
+    if (!scriptMatch) {
+      return;
+    }
+    scriptMatch = isNormalizedScriptEqual(
+      prefabA[key],
+      lookupA,
+      prefabB[key],
+      lookupB
+    );
+  });
+  return scriptMatch;
+};
+
+export const isTriggerPrefabEqual = (
+  prefabA: TriggerPrefabNormalized,
+  lookupA: Record<string, ScriptEventNormalized>,
+  prefabB: TriggerPrefabNormalized,
+  lookupB: Record<string, ScriptEventNormalized>
+) => {
+  type CompareType = Omit<TriggerPrefabNormalized, TriggerScriptKey | "id"> &
+    Record<TriggerScriptKey | "id", undefined>;
+
+  const compareA: CompareType = {
+    ...prefabA,
+    id: undefined,
+    script: undefined,
+    leaveScript: undefined,
+  };
+  const compareB: CompareType = {
+    ...prefabB,
+    id: undefined,
+    script: undefined,
+    leaveScript: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  let scriptMatch = true;
+  walkTriggerScriptsKeys((key) => {
+    if (!scriptMatch) {
+      return;
+    }
+    scriptMatch = isNormalizedScriptEqual(
+      prefabA[key],
+      lookupA,
+      prefabB[key],
+      lookupB
+    );
+  });
+  return scriptMatch;
+};
+
 export const actorName = (actor: NamedEntity, actorIndex: number) => {
   return actor.name || defaultLocalisedActorName(actorIndex);
 };
@@ -519,6 +660,12 @@ export const customEventName = (
   customEventIndex: number
 ) => {
   return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
+};
+
+export const constantName = (constant: NamedEntity, constantIndex: number) => {
+  return (constant.name || defaultLocalisedConstantName(constantIndex))
+    .toLocaleUpperCase()
+    .replace(/\s/g, "_");
 };
 
 export const paletteName = (palette: Palette, paletteIndex: number) => {
@@ -560,55 +707,65 @@ export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
 export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+export const defaultLocalisedConstantName = (constantIndex: number) =>
+  `${l10n("CONSTANT")} ${constantIndex + 1}`;
 export const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
-const extractEntitySymbols = (entities: EntityState<{ symbol?: string }>) => {
-  return Object.values(entities.entities).map(
-    (entity) => entity?.symbol
-  ) as string[];
+const extractEntitySymbols = (
+  entities: EntityState<{ symbol?: string }, string>
+): Set<string> => {
+  return new Set(
+    Object.values(entities.entities).map((entity) => entity?.symbol ?? "")
+  );
 };
 
-const extractEntityStateSymbols = (state: EntitiesState) => {
-  return [
-    ...extractEntitySymbols(state.scenes),
-    ...extractEntitySymbols(state.actors),
-    ...extractEntitySymbols(state.triggers),
-    ...extractEntitySymbols(state.backgrounds),
-    ...extractEntitySymbols(state.spriteSheets),
-    ...extractEntitySymbols(state.emotes),
-    ...extractEntitySymbols(state.tilesets),
-    ...extractEntitySymbols(state.fonts),
-    ...extractEntitySymbols(state.variables),
-    ...extractEntitySymbols(state.customEvents),
-    ...extractEntitySymbols(state.music),
-    ...extractEntitySymbols(state.sounds),
-    ...extractEntitySymbols(state.scriptEvents),
-  ];
+const extractEntityStateSymbols = (state: EntitiesState): Set<string> => {
+  const allSymbols = new Set<string>();
+
+  const addSymbols = (symbols: Set<string>) => {
+    symbols.forEach((symbol) => allSymbols.add(symbol));
+  };
+
+  addSymbols(extractEntitySymbols(state.scenes));
+  addSymbols(extractEntitySymbols(state.actors));
+  addSymbols(extractEntitySymbols(state.triggers));
+  addSymbols(extractEntitySymbols(state.backgrounds));
+  addSymbols(extractEntitySymbols(state.spriteSheets));
+  addSymbols(extractEntitySymbols(state.emotes));
+  addSymbols(extractEntitySymbols(state.tilesets));
+  addSymbols(extractEntitySymbols(state.fonts));
+  addSymbols(extractEntitySymbols(state.variables));
+  addSymbols(extractEntitySymbols(state.constants));
+  addSymbols(extractEntitySymbols(state.customEvents));
+  addSymbols(extractEntitySymbols(state.music));
+  addSymbols(extractEntitySymbols(state.sounds));
+
+  return allSymbols;
 };
 
 export const genEntitySymbol = (state: EntitiesState, name: string) => {
   return genSymbol(name, extractEntityStateSymbols(state));
 };
 
-const ensureEntitySymbolsUnique = (
-  entities: EntityState<{ symbol?: string }>,
-  seenSymbols: string[]
+export const ensureEntitySymbolsUnique = (
+  entities: EntityState<{ symbol?: string }, string>,
+  seenSymbols: Set<string>
 ) => {
   for (const entity of Object.values(entities.entities)) {
-    if (entity && entity.symbol) {
-      entity.symbol = toValidSymbol(entity.symbol);
-      if (seenSymbols.includes(entity.symbol)) {
+    if (entity) {
+      entity.symbol = toValidSymbol(entity.symbol ?? "");
+      if (seenSymbols.has(entity.symbol)) {
         const newSymbol = genSymbol(entity.symbol, seenSymbols);
         entity.symbol = newSymbol;
       }
-      seenSymbols.push(entity.symbol);
+      seenSymbols.add(entity.symbol);
     }
   }
 };
 
 export const ensureSymbolsUnique = (state: EntitiesState) => {
-  const symbols: string[] = [];
+  const symbols: Set<string> = new Set();
   ensureEntitySymbolsUnique(state.scenes, symbols);
   ensureEntitySymbolsUnique(state.actors, symbols);
   ensureEntitySymbolsUnique(state.triggers, symbols);
@@ -618,14 +775,24 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.tilesets, symbols);
   ensureEntitySymbolsUnique(state.fonts, symbols);
   ensureEntitySymbolsUnique(state.variables, symbols);
+  ensureEntitySymbolsUnique(state.constants, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
   ensureEntitySymbolsUnique(state.sounds, symbols);
-  ensureEntitySymbolsUnique(state.scriptEvents, symbols);
+};
+
+export const matchAssetEntity = <
+  A extends Asset & { inode: string },
+  T extends Asset & { inode: string }
+>(
+  entity: A,
+  existingEntities: T[]
+) => {
+  return existingEntities.find(matchAsset(entity));
 };
 
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
-  entities: EntityState<T>,
+  entities: EntityState<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ): T => {
@@ -658,7 +825,7 @@ export const storeRemovedAssetInInodeCache = <
   filename: string,
   projectRoot: string,
   assetFolder: string,
-  entities: EntityState<T>
+  entities: EntityState<T, string>
 ): Asset => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
 
@@ -691,12 +858,15 @@ export const storeRemovedAssetInInodeCache = <
 export const upsertAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   entity: T,
   keepProps: (keyof T)[]
 ) => {
-  adapter.upsertOne(entities, mergeAssetEntity(entities, entity, keepProps));
+  const mergedEntity = mergeAssetEntity(entities, entity, keepProps);
+  const didInsert = entity === mergedEntity;
+  adapter.upsertOne(entities, mergedEntity);
+  return didInsert;
 };
 
 /**
@@ -708,8 +878,8 @@ export const upsertAssetEntity = <
 export const removeAssetEntity = <
   T extends Asset & { id: string; inode: string }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset
 ) => {
   const existingEntities = entities.ids.map(
@@ -736,8 +906,8 @@ export const renameAssetEntity = <
     name: string;
   }
 >(
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   asset: Asset,
   newFilename: string
 ) => {
@@ -759,8 +929,8 @@ export const renameAssetEntity = <
 
 export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   state: EntitiesState,
-  entities: EntityState<T>,
-  adapter: EntityAdapter<T>,
+  entities: EntityState<T, string>,
+  adapter: EntityAdapter<T, string>,
   id: string,
   inputSymbol: string
 ) => {
@@ -785,11 +955,11 @@ export const isSlope = (value: number) => {
 
 export const updateCustomEventArgs = (
   customEvent: CustomEventNormalized,
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
-  const variables = {} as Dictionary<CustomEventVariable>;
-  const actors = {} as Dictionary<CustomEventActor>;
+  const variables = {} as Record<string, CustomEventVariable>;
+  const actors = {} as Record<string, CustomEventActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
@@ -822,7 +992,7 @@ export const updateCustomEventArgs = (
         };
         const addPropertyActor = (property: string) => {
           const actor = property && property.replace(/:.*/, "");
-          if (actor !== "player" && actor !== "$self$") {
+          if (actor !== "player" && actor !== "$self$" && actor !== "camera") {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(actor)
             );
@@ -921,10 +1091,44 @@ export const updateCustomEventArgs = (
 
 export const updateAllCustomEventsArgs = (
   customEvents: CustomEventNormalized[],
-  scriptEventLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   for (const customEvent of customEvents) {
     updateCustomEventArgs(customEvent, scriptEventLookup, scriptEventDefs);
   }
+};
+
+export const validScriptEvent = (scriptEvent: ScriptEvent): boolean => {
+  return !!(scriptEvent && scriptEvent.id);
+};
+
+export const sceneFixNulls = (scene: Scene): Scene => {
+  const newScene = { ...scene };
+  walkSceneScriptsKeys((key) => {
+    newScene[key] = filterEvents(newScene[key], validScriptEvent);
+  });
+  return newScene;
+};
+
+export const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
+  const newActor = { ...actor };
+  walkActorScriptsKeys((key) => {
+    newActor[key] = filterEvents(newActor[key], validScriptEvent);
+  });
+  return newActor;
+};
+
+export const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
+  trigger: T
+): T => {
+  const newTrigger = { ...trigger };
+  walkTriggerScriptsKeys((key) => {
+    newTrigger[key] = filterEvents(newTrigger[key], validScriptEvent);
+  });
+  return newTrigger;
+};
+
+export const scriptFixNulls = (script: CustomEvent): CustomEvent => {
+  return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };

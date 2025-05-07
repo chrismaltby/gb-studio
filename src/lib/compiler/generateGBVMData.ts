@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
@@ -8,16 +7,26 @@ import type {
   Palette,
   Scene,
   SceneParallaxLayer,
+  TilesetData,
   Trigger,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
-import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
+import {
+  decHex32Val,
+  hexDec,
+  wrap8Bit,
+  wrapSigned8Bit,
+} from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
+import { ColorModeSetting, Constant } from "shared/lib/resources/types";
+import { VariableMapData } from "./compileData";
+import { GlobalProjectiles } from "./scriptBuilder";
+import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 export interface PrecompiledBackground {
   id: string;
@@ -31,6 +40,7 @@ export interface PrecompiledBackground {
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
   autoPalettes?: Palette[];
+  colorMode: ColorModeSetting;
 }
 
 export interface ProjectileData {
@@ -38,8 +48,10 @@ export interface ProjectileData {
   spriteStateId: string;
   speed: number;
   animSpeed: number;
+  loopAnim: boolean;
   lifeTime: number;
   initialOffset: number;
+  destroyOnHit: boolean;
   collisionGroup: string;
   collisionMask: string[];
 }
@@ -59,13 +71,13 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
-export interface PrecompiledTilesetData {
+export type PrecompiledTilesetData = TilesetData & {
   id: string;
   symbol: string;
   data: number[] | Uint8Array;
   width: number;
   height: number;
-}
+};
 
 export interface PrecompiledTileData {
   symbol: string;
@@ -84,6 +96,7 @@ interface Entity {
 
 export type PrecompiledScene = Scene & {
   id: string;
+  hash: string;
   name: string;
   symbol: string;
   width: number;
@@ -92,7 +105,7 @@ export type PrecompiledScene = Scene & {
   background: PrecompiledBackground;
   playerSprite?: PrecompiledSprite;
   parallax?: Array<{ height: number; speed: number }>;
-  actorsExclusiveLookup: Dictionary<number>;
+  actorsExclusiveLookup: Record<string, number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
@@ -116,6 +129,7 @@ export type PrecompiledSprite = {
   symbol: string;
   tileset: PrecompiledTileData;
   cgbTileset?: PrecompiledTileData;
+  colorMode: ColorModeSetting;
 } & PrecompiledSpriteSheetData;
 
 export type PrecompiledFontData = {
@@ -438,6 +452,14 @@ ${data}
 };`;
 };
 
+export const parallaxStep = (
+  startRow: number,
+  endRow: number,
+  speed: number,
+): string => {
+  return `PARALLAX_STEP(${startRow}, ${endRow}, ${wrapSigned8Bit(speed)})`;
+};
+
 export const compileParallax = (
   parallax: SceneParallaxLayer[] | undefined
 ): string[] | undefined => {
@@ -451,24 +473,22 @@ export const compileParallax = (
         layerIndex === parallax.length - 1 &&
         layer.speed !== 0
       ) {
-        return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
+        return parallaxStep(row, 18, layer.speed);
       }
       if (layerIndex === parallax.length - 1) {
-        return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
+        return parallaxStep(row, 0, layer.speed);
       }
-      const str = `PARALLAX_STEP(${row}, ${row + layer.height}, ${
-        layer.speed
-      })`;
+      const str = parallaxStep(row, row + layer.height, layer.speed);
       row += layer.height;
       return str;
     });
     // For num layers = 1 or 2 append parallax terminator
     if (parallax.length < 3) {
-      layers.push("PARALLAX_STEP(18, 0, 0)");
+      layers.push(parallaxStep(18, 0, 0));
     }
     return layers;
   }
-  return [`PARALLAX_STEP(0,0,0)`];
+  return [parallaxStep(0, 0, 0)];
 };
 
 export const compileScene = (
@@ -604,13 +624,13 @@ export const compileSceneActors = (
         return {
           __comment: actorName(actor, actorIndex),
           pos: {
-            x: `${actor.x * 8} * 16`,
-            y: `${actor.y * 8} * 16`,
+            x: tileToSubpx(actor.x),
+            y: tileToSubpx(actor.y),
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(actor.moveSpeed * 16),
+          move_speed: pxToSubpx(actor.moveSpeed),
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
           persistent: actor.persistent ? "TRUE" : "FALSE",
@@ -729,14 +749,16 @@ export const compileSceneProjectiles = (
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
-          move_speed: Math.round(projectile.speed * 16),
+          move_speed: pxToSubpx(projectile.speed),
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
           collision_mask: toASMCollisionMask(projectile.collisionMask),
+          strong: !projectile.destroyOnHit,
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
+          anim_noloop: !projectile.loopAnim,
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
-          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
+          initial_offset: pxToSubpx(projectile.initialOffset || 0),
         };
       })
     ),
@@ -758,6 +780,58 @@ export const compileSceneProjectilesHeader = (
     FARPTR_TYPE,
     sceneProjectilesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`
+  );
+
+export const compileGlobalProjectiles = (
+  projectiles: GlobalProjectiles,
+  sprites: PrecompiledSprite[]
+) =>
+  toStructArrayDataFile(
+    PROJECTILE_TYPE,
+    projectiles.symbol,
+    `// Global Projectiles: ${projectiles.symbol}`,
+    filterNull(
+      projectiles.projectiles.map((projectile, projectileIndex) => {
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
+        if (!sprite) return null;
+        const stateIndex = sprite.states.findIndex(
+          (state) => state.name === projectile.spriteStateId
+        );
+        const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
+        return {
+          __comment: `Projectile ${projectileIndex}`,
+          sprite: toFarPtr(sprite.symbol),
+          move_speed: pxToSubpx(projectile.speed),
+          life_time: Math.round(projectile.lifeTime * 60),
+          collision_group: toASMCollisionGroup(projectile.collisionGroup),
+          collision_mask: toASMCollisionMask(projectile.collisionMask),
+          strong: !projectile.destroyOnHit,
+          bounds: compileBounds(sprite),
+          anim_tick: projectile.animSpeed,
+          anim_noloop: !projectile.loopAnim,
+          animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
+          initial_offset: pxToSubpx(projectile.initialOffset || 0),
+        };
+      })
+    ),
+    // Dependencies
+    flatten(
+      projectiles.projectiles.map((projectile) => {
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
+        return sprite.symbol;
+      })
+    )
+  );
+
+export const compileGlobalProjectilesHeader = (
+  projectiles: GlobalProjectiles
+) =>
+  toArrayDataHeader(
+    FARPTR_TYPE,
+    projectiles.symbol,
+    `// Global Projectiles: ${projectiles.symbol}`
   );
 
 export const compileSceneCollisions = (
@@ -901,15 +975,9 @@ export const compileSpriteSheetHeader = (spriteSheet: PrecompiledSprite) =>
     `// SpriteSheet: ${spriteSheet.name}`
   );
 
-export const compileBackground = (
-  background: PrecompiledBackground,
-  {
-    color,
-  }: {
-    color: boolean;
-  }
-) =>
-  toStructDataFile(
+export const compileBackground = (background: PrecompiledBackground) => {
+  const isColor = background.colorMode !== "mono";
+  return toStructDataFile(
     BACKGROUND_TYPE,
     background.symbol,
     `// Background: ${background.name}`,
@@ -920,11 +988,11 @@ export const compileBackground = (
         ? toFarPtr(background.tileset.symbol)
         : "{ NULL, NULL }",
       cgb_tileset:
-        color && background.cgbTileset
+        isColor && background.cgbTileset
           ? toFarPtr(background.cgbTileset.symbol)
           : "{ NULL, NULL }",
       tilemap: toFarPtr(background.tilemap.symbol),
-      cgb_tilemap_attr: color
+      cgb_tilemap_attr: isColor
         ? toFarPtr(background.tilemapAttr.symbol)
         : "{ NULL, NULL }",
     },
@@ -932,9 +1000,10 @@ export const compileBackground = (
       background.tileset?.symbol ?? [],
       background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
-      color ? background.tilemapAttr.symbol : []
+      isColor ? background.tilemapAttr.symbol : []
     )
   );
+};
 
 export const compileBackgroundHeader = (background: PrecompiledBackground) =>
   toDataHeader(
@@ -1150,8 +1219,20 @@ export const compileCursorImageHeader = (_data: Uint8Array) =>
 export const compileScriptHeader = (scriptName: string) =>
   toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
 
+export const replaceScriptSymbols = (
+  script: string,
+  replaceSymbols: Record<string, string>
+) => {
+  let newScript = script;
+  for (const key in replaceSymbols) {
+    newScript = newScript.replaceAll(key, replaceSymbols[key] ?? "");
+  }
+  return newScript;
+};
+
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<{ symbol: string }>,
+  variableAliasLookup: Record<string, VariableMapData>,
+  constants: Constant[],
   stateReferences: string[]
 ) => {
   const variables = Object.values(variableAliasLookup).map(
@@ -1164,11 +1245,49 @@ export const compileGameGlobalsInclude = (
       })
       .join("") +
     `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `${constant.symbol.toLocaleUpperCase()} = ${constant.value}\n`;
+      })
+      .join("") +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
       .join("")
+  );
+};
+
+export const compileGameGlobalsHeader = (
+  variableAliasLookup: Record<string, VariableMapData>,
+  constants: Constant[],
+  stateReferences: string[]
+) => {
+  return (
+    `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
+    Object.values(variableAliasLookup)
+      .map((v) => v?.symbol)
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
+      })
+      .join("") +
+    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
+    constants
+      .filter((constant) => constant.symbol)
+      .map((constant) => {
+        return `#define ${constant.symbol.toLocaleUpperCase()} ${
+          constant.value
+        }\n`;
+      })
+      .join("") +
+    stateReferences
+      .map((string, stringIndex) => {
+        return `#define ${string} ${stringIndex}\n`;
+      })
+      .join("") +
+    `\n` +
+    `#endif\n`
   );
 };
 
@@ -1256,3 +1375,38 @@ export const compileStateDefines = (
     `#endif\n`
   );
 };
+
+export const emptySpriteSheet = `#pragma bank 255
+
+// SpriteSheet: None
+
+#include "gbs_types.h"
+
+const void __at(255) __bank_spritesheet_none;
+
+const metasprite_t spritesheet_none_metasprite[]  = {
+    {metasprite_end}
+};
+
+const metasprite_t * const spritesheet_none_metasprites[] = {
+    spritesheet_none_metasprite
+};
+
+const struct spritesheet_t spritesheet_none = {
+    .n_metasprites = 1,
+    .metasprites = spritesheet_none_metasprites,
+};
+`;
+
+export const emptySpriteSheetHeader = `#ifndef SPRITESHEET_NONE_H
+#define SPRITESHEET_NONE_H
+
+// SpriteSheet: None
+
+#include "gbs_types.h"
+
+extern const void __bank_spritesheet_none;
+extern const struct spritesheet_t spritesheet_none;
+
+#endif
+`;

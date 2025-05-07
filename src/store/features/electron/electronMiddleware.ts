@@ -11,15 +11,27 @@ import {
   actorSelectors,
   triggerSelectors,
   scriptEventSelectors,
+  actorPrefabSelectors,
+  triggerPrefabSelectors,
+  constantSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
 import API from "renderer/lib/api";
 import { EVENT_CALL_CUSTOM_EVENT, NAVIGATOR_MIN_WIDTH } from "consts";
-import l10n from "shared/lib/lang/l10n";
+import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 import { unwrapResult } from "@reduxjs/toolkit";
 import errorActions from "store/features/error/errorActions";
+import {
+  actorName,
+  constantName,
+  triggerName,
+} from "shared/lib/entities/entitiesHelpers";
+import type { DeleteScriptConfirmButton } from "lib/electron/dialog/confirmDeleteCustomEvent";
+import { worker } from "components/editors/ConstantEditor";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { ConstantUseResult } from "components/editors/ConstantUses.worker";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -78,6 +90,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       try {
         unwrapResult(action);
       } catch (error) {
+        console.error(error);
         if (
           error &&
           typeof error === "object" &&
@@ -90,7 +103,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
               filename: "",
               line: 0,
               col: 0,
-              stackTrace: error.message,
+              stackTrace: "stack" in error ? String(error.stack) : "",
             })
           );
         }
@@ -116,10 +129,23 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const scenesLookup = sceneSelectors.selectEntities(state);
       const actorsLookup = actorSelectors.selectEntities(state);
       const triggersLookup = triggerSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const allScriptEvents = scriptEventSelectors.selectAll(state);
 
       const usedSceneIds = [] as string[];
       const usedEventIds = [] as string[];
+
+      const referenceIds: string[] = [];
+      for (const scriptEvent of allScriptEvents) {
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId === action.payload.customEventId
+        ) {
+          referenceIds.push(scriptEvent.id);
+        }
+      }
 
       const sceneName = (sceneId: string) => {
         const scene = scenesLookup[sceneId];
@@ -133,6 +159,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         scriptEventsLookup,
         actorsLookup,
         triggersLookup,
+        actorPrefabsLookup,
+        triggerPrefabsLookup,
         undefined,
         (scriptEvent, scene) => {
           if (
@@ -145,7 +173,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         }
       );
 
-      const usedTotal = usedSceneIds.length;
+      const usedTotal = referenceIds.length;
 
       if (usedTotal > 0) {
         const sceneNames = uniq(
@@ -155,29 +183,217 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         // Display confirmation and stop delete if cancelled
         API.dialog
           .confirmDeleteCustomEvent(customEventName, sceneNames, usedTotal)
-          .then((cancel) => {
-            if (cancel) {
+          .then((button) => {
+            const cancelButton: DeleteScriptConfirmButton.cancel = 2;
+            const deleteReferencesButton: DeleteScriptConfirmButton.deleteReferences = 1;
+            if (button === cancelButton) {
               return;
             }
-
-            // Remove any references to this custom event
-            for (const usedEventId of usedEventIds) {
-              store.dispatch(
-                entitiesActions.editScriptEvent({
-                  scriptEventId: usedEventId,
-                  changes: {
-                    args: {
-                      customEventId: "",
-                    },
-                  },
-                })
-              );
+            if (button === deleteReferencesButton) {
+              return next({
+                ...action,
+                payload: {
+                  ...action.payload,
+                  deleteReferences: true,
+                },
+              });
             }
-
             return next(action);
           });
         return;
       }
+    } else if (entitiesActions.removeActorPrefab.match(action)) {
+      const state = store.getState();
+      const actorPrefab = actorPrefabSelectors.selectById(
+        state,
+        action.payload.actorPrefabId
+      );
+
+      if (!actorPrefab) {
+        return;
+      }
+
+      const allPrefabIds = actorPrefabSelectors.selectIds(state);
+      const prefabIndex = allPrefabIds.indexOf(actorPrefab.id);
+      const prefabName =
+        actorPrefab.name || actorName(actorPrefab, prefabIndex);
+
+      const actors = actorSelectors.selectAll(state);
+      const usedActors = actors.filter(
+        (actor) => actor.prefabId === actorPrefab.id
+      );
+      const usedTotal = usedActors.length;
+
+      if (usedTotal > 0) {
+        // Display confirmation and stop delete if cancelled
+        API.dialog.confirmDeletePrefab(prefabName, usedTotal).then((cancel) => {
+          if (cancel) {
+            return;
+          }
+
+          // Unpack any actors using this prefab
+          for (const usedActor of usedActors) {
+            store.dispatch(
+              entitiesActions.unpackActorPrefab({
+                actorId: usedActor.id,
+                force: true,
+              })
+            );
+          }
+
+          return next(action);
+        });
+
+        return;
+      }
+    } else if (entitiesActions.unpackActorPrefab.match(action)) {
+      if (action.payload.force) {
+        return next(action);
+      }
+      // Display confirmation and stop unpack if cancelled
+      API.dialog.confirmUnpackPrefab().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
+    } else if (entitiesActions.removeTriggerPrefab.match(action)) {
+      const state = store.getState();
+      const triggerPrefab = triggerPrefabSelectors.selectById(
+        state,
+        action.payload.triggerPrefabId
+      );
+
+      if (!triggerPrefab) {
+        return;
+      }
+
+      const allPrefabIds = triggerPrefabSelectors.selectIds(state);
+      const prefabIndex = allPrefabIds.indexOf(triggerPrefab.id);
+      const prefabName =
+        triggerPrefab.name || triggerName(triggerPrefab, prefabIndex);
+
+      const triggers = triggerSelectors.selectAll(state);
+      const usedTriggers = triggers.filter(
+        (trigger) => trigger.prefabId === triggerPrefab.id
+      );
+      const usedTotal = usedTriggers.length;
+
+      if (usedTotal > 0) {
+        // Display confirmation and stop delete if cancelled
+        API.dialog.confirmDeletePrefab(prefabName, usedTotal).then((cancel) => {
+          if (cancel) {
+            return;
+          }
+
+          // Unpack any triggers using this prefab
+          for (const usedTrigger of usedTriggers) {
+            store.dispatch(
+              entitiesActions.unpackTriggerPrefab({
+                triggerId: usedTrigger.id,
+                force: true,
+              })
+            );
+          }
+
+          return next(action);
+        });
+
+        return;
+      }
+    } else if (entitiesActions.unpackTriggerPrefab.match(action)) {
+      if (action.payload.force) {
+        return next(action);
+      }
+      // Display confirmation and stop unpack if cancelled
+      API.dialog.confirmUnpackPrefab().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
+    } else if (settingsActions.removeScriptEventPreset.match(action)) {
+      const state = store.getState();
+
+      const scriptEventPreset =
+        state.project.present.settings.scriptEventPresets[action.payload.id]?.[
+          action.payload.presetId
+        ];
+      if (scriptEventPreset) {
+        API.dialog
+          .confirmDeletePreset(scriptEventPreset.name)
+          .then((cancel) => {
+            if (cancel) {
+              return;
+            }
+            return next(action);
+          });
+        return;
+      }
+    } else if (settingsActions.editScriptEventPreset.match(action)) {
+      API.dialog.confirmApplyPreset().then((cancel) => {
+        if (cancel) {
+          return;
+        }
+        return next(action);
+      });
+      return;
+    } else if (entitiesActions.removeConstant.match(action)) {
+      const state = store.getState();
+
+      const constant = constantSelectors.selectById(
+        state,
+        action.payload.constantId
+      );
+      if (!constant) {
+        return;
+      }
+
+      const allConstants = constantSelectors.selectAll(state);
+      const constantIndex = allConstants.indexOf(constant);
+      const name = constantName(constant, constantIndex);
+      const scenes = sceneSelectors.selectAll(state);
+      const actorsLookup = actorSelectors.selectEntities(state);
+      const triggersLookup = triggerSelectors.selectEntities(state);
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const customEventsLookup = customEventSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
+      const scriptEventDefs = selectScriptEventDefs(state);
+
+      worker.postMessage({
+        id: action.payload.constantId,
+        constantId: action.payload.constantId,
+        scenes,
+        actorsLookup,
+        triggersLookup,
+        actorPrefabsLookup,
+        triggerPrefabsLookup,
+        scriptEventsLookup,
+        scriptEventDefs,
+        customEventsLookup,
+        l10NData: getL10NData(),
+      });
+      worker.addEventListener(
+        "message",
+        (e: MessageEvent<ConstantUseResult>) => {
+          const { uses } = e.data;
+          if (!uses || uses.length === 0) {
+            return next(action);
+          }
+          const useNames = uses.map((use) => use.name);
+          API.dialog.confirmDeleteConstant(name, useNames).then((cancel) => {
+            if (cancel) {
+              return;
+            }
+            return next(action);
+          });
+        },
+        { once: true }
+      );
+      return;
     } else if (actions.showErrorBox.match(action)) {
       API.dialog.showError(action.payload.title, action.payload.content);
     }

@@ -1,21 +1,22 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
-import {
-  customEventSelectors,
-  scriptEventSelectors,
-} from "store/features/entities/entitiesState";
-import { Dictionary } from "@reduxjs/toolkit";
+import { customEventSelectors } from "store/features/entities/entitiesState";
 import {
   CustomEventNormalized,
   ScriptEventFieldSchema,
+  ScriptEventNormalized,
+  ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventFormProps {
-  id: string;
+  scriptEvent: ScriptEventNormalized;
   entityId: string;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
   nestLevel: number;
   altBg: boolean;
   renderEvents: (key: string, label: string) => React.ReactNode;
@@ -24,8 +25,8 @@ interface ScriptEventFormProps {
 const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Dictionary<CustomEventNormalized>,
-  scriptEventDefs: Dictionary<ScriptEventDef>
+  customEvents: Record<string, CustomEventNormalized>,
+  scriptEventDefs: Record<string, ScriptEventDef>
 ) => {
   const eventCommands =
     (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];
@@ -79,17 +80,17 @@ const getScriptEventFields = (
 };
 
 const ScriptEventForm = ({
-  id,
+  scriptEvent,
   entityId,
+  parentId,
+  parentKey,
+  parentType,
   nestLevel,
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
-  );
-  const scriptEvent = useAppSelector((state) =>
-    scriptEventSelectors.selectById(state, id)
   );
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
@@ -115,8 +116,11 @@ const ScriptEventForm = ({
 
   return (
     <ScriptEventFields
-      id={id}
+      scriptEvent={scriptEvent}
       entityId={entityId}
+      parentId={parentId}
+      parentKey={parentKey}
+      parentType={parentType}
       nestLevel={nestLevel}
       altBg={altBg}
       renderEvents={renderEvents}

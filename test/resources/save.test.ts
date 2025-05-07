@@ -6,6 +6,8 @@ import {
 import { CompressedProjectResources } from "shared/lib/resources/types";
 import SparkMD5 from "spark-md5";
 import {
+  dummyActorPrefabResource,
+  dummyTriggerPrefabResource,
   dummyActorResource,
   dummyAvatarResource,
   dummyBackgroundResource,
@@ -92,6 +94,20 @@ describe("save.ts", () => {
           name: "Palette 1",
         },
       ],
+      actorPrefabs: [
+        {
+          ...dummyActorPrefabResource,
+          id: "actorPrefab1",
+          name: "Actor Prefab 1",
+        },
+      ],
+      triggerPrefabs: [
+        {
+          ...dummyTriggerPrefabResource,
+          id: "actorTrigger1",
+          name: "Trigger Prefab 1",
+        },
+      ],
       scripts: [
         {
           ...dummyScriptResource,
@@ -165,7 +181,7 @@ describe("save.ts", () => {
     it("should build resource export buffer correctly", () => {
       const buffer = buildResourceExportBuffer(mockProjectResources);
 
-      expect(buffer).toHaveLength(17);
+      expect(buffer).toHaveLength(19);
 
       // Verify one of the encoded resources
       const actorResource = buffer.find((file) =>

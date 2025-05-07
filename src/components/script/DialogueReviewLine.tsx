@@ -8,6 +8,8 @@ export interface DialogueLine {
   line: ScriptEventNormalized;
   sceneName: string;
   entityName: string;
+  overrideActorId?: string;
+  overrideTriggerId?: string;
 }
 
 interface DialogueReviewLineProps {

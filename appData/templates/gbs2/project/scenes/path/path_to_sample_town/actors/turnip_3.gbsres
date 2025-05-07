@@ -3,6 +3,7 @@
   "id": "4159e95b-34e4-42e8-bf25-67f2078e804f",
   "_index": 3,
   "symbol": "actor_turnip_3",
+  "prefabId": "5fa52cd0-57cd-414c-8b93-5601c6e9636f",
   "name": "Turnip 3",
   "x": 103,
   "y": 13,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "1",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "4c6d3ad0-1b8d-4d01-99df-60015643929c",

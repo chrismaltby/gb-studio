@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./rootReducer";
 import electronMiddleware from "./features/electron/electronMiddleware";
 import buildGameMiddleware from "./features/buildGame/buildGameMiddleware";
@@ -13,6 +13,7 @@ import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
 import entitiesMiddleware from "./features/entities/entitiesMiddleware";
 import settingsMiddleware from "./features/settings/settingsMiddleware";
+import consoleMiddleware from "./features/console/consoleMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -20,27 +21,31 @@ const store = configureStore({
   reducer: rootReducer,
   devTools: {
     latency: 200,
-    actionsBlacklist: ["editor/sceneHover"],
+    actionsDenylist: ["editor/sceneHover"],
   },
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-    immutableCheck: false,
-  }).concat([
-    throttleMiddleware,
-    electronMiddleware,
-    projectMiddleware,
-    entitiesMiddleware,
-    settingsMiddleware,
-    spriteMiddleware,
-    buildGameMiddleware,
-    musicMiddleware,
-    soundFxMiddleware,
-    assetsMiddleware,
-    undoMiddleware,
-    clipboardMiddleware,
-    trackerDocumentMiddleware,
-  ]),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+      immutableCheck: false,
+    }).concat([
+      throttleMiddleware,
+      electronMiddleware,
+      projectMiddleware,
+      entitiesMiddleware,
+      settingsMiddleware,
+      spriteMiddleware,
+      buildGameMiddleware,
+      musicMiddleware,
+      soundFxMiddleware,
+      assetsMiddleware,
+      consoleMiddleware,
+      undoMiddleware,
+      clipboardMiddleware,
+      trackerDocumentMiddleware,
+    ]),
 });
 
 export type AppDispatch = typeof store.dispatch;
+export type AppStore = typeof store;
+
 export default store;

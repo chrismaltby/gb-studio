@@ -10,6 +10,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { FontIcon } from "ui/icons/Icons";
+import { SingleValue } from "react-select";
 
 interface FontSelectProps extends SelectCommonProps {
   name: string;
@@ -88,8 +89,10 @@ export const FontSelect: FC<FontSelectProps> = ({
     }
   }, [currentFont, fonts, optional, optionalDefaultFontId, optionalLabel]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

@@ -14,6 +14,10 @@ export type MusicDataPacket =
       song: Song;
     }
   | {
+      action: "load-sound";
+      sound: string;
+    }
+  | {
       action: "loaded";
     }
   | {

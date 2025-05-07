@@ -3,6 +3,7 @@
   "id": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
   "_index": 1,
   "symbol": "actor_ice_block",
+  "prefabId": "",
   "name": "Ice Block",
   "x": 24,
   "y": 18,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "b64b6db6-c892-40be-9faf-6ac81861e610",

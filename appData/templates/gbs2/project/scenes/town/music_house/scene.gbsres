@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "4ebc5249-2878-434c-aab7-091dec325fc6",
+  "_index": 10,
   "type": "TOPDOWN",
   "name": "town/Music House",
   "symbol": "scene_17",

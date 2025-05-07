@@ -3,6 +3,7 @@
   "id": "4cdaa8db-09e8-451b-bcdd-a98066e3b7ac",
   "_index": 2,
   "symbol": "actor_4",
+  "prefabId": "8d9d0f7c-2757-441c-9111-403634dcb6c9",
   "name": "",
   "x": 67,
   "y": 14,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "1",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "43237e2d-283f-4a4e-83a0-fdaa05e79dc0",
@@ -192,14 +194,6 @@
               "duration": 0.5,
               "wait": false
             }
-          },
-          {
-            "id": "",
-            "command": ""
-          },
-          {
-            "id": "",
-            "command": ""
           },
           {
             "id": "4aec2ab7-1a8f-4b54-b4fc-7cb4fded05de",

@@ -3,6 +3,7 @@
   "id": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
   "_index": 4,
   "symbol": "actor_angry_guy",
+  "prefabId": "",
   "name": "Angry Guy",
   "x": 18,
   "y": 24,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "81f7693e-8544-4bb2-bf47-b8963fe90982",

@@ -1,19 +1,24 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
-import { FlexGrow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 import {
   SettingsState,
   getSettings,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
+import DebuggerUsageData from "components/debugger/DebuggerUsageData";
+import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
+import useDimensions from "react-cool-dimensions";
+import editorActions from "store/features/editor/editorActions";
+import { ConsoleLink } from "store/features/console/consoleState";
+import { StyledButton } from "ui/buttons/style";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -44,7 +49,7 @@ const ButtonToolbar = styled.div`
   align-items: center;
   padding: 10px;
 
-  ${Button} {
+  ${StyledButton} {
     height: 24px;
     line-height: 24px;
   }
@@ -53,6 +58,81 @@ const ButtonToolbar = styled.div`
     margin-left: 10px;
   }
 `;
+
+const UsageWrapper = styled.div`
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+interface LogLineProps {
+  $type: "log" | "warn";
+}
+
+const LogLine = styled.div<LogLineProps>`
+  color: white;
+  ${(props) =>
+    props.$type === "warn"
+      ? css`
+          color: orange;
+        `
+      : ""};
+`;
+
+const LogLink = styled.a`
+  cursor: pointer;
+`;
+
+interface BuildLogLineProps {
+  text: string;
+  link?: ConsoleLink;
+  type: "log" | "warn";
+}
+
+const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
+  const dispatch = useAppDispatch();
+  return (
+    <LogLine $type={type}>
+      {text}{" "}
+      {link && (
+        <LogLink
+          onClick={() => {
+            if (link.type === "customEvent") {
+              dispatch(
+                editorActions.selectCustomEvent({
+                  customEventId: link.entityId,
+                })
+              );
+            } else if (link.type === "actor") {
+              dispatch(
+                editorActions.selectActor({
+                  actorId: link.entityId,
+                  sceneId: link.sceneId,
+                })
+              );
+            } else if (link.type === "trigger") {
+              dispatch(
+                editorActions.selectTrigger({
+                  triggerId: link.entityId,
+                  sceneId: link.sceneId,
+                })
+              );
+            } else if (link.type === "scene") {
+              dispatch(
+                editorActions.selectScene({
+                  sceneId: link.sceneId,
+                })
+              );
+            }
+          }}
+        >
+          ➡️ <u>{link.linkText}</u>
+        </LogLink>
+      )}
+    </LogLine>
+  );
+};
 
 const DebuggerBuildLog = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -67,6 +147,11 @@ const DebuggerBuildLog = () => {
   const generateDebugFilesEnabled = useAppSelector(
     (state) => getSettings(state).generateDebugFilesEnabled
   );
+
+  const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
+    breakpoints: { SM: 0, MD: 50, LG: 280 },
+    updateOnBreakpointChange: true,
+  });
 
   // Only show the latest 500 lines during build
   // show full output on complete
@@ -135,13 +220,12 @@ const DebuggerBuildLog = () => {
     <Wrapper>
       <Terminal ref={scrollRef}>
         {outputLines.map((out, index) => (
-          <div
-            // eslint-disable-next-line react/no-array-index-key
+          <BuildLogLine
             key={index}
-            style={{ color: out.type === "err" ? "orange" : "white" }}
-          >
-            {out.text}
-          </div>
+            text={out.text}
+            type={out.type === "err" ? "warn" : "log"}
+            link={out.link}
+          />
         ))}
         {status === "cancelled" && (
           <div style={{ color: "orange" }}>{l10n("BUILD_CANCELLING")}...</div>
@@ -151,42 +235,54 @@ const DebuggerBuildLog = () => {
             <br />
             Warnings:
             {warnings.map((out, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index} style={{ color: "orange" }}>
-                - {out.text}
-              </div>
+              <BuildLogLine
+                key={index}
+                type="warn"
+                text={out.text}
+                link={out.link}
+              />
             ))}
           </div>
         )}
       </Terminal>
       <ButtonToolbar>
-        {status === "running" ? (
-          <Button onClick={onRun}>{l10n("BUILD_CANCEL")}</Button>
-        ) : (
-          <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
-        )}
+        <Button
+          onClick={status !== "cancelled" ? onRun : undefined}
+          disabled={status === "cancelled"}
+        >
+          <ConsistentWidthLabel
+            label={
+              status === "running" || status === "cancelled"
+                ? l10n("BUILD_CANCEL")
+                : l10n("BUILD_RUN")
+            }
+            possibleValues={[l10n("BUILD_CANCEL"), l10n("BUILD_RUN")]}
+          />
+        </Button>
         <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
-          <MenuItem onClick={onToggleOpenBuildLogOnWarnings}>
-            <MenuItemIcon>
-              {openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleOpenBuildLogOnWarnings}
+            icon={openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
           </MenuItem>
-          <MenuItem onClick={onToggleGenerateDebugFilesEnabled}>
-            <MenuItemIcon>
-              {generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
-            </MenuItemIcon>
+          <MenuItem
+            onClick={onToggleGenerateDebugFilesEnabled}
+            icon={generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
+          >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
           <MenuDivider />
-          <MenuItem onClick={onDeleteCache}>
-            <MenuItemIcon>
-              <BlankIcon />
-            </MenuItemIcon>
+          <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>
-        <FlexGrow />
+        <UsageWrapper ref={observe}>
+          <DebuggerUsageData
+            hideLabels={usageBreakpoint !== "LG"}
+            forceZoom={usageBreakpoint === "SM"}
+          ></DebuggerUsageData>
+        </UsageWrapper>
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>
     </Wrapper>

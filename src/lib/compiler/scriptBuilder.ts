@@ -1,6 +1,6 @@
-import { inputDec, textSpeedDec } from "./helpers";
+import SparkMD5 from "spark-md5";
+import { inputDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
-import trimlines from "shared/lib/helpers/trimlines";
 import { is16BitCType } from "shared/lib/engineFields/engineFieldToCType";
 import {
   globalVariableDefaultName,
@@ -15,8 +15,8 @@ import type {
   ScriptEvent,
   CustomEvent,
   SoundData,
+  TimeUnitType,
 } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
@@ -30,8 +30,9 @@ import {
   PrecompiledEmote,
   PrecompiledTilesetData,
   PrecompiledBackground,
+  PrecompiledProjectile,
 } from "./generateGBVMData";
-import { DMG_PALETTE, defaultProjectSettings } from "consts";
+import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -47,18 +48,17 @@ import {
   isVariableTemp,
   toVariableNumber,
 } from "shared/lib/entities/entitiesHelpers";
-import { lexText } from "shared/lib/compiler/lexText";
+import { lexText, Token } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
-import {
-  defaultVariableForContext,
-  ScriptEditorContextType,
-} from "shared/lib/scripts/context";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
+import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { VariableMapData } from "lib/compiler/compileData";
 import {
+  ConstScriptValue,
   isScriptValue,
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
@@ -74,9 +74,15 @@ import {
   addScriptValueConst,
   addScriptValueToScriptValue,
   shiftLeftScriptValueConst,
+  clampScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
+import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
+import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
+import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
+import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
+import { pxToSubpx, subpxShiftForUnits, tileToSubpx, unitsValueToSubpx } from "shared/lib/helpers/subpixels";
 
 export type ScriptOutput = string[];
 
@@ -120,14 +126,27 @@ type ScriptBuilderVariable =
   | ScriptBuilderSimpleVariable
   | ScriptBuilderFunctionArg;
 
+type CameraProperty =
+  | "camera_x"
+  | "camera_y"
+  | "camera_deadzone_x"
+  | "camera_deadzone_y"
+  | "camera_offset_x"
+  | "camera_offset_y";
+
 interface ScriptBuilderFunctionArgLookup {
   actor: Map<string, ScriptBuilderFunctionArg>;
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
+export interface GlobalProjectiles {
+  symbol: string;
+  projectiles: PrecompiledProjectile[];
+}
+
 export interface ScriptBuilderOptions {
   scriptEventHandlers: ScriptEventHandlers;
-  context: ScriptEditorContextType;
+  context: ScriptEditorCtxType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
   sceneIndex: number;
@@ -135,7 +154,8 @@ export interface ScriptBuilderOptions {
   entityType: ScriptBuilderEntityType;
   entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<VariableMapData>;
+  variableAliasLookup: Record<string, VariableMapData>;
+  constantsLookup: Record<string, Constant>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -151,25 +171,37 @@ export interface ScriptBuilderOptions {
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
-  engineFields: Dictionary<EngineFieldSchema>;
+  engineFields: Record<string, EngineFieldSchema>;
   settings: SettingsState;
-  additionalScripts: Dictionary<{
-    symbol: string;
-    compiledScript: string;
-  }>;
-  additionalOutput: Dictionary<{
-    filename: string;
-    data: string;
-  }>;
-  symbols: Dictionary<string>;
+  additionalScripts: Record<
+    string,
+    {
+      symbol: string;
+      compiledScript: string;
+    }
+  >;
+  additionalOutput: Record<
+    string,
+    {
+      filename: string;
+      data: string;
+    }
+  >;
+  symbols: Record<string, string>;
+  globalProjectiles: GlobalProjectiles[];
   argLookup: ScriptBuilderFunctionArgLookup;
   maxDepth: number;
-  compiledCustomEventScriptCache: Dictionary<{
-    scriptRef: string;
-    argsLen: number;
-  }>;
+  compiledCustomEventScriptCache: Record<
+    string,
+    {
+      scriptRef: string;
+      argsLen: number;
+    }
+  >;
+  recursiveSymbolMap: Record<string, string>;
+  additionalScriptsCache: Record<string, string>;
   debugEnabled: boolean;
-  compiledAssetsCache: Dictionary<string>;
+  compiledAssetsCache: Record<string, string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -276,9 +308,12 @@ type RPNHandler = {
   refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
   int8: (value: number | string) => RPNHandler;
   int16: (value: number | string) => RPNHandler;
+  intConstant: (value: string) => RPNHandler;
   operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
   stop: () => void;
 };
+
+type RPNMemType = ".MEM_I8" | ".MEM_U8" | ".MEM_I16";
 
 const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
   ".ABS",
@@ -345,6 +380,16 @@ const unionFlags = (flags: string[], defaultValue = "0") => {
   return `^/(${flags.join(" | ")})/`;
 };
 
+const andFlags = (flags: string[], defaultValue = "0") => {
+  if (flags.length === 0) {
+    return defaultValue;
+  }
+  if (flags.length === 1) {
+    return flags[0];
+  }
+  return `^/(${flags.join(" & ")})/`;
+};
+
 const toASMVar = (symbol: string) => {
   return symbol.toUpperCase().replace(/[^A-Z0-9]/g, "_");
 };
@@ -377,15 +422,6 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
     ([] as string[]).concat(
       axis.includes("x") ? ".CAMERA_LOCK_X" : [],
       axis.includes("y") ? ".CAMERA_LOCK_Y" : []
-    )
-  );
-};
-
-const toProjectileFlags = (destroyOnHit: boolean, loopAnim: boolean) => {
-  return unionFlags(
-    ([] as string[]).concat(
-      !destroyOnHit ? ".PROJECTILE_STRONG" : [],
-      !loopAnim ? ".PROJECTILE_ANIM_ONCE" : []
     )
   );
 };
@@ -557,6 +593,10 @@ const textCodeGotoRel = (x: number, y: number): string => {
   return `\\004\\${decOct(x)}\\${decOct(y)}`;
 };
 
+const textCodeInput = (mask: number): string => {
+  return `\\006\\${decOct(mask)}`;
+};
+
 const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };
@@ -566,8 +606,10 @@ export const toProjectileHash = ({
   spriteStateId,
   speed,
   animSpeed,
+  loopAnim,
   lifeTime,
   initialOffset,
+  destroyOnHit,
   collisionGroup,
   collisionMask,
 }: {
@@ -575,30 +617,35 @@ export const toProjectileHash = ({
   spriteStateId: string;
   speed: number;
   animSpeed: number;
+  loopAnim: boolean;
   lifeTime: number;
   initialOffset: number;
+  destroyOnHit: boolean;
   collisionGroup: string;
   collisionMask: string[];
 }) =>
-  JSON.stringify({
-    spriteSheetId,
-    spriteStateId,
-    speed,
-    animSpeed,
-    lifeTime,
-    initialOffset,
-    collisionGroup,
-    collisionMask: [...collisionMask].sort(),
-  });
+  SparkMD5.hash(
+    JSON.stringify({
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask: [...collisionMask].sort(),
+    })
+  );
 
-const MAX_DIALOGUE_LINES = 5;
 const fadeSpeeds = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f];
 
 const scriptValueToSubpixels = (
   value: ScriptValue,
   units: DistanceUnitType
 ) => {
-  return shiftLeftScriptValueConst(value, units === "tiles" ? 0x7 : 0x4);
+  return shiftLeftScriptValueConst(value, subpxShiftForUnits(units));
 };
 
 // ------------------------
@@ -614,7 +661,7 @@ class ScriptBuilder {
   localsSize: number;
   actorIndex: number;
   stackPtr: number;
-  labelStackSize: Dictionary<number>;
+  labelStackSize: Record<string, number>;
   includeParams: number[];
   headers: string[];
 
@@ -635,6 +682,7 @@ class ScriptBuilder {
       entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
+      constantsLookup: options.constantsLookup || {},
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
@@ -653,11 +701,14 @@ class ScriptBuilder {
       additionalScripts: options.additionalScripts || {},
       additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
+      globalProjectiles: options.globalProjectiles || [],
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
+      recursiveSymbolMap: options.recursiveSymbolMap ?? {},
+      additionalScriptsCache: options.additionalScriptsCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || defaultProjectSettings,
@@ -834,6 +885,10 @@ class ScriptBuilder {
         } else if (token.type === "OP") {
           const op = toScriptOperator(token.operator);
           rpn = rpn.operator(op);
+        } else if (token.type === "CONST") {
+          rpn = rpn.intConstant(token.symbol);
+        } else {
+          assertUnreachable(token);
         }
         token = rpnTokens.shift();
       }
@@ -857,6 +912,9 @@ class ScriptBuilder {
       .replace(/\n/g, "")
       .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
         return this.getVariableAlias(symbol.replace(/\$/g, ""));
+      })
+      .replace(/@([a-z0-9-]{36})@/g, (symbol) => {
+        return this.getConstantSymbol(symbol.replace(/@/g, ""));
       });
   };
 
@@ -1026,6 +1084,11 @@ class ScriptBuilder {
     this._addCmd("VM_SET_INT8", `_${cVariable}`, addr);
   };
 
+  _setMemUInt8 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_UINT8", `_${cVariable}`, addr);
+  };
+
   _setMemInt16 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_INT16", `_${cVariable}`, addr);
@@ -1043,6 +1106,18 @@ class ScriptBuilder {
     }
   };
 
+  _setMemUInt8ToVariable = (cVariable: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addDependency(cVariable);
+    if (this._isIndirectVariable(variable)) {
+      this._stackPushInd(variableAlias);
+      this._setMemUInt8(cVariable, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setMemUInt8(cVariable, variableAlias);
+    }
+  };
+
   _setMemInt16ToVariable = (cVariable: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
@@ -1055,9 +1130,61 @@ class ScriptBuilder {
     }
   };
 
+  _setMemToScriptValue = (
+    cVariable: string,
+    cType: "BYTE" | "UBYTE" | "WORD" | "UWORD",
+    value: ScriptValue
+  ) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      // Was single number - set using const
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setConstMemInt16(cVariable, rpnOps[0].value);
+      } else if (cType === "UBYTE") {
+        this._setConstMemUInt8(cVariable, rpnOps[0].value);
+      } else {
+        this._setConstMemInt8(cVariable, rpnOps[0].value);
+      }
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      // Was single variable
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setMemInt16ToVariable(cVariable, rpnOps[0].value);
+      } else if (cType === "UBYTE") {
+        this._setMemUInt8ToVariable(cVariable, rpnOps[0].value);
+      } else {
+        this._setMemInt8ToVariable(cVariable, rpnOps[0].value);
+      }
+    } else {
+      // Was RPN instructions
+      const memSetValueRef = this._declareLocal("mem_set_value", 1, true);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(memSetValueRef).stop();
+      if (cType === "WORD" || cType === "UWORD") {
+        this._setMemInt16ToVariable(cVariable, memSetValueRef);
+      } else if (cType === "UBYTE") {
+        this._setMemUInt8ToVariable(cVariable, memSetValueRef);
+      } else {
+        this._setMemInt8ToVariable(cVariable, memSetValueRef);
+      }
+    }
+  };
+
   _setConstMemInt8 = (cVariable: string, value: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
+  };
+
+  _setConstMemUInt8 = (
+    cVariable: string,
+    value: ScriptBuilderStackVariable
+  ) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
   };
 
   _setConstMemInt16 = (
@@ -1200,6 +1327,27 @@ class ScriptBuilder {
     }
   };
 
+  _printerDetect = (statusAddr: string, timeout: number) => {
+    this._addCmd("VM_PRINTER_DETECT", statusAddr, timeout);
+  };
+
+  _printOverlay = (
+    statusAddr: string,
+    startLine: number,
+    height: number,
+    margin: number
+  ) => {
+    // Height must be a multiple of two
+    const roundUpToNearest2 = (num: number) => Math.ceil(num / 2) * 2;
+    this._addCmd(
+      "VM_PRINT_OVERLAY",
+      statusAddr,
+      startLine,
+      roundUpToNearest2(height),
+      margin
+    );
+  };
+
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(
       `.dw ${data.map((d) => this._rawOffsetStackAddr(d)).join(", ")}`
@@ -1216,6 +1364,16 @@ class ScriptBuilder {
     const _label = toValidLabel(label);
     this._assertLabelStackNeutral(_label);
     this._addCmd("VM_JUMP", `${_label}$`);
+  };
+
+  // Loops while variable is not zero
+  _loop = (
+    counterAddr: ScriptBuilderStackVariable,
+    label: string,
+    popNum: number
+  ) => {
+    const _label = toValidLabel(label);
+    this._addCmd("VM_LOOP", counterAddr, `${_label}$`, popNum);
   };
 
   _randomize = () => {
@@ -1292,6 +1450,10 @@ class ScriptBuilder {
           return rpn.refSet(variableAlias);
         }
       },
+      refMem: (type: RPNMemType, address: string) => {
+        rpnCmd(".R_REF_MEM", type, `_${address}`);
+        return rpn;
+      },
       int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
@@ -1299,6 +1461,12 @@ class ScriptBuilder {
       },
       int16: (value: number | string) => {
         rpnCmd(".R_INT16", value);
+        stack.push(0);
+        return rpn;
+      },
+      intConstant: (value: string) => {
+        const symbol = this.getConstantSymbol(value);
+        rpnCmd(".R_INT16", symbol);
         stack.push(0);
         return rpn;
       },
@@ -1338,92 +1506,148 @@ class ScriptBuilder {
       const localVar = this._declareLocal("local", 1, true);
       localsLookup[fetchOp.local] = localVar;
       switch (fetchOp.value.type) {
-        case "property": {
-          const actorValue = fetchOp.value.target || "player";
-          const propertyValue = fetchOp.value.property || "xpos";
+        case "property":
+          if (fetchOp.value.target === "camera") {
+            const propertyValue = fetchOp.value.property || "xpos";
+            this._addComment(`-- Fetch Camera ${propertyValue}`);
 
-          if (
-            actorValue === currentActor &&
-            propertyValue === currentProperty &&
-            prevLocalVar
-          ) {
-            // If requested prop was fetched previously, reuse local var, don't fetch again
-            localsLookup[fetchOp.local] = prevLocalVar;
-            delete this.localsLookup[localVar];
-            continue;
-          }
-
-          this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
-          if (currentActor !== actorValue) {
-            this.actorSetById(actorValue);
-            currentActor = actorValue;
-            currentPropData = "";
-          }
-          if (propertyValue === "xpos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
+            if (propertyValue === "xpos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_x")
+                .int16(tileToSubpx(1))
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ypos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_y")
+                .int16(tileToSubpx(1))
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pxpos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_x")
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pypos") {
+              this._rpn()
+                .refMem(".MEM_I16", "camera_y")
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "xdeadzone") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_deadzone_x")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ydeadzone") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_deadzone_y")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "xoffset") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_offset_x")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "yoffset") {
+              this._rpn()
+                .refMem(".MEM_U8", "camera_offset_y")
+                .refSet(localVar)
+                .stop();
+            } else {
+              throw new Error(`Unsupported property type "${propertyValue}"`);
             }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 1))
-              .int16(8 * 16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "ypos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 2))
-              .int16(8 * 16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "pxpos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 1))
-              .int16(16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "pypos") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "pos") {
-              this._actorGetPosition(actorRef);
-              currentPropData = "pos";
-            }
-            this._rpn() //
-              .ref(this._localRef(actorRef, 2))
-              .int16(16)
-              .operator(".DIV")
-              .refSet(localVar)
-              .stop();
-          } else if (propertyValue === "direction") {
-            const actorRef = this._declareLocal("actor", 4);
-            this._actorGetDirection(actorRef, localVar);
-          } else if (propertyValue === "frame") {
-            const actorRef = this._declareLocal("actor", 4);
-            if (currentPropData !== "frame") {
-              this._actorGetAnimFrame(actorRef);
-              currentPropData = "frame";
-            }
-            this._set(localVar, this._localRef(actorRef, 1));
           } else {
-            throw new Error(`Unsupported property type "${propertyValue}"`);
+            const actorValue = fetchOp.value.target || "player";
+            const propertyValue = fetchOp.value.property || "xpos";
+
+            if (
+              actorValue === currentActor &&
+              propertyValue === currentProperty &&
+              prevLocalVar
+            ) {
+              // If requested prop was fetched previously, reuse local var, don't fetch again
+              localsLookup[fetchOp.local] = prevLocalVar;
+              delete this.localsLookup[localVar];
+              continue;
+            }
+
+            this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
+            if (currentActor !== actorValue) {
+              this.actorSetById(actorValue);
+              currentActor = actorValue;
+              currentPropData = "";
+            }
+            if (propertyValue === "xpos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 1))
+                .int16(tileToSubpx(1))
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "ypos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 2))
+                .int16(tileToSubpx(1))
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pxpos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 1))
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "pypos") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "pos") {
+                this._actorGetPosition(actorRef);
+                currentPropData = "pos";
+              }
+              this._rpn() //
+                .ref(this._localRef(actorRef, 2))
+                .int16(16)
+                .operator(".DIV")
+                .refSet(localVar)
+                .stop();
+            } else if (propertyValue === "direction") {
+              const actorRef = this._declareLocal("actor", 4);
+              this._actorGetDirection(actorRef, localVar);
+            } else if (propertyValue === "frame") {
+              const actorRef = this._declareLocal("actor", 4);
+              if (currentPropData !== "frame") {
+                this._actorGetAnimFrame(actorRef);
+                currentPropData = "frame";
+              }
+              this._set(localVar, this._localRef(actorRef, 1));
+            } else {
+              throw new Error(`Unsupported property type "${propertyValue}"`);
+            }
+            currentProperty = propertyValue;
+            prevLocalVar = localVar;
           }
-          currentProperty = propertyValue;
-          prevLocalVar = localVar;
           break;
-        }
         case "expression": {
           this._addComment(
             `-- Evaluate expression ${this._expressionToHumanReadable(
@@ -1451,6 +1675,10 @@ class ScriptBuilder {
       switch (rpnOp.type) {
         case "number": {
           rpn.int16(rpnOp.value ?? 0);
+          break;
+        }
+        case "constant": {
+          rpn.intConstant(rpnOp.value);
           break;
         }
         case "variable": {
@@ -1502,7 +1730,7 @@ class ScriptBuilder {
 
   _switch = (
     variable: ScriptBuilderStackVariable,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     this._addCmd("VM_SWITCH", variable, switchCases.length, popNum);
@@ -1514,7 +1742,7 @@ class ScriptBuilder {
 
   _switchVariable = (
     variable: string,
-    switchCases: [number, string][],
+    switchCases: [number | string, string][],
     popNum: number
   ) => {
     const variableAlias = this.getVariableAlias(variable);
@@ -1667,6 +1895,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
   };
 
+  _actorStartUpdate = (addr: string) => {
+    this._addCmd("VM_ACTOR_BEGIN_UPDATE", addr);
+  };
+
   _actorTerminateUpdate = (addr: string) => {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
   };
@@ -1688,6 +1920,16 @@ class ScriptBuilder {
     this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
   };
 
+  _projectileLoad = (destIndex: number, srcIndex: number, symbol: string) => {
+    this._addCmd(
+      "VM_PROJECTILE_LOAD_TYPE",
+      destIndex,
+      srcIndex,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
+  };
+
   _spritesHide = () => {
     this._addCmd("VM_HIDE_SPRITES");
   };
@@ -1700,6 +1942,164 @@ class ScriptBuilder {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
 
+  _injectScrollCode = (inputText: string, scrollHeight?: number) => {
+    let text = inputText;
+    // Replace newlines with scroll code if larger than max dialogue size
+    if (scrollHeight) {
+      let numNewlines = 0;
+      text = text.replace(/(\\012|\n)/g, (newline) => {
+        numNewlines++;
+        if (numNewlines > scrollHeight - 1) {
+          return "\\015";
+        }
+        return newline;
+      });
+    }
+    return text;
+  };
+
+  _getAvatarCode = (avatarIndex?: number) => {
+    if (avatarIndex === undefined) {
+      return "";
+    }
+    const { fonts } = this.options;
+    const avatarFontSize = 16;
+    const fontIndex = fonts.length + Math.floor(avatarIndex / avatarFontSize);
+    const baseCharCode = ((avatarIndex * 4) % (avatarFontSize * 4)) + 64;
+    return `${textCodeSetSpeed(0)}${textCodeSetFont(
+      fontIndex
+    )}${String.fromCharCode(baseCharCode)}${String.fromCharCode(
+      baseCharCode + 1
+    )}\\n${String.fromCharCode(baseCharCode + 2)}${String.fromCharCode(
+      baseCharCode + 3
+    )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(0)}`;
+  };
+
+  _loadAndDisplayText = (inputText: string) => {
+    let waitArgsRef = "";
+    let lastWait = -1;
+    // Split into chunks where wait frames code is found
+    const chunks = chunkTextOnWaitCodes(inputText);
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+
+      this._loadTokens(chunk.tokens);
+      this._displayText(i !== 0);
+
+      if (chunk.action?.type === "wait") {
+        if (waitArgsRef === "") {
+          // Declare wait args variable on first call to wait
+          waitArgsRef = this._declareLocal("wait_args", 1, true);
+        }
+        const waitFrames = chunk.action.frames;
+        this._overlayWait(true, [".UI_WAIT_TEXT"]);
+        if (lastWait !== waitFrames) {
+          this._setConst(waitArgsRef, Math.round(waitFrames));
+          lastWait = waitFrames;
+        }
+        this._invoke("wait_frames", 0, waitArgsRef);
+      }
+    }
+  };
+
+  _loadTokens = (textTokens: Token[]) => {
+    const { fonts, defaultFontId } = this.options;
+    let font = fonts.find((f) => f.id === defaultFontId);
+
+    if (!font) {
+      font = fonts[0];
+    }
+
+    if (!font) {
+      this._loadText(0);
+      this._string("UNABLE TO LOAD FONT");
+      return;
+    }
+
+    let text = "";
+    const indirectVars: { arg: string; local: string }[] = [];
+    const usedVariableAliases: string[] = [];
+
+    textTokens.forEach((token) => {
+      if (token.type === "text") {
+        text += encodeString(token.value, font?.mapping);
+      } else if (token.type === "font") {
+        const newFont = fonts.find((f) => f.id === token.fontId);
+        if (newFont) {
+          const fontIndex = this._getFontIndex(token.fontId);
+          font = newFont;
+          text += textCodeSetFont(fontIndex);
+        }
+      } else if (
+        token.type === "variable" ||
+        token.type === "char" ||
+        token.type === "speedVariable" ||
+        token.type === "fontVariable"
+      ) {
+        const variable = token.variableId;
+        if (variable.match(/^V[0-9]$/)) {
+          const key = variable;
+          const arg = this.options.argLookup.variable.get(key);
+          if (!arg) {
+            throw new Error("Cant find arg");
+          }
+          if (this._isIndirectVariable(arg)) {
+            const localRef = this._declareLocal(
+              `text_arg${indirectVars.length}`,
+              1,
+              true
+            );
+            indirectVars.unshift({
+              local: localRef,
+              arg: arg.symbol,
+            });
+            usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
+          } else {
+            usedVariableAliases.push(this._rawOffsetStackAddr(arg.symbol));
+          }
+        } else {
+          usedVariableAliases.push(
+            this.getVariableAlias(variable.replace(/^0/g, ""))
+          );
+        }
+        if (token.type === "variable" && token.fixedLength !== undefined) {
+          text += `%D${token.fixedLength}`;
+        } else if (token.type === "variable") {
+          text += "%d";
+        } else if (token.type === "char") {
+          text += "%c";
+        } else if (token.type === "speedVariable") {
+          text += "%t";
+        } else if (token.type === "fontVariable") {
+          text += "%f";
+        }
+      } else if (token.type === "speed") {
+        text += textCodeSetSpeed(token.speed);
+      } else if (token.type === "gotoxy" && token.relative) {
+        text += textCodeGotoRel(token.x, token.y);
+      } else if (token.type === "gotoxy" && !token.relative) {
+        text += textCodeGoto(token.x, token.y);
+      } else if (token.type === "input") {
+        text += textCodeInput(token.mask);
+      }
+    });
+
+    if (indirectVars.length > 0) {
+      for (const indirectVar of indirectVars) {
+        this._getInd(indirectVar.local, indirectVar.arg);
+      }
+    }
+
+    this._loadText(usedVariableAliases.length);
+
+    if (usedVariableAliases.length > 0) {
+      this._dw(...usedVariableAliases);
+    }
+
+    this._string(text);
+  };
+
+  // @deprecated Replace with _loadAndDisplayText which supports wait codes
   _loadStructuredText = (
     inputText: string,
     avatarIndex?: number,
@@ -1783,6 +2183,8 @@ class ScriptBuilder {
         text += textCodeGotoRel(token.x, token.y);
       } else if (token.type === "gotoxy" && !token.relative) {
         text += textCodeGoto(token.x, token.y);
+      } else if (token.type === "input") {
+        text += textCodeInput(token.mask);
       }
     });
 
@@ -1830,8 +2232,20 @@ class ScriptBuilder {
     this._string(text);
   };
 
-  _displayText = () => {
-    this._addCmd("VM_DISPLAY_TEXT");
+  _displayText = (preservePos?: boolean, startTile?: number) => {
+    if (preservePos || startTile !== undefined) {
+      this._addCmd(
+        "VM_DISPLAY_TEXT_EX",
+        preservePos ? ".DISPLAY_PRESERVE_POS" : ".DISPLAY_DEFAULT",
+        startTile ?? ".TEXT_TILE_CONTINUE"
+      );
+    } else {
+      this._addCmd("VM_DISPLAY_TEXT");
+    }
+  };
+
+  _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
+    this._addCmd("VM_SWITCH_TEXT_LAYER", layer);
   };
 
   _choice = (
@@ -1853,7 +2267,7 @@ class ScriptBuilder {
     this._addCmd("    .MENUITEM", x, y, left, right, up, down);
   };
 
-  _overlayShow = (x: number, y: number, color: number) => {
+  _overlayShow = (x: number, y: number, color: number | string) => {
     this._addCmd("VM_OVERLAY_SHOW", x, y, color, 0);
   };
 
@@ -1863,7 +2277,8 @@ class ScriptBuilder {
     width: number,
     height: number,
     color: ScriptBuilderUIColor,
-    drawFrame: boolean
+    drawFrame: boolean,
+    autoScroll = true
   ) => {
     this._addCmd(
       "VM_OVERLAY_CLEAR",
@@ -1872,7 +2287,10 @@ class ScriptBuilder {
       width,
       height,
       color,
-      unionFlags([".UI_AUTO_SCROLL"].concat(drawFrame ? ".UI_DRAW_FRAME" : []))
+      unionFlags([
+        ...(autoScroll ? [".UI_AUTO_SCROLL"] : []),
+        ...(drawFrame ? [".UI_DRAW_FRAME"] : []),
+      ])
     );
   };
 
@@ -1897,6 +2315,20 @@ class ScriptBuilder {
       modal ? ".UI_MODAL" : ".UI_NONMODAL",
       buildOverlayWaitCondition(waitFlags)
     );
+  };
+
+  _overlaySetScroll = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: string
+  ) => {
+    this._addCmd("VM_OVERLAY_SET_SCROLL", x, y, width, height, color);
+  };
+
+  _overlaySetSubmapEx = (addr: string) => {
+    this._addCmd("VM_OVERLAY_SET_SUBMAP_EX", addr);
   };
 
   _inputWait = (mask: number) => {
@@ -1947,6 +2379,48 @@ class ScriptBuilder {
 
   _timerReset = (context: number) => {
     this._addCmd("VM_TIMER_RESET", context);
+  };
+
+  _threadStart = (symbol: string, handleAddr: string, numArgs: number) => {
+    this._addCmd(
+      "VM_BEGINTHREAD",
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      handleAddr,
+      numArgs
+    );
+  };
+
+  _threadStartWithVariableHandle = (
+    symbol: string,
+    handleVariable: ScriptBuilderVariable,
+    numArgs: number
+  ) => {
+    const handleVariableAlias = this.getVariableAlias(handleVariable);
+    if (this._isIndirectVariable(handleVariable)) {
+      const valueTmpRef = this._declareLocal("value_tmp", 1, true);
+      this._threadStart(symbol, valueTmpRef, numArgs);
+      this._setInd(handleVariableAlias, valueTmpRef);
+    } else {
+      this._threadStart(symbol, handleVariableAlias, numArgs);
+    }
+  };
+
+  _threadTerminate = (handleAddr: string) => {
+    this._addCmd("VM_TERMINATE", handleAddr);
+  };
+
+  _threadTerminateWithVariableHandle = (
+    handleVariable: ScriptBuilderVariable
+  ) => {
+    const handleVariableAlias = this.getVariableAlias(handleVariable);
+    if (this._isIndirectVariable(handleVariable)) {
+      this._stackPushInd(handleVariableAlias);
+      this._threadTerminate(".ARG0");
+      this._stackPop(1);
+    } else {
+      this._threadTerminate(handleVariableAlias);
+    }
   };
 
   _savePeek = (
@@ -2166,7 +2640,7 @@ extern void __mute_mask_${symbol};
     addr: ScriptBuilderStackVariable,
     symbol: string,
     tileIndex: ScriptBuilderStackVariable,
-    numTiles: number
+    numTiles: number | string
   ) => {
     this._addCmd(
       "VM_REPLACE_TILE",
@@ -2210,8 +2684,8 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  _callNative = (symbol: string) => {
-    this._addCmd("VM_CALL_NATIVE", `b_${symbol}`, `_${symbol}`);
+  _callNative = (symbol: string, bank?: number) => {
+    this._addCmd("VM_CALL_NATIVE", bank ? bank : `b_${symbol}`, `_${symbol}`);
   };
 
   _returnFar = () => {
@@ -2464,11 +2938,11 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Move To");
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(y, units)
     );
     this._setConst(
       this._localRef(actorRef, 3),
@@ -2492,11 +2966,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -2575,13 +3049,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -2685,11 +3159,11 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       this._localRef(actorRef, 1),
-      x * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(actorRef, 2),
-      y * (units === "tiles" ? 8 : 1) * 16
+      unitsValueToSubpx(y, units)
     );
     this._actorSetPosition(actorRef);
 
@@ -2707,11 +3181,11 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 1))
       .refVariable(variableY)
-      .int16(units === "tiles" ? 0x7 : 0x4)
+      .int16(subpxShiftForUnits(units))
       .operator(".SHL")
       .refSet(this._localRef(actorRef, 2))
       .stop();
@@ -2775,13 +3249,13 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .refSet(this._localRef(actorRef, 1))
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -2871,12 +3345,12 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableX)
       .ref(this._localRef(actorRef, 2))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
 
@@ -2893,8 +3367,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableX)
       .stop();
 
@@ -2911,8 +3385,8 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
-      .int16((units === "tiles" ? 8 : 1) * 16)
-      .operator(".DIV")
+      .int8(subpxShiftForUnits(units))
+      .operator(".SHR")
       .refSetVariable(variableY)
       .stop();
 
@@ -2943,7 +3417,7 @@ extern void __mute_mask_${symbol};
     const rightLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
 
-    const offset = continueUntilCollision ? 128 * 100 : 128 * 2;
+    const offset = tileToSubpx(continueUntilCollision ? 100 : 2);
 
     this._addComment("Actor Push");
     this._setConst(actorRef, 0);
@@ -3198,7 +3672,7 @@ extern void __mute_mask_${symbol};
   actorSetMovementSpeed = (speed = 1) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Movement Speed");
-    this._actorSetMoveSpeed(actorRef, Math.round(speed * 16));
+    this._actorSetMoveSpeed(actorRef, pxToSubpx(speed));
     this._addNL();
   };
 
@@ -3258,21 +3732,23 @@ extern void __mute_mask_${symbol};
   actorStartUpdate = () => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Start Update Script");
-    this._actorDeactivate(actorRef);
-    this._actorActivate(actorRef);
+    this._actorStartUpdate(actorRef);
     this._addNL();
   };
 
   playerBounce = (height: "low" | "medium" | "high") => {
-    this._addComment("Player Bounce");
-    let value = -0x4000;
-    if (height === "low") {
-      value = -0x2000;
-    } else if (height === "high") {
-      value = -0x6000;
+    const { scene } = this.options;
+    if (scene.type === "PLATFORM") {
+      this._addComment("Player Bounce");
+      let value = pxToSubpx(-0x400);
+      if (height === "low") {
+        value = pxToSubpx(-0x200);
+      } else if (height === "high") {
+        value = pxToSubpx(-0x600);
+      }
+      this._setConstMemInt16("pl_vel_y", value);
+      this._addNL();
     }
-    this._setConstMemInt16("pl_vel_y", value);
-    this._addNL();
   };
 
   actorInvoke = () => {
@@ -3284,6 +3760,141 @@ extern void __mute_mask_${symbol};
     }
   };
 
+  actorFXSplitIn = (
+    actorId: string,
+    distance: number,
+    speed: number,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    const pixelDistance = distance * (units === "tiles" ? 8 : 1);
+    const steps = Math.floor(pixelDistance / speed);
+    const subpixelDistance = pxToSubpx(pixelDistance);
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const actorFinalXRef = this._declareLocal("final_x", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Split In");
+    this.actorSetById(actorId);
+    this._actorActivate(actorRef);
+    this._setConst(loopVarRef, steps);
+    this._actorGetPosition(actorRef);
+    this._set(actorFinalXRef, this._localRef(actorRef, 1));
+
+    this._label(loopLabel);
+
+    // Position to right
+    this._rpn()
+      .ref(actorFinalXRef)
+      .ref(loopVarRef)
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    // Position to left
+    this._rpn()
+      .ref(actorFinalXRef)
+      .ref(loopVarRef)
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".SUB")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    this._loop(loopVarRef, loopLabel, 0);
+  };
+
+  actorFXSplitOut = (
+    actorId: string,
+    distance: number,
+    speed: number,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    const pixelDistance = distance * (units === "tiles" ? 8 : 1);
+    const steps = Math.floor(pixelDistance / speed);
+    const subpixelDistance = pxToSubpx(pixelDistance);
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const actorFinalXRef = this._declareLocal("final_x", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Split Out");
+    this.actorSetById(actorId);
+    this._setConst(loopVarRef, steps);
+    this._actorGetPosition(actorRef);
+    this._set(actorFinalXRef, this._localRef(actorRef, 1));
+
+    this._label(loopLabel);
+
+    // Position to right
+    this._rpn()
+      .ref(actorFinalXRef)
+      .int16(steps)
+      .ref(loopVarRef)
+      .operator(".SUB")
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    // Position to left
+    this._rpn()
+      .ref(actorFinalXRef)
+      .int16(steps)
+      .ref(loopVarRef)
+      .operator(".SUB")
+      .int16(Math.floor(subpixelDistance / steps))
+      .operator(".MUL")
+      .operator(".SUB")
+      .refSet(this._localRef(actorRef, 1))
+      .stop();
+    this._actorSetPosition(actorRef);
+    this._idle();
+
+    this._loop(loopVarRef, loopLabel, 0);
+
+    // Position at end
+    this._rpn().ref(actorFinalXRef).refSet(this._localRef(actorRef, 1)).stop();
+    this._actorSetPosition(actorRef);
+
+    this._actorDeactivate(actorRef);
+  };
+
+  actorFXFlicker = (actorId: string, frames: number) => {
+    if (frames === 0) {
+      return;
+    }
+    const steps = Math.ceil(frames / 4);
+
+    const actorRef = this._declareLocal("actor", 4);
+    const loopVarRef = this._declareLocal("loop", 1, true);
+    const loopLabel = this.getNextLabel();
+
+    this._addComment("Actor Effect : Flicker");
+    this.actorSetById(actorId);
+    this._setConst(loopVarRef, steps);
+
+    this._label(loopLabel);
+    this._actorSetHidden(actorRef, true);
+    this._idle();
+    this._idle();
+    this._actorSetHidden(actorRef, false);
+    this._idle();
+    this._idle();
+    this._loop(loopVarRef, loopLabel, 0);
+  };
+
   // --------------------------------------------------------------------------
   // Weapons
 
@@ -3292,8 +3903,10 @@ extern void __mute_mask_${symbol};
     spriteStateId: string,
     speed: number,
     animSpeed: number,
+    loopAnim: boolean,
     lifeTime: number,
     initialOffset: number,
+    destroyOnHit: boolean,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -3303,8 +3916,10 @@ extern void __mute_mask_${symbol};
       spriteStateId,
       speed,
       animSpeed,
+      loopAnim,
       lifeTime,
       initialOffset,
+      destroyOnHit,
       collisionGroup,
       collisionMask,
     });
@@ -3313,16 +3928,94 @@ extern void __mute_mask_${symbol};
     return projectileIndex;
   };
 
+  getGlobalProjectile = (
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    loopAnim: boolean,
+    lifeTime: number,
+    initialOffset: number,
+    destroyOnHit: boolean,
+    collisionGroup: string,
+    collisionMask: string[]
+  ): { symbol: string; index: number } => {
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask,
+    });
+
+    // Check cached projectiles first
+    for (const projectiles of this.options.globalProjectiles) {
+      const index = projectiles.projectiles.findIndex(
+        (p) => p.hash === projectileHash
+      );
+      if (index > -1) {
+        return {
+          symbol: projectiles.symbol,
+          index,
+        };
+      }
+    }
+
+    // Not found add to existing
+    const lastGlobalProjectiles =
+      this.options.globalProjectiles[this.options.globalProjectiles.length - 1];
+
+    const projectile: PrecompiledProjectile = {
+      hash: projectileHash,
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask,
+    };
+
+    if (lastGlobalProjectiles && lastGlobalProjectiles.projectiles.length < 5) {
+      lastGlobalProjectiles.projectiles.push(projectile);
+      return {
+        symbol: lastGlobalProjectiles.symbol,
+        index: lastGlobalProjectiles.projectiles.length - 1,
+      };
+    }
+
+    // No existing global projectiles array to add to, make a new one
+
+    const symbol = this._getAvailableSymbol(
+      `global_projectiles_${this.options.globalProjectiles.length}`
+    );
+
+    this.options.globalProjectiles.push({
+      symbol,
+      projectiles: [projectile],
+    });
+
+    return { symbol, index: 0 };
+  };
+
   _rpnProjectilePosArgs = (actorRef: string, x = 0, y = 0) => {
     this._actorGetPosition(actorRef);
     const rpn = this._rpn();
     rpn.ref(this._localRef(actorRef, 1));
     if (x) {
-      rpn.int16(x * 16).operator(".ADD");
+      rpn.int16(pxToSubpx(x)).operator(".ADD");
     }
     rpn.ref(this._localRef(actorRef, 2));
     if (y) {
-      rpn.int16(-y * 16).operator(".ADD");
+      rpn.int16(pxToSubpx(-y)).operator(".ADD");
     }
     return rpn;
   };
@@ -3331,19 +4024,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    direction: string,
-    destroyOnHit = false,
-    loopAnim = false
+    direction: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(dirToAngle(direction))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(dirToAngle(direction)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3351,19 +4039,14 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number,
-    destroyOnHit = false,
-    loopAnim = false
+    angle: number
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .int16(Math.round(angle % 256))
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.int16(Math.round(angle % 256)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3371,39 +4054,31 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string,
-    destroyOnHit = false,
-    loopAnim = false
+    angleVariable: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn
-      .refVariable(angleVariable)
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
-      .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    rpn.refVariable(angleVariable).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
   launchProjectileInSourceActorDirection = (
     projectileIndex: number,
     x = 0,
-    y = 0,
-    destroyOnHit = false,
-    loopAnim = false
+    y = 0
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._actorGetAngle(actorRef, ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._actorGetAngle(actorRef, ".ARG0");
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3411,21 +4086,18 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    actorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this.setActorId(".ARG1", actorId);
-    this._actorGetAngle(".ARG1", ".ARG1");
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this.setActorId(".ARG0", actorId);
+    this._actorGetAngle(".ARG0", ".ARG0");
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
@@ -3433,9 +4105,7 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    otherActorId: string,
-    destroyOnHit = false,
-    loopAnim = false
+    otherActorId: string
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -3447,18 +4117,47 @@ extern void __mute_mask_${symbol};
       .ref(this._localRef(otherActorRef, 2))
       .ref(this._localRef(actorRef, 2))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".DIV")
       .ref(this._localRef(otherActorRef, 1))
       .ref(this._localRef(actorRef, 1))
       .operator(".SUB")
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".DIV")
       .operator(".ATAN2")
-      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG3");
-    this._stackPop(4);
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+    this._addNL();
+  };
+
+  loadProjectile = (
+    index: number,
+    spriteSheetId: string,
+    spriteStateId: string,
+    speed: number,
+    animSpeed: number,
+    loopAnim: boolean,
+    lifeTime: number,
+    initialOffset: number,
+    destroyOnHit: boolean,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { symbol, index: srcIndex } = this.getGlobalProjectile(
+      spriteSheetId,
+      spriteStateId,
+      speed,
+      animSpeed,
+      loopAnim,
+      lifeTime,
+      initialOffset,
+      destroyOnHit,
+      collisionGroup,
+      collisionMask
+    );
+    this._addComment("Load Projectile Into Slot");
+    this._projectileLoad(index, srcIndex, symbol);
     this._addNL();
   };
 
@@ -3491,6 +4190,40 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  waitScriptValue = (duration: ScriptValue, units: TimeUnitType) => {
+    const waitArgsRef = this._declareLocal("wait_args", 1, true);
+    const stackPtr = this.stackPtr;
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(duration)
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      const frames =
+        units === "time" ? Math.ceil(rpnOps[0].value * 60) : rpnOps[0].value;
+      this._addComment(`Wait ${frames} frames`);
+      if (frames < 5) {
+        for (let i = 0; i < frames; i++) {
+          this._idle();
+        }
+      } else {
+        this._setConst(waitArgsRef, Math.round(frames));
+        this._invoke("wait_frames", 0, waitArgsRef);
+      }
+    } else {
+      this._addComment(`Wait frames ${units}`);
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      if (units === "time") {
+        rpn.int16(60);
+        rpn.operator(".MUL");
+      }
+      rpn.refSetVariable(waitArgsRef).stop();
+      this._invoke("wait_frames", 0, waitArgsRef);
+    }
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
   // --------------------------------------------------------------------------
   // UI
 
@@ -3499,15 +4232,56 @@ extern void __mute_mask_${symbol};
     return (input.match(/(\n|\r|\x0a|\x0d|\\012|\\015)/g)?.length ?? 0) + 1;
   };
 
-  textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
+  textDialogue = (
+    inputText: string | string[] = " ",
+    avatarId?: string,
+    minHeight = 4,
+    maxHeight = 7,
+    position: "bottom" | "top" = "bottom",
+    showFrame = true,
+    clearPrevious = true,
+    textX = 1,
+    textY = 1,
+    textHeight = 5,
+    speedIn = -1,
+    speedOut = -1,
+    closeWhen: "key" | "text" | "notModal" = "key",
+    closeButton: "a" | "b" | "any" = "a",
+    closeDelayFrames = 0
+  ) => {
+    const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
+    const overlayInSpeed = speedIn === -1 ? ".OVERLAY_IN_SPEED" : speedIn;
+    const overlayOutSpeed = speedOut === -1 ? ".OVERLAY_OUT_SPEED" : speedOut;
+
     const initialNumLines = input.map(this.textNumLines);
-    const maxNumLines = Math.max(2, Math.max.apply(null, initialNumLines));
-    const textBoxHeight = Math.min(maxNumLines, MAX_DIALOGUE_LINES) + 2;
-    const textBoxY = 18 - textBoxHeight;
+    const maxNumLines = Math.max.apply(null, initialNumLines);
+    const textBoxHeight = calculateTextBoxHeight({
+      textLines: maxNumLines,
+      textY,
+      textHeight,
+      minHeight,
+      maxHeight,
+      showFrame,
+    });
+
+    const isModal = closeWhen !== "notModal";
+    const renderOnTop = position === "top" && !scene.parallax;
+    const textBoxY = renderOnTop ? 0 : 18 - textBoxHeight;
+    const x = decOct(Math.max(1, 1 + textX + (avatarId ? 2 : 0)));
+    const y = decOct(Math.max(1, 1 + textY));
+    const textPosSequence =
+      textX !== 1 || textY !== 1 ? `\\003\\${x}\\${y}` : "";
 
     this._addComment("Text Dialogue");
+
+    if (renderOnTop) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_cut_scanline");
+      this._setConstMemUInt8("overlay_cut_scanline", textBoxHeight * 8 - 1);
+    }
+
     input.forEach((text, textIndex) => {
       let avatarIndex = undefined;
       if (avatarId) {
@@ -3518,22 +4292,137 @@ extern void __mute_mask_${symbol};
         }
       }
 
-      this._loadStructuredText(text, avatarIndex, MAX_DIALOGUE_LINES);
-      this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
-      if (textIndex === 0) {
-        this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
+      if (clearPrevious) {
+        this._overlayClear(
+          0,
+          0,
+          20,
+          textBoxHeight,
+          ".UI_COLOR_WHITE",
+          showFrame,
+          false
+        );
       }
-      this._displayText();
-      this._overlayWait(true, [
-        ".UI_WAIT_WINDOW",
-        ".UI_WAIT_TEXT",
-        ".UI_WAIT_BTN_A",
-      ]);
+
+      // Animate first dialogue window of sequence on screen
+      if (textIndex === 0) {
+        this._overlayMoveTo(
+          0,
+          renderOnTop ? textBoxHeight : 18,
+          ".OVERLAY_SPEED_INSTANT"
+        );
+        this._overlayMoveTo(0, textBoxY, overlayInSpeed);
+
+        this._overlaySetScroll(
+          textX + (avatarId ? 2 : 0),
+          textY,
+          (showFrame ? 19 : 20) - (avatarId ? 2 : 0) - textX,
+          textHeight,
+          ".UI_COLOR_WHITE"
+        );
+      }
+
+      const decoratedText = `${this._getAvatarCode(
+        avatarIndex
+      )}${textPosSequence}${this._injectScrollCode(text, textHeight)}`;
+
+      this._loadAndDisplayText(decoratedText);
+
+      if (isModal) {
+        const waitFlags: ScriptBuilderOverlayWaitFlag[] = [
+          ".UI_WAIT_WINDOW",
+          ".UI_WAIT_TEXT",
+        ];
+        if (closeWhen === "key") {
+          if (closeButton === "a") {
+            waitFlags.push(".UI_WAIT_BTN_A");
+          }
+          if (closeButton === "b") {
+            waitFlags.push(".UI_WAIT_BTN_B");
+          }
+          if (closeButton === "any") {
+            waitFlags.push(".UI_WAIT_BTN_ANY");
+          }
+        }
+        this._overlayWait(isModal, waitFlags);
+        if (closeWhen === "text" && closeDelayFrames > 0) {
+          if (closeDelayFrames < 5) {
+            for (let i = 0; i < closeDelayFrames; i++) {
+              this._idle();
+            }
+          } else {
+            const waitArgsRef = this._declareLocal("wait_args", 1, true);
+            const stackPtr = this.stackPtr;
+            this._setConst(waitArgsRef, Math.round(closeDelayFrames));
+            this._invoke("wait_frames", 0, waitArgsRef);
+            this._assertStackNeutral(stackPtr);
+          }
+        }
+      }
+
+      // Animate final dialogue window of sequence off screen
       if (textIndex === input.length - 1) {
-        this._overlayMoveTo(0, 18, ".OVERLAY_OUT_SPEED");
-        this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+        if (isModal) {
+          this._overlayMoveTo(
+            0,
+            renderOnTop ? textBoxHeight : 18,
+            overlayOutSpeed
+          );
+          this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+        }
       }
     });
+
+    // Reset scanline when rendering on top (as long as it wasn't non-modal)
+    if (isModal && renderOnTop) {
+      this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
+      this._idle();
+      this._setMemUInt8("overlay_cut_scanline", ".ARG0");
+    }
+
+    if (renderOnTop) {
+      this._stackPop(1);
+    }
+
+    this._addNL();
+  };
+
+  textDraw = (
+    inputText = " ",
+    x = 0,
+    y = 0,
+    location: "background" | "overlay" = "background"
+  ) => {
+    const { settings } = this.options;
+    const isColor = settings.colorMode !== "mono";
+    const drawX = decOct(1 + x);
+    const drawY = decOct(1 + y);
+
+    this._addComment("Draw Text");
+
+    if (isColor) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_priority");
+      this._setConstMemUInt8("overlay_priority", 0);
+    }
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_BKG");
+    }
+
+    this._loadAndDisplayText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
+
+    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    if (isColor) {
+      this._setMemUInt8("overlay_priority", ".ARG0");
+      this._stackPop(1);
+    }
+
     this._addNL();
   };
 
@@ -3556,8 +4445,8 @@ extern void __mute_mask_${symbol};
     args: { trueText: string; falseText: string }
   ) => {
     const variableAlias = this.getVariableAlias(variable);
-    const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
-    const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
+    const trueText = args.trueText || "Choice A";
+    const falseText = args.falseText || "Choice B";
     const speedInstant = textCodeSetSpeed(0);
     const gotoFirstLine = textCodeGoto(3, 2);
     const gotoSecondLine = textCodeGoto(3, 3);
@@ -3572,10 +4461,9 @@ extern void __mute_mask_${symbol};
       dest = menuResultRef;
     }
 
-    this._loadStructuredText(choiceText);
-    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
-    this._displayText();
+    this._loadAndDisplayText(choiceText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
     this._menuItem(1, 1, 0, 0, 0, 2);
@@ -3634,13 +4522,12 @@ extern void __mute_mask_${symbol};
       dest = menuResultRef;
     }
 
-    this._loadStructuredText(menuText);
-    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
+    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true, true);
     if (layout === "menu") {
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_IN_SPEED");
-    this._displayText();
+    this._loadAndDisplayText(menuText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, choiceFlags, numLines);
 
@@ -3691,6 +4578,19 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  textCloseNonModal = (speed = 0) => {
+    this._addComment("Close Non-Modal Dialogue");
+    this._overlayMoveTo(
+      0,
+      18,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
+    this._idle();
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._setConstMemUInt8("overlay_cut_scanline", LYC_SYNC_VALUE);
+    this._addNL();
+  };
+
   overlayShow = (color = "white", x = 0, y = 0) => {
     this._addComment("Overlay Show");
     this._overlayShow(x, y, color === "white" ? 1 : 0);
@@ -3705,9 +4605,90 @@ extern void __mute_mask_${symbol};
 
   overlayMoveTo = (x = 0, y = 18, speed = 0) => {
     this._addComment("Overlay Move To");
-    this._overlayMoveTo(x, y, speed);
+    this._overlayMoveTo(
+      x,
+      y,
+      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed
+    );
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
     this._addNL();
+  };
+
+  overlaySetScanlineCutoff = (
+    y: ScriptValue,
+    units: DistanceUnitType = "pixels"
+  ) => {
+    this._addComment("Overlay Set Scanline Cutoff");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(
+        shiftLeftScriptValueConst(y, units === "tiles" ? 0x3 : 0x0)
+      )
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._setConstMemUInt8("overlay_cut_scanline", rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      const yRef = this._declareLocal("y", 1, true);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable(yRef).stop();
+      this._setMemUInt8ToVariable("overlay_cut_scanline", yRef);
+    }
+    this._addNL();
+  };
+
+  dialogueFrameSetTiles = (tilesetId: string) => {
+    const { tilesets } = this.options;
+    const tileset = tilesets.find((t) => t.id === tilesetId);
+
+    if (tileset && (tileset.imageWidth !== 24 || tileset.imageHeight !== 24)) {
+      throw new Error(
+        `The selected tileset is ${tileset.imageWidth}x${tileset.imageHeight}px. Please select a 24x24 tileset.`
+      );
+    }
+
+    const symbol = tileset?.symbol ?? "tileset_default_frame";
+
+    this._addComment(`Set dialogue frame`);
+    this._stackPushConst(0);
+    this._stackPushConst(".FRAME_TILE_ID");
+    this._replaceTile(".ARG0", symbol, ".ARG1", ".FRAME_LENGTH");
+    this._stackPop(2);
+    this._addNL();
+  };
+
+  overlayCopyFromBackground = () => {
+    this._addComment("Copy Background To Overlay");
+
+    const scrollXRef = this._declareLocal("scroll_x", 1, true);
+    const scrollYRef = this._declareLocal("scroll_y", 1, true);
+
+    this._getMemInt16(scrollXRef, "scroll_x");
+    this._getMemInt16(scrollYRef, "scroll_y");
+
+    this._rpn()
+      .int8(0) // overlay x
+      .int8(0) // overlay y
+      .int8(20) // copy width
+      .int8(18) // copy height
+      // scene_x
+      .int8(0) // min x
+      .ref(scrollXRef)
+      .int8(3) // shift right by 3 (div by 8)
+      .operator(".SHR")
+      .operator(".MAX")
+      // scene_y
+      .int8(0) // min y
+      .ref(scrollYRef)
+      .int8(3) // shift right by 3 (div by 8)
+      .operator(".SHR")
+      .operator(".MAX")
+      .stop();
+
+    this._overlaySetSubmapEx(".ARG5");
+
+    this._stackPop(6);
   };
 
   // --------------------------------------------------------------------------
@@ -3721,29 +4702,30 @@ extern void __mute_mask_${symbol};
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
     this._addComment("Camera Move To");
-    const xOffset = 80;
-    const yOffset = 72;
+    const xOffsetSubpx = pxToSubpx(80);
+    const yOffsetSubpx = pxToSubpx(72);
 
     this._setConst(
       cameraMoveArgsRef,
-      (xOffset + Math.round(x * (units === "tiles" ? 8 : 1))) * 16
+      xOffsetSubpx + unitsValueToSubpx(x, units)
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      (yOffset + Math.round(y * (units === "tiles" ? 8 : 1))) * 16
+      yOffsetSubpx + unitsValueToSubpx(y, units)
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        pxToSubpx(speed),
         ".CAMERA_UNLOCK"
       );
     }
     this._addNL();
   };
 
+  // @deprecated - Replace used with cameraMoveToScriptValues
   cameraMoveToVariables = (
     variableX: string,
     variableY: string,
@@ -3751,33 +4733,24 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     this._addComment("Camera Move To Variables");
-    if (units === "tiles") {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(80 * 16)
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(0x7) // Multiply 128
-        .operator(".SHL")
-        .int16(72 * 16)
-        .operator(".ADD")
-        .stop();
-    } else {
-      this._rpn() //
-        .refVariable(variableX)
-        .int16(80 * 16)
-        .operator(".ADD")
-        .refVariable(variableY)
-        .int16(72 * 16)
-        .operator(".ADD")
-        .stop();
-    }
+
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(80))
+      .operator(".ADD")
+      .refVariable(variableY)
+      .int16(subpxShiftForUnits(units))
+      .operator(".SHL")
+      .int16(pxToSubpx(72))
+      .operator(".ADD")
+      .stop();
+
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", Math.round(speed * 16), ".CAMERA_UNLOCK");
+      this._cameraMoveTo(".ARG1", pxToSubpx(speed), ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -3789,8 +4762,8 @@ extern void __mute_mask_${symbol};
     units: DistanceUnitType = "tiles"
   ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
-    const xOffset = 80 * 16;
-    const yOffset = 72 * 16;
+    const xOffset = pxToSubpx(80);
+    const yOffset = pxToSubpx(72);
 
     const stackPtr = this.stackPtr;
     this._addComment("Camera Move To");
@@ -3833,7 +4806,7 @@ extern void __mute_mask_${symbol};
     } else {
       this._cameraMoveTo(
         cameraMoveArgsRef,
-        Math.round(speed * 16),
+        pxToSubpx(speed),
         ".CAMERA_UNLOCK"
       );
     }
@@ -3849,16 +4822,16 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".ADD")
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16(tileToSubpx(1))
       .operator(".ADD")
       .stop();
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     }
-    this._cameraMoveTo(".ARG1", Math.round(speed * 16), toASMCameraLock(axis));
+    this._cameraMoveTo(".ARG1", pxToSubpx(speed), toASMCameraLock(axis));
     this._stackPop(2);
   };
 
@@ -3943,6 +4916,23 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  cameraSetPropertyToScriptValue = (
+    property: CameraProperty = "camera_deadzone_x",
+    value: ScriptValue
+  ) => {
+    this._addComment(`Camera Set Property ${property}`);
+    if (property === "camera_deadzone_x" || property === "camera_deadzone_y") {
+      this._setMemToScriptValue(
+        property,
+        "BYTE",
+        clampScriptValueConst(value, 0, 40)
+      );
+    } else {
+      this._setMemToScriptValue(property, "BYTE", value);
+    }
+    this._addNL();
+  };
+
   // --------------------------------------------------------------------------
   // Input
 
@@ -4011,11 +5001,28 @@ extern void __mute_mask_${symbol};
   };
 
   // --------------------------------------------------------------------------
+  // Threads
+
+  threadStart = (handleVariable: string, script: ScriptEvent[]) => {
+    this._addComment(`Thread Start`);
+    const scriptRef = this._compileSubScript("thread", script);
+    this._vmUnlock();
+    this._threadStartWithVariableHandle(scriptRef, handleVariable, 0);
+    this._addNL();
+  };
+
+  threadTerminate = (handleVariable: string) => {
+    this._addComment(`Thread Stop`);
+    this._threadTerminateWithVariableHandle(handleVariable);
+    this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
   // Call Script
 
   callScript = (
     scriptId: string,
-    input: Dictionary<string | ScriptValue | ScriptBuilderFunctionArg>
+    input: Record<string, string | ScriptValue | ScriptBuilderFunctionArg>
   ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
@@ -4113,7 +5120,7 @@ extern void __mute_mask_${symbol};
                 this._stackPush(variableAlias);
               } else {
                 // Arg union value is variable id
-                this._stackPushConst(
+                this._stackPushReference(
                   variableAlias,
                   `Variable ${variableArg.id}`
                 );
@@ -4176,7 +5183,12 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    const { customEvents, compiledCustomEventScriptCache } = this.options;
+    const {
+      customEvents,
+      compiledCustomEventScriptCache,
+      scene,
+      recursiveSymbolMap,
+    } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
     if (!customEvent) {
@@ -4184,7 +5196,14 @@ extern void __mute_mask_${symbol};
       return;
     }
 
-    const cachedResult = compiledCustomEventScriptCache[customEventId];
+    // Check if this script has already been compiled for this scene
+    // If so, is safe to just reuse it
+    // If not it's likely script is the same but need to compile anyway
+    // to handle cases like scene projectiles being in a different order
+    // anything that could cause scripts to be different per scene should
+    // be included when generating scene.hash while precompiling scenes
+    const cacheKey = `${customEventId}-${scene.hash}`;
+    const cachedResult = compiledCustomEventScriptCache[cacheKey];
     if (cachedResult) {
       return cachedResult;
     }
@@ -4348,14 +5367,13 @@ extern void __mute_mask_${symbol};
             if (isScriptValue(argValue)) {
               e.args[arg] = mapScriptValueLeafNodes(argValue, (val) => {
                 if (val.type === "variable") {
-                  const scriptArg = argLookup["variable"].get(val.value);
-                  if (scriptArg?.indirect) {
+                  if (isVariableCustomEvent(val.value)) {
                     return {
-                      type: "indirect",
-                      value: scriptArg.symbol,
+                      ...val,
+                      value: getArg("variable", val.value),
                     };
                   }
-                } else if (val.type === "property") {
+                } else if (val.type === "property" && val.target === "actor") {
                   const scriptArg = getArg("actor", val.target);
                   if (scriptArg && typeof scriptArg === "string") {
                     return {
@@ -4379,15 +5397,36 @@ extern void __mute_mask_${symbol};
       }
     );
 
+    const inputSymbol = customEvent.symbol
+      ? customEvent.symbol
+      : `script_custom_0`;
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
-    const symbol = this._getAvailableSymbol(
-      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
-      false
-    );
-    const result = { scriptRef: symbol, argsLen };
-    compiledCustomEventScriptCache[customEventId] = result;
+    // all calls to this script while compilation is still in progress will
+    // use this symbol that gets replaced later
+    const placeholderSymbol =
+      "__PLACEHOLDER|" + inputSymbol + this._contextHash() + "|PLACEHOLDER__";
 
-    this._compileSubScript("custom", script, symbol, { argLookup });
+    const tmpResult = {
+      scriptRef: placeholderSymbol,
+      argsLen,
+    };
+
+    // Cache placeholder symbol to be used by recursive calls
+    compiledCustomEventScriptCache[cacheKey] = tmpResult;
+
+    const symbol = this._compileSubScript("custom", script, inputSymbol, {
+      argLookup,
+    });
+
+    const result = {
+      scriptRef: symbol,
+      argsLen,
+    };
+
+    // Replace placeholder symbol with actual one + add to mapping table for
+    // handling find/replace of recursive calls that used placeholder
+    recursiveSymbolMap[placeholderSymbol] = symbol;
+    compiledCustomEventScriptCache[cacheKey] = result;
 
     return result;
   };
@@ -4445,8 +5484,8 @@ extern void __mute_mask_${symbol};
         this._fadeOut(true);
       }
       this._setConst(actorRef, 0);
-      this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-      this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+      this._setConst(this._localRef(actorRef, 1), tileToSubpx(x));
+      this._setConst(this._localRef(actorRef, 2), tileToSubpx(y));
       this._actorSetPosition(actorRef);
       const asmDir = toASMDir(direction);
       if (asmDir) {
@@ -4532,8 +5571,13 @@ extern void __mute_mask_${symbol};
 
   scenePopState = (fadeSpeed = 2) => {
     this._addComment("Pop Scene State");
-    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(true);
+    if (fadeSpeed > 0) {
+      this._setConstMemInt8(
+        "fade_frames_per_step",
+        fadeSpeeds[fadeSpeed] ?? 0x3
+      );
+      this._fadeOut(true);
+    }
     this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
     this._scenePop();
     this._addNL();
@@ -4541,8 +5585,14 @@ extern void __mute_mask_${symbol};
 
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
-    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(true);
+    this._addComment("" + fadeSpeed);
+    if (fadeSpeed > 0) {
+      this._setConstMemInt8(
+        "fade_frames_per_step",
+        fadeSpeeds[fadeSpeed] ?? 0x3
+      );
+      this._fadeOut(true);
+    }
     this._setConstMemInt8("camera_settings", ".CAMERA_LOCK");
     this._scenePopAll();
     this._addNL();
@@ -4560,16 +5610,20 @@ extern void __mute_mask_${symbol};
   getActorIndex = (id: string): number => {
     const { entity, entityType, scene } = this.options;
 
+    // Actor == player
     if (id === "player" || (id === "$self$" && entityType !== "actor")) {
       return 0;
     }
 
+    // Actor == Self
     if (id === "$self$" && entity) {
       return getActorIndex(entity.id, scene);
     }
 
+    // Find actor in current scene
     const index = getActorIndex(id, scene);
 
+    // Actor id not found but entity was set, fall back to Self
     if (entity && index === 0) {
       return getActorIndex(entity.id, scene);
     }
@@ -4680,6 +5734,15 @@ extern void __mute_mask_${symbol};
     };
 
     return newAlias;
+  };
+
+  getConstantSymbol = (id: string): string => {
+    const { constantsLookup } = this.options;
+    const constant = constantsLookup[id];
+    if (!constant) {
+      return "0";
+    }
+    return constant.symbol.toLocaleUpperCase();
   };
 
   variableInc = (variable: ScriptBuilderVariable) => {
@@ -5437,6 +6500,27 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  musicSetMuteMask = (
+    duty1Active: boolean,
+    duty2Active: boolean,
+    waveActive: boolean,
+    noiseActive: boolean
+  ) => {
+    this._addComment(`Mute Channel`);
+    this._addCmd(
+      "VM_MUSIC_MUTE",
+      andFlags(
+        (["0x0F"] as string[]).concat(
+          duty1Active ? "0x0E" : [],
+          duty2Active ? "0x0D" : [],
+          waveActive ? "0x0B" : [],
+          noiseActive ? "0x07" : []
+        )
+      )
+    );
+    this._addNL();
+  };
+
   musicRoutineSet = (
     routine: number,
     script: ScriptEvent[],
@@ -5502,10 +6586,15 @@ extern void __mute_mask_${symbol};
     const { sounds } = this.options;
     const sound = sounds.find((s) => s.id === soundId);
     if (sound) {
+      const maxEffect = (sound.numEffects ?? 0) - 1;
+      const effectIndex =
+        sound.type === "fxhammer"
+          ? Math.max(0, Math.min(maxEffect, effect ?? 0))
+          : 0;
       this._soundPlay(
         `${sound.symbol}${
           sound.type === "fxhammer"
-            ? "_" + String(effect ?? 0).padStart(2, "0")
+            ? "_" + String(effectIndex).padStart(2, "0")
             : ""
         }`,
         toASMSoundPriority(priority)
@@ -5646,7 +6735,7 @@ extern void __mute_mask_${symbol};
   };
 
   paletteSetSprite = (paletteIds: string[]) => {
-    const { palettes, settings } = this.options;
+    const { palettes, scene, settings } = this.options;
 
     let mask = 0;
     const writePalettes: Palette[] = [];
@@ -5656,8 +6745,15 @@ extern void __mute_mask_${symbol};
       if (paletteId === "keep") {
         continue;
       }
+      let palette = getPalette(palettes, paletteId, defaultPaletteId);
+      if (paletteId === "restore") {
+        // Restore from manual palette
+        const scenePaletteId =
+          scene.spritePaletteIds[i] ?? settings.defaultSpritePaletteIds[i];
+        palette = getPalette(palettes, scenePaletteId, defaultPaletteId);
+      }
       mask += 1 << i;
-      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
+      writePalettes.push(palette);
     }
 
     if (mask === 0) {
@@ -5894,6 +6990,63 @@ extern void __mute_mask_${symbol};
     packetSize: number
   ) => {
     this._sioExchangeVariables(sendVariable, receiveVariable, packetSize);
+  };
+
+  // --------------------------------------------------------------------------
+  // GB Printer
+
+  printOverlay = (
+    startLine: number,
+    height: number,
+    margin: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const isCGBRef = this._declareLocal("is_cgb", 1, true);
+    const printStatusRef = this._declareLocal("print_status", 1, true);
+    const timeout = 30;
+
+    const colorNotSupportedLabelA = this.getNextLabel();
+    const colorNotSupportedLabelB = this.getNextLabel();
+    const printFailedLabel = this.getNextLabel();
+    const printSuccessLabel = this.getNextLabel();
+    const printCleanupLabel = this.getNextLabel();
+
+    this._addComment("Print Overlay");
+
+    // If using CGB slow CPU before connecting to printer
+    this._getMemUInt8(isCGBRef, "_is_CGB");
+    this._ifConst(".NE", isCGBRef, 1, colorNotSupportedLabelA, 0);
+    this._callNative("cpu_slow", 1);
+    this._label(colorNotSupportedLabelA);
+
+    // Detect if printer was found
+    this._printerDetect(printStatusRef, timeout);
+    this._rpn().ref(printStatusRef).int8(0xf0).operator(".B_AND").stop();
+    this._ifConst(".NE", ".ARG0", 0, printFailedLabel, 1);
+
+    // Print overlay
+    this._printOverlay(printStatusRef, startLine, height, margin);
+    this._rpn().ref(printStatusRef).int8(0xf0).operator(".B_AND").stop();
+    this._ifConst(".EQ", ".ARG0", 0, printSuccessLabel, 1);
+
+    // Error path
+    this._label(printFailedLabel);
+    this._compilePath(falsePath);
+    this._jump(printCleanupLabel);
+
+    // Success
+    this._label(printSuccessLabel);
+    this._compilePath(truePath);
+
+    // If using CGB set CPU back to fast
+    this._label(printCleanupLabel);
+    this._getMemUInt8(isCGBRef, "_is_CGB");
+    this._ifConst(".NE", isCGBRef, 1, colorNotSupportedLabelB, 0);
+    this._callNative("cpu_fast", 1);
+    this._label(colorNotSupportedLabelB);
+
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -6256,10 +7409,10 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn()
       .ref(this._localRef(actorRef, 1))
-      .int16(x * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(x, units))
       .operator(".EQ")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * (units === "tiles" ? 8 : 1) * 16)
+      .int16(unitsValueToSubpx(y, units))
       .operator(".EQ")
       .operator(".AND")
       .stop();
@@ -6288,11 +7441,11 @@ extern void __mute_mask_${symbol};
     this._addComment(`If Actor At Position`);
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
+      optimiseScriptValue(valueX),
       "x"
     );
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
+      optimiseScriptValue(valueY),
       "y"
     );
 
@@ -6310,11 +7463,19 @@ extern void __mute_mask_${symbol};
 
     // X Value EQ
     rpn.ref(this._localRef(actorRef, 1));
+    // Convert to chosen units
+    rpn.int8(subpxShiftForUnits(units));
+    rpn.operator(".SHR");
+    // Get value to compare X with
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
     rpn.operator(".EQ");
 
     // Y Value EQ
     rpn.ref(this._localRef(actorRef, 2));
+    // Convert to chosen units
+    rpn.int8(subpxShiftForUnits(units));
+    rpn.operator(".SHR");
+    // Get value to compare Y with
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.operator(".EQ");
 
@@ -6539,6 +7700,7 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     const distanceSquared = distance * distance;
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor ${operator} ${distance} tiles from Actor`);
     this._actorGetPosition(actorRef);
@@ -6548,32 +7710,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -6603,6 +7765,7 @@ extern void __mute_mask_${symbol};
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(
       `If Actor ${operator} ${distanceVariable} tiles from Actor`
@@ -6614,32 +7777,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -6673,6 +7836,7 @@ extern void __mute_mask_${symbol};
     const distanceRef = this._declareLocal("distance", 1, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const subpxShiftBits = subpxShiftForUnits("tiles");
 
     this._addComment(`If Actor Distance from Actor`);
 
@@ -6695,32 +7859,32 @@ extern void __mute_mask_${symbol};
     // (x2-x1)^2 + (y2-y1)^2
     this._rpn() //
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 1)) // X2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 1)) // X1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .ref(this._localRef(otherActorRef, 2)) // Y2
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .ref(this._localRef(actorRef, 2)) // Y1
-      .int16(0x7)
+      .int16(subpxShiftBits)
       .operator(".SHR")
       .operator(".SUB")
       .operator(".MUL")
@@ -6762,7 +7926,7 @@ extern void __mute_mask_${symbol};
     this._addComment(`Switch Variable`);
     this._switchVariable(
       variable,
-      caseLabels.map((label, i) => [Number(caseKeys[i]), `${label}$`]),
+      caseLabels.map((label, i) => [caseKeys[i], `${label}$`]),
       0
     );
     this._addNL();
@@ -6776,6 +7940,59 @@ extern void __mute_mask_${symbol};
       this._addComment(`case ${caseKeys[i]}:`);
       this._label(caseLabels[i]);
       this._compilePath(cases[caseKeys[i]]);
+      this._jump(endLabel);
+    }
+    this._label(endLabel);
+
+    this._addNL();
+  };
+
+  caseVariableConstValue = (
+    variable: string,
+    cases: {
+      value: ConstScriptValue;
+      branch: ScriptEvent[] | ScriptBuilderPathFunction;
+    }[],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const numCases = cases.length;
+
+    if (numCases === 0) {
+      this._compilePath(falsePath);
+      return;
+    }
+
+    const caseLabels = cases.map(() => this.getNextLabel());
+    const endLabel = this.getNextLabel();
+
+    const extractSymbol = (value: ConstScriptValue): string | number => {
+      if (value.type === "number") {
+        return value.value;
+      } else if (value.type === "constant") {
+        return this.getConstantSymbol(value.value);
+      }
+      return 0;
+    };
+
+    this._addComment(`Switch Variable`);
+    this._switchVariable(
+      variable,
+      caseLabels.map((label, i) => {
+        return [extractSymbol(cases[i].value), `${label}$`];
+      }),
+      0
+    );
+    this._addNL();
+
+    // Default
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+
+    // Cases
+    for (let i = 0; i < numCases; i++) {
+      this._addComment(`case ${extractSymbol(cases[i].value)}:`);
+      this._label(caseLabels[i]);
+      this._compilePath(cases[i].branch);
       this._jump(endLabel);
     }
     this._label(endLabel);
@@ -6801,8 +8018,12 @@ extern void __mute_mask_${symbol};
       return name;
     }
     let counter = 0;
+    let newName = name;
     while (true) {
-      const newName = `${name.replace(/_[0-9]+$/, "")}_${counter}`;
+      newName =
+        counter === 0
+          ? `${newName}_0`
+          : `${newName.replace(/_[0-9]+$/, "")}_${counter}`;
       if (!symbols[newName]) {
         if (register) {
           symbols[newName] = newName;
@@ -6818,22 +8039,40 @@ extern void __mute_mask_${symbol};
     delete symbols[symbol];
   };
 
+  _contextHash = () => {
+    const { scene, entityType, entity, context } = this.options;
+    return `${scene.hash}_${context}_${entityType}_${entity?.id ?? ""}`;
+  };
+
   _compileSubScript = (
-    type: "input" | "timer" | "music" | "custom",
+    type: "input" | "timer" | "music" | "thread" | "custom",
     script: ScriptEvent[],
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const symbol = this._getAvailableSymbol(
-      inputSymbol ? inputSymbol : `script_${type}_0`
-    );
+    let context: ScriptEditorCtxType = this.options.context;
+
     // Set script context to calculate default value for missing vars
-    let context: ScriptEditorContextType = this.options.context;
     if (type === "custom") {
       context = "script";
     } else if (context === "script") {
       context = "global";
     }
+
+    // Generate a quick hash of the script for this scene to see if
+    // it's already been compiled - just reuse if possible
+    const preBuildHash = `${generateScriptHash(
+      script
+    )}_${this._contextHash()}_${type === "custom" ? inputSymbol : ""}`;
+
+    if (this.options.additionalScriptsCache[preBuildHash]) {
+      return this.options.additionalScriptsCache[preBuildHash];
+    }
+
+    const symbol = this._getAvailableSymbol(
+      inputSymbol ? inputSymbol : `script_${type}`
+    );
+
     const compiledSubScript = compileEntityEvents(
       symbol,
       this.options.maxDepth >= 0 ? script : [],
@@ -6854,10 +8093,29 @@ extern void __mute_mask_${symbol};
         },
       }
     );
+
+    // Check if identical to any already compiled scripts
+    const scriptHash = `${gbvmScriptChecksum(
+      inputSymbol
+        ? compiledSubScript.replaceAll(inputSymbol, "SCRIPT")
+        : compiledSubScript
+    )}_${type === "custom" ? inputSymbol : ""}`;
+
+    // If this script is identical to an already generated script
+    // just reuse the existing symbol rather than writing a duplicate file
+    if (this.options.additionalScriptsCache[scriptHash]) {
+      return this.options.additionalScriptsCache[scriptHash];
+    }
+
     this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
     };
+
+    // Store generate symbols in cache
+    this.options.additionalScriptsCache[scriptHash] = symbol;
+    this.options.additionalScriptsCache[preBuildHash] = symbol;
+
     return symbol;
   };
 
@@ -6867,6 +8125,18 @@ extern void __mute_mask_${symbol};
 
   unlock = () => {
     this._vmUnlock();
+  };
+
+  sceneUpdatePause = () => {
+    this._addComment(`Pause Scene Type Update`);
+    this._setConstMemInt8("pause_state_update", 1);
+    this._addNL();
+  };
+
+  sceneUpdateResume = () => {
+    this._addComment(`Resume Scene Type Update`);
+    this._setConstMemInt8("pause_state_update", 0);
+    this._addNL();
   };
 
   scriptEnd = () => {

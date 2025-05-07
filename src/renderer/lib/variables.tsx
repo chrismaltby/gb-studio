@@ -52,7 +52,7 @@ export const namedVariablesByContext = (
       return namedCustomEventVariables(customEvent, variablesLookup);
     }
     return [];
-  } else if (context.type === "entity") {
+  } else if (context.type === "entity" || context.type === "prefab") {
     return namedEntityVariables(context.entityId, variablesLookup);
   } else {
     return namedGlobalVariables(variablesLookup);

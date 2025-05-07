@@ -11,6 +11,7 @@ import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
+import { getSettings } from "store/features/settings/settingsState";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -44,6 +45,10 @@ export const MetaspriteCanvas = memo(
     const tilesLookup = useAppSelector((state) =>
       metaspriteTileSelectors.selectEntities(state)
     );
+    const colorCorrection = useAppSelector(
+      (state) => getSettings(state).colorCorrection
+    );
+
     const width = spriteSheet?.canvasWidth || 0;
     const height = spriteSheet?.canvasHeight || 0;
 
@@ -89,10 +94,12 @@ export const MetaspriteCanvas = memo(
     }, [width, height, onWorkerComplete]);
 
     useEffect(() => {
-      if (tiles.length === 0) {
+      if (!canvasRef.current || !spriteSheet) {
         return;
       }
-      if (!canvasRef.current || !spriteSheet) {
+      if (tiles.length === 0) {
+        // eslint-disable-next-line no-self-assign
+        canvasRef.current.width = canvasRef.current.width;
         return;
       }
       const ctx = canvasRef.current.getContext("2d");
@@ -111,6 +118,7 @@ export const MetaspriteCanvas = memo(
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
         previewAsMono,
+        colorCorrection,
       });
     }, [
       canvasRef,
@@ -122,6 +130,7 @@ export const MetaspriteCanvas = memo(
       flipX,
       workerId,
       previewAsMono,
+      colorCorrection,
     ]);
 
     return (

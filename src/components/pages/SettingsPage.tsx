@@ -38,14 +38,13 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
-import { CompilerOptimisationSelect } from "components/forms/CompilerOptimisationSelect";
-import { CompilerOptimisation } from "shared/lib/resources/types";
-import Alert from "ui/alerts/Alert";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -80,6 +79,7 @@ const SettingsPage: FC = () => {
 
   const {
     colorMode,
+    colorCorrection,
     sgbEnabled,
     customHead,
     defaultBackgroundPaletteIds,
@@ -89,7 +89,6 @@ const SettingsPage: FC = () => {
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
-    compilerOptimisation,
     compilerPreset,
   } = settings;
 
@@ -125,6 +124,11 @@ const SettingsPage: FC = () => {
     [onChangeSettingProp]
   );
 
+  const onChangeColorCorrection = useCallback(
+    (e: ColorCorrectionSetting) => onChangeSettingProp("colorCorrection", e),
+    [onChangeSettingProp]
+  );
+
   const onChangeSGBEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("sgbEnabled", castEventToBool(e)),
@@ -156,12 +160,6 @@ const SettingsPage: FC = () => {
   const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
-    [onChangeSettingProp]
-  );
-
-  const onChangeCompilerOptimisation = useCallback(
-    (value: CompilerOptimisation) =>
-      onChangeSettingProp("compilerOptimisation", value),
     [onChangeSettingProp]
   );
 
@@ -298,6 +296,7 @@ const SettingsPage: FC = () => {
             l10n("FIELD_EXPORT_IN_COLOR"),
             l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
             l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
           <CardAnchor id="settingsColor" />
@@ -349,6 +348,28 @@ const SettingsPage: FC = () => {
           </SearchableSettingRow>
           {colorEnabled && (
             <>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_COLOR_CORRECTION")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_COLOR_CORRECTION")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <ColorCorrectionSelect
+                    name="colorCorrection"
+                    value={colorCorrection}
+                    onChange={onChangeColorCorrection}
+                  />
+                  <FormInfo>
+                    {colorCorrection === "default" &&
+                      l10n("FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO")}
+                    {colorCorrection === "none" &&
+                      l10n("FIELD_COLOR_CORRECTION_NONE_INFO")}
+                  </FormInfo>
+                </SettingRowInput>
+              </SearchableSettingRow>
+
               <SearchableSettingRow
                 searchTerm={searchTerm}
                 searchMatches={[l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")]}
@@ -670,7 +691,6 @@ const SettingsPage: FC = () => {
             l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
             l10n("FIELD_GENERATE_DEBUG_FILES"),
             l10n("FIELD_COMPILER_PRESET"),
-            l10n("FIELD_COMPILER_OPTIMISATION"),
           ]}
         >
           <CardAnchor id="settingsBuild" />
@@ -711,22 +731,6 @@ const SettingsPage: FC = () => {
 
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_COMPILER_OPTIMISATION")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_COMPILER_OPTIMISATION")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <CompilerOptimisationSelect
-                name={"compilerOptimisation"}
-                value={compilerOptimisation}
-                onChange={onChangeCompilerOptimisation}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
             searchMatches={[l10n("FIELD_COMPILER_PRESET")]}
           >
             <SettingRowLabel>{l10n("FIELD_COMPILER_PRESET")}</SettingRowLabel>
@@ -736,11 +740,6 @@ const SettingsPage: FC = () => {
                 value={compilerPreset}
                 onChange={onChangeCompilerPreset}
               />
-              {compilerOptimisation !== "none" && compilerPreset !== 3000 && (
-                <Alert variant="warning" style={{ marginTop: 3 }}>
-                  <p>{l10n("FIELD_COMPILER_OPTIONS_WARNING")}</p>
-                </Alert>
-              )}
             </SettingRowInput>
           </SearchableSettingRow>
 
@@ -750,7 +749,6 @@ const SettingsPage: FC = () => {
                 onClick={() => {
                   onChangeSettingProp("openBuildLogOnWarnings", true);
                   onChangeSettingProp("generateDebugFilesEnabled", false);
-                  onChangeSettingProp("compilerOptimisation", "none");
                   onChangeSettingProp("compilerPreset", 3000);
                 }}
               >

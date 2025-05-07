@@ -3,6 +3,7 @@
   "id": "6883c5ff-6786-4e75-aea1-475a3c0f4641",
   "_index": 7,
   "symbol": "actor_25",
+  "prefabId": "",
   "name": "Sign Post 2",
   "x": 2,
   "y": 10,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "6c95441f-13c1-43aa-91b5-4c6e72ca77f0",

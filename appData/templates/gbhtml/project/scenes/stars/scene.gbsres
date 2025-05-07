@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "8a52b387-2a88-4741-8d4e-ca56acea4672",
+  "_index": 5,
   "type": "TOPDOWN",
   "name": "Stars",
   "symbol": "scene_stars",

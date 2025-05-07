@@ -5,22 +5,29 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import { program } from "commander";
 import { binjgbRoot } from "consts";
-import compileData from "lib/compiler/compileData";
-import ejectBuild from "lib/compiler/ejectBuild";
-import makeBuild from "lib/compiler/makeBuild";
 import initElectronL10N from "lib/lang/initElectronL10N";
 import { loadEngineFields } from "lib/project/engineFields";
-import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
-import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadProject from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
+import { buildRunner } from "lib/compiler/buildRunner";
+import { BuildType } from "lib/compiler/buildWorker";
 
 const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
 type Command = "export" | "make:rom" | "make:pocket" | "make:web";
+
+const buildTypeForCommand = (command: Command): BuildType => {
+  if (command === "make:web") {
+    return "web";
+  }
+  if (command === "make:pocket") {
+    return "pocket";
+  }
+  return "rom";
+};
 
 const main = async (
   command: Command,
@@ -33,9 +40,7 @@ const main = async (
   const projectRoot = Path.resolve(Path.dirname(projectFile));
   const loadedProject = await loadProject(projectFile);
   const project = decompressProjectResources(loadedProject.resources);
-
-  // Load script event handlers + plugins
-  const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
+  const buildType = buildTypeForCommand(command);
 
   // Load engine fields
   const engineFields = await loadEngineFields(projectRoot);
@@ -44,6 +49,7 @@ const main = async (
   // Use OS default tmp
   const tmpPath = os.tmpdir();
   const tmpBuildDir = Path.join(tmpPath, "_gbsbuild");
+  const outputRoot = tmpBuildDir;
 
   const progress = (message: string) => {
     if (program.verbose) {
@@ -57,36 +63,21 @@ const main = async (
     }
   };
 
-  // Compile project data
-  const compiledData = await compileData(project, {
+  const { result } = buildRunner({
+    project,
+    buildType,
     projectRoot,
     engineFields,
-    scriptEventHandlers,
     sceneTypes,
     tmpPath,
+    outputRoot,
+    debugEnabled: project.settings.debuggerEnabled,
+    make: command !== "export",
     progress,
     warnings,
   });
 
-  // Export compiled data to a folder
-  await ejectBuild({
-    projectType: "gb",
-    projectRoot,
-    projectData: project,
-    engineFields,
-    sceneTypes,
-    outputRoot: tmpBuildDir,
-    tmpPath,
-    compiledData,
-    progress,
-    warnings,
-  });
-
-  await validateEjectedBuild({
-    buildRoot: tmpBuildDir,
-    progress,
-    warnings,
-  });
+  await result;
 
   const colorOnly = project.settings.colorMode === "color";
   const gameFile = colorOnly ? "game.gbc" : "game.gb";
@@ -107,42 +98,12 @@ const main = async (
       await copy(tmpBuildDir, destination);
     }
   } else if (command === "make:rom") {
-    // Export ROM to destination
-    await makeBuild({
-      buildRoot: tmpBuildDir,
-      tmpPath,
-      data: project,
-      debug: false,
-      buildType: "rom",
-      progress,
-      warnings,
-    });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
     await copy(romTmpPath, destination);
   } else if (command === "make:pocket") {
-    // Export ROM to destination
-    await makeBuild({
-      buildRoot: tmpBuildDir,
-      tmpPath,
-      data: project,
-      debug: false,
-      buildType: "pocket",
-      progress,
-      warnings,
-    });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.pocket");
     await copy(romTmpPath, destination);
   } else if (command === "make:web") {
-    // Export web build to destination
-    await makeBuild({
-      buildRoot: tmpBuildDir,
-      tmpPath,
-      data: project,
-      debug: false,
-      buildType: "web",
-      progress,
-      warnings,
-    });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
     await copy(binjgbRoot, destination);
     await copy(romTmpPath, `${destination}/rom/${gameFile}`);

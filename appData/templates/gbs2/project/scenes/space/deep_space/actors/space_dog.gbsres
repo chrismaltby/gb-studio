@@ -3,6 +3,7 @@
   "id": "8b18019e-754f-4cbb-9676-ca3901b2bc96",
   "_index": 0,
   "symbol": "actor_space_dog",
+  "prefabId": "",
   "name": "Space Dog",
   "x": 14,
   "y": 14,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "c8f60bb4-d40a-4994-b819-e18b569372a0",

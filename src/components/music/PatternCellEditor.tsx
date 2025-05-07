@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
+import {
+  FormField,
+  FormRow,
+  FormSectionTitle,
+} from "ui/form/layout/FormLayout";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
-import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
+import { Select, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { CheckboxField } from "ui/form/CheckboxField";
@@ -13,17 +17,18 @@ import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { renderNote } from "./helpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
-type EffectCodeOption = {
+interface EffectCodeOption {
   value: number | null;
   label: string;
   info?: string;
-};
+}
 
-type EffectCodeOptionGroup = {
+interface EffectCodeOptionGroup {
   label: string;
   options: EffectCodeOption[];
-};
+}
 
 const dutyOptions = [
   {
@@ -441,10 +446,17 @@ export const PatternCellEditor = ({
                   name="effectparam"
                   value={selectedWaveform}
                   options={waveformOptions}
-                  onChange={(e: { value: number; label: string }) => {
-                    onChangeParamField("x")(e.value || 0);
+                  onChange={(
+                    e: SingleValue<{ value: number; label: string }>
+                  ) => {
+                    if (e) {
+                      onChangeParamField("x")(e.value || 0);
+                    }
                   }}
-                  formatOptionLabel={(option: Option) => {
+                  formatOptionLabel={(option: {
+                    value: number;
+                    label: string;
+                  }) => {
                     return (
                       <VibrateWaveFormOptionWrapper>
                         <span style={{ paddingRight: 8 }}>{option.value}:</span>
@@ -468,8 +480,12 @@ export const PatternCellEditor = ({
                 name="effectparam"
                 value={selectedRoutine}
                 options={routineOptions}
-                onChange={(e: { value: number; label: string }) => {
-                  onChangeParamField("y")(e.value || 0);
+                onChange={(
+                  e: SingleValue<{ value: number; label: string }>
+                ) => {
+                  if (e) {
+                    onChangeParamField("y")(e.value || 0);
+                  }
                 }}
               />
             </FormField>
@@ -778,7 +794,10 @@ export const PatternCellEditor = ({
 
   const onChangeFieldSelect =
     <T extends keyof PatternCell>(key: T) =>
-    (e: { value: number; label: string }) => {
+    (e: SingleValue<EffectCodeOption>) => {
+      if (!e) {
+        return;
+      }
       const editValue = e.value;
 
       const newChanges = {} as Partial<PatternCell>;
@@ -810,11 +829,7 @@ export const PatternCellEditor = ({
             options={effectCodeOptions}
             onChange={onChangeFieldSelect("effectcode")}
             formatOptionLabel={(
-              option: {
-                value: number;
-                label: string;
-                info: string;
-              },
+              option: EffectCodeOption,
               { context }: { context: "menu" | "value" }
             ) => {
               return (

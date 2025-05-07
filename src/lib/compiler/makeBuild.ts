@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import os from "os";
+import Path from "path";
 import {
   buildLinkFile,
   buildLinkFlags,
@@ -12,6 +13,11 @@ import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
 import { gbspack } from "./gbspack";
 import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
+import psTree from "ps-tree";
+import { promisify } from "util";
+import { envWith } from "lib/helpers/cli/env";
+
+const psTreeAsync = promisify(psTree);
 
 type MakeOptions = {
   buildRoot: string;
@@ -24,6 +30,8 @@ type MakeOptions = {
 };
 
 const cpuCount = os.cpus().length;
+const childSet = new Set<ChildProcess>();
+let cancelling = false;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
@@ -34,7 +42,8 @@ const makeBuild = async ({
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: MakeOptions) => {
-  const env = Object.create(process.env);
+  cancelling = false;
+  const env = { ...process.env };
   const { settings } = data;
   const colorEnabled = settings.colorMode !== "mono";
   const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
@@ -48,7 +57,8 @@ const makeBuild = async ({
     "utf8"
   );
 
-  env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
+  env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
+
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
   env.TARGET_PLATFORM = targetPlatform;
@@ -57,18 +67,18 @@ const makeBuild = async ({
   env.TMP = tmpPath;
   env.TEMP = tmpPath;
   if (colorEnabled) {
-    env.COLOR = true;
+    env.COLOR = "true";
   }
   if (sgbEnabled) {
-    env.SGB = true;
+    env.SGB = "true";
   }
   if (batterylessEnabled) {
-    env.BATTERYLESS = true;
+    env.BATTERYLESS = "true";
   }
   env.COLOR_MODE = settings.colorMode;
   env.MUSIC_DRIVER = settings.musicDriver;
   if (debug) {
-    env.DEBUG = true;
+    env.DEBUG = "true";
   }
   if (settings.musicDriver === "huge") {
     env.MUSIC_DRIVER = "HUGE_TRACKER";
@@ -76,13 +86,12 @@ const makeBuild = async ({
     env.MUSIC_DRIVER = "GBT_PLAYER";
   }
   if (settings.cartType === "mbc3") {
-    env.RUMBLE_ENABLE = 0x20;
+    env.RUMBLE_ENABLE = "0x20";
   } else {
-    env.RUMBLE_ENABLE = 0x08;
+    env.RUMBLE_ENABLE = "0x08";
   }
 
-  env.GBDK_COMPILER_OPTIMISATION = settings.compilerOptimisation;
-  env.GBDK_COMPILER_PRESET = settings.compilerPreset;
+  env.GBDK_COMPILER_PRESET = String(settings.compilerPreset);
 
   // Populate /obj with cached data
   await fetchCachedObjData(buildRoot, tmpPath, env);
@@ -97,7 +106,6 @@ const makeBuild = async ({
     platform: process.platform,
     targetPlatform,
     cartType: settings.cartType,
-    compilerOptimisation: settings.compilerOptimisation,
     compilerPreset: settings.compilerPreset,
   });
 
@@ -108,19 +116,18 @@ const makeBuild = async ({
   };
 
   // Build source files in parallel
-  const childSet = new Set<ChildProcess>();
   const concurrency = cpuCount;
   await Promise.all(
     Array(concurrency)
       .fill(makeCommands.entries())
       .map(async (cursor) => {
         for (const [_, makeCommand] of cursor) {
+          if (cancelling) {
+            throw new Error("BUILD_CANCELLED");
+          }
           try {
             progress(makeCommand.label);
           } catch (e) {
-            for (const child of childSet) {
-              child.kill();
-            }
             throw e;
           }
           const { child, completed } = spawn(
@@ -141,8 +148,12 @@ const makeBuild = async ({
 
   // GBSPack ---
 
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
+
   progress(`${l10n("COMPILER_PACKING")}...`);
-  const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
+  const { cartSize, report } = await gbspack(await getPackFiles(buildRoot), {
     bankOffset: 1,
     filter: 255,
     extension: "rel",
@@ -156,7 +167,14 @@ const makeBuild = async ({
         : {},
   });
 
+  const packReportFilePath = `${buildRoot}/build/rom/bank_usage.txt`;
+  await fs.writeFile(packReportFilePath, report);
+
   // Link ROM ---
+
+  if (cancelling) {
+    throw new Error("BUILD_CANCELLED");
+  }
 
   progress(`${l10n("COMPILER_LINKING")}...`);
   const linkFile = await buildLinkFile(buildRoot, cartSize);
@@ -179,19 +197,47 @@ const makeBuild = async ({
     targetPlatform
   );
 
-  const { completed: linkCompleted } = spawn(linkCommand, linkArgs, options, {
-    onLog: (msg) => progress(msg),
-    onError: (msg) => {
-      if (msg.indexOf("Converted build") > -1) {
-        return;
-      }
-      warnings(msg);
-    },
-  });
+  const { completed: linkCompleted, child } = spawn(
+    linkCommand,
+    linkArgs,
+    options,
+    {
+      onLog: (msg) => progress(msg),
+      onError: (msg) => {
+        if (msg.indexOf("Converted build") > -1) {
+          return;
+        }
+        warnings(msg);
+      },
+    }
+  );
+
+  childSet.add(child);
   await linkCompleted;
+  childSet.delete(child);
 
   // Store /obj in cache
   await cacheObjData(buildRoot, tmpPath, env);
+};
+
+export const cancelBuildCommandsInProgress = async () => {
+  cancelling = true;
+  // Kill all spawned commands and any commands that were spawned by those
+  // e.g lcc spawns sdcc, etc.
+  for (const child of childSet) {
+    if (child.pid === undefined) {
+      continue;
+    }
+    const spawnedChildren = await psTreeAsync(child.pid);
+    for (const childChild of spawnedChildren) {
+      try {
+        process.kill(Number(childChild.PID));
+      } catch (e) {}
+    }
+    try {
+      child.kill();
+    } catch (e) {}
+  }
 };
 
 export default makeBuild;

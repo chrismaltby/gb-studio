@@ -19,6 +19,7 @@ import { TileCanvas } from "components/world/TileCanvas";
 import uniq from "lodash/uniq";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
@@ -28,10 +29,18 @@ interface TilesetSelectProps extends SelectCommonProps {
   units?: UnitType;
   optional?: boolean;
   optionalLabel?: string;
+  filters?: {
+    width?: number;
+    height?: number;
+  };
 }
 
 interface TilesetOption extends Option {
-  tileset: Tileset;
+  tileset?: Tileset;
+}
+
+interface TilesetOptGroup extends OptGroup {
+  options: TilesetOption[];
 }
 
 const Wrapper = styled.div`
@@ -61,21 +70,35 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
   units,
   optional,
   optionalLabel,
+  filters,
   ...selectProps
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
-  const [options, setOptions] = useState<OptGroup[]>([]);
+  const [options, setOptions] = useState<TilesetOptGroup[]>([]);
   const [currentTileset, setCurrentTileset] = useState<Tileset>();
-  const [currentValue, setCurrentValue] = useState<Option>();
+  const [currentValue, setCurrentValue] = useState<TilesetOption>();
 
   useEffect(() => {
-    const plugins = uniq(tilesets.map((s) => s.plugin || "")).sort();
+    const filteredTilesets = filters
+      ? tilesets.filter((tileset) => {
+          if (filters.width && tileset.imageWidth !== filters.width) {
+            return false;
+          }
+          if (filters.height && tileset.imageHeight !== filters.height) {
+            return false;
+          }
+          return true;
+        })
+      : tilesets;
+    const plugins = uniq(filteredTilesets.map((s) => s.plugin || "")).sort();
     const options = plugins.reduce(
       (memo, plugin) => {
         buildOptions(
           memo,
           plugin,
-          tilesets.filter((s) => (plugin ? s.plugin === plugin : !s.plugin))
+          filteredTilesets.filter((s) =>
+            plugin ? s.plugin === plugin : !s.plugin
+          )
         );
         return memo;
       },
@@ -87,12 +110,12 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
                 { value: "", label: optionalLabel || l10n("FIELD_NONE") },
               ],
             },
-          ] as OptGroup[])
-        : ([] as OptGroup[])
+          ] as TilesetOptGroup[])
+        : ([] as TilesetOptGroup[])
     );
 
     setOptions(options);
-  }, [tilesets, optional, optionalLabel]);
+  }, [tilesets, optional, optionalLabel, filters]);
 
   useEffect(() => {
     setCurrentTileset(tilesets.find((v) => v.id === value));
@@ -103,6 +126,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
       setCurrentValue({
         value: currentTileset.id,
         label: `${currentTileset.name}`,
+        tileset: currentTileset,
       });
     } else if (optional) {
       setCurrentValue({
@@ -112,8 +136,10 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
     }
   }, [currentTileset, optional, optionalLabel]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

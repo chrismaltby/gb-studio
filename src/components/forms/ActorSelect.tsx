@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   ActorNormalized,
@@ -11,6 +11,7 @@ import {
   SingleValueWithPreview,
 } from "ui/form/Select";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   getSceneActorIds,
@@ -20,6 +21,7 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
+import { components, SingleValue } from "react-select";
 
 interface ActorSelectProps {
   name: string;
@@ -65,13 +67,40 @@ export const ActorSelect = ({
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
+  const actorPrefabsLookup = useAppSelector((state) =>
+    actorPrefabSelectors.selectEntities(state)
+  );
+  const actorPrefabIds = useAppSelector((state) =>
+    actorPrefabSelectors.selectIds(state)
+  );
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(context.entityId);
-  const selfActor = actorsLookup[context.entityId];
+  const sceneActorId = context.instanceId
+    ? context.instanceId
+    : context.entityId;
+  const sceneActorIndex = sceneActorIds?.indexOf(sceneActorId);
+  const sceneActor = actorsLookup[sceneActorId];
+  const selfPrefab = actorPrefabsLookup[context.entityId];
+  const selfPrefabIndex = actorPrefabIds.indexOf(context.entityId);
+
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
+
+  const getActorSpriteId = useCallback(
+    (actorId: string): string => {
+      const actor = actorsLookup[actorId];
+      if (!actor) {
+        return "";
+      }
+      const prefab = actorPrefabsLookup[actor.prefabId];
+      if (!prefab) {
+        return actor.spriteSheetId;
+      }
+      return prefab.spriteSheetId;
+    },
+    [actorPrefabsLookup, actorsLookup]
+  );
 
   useEffect(() => {
     if (context.type === "script" && customEvent) {
@@ -90,20 +119,24 @@ export const ActorSelect = ({
           };
         }),
       ]);
-    } else if (context.type === "entity" && sceneActorIds) {
+    } else if (
+      (context.type === "entity" || context.type === "prefab") &&
+      sceneActorIds
+    ) {
       setOptions([
-        ...(context.entityType === "actor" &&
-        selfActor &&
-        selfIndex !== undefined
+        ...((context.entityType === "actor" ||
+          context.entityType === "actorPrefab") &&
+        sceneActor &&
+        sceneActorIndex !== undefined
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
-                  selfActor,
-                  selfIndex
+                  sceneActor,
+                  sceneActorIndex
                 )})`,
                 value: "$self$",
-                spriteSheetId: selfActor.spriteSheetId,
-                direction: selfActor.direction,
+                spriteSheetId: getActorSpriteId(sceneActor.id),
+                direction: sceneActor.direction,
               },
             ]
           : []),
@@ -117,10 +150,33 @@ export const ActorSelect = ({
           return {
             label: actorName(actor, actorIndex),
             value: actor.id,
-            spriteSheetId: actor.spriteSheetId,
+            spriteSheetId: getActorSpriteId(actor.id),
             direction: actor.direction,
           };
         }),
+      ]);
+    } else if (context.type === "prefab") {
+      setOptions([
+        ...(context.entityType === "actorPrefab" &&
+        selfPrefab &&
+        selfPrefabIndex !== undefined
+          ? [
+              {
+                label: `${l10n("FIELD_SELF")} (${actorName(
+                  selfPrefab,
+                  selfPrefabIndex
+                )})`,
+                value: "$self$",
+                spriteSheetId: selfPrefab.spriteSheetId,
+                direction: "down" as ActorDirection,
+              },
+            ]
+          : []),
+        {
+          label: l10n("FIELD_PLAYER"),
+          value: "player",
+          spriteSheetId: playerSpriteSheetId,
+        },
       ]);
     } else {
       setOptions([
@@ -137,8 +193,11 @@ export const ActorSelect = ({
     customEvent,
     playerSpriteSheetId,
     sceneActorIds,
-    selfActor,
-    selfIndex,
+    sceneActor,
+    sceneActorIndex,
+    selfPrefab,
+    selfPrefabIndex,
+    getActorSpriteId,
   ]);
 
   useEffect(() => {
@@ -154,8 +213,10 @@ export const ActorSelect = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: ActorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<ActorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: ActorOption) => {
         return option.spriteSheetId ? (
@@ -175,7 +236,7 @@ export const ActorSelect = ({
         );
       }}
       components={{
-        SingleValue: () =>
+        SingleValue: (props) =>
           currentValue?.spriteSheetId ? (
             <SingleValueWithPreview
               preview={
@@ -189,7 +250,9 @@ export const ActorSelect = ({
               {currentValue?.label}
             </SingleValueWithPreview>
           ) : (
-            currentValue?.label
+            <components.SingleValue {...props}>
+              {currentValue?.label}
+            </components.SingleValue>
           ),
       }}
     />

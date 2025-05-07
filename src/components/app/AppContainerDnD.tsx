@@ -1,14 +1,9 @@
 import React from "react";
-import { AppContainer } from "react-hot-loader";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-const AppContainerDnD = ({ children }: { children: React.ReactElement }) => {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <AppContainer>{children}</AppContainer>
-    </DndProvider>
-  );
+const AppContainerDnD = (props: { children: React.ReactElement }) => {
+  return <DndProvider backend={HTML5Backend} {...props} />;
 };
 
 export default AppContainerDnD;

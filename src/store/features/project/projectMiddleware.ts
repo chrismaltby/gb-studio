@@ -22,6 +22,8 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         return;
       }
 
+      await API.app.showProjectWindow();
+
       actions.loadProject(action.payload)(store.dispatch, store.getState, {});
     } else if (actions.addFileToProject.match(action)) {
       const filename = action.payload;
@@ -30,7 +32,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
 
     const renameAsset = async <T extends Asset>(
       assetType: AssetType,
-      assetSelectors: EntitySelectors<T, RootState>,
+      assetSelectors: EntitySelectors<T, RootState, string>,
       assetId: string,
       newName: string,
       getExtension: (asset: T) => string
@@ -50,7 +52,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
 
     const removeAsset = async <T extends Asset>(
       assetType: AssetType,
-      assetSelectors: EntitySelectors<T, RootState>,
+      assetSelectors: EntitySelectors<T, RootState, string>,
       assetId: string
     ) => {
       const state = store.getState();

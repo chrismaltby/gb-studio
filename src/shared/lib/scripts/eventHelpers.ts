@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import { EVENT_FADE_IN } from "consts";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
@@ -9,7 +8,7 @@ import type {
 } from "shared/lib/entities/entitiesTypes";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
-export type ScriptEventDefs = Dictionary<ScriptEventDef>;
+export type ScriptEventDefs = Record<string, ScriptEventDef>;
 
 export const patchEventArgs = (
   command: string,
@@ -56,8 +55,8 @@ export const patchEventArgs = (
 
 export const calculateAutoFadeEventIdNormalized = (
   script: string[],
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
-  customEventsLookup: Dictionary<CustomEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  customEventsLookup: Record<string, CustomEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   const events = scriptEventDefs;
@@ -110,7 +109,7 @@ export const calculateAutoFadeEventIdNormalized = (
 
 export const calculateAutoFadeEventId = (
   script: ScriptEvent[],
-  customEventsLookup: Dictionary<CustomEvent>,
+  customEventsLookup: Record<string, CustomEvent>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   const events = scriptEventDefs;

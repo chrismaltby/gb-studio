@@ -3,6 +3,7 @@
   "id": "b624beb1-cc63-4529-9f9e-4ad68beb09cb",
   "_index": 1,
   "symbol": "actor_19",
+  "prefabId": "",
   "name": "Drumkit",
   "x": 13,
   "y": 7,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "command": "EVENT_IF",

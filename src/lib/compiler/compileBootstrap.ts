@@ -10,6 +10,8 @@ import {
 } from "./generateGBVMData";
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
+import { gbvmSetConstForCType } from "shared/lib/engineFields/engineFieldToCType";
+import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 interface InitialState {
   startX: number;
@@ -53,15 +55,15 @@ export const compileScriptEngineInit = ({
 .area _CODE
 
 _start_scene_x:: 
-        .dw ${(startX || 0) * 8 * 16}
+        .dw ${tileToSubpx(startX || 0)}
 _start_scene_y:: 
-        .dw ${(startY || 0) * 8 * 16} 
+        .dw ${tileToSubpx(startY || 0)} 
 _start_scene_dir:: 
         .db .${dirEnum(startDirection)}
 _start_scene::
         IMPORT_FAR_PTR_DATA _${startScene.symbol}
 _start_player_move_speed:: 
-        .db ${Math.round(startMoveSpeed * 16)}
+        .db ${pxToSubpx(startMoveSpeed)}
 _start_player_anim_tick:: 
         .db ${startAnimSpeed}
 _ui_fonts:: 
@@ -88,12 +90,16 @@ ${usedEngineFields
 _script_engine_init::
 ${usedEngineFields
   .map((engineField) => {
+    if (engineField.cType === "define") {
+      return "";
+    }
     const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
     const value =
       engineValue && engineValue.value !== undefined
         ? engineValue.value
         : engineField.defaultValue;
-    return `        VM_SET_CONST_INT16      _${engineField.key}, ${value}`;
+    const gbvmSetConstInstruction = gbvmSetConstForCType(engineField.cType);
+    return `        ${gbvmSetConstInstruction}      _${engineField.key}, ${value}`;
   })
   .join("\n")}
 

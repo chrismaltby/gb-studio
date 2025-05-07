@@ -6,6 +6,8 @@ export interface SliderProps {
   value: number;
   min: number;
   max: number;
+  step?: number;
+  labelledBy?: string;
   onChange?: (value: number) => void;
 }
 
@@ -29,7 +31,7 @@ const RangeTrack = styled.div`
 `;
 
 interface RangeThumbProps {
-  isDragged: boolean;
+  $isDragged: boolean;
 }
 
 const RangeThumb = styled.div<RangeThumbProps>`
@@ -39,7 +41,7 @@ const RangeThumb = styled.div<RangeThumbProps>`
   background: ${(props) => props.theme.colors.button.background};
   border: 1px solid ${(props) => props.theme.colors.input.border};
   ${(props) =>
-    props.isDragged
+    props.$isDragged
       ? css`
           background: ${(props) => props.theme.colors.highlight};
           border: 1px solid ${(props) => props.theme.colors.highlight};
@@ -47,13 +49,22 @@ const RangeThumb = styled.div<RangeThumbProps>`
       : ""}
 `;
 
-export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
+export const Slider: FC<SliderProps> = ({
+  labelledBy,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}) => {
   const themeContext = useContext(ThemeContext);
 
   return (
     <Range
+      labelledBy={labelledBy}
       min={min}
       max={max}
+      step={step}
       values={[value]}
       onChange={(values) => onChange?.(values[0])}
       renderTrack={({ props, children }) => (
@@ -68,8 +79,8 @@ export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
               background: getTrackBackground({
                 values: [value],
                 colors: [
-                  themeContext.colors.highlight,
-                  themeContext.colors.input.border,
+                  themeContext?.colors.highlight ?? "black",
+                  themeContext?.colors.input.border ?? "white",
                 ],
                 min,
                 max,
@@ -81,7 +92,7 @@ export const Slider: FC<SliderProps> = ({ value, min, max, onChange }) => {
         </RangeInner>
       )}
       renderThumb={({ props, isDragged }) => (
-        <RangeThumb {...props} isDragged={isDragged} style={props.style} />
+        <RangeThumb {...props} $isDragged={isDragged} style={props.style} />
       )}
     />
   );

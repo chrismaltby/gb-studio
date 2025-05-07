@@ -3,7 +3,7 @@ import middleware from "../../../../src/store/features/clipboard/clipboardMiddle
 import actions from "../../../../src/store/features/clipboard/clipboardActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyActorNormalized } from "../../../dummydata";
-import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
+import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { mocked } from "jest-mock";
 import { ClipboardTypeActors } from "../../../../src/store/features/clipboard/clipboardTypes";
 import API from "../../../__mocks__/apiMock";
@@ -31,6 +31,10 @@ test("Should be able to copy actor to clipboard", async () => {
               entities: {},
               ids: [],
             },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
             variables: {
               entities: {},
               ids: [],
@@ -44,7 +48,7 @@ test("Should be able to copy actor to clipboard", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.copyActors({
@@ -62,6 +66,7 @@ test("Should be able to copy actor to clipboard", async () => {
         customEvents: [],
         variables: [],
         scriptEvents: [],
+        actorPrefabs: [],
       }),
       "utf8"
     )
@@ -104,12 +109,16 @@ test("Should include referenced variables when copying actor", async () => {
               entities: {},
               ids: [],
             },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
           },
         },
       },
     }),
     dispatch: jest.fn(),
-  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.copyActors({
@@ -132,6 +141,7 @@ test("Should include referenced variables when copying actor", async () => {
           },
         ],
         scriptEvents: [],
+        actorPrefabs: [],
       }),
       "utf8"
     )

@@ -1,14 +1,14 @@
-import { Dictionary } from "@reduxjs/toolkit";
-
 export const clone = <T>(input: T): T => {
   return JSON.parse(JSON.stringify(input));
 };
 
-export const cloneDictionary = <T>(dictionary: Dictionary<T>): Dictionary<T> =>
+export const cloneDictionary = <T>(
+  dictionary: Record<string, T>
+): Record<string, T> =>
   Object.keys(dictionary).reduce((memo, key) => {
     const value = dictionary[key];
     if (value) {
       memo[key] = JSON.parse(JSON.stringify(value));
     }
     return memo;
-  }, {} as Dictionary<T>);
+  }, {} as Record<string, T>);

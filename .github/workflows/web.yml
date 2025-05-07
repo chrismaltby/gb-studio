@@ -1,0 +1,71 @@
+name: Coverage Report
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "21.6.2"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: |
+          yarn
+
+      - name: Create dist directory
+        run: |
+          mkdir ./dist
+
+      - name: Generate Coverage
+        run: |
+          yarn coverage
+
+      - name: Move coverage into dist
+        run: |
+          mv ./coverage/lcov-report ./dist/coverage
+
+      - name: Generate Storybook
+        run: |
+          yarn build-storybook
+
+      - name: Move storybook into dist
+        run: |
+          mv ./storybook-static ./dist/storybook
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+  deploy-coverage:
+    runs-on: ubuntu-latest
+    needs: coverage
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

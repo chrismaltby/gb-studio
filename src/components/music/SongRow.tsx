@@ -20,10 +20,10 @@ interface SongRowProps {
 }
 
 interface WrapperProps {
-  n: number;
-  isActive: boolean;
-  isPlaying: boolean;
-  size?: "normal" | "small";
+  $n: number;
+  $isActive: boolean;
+  $isPlaying: boolean;
+  $size?: "normal" | "small";
 }
 
 const Wrapper = styled.span<WrapperProps>`
@@ -39,7 +39,7 @@ const Wrapper = styled.span<WrapperProps>`
   padding: 4px 8px;
   height: 20px;
   ${(props) =>
-    props.size === "small"
+    props.$size === "small"
       ? css`
           width: 30px;
         `
@@ -48,45 +48,45 @@ const Wrapper = styled.span<WrapperProps>`
         `}
   background-color: ${(props) => props.theme.colors.tracker.background};
   ${(props) =>
-    props.n % 8 === 0
+    props.$n % 8 === 0
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isActive
+    props.$isActive
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
       : ""}
   ${(props) =>
-    props.isPlaying
+    props.$isPlaying
       ? css`
           background-color: ${props.theme.colors.highlight};
         `
       : ""}
 `;
 
-const Field = styled.span<{ active?: boolean; selected?: boolean }>`
-  :hover {
+const Field = styled.span<{ $active?: boolean; $selected?: boolean }>`
+  &:hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
   margin: 0;
   padding: 0 4px;
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           background-color: rgba(255, 0, 0, 0.2);
         `
       : ""}
   ${(props) =>
-    props.active
+    props.$active
       ? css`
           background-color: white;
         `
       : ""}
   ${(props) =>
-    props.active && props.selected
+    props.$active && props.$selected
       ? css`
           box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
         `
@@ -135,56 +135,61 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
     return (
       <div>
         <Wrapper
-          isPlaying={isPlaying}
-          isActive={isActive}
-          n={n}
-          size="small"
+          $isPlaying={isPlaying}
+          $isActive={isActive}
+          $n={n}
+          $size="small"
           data-row={n}
         >
           <HeaderField id={`cell_${n}`}>{renderCounter(n)}</HeaderField>
         </Wrapper>
         {row.map((cell, channelId) => {
           const ret = (
-            <Wrapper isPlaying={isPlaying} isActive={isActive} n={n}>
+            <Wrapper
+              $isPlaying={isPlaying}
+              $isActive={isActive}
+              $n={n}
+              key={`_${channelId}`}
+            >
               <NoteField
                 id={`cell_${n}_${channelId}_note`}
-                active={activeField === fieldCount}
+                $active={activeField === fieldCount}
                 ref={activeField === fieldCount ? ref : null}
                 data-fieldid={fieldCount}
-                selected={selectedTrackerFields.indexOf(fieldCount) > -1}
+                $selected={selectedTrackerFields.indexOf(fieldCount) > -1}
               >
                 {renderNote(cell.note)}
               </NoteField>
               <InstrumentField
                 id={`cell_${n}_${channelId}_instrument`}
-                active={activeField === fieldCount + 1}
+                $active={activeField === fieldCount + 1}
                 ref={activeField === fieldCount + 1 ? ref : null}
                 data-fieldid={fieldCount + 1}
-                selected={selectedTrackerFields.indexOf(fieldCount + 1) > -1}
+                $selected={selectedTrackerFields.indexOf(fieldCount + 1) > -1}
               >
                 {renderInstrument(cell.instrument)}
               </InstrumentField>
               <EffectCodeField
                 id={`cell_${n}_${channelId}_effectcode`}
-                active={activeField === fieldCount + 2}
+                $active={activeField === fieldCount + 2}
                 ref={activeField === fieldCount + 2 ? ref : null}
                 data-fieldid={fieldCount + 2}
                 style={{
                   paddingRight: 1,
                 }}
-                selected={selectedTrackerFields.indexOf(fieldCount + 2) > -1}
+                $selected={selectedTrackerFields.indexOf(fieldCount + 2) > -1}
               >
                 {renderEffect(cell.effectcode)}
               </EffectCodeField>
               <EffectParamField
                 id={`cell_${n}_${channelId}_effectparam`}
-                active={activeField === fieldCount + 3}
+                $active={activeField === fieldCount + 3}
                 ref={activeField === fieldCount + 3 ? ref : null}
                 data-fieldid={fieldCount + 3}
                 style={{
                   paddingLeft: 1,
                 }}
-                selected={selectedTrackerFields.indexOf(fieldCount + 3) > -1}
+                $selected={selectedTrackerFields.indexOf(fieldCount + 3) > -1}
               >
                 {renderEffectParam(cell.effectparam)}
               </EffectParamField>

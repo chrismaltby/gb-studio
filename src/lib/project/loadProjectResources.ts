@@ -1,5 +1,6 @@
 import path from "path";
 import {
+  ActorPrefabResource,
   ActorResource,
   AvatarResource,
   CompressedBackgroundResource,
@@ -18,6 +19,7 @@ import {
   SoundResource,
   SpriteResource,
   TilesetResource,
+  TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
@@ -30,7 +32,7 @@ import { defaultProjectSettings } from "consts";
 import { readJson } from "lib/helpers/fs/readJson";
 import { Value } from "@sinclair/typebox/value";
 import { TSchema } from "@sinclair/typebox/build/cjs/type/schema";
-import { Type, Static } from "@sinclair/typebox";
+import { Static } from "@sinclair/typebox";
 import { naturalSortPaths, pathToPosix } from "shared/lib/helpers/path";
 
 const globAsync = promisify(glob);
@@ -64,6 +66,8 @@ interface ResourceLookup {
   actors: ResourceWithPath<ActorResource>[];
   triggers: ResourceWithPath<TriggerResource>[];
   scenes: ResourceWithPath<CompressedSceneResource>[];
+  actorPrefabs: ResourceWithPath<ActorPrefabResource>[];
+  triggerPrefabs: ResourceWithPath<TriggerPrefabResource>[];
   scripts: ResourceWithPath<ScriptResource>[];
   backgrounds: ResourceWithPath<CompressedBackgroundResource>[];
   sprites: ResourceWithPath<SpriteResource>[];
@@ -84,7 +88,9 @@ export const loadProjectResources = async (
   metadataResource: ProjectMetadataResource
 ): Promise<CompressedProjectResources> => {
   const projectResources = naturalSortPaths(
-    await globAsync(path.join(projectRoot, "project", "**/*.gbsres"))
+    await globAsync(
+      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres")
+    )
   );
 
   const resources = (
@@ -109,6 +115,8 @@ export const loadProjectResources = async (
     actors: [],
     triggers: [],
     scenes: [],
+    actorPrefabs: [],
+    triggerPrefabs: [],
     scripts: [],
     backgrounds: [],
     sprites: [],
@@ -146,13 +154,21 @@ export const loadProjectResources = async (
     ) =>
     ({ path, data }: { path: string; data: D }): boolean => {
       if (data._resourceType === schema?.properties?._resourceType?.const) {
-        if (Value.Check(Type.Partial(schema), data)) {
-          arr.push({
-            path,
-            data: data as Partial<Static<T>>,
-          });
-          return true;
+        // Filter out any invalid keys, returning a valid partial resource
+        const keys = Object.keys(data) as (keyof D)[];
+        const newResource: Partial<Static<T>> = {};
+        for (const key of keys) {
+          const keySchema = schema?.properties?.[key] as TSchema;
+          const keyData = data[key] as Static<T>[keyof Static<T>];
+          if (keySchema && Value.Check(keySchema, keyData)) {
+            newResource[key as keyof Static<T>] = keyData;
+          }
         }
+        arr.push({
+          path,
+          data: newResource,
+        });
+        return true;
       }
       return false;
     };
@@ -160,6 +176,8 @@ export const loadProjectResources = async (
     cast(ActorResource, resourcesLookup.actors),
     cast(TriggerResource, resourcesLookup.triggers),
     cast(CompressedSceneResource, resourcesLookup.scenes),
+    cast(ActorPrefabResource, resourcesLookup.actorPrefabs),
+    cast(TriggerPrefabResource, resourcesLookup.triggerPrefabs),
     cast(ScriptResource, resourcesLookup.scripts),
     cast(CompressedBackgroundResource, resourcesLookup.backgrounds),
     cast(SpriteResource, resourcesLookup.sprites),
@@ -187,6 +205,7 @@ export const loadProjectResources = async (
     }
   }
 
+  resourcesLookup.scenes.sort(sortByIndex);
   resourcesLookup.actors.sort(sortByIndex);
   resourcesLookup.triggers.sort(sortByIndex);
 
@@ -221,8 +240,13 @@ export const loadProjectResources = async (
       };
     });
 
-  const variablesResource: VariablesResource = resourcesLookup.variables[0]
-    ?.data ?? { _resourceType: "variables", variables: [] };
+  const variablesResource: VariablesResource =
+    resourcesLookup.variables[0]?.data ??
+    ({
+      _resourceType: "variables",
+      variables: [],
+      constants: [],
+    } as VariablesResource);
 
   const engineFieldValuesResource: EngineFieldValuesResource =
     (resourcesLookup.engineFieldValues ?? [])[0]?.data ?? {
@@ -244,6 +268,8 @@ export const loadProjectResources = async (
 
   return {
     scenes: sceneResources,
+    actorPrefabs: extractDataArray(resourcesLookup.actorPrefabs),
+    triggerPrefabs: extractDataArray(resourcesLookup.triggerPrefabs),
     scripts: extractDataArray(resourcesLookup.scripts),
     sprites: extractDataArray(resourcesLookup.sprites),
     backgrounds: extractDataArray(resourcesLookup.backgrounds),

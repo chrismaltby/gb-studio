@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "6bcc8670-b44d-4892-a37a-77a35f5a7668",
+  "_index": 8,
   "type": "SHMUP",
   "name": "space/Space Battle",
   "symbol": "scene_space_battle",

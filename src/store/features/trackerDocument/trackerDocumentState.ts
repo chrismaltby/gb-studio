@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 import {
-  AnyAction,
+  UnknownAction,
   createAsyncThunk,
   createSlice,
   PayloadAction,
+  createAction,
 } from "@reduxjs/toolkit";
 import cloneDeep from "lodash/cloneDeep";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
@@ -17,7 +18,7 @@ import {
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
-import type { MusicAssetData } from "lib/project/loadMusicData";
+import { MusicResourceAsset } from "shared/lib/resources/types";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -32,11 +33,15 @@ export const initialState: TrackerDocumentState = {
   modified: false,
 };
 
+export const requestAddNewSongFile = createAction<string>(
+  "tracker/requestAddNewSong"
+);
+
 export const addNewSongFile = createAsyncThunk<
-  { data: MusicAssetData },
+  { data: MusicResourceAsset },
   string
 >("tracker/addNewSong", async (path, _thunkApi): Promise<{
-  data: MusicAssetData;
+  data: MusicResourceAsset;
 }> => {
   return {
     data: await API.tracker.addNewUGEFile(path),
@@ -488,7 +493,7 @@ const trackerSlice = createSlice({
         state.modified = false;
       })
       .addMatcher(
-        (action: AnyAction): action is AnyAction =>
+        (action: UnknownAction): action is UnknownAction =>
           action.type.startsWith("tracker/edit") ||
           action.type.startsWith("tracker/addSequence") ||
           action.type.startsWith("tracker/removeSequence"),

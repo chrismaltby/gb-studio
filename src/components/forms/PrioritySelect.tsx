@@ -31,7 +31,7 @@ const MenuSpacer = styled.div`
 `;
 
 export const PrioritySelect: FC<PrioritySelectProps> = ({
-  value,
+  value = "low",
   onChange,
 }) => {
   const selectedIcon = value ? priorityIconsLookup[value] : <PriorityLowIcon />;
@@ -56,10 +56,8 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
           onClick={() => {
             onChange?.(priority);
           }}
+          icon={value === priority ? <CheckIcon /> : <BlankIcon />}
         >
-          <MenuItemIcon>
-            {value === priority ? <CheckIcon /> : <BlankIcon />}
-          </MenuItemIcon>
           <FlexGrow>{priorityNamesLookup[priority]}</FlexGrow>
           <MenuSpacer />
           <MenuItemIcon>{priorityIconsLookup[priority]}</MenuItemIcon>
@@ -67,8 +65,4 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
       ))}
     </DropdownButton>
   );
-};
-
-PrioritySelect.defaultProps = {
-  value: "low",
 };

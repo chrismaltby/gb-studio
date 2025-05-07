@@ -3,6 +3,7 @@
   "id": "871ea302-1cc1-463c-b9d7-530aac38fe81",
   "_index": 1,
   "symbol": "actor_gardener",
+  "prefabId": "",
   "name": "Gardener",
   "x": 45,
   "y": 13,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "0846c4dc-f631-429b-9a84-ee2dab5b76e1",

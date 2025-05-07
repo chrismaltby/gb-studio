@@ -57,21 +57,33 @@ const watchProject = (
   };
 
   const spriteWatcher = chokidar
-    .watch(`${spritesRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${spritesRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/sprites/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedSprite)
     .on("change", callbacks.onChangedSprite)
     .on("unlink", callbacks.onRemoveSprite);
 
   const backgroundWatcher = chokidar
-    .watch(`${backgroundsRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${backgroundsRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/backgrounds/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedBackground)
     .on("change", callbacks.onChangedBackground)
     .on("unlink", callbacks.onRemoveBackground);
@@ -97,61 +109,94 @@ const watchProject = (
     .on("unlink", callbacks.onRemoveUI);
 
   const musicWatcher = chokidar
-    .watch(`${musicRoot}/**/*.{uge,UGE,mod,MOD}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish: musicAwaitWriteFinish,
-    })
+    .watch(
+      [
+        `${musicRoot}/**/*.{uge,UGE,mod,MOD}`,
+        `${pluginsRoot}/**/music/**/*.{uge,UGE,mod,MOD}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish: musicAwaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedMusic)
     .on("change", callbacks.onChangedMusic)
     .on("unlink", callbacks.onRemoveMusic);
 
   const soundsWatcher = chokidar
-    .watch(`${soundsRoot}/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${soundsRoot}/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
+        `${pluginsRoot}/**/sounds/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedSound)
     .on("change", callbacks.onChangedSound)
     .on("unlink", callbacks.onRemoveSound);
 
   const fontsWatcher = chokidar
-    .watch(`${fontsRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [`${fontsRoot}/**/*.{png,PNG}`, `${pluginsRoot}/**/fonts/**/*.{png,PNG}`],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedFont)
     .on("change", callbacks.onChangedFont)
     .on("unlink", callbacks.onRemoveFont);
 
   const avatarsWatcher = chokidar
-    .watch(`${avatarsRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${avatarsRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/avatars/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedAvatar)
     .on("change", callbacks.onChangedAvatar)
     .on("unlink", callbacks.onRemoveAvatar);
 
   const emotesWatcher = chokidar
-    .watch(`${emotesRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${emotesRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/emotes/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedEmote)
     .on("change", callbacks.onChangedEmote)
     .on("unlink", callbacks.onRemoveEmote);
 
   const tilesetsWatcher = chokidar
-    .watch(`${tilesetsRoot}/**/*.{png,PNG}`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    })
+    .watch(
+      [
+        `${tilesetsRoot}/**/*.{png,PNG}`,
+        `${pluginsRoot}/**/tilesets/**/*.{png,PNG}`,
+      ],
+      {
+        ignoreInitial: true,
+        persistent: true,
+        awaitWriteFinish,
+      }
+    )
     .on("add", callbacks.onChangedTileset)
     .on("change", callbacks.onChangedTileset)
     .on("unlink", callbacks.onRemoveTileset);

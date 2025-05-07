@@ -1,6 +1,6 @@
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_GROUP } from "consts";
 import React, { Dispatch } from "react";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -16,7 +16,7 @@ import {
 } from "store/features/clipboard/clipboardTypes";
 
 interface ScriptEventContextMenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch: Dispatch<UnknownAction>;
   scriptEventId: string;
   command: string;
   args?: Record<string, unknown>;
@@ -28,11 +28,14 @@ interface ScriptEventContextMenuProps {
   parentKey: string;
   commented?: boolean;
   hasElse?: boolean;
+  hasOverride: boolean;
   disabledElse?: boolean;
   clipboardFormat?: ClipboardFormat;
   onRename?: () => void;
   onViewSymbols?: () => void;
   onInsert?: (before: boolean) => void;
+  onApplyOverrides: () => void;
+  onRevertOverrides: () => void;
 }
 
 const renderScriptEventContextMenu = ({
@@ -49,10 +52,13 @@ const renderScriptEventContextMenu = ({
   parentKey,
   commented,
   hasElse,
+  hasOverride,
   disabledElse,
   clipboardFormat,
   onViewSymbols,
   onInsert,
+  onApplyOverrides,
+  onRevertOverrides,
 }: ScriptEventContextMenuProps) => {
   const multiSelection = additionalScriptEventIds.length > 1;
   return [
@@ -152,6 +158,7 @@ const renderScriptEventContextMenu = ({
     ...(hasElse
       ? [
           <MenuItem
+            key="toggle-else"
             onClick={() => {
               dispatch(
                 entitiesActions.toggleScriptEventDisableElse({ scriptEventId })
@@ -166,6 +173,7 @@ const renderScriptEventContextMenu = ({
       : []),
 
     <MenuItem
+      key="set-breakpoint"
       onClick={() => {
         dispatch(
           settingsActions.toggleBreakpoint({
@@ -182,6 +190,18 @@ const renderScriptEventContextMenu = ({
         </MenuItemIcon>
       )}
     </MenuItem>,
+
+    ...(hasOverride
+      ? [
+          <MenuDivider key="div-changes" />,
+          <MenuItem key="changes-apply" onClick={() => onApplyOverrides()}>
+            {l10n("FIELD_APPLY_CHANGES")}
+          </MenuItem>,
+          <MenuItem key="changes-revert" onClick={() => onRevertOverrides()}>
+            {l10n("FIELD_REVERT_CHANGES")}
+          </MenuItem>,
+        ]
+      : []),
 
     ...(onInsert
       ? [
@@ -216,6 +236,7 @@ const renderScriptEventContextMenu = ({
       ? [
           <MenuDivider key="div-paste" />,
           <MenuItem
+            key="paste-values"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEventValues({
@@ -227,6 +248,7 @@ const renderScriptEventContextMenu = ({
             {l10n("MENU_PASTE_VALUES")}
           </MenuItem>,
           <MenuItem
+            key="paste-before"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEvents({
@@ -242,6 +264,7 @@ const renderScriptEventContextMenu = ({
             {l10n("MENU_PASTE_EVENT_BEFORE")}
           </MenuItem>,
           <MenuItem
+            key="paste-after"
             onClick={() => {
               dispatch(
                 clipboardActions.pasteScriptEvents({

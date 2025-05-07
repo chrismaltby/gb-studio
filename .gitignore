@@ -12,9 +12,26 @@ coverage
 /dist
 .DS_Store
 test/projects/*/build
+buildTools/*/gbdk
 
 # Webpack
 .webpack/
 
 # IDEs
 .idea/
+
+# Storybook
+*storybook.log
+
+# Performance   
+isolate*-v8.log
+flamegraph.html
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

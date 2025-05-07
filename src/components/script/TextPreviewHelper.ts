@@ -1,16 +1,11 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
-import { lexText } from "shared/lib/compiler/lexText";
-import { encodeChar } from "shared/lib/helpers/fonts";
+import {
+  encodeString,
+  FontData,
+  lexTextWithMapping,
+} from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
-
-export interface FontData {
-  id: string;
-  img: HTMLImageElement;
-  isMono: boolean;
-  widths: number[];
-  mapping: Record<string, number>;
-}
 
 const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
@@ -28,8 +23,6 @@ export const drawFrame = (
   width: number,
   height: number
 ) => {
-  ctx.drawImage(img, 0, 0, 8, 8, 0, 0, 8, 8); // TL
-  ctx.drawImage(img, 16, 0, 8, 8, (width - 1) * 8, 0, 8, 8); // TR
   ctx.drawImage(img, 0, 16, 8, 8, 0, (height - 1) * 8, 8, 8); // BL
   ctx.drawImage(img, 16, 16, 8, 8, (width - 1) * 8, (height - 1) * 8, 8, 8); // BR
   for (let i = 0; i < height - 2; i++) {
@@ -37,12 +30,27 @@ export const drawFrame = (
     ctx.drawImage(img, 16, 8, 8, 8, (width - 1) * 8, (i + 1) * 8, 8, 8); // R
   }
   for (let i = 0; i < width - 2; i++) {
-    ctx.drawImage(img, 8, 0, 8, 8, (i + 1) * 8, 0, 8, 8); // T
     ctx.drawImage(img, 8, 16, 8, 8, (i + 1) * 8, (height - 1) * 8, 8, 8); // B
+    ctx.drawImage(img, 8, 0, 8, 8, (i + 1) * 8, 0, 8, 8); // T
   }
+  ctx.drawImage(img, 0, 0, 8, 8, 0, 0, 8, 8); // TL
+  ctx.drawImage(img, 16, 0, 8, 8, (width - 1) * 8, 0, 8, 8); // TR
   for (let i = 0; i < height - 2; i++) {
     for (let j = 0; j < width - 2; j++) {
       ctx.drawImage(img, 8, 8, 8, 8, (j + 1) * 8, (i + 1) * 8, 8, 8); // C
+    }
+  }
+};
+
+export const drawFill = (
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  width: number,
+  height: number
+) => {
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      ctx.drawImage(img, 8, 8, 8, 8, j * 8, i * 8, 8, 8); // C
     }
   }
 };
@@ -111,6 +119,7 @@ export const drawText = (
   text: string,
   xOffset: number,
   yOffset: number,
+  maxHeight: number,
   fontsData: Record<string, FontData>,
   defaultFontId: string,
   fallbackFontId: string
@@ -132,6 +141,9 @@ export const drawText = (
   const drawCharCode = (char: number) => {
     const lookupX = char % 16;
     const lookupY = Math.floor(char / 16);
+    if (drawY >= maxHeight * 8) {
+      return;
+    }
     ctx.drawImage(
       font.img,
       lookupX * 8,
@@ -143,28 +155,42 @@ export const drawText = (
       font.widths[char],
       8
     );
-    drawX += font.widths[char];
+    drawX += font.widths[char] ?? 0;
   };
 
-  const textTokens = lexText(text);
+  const textTokens = lexTextWithMapping(text, fontsData, font.id, false);
+
   textTokens.forEach((token) => {
-    if (token.type === "text" && !token.hideInPreview) {
-      const string = token.value;
-      for (let i = 0; i < string.length; i++) {
-        if (string[i] === "\n") {
+
+    if (token.type === "text") {
+      const string = token.previewValue ?? token.value;
+      let i = 0;
+
+      while (i < string.length) {
+        const char = string[i];
+        
+        // Newline - encodeString() above causes all newlines to be represented as \012
+        if (
+          char === "\\" &&
+          string[i + 1] === "0" &&
+          string[i + 2] === "1" &&
+          string[i + 3] === "2"
+        ) {
           drawX = leftX;
           drawY += 8;
+          i += 4;
           continue;
         }
-        if (string[i] === "\\" && string[i + 1] === "n") {
-          drawX = leftX;
-          drawY += 8;
-          i++;
-          continue;
-        }
-        const char =
-          (encodeChar(string[i], font.mapping) - 32) % font.widths.length;
-        drawCharCode(char);
+
+        const tileHeight = Math.floor(font.img.height / 8);
+
+        const code = char.codePointAt(0) ?? 0;
+        const charIndex =
+          (code - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
+        
+        drawCharCode(charIndex);
+
+        i++;
       }
     } else if (token.type === "variable" && token.fixedLength !== undefined) {
       for (let c = 0; c < token.fixedLength - 1; c++) {

@@ -9,7 +9,7 @@ test("Should be able to write to console", () => {
     ...initialState,
     output: [],
   };
-  const action = actions.stdOut("Message");
+  const action = actions.stdOut({ text: "Message" });
   const newState = reducer(state, action);
   expect(newState.output).toEqual([
     {
@@ -25,7 +25,7 @@ test("Should be able to write errors to output and warnings list", () => {
     ...initialState,
     output: [],
   };
-  const action = actions.stdErr("Message");
+  const action = actions.stdErr({ text: "Message" });
   const newState = reducer(state, action);
   expect(newState.output).toEqual([
     {

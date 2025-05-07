@@ -1,15 +1,21 @@
-import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+} from "ui/form/layout/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -41,12 +47,12 @@ interface VariableEditorProps {
   id: string;
 }
 interface UsesWrapperProps {
-  showSymbols: boolean;
+  $showSymbols: boolean;
 }
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: ${(props) => (props.showSymbols ? `71px` : `38px`)};
+  top: ${(props) => (props.$showSymbols ? `71px` : `38px`)};
   left: 0;
   bottom: 0;
   right: 0;
@@ -59,7 +65,7 @@ const UseMessage = styled.div`
 
 export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
-  const { ref, height } = useDimensions();
+  const { observe, height } = useDimensions();
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)
   );
@@ -76,6 +82,12 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   );
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
+  );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
@@ -110,6 +122,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       scenes,
       actorsLookup,
       triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
       scriptEventsLookup,
       scriptEventDefs,
       customEventsLookup,
@@ -123,6 +137,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     scriptEventsLookup,
     scriptEventDefs,
     customEventsLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
   ]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,10 +221,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
             </>
           )}
         </FormContainer>
-        <UsesWrapper
-          ref={ref as RefObject<HTMLDivElement>}
-          showSymbols={showSymbols}
-        >
+        <UsesWrapper ref={observe} $showSymbols={showSymbols}>
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>

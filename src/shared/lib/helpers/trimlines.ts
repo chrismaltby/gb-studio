@@ -100,4 +100,9 @@ const trimlines = (
 export const textNumLines = (string: string) =>
   Math.max(LINE_MIN, (string || "").split("\n").length);
 
+export const textNumNewlines = (input: string): number => {
+  // eslint-disable-next-line no-control-regex
+  return (input.match(/(\n|\r|\x0a|\x0d|\\012|\\015)/g)?.length ?? 0) + 1;
+};
+
 export default trimlines;

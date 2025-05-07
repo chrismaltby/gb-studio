@@ -1,4 +1,3 @@
-import type { Dictionary } from "@reduxjs/toolkit";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
   ScriptEventArgs,
@@ -9,17 +8,23 @@ import {
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
 
-export type ScriptEventDefs = Dictionary<ScriptEventDef>;
+export type ScriptEventDefs = Record<string, ScriptEventDef>;
+
+const SECTION_TAB_KEY = "__section";
 
 export const isFieldVisible = (
   field: ScriptEventFieldSchema,
-  args: ScriptEventArgs
+  args: ScriptEventArgs,
+  ignoreConditions?: string[]
 ) => {
   if (!field.conditions) {
     return true;
   }
   // Determine if field conditions are met
   return field.conditions.reduce((memo, condition) => {
+    if (ignoreConditions?.includes(condition.key)) {
+      return memo;
+    }
     const keyValue = args[condition.key];
     return (
       memo &&
@@ -55,16 +60,12 @@ export const isVariableField = (
   args: ScriptEventArgs,
   scriptEventDefs: ScriptEventDefs
 ) => {
-  // Custom event calls
-  if (fieldName.startsWith("$variable[")) {
-    return true;
-  }
   const field = getField(command, fieldName, scriptEventDefs);
   const argValue = args[fieldName];
   return (
     !!field &&
     (field.type === "variable" || isUnionVariableValue(argValue)) &&
-    isFieldVisible(field, args)
+    isFieldVisible(field, args, [SECTION_TAB_KEY])
   );
 };
 
@@ -79,7 +80,11 @@ export const isActorField = (
     return true;
   }
   const field = getField(cmd, fieldName, scriptEventDefs);
-  return !!field && field.type === "actor" && isFieldVisible(field, args);
+  return (
+    !!field &&
+    field.type === "actor" &&
+    isFieldVisible(field, args, [SECTION_TAB_KEY])
+  );
 };
 
 export const isPropertyField = (
@@ -95,7 +100,7 @@ export const isPropertyField = (
   return (
     !!field &&
     (field.type === "property" || isUnionPropertyValue(fieldValue)) &&
-    isFieldVisible(field, args)
+    isFieldVisible(field, args, [SECTION_TAB_KEY])
   );
 };
 
@@ -105,8 +110,16 @@ export const isScriptValueField = (
   args: ScriptEventArgs,
   scriptEventDefs: ScriptEventDefs
 ) => {
+  // Custom event calls
+  if (fieldName.startsWith("$variable[")) {
+    return true;
+  }
   const event = scriptEventDefs[cmd];
   if (!event) return false;
   const field = getField(cmd, fieldName, scriptEventDefs);
-  return field && field.type === "value" && isFieldVisible(field, args);
+  return (
+    field &&
+    field.type === "value" &&
+    isFieldVisible(field, args, [SECTION_TAB_KEY])
+  );
 };

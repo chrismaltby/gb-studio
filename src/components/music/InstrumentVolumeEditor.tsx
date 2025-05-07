@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { ThemeContext } from "styled-components";
-import { FormRow } from "ui/form/FormLayout";
+import { FormRow } from "ui/form/layout/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 
 type EditableInstrument = {
@@ -30,6 +30,9 @@ export const InstrumentVolumeEditor = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
+      return;
+    }
+    if (!themeContext) {
       return;
     }
 
@@ -104,7 +107,7 @@ export const InstrumentVolumeEditor = ({
       }
       ctx.stroke();
     }
-  }, [initialVolume, length, themeContext.colors.highlight, volumeSweepChange]);
+  }, [initialVolume, length, themeContext, volumeSweepChange]);
 
   return (
     <>

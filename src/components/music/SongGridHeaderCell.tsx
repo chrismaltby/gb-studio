@@ -12,7 +12,7 @@ interface SongGridHeaderCellProps {
 }
 
 interface WrapperProps {
-  size?: "normal" | "small";
+  $size?: "normal" | "small";
 }
 const Wrapper = styled.span<WrapperProps>`
   display: inline-block;
@@ -28,7 +28,7 @@ const Wrapper = styled.span<WrapperProps>`
   padding: 4px 4px 4px 2px;
   height: 20px;
   ${(props) =>
-    props.size === "small"
+    props.$size === "small"
       ? css`
           width: 40px;
         `
@@ -55,7 +55,7 @@ export const SongGridHeaderCell = ({
   }, [muted, channel]);
 
   return (
-    <Wrapper size={size}>
+    <Wrapper $size={size}>
       {channel !== undefined ? (
         <Button variant="transparent" size="small" onClick={setMute}>
           {muted ? <AudioOffIcon /> : <AudioOnIcon />}

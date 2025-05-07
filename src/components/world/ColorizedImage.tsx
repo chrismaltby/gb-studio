@@ -3,6 +3,8 @@ import { Palette } from "shared/lib/entities/entitiesTypes";
 import ColorizedImageWorker, {
   ColorizedImageResult,
 } from "./ColorizedImage.worker";
+import { getSettings } from "store/features/settings/settingsState";
+import { useAppSelector } from "store/hooks";
 
 const workerPool: ColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -26,6 +28,10 @@ const ColorizedImage = ({
   palettes,
   previewAsMono,
 }: ColorizedImageProps) => {
+  const colorCorrection = useAppSelector(
+    (state) => getSettings(state).colorCorrection
+  );
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
   const worker = useRef(
@@ -69,10 +75,11 @@ const ColorizedImage = ({
         width,
         height,
         previewAsMono,
+        colorCorrection,
         id: workerId.current,
       });
     }
-  }, [height, palettes, previewAsMono, src, tiles, width]);
+  }, [height, palettes, previewAsMono, colorCorrection, src, tiles, width]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };

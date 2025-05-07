@@ -18,9 +18,17 @@ module.exports = {
     __dirname: false,
     __filename: false,
   },
-  entry: Path.resolve(__dirname, "./src/bin/gb-studio-cli.ts"),
+  entry: {
+    index: Path.resolve(__dirname, "./src/bin/gb-studio-cli.ts"),
+    buildWorker: "./src/lib/compiler/buildWorker.ts",
+  },
   output: {
-    filename: "gb-studio-cli.js",
+    filename: (pathData) => {
+      if (pathData.chunk.name === "index") {
+        return "gb-studio-cli.js";
+      }
+      return "[name].js";
+    },
     path: Path.resolve(__dirname, "./out/cli"),
     publicPath: __dirname,
   },

@@ -7,6 +7,7 @@ import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
+import { getSettings } from "store/features/settings/settingsState";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;
@@ -37,6 +38,9 @@ export const SpriteSliceCanvas = ({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
+  );
+  const colorCorrection = useAppSelector(
+    (state) => getSettings(state).colorCorrection
   );
 
   const onWorkerComplete = useCallback(
@@ -87,6 +91,7 @@ export const SpriteSliceCanvas = ({
       flipY,
       objPalette: palette ? "OBP0" : objPalette,
       palette: (palette || DMG_PALETTE).colors,
+      colorCorrection,
     });
   }, [
     canvasRef,
@@ -99,6 +104,7 @@ export const SpriteSliceCanvas = ({
     flipY,
     objPalette,
     palette,
+    colorCorrection,
     workerId,
   ]);
 

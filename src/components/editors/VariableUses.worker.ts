@@ -1,4 +1,4 @@
-import { Dictionary } from "@reduxjs/toolkit";
+import { lexText } from "shared/lib/compiler/lexText";
 import {
   actorName,
   customEventName,
@@ -8,12 +8,15 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorNormalized,
+  ActorPrefabNormalized,
   CustomEventNormalized,
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
+  TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
+import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,
@@ -25,6 +28,10 @@ import {
 } from "shared/lib/scripts/walk";
 import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  variableInDialogueText,
+  variableInExpressionText,
+} from "shared/lib/variables/variablesInText";
 
 export type VariableUse = {
   id: string;
@@ -72,25 +79,82 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const variableId: string = evt.data.variableId;
   const scenes: SceneNormalized[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
+  const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
+  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Record<string, TriggerNormalized> =
+    evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
-  const customEventsLookup: Dictionary<CustomEventNormalized> =
+  const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
+    evt.data.actorPrefabsLookup;
+  const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
+    evt.data.triggerPrefabsLookup;
+  const customEventsLookup: Record<string, CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
 
   const uses: VariableUse[] = [];
-  const useLookup: Dictionary<boolean> = {};
+  const useLookup: Record<string, boolean> = {};
+
+  const isVariableInArg = (
+    scriptEvent: ScriptEventNormalized,
+    arg: string
+  ): boolean => {
+    const args = scriptEvent.args;
+    if (!args) {
+      return false;
+    }
+    const argValue = args[arg];
+    const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup?.[arg];
+    if (!field) {
+      return false;
+    }
+    // If field was a script value extract used variables in value
+    // and check if any match this variable
+    if (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)) {
+      if (
+        isScriptValue(argValue) &&
+        variableInScriptValue(variableId, argValue)
+      ) {
+        return true;
+      }
+    }
+    // If field was a variable check if it matches this variable
+    else if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
+      const isVariableId =
+        argValue === variableId ||
+        (isUnionValue(argValue) &&
+          argValue.type === "variable" &&
+          argValue.value === variableId);
+
+      if (isVariableId) {
+        return true;
+      }
+    } else if (field.type === "text" || field.type === "textarea") {
+      const allText = String(
+        Array.isArray(argValue) ? argValue.join("|") : argValue
+      );
+      if (variableInDialogueText(variableId, allText)) {
+        return true;
+      }
+    } else if (field.type === "matharea" && typeof argValue === "string") {
+      if (variableInExpressionText(variableId, argValue)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   walkNormalizedScenesScripts(
     scenes,
     scriptEventsLookup,
     actorsLookup,
     triggersLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
     undefined,
     (scriptEvent, scene, actor, trigger) => {
       if (!scriptEvent.args) {
@@ -113,45 +177,7 @@ workerCtx.onmessage = async (evt) => {
       }
 
       for (const arg in scriptEvent.args) {
-        const argValue = scriptEvent.args[arg];
-
-        // If field was a script value extract used variables in value
-        // and check if any match this variable
-        if (
-          isScriptValueField(
-            scriptEvent.command,
-            arg,
-            scriptEvent.args,
-            scriptEventDefs
-          )
-        ) {
-          if (
-            !isScriptValue(argValue) ||
-            !variableInScriptValue(variableId, argValue)
-          ) {
-            continue;
-          }
-        }
-        // If field was a variable check if it matches this variable
-        else if (
-          isVariableField(
-            scriptEvent.command,
-            arg,
-            scriptEvent.args,
-            scriptEventDefs
-          )
-        ) {
-          const isVariableId =
-            argValue === variableId ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === variableId);
-
-          if (!isVariableId) {
-            continue;
-          }
-        } else {
-          // Field was not a script value or a variable so can be ignored
+        if (!isVariableInArg(scriptEvent, arg)) {
           continue;
         }
 
@@ -223,25 +249,7 @@ workerCtx.onmessage = async (evt) => {
         }
 
         for (const arg in scriptEvent.args) {
-          if (
-            !isVariableField(
-              scriptEvent.command,
-              arg,
-              scriptEvent.args,
-              scriptEventDefs
-            )
-          ) {
-            continue;
-          }
-
-          const argValue = scriptEvent.args[arg];
-          const isVariableId =
-            argValue === variableId ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === variableId);
-
-          if (!isVariableId) {
+          if (!isVariableInArg(scriptEvent, arg)) {
             continue;
           }
 

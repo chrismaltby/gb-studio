@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
   backgroundSelectors,
+  constantSelectors,
   customEventSelectors,
   emoteSelectors,
   fontSelectors,
@@ -83,7 +84,7 @@ const ReferenceSymbol = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
 
-  :hover {
+  &:hover {
     text-decoration: underline;
     cursor: pointer;
 
@@ -102,7 +103,7 @@ const ReferenceRow = styled.div`
   margin: 0 -10px;
   padding: 5px 10px;
   line-height: 18px;
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.sidebar.background};
   }
 `;
@@ -435,7 +436,7 @@ interface ReferenceGroupProps {
 
 const ReferenceGroup = ({ header, extraReferences }: ReferenceGroupProps) => {
   const [expand, setExpanded] = useState(false);
-  const timerRef = useRef<number>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const onMouseEnter = useCallback(() => {
     timerRef.current = setTimeout(() => {
@@ -444,7 +445,9 @@ const ReferenceGroup = ({ header, extraReferences }: ReferenceGroupProps) => {
   }, []);
 
   const onMouseLeave = useCallback(() => {
-    clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
     setExpanded(false);
   }, []);
 
@@ -491,10 +494,10 @@ const RenameCompleteButton = styled.button`
   background: transparent;
   border-color: transparent;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
   svg {
@@ -725,6 +728,108 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
                 onCopy={onCopy}
                 symbol={symbol}
                 name={variable?.name}
+              />
+            </ReferenceName>
+            <FlexGrow />
+            <Button
+              size="small"
+              variant="transparent"
+              onClick={() => onStartEdit()}
+            >
+              <PencilIcon />
+            </Button>
+            {onRemove && (
+              <Button
+                size="small"
+                variant="transparent"
+                onClick={() => onRemove(id)}
+              >
+                <MinusIcon />
+              </Button>
+            )}
+          </>
+        )
+      }
+    />
+  );
+};
+
+export const ConstantReference = ({ id, onRemove }: ReferenceProps) => {
+  const dispatch = useAppDispatch();
+
+  const constant = useAppSelector((state) =>
+    constantSelectors.selectById(state, id)
+  );
+  const symbol = constant?.symbol?.toUpperCase() ?? `VAR_${id}`;
+  const constantName = constant?.name ?? "";
+
+  const [renameVisible, setRenameVisible] = useState(false);
+  const [customSymbol, setCustomSymbol] = useState("");
+
+  const onCopy = useCallback(
+    (symbol: string) => {
+      dispatch(clipboardActions.copyText(symbol));
+    },
+    [dispatch]
+  );
+
+  const onStartEdit = useCallback(() => {
+    setCustomSymbol(constantName);
+    setRenameVisible(true);
+  }, [constantName]);
+
+  const onRenameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setCustomSymbol(e.currentTarget.value);
+  }, []);
+
+  const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onRenameFinish();
+    } else if (e.key === "Escape") {
+      setRenameVisible(false);
+    }
+  };
+
+  const onRenameFinish = useCallback(() => {
+    if (customSymbol && (!constant?.symbol || customSymbol !== constantName)) {
+      dispatch(
+        entitiesActions.renameConstant({ constantId: id, name: customSymbol })
+      );
+    }
+    setRenameVisible(false);
+  }, [customSymbol, dispatch, id, constant?.symbol, constantName]);
+
+  const onRenameFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.select();
+  }, []);
+
+  return (
+    <ReferenceGroup
+      header={
+        renameVisible ? (
+          <RenameWrapper>
+            <RenameInput
+              value={customSymbol}
+              onChange={onRenameChange}
+              onKeyDown={onRenameKeyDown}
+              onFocus={onRenameFocus}
+              onBlur={onRenameFinish}
+              autoFocus
+            />
+            <RenameCompleteButton
+              onClick={onRenameFinish}
+              title={l10n("FIELD_RENAME")}
+            >
+              <CheckIcon />
+            </RenameCompleteButton>
+          </RenameWrapper>
+        ) : (
+          <>
+            <ReferenceName onClick={() => onCopy(symbol)}>
+              <CopyableReferenceSymbol
+                onCopy={onCopy}
+                symbol={symbol}
+                name={constant?.name}
               />
             </ReferenceName>
             <FlexGrow />

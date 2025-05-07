@@ -43,8 +43,8 @@ interface SceneCursorProps {
 }
 
 interface WrapperProps {
-  tool: Tool;
-  size: "8px" | "16px";
+  $tool: Tool;
+  $size: "8px" | "16px";
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -55,7 +55,7 @@ const Wrapper = styled.div<WrapperProps>`
   background: rgba(140, 150, 156, 0.4);
   -webkit-transform: translate3d(0, 0, 0);
 
-  ::after {
+  &:after {
     content: "";
     position: absolute;
     top: -8px;
@@ -66,7 +66,7 @@ const Wrapper = styled.div<WrapperProps>`
   }
 
   ${(props) =>
-    props.size === "16px"
+    props.$size === "16px"
       ? css`
           width: 16px;
           height: 16px;
@@ -74,7 +74,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "actors"
+    props.$tool === "actors"
       ? css`
           width: 16px;
           background-color: rgba(247, 45, 220, 0.5);
@@ -85,7 +85,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "triggers"
+    props.$tool === "triggers"
       ? css`
           background-color: rgba(255, 120, 0, 0.5);
           outline: 1px solid rgba(255, 120, 0, 1);
@@ -95,7 +95,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "eraser"
+    props.$tool === "eraser"
       ? css`
           background-color: rgba(255, 0, 0, 0.8);
           outline: 1px solid rgba(255, 0, 0, 1);
@@ -105,7 +105,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "collisions"
+    props.$tool === "collisions"
       ? css`
           background-color: rgba(250, 40, 40, 0.6);
           outline: 1px solid rgba(250, 40, 40, 0.8);
@@ -114,7 +114,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 
   ${(props) =>
-    props.tool === "colors"
+    props.$tool === "colors"
       ? css`
           background-color: transparent;
           pointer-events: all;
@@ -167,6 +167,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const showCollisions = useAppSelector(
     (state) => state.project.present.settings.showCollisions
   );
+
+  const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
 
   const [resize, setResize] = useState<boolean>(false);
   const data = useRef<{
@@ -250,7 +252,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   }, [dispatch, sceneId, x, y]);
 
   const onKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -275,7 +278,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   );
 
   const onKeyUp = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -610,11 +614,16 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           sceneId,
           x,
           y,
+          defaults: editorPrefabId
+            ? {
+                prefabId: editorPrefabId,
+              }
+            : undefined,
         })
       );
     }
     dispatch(editorActions.setTool({ tool: "select" }));
-  }, [dispatch, pasteMode, sceneId, x, y]);
+  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
 
   const onMouseDownTrigger = useCallback(() => {
     if (pasteMode) {
@@ -633,6 +642,11 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           y,
           width: 1,
           height: 1,
+          defaults: editorPrefabId
+            ? {
+                prefabId: editorPrefabId,
+              }
+            : undefined,
         })
       );
     }
@@ -640,7 +654,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     data.current.startX = x;
     data.current.startY = y;
     setResize(true);
-  }, [dispatch, pasteMode, sceneId, x, y]);
+  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
 
   const onMouseDownCollisions = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -1055,8 +1069,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   return (
     <Wrapper
       ref={cursorRef}
-      tool={tool}
-      size={
+      $tool={tool}
+      $size={
         (tool === TOOL_COLORS ||
           tool === TOOL_COLLISIONS ||
           tool === TOOL_ERASER) &&

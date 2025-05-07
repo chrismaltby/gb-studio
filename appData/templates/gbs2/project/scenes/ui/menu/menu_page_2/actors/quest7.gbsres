@@ -3,6 +3,7 @@
   "id": "dbdbebfe-1c6d-4ebf-ab2f-b4b2dd45bc81",
   "_index": 0,
   "symbol": "actor_quest7",
+  "prefabId": "",
   "name": "Quest7",
   "x": 2,
   "y": 4,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [],
   "startScript": [
     {

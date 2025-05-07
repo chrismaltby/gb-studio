@@ -12,6 +12,10 @@ test("should replace params in l10n string", () => {
   );
 });
 
+test("should replace params in l10n string when param value is falsy", () => {
+  expect(replaceParams("Hello {place}!", { place: 0 })).toBe("Hello 0!");
+});
+
 test("should replace multiple repeating params in l10n string", () => {
   expect(
     replaceParams("Hello {place}! Around the {place}.", { place: "World" })

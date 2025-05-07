@@ -14,6 +14,7 @@ import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import musicActions from "store/features/music/musicActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface MusicSelectProps extends SelectCommonProps {
   name: string;
@@ -106,8 +107,10 @@ export const MusicSelect = ({
   }, [options, value]);
 
   const onSelectChange = useCallback(
-    (newValue: Option) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<Option>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

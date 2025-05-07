@@ -3,6 +3,7 @@
   "id": "b1c94e73-7160-4ea2-aed9-2c1e29fc9360",
   "_index": 5,
   "symbol": "actor_23",
+  "prefabId": "",
   "name": "Machine",
   "x": 11,
   "y": 3,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "command": "EVENT_SOUND_PLAY_EFFECT",

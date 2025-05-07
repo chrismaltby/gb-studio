@@ -15,6 +15,7 @@ interface PackArgs {
 interface PackResult {
   cartSize: number;
   maxBank: number;
+  report: string;
 }
 
 export interface ObjectBankData {
@@ -172,8 +173,8 @@ export const packObjectData = (
   filter: number,
   bankOffset: number,
   mbc1: boolean,
-  reserve: Record<number, number>
-): ObjectPatch[] => {
+  reserve: Record<number, number>,
+): { patches: ObjectPatch[]; banks: Bank[] } => {
   const banks: Bank[] = [];
 
   const areas: [number, ObjectBankData][] = objects
@@ -289,7 +290,10 @@ export const packObjectData = (
     replacements: getBankReplacements(i, banks, mbc1),
   }));
 
-  return patch;
+  return {
+    patches: patch,
+    banks,
+  };
 };
 
 export const getPatchMaxBank = (packed: ObjectPatch[]): number => {
@@ -336,6 +340,38 @@ export const writeAsync = (
   });
 };
 
+export const generateReport = (
+  packed: Bank[],
+  objects: ObjectData[],
+): string => {
+  let report = "";
+
+  for (let i = 0; i < packed.length; i++) {
+    const bank = packed[i];
+    const entries = bank.objects.map(([index, data]) => {
+      const name = Path.basename(objects[index].filename).replace(
+        /\.[^.]+$/,
+        "",
+      );
+      return { name, size: data.size };
+    });
+
+    // Sort by descending size
+    entries.sort((a, b) => b.size - a.size);
+
+    const totalSize = entries.reduce((acc, cur) => acc + cur.size, 0);
+    report += `# Bank ${i + 1}\n\n`;
+    for (const entry of entries) {
+      if (entry.size > 0) {
+        report += `- ${entry.name} = ${entry.size}\n`;
+      }
+    }
+    report += `- TOTAL = ${totalSize}\n\n`;
+  }
+
+  return report;
+};
+
 export const gbspack = async (
   inputFiles: string[],
   args: PackArgs
@@ -372,11 +408,17 @@ export const gbspack = async (
   }
 
   // Pack object data into banks
-  const packed = packObjectData(objects, filter, bankOffset, mbc1, reserve);
+  const { patches, banks } = packObjectData(
+    objects,
+    filter,
+    bankOffset,
+    mbc1,
+    reserve,
+  );
 
-  const maxBankNo = getPatchMaxBank(packed) + additional;
+  const maxBankNo = getPatchMaxBank(patches) + additional;
 
-  for (const patch of packed) {
+  for (const patch of patches) {
     const outputFilename = toOutputFilename(patch.filename, outputPath, ext);
     if (verbose) {
       console.log(`Writing file ${outputFilename}`);
@@ -395,5 +437,6 @@ export const gbspack = async (
   return {
     cartSize: toCartSize(maxBankNo),
     maxBank: maxBankNo,
+    report: generateReport(banks, objects),
   };
 };

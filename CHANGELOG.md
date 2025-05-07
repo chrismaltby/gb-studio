@@ -9,12 +9,168 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add ability to define constant values, compared to variables these don't take any extra memory when used in game
+- Add ability to select all scenes with Ctrl/Cmd + A from Game World view
+- Add plugin manager for installing plugins from the official plugin repository, accessible from the menu at `Plugins / Plugin Manager`
+- Add support for theme, localization and project template plugins
+- Add ability to right click a scene to "Run From Here" allowing quick preview of a specific scene. Optionally can only include the selected scenes for faster build previews in large projects.
+- Add events "Load Projectile Into Slot" and "Launch Projectile In Slot" to allow more advanced control over setup and launch of projectiles and changing the loaded projectiles at run time
+- Add ability to hover over tiles in debugger VRAM preview to see tile memory address information [@pau-tomas](https://github.com/pau-tomas)
+- Add animation states to generated `game_globals.h` allowing use from engine code [@Mico27](https://github.com/Mico27)
+- Add ability to change collision layer opacity in World view when collision tool is selected [@Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
+- Add ability for engine plugins to define new, per scene, collision tile types in `engine.json` file [@Q-Bert-Reynolds]
+- Add ability to show the raw collision tile values when editing collisions in world view
+- Add ability to ctrl/cmd + click frames in Sprite Editor to toggle multi select or shift + click to select range
+- Add right click context menu to frames in Sprite Editor allowing copy/paste/clone/delete to be performed on all selected frames
+- Add ability to search and add scripts by name when adding events instead of needing to add a "Call Script" event and selecting the script manually from the dropdown each time [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to quickly create "Comment" events by typing the comment text in the Add Event search field and choosing "Comment" menu item [@pau-tomas](https://github.com/pau-tomas)
+- Add text code `!Wait` to allow pausing dialogue until an amount of time/frames has elapsed or a selected button has been pressed
+- Add setting to toggle GBC color correction. Disable color correction to closer match how colors will appear on modern hardware
+- Add ability to read camera properties (tile/pixel position, deadzone and offset) within script values [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to mute audio of inbuilt emulator from menu "Window / Play Window / Mute Audio"
+- Add ability to override "Color Only" setting per scene in color projects, allowing "Color Only" scenes in a mixed project or monochrome compatible scenes in a "Color Only" project. Right click on a scene and select "Color Mode Override"
+- Add events "Pause Logic For Scene Type" and "Resume Logic For Scene Type" allowing manual control of if the scene's update function should be running or not. You can use this when running multi-threaded scripts (such as a cutscene with multiple actors moving at once) to prevent player input while the script is running.
+- Add support for characters outside of the basic multilingual plane in font mappings (such as emoji) e.g. `"😊": 34`
+- Add support for multiple character sequences to be replaced in font mappings e.g. `"EURO": 128`
+- Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
+- Add ability to click label to the right of ROM usage bar to toggle between showing ROM usage values as byte values rather than rounding to KiB/MiB
+- Generate file `bank_usage.txt` when exporting ROM giving a breakdown of which assets were assigned to each memory bank and how many bytes were used
+
+### Changed
+
+- Optimised performance of "Show Connections" calculations by moving most of the effort to a thottled Worker thread. This also improves script editing performance when Connections are visible.
+- "Switch" event updated to allow use of constant values for each branch condition
+- Optimised compilation of backgrounds by reusing tileset data where possible if common tilesets are used [@Mico27](https://github.com/Mico27)
+- Moved `.gbsres` files for assets to the same folder as the asset files. Allows asset plugins to include `.gbsres` e.g sprite asset pack plugins can include animations
+- Optimised script editor by throttling the processing that was occuring on every key press
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below [@Steinbeuge](https://github.com/Steinbeuge)
+- Ladder collision tile now only visible on Platform scenes by default, edit `engine.json` to add per scene collision tile types
+- New instances of prefabs use prefab's name by default
+- Update "Wait" event to support using variable values for wait time [@pau-tomas](https://github.com/pau-tomas))
+- Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
+- Font PNGs that are 128px tall (16 tile rows) now map tiles starting from ASCII code 0 instead of 32, enabling support for drawing control characters (ASCII 0–31). To draw characters with codes less than 32 they must be escaped with `\005` e.g. to draw character code 7 use `\005\007` (note: this is octal so code 19 would be `\005\023`)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
+- Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
+
+### Fixed
+
+- Fix issue where errors in watched files could cause application to crash
+- Fix issue where quickly clicking "Create Project" button during project creation could prevent new project from opening
+- Fix issue where CLI tool was ignoring project's debugger enabled setting causing debugger comments to always be included in generated gbvm code
+- Fix tileset preview in dropdowns for 16px tiles
+- Fix issue where instanced prefabs were showing incorrect icons in actor select inputs
+- Fix issue preventing engine plugins stored in subfolders from being included in project
+- Fix bottom margins when using GB Printer [@untoxa](https://github.com/untoxa)
+- Fix variable uses list which wasn't including variable "0"'s uses in text fields
+- Fix issue where "Set Animation Frame" event wouldn't allow frame values greater than 25
+- Fix issue causing "Dialogue Multiple Choice" event to cut off menu items early
+- Fix issue where changing the dimensions of a sprite png image could cause the sprite editor's tile palette to display incorrectly
+- Fix line numbers in code editor for GBVM scripts with more than 999 lines
+- Fix issue preventing projects being created with the name "project"
+- Fix issue without-of-bounds memory writes on 8-bit values in engine field initialisation [@michel-iwaniec](https://github.com/michel-iwaniec)
+- Fix issue preventing checkbox type working in engine fields [@pau-tomas](https://github.com/pau-tomas)
+- Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator [@untoxa](https://github.com/untoxa)
+- Fix issue where migrating old projects could cause gbvm symbols to become empty, preventing build from completing (opening a broken project will now automatically fix this issue)
+- Fix issue where sprites could end up with empty state id values
+- Fix issue where script labels could may not match script behaviour when referring to deleted actors (dropdown would say Self, label would say Player, game would use Self)
+- Fix issue where migrating older projects to the latest version would sometimes cause auto generated gbvm symbols to change
+- Fix issue where project migrations were not being applied to prefab script overrides
+- Fix issue where scene change and projectile load events within a scene init script couldn't occur before the auto fade in event
+- Fix default template PNG assets to only contain valid colors as defined in the GB Studio documentation [@mxashlynn](https://github.com/mxashlynn)
+- Fix "spawn cmd.exe" issue on Windows when "%SystemRoot%\system32" is missing from Path environment variable
+- Fix issue where changing the size of a background image would cause the collision and color tiles to be reset
+- Fix issue where clicking "Show Navigator" toolbar button would not cause "Show Navigator" option in menu to be checked
+- Fix issue where font mappings were not being displayed in app text previews
+- Fix overflow warning when using "Fixed Position" parallax layers
+
+## [4.1.3] - 2024-09-16
+
+### Changed
+
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+- Improved error message that appears when project fails to open due to broken plugins
+
+### Fixed
+
+- Fix issue where adding a new song wouldn't warn about unsaved changes in current song
+- Fix issue where adding a song with an already existing name wouldn't auto select the newly created song
+- Fix issue where scene connection lines could get stuck in place if custom scripts that change scenes are called multiple times from the same scene
+- Fix issue where "Replace Script" confirmation alert would appear when pasting sometimes even if the custom script hadn't been modified
+- Fix issue preventing building projects containing a "Play Music" event but no music
+- Fix issue where dialogue script events could cause horizontal scroll bars to appear in script editor when column was not wide enough to display all tabs
+- Fix issue where errors causing the build process to end early where not being display correctly in the Build Log
+- Fix issue preventing build when a scene includes a common tileset that has been deleted
+
+## [4.1.2] - 2024-09-09
+
+### Added
+
+- Add ability to remove a single project from the recent files list by clicking "X" button that appears on hover
+
+### Changed
+
+- Update build log so the scripts with GBVM errors will display a link to edit the script which needs fixing.
+- When trying to open a project that has been deleted it will be removed from the recent projects list
+- Build process now runs in a Worker thread, meaning long builds will no longer cause the UI to become unresponsive
+
+### Fixed
+
+- Fix overflow of actor position that can occur when using "Move Relative" event near scene edges
+- Fix issue causing crash when trying to preview an FX Hammer effect index that doesn't exist
+- Fix issue building game when playing FX Hammer sound effect that doesn't exist (overflowed values will clamp to available range)
+- Fix issue where migrate project confirmation dialog would appear behind project window on Linux
+- Fix issue where "Display Dialogue" event would inconsistently pause between each dialogue in a multi dialogue sequence
+- Fix issue where text scroll would not scroll first character of each line of text when using avatars
+
+## [4.1.1] - 2024-09-04
+
+### Added
+
+- Add desktop icons for Linux deb and rpm packages [@wbrawner](https://github.com/wbrawner)
+
+### Changed
+
+- Update build log so the scripts that are too large to fit in GB memory will display a link to edit the script which needs reducing.
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
+
+### Fixed
+
+- Fix issue where custom script gbvm symbols would not always match the ones you defined
+- Fix issue where identical custom scripts would share the same gbvm symbol
+- Fix wording on sound effect context menu. Now says "Delete Sound Effect" rather than "Delete Song"
+- Fix variable uses list to include variables referenced in text and expressions
+- Fix label in Switch event for branch when value is "0"
+
+### Removed
+
+- Removed "Optimise ROM For" setting as it would cause issues when changed from default value
+
+## [4.1.0] - 2024-09-02
+
+### Added
+
+- Add ability to create reusable actor and trigger "prefabs"
+- Add ability to set reusable "preset" values on "Display Dialogue" and "Launch Projectile" events
+- Add "Draw Text" event allowing drawing text directly to background or overlay (based on "Display Background Text" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Set Overlay Scanline Cutoff" event allowing you to show overlays at the top of the screen
+- Add "Close Non-Modal Dialogue" event, required if using "Close When" -> "Never" option in updated "Display Dialogue" event.
+- Add "Mute Channel" event allowing control over which music channels are active or muted (based on "Mute Channel" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Set Dialogue Frame" event allowing the dialogue frame image to be dynamically replaced with any 24px x 24px tileset (based on "Set Dialogue Frame" plugin by [@pau-tomas](https://github.com/pau-tomas))
 - Tilesets asset folder added to all sample projects [@pau-tomas](https://github.com/pau-tomas)
 - Add `_stackPushVariable(variable)` and `_isIndirectVariable(variable)` helpers for use in plugins
 - Add "View Script Uses" feature accessible from the script context menu, allowing you to see all places where a script has been used in your project
 - Add ability to change compiler optimisation settings in Build Options section on Settings page [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "Set Actor Collision Bounding Box" to modify collision shape
 - Add event "Set Text Sound Effect" to set a sound effect to play as each dialogue text character is displayed
+- When deleting scripts, you are now given the option to also delete all "Call Script" events that reference the script
+- Add ROM usage monitor to Build Log showing how much free space is available before the next ROM size increase [@pau-tomas](https://github.com/pau-tomas)
+- Add "Print Using GB Printer" event to send either the current Background or Overlay to a connected GB Printer. Game must be run on real hardware with a printer connected for this feature to work (based on "Print Screen Background" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Set Camera Property" event for changing camera deadzone and offset values
+- Add "Actor Effects" event for playing effect animations on actors (based on "Actor FX" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Add "Thread Start" and "Stop Thread" events allowing running scripts in the background.
 
 ### Changed
 
@@ -23,7 +179,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimise subpixel calculations in Actor and Camera Move events by using bitwise shifting rather than multiplication/division
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated French localisation. [@Pomdap](https://github.com/Pomdap)
+- Updated Spanish localisation. [@doomer6699](https://github.com/doomer6699)
 - Only the inbuilt scene types that were actually used in your game are now compiled, improving build time if only some scene types were used
+- Improve build cancelling: Stops spawned processes immediately rather than waiting for in progress processes to complete
+- Changing the engine field in a "Store Engine Field In Variable" event no longer resets the variable
+- Build time now shown in seconds when < 60s and minutes+seconds when >= 60s
+- Update Scene Pop events to allow setting Fade Speed as "Instant" [@pau-tomas](https://github.com/pau-tomas)
+- "Launch Projectile" event fields organised into multiple tabs
+- Update "Display Dialogue" event to include tabs with additional layout and behavior options (based on "Display Advanced Dialogue" plugin by [@pau-tomas](https://github.com/pau-tomas))
+- Update "Set Sprite Palettes" event to allow restoring default palettes
 
 ### Fixed
 
@@ -31,6 +196,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using variables used within Not, Rnd(), Abs(), etc. in scripts were not being listed as parameters
 - Fix Variable Uses list to include variables used in script value calculations
 - Fix tilemap generation when number of unique tiles is above limits to match behaviour in v3.x
+- Fix issue where custom movement speed input would become focused unnecessarily
+- Fix issue causing broken rom header when project name contained no ascii characters
+- Fix issue where sound effect preview button would sometimes not cause sound effect to play
+- Fix issue where using reusing a script that would launch projectiles across multiple scenes could cause the wrong projectile to be launched
+- Fix issue where passing values from one script to another wouldn't correctly pass by reference
+- Fix issue where using parameters from one script while calling another wouldn't register the parameter in the parent script correctly
+- Fix issue where modified player flags were not being reset when changing scenes
+- Fix issue where "If Actor At Position" wasn't rounding to chosen units before comparing causing condition to fail when between tiles
+- Fix issue where resetting palettes back to defaults from a script used in multiple scenes may not load the correct palettes
+- Fix issue where timers were not suspending when executing modal dialogues and menus
+- Fix issue where using "Start Actor's 'On Update' script" could change sprite draw order
 
 ## [4.0.2] - 2024-07-29
 

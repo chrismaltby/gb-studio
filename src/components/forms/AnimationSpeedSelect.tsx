@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
@@ -30,7 +31,7 @@ export const getAnimLabel = (speed: number): string => {
 
 export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
   name,
-  value,
+  value = 3,
   onChange,
 }) => {
   const options: AnimationSpeedOption[] = useMemo(
@@ -72,14 +73,11 @@ export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
           </OptionLabelWithInfo>
         );
       }}
-      onChange={(newValue: AnimationSpeedOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<AnimationSpeedOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
-};
-
-AnimationSpeedSelect.defaultProps = {
-  name: undefined,
-  value: 3,
 };

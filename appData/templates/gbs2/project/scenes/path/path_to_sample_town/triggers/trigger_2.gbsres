@@ -3,11 +3,13 @@
   "id": "86bfaf71-2475-4b34-9266-e7263bff6465",
   "_index": 1,
   "symbol": "trigger_31",
+  "prefabId": "",
   "name": "",
   "x": 42,
   "y": 0,
   "width": 1,
   "height": 14,
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "e07e7b76-8205-4bc3-abd5-189325fbb959",

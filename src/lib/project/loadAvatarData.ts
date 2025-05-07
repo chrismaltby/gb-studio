@@ -6,17 +6,11 @@ import { stat } from "fs";
 import { PNG } from "pngjs";
 
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
-
-export interface AvatarAssetData {
-  id: string;
-  plugin: string | undefined;
-  name: string;
-  width: number;
-  height: number;
-  filename: string;
-  inode: string;
-  _v: number;
-}
+import {
+  AvatarResource,
+  AvatarResourceAsset,
+} from "shared/lib/resources/types";
+import { getAssetResource } from "./assets";
 
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);
@@ -34,21 +28,24 @@ const sizeOfAsync = (
 
 const loadAvatarData =
   (projectRoot: string) =>
-  async (filename: string): Promise<AvatarAssetData | null> => {
+  async (filename: string): Promise<AvatarResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
+    const resource = await getAssetResource(AvatarResource, filename);
     try {
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
       return {
+        _resourceType: "avatar",
         id: uuid(),
         plugin,
         name: file.replace(/.png/i, ""),
         width: size.width,
         height: size.height,
+        _v: Date.now(),
+        ...resource,
         filename: file,
         inode,
-        _v: Date.now(),
       };
     } catch (e) {
       console.error(e);
@@ -58,22 +55,22 @@ const loadAvatarData =
 
 const loadAllAvatarData = async (
   projectRoot: string
-): Promise<AvatarAssetData[]> => {
+): Promise<AvatarResourceAsset[]> => {
   const imagePaths = await globAsync(
     `${projectRoot}/assets/avatars/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/avatars/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/avatars/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(
-      ([] as Promise<AvatarAssetData | null>[]).concat(
+      ([] as Promise<AvatarResourceAsset | null>[]).concat(
         imagePaths.map(loadAvatarData(projectRoot)),
         pluginPaths.map(loadAvatarData(projectRoot))
       )
     )
   ).filter((i) => i);
-  return imageData as AvatarAssetData[];
+  return imageData as AvatarResourceAsset[];
 };
 
 export default loadAllAvatarData;

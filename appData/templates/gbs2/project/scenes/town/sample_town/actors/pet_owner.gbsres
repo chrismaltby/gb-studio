@@ -3,6 +3,7 @@
   "id": "c73c195d-5cc8-4417-bdb0-b0c55c4b6188",
   "_index": 2,
   "symbol": "actor_pet_owner",
+  "prefabId": "",
   "name": "Pet Owner",
   "x": 24,
   "y": 44,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "137799a4-c0db-46dd-91c9-36c0e5386e3d",

@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "6a82648b-e0fe-4a31-861e-0c4af5b83ba2",
+  "_index": 9,
   "type": "TOPDOWN",
   "name": "town/Launch Site",
   "symbol": "scene_launch_site",

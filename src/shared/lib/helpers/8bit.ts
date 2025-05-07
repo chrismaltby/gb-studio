@@ -1,5 +1,16 @@
+export const SIGNED_16BIT_MAX = 32767;
+export const SIGNED_16BIT_MIN = -32768;
+
 export const wrap8Bit = (val: number) => (256 + (val % 256)) % 256;
 export const wrap16Bit = (val: number) => (65536 + (val % 65536)) % 65536;
+
+export const wrapSigned8Bit = (val: number) => {
+  const u = wrap8Bit(val);
+  return u >= 128 ? u - 256 : u;
+};
+
+export const clampSigned16Bit = (val: number) =>
+  Math.max(SIGNED_16BIT_MIN, Math.min(SIGNED_16BIT_MAX, val));
 export const wrap32Bit = (val: number) =>
   (4294967296 + (val % 4294967296)) % 4294967296;
 
@@ -29,9 +40,6 @@ export const hexDec = (hex: string) => parseInt(hex, 16);
 export const hi = (longNum: number) => wrap16Bit(longNum) >> 8;
 
 export const lo = (longNum: number) => wrap16Bit(longNum) % 256;
-
-export const signed8BitVal = (dec: number) =>
-  dec >= 0 ? dec & 0x7f : 0x80 + (0x80 - (Math.abs(dec) & 0x7f));
 
 export const fromSigned8Bit = (num: number): number => {
   const masked = num & 0xff;

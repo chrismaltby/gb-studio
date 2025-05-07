@@ -10,6 +10,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { AvatarCanvas } from "components/world/AvatarCanvas";
+import { SingleValue } from "react-select";
 
 interface AvatarSelectProps extends SelectCommonProps {
   name: string;
@@ -96,8 +97,10 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
     optionalLabel,
   ]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (

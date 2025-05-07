@@ -1,6 +1,7 @@
 import { readFile } from "fs-extra";
 import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 import { PNG } from "pngjs";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import {
   AutoPaletteResult,
   autoPalette,
@@ -9,10 +10,16 @@ import {
 import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 
 export const readFileToPalettes = async (
-  filename: string
+  filename: string,
+  colorCorrection: ColorCorrectionSetting
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
-  return autoPalette(colorPNG.width, colorPNG.height, colorPNG.data);
+  return autoPalette(
+    colorPNG.width,
+    colorPNG.height,
+    colorPNG.data,
+    colorCorrection
+  );
 };
 
 export const readFileToPalettesUsingTiles = async (

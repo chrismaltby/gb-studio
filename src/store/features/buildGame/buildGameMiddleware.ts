@@ -14,7 +14,14 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const dispatch = store.dispatch.bind(store);
 
-      const { buildType, exportBuild, debugEnabled } = action.payload;
+      const {
+        buildType,
+        exportBuild,
+        debugEnabled,
+        startSceneId,
+        startX,
+        startY,
+      } = action.payload;
 
       if (state.console.status === "cancelled") {
         // Wait until cancel is complete before allowing another build
@@ -32,15 +39,35 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const project = denormalizeProject(state.project.present);
       const engineFields = state.engine.fields;
       const sceneTypes = state.engine.sceneTypes;
+      const selectionIds = state.editor.sceneSelectionIds;
 
       try {
-        await API.project.build(project, {
-          buildType,
-          engineFields,
-          exportBuild,
-          debugEnabled,
-          sceneTypes,
-        });
+        await API.project.build(
+          {
+            ...project,
+            scenes:
+              startSceneId && project.settings.runSceneSelectionOnly
+                ? project.scenes.filter(
+                    (scene) =>
+                      scene.id === startSceneId ||
+                      selectionIds.includes(scene.id)
+                  )
+                : project.scenes,
+            settings: {
+              ...project.settings,
+              startSceneId: startSceneId ?? project.settings.startSceneId,
+              startX: startX ?? project.settings.startX,
+              startY: startY ?? project.settings.startY,
+            },
+          },
+          {
+            buildType,
+            engineFields,
+            exportBuild,
+            debugEnabled,
+            sceneTypes,
+          }
+        );
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
         dispatch(navigationActions.setSection("world"));
@@ -51,7 +78,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const dispatch = store.dispatch.bind(store);
       await API.app.deleteBuildCache();
       dispatch(consoleActions.clearConsole());
-      dispatch(consoleActions.stdOut("Cleared GB Studio caches"));
+      dispatch(consoleActions.stdOut({ text: "Cleared GB Studio caches" }));
     } else if (actions.ejectEngine.match(action)) {
       API.project.ejectEngine();
     } else if (actions.exportProject.match(action)) {

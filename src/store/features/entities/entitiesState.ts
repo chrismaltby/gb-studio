@@ -3,10 +3,9 @@ import {
   createSlice,
   PayloadAction,
   ThunkDispatch,
-  AnyAction,
+  UnknownAction,
   createSelector,
   CaseReducer,
-  Dictionary,
 } from "@reduxjs/toolkit";
 import l10n from "shared/lib/lang/l10n";
 import {
@@ -29,6 +28,7 @@ import {
   COLLISION_BOTTOM,
   COLLISION_RIGHT,
   COLLISION_LEFT,
+  EVENT_CALL_CUSTOM_EVENT,
 } from "consts";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
@@ -69,6 +69,10 @@ import {
   ScriptEventParentType,
   Sound,
   Tileset,
+  ActorPrefabNormalized,
+  TriggerPrefabNormalized,
+  ScriptEventArgsOverride,
+  ScriptEventArgs,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -82,10 +86,11 @@ import {
   renameAssetEntity,
   defaultLocalisedCustomEventName,
   paletteName,
-  moveArrayElement,
   updateCustomEventArgs,
   updateAllCustomEventsArgs,
   normalizeEntityResources,
+  localVariableCodes,
+  normalizeSprite,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -96,6 +101,26 @@ import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
+import { omit } from "shared/types";
+import { isEqual } from "lodash";
+import {
+  AvatarResourceAsset,
+  CompressedBackgroundResourceAsset,
+  Constant,
+  EmoteResourceAsset,
+  FontResourceAsset,
+  MusicResourceAsset,
+  SoundResourceAsset,
+  SpriteResourceAsset,
+  TilesetResourceAsset,
+} from "shared/lib/resources/types";
+import {
+  insertAfterElement,
+  moveArrayElement,
+  moveArrayElements,
+  sortSubsetStringArray,
+} from "shared/lib/helpers/array";
+import { resizeTiles } from "shared/lib/helpers/tiles";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -106,6 +131,8 @@ const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
 const actorsAdapter = createEntityAdapter<ActorNormalized>();
 const triggersAdapter = createEntityAdapter<TriggerNormalized>();
 const scenesAdapter = createEntityAdapter<SceneNormalized>();
+const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
+const triggerPrefabsAdapter = createEntityAdapter<TriggerPrefabNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
@@ -137,12 +164,15 @@ const emotesAdapter = createEntityAdapter<Emote>({
   sortComparer: sortByFilename,
 });
 const variablesAdapter = createEntityAdapter<Variable>();
+const constantsAdapter = createEntityAdapter<Constant>();
 const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
 export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
+  actorPrefabs: actorPrefabsAdapter.getInitialState(),
+  triggerPrefabs: triggerPrefabsAdapter.getInitialState(),
   scriptEvents: scriptEventsAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
@@ -159,13 +189,14 @@ export const initialState: EntitiesState = {
   emotes: emotesAdapter.getInitialState(),
   tilesets: tilesetsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
+  constants: constantsAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
 const moveSelectedEntity =
   ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
   (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const state = getState();
@@ -207,7 +238,7 @@ const moveSelectedEntity =
 const removeSelectedEntity =
   () =>
   (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const state = getState();
@@ -254,6 +285,14 @@ const loadProject: CaseReducer<
   actorsAdapter.setAll(state.actors, data.entities.actors || {});
   triggersAdapter.setAll(state.triggers, data.entities.triggers || {});
   scenesAdapter.setAll(state.scenes, data.entities.scenes || {});
+  actorPrefabsAdapter.setAll(
+    state.actorPrefabs,
+    data.entities.actorPrefabs || {}
+  );
+  triggerPrefabsAdapter.setAll(
+    state.triggerPrefabs,
+    data.entities.triggerPrefabs || {}
+  );
   scriptEventsAdapter.setAll(
     state.scriptEvents,
     data.entities.scriptEvents || {}
@@ -282,6 +321,7 @@ const loadProject: CaseReducer<
   tilesetsAdapter.setAll(state.tilesets, data.entities.tilesets || {});
   customEventsAdapter.setAll(state.customEvents, data.entities.scripts || {});
   variablesAdapter.setAll(state.variables, data.entities.variables || {});
+  constantsAdapter.setAll(state.constants, data.entities.constants || {});
   engineFieldValuesAdapter.setAll(
     state.engineFieldValues,
     data.entities.engineFieldValues || {}
@@ -300,15 +340,46 @@ const loadProject: CaseReducer<
 const loadBackground: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Background;
+    data: CompressedBackgroundResourceAsset;
   }>
 > = (state, action) => {
+  const existingBackground = localBackgroundSelectById(
+    state,
+    action.payload.data.id
+  );
+  const modifiedSize =
+    existingBackground &&
+    (existingBackground.width !== action.payload.data.width ||
+      existingBackground.height !== action.payload.data.height);
+
+  const originalWidth = existingBackground?.width ?? 0;
+  const originalHeight = existingBackground?.width ?? 0;
+
   upsertAssetEntity(
     state.backgrounds,
     backgroundsAdapter,
-    action.payload.data,
-    ["id", "symbol"]
+    {
+      ...action.payload.data,
+      tileColors: [],
+    },
+    ["id", "symbol", "autoColor", "tileColors"]
   );
+
+  if (modifiedSize) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: existingBackground.id,
+      changes: {
+        tileColors: resizeTiles(
+          existingBackground.tileColors,
+          originalWidth,
+          originalHeight,
+          action.payload.data.width,
+          action.payload.data.height
+        ),
+      },
+    });
+  }
+
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
@@ -392,13 +463,17 @@ const renamedAsset: CaseReducer<
 const loadSprite: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: SpriteSheetNormalized;
+    data: SpriteResourceAsset;
   }>
 > = (state, action) => {
-  upsertAssetEntity(
+  const normalizedSpriteData = normalizeSprite(action.payload.data);
+  const normalizedSprite =
+    normalizedSpriteData.entities.spriteSheets[normalizedSpriteData.result];
+
+  const didInsert = upsertAssetEntity(
     state.spriteSheets,
     spriteSheetsAdapter,
-    action.payload.data,
+    normalizedSprite,
     [
       "id",
       "symbol",
@@ -413,6 +488,27 @@ const loadSprite: CaseReducer<
       "numTiles",
     ]
   );
+
+  if (didInsert) {
+    // If inserted also insert metasprite + animation data
+    metaspriteTilesAdapter.addMany(
+      state.metaspriteTiles,
+      normalizedSpriteData.entities.metaspriteTiles ?? {}
+    );
+    metaspritesAdapter.addMany(
+      state.metasprites,
+      normalizedSpriteData.entities.metasprites ?? {}
+    );
+    spriteAnimationsAdapter.addMany(
+      state.spriteAnimations,
+      normalizedSpriteData.entities.spriteAnimations ?? {}
+    );
+    spriteStatesAdapter.addMany(
+      state.spriteStates,
+      normalizedSpriteData.entities.spriteStates ?? {}
+    );
+  }
+
   fixAllSpritesWithMissingStates(state);
   ensureSymbolsUnique(state);
 };
@@ -429,7 +525,7 @@ const loadDetectedSprite: CaseReducer<
     changes: Partial<SpriteSheetNormalized>;
   }>
 > = (state, action) => {
-  const spriteSheet = localSpriteSheetSelectors.selectById(
+  const spriteSheet = localSpriteSheetSelectById(
     state,
     action.payload.spriteSheetId
   );
@@ -466,7 +562,7 @@ const loadDetectedSprite: CaseReducer<
 const loadMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Music;
+    data: MusicResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.music, musicAdapter, action.payload.data, [
@@ -481,7 +577,7 @@ const editMusicSettings: CaseReducer<
   EntitiesState,
   PayloadAction<{ musicId: string; changes: Partial<MusicSettings> }>
 > = (state, action) => {
-  const music = localMusicSelectors.selectById(state, action.payload.musicId);
+  const music = localMusicSelectById(state, action.payload.musicId);
   if (music) {
     musicAdapter.updateOne(state.music, {
       id: music.id,
@@ -515,7 +611,7 @@ const setMusicSymbol: CaseReducer<
 const loadSound: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Sound;
+    data: SoundResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.sounds, soundsAdapter, action.payload.data, [
@@ -558,7 +654,7 @@ const setFontSymbol: CaseReducer<
 const loadFont: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Font;
+    data: FontResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.fonts, fontsAdapter, action.payload.data, [
@@ -585,7 +681,7 @@ const removeFont: CaseReducer<
 const loadAvatar: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Avatar;
+    data: AvatarResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, ["id"]);
@@ -622,7 +718,7 @@ const setEmoteSymbol: CaseReducer<
 const loadEmote: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Emote;
+    data: EmoteResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.emotes, emotesAdapter, action.payload.data, [
@@ -662,7 +758,7 @@ const setTilesetSymbol: CaseReducer<
 const loadTileset: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: Tileset;
+    data: TilesetResourceAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [
@@ -677,26 +773,31 @@ const loadTileset: CaseReducer<
  */
 
 const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
-  const scenes = localSceneSelectors.selectAll(state);
+  const scenes = localSceneSelectAll(state);
   for (const scene of scenes) {
-    const background = localBackgroundSelectors.selectById(
-      state,
-      scene.backgroundId
-    );
+    const background = localBackgroundSelectById(state, scene.backgroundId);
     if (
       !background ||
       scene.width !== background.width ||
       scene.height !== background.height
     ) {
-      scene.width = background ? background.width : 32;
-      scene.height = background ? background.height : 32;
-      scene.collisions = [];
+      const newWidth = background ? background.width : 32;
+      const newHeight = background ? background.height : 32;
+      scene.collisions = resizeTiles(
+        scene.collisions,
+        scene.width,
+        scene.height,
+        newWidth,
+        newHeight
+      );
+      scene.width = newWidth;
+      scene.height = newHeight;
     }
   }
 };
 
 const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
-  const sprites = localSpriteSheetSelectors.selectAll(state);
+  const sprites = localSpriteSheetSelectAll(state);
   for (const sprite of sprites) {
     if (!sprite.states || sprite.states.length === 0) {
       // Create default state for newly added spritesheets
@@ -741,9 +842,9 @@ const addScene: CaseReducer<
     variables?: Variable[];
   }>
 > = (state, action) => {
-  const scenesTotal = localSceneSelectors.selectTotal(state);
-  const backgroundId = String(localBackgroundSelectors.selectIds(state)[0]);
-  const background = localBackgroundSelectors.selectById(state, backgroundId);
+  const scenesTotal = localSceneSelectTotal(state);
+  const backgroundId = String(localBackgroundSelectIds(state)[0]);
+  const background = localBackgroundSelectById(state, backgroundId);
 
   const newScene: SceneNormalized = {
     name: defaultLocalisedSceneName(scenesTotal),
@@ -752,6 +853,7 @@ const addScene: CaseReducer<
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
     type: "TOPDOWN",
+    colorModeOverride: "none",
     paletteIds: [],
     spritePaletteIds: [],
     collisions: [],
@@ -781,9 +883,9 @@ const moveScene: CaseReducer<
     additionalSceneIds: string[];
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   const additionalScenes = action.payload.additionalSceneIds.map((id) =>
-    localSceneSelectors.selectById(state, id)
+    localSceneSelectById(state, id)
   );
   if (scene) {
     const minSelectionX = Math.min(
@@ -806,10 +908,7 @@ const moveScene: CaseReducer<
     // Move additionally selected scenes by same amount
     for (const additionalSceneId of action.payload.additionalSceneIds) {
       if (additionalSceneId !== action.payload.sceneId) {
-        const additionalScene = localSceneSelectors.selectById(
-          state,
-          additionalSceneId
-        );
+        const additionalScene = localSceneSelectById(state, additionalSceneId);
         if (additionalScene) {
           const newX = Math.max(MIN_SCENE_X, additionalScene.x + diffX);
           const newY = Math.max(MIN_SCENE_Y, additionalScene.y + diffY);
@@ -833,12 +932,12 @@ const editScene: CaseReducer<
   }
 
   if (patch.backgroundId) {
-    const otherScene = localSceneSelectors.selectAll(state).find((s) => {
+    const otherScene = localSceneSelectAll(state).find((s) => {
       return s.backgroundId === patch.backgroundId;
     });
 
-    const actors = localActorSelectors.selectEntities(state);
-    const triggers = localTriggerSelectors.selectEntities(state);
+    const actors = localActorSelectEntities(state);
+    const triggers = localTriggerSelectEntities(state);
 
     const oldBackground =
       scene && state.backgrounds.entities[scene.backgroundId];
@@ -961,12 +1060,12 @@ const addActor: CaseReducer<
     variables?: Variable[];
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
 
-  const spriteSheetId = first(localSpriteSheetSelectors.selectAll(state))?.id;
+  const spriteSheetId = first(localSpriteSheetSelectAll(state))?.id;
   if (!spriteSheetId) {
     return;
   }
@@ -985,11 +1084,24 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
+  // Set default name based on prefab if provided
+  let name = "";
+  if (action.payload.defaults?.prefabId) {
+    const prefab = localActorPrefabSelectById(
+      state,
+      action.payload.defaults.prefabId
+    );
+    if (prefab && prefab.name.length > 0) {
+      name = prefab.name;
+    }
+  }
+
   const newActor: ActorNormalized = {
-    name: "",
+    name,
     frame: 0,
     animate: false,
     spriteSheetId,
+    prefabId: "",
     direction: "down",
     moveSpeed: 1,
     animSpeed: 15,
@@ -997,6 +1109,7 @@ const addActor: CaseReducer<
     isPinned: false,
     persistent: false,
     collisionGroup: "",
+    prefabScriptOverrides: {},
     ...(action.payload.defaults || {}),
     symbol: genEntitySymbol(state, "actor_0"),
     script: [],
@@ -1019,11 +1132,16 @@ const editActor: CaseReducer<
   EntitiesState,
   PayloadAction<{ actorId: string; changes: Partial<ActorNormalized> }>
 > = (state, action) => {
-  const actor = localActorSelectors.selectById(state, action.payload.actorId);
+  const actor = localActorSelectById(state, action.payload.actorId);
   const patch = { ...action.payload.changes };
 
   if (!actor) {
     return;
+  }
+
+  // If prefab changes reset overrides
+  if (patch.prefabId && actor.prefabId !== patch.prefabId) {
+    patch.prefabScriptOverrides = {};
   }
 
   actorsAdapter.updateOne(state.actors, {
@@ -1055,19 +1173,13 @@ const moveActor: CaseReducer<
     y: number;
   }>
 > = (state, action) => {
-  const newScene = localSceneSelectors.selectById(
-    state,
-    action.payload.newSceneId
-  );
+  const newScene = localSceneSelectById(state, action.payload.newSceneId);
   if (!newScene) {
     return;
   }
 
   if (action.payload.sceneId !== action.payload.newSceneId) {
-    const prevScene = localSceneSelectors.selectById(
-      state,
-      action.payload.sceneId
-    );
+    const prevScene = localSceneSelectById(state, action.payload.sceneId);
     if (!prevScene) {
       return;
     }
@@ -1103,6 +1215,284 @@ const moveActor: CaseReducer<
   });
 };
 
+const unpackActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    force?: boolean;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefab = localActorPrefabSelectById(state, actor.prefabId);
+  if (!prefab) {
+    return;
+  }
+
+  const overrides = actor.prefabScriptOverrides;
+
+  const patch = {
+    ...omit(
+      prefab,
+      "id",
+      "name",
+      "notes",
+      "script",
+      "startScript",
+      "updateScript",
+      "hit1Script",
+      "hit2Script",
+      "hit3Script"
+    ),
+    prefabId: "",
+    script: duplicateScript(state, prefab.script, overrides),
+    startScript: duplicateScript(state, prefab.startScript, overrides),
+    updateScript: duplicateScript(state, prefab.updateScript, overrides),
+    hit1Script: duplicateScript(state, prefab.hit1Script, overrides),
+    hit2Script: duplicateScript(state, prefab.hit2Script, overrides),
+    hit3Script: duplicateScript(state, prefab.hit3Script, overrides),
+  };
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: patch,
+  });
+
+  // Duplicate prefab local variables
+  for (const code of localVariableCodes) {
+    const prefabLocalId = `${prefab.id}__${code}`;
+    const actorLocalId = `${actor.id}__${code}`;
+    const localVariable = localVariableSelectById(state, prefabLocalId);
+    if (localVariable) {
+      // Duplicate prefab's local into actor
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: actorLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, actorLocalId);
+    }
+  }
+};
+
+const convertActorToPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefab = localActorPrefabSelectById(state, actor.prefabId);
+  // Don't allow converting actor which is already a prefab into a prefab
+  if (prefab) {
+    return;
+  }
+
+  const newActorPrefab: ActorPrefabNormalized = {
+    ...omit(
+      actor,
+      "id",
+      "symbol",
+      "prefabId",
+      "notes",
+      "x",
+      "y",
+      "direction",
+      "isPinned",
+      "script",
+      "startScript",
+      "updateScript",
+      "hit1Script",
+      "hit2Script",
+      "hit3Script"
+    ),
+    script: duplicateScript(state, actor.script),
+    startScript: duplicateScript(state, actor.startScript),
+    updateScript: duplicateScript(state, actor.updateScript),
+    hit1Script: duplicateScript(state, actor.hit1Script),
+    hit2Script: duplicateScript(state, actor.hit2Script),
+    hit3Script: duplicateScript(state, actor.hit3Script),
+    id: uuid(),
+  };
+
+  actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabId: newActorPrefab.id,
+    },
+  });
+
+  // Duplicate local variables
+  for (const code of localVariableCodes) {
+    const actorLocalId = `${actor.id}__${code}`;
+    const prefabLocalId = `${newActorPrefab.id}__${code}`;
+    const localVariable = localVariableSelectById(state, actorLocalId);
+    if (localVariable) {
+      // Duplicate prefab's local into actor
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: prefabLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, prefabLocalId);
+    }
+  }
+};
+
+const editActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+    args: Record<string, unknown>;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  const scriptEvent = localScriptEventSelectById(
+    state,
+    action.payload.scriptEventId
+  );
+  if (!actor || !scriptEvent) {
+    return;
+  }
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  const override = prefabScriptOverrides[scriptEvent.id] ?? {
+    id: scriptEvent.id,
+    args: {},
+  };
+  const argKeys = Object.keys(action.payload.args);
+  for (const key of argKeys) {
+    override.args[key] = action.payload.args[key];
+  }
+  prefabScriptOverrides[scriptEvent.id] = override;
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const revertActorPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const revertActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const applyActorPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+
+  // Update script events using override data
+  const overrides = Object.values(actor.prefabScriptOverrides);
+  for (const override of overrides) {
+    const scriptEvent = localScriptEventSelectById(state, override.id);
+    if (scriptEvent) {
+      scriptEventsAdapter.updateOne(state.scriptEvents, {
+        id: override.id,
+        changes: {
+          args: {
+            ...scriptEvent.args,
+            ...override.args,
+          },
+        },
+      });
+    }
+  }
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const applyActorPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const actor = localActorSelectById(state, action.payload.actorId);
+  if (!actor) {
+    return;
+  }
+
+  // Update script events using override data
+  const override = actor.prefabScriptOverrides[action.payload.scriptEventId];
+  const scriptEvent = localScriptEventSelectById(state, override.id);
+  if (scriptEvent) {
+    scriptEventsAdapter.updateOne(state.scriptEvents, {
+      id: override.id,
+      changes: {
+        args: {
+          ...scriptEvent.args,
+          ...override.args,
+        },
+      },
+    });
+  }
+
+  const prefabScriptOverrides = actor.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  actorsAdapter.updateOne(state.actors, {
+    id: action.payload.actorId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
 const removeActor: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1110,7 +1500,7 @@ const removeActor: CaseReducer<
     sceneId: string;
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
@@ -1136,13 +1526,13 @@ const removeActorAt: CaseReducer<
     y: number;
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
 
   const removeActorId = scene.actors.find((actorId) => {
-    const actor = localActorSelectors.selectById(state, actorId);
+    const actor = localActorSelectById(state, actorId);
     return (
       actor &&
       (actor.x === action.payload.x || actor.x === action.payload.x - 1) &&
@@ -1182,20 +1572,34 @@ const addTrigger: CaseReducer<
     // variables?: Variable[];
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
+  // Set default name based on prefab if provided
+  let name = "";
+  if (action.payload.defaults?.prefabId) {
+    const prefab = localTriggerPrefabSelectById(
+      state,
+      action.payload.defaults.prefabId
+    );
+    if (prefab && prefab.name.length > 0) {
+      name = prefab.name;
+    }
+  }
+
   const newTrigger: TriggerNormalized = {
-    name: "",
+    name,
+    prefabId: "",
     ...(action.payload.defaults || {}),
     id: action.payload.triggerId,
     x: clamp(action.payload.x, 0, scene.width - width),
     y: clamp(action.payload.y, 0, scene.height - height),
     symbol: genEntitySymbol(state, "trigger_0"),
+    prefabScriptOverrides: {},
     width,
     height,
     script: [],
@@ -1211,7 +1615,17 @@ const editTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{ triggerId: string; changes: Partial<TriggerNormalized> }>
 > = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+
+  if (!trigger) {
+    return;
+  }
   const patch = { ...action.payload.changes };
+
+  // If prefab changes reset overrides
+  if (patch.prefabId && trigger.prefabId !== patch.prefabId) {
+    patch.prefabScriptOverrides = {};
+  }
 
   triggersAdapter.updateOne(state.triggers, {
     id: action.payload.triggerId,
@@ -1242,27 +1656,18 @@ const moveTrigger: CaseReducer<
     y: number;
   }>
 > = (state, action) => {
-  const trigger = localTriggerSelectors.selectById(
-    state,
-    action.payload.triggerId
-  );
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
   if (!trigger) {
     return;
   }
 
-  const newScene = localSceneSelectors.selectById(
-    state,
-    action.payload.newSceneId
-  );
+  const newScene = localSceneSelectById(state, action.payload.newSceneId);
   if (!newScene) {
     return;
   }
 
   if (action.payload.sceneId !== action.payload.newSceneId) {
-    const prevScene = localSceneSelectors.selectById(
-      state,
-      action.payload.sceneId
-    );
+    const prevScene = localSceneSelectById(state, action.payload.sceneId);
     if (!prevScene) {
       return;
     }
@@ -1298,6 +1703,116 @@ const moveTrigger: CaseReducer<
   });
 };
 
+const unpackTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    force?: boolean;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  if (!trigger) {
+    return;
+  }
+  const prefab = localTriggerPrefabSelectById(state, trigger.prefabId);
+  if (!prefab) {
+    return;
+  }
+
+  const overrides = trigger.prefabScriptOverrides;
+
+  const patch = {
+    ...omit(prefab, "id", "name", "notes", "script", "leaveScript"),
+    prefabId: "",
+    script: duplicateScript(state, prefab.script, overrides),
+    leaveScript: duplicateScript(state, prefab.leaveScript, overrides),
+  };
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: patch,
+  });
+
+  // Duplicate prefab local variables
+  for (const code of localVariableCodes) {
+    const prefabLocalId = `${prefab.id}__${code}`;
+    const triggerLocalId = `${trigger.id}__${code}`;
+    const localVariable = localVariableSelectById(state, prefabLocalId);
+    if (localVariable) {
+      // Duplicate prefab's local into trigger
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: triggerLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, triggerLocalId);
+    }
+  }
+};
+
+const convertTriggerToPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  if (!trigger) {
+    return;
+  }
+  const prefab = localTriggerPrefabSelectById(state, trigger.prefabId);
+  // Don't allow converting trigger which is already a prefab into a prefab
+  if (prefab) {
+    return;
+  }
+
+  const newTriggerPrefab: TriggerPrefabNormalized = {
+    ...omit(
+      trigger,
+      "id",
+      "symbol",
+      "prefabId",
+      "notes",
+      "x",
+      "y",
+      "width",
+      "height",
+      "script",
+      "leaveScript"
+    ),
+    script: duplicateScript(state, trigger.script),
+    leaveScript: duplicateScript(state, trigger.leaveScript),
+    id: uuid(),
+  };
+
+  triggerPrefabsAdapter.addOne(state.triggerPrefabs, newTriggerPrefab);
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabId: newTriggerPrefab.id,
+    },
+  });
+
+  // Duplicate local variables
+  for (const code of localVariableCodes) {
+    const triggerLocalId = `${trigger.id}__${code}`;
+    const prefabLocalId = `${newTriggerPrefab.id}__${code}`;
+    const localVariable = localVariableSelectById(state, triggerLocalId);
+    if (localVariable) {
+      // Duplicate prefab's local into trigger
+      variablesAdapter.upsertOne(state.variables, {
+        ...localVariable,
+        id: prefabLocalId,
+      });
+    } else {
+      // Prefab didn't contain this local, remove it
+      variablesAdapter.removeOne(state.variables, prefabLocalId);
+    }
+  }
+};
+
 const resizeTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1319,6 +1834,151 @@ const resizeTrigger: CaseReducer<
   });
 };
 
+const editTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+    args: Record<string, unknown>;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  const scriptEvent = localScriptEventSelectById(
+    state,
+    action.payload.scriptEventId
+  );
+  if (!trigger || !scriptEvent) {
+    return;
+  }
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  const override = prefabScriptOverrides[scriptEvent.id] ?? {
+    id: scriptEvent.id,
+    args: {},
+  };
+  const argKeys = Object.keys(action.payload.args);
+  for (const key of argKeys) {
+    override.args[key] = action.payload.args[key];
+  }
+  prefabScriptOverrides[scriptEvent.id] = override;
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const revertTriggerPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const revertTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  if (!trigger) {
+    return;
+  }
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
+const applyTriggerPrefabScriptEventOverrides: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  if (!trigger) {
+    return;
+  }
+
+  // Update script events using override data
+  const overrides = Object.values(trigger.prefabScriptOverrides);
+  for (const override of overrides) {
+    const scriptEvent = localScriptEventSelectById(state, override.id);
+    if (scriptEvent) {
+      scriptEventsAdapter.updateOne(state.scriptEvents, {
+        id: override.id,
+        changes: {
+          args: {
+            ...scriptEvent.args,
+            ...override.args,
+          },
+        },
+      });
+    }
+  }
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides: {},
+    },
+  });
+};
+
+const applyTriggerPrefabScriptEventOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerId: string;
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const trigger = localTriggerSelectById(state, action.payload.triggerId);
+  if (!trigger) {
+    return;
+  }
+
+  // Update script events using override data
+  const override = trigger.prefabScriptOverrides[action.payload.scriptEventId];
+  const scriptEvent = localScriptEventSelectById(state, override.id);
+  if (scriptEvent) {
+    scriptEventsAdapter.updateOne(state.scriptEvents, {
+      id: override.id,
+      changes: {
+        args: {
+          ...scriptEvent.args,
+          ...override.args,
+        },
+      },
+    });
+  }
+
+  const prefabScriptOverrides = trigger.prefabScriptOverrides ?? {};
+  delete prefabScriptOverrides[action.payload.scriptEventId];
+
+  triggersAdapter.updateOne(state.triggers, {
+    id: action.payload.triggerId,
+    changes: {
+      prefabScriptOverrides,
+    },
+  });
+};
+
 const removeTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1326,7 +1986,7 @@ const removeTrigger: CaseReducer<
     sceneId: string;
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
@@ -1352,12 +2012,12 @@ const removeTriggerAt: CaseReducer<
     y: number;
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
   const removeTriggerId = scene.triggers.find((triggerId) => {
-    const trigger = localTriggerSelectors.selectById(state, triggerId);
+    const trigger = localTriggerSelectById(state, triggerId);
     return (
       trigger &&
       action.payload.x >= trigger.x &&
@@ -1383,6 +2043,142 @@ const removeTriggerAt: CaseReducer<
 };
 
 /**************************************************************************
+ * Actor Prefabs
+ */
+
+const addActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorPrefabId: string;
+    defaults?: Partial<ActorPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const spriteSheetId = first(localSpriteSheetSelectAll(state))?.id;
+  if (!spriteSheetId) {
+    return;
+  }
+
+  const newActorPrefab: ActorPrefabNormalized = {
+    name: "",
+    frame: 0,
+    animate: false,
+    spriteSheetId,
+    moveSpeed: 1,
+    animSpeed: 15,
+    paletteId: "",
+    persistent: false,
+    collisionGroup: "",
+    ...(action.payload.defaults || {}),
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
+    id: action.payload.actorPrefabId,
+  };
+
+  actorPrefabsAdapter.addOne(state.actorPrefabs, newActorPrefab);
+};
+
+const editActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorPrefabId: string;
+    changes: Partial<ActorPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const actorPrefab = localActorPrefabSelectById(
+    state,
+    action.payload.actorPrefabId
+  );
+  const patch = { ...action.payload.changes };
+
+  if (!actorPrefab) {
+    return;
+  }
+
+  actorPrefabsAdapter.updateOne(state.actorPrefabs, {
+    id: action.payload.actorPrefabId,
+    changes: patch,
+  });
+};
+
+const removeActorPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    actorPrefabId: string;
+  }>
+> = (state, action) => {
+  actorPrefabsAdapter.removeOne(
+    state.actorPrefabs,
+    action.payload.actorPrefabId
+  );
+};
+
+/**************************************************************************
+ * Trigger Prefabs
+ */
+
+const addTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+    defaults?: Partial<TriggerPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const spriteSheetId = first(localSpriteSheetSelectAll(state))?.id;
+  if (!spriteSheetId) {
+    return;
+  }
+
+  const newTriggerPrefab: TriggerPrefabNormalized = {
+    name: "",
+    ...(action.payload.defaults || {}),
+    script: [],
+    leaveScript: [],
+    id: action.payload.triggerPrefabId,
+  };
+
+  triggerPrefabsAdapter.addOne(state.triggerPrefabs, newTriggerPrefab);
+};
+
+const editTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+    changes: Partial<TriggerPrefabNormalized>;
+  }>
+> = (state, action) => {
+  const triggerPrefab = localTriggerPrefabSelectById(
+    state,
+    action.payload.triggerPrefabId
+  );
+  const patch = { ...action.payload.changes };
+
+  if (!triggerPrefab) {
+    return;
+  }
+
+  triggerPrefabsAdapter.updateOne(state.triggerPrefabs, {
+    id: action.payload.triggerPrefabId,
+    changes: patch,
+  });
+};
+
+const removeTriggerPrefab: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    triggerPrefabId: string;
+  }>
+> = (state, action) => {
+  triggerPrefabsAdapter.removeOne(
+    state.triggerPrefabs,
+    action.payload.triggerPrefabId
+  );
+};
+
+/**************************************************************************
  * Backgrounds
  */
 
@@ -1403,7 +2199,7 @@ const editBackgroundAutoColor: CaseReducer<
   EntitiesState,
   PayloadAction<{ backgroundId: string; autoColor: boolean }>
 > = (state, action) => {
-  const background = localBackgroundSelectors.selectById(
+  const background = localBackgroundSelectById(
     state,
     action.payload.backgroundId
   );
@@ -1418,7 +2214,7 @@ const editBackgroundAutoColor: CaseReducer<
 };
 
 const updateMonoOverrideIds = (state: EntitiesState) => {
-  const backgrounds = localBackgroundSelectors.selectAll(state);
+  const backgrounds = localBackgroundSelectAll(state);
   const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
   const getMonoKey = (b: Background) =>
     `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
@@ -1475,6 +2271,7 @@ const addMetasprite: CaseReducer<
   PayloadAction<{
     metaspriteId: string;
     spriteAnimationId: string;
+    afterMetaspriteId: string;
   }>
 > = (state, action) => {
   const spriteAnimation =
@@ -1489,110 +2286,78 @@ const addMetasprite: CaseReducer<
     tiles: [],
   };
 
-  // Add to sprite animation
-  spriteAnimation.frames = ([] as string[]).concat(
+  spriteAnimation.frames = insertAfterElement(
     spriteAnimation.frames,
-    newMetasprite.id
+    newMetasprite.id,
+    action.payload.afterMetaspriteId
   );
+
   metaspritesAdapter.addOne(state.metasprites, newMetasprite);
 };
 
-const cloneMetasprite: CaseReducer<
+const cloneMetasprites: CaseReducer<
   EntitiesState,
   PayloadAction<{
     spriteAnimationId: string;
-    metaspriteId: string;
-    newMetaspriteId: string;
+    metaspriteIds: string[];
+    newMetaspriteIds: string[];
   }>
 > = (state, action) => {
   const spriteAnimation =
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
 
-  if (!spriteAnimation || !metasprite) {
+  if (!spriteAnimation) {
     return;
   }
 
-  const metaspriteTiles = metasprite.tiles
-    .map((id) => state.metaspriteTiles.entities[id])
-    .filter((i) => i) as MetaspriteTile[];
-
-  const newMetaspriteTiles = metaspriteTiles.map((tile) => ({
-    ...tile,
-    id: uuid(),
-  }));
-
-  const newMetasprite = {
-    ...metasprite,
-    id: action.payload.newMetaspriteId,
-    tiles: newMetaspriteTiles.map((tile) => tile.id),
-  };
-
-  // Add to sprite animation
-  spriteAnimation.frames = ([] as string[]).concat(
-    spriteAnimation.frames,
-    newMetasprite.id
+  const sortedMetaspriteIds = sortSubsetStringArray(
+    action.payload.metaspriteIds,
+    spriteAnimation.frames
   );
-  metaspritesAdapter.addOne(state.metasprites, newMetasprite);
-  metaspriteTilesAdapter.addMany(state.metaspriteTiles, newMetaspriteTiles);
-};
 
-const sendMetaspriteTilesToFront: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    metaspriteId: string;
-    metaspriteTileIds: string[];
-    spriteSheetId: string;
-  }>
-> = (state, action) => {
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
-
-  if (!metasprite) {
+  if (sortedMetaspriteIds.length > action.payload.newMetaspriteIds.length) {
     return;
   }
 
-  const newTiles = ([] as string[]).concat(
-    metasprite.tiles.filter(
-      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
-    ),
-    action.payload.metaspriteTileIds
-  );
+  for (let i = 0; i < sortedMetaspriteIds.length; i++) {
+    const fromMetaspriteId = sortedMetaspriteIds[i];
+    const toMetaspriteId = action.payload.newMetaspriteIds[i];
 
-  metaspritesAdapter.updateOne(state.metasprites, {
-    id: action.payload.metaspriteId,
-    changes: {
-      tiles: newTiles,
-    },
-  });
-};
+    const metasprite = state.metasprites.entities[fromMetaspriteId];
 
-const sendMetaspriteTilesToBack: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    metaspriteId: string;
-    metaspriteTileIds: string[];
-    spriteSheetId: string;
-  }>
-> = (state, action) => {
-  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+    if (!spriteAnimation || !metasprite) {
+      continue;
+    }
 
-  if (!metasprite) {
-    return;
+    const metaspriteTiles = metasprite.tiles
+      .map((id) => state.metaspriteTiles.entities[id])
+      .filter((i) => i) as MetaspriteTile[];
+
+    const newMetaspriteTiles = metaspriteTiles.map((tile) => ({
+      ...tile,
+      id: uuid(),
+    }));
+
+    const newMetasprite = {
+      ...metasprite,
+      id: toMetaspriteId,
+      tiles: newMetaspriteTiles.map((tile) => tile.id),
+    };
+
+    const insertAfterId =
+      i === 0
+        ? sortedMetaspriteIds[sortedMetaspriteIds.length - 1]
+        : action.payload.newMetaspriteIds[i - 1];
+
+    spriteAnimation.frames = insertAfterElement(
+      spriteAnimation.frames,
+      newMetasprite.id,
+      insertAfterId
+    );
+
+    metaspritesAdapter.addOne(state.metasprites, newMetasprite);
+    metaspriteTilesAdapter.addMany(state.metaspriteTiles, newMetaspriteTiles);
   }
-
-  const newTiles = ([] as string[]).concat(
-    action.payload.metaspriteTileIds,
-    metasprite.tiles.filter(
-      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
-    )
-  );
-
-  metaspritesAdapter.updateOne(state.metasprites, {
-    id: action.payload.metaspriteId,
-    changes: {
-      tiles: newTiles,
-    },
-  });
 };
 
 const removeMetasprite: CaseReducer<
@@ -1622,6 +2387,48 @@ const removeMetasprite: CaseReducer<
   );
 
   metaspritesAdapter.removeOne(state.metasprites, action.payload.metaspriteId);
+};
+
+const removeMetasprites: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimationId: string;
+    metaspriteIds: string[];
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newFrames = spriteAnimation.frames.filter(
+    (frameId) => !action.payload.metaspriteIds.includes(frameId)
+  );
+
+  if (newFrames.length > 0) {
+    spriteAnimation.frames = newFrames;
+    metaspritesAdapter.removeMany(
+      state.metasprites,
+      action.payload.metaspriteIds
+    );
+  } else if (newFrames.length === 0 && spriteAnimation.frames[0]) {
+    // if frames list would be empty keep first frame but clear tiles
+    const keepId = spriteAnimation.frames[0];
+    spriteAnimation.frames = [keepId];
+    metaspritesAdapter.updateOne(state.metasprites, {
+      id: keepId,
+      changes: {
+        tiles: [],
+      },
+    });
+    metaspritesAdapter.removeMany(
+      state.metasprites,
+      action.payload.metaspriteIds.filter((id) => id !== keepId)
+    );
+  }
 };
 
 /**************************************************************************
@@ -1822,6 +2629,64 @@ const editMetaspriteTiles: CaseReducer<
   );
 };
 
+const sendMetaspriteTilesToFront: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileIds: string[];
+    spriteSheetId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    metasprite.tiles.filter(
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
+    ),
+    action.payload.metaspriteTileIds
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
+const sendMetaspriteTilesToBack: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileIds: string[];
+    spriteSheetId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    action.payload.metaspriteTileIds,
+    metasprite.tiles.filter(
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
+    )
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
 const removeMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1942,6 +2807,36 @@ const moveSpriteAnimationFrame: CaseReducer<
   });
 };
 
+const moveSpriteAnimationFrames: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimationId: string;
+    fromIndexes: number[];
+    toIndex: number;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newFrames = moveArrayElements(
+    action.payload.fromIndexes,
+    action.payload.toIndex,
+    spriteAnimation.frames
+  );
+
+  spriteAnimationsAdapter.updateOne(state.spriteAnimations, {
+    id: action.payload.spriteAnimationId,
+    changes: {
+      frames: newFrames,
+    },
+  });
+};
+
 /**************************************************************************
  * Sprite State
  */
@@ -2013,7 +2908,7 @@ const removeSpriteState: CaseReducer<
     spriteStateId: string;
   }>
 > = (state, action) => {
-  const spriteSheet = localSpriteSheetSelectors.selectById(
+  const spriteSheet = localSpriteSheetSelectById(
     state,
     action.payload.spriteSheetId
   );
@@ -2055,14 +2950,11 @@ const paintCollision: CaseReducer<
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
-  const background = localBackgroundSelectors.selectById(
-    state,
-    scene.backgroundId
-  );
+  const background = localBackgroundSelectById(state, scene.backgroundId);
   if (!background) {
     return;
   }
@@ -2173,14 +3065,11 @@ const paintSlopeCollision: CaseReducer<
     slopeDirection: "left" | "right";
   }>
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
-  const background = localBackgroundSelectors.selectById(
-    state,
-    scene.backgroundId
-  );
+  const background = localBackgroundSelectById(state, scene.backgroundId);
   if (!background) {
     return;
   }
@@ -2316,7 +3205,7 @@ const paintColor: CaseReducer<
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
-  const background = localBackgroundSelectors.selectById(
+  const background = localBackgroundSelectById(
     state,
     action.payload.backgroundId
   );
@@ -2464,6 +3353,83 @@ const renameVariableFlags: CaseReducer<
 };
 
 /**************************************************************************
+ * Constants
+ */
+
+const addConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+  }>
+> = (state, action) => {
+  const numConstants = localConstantSelectTotal(state);
+
+  const newConstant: Constant = {
+    id: action.payload.constantId,
+    name: "",
+    symbol: genEntitySymbol(state, `const_constant_${numConstants + 1}`),
+    value: 0,
+  };
+
+  constantsAdapter.addOne(state.constants, newConstant);
+};
+
+const editConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+    changes: Partial<Constant>;
+  }>
+> = (state, action) => {
+  const constant = localConstantSelectById(state, action.payload.constantId);
+
+  if (!constant) {
+    return;
+  }
+
+  const patch = {
+    ...action.payload.changes,
+    symbol: action.payload.changes.name
+      ? genEntitySymbol(state, `const_${action.payload.changes.name ?? "0"}`)
+      : constant.symbol,
+  };
+
+  constantsAdapter.updateOne(state.constants, {
+    id: action.payload.constantId,
+    changes: patch,
+  });
+};
+
+const renameConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ constantId: string; name: string }>
+> = (state, action) => {
+  const constant = localConstantSelectById(state, action.payload.constantId);
+  const patch = {
+    name: action.payload.name,
+    symbol: genEntitySymbol(state, `const_${action.payload.name ?? "0"}`),
+  };
+
+  if (!constant) {
+    return;
+  }
+
+  constantsAdapter.updateOne(state.constants, {
+    id: action.payload.constantId,
+    changes: patch,
+  });
+};
+
+const removeConstant: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+  }>
+> = (state, action) => {
+  constantsAdapter.removeOne(state.constants, action.payload.constantId);
+};
+
+/**************************************************************************
  * Palettes
  */
 
@@ -2474,7 +3440,7 @@ const addPalette: CaseReducer<
   const newPalette: Palette = {
     id: action.payload.paletteId,
     name: `${l10n("TOOL_PALETTE_N", {
-      number: localPaletteSelectors.selectTotal(state) + 1,
+      number: localPaletteSelectTotal(state) + 1,
     })}`,
     colors: [
       DMG_PALETTE.colors[0],
@@ -2516,7 +3482,7 @@ const addCustomEvent: CaseReducer<
     defaults?: Partial<CustomEventNormalized>;
   }>
 > = (state, action) => {
-  const customEventsTotal = localCustomEventSelectors.selectTotal(state);
+  const customEventsTotal = localCustomEventSelectTotal(state);
   const newCustomEvent: CustomEventNormalized = {
     id: action.payload.customEventId,
     name: defaultLocalisedCustomEventName(customEventsTotal),
@@ -2559,8 +3525,34 @@ const setCustomEventSymbol: CaseReducer<
 
 const removeCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{ customEventId: string; deleteReferences?: boolean }>
 > = (state, action) => {
+  const allScriptEvents = localScriptEventSelectAll(state);
+  const referenceIds: string[] = [];
+
+  for (const scriptEvent of allScriptEvents) {
+    if (
+      scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+      scriptEvent.args?.customEventId === action.payload.customEventId
+    ) {
+      referenceIds.push(scriptEvent.id);
+    }
+  }
+
+  if (action.payload.deleteReferences) {
+    scriptEventsAdapter.removeMany(state.scriptEvents, referenceIds);
+  } else {
+    scriptEventsAdapter.updateMany(
+      state.scriptEvents,
+      referenceIds.map((id) => ({
+        id,
+        changes: {
+          args: { customEventId: undefined },
+        },
+      }))
+    );
+  }
+
   customEventsAdapter.removeOne(
     state.customEvents,
     action.payload.customEventId
@@ -2647,6 +3639,26 @@ export const selectScriptIds = (
     }
     const newScript = (customEvent[parentKey as "script"] = []);
     return newScript;
+  } else if (parentType === "actorPrefab") {
+    const actorPrefab = state.actorPrefabs.entities[parentId];
+    if (!actorPrefab) return;
+    const script = actorPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (actorPrefab[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "triggerPrefab") {
+    const triggerPrefab = state.triggerPrefabs.entities[parentId];
+    if (!triggerPrefab) return;
+    const script = triggerPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (triggerPrefab[parentKey as "script"] = []);
+    return newScript;
+  } else {
+    assertUnreachable(parentType);
   }
 };
 
@@ -2690,7 +3702,6 @@ const addScriptEvents: CaseReducer<
       const newScriptEvent: ScriptEventNormalized = {
         ...scriptEventData,
         id: action.payload.scriptEventIds[scriptEventIndex],
-        symbol: undefined,
       };
       if (scriptEventData.children) {
         newScriptEvent.children = Object.keys(scriptEventData.children).reduce(
@@ -2698,7 +3709,7 @@ const addScriptEvents: CaseReducer<
             memo[key] = [];
             return memo;
           },
-          {} as Dictionary<string[]>
+          {} as Record<string, string[]>
         );
       }
       return newScriptEvent;
@@ -3009,6 +4020,118 @@ const ungroupScriptEvent: CaseReducer<
   );
 };
 
+const applyScriptEventPresetChanges: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    id: string;
+    presetId: string;
+    name: string;
+    groups: string[];
+    args: ScriptEventArgs;
+    previousArgs: ScriptEventArgs;
+  }>
+> = (state, action) => {
+  const scriptEvents = localScriptEventSelectAll(state);
+  const actors = localActorSelectAll(state);
+  const triggers = localTriggerSelectAll(state);
+
+  const mergeArgs = (storedArgs?: ScriptEventArgs) => {
+    const mergedArgs = { ...storedArgs };
+    Object.keys({ ...mergedArgs, ...action.payload.args }).forEach((key) => {
+      if (
+        (!mergedArgs[key] ||
+          isEqual(mergedArgs[key], action.payload.previousArgs[key])) &&
+        action.payload.args[key] !== undefined
+      ) {
+        mergedArgs[key] = action.payload.args[key];
+      }
+    });
+    return mergedArgs;
+  };
+
+  const scriptEventUpdates = scriptEvents
+    .filter(
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
+    )
+    .map((scriptEvent) => ({
+      id: scriptEvent.id,
+      changes: {
+        args: mergeArgs(scriptEvent.args),
+      },
+    }));
+
+  scriptEventsAdapter.updateMany(state.scriptEvents, scriptEventUpdates);
+
+  // Apply preset to any uses in actor prefab overrides
+  actors.forEach((actor) => {
+    Object.values(actor.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = mergeArgs(override.args);
+      }
+    });
+  });
+
+  // Apply preset to any uses in trigger prefab overrides
+  triggers.forEach((trigger) => {
+    Object.values(trigger.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = mergeArgs(override.args);
+      }
+    });
+  });
+};
+
+const removeScriptEventPresetReferences: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    id: string;
+    presetId: string;
+  }>
+> = (state, action) => {
+  const scriptEvents = localScriptEventSelectAll(state);
+  const actors = localActorSelectAll(state);
+  const triggers = localTriggerSelectAll(state);
+
+  const stripPresetId = (storedArgs?: ScriptEventArgs) => {
+    return { ...storedArgs, __presetId: undefined };
+  };
+
+  const scriptEventUpdates = scriptEvents
+    .filter(
+      (scriptEvent) =>
+        scriptEvent.command === action.payload.id &&
+        scriptEvent.args?.__presetId === action.payload.presetId
+    )
+    .map((scriptEvent) => ({
+      id: scriptEvent.id,
+      changes: {
+        args: stripPresetId(scriptEvent.args),
+      },
+    }));
+
+  scriptEventsAdapter.updateMany(state.scriptEvents, scriptEventUpdates);
+
+  // Remove presetId from any uses in actor prefab overrides
+  actors.forEach((actor) => {
+    Object.values(actor.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
+      }
+    });
+  });
+
+  // Remove presetId from any uses in trigger prefab overrides
+  triggers.forEach((trigger) => {
+    Object.values(trigger.prefabScriptOverrides).forEach((override) => {
+      if (override.args?.__presetId === action.payload.presetId) {
+        override.args = stripPresetId(override.args);
+      }
+    });
+  });
+};
+
 const removeScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3083,7 +4206,7 @@ const editEngineFieldValue: CaseReducer<
   EntitiesState,
   PayloadAction<{
     engineFieldId: string;
-    value: string | number | boolean | undefined;
+    value: string | number | undefined;
   }>
 > = (state, action) => {
   engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {
@@ -3114,13 +4237,9 @@ const reloadAssets: CaseReducer<EntitiesState> = (state) => {
     return obj;
   };
 
-  const backgrounds = localBackgroundSelectors
-    .selectAll(state)
-    .map(updateTimestamp);
-  const spriteSheets = localSpriteSheetSelectors
-    .selectAll(state)
-    .map(updateTimestamp);
-  const music = localMusicSelectors.selectAll(state).map(updateTimestamp);
+  const backgrounds = localBackgroundSelectAll(state).map(updateTimestamp);
+  const spriteSheets = localSpriteSheetSelectAll(state).map(updateTimestamp);
+  const music = localMusicSelectAll(state).map(updateTimestamp);
 
   backgroundsAdapter.setAll(state.backgrounds, backgrounds);
   spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
@@ -3188,6 +4307,13 @@ const entitiesSlice = createSlice({
 
     editActor,
     setActorSymbol,
+    unpackActorPrefab,
+    convertActorToPrefab,
+    editActorPrefabScriptEventOverride,
+    revertActorPrefabScriptEventOverrides,
+    applyActorPrefabScriptEventOverrides,
+    revertActorPrefabScriptEventOverride,
+    applyActorPrefabScriptEventOverride,
     removeActor,
     removeActorAt,
     moveActor,
@@ -3218,10 +4344,61 @@ const entitiesSlice = createSlice({
 
     editTrigger,
     setTriggerSymbol,
+    unpackTriggerPrefab,
+    convertTriggerToPrefab,
+    editTriggerPrefabScriptEventOverride,
+    revertTriggerPrefabScriptEventOverrides,
+    applyTriggerPrefabScriptEventOverrides,
+    revertTriggerPrefabScriptEventOverride,
+    applyTriggerPrefabScriptEventOverride,
     removeTrigger,
     removeTriggerAt,
     moveTrigger,
     resizeTrigger,
+
+    /**************************************************************************
+     * Actor Prefabs
+     */
+
+    addActorPrefab: {
+      reducer: addActorPrefab,
+      prepare: (payload?: {
+        actorPrefabId?: string;
+        defaults?: Partial<ActorPrefabNormalized>;
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            actorPrefabId: payload?.actorPrefabId ?? uuid(),
+          },
+        };
+      },
+    },
+
+    editActorPrefab,
+    removeActorPrefab,
+
+    /**************************************************************************
+     * Trigger Prefabs
+     */
+
+    addTriggerPrefab: {
+      reducer: addTriggerPrefab,
+      prepare: (payload?: {
+        triggerPrefabId?: string;
+        defaults?: Partial<TriggerPrefabNormalized>;
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            triggerPrefabId: payload?.triggerPrefabId ?? uuid(),
+          },
+        };
+      },
+    },
+
+    editTriggerPrefab,
+    removeTriggerPrefab,
 
     /**************************************************************************
      * Backgrounds
@@ -3246,6 +4423,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         spriteAnimationId: string;
         spriteSheetId: string;
+        afterMetaspriteId: string;
       }) => {
         return {
           payload: {
@@ -3256,17 +4434,17 @@ const entitiesSlice = createSlice({
       },
     },
 
-    cloneMetasprite: {
-      reducer: cloneMetasprite,
+    cloneMetasprites: {
+      reducer: cloneMetasprites,
       prepare: (payload: {
         spriteSheetId: string;
         spriteAnimationId: string;
-        metaspriteId: string;
+        metaspriteIds: string[];
       }) => {
         return {
           payload: {
             ...payload,
-            newMetaspriteId: uuid(),
+            newMetaspriteIds: payload.metaspriteIds.map(() => uuid()),
           },
         };
       },
@@ -3275,6 +4453,7 @@ const entitiesSlice = createSlice({
     sendMetaspriteTilesToFront,
     sendMetaspriteTilesToBack,
     removeMetasprite,
+    removeMetasprites,
 
     /**************************************************************************
      * Metasprite Tiles
@@ -3319,6 +4498,7 @@ const entitiesSlice = createSlice({
 
     editSpriteAnimation,
     moveSpriteAnimationFrame,
+    moveSpriteAnimationFrames,
 
     /**************************************************************************
      * Sprite States
@@ -3345,6 +4525,25 @@ const entitiesSlice = createSlice({
 
     renameVariable,
     renameVariableFlags,
+
+    /**************************************************************************
+     * Constants
+     */
+
+    addConstant: {
+      reducer: addConstant,
+      prepare: () => {
+        return {
+          payload: {
+            constantId: uuid(),
+          },
+        };
+      },
+    },
+
+    editConstant,
+    renameConstant,
+    removeConstant,
 
     /**************************************************************************
      * Palettes
@@ -3432,6 +4631,8 @@ const entitiesSlice = createSlice({
     setScriptEventSymbol,
     groupScriptEvents,
     ungroupScriptEvent,
+    applyScriptEventPresetChanges,
+    removeScriptEventPresetReferences,
     resetScript,
     toggleScriptEventOpen,
     toggleScriptEventComment,
@@ -3521,7 +4722,7 @@ export const actions = {
 
 export const generateScriptEventInsertActions = (
   scriptEventIds: string[],
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   entityId: string,
   type: ScriptEventParentType,
   key: string,
@@ -3581,40 +4782,123 @@ export const generateScriptEventInsertActions = (
 };
 
 /**************************************************************************
+ * Helpers
+ */
+
+export const duplicateScript = (
+  state: EntitiesState,
+  scriptEventIds: string[],
+  overrides?: Record<string, ScriptEventArgsOverride>
+): string[] => {
+  const newIds = scriptEventIds.map(() => uuid());
+  scriptEventIds.forEach((scriptEventId, index) => {
+    const scriptEvent = localScriptEventSelectById(state, scriptEventId);
+    if (scriptEvent) {
+      const duplicatedChildren: Record<string, string[]> = {};
+      if (scriptEvent.children) {
+        for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+          duplicatedChildren[key] = duplicateScript(
+            state,
+            childIds || [],
+            overrides
+          );
+        }
+      }
+      const override = overrides?.[scriptEvent.id];
+      scriptEventsAdapter.addOne(state.scriptEvents, {
+        ...scriptEvent,
+        args: override
+          ? {
+              ...scriptEvent.args,
+              ...override.args,
+            }
+          : scriptEvent.args,
+        id: newIds[index],
+        children: duplicatedChildren,
+      });
+    }
+  });
+  return newIds;
+};
+
+/**************************************************************************
  * Selectors
  */
 
 // Local (only for use in reducers within this file)
-const localActorSelectors = actorsAdapter.getSelectors(
-  (state: EntitiesState) => state.actors
-);
-const localTriggerSelectors = triggersAdapter.getSelectors(
-  (state: EntitiesState) => state.triggers
-);
-const localSceneSelectors = scenesAdapter.getSelectors(
-  (state: EntitiesState) => state.scenes
-);
-const localCustomEventSelectors = customEventsAdapter.getSelectors(
-  (state: EntitiesState) => state.customEvents
-);
-const localSpriteSheetSelectors = spriteSheetsAdapter.getSelectors(
-  (state: EntitiesState) => state.spriteSheets
-);
-const localBackgroundSelectors = backgroundsAdapter.getSelectors(
-  (state: EntitiesState) => state.backgrounds
-);
-const localPaletteSelectors = palettesAdapter.getSelectors(
-  (state: EntitiesState) => state.palettes
-);
-const localMusicSelectors = musicAdapter.getSelectors(
-  (state: EntitiesState) => state.music
-);
-const _localSoundSelectors = soundsAdapter.getSelectors(
-  (state: EntitiesState) => state.sounds
-);
-const _localTilesetSelectors = tilesetsAdapter.getSelectors(
-  (state: EntitiesState) => state.tilesets
-);
+const localSceneSelectById = (state: EntitiesState, id: string) =>
+  state.scenes.entities[id];
+
+const localSceneSelectAll = (state: EntitiesState) =>
+  state.scenes.ids.map((id) => state.scenes.entities[id]);
+
+const localSceneSelectTotal = (state: EntitiesState) => state.scenes.ids.length;
+
+const localActorSelectById = (state: EntitiesState, id: string) =>
+  state.actors.entities[id];
+
+const localActorSelectEntities = (state: EntitiesState) =>
+  state.actors.entities;
+
+const localActorSelectAll = (state: EntitiesState) =>
+  state.actors.ids.map((id) => state.actors.entities[id]);
+
+const localTriggerSelectById = (state: EntitiesState, id: string) =>
+  state.triggers.entities[id];
+
+const localTriggerSelectEntities = (state: EntitiesState) =>
+  state.triggers.entities;
+
+const localTriggerSelectAll = (state: EntitiesState) =>
+  state.triggers.ids.map((id) => state.triggers.entities[id]);
+
+const localActorPrefabSelectById = (state: EntitiesState, id: string) =>
+  state.actorPrefabs.entities[id];
+
+const localTriggerPrefabSelectById = (state: EntitiesState, id: string) =>
+  state.triggerPrefabs.entities[id];
+
+const localScriptEventSelectById = (state: EntitiesState, id: string) =>
+  state.scriptEvents.entities[id];
+
+const localScriptEventSelectAll = (state: EntitiesState) =>
+  state.scriptEvents.ids.map((id) => state.scriptEvents.entities[id]);
+
+const localCustomEventSelectTotal = (state: EntitiesState) =>
+  state.customEvents.ids.length;
+
+const localSpriteSheetSelectById = (state: EntitiesState, id: string) =>
+  state.spriteSheets.entities[id];
+
+const localSpriteSheetSelectAll = (state: EntitiesState) =>
+  state.spriteSheets.ids.map((id) => state.spriteSheets.entities[id]);
+
+const localBackgroundSelectById = (state: EntitiesState, id: string) =>
+  state.backgrounds.entities[id];
+
+const localBackgroundSelectAll = (state: EntitiesState) =>
+  state.backgrounds.ids.map((id) => state.backgrounds.entities[id]);
+
+const localBackgroundSelectIds = (state: EntitiesState) =>
+  state.backgrounds.ids;
+
+const localPaletteSelectTotal = (state: EntitiesState) =>
+  state.palettes.ids.length;
+
+const localMusicSelectById = (state: EntitiesState, id: string) =>
+  state.music.entities[id];
+
+const localMusicSelectAll = (state: EntitiesState) =>
+  state.music.ids.map((id) => state.music.entities[id]);
+
+const localVariableSelectById = (state: EntitiesState, id: string) =>
+  state.variables.entities[id];
+
+const localConstantSelectById = (state: EntitiesState, id: string) =>
+  state.constants.entities[id];
+
+const localConstantSelectTotal = (state: EntitiesState) =>
+  state.constants.ids.length;
 
 // Global
 export const actorSelectors = actorsAdapter.getSelectors(
@@ -3625,6 +4909,12 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 );
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scenes
+);
+export const actorPrefabSelectors = actorPrefabsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.actorPrefabs
+);
+export const triggerPrefabSelectors = triggerPrefabsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.triggerPrefabs
 );
 export const scriptEventSelectors = scriptEventsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scriptEvents
@@ -3673,6 +4963,9 @@ export const tilesetSelectors = tilesetsAdapter.getSelectors(
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables
+);
+export const constantSelectors = constantsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.constants
 );
 export const engineFieldValueSelectors = engineFieldValuesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.engineFieldValues

@@ -4,6 +4,7 @@ import {
   toNumber,
   isOperatorSymbol,
   isVariable,
+  isConstant,
 } from "./helpers";
 import { Token } from "./types";
 
@@ -13,9 +14,11 @@ const tokenizer = (input: string): Token[] => {
   return (
     input
       .replace(/\s+/g, "")
-      .split(/(<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/)
+      .split(
+        /(@[a-f0-9-]{36}@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/
+      )
       .filter(identity)
-      .map((token) => {
+      .map((token): Token => {
         if (isNumeric(token)) {
           return {
             type: "VAL",
@@ -53,6 +56,12 @@ const tokenizer = (input: string): Token[] => {
           return {
             type: "VAR",
             symbol: token,
+          };
+        }
+        if (isConstant(token)) {
+          return {
+            type: "CONST",
+            symbol: token.replaceAll(/@/g, ""),
           };
         }
         throw new Error(`Unexpected token ${token}`);

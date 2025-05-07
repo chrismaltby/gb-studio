@@ -3,6 +3,7 @@
   "id": "4548028c-0fd3-4d59-90e3-002433e44af4",
   "_index": 0,
   "symbol": "actor_17",
+  "prefabId": "",
   "name": "",
   "x": 15,
   "y": 12,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "23d657ea-f5fc-40b1-8cac-7b4f8d1fae85",

@@ -12,11 +12,13 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
   spriteSheetSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import styled, { css } from "styled-components";
@@ -30,12 +32,12 @@ import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprit
 import { walkNormalizedSceneScripts } from "shared/lib/scripts/walk";
 
 interface SceneInfoWrapperProps {
-  loaded: boolean;
+  $loaded: boolean;
 }
 
 interface SceneInfoButtonProps {
-  warning?: boolean;
-  error?: boolean;
+  $warning?: boolean;
+  $error?: boolean;
 }
 
 const MAX_LOGO_SPRITE_TILES = 12;
@@ -50,7 +52,7 @@ const SceneInfoWrapper = styled.div<SceneInfoWrapperProps>`
   font-size: 10px;
 
   ${(props) =>
-    props.loaded
+    props.$loaded
       ? css`
           opacity: 1;
         `
@@ -64,16 +66,16 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
   margin: 0 3px;
   white-space: nowrap;
 
-  :hover {
+  &:hover {
     background-color: rgba(128, 128, 128, 0.2);
   }
 
   ${(props) =>
-    props.warning
+    props.$warning
       ? css`
           background: rgb(243, 168, 30);
           color: #fff;
-          :hover {
+          &:hover {
             background: rgb(243, 168, 30);
             opacity: 0.7;
           }
@@ -81,11 +83,11 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       : ""}
 
   ${(props) =>
-    props.error
+    props.$error
       ? css`
           background: rgb(243, 0, 0);
           color: #fff;
-          :hover {
+          &:hover {
             background: rgb(243, 0, 0);
             opacity: 0.7;
           }
@@ -100,6 +102,12 @@ const SceneInfo = () => {
   );
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
+  );
+  const actorPrefabsLookup = useAppSelector(
+    actorPrefabSelectors.selectEntities
+  );
+  const triggerPrefabsLookup = useAppSelector(
+    triggerPrefabSelectors.selectEntities
   );
   const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
@@ -120,7 +128,12 @@ const SceneInfo = () => {
     (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const isCGBOnly = useAppSelector(
-    (state) => state.project.present.settings.colorMode === "color"
+    (state) =>
+      (state.project.present.settings.colorMode !== "mono" &&
+      scene?.colorModeOverride &&
+      scene?.colorModeOverride !== "none"
+        ? scene?.colorModeOverride
+        : state.project.present.settings.colorMode) === "color"
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
@@ -152,6 +165,8 @@ const SceneInfo = () => {
         scriptEventsLookup,
         actorsLookup,
         triggersLookup,
+        actorPrefabsLookup,
+        triggerPrefabsLookup,
         {
           customEvents: {
             lookup: customEventsLookup,
@@ -228,7 +243,8 @@ const SceneInfo = () => {
       scene.actors.forEach((actorId) => {
         const actor = actorsLookup[actorId];
         if (actor && !actorsExclusiveLookup[actorId]) {
-          addSprite(actor.spriteSheetId);
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          addSprite(prefab?.spriteSheetId ?? actor.spriteSheetId);
         }
       });
 
@@ -236,14 +252,18 @@ const SceneInfo = () => {
       scene.actors.forEach((actorId) => {
         const actor = actorsLookup[actorId];
         if (actor && actorsExclusiveLookup[actorId]) {
-          const defaultSprite = spriteSheetsLookup[actor.spriteSheetId || ""];
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          const defaultSprite =
+            spriteSheetsLookup[
+              prefab?.spriteSheetId ?? actor.spriteSheetId ?? ""
+            ];
           if (
             !defaultSprite ||
             actorsExclusiveLookup[actorId].numTiles > defaultSprite.numTiles
           ) {
             addSprite(actorsExclusiveLookup[actorId].id, true);
           } else {
-            addSprite(actor.spriteSheetId, true);
+            addSprite(prefab?.spriteSheetId ?? actor.spriteSheetId, true);
           }
         }
       });
@@ -361,6 +381,8 @@ const SceneInfo = () => {
     scriptEventsLookup,
     actorsLookup,
     triggersLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
     customEventsLookup,
     defaultPlayerSprites,
     isCGBOnly,
@@ -378,6 +400,7 @@ const SceneInfo = () => {
     scriptEventsLookup,
     spriteSheetsLookup,
     defaultPlayerSprites,
+    actorPrefabsLookup,
   ]);
 
   if (!scene) {
@@ -403,7 +426,7 @@ const SceneInfo = () => {
       : MAX_LOGO_SPRITE_TILES;
 
   return (
-    <SceneInfoWrapper loaded={loaded}>
+    <SceneInfoWrapper $loaded={loaded}>
       <TooltipWrapper
         tooltip={
           <>
@@ -422,7 +445,7 @@ const SceneInfo = () => {
           </>
         }
       >
-        <SceneInfoButton warning={actorWarning} error={actorError}>
+        <SceneInfoButton $warning={actorWarning} $error={actorError}>
           A: {actorCount}/{maxActors}
         </SceneInfoButton>
       </TooltipWrapper>
@@ -445,8 +468,8 @@ const SceneInfo = () => {
         }
       >
         <SceneInfoButton
-          warning={tileCount === maxSpriteTiles}
-          error={tileCount > maxSpriteTiles}
+          $warning={tileCount === maxSpriteTiles}
+          $error={tileCount > maxSpriteTiles}
         >
           S: {tileCount}/{maxSpriteTiles}
         </SceneInfoButton>
@@ -473,8 +496,8 @@ const SceneInfo = () => {
         }
       >
         <SceneInfoButton
-          warning={maxTriggers > 0 && triggerCount === maxTriggers}
-          error={triggerCount > maxTriggers}
+          $warning={maxTriggers > 0 && triggerCount === maxTriggers}
+          $error={triggerCount > maxTriggers}
         >
           T: {triggerCount}/{maxTriggers}
         </SceneInfoButton>

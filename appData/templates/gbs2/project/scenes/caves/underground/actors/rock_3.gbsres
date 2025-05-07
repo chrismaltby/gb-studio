@@ -3,6 +3,7 @@
   "id": "7c2b0a86-4cc1-46f4-9b4a-6ea987300848",
   "_index": 2,
   "symbol": "actor_rock_3",
+  "prefabId": "",
   "name": "Rock 3",
   "x": 23,
   "y": 27,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "603eab48-8349-48e8-bcde-8c6e4f42e316",

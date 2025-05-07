@@ -7,6 +7,7 @@ import {
   SingleValueWithPreview,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface ObjPaletteSelectProps {
   name: string;
@@ -35,7 +36,7 @@ const options: ObjPaletteOption[] = [
 
 export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
   name,
-  value,
+  value = "OBP0",
   onChange,
 }) => {
   const currentValue = options.find((o) => o.value === value);
@@ -44,8 +45,10 @@ export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: ObjPaletteOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<ObjPaletteOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: ObjPaletteOption) => {
         return (
@@ -75,9 +78,4 @@ export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
       }}
     />
   );
-};
-
-ObjPaletteSelect.defaultProps = {
-  name: undefined,
-  value: "OBP0",
 };

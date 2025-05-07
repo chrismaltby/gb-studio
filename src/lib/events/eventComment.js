@@ -5,9 +5,9 @@ const groups = ["EVENT_GROUP_MISC"];
 
 const autoLabel = (fetchArg, args) => {
   if (args.text) {
-    return `// ${fetchArg("text")}`;
+    return fetchArg("text");
   } else {
-    return `// ${l10n("EVENT_COMMENT")}`;
+    return l10n("EVENT_COMMENT");
   }
 };
 

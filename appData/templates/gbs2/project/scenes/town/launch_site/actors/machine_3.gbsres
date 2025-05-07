@@ -3,6 +3,7 @@
   "id": "f0e99382-7663-4fcc-8de0-a1bb069fa726",
   "_index": 4,
   "symbol": "actor_machine_1",
+  "prefabId": "",
   "name": "Machine",
   "x": 6,
   "y": 10,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "f33a2e4e-dd3b-4cc0-9207-9fac74bf3753",

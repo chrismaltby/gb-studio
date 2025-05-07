@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
-import { FormField } from "./FormLayout";
+import { FormField } from "./layout/FormLayout";
 import { Input } from "./Input";
 
 export interface TextFieldProps {
@@ -40,7 +40,7 @@ export const TextField: FC<TextFieldProps> = ({
   placeholder,
   errorLabel,
   size,
-  value,
+  value = "",
   onChange,
   additionalRight,
 }) => (
@@ -75,7 +75,3 @@ export const TextField: FC<TextFieldProps> = ({
     )}
   </FormField>
 );
-
-TextField.defaultProps = {
-  value: "",
-};

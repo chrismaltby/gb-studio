@@ -1,5 +1,9 @@
-import type { EntityState, Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEditorContextType } from "shared/lib/scripts/context";
+import type { EntityState } from "@reduxjs/toolkit";
+import type {
+  ColorModeOverrideSetting,
+  Constant,
+  ScriptEditorCtxType,
+} from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
@@ -44,20 +48,26 @@ export type ScriptEventParentType =
   | "actor"
   | "trigger"
   | "scriptEvent"
-  | "customEvent";
+  | "customEvent"
+  | "actorPrefab"
+  | "triggerPrefab";
 
 export type ScriptEventArgs = Record<string, unknown>;
 
 export type ScriptEvent = {
   id: string;
   command: string;
-  symbol?: string | undefined;
   args?: ScriptEventArgs | undefined;
   children?: Record<string, ScriptEvent[] | undefined> | undefined;
 };
 
 export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
-  children?: Dictionary<string[]>;
+  children?: Record<string, string[]>;
+};
+
+export type ScriptEventArgsOverride = {
+  id: string;
+  args: ScriptEventArgs;
 };
 
 export type ScriptEventsRef = {
@@ -84,6 +94,7 @@ export type Actor = {
   notes?: string;
   x: number;
   y: number;
+  prefabId: string;
   spriteSheetId: string;
   paletteId: string;
   frame: number;
@@ -94,6 +105,7 @@ export type Actor = {
   isPinned: boolean;
   persistent: boolean;
   collisionGroup: CollisionGroup;
+  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];
@@ -119,6 +131,22 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
+export type ActorFieldsOmittedFromPrefab =
+  | "prefabId"
+  | "x"
+  | "y"
+  | "direction"
+  | "isPinned"
+  | "symbol"
+  | "prefabScriptOverrides";
+
+export type ActorPrefab = Omit<Actor, ActorFieldsOmittedFromPrefab>;
+
+export type ActorPrefabNormalized = Omit<
+  ActorNormalized,
+  ActorFieldsOmittedFromPrefab
+>;
+
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
@@ -127,10 +155,12 @@ export type Trigger = {
   name: string;
   symbol: string;
   notes?: string;
+  prefabId: string;
   x: number;
   y: number;
   width: number;
   height: number;
+  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
   script: ScriptEvent[];
   leaveScript: ScriptEvent[];
 };
@@ -139,6 +169,22 @@ export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
   script: string[];
   leaveScript: string[];
 };
+
+export type TriggerFieldsOmittedFromPrefab =
+  | "prefabId"
+  | "x"
+  | "y"
+  | "width"
+  | "height"
+  | "symbol"
+  | "prefabScriptOverrides";
+
+export type TriggerPrefab = Omit<Trigger, TriggerFieldsOmittedFromPrefab>;
+
+export type TriggerPrefabNormalized = Omit<
+  TriggerNormalized,
+  TriggerFieldsOmittedFromPrefab
+>;
 
 export type Background = {
   id: string;
@@ -168,7 +214,7 @@ export type Font = {
   height: number;
   plugin?: string;
   inode: string;
-  mapping: Record<string, number>;
+  mapping: Record<string, number | number[]>;
   _v: number;
 };
 
@@ -226,6 +272,7 @@ export type Sound = {
   filename: string;
   plugin?: string;
   type: "wav" | "vgm" | "fxhammer";
+  numEffects?: number;
   inode: string;
   _v: number;
 };
@@ -279,8 +326,8 @@ export type CustomEvent = {
   name: string;
   symbol: string;
   description: string;
-  variables: Dictionary<CustomEventVariable>;
-  actors: Dictionary<CustomEventActor>;
+  variables: Record<string, CustomEventVariable>;
+  actors: Record<string, CustomEventActor>;
   script: ScriptEvent[];
 };
 
@@ -290,7 +337,7 @@ export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
 
 export type EngineFieldValue = {
   id: string;
-  value?: number | string | boolean | undefined;
+  value?: number | string | undefined;
 };
 
 export type MetaspriteTile = {
@@ -391,6 +438,7 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
+  colorModeOverride: ColorModeOverrideSetting;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];
@@ -436,30 +484,34 @@ export type ProjectEntitiesData = {
   emotes: EmoteData[];
   tilesets: TilesetData[];
   variables: Variable[];
+  constants: Constant[];
   engineFieldValues: EngineFieldValue[];
 };
 
 export interface EntitiesState {
-  actors: EntityState<ActorNormalized>;
-  triggers: EntityState<TriggerNormalized>;
-  scenes: EntityState<SceneNormalized>;
-  scriptEvents: EntityState<ScriptEventNormalized>;
-  backgrounds: EntityState<Background>;
-  spriteSheets: EntityState<SpriteSheetNormalized>;
-  metasprites: EntityState<Metasprite>;
-  metaspriteTiles: EntityState<MetaspriteTile>;
-  spriteAnimations: EntityState<SpriteAnimation>;
-  spriteStates: EntityState<SpriteState>;
-  palettes: EntityState<Palette>;
-  customEvents: EntityState<CustomEventNormalized>;
-  music: EntityState<Music>;
-  sounds: EntityState<Sound>;
-  fonts: EntityState<Font>;
-  avatars: EntityState<Avatar>;
-  emotes: EntityState<Emote>;
-  tilesets: EntityState<Tileset>;
-  variables: EntityState<Variable>;
-  engineFieldValues: EntityState<EngineFieldValue>;
+  actors: EntityState<ActorNormalized, string>;
+  triggers: EntityState<TriggerNormalized, string>;
+  scenes: EntityState<SceneNormalized, string>;
+  actorPrefabs: EntityState<ActorPrefabNormalized, string>;
+  triggerPrefabs: EntityState<TriggerPrefabNormalized, string>;
+  scriptEvents: EntityState<ScriptEventNormalized, string>;
+  backgrounds: EntityState<Background, string>;
+  spriteSheets: EntityState<SpriteSheetNormalized, string>;
+  metasprites: EntityState<Metasprite, string>;
+  metaspriteTiles: EntityState<MetaspriteTile, string>;
+  spriteAnimations: EntityState<SpriteAnimation, string>;
+  spriteStates: EntityState<SpriteState, string>;
+  palettes: EntityState<Palette, string>;
+  customEvents: EntityState<CustomEventNormalized, string>;
+  music: EntityState<Music, string>;
+  sounds: EntityState<Sound, string>;
+  fonts: EntityState<Font, string>;
+  avatars: EntityState<Avatar, string>;
+  emotes: EntityState<Emote, string>;
+  tilesets: EntityState<Tileset, string>;
+  variables: EntityState<Variable, string>;
+  constants: EntityState<Constant, string>;
+  engineFieldValues: EntityState<EngineFieldValue, string>;
 }
 
 export interface ScriptEventFieldCondition {
@@ -473,6 +525,7 @@ export interface ScriptEventFieldCondition {
   in?: unknown[];
   set?: boolean;
   soundType?: unknown;
+  parallaxEnabled?: boolean;
 }
 
 export const distanceUnitTypes = ["tiles", "pixels"] as const;
@@ -517,7 +570,9 @@ export interface ScriptEventFieldSchema {
   step?: number;
   options?: [unknown, string][];
   optional?: boolean;
+  optionalLabel?: string;
   allowNone?: boolean;
+  allowDefault?: boolean;
   allowMultiple?: boolean;
   paletteType?: "background" | "ui" | "emote" | "sprite";
   paletteIndex?: number;
@@ -528,7 +583,7 @@ export interface ScriptEventFieldSchema {
   types?: string[];
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
-  allowedContexts?: ScriptEditorContextType[];
+  allowedContexts?: ScriptEditorCtxType[];
   unitsField?: string;
   unitsDefault?: UnitType;
   unitsAllowed?: UnitType[];
@@ -537,6 +592,9 @@ export interface ScriptEventFieldSchema {
   hasPostUpdateFn?: boolean;
   singleLine?: boolean;
   noneLabel?: string;
+  variant?: string;
+  labelVariant?: string;
+  filters?: Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;

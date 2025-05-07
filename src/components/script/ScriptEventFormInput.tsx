@@ -50,8 +50,8 @@ import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
-import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
-import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { BlankIcon, CheckIcon, ConnectIcon, PlusIcon } from "ui/icons/Icons";
+import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
@@ -63,9 +63,15 @@ import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import ValueSelect from "components/forms/ValueSelect";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isConstScriptValue,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
+import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
+import { SingleValue } from "react-select";
+import ConstantValueSelect from "components/forms/ConstantValueSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -78,11 +84,11 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
-  onChangeArg: (key: string, newValue: unknown) => void;
+  onInsertEventAfter: () => void;
 }
 
 const ConnectButton = styled.div`
-  ${Button} {
+  ${StyledButton} {
     min-width: 15px;
     padding: 0;
     height: 28px;
@@ -110,7 +116,7 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
-  onChangeArg,
+  onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useAppSelector(
@@ -151,8 +157,10 @@ const ScriptEventFormInput = ({
   );
 
   const onChangeSelectField = useCallback(
-    (e: { value: unknown }) => {
-      onChange(e.value, index);
+    (e: SingleValue<{ value: unknown }>) => {
+      if (e) {
+        onChange(e.value, index);
+      }
     },
     [index, onChange]
   );
@@ -342,10 +350,11 @@ const ScriptEventFormInput = ({
           }
         >
           {(field.options || []).map(([type, label]) => (
-            <MenuItem key={String(type)} onClick={() => onChangeField(type)}>
-              <MenuItemIcon>
-                {type === value ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key={String(type)}
+              onClick={() => onChangeField(type)}
+              icon={type === value ? <CheckIcon /> : <BlankIcon />}
+            >
               {label}
             </MenuItem>
           ))}
@@ -358,7 +367,7 @@ const ScriptEventFormInput = ({
         <ToggleButtons
           name={id}
           options={field.options as [string, string][]}
-          value={value as string[]}
+          value={(value ?? field.defaultValue) as string[]}
           allowMultiple={field.allowMultiple as true}
           allowNone={field.allowNone}
           onChange={onChangeField}
@@ -393,6 +402,26 @@ const ScriptEventFormInput = ({
       <ValueSelect
         name={id}
         entityId={entityId}
+        value={
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
+  } else if (type === "constvalue") {
+    const isValueScript = isConstScriptValue(value);
+    const isDefaultScript = isConstScriptValue(defaultValue);
+
+    return (
+      <ConstantValueSelect
+        name={id}
         value={
           isValueScript ? value : isDefaultScript ? defaultValue : undefined
         }
@@ -451,6 +480,7 @@ const ScriptEventFormInput = ({
               defaultSpritePaletteIds[field.paletteIndex || 0] || ""
             }
             canKeep={field.canKeep}
+            canRestore={field.canRestore}
             keepLabel={l10n("FIELD_DONT_MODIFY")}
             type="sprite"
           />
@@ -590,7 +620,8 @@ const ScriptEventFormInput = ({
         <CameraSpeedSelect
           name={id}
           allowNone
-          value={Number(value ?? 0)}
+          allowDefault={field.allowDefault}
+          value={Number(value ?? field.defaultValue ?? 0)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -666,12 +697,15 @@ const ScriptEventFormInput = ({
       <OffscreenSkeletonInput>
         <TilesetSelect
           name={id}
+          optional={field.optional}
+          optionalLabel={field.optionalLabel}
           value={String(value)}
           onChange={onChangeField}
           tileIndex={argValue(args.tileIndex) as number | undefined}
           units={
             (args[field.unitsField || ""] || field.unitsDefault) as UnitType
           }
+          filters={field.filters}
         />
       </OffscreenSkeletonInput>
     );
@@ -812,6 +846,15 @@ const ScriptEventFormInput = ({
         />
       );
     }
+  } else if (type === "addEventButton") {
+    return (
+      <Button style={{ width: "100%" }} onClick={onInsertEventAfter}>
+        <ButtonPrefixIcon>
+          <PlusIcon />
+        </ButtonPrefixIcon>
+        {field.label}
+      </Button>
+    );
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
       field.defaultType) as string;
@@ -838,7 +881,7 @@ const ScriptEventFormInput = ({
             allowRename={false}
             args={args}
             onChange={onChangeUnionField}
-            onChangeArg={onChangeArg}
+            onInsertEventAfter={onInsertEventAfter}
           />
         </div>
         <ConnectButton>
@@ -852,10 +895,11 @@ const ScriptEventFormInput = ({
             }
           >
             {(field.types || []).map((type) => (
-              <MenuItem key={type} onClick={() => onChangeUnionType(type)}>
-                <MenuItemIcon>
-                  {type === currentType ? <CheckIcon /> : <BlankIcon />}
-                </MenuItemIcon>
+              <MenuItem
+                key={type}
+                onClick={() => onChangeUnionType(type)}
+                icon={type === currentType ? <CheckIcon /> : <BlankIcon />}
+              >
                 {type}
               </MenuItem>
             ))}

@@ -11,6 +11,9 @@ import {
   ValueOperatorType,
   ValueUnaryOperatorType,
   isValueUnaryOperatorType,
+  RPNOperation,
+  RPNUnaryOperation,
+  ScriptValueAtom,
 } from "./types";
 import { OperatorSymbol } from "shared/lib/rpn/types";
 
@@ -197,149 +200,158 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
 };
 
 export const expressionToScriptValue = (expression: string): ScriptValue => {
-  const tokens = tokenize(expression);
-  const rpnTokens = shuntingYard(tokens);
+  try {
+    const tokens = tokenize(expression);
+    const rpnTokens = shuntingYard(tokens);
 
-  const stack: ScriptValue[] = [];
+    const stack: ScriptValue[] = [];
 
-  function mapOperator(
-    operator: OperatorSymbol
-  ): ValueOperatorType | ValueUnaryOperatorType {
-    const operatorMap: Record<
-      OperatorSymbol,
-      ValueOperatorType | ValueUnaryOperatorType
-    > = {
-      "/": "div",
-      "*": "mul",
-      "+": "add",
-      "-": "sub",
-      "%": "mod",
-      "!": "not",
-      "&": "bAND",
-      "|": "bOR",
-      "^": "bXOR",
-      "~": "bNOT",
-      "==": "eq",
-      "!=": "ne",
-      "<": "lt",
-      "<=": "lte",
-      ">": "gt",
-      ">=": "gte",
-      "&&": "and",
-      "||": "or",
-      "<<": "shl",
-      ">>": "shr",
-    };
+    function mapOperator(
+      operator: OperatorSymbol
+    ): ValueOperatorType | ValueUnaryOperatorType {
+      const operatorMap: Record<
+        OperatorSymbol,
+        ValueOperatorType | ValueUnaryOperatorType
+      > = {
+        "/": "div",
+        "*": "mul",
+        "+": "add",
+        "-": "sub",
+        "%": "mod",
+        "!": "not",
+        "&": "bAND",
+        "|": "bOR",
+        "^": "bXOR",
+        "~": "bNOT",
+        "==": "eq",
+        "!=": "ne",
+        "<": "lt",
+        "<=": "lte",
+        ">": "gt",
+        ">=": "gte",
+        "&&": "and",
+        "||": "or",
+        "<<": "shl",
+        ">>": "shr",
+      };
 
-    const scriptValueOperator = operatorMap[operator];
+      const scriptValueOperator = operatorMap[operator];
 
-    /* istanbul ignore else: unreachable else branch */
-    if (scriptValueOperator) {
-      return scriptValueOperator;
-    } else {
-      assertUnreachable(scriptValueOperator);
-      return "eq";
-    }
-  }
-
-  for (const operation of rpnTokens) {
-    if (operation.type === "VAR") {
-      stack.push({
-        type: "variable",
-        value: operation.symbol.replace(/\$/g, "").replace(/^0/g, ""),
-      });
-    } else if (operation.type === "VAL") {
-      stack.push({
-        type: "number",
-        value: operation.value,
-      });
-    } else if (operation.type === "OP") {
-      const scriptValueOperator = mapOperator(operation.operator);
-      if (isValueUnaryOperatorType(scriptValueOperator)) {
-        const value = stack.pop();
-        if (value) {
-          stack.push({
-            type: scriptValueOperator,
-            value,
-          });
-        }
+      /* istanbul ignore else: unreachable else branch */
+      if (scriptValueOperator) {
+        return scriptValueOperator;
       } else {
-        const valueB = stack.pop();
-        const valueA = stack.pop();
-        if (valueA && valueB) {
-          stack.push({
-            type: scriptValueOperator,
-            valueA,
-            valueB,
-          });
-        }
+        assertUnreachable(scriptValueOperator);
+        return "eq";
       }
-    } else if (operation.type === "FUN") {
-      if (operation.function === "min") {
-        const valueB = stack.pop();
-        const valueA = stack.pop();
-        if (valueA && valueB) {
-          stack.push({
-            type: "min",
-            valueA,
-            valueB,
-          });
+    }
+
+    for (const operation of rpnTokens) {
+      if (operation.type === "VAR") {
+        stack.push({
+          type: "variable",
+          value: operation.symbol.replace(/\$/g, "").replace(/^0/g, ""),
+        });
+      } else if (operation.type === "VAL") {
+        stack.push({
+          type: "number",
+          value: operation.value,
+        });
+      } else if (operation.type === "CONST") {
+        stack.push({
+          type: "constant",
+          value: operation.symbol,
+        });
+      } else if (operation.type === "OP") {
+        const scriptValueOperator = mapOperator(operation.operator);
+        if (isValueUnaryOperatorType(scriptValueOperator)) {
+          const value = stack.pop();
+          if (value) {
+            stack.push({
+              type: scriptValueOperator,
+              value,
+            });
+          }
+        } else {
+          const valueB = stack.pop();
+          const valueA = stack.pop();
+          if (valueA && valueB) {
+            stack.push({
+              type: scriptValueOperator,
+              valueA,
+              valueB,
+            });
+          }
         }
-      } else if (operation.function === "max") {
-        const valueB = stack.pop();
-        const valueA = stack.pop();
-        if (valueA && valueB) {
-          stack.push({
-            type: "max",
-            valueA,
-            valueB,
-          });
-        }
-      } else if (operation.function === "abs") {
-        const value = stack.pop();
-        if (value) {
-          stack.push({
-            type: "abs",
-            value,
-          });
-        }
-      } else if (operation.function === "rnd") {
-        const value = stack.pop();
-        if (value) {
-          stack.push({
-            type: "rnd",
-            value,
-          });
-        }
-      } else if (operation.function === "isqrt") {
-        const value = stack.pop();
-        if (value) {
-          stack.push({
-            type: "isqrt",
-            value,
-          });
-        }
-      } else if (operation.function === "atan2") {
-        const valueB = stack.pop();
-        const valueA = stack.pop();
-        if (valueA && valueB) {
-          stack.push({
-            type: "atan2",
-            valueA,
-            valueB,
-          });
+      } else if (operation.type === "FUN") {
+        if (operation.function === "min") {
+          const valueB = stack.pop();
+          const valueA = stack.pop();
+          if (valueA && valueB) {
+            stack.push({
+              type: "min",
+              valueA,
+              valueB,
+            });
+          }
+        } else if (operation.function === "max") {
+          const valueB = stack.pop();
+          const valueA = stack.pop();
+          if (valueA && valueB) {
+            stack.push({
+              type: "max",
+              valueA,
+              valueB,
+            });
+          }
+        } else if (operation.function === "abs") {
+          const value = stack.pop();
+          if (value) {
+            stack.push({
+              type: "abs",
+              value,
+            });
+          }
+        } else if (operation.function === "rnd") {
+          const value = stack.pop();
+          if (value) {
+            stack.push({
+              type: "rnd",
+              value,
+            });
+          }
+        } else if (operation.function === "isqrt") {
+          const value = stack.pop();
+          if (value) {
+            stack.push({
+              type: "isqrt",
+              value,
+            });
+          }
+        } else if (operation.function === "atan2") {
+          const valueB = stack.pop();
+          const valueA = stack.pop();
+          if (valueA && valueB) {
+            stack.push({
+              type: "atan2",
+              valueA,
+              valueB,
+            });
+          }
+        } else {
+          /* istanbul ignore next: unreachable */
+          assertUnreachable(operation.function);
         }
       } else {
         /* istanbul ignore next: unreachable */
-        assertUnreachable(operation.function);
+        assertUnreachable(operation);
       }
-    } else {
-      /* istanbul ignore next: unreachable */
-      assertUnreachable(operation);
     }
-  }
 
-  return stack.length === 1 ? stack[0] : zero;
+    return stack.length === 1 ? stack[0] : zero;
+  } catch (e) {
+    return zero;
+  }
 };
 
 export const walkScriptValue = (
@@ -383,10 +395,18 @@ export const someInScriptValue = (
   return false;
 };
 
-export const mapScriptValueLeafNodes = (
+export type MappedScriptValue<T> =
+  | T
+  | (Omit<RPNUnaryOperation, "value"> & { value: MappedScriptValue<T> })
+  | (Omit<RPNOperation, "valueA" | "valueB"> & {
+      valueA: MappedScriptValue<T>;
+      valueB: MappedScriptValue<T>;
+    });
+
+export const mapScriptValueLeafNodes = <T>(
   input: ScriptValue,
-  fn: (val: ScriptValue) => ScriptValue
-): ScriptValue => {
+  fn: (val: ScriptValueAtom) => T
+): MappedScriptValue<T> => {
   if (isValueOperation(input)) {
     const mappedA = input.valueA && mapScriptValueLeafNodes(input.valueA, fn);
     const mappedB = input.valueB && mapScriptValueLeafNodes(input.valueB, fn);
@@ -457,6 +477,24 @@ export const variableInScriptValue = (
   });
 };
 
+export const constantInScriptValue = (
+  constantId: string,
+  input: ScriptValue
+): boolean => {
+  return someInScriptValue(input, (val) => {
+    if (val.type === "constant" && val.value === constantId) {
+      return true;
+    } else if (val.type === "expression") {
+      const text = val.value;
+      if (text && typeof text === "string") {
+        const expressionValue = expressionToScriptValue(text);
+        return constantInScriptValue(constantId, expressionValue);
+      }
+    }
+    return false;
+  });
+};
+
 export const precompileScriptValue = (
   input: ScriptValue,
   localsLabel = "",
@@ -509,6 +547,8 @@ export const precompileScriptValue = (
     rpnOperations.push({ type: "number", value: 1 });
   } else if (input.type === "false") {
     rpnOperations.push({ type: "number", value: 0 });
+  } else if (input.type === "constant") {
+    rpnOperations.push({ type: "constant", value: input.value });
   } else {
     rpnOperations.push(input);
   }
@@ -596,5 +636,27 @@ export const addScriptValueToScriptValue = (
     type: "add",
     valueA: valueA,
     valueB: valueB,
+  };
+};
+
+export const clampScriptValueConst = (
+  value: ScriptValue,
+  min: number,
+  max: number
+): ScriptValue => {
+  return {
+    type: "max",
+    valueA: {
+      type: "number",
+      value: min,
+    },
+    valueB: {
+      type: "min",
+      valueA: {
+        type: "number",
+        value: max,
+      },
+      valueB: value,
+    },
   };
 };

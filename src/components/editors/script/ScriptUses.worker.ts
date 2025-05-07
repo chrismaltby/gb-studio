@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import {
   actorName,
   customEventName,
@@ -7,10 +6,12 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorNormalized,
+  ActorPrefabNormalized,
   CustomEventNormalized,
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
+  TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
@@ -64,24 +65,31 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const scriptId: string = evt.data.scriptId;
   const scenes: SceneNormalized[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
+  const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
-  const customEventsLookup: Dictionary<CustomEventNormalized> =
+  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Record<string, TriggerNormalized> =
+    evt.data.triggersLookup;
+  const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
+    evt.data.actorPrefabsLookup;
+  const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
+    evt.data.triggerPrefabsLookup;
+  const customEventsLookup: Record<string, CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
 
   const uses: ScriptUse[] = [];
-  const useLookup: Dictionary<boolean> = {};
+  const useLookup: Record<string, boolean> = {};
 
   walkNormalizedScenesScripts(
     scenes,
     scriptEventsLookup,
     actorsLookup,
     triggersLookup,
+    actorPrefabsLookup,
+    triggerPrefabsLookup,
     undefined,
     (scriptEvent, scene, actor, trigger) => {
       if (

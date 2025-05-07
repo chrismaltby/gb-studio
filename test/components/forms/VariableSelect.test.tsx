@@ -5,7 +5,7 @@
 import React from "react";
 import { VariableSelect } from "../../../src/components/forms/VariableSelect";
 import { render, screen, fireEvent } from "../../react-utils";
-import { AnyAction, Store } from "@reduxjs/toolkit";
+import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "../../../src/store/configureStore";
 import { ScriptEditorContext } from "../../../src/components/script/ScriptEditorContext";
 
@@ -34,7 +34,7 @@ test("Should use default variable name with not renamed", () => {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
@@ -74,7 +74,7 @@ test("Should use default custom event variable name with not renamed", () => {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <ScriptEditorContext.Provider
@@ -129,7 +129,7 @@ test("Should use renamed variable", () => {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
@@ -174,7 +174,7 @@ test("Should use renamed variable for custom event", () => {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <ScriptEditorContext.Provider
@@ -230,7 +230,7 @@ test("Should be able to rename variable", async () => {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <VariableSelect
@@ -296,7 +296,7 @@ test("Should cancel rename when Escape is pressed", async () => {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <VariableSelect
@@ -358,7 +358,7 @@ test("Should complete rename when Escape is pressed", async () => {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, UnknownAction>;
 
   render(
     <VariableSelect

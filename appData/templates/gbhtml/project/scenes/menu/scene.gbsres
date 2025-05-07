@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
+  "_index": 3,
   "type": "TOPDOWN",
   "name": "Menu",
   "symbol": "scene_menu",

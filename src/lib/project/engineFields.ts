@@ -1,7 +1,7 @@
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
-import { engineRoot } from "consts";
+import { defaultEngineMetaPath } from "consts";
 import glob from "glob";
 
 interface EngineData {
@@ -11,7 +11,6 @@ interface EngineData {
 export const loadEngineFields = async (
   projectRoot: string
 ): Promise<EngineFieldSchema[]> => {
-  const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
@@ -26,7 +25,7 @@ export const loadEngineFields = async (
   try {
     localEngine = await readJSON(localEngineJsonPath);
   } catch (e) {
-    defaultEngine = await readJSON(defaultEngineJsonPath);
+    defaultEngine = await readJSON(defaultEngineMetaPath);
   }
 
   let fields: EngineFieldSchema[] = [];

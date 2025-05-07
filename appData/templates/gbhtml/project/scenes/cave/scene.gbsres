@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
+  "_index": 0,
   "type": "TOPDOWN",
   "name": "Cave",
   "symbol": "scene_cave",

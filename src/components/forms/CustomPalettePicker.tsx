@@ -12,7 +12,9 @@ import { NumberField } from "ui/form/NumberField";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { GBCHexToClosestHex } from "shared/lib/color/gbcColors";
+import { GBCHexToColorCorrectedHex } from "shared/lib/color/colorCorrection";
+import { hex2GBChex, rgb5BitToGBCHex } from "shared/lib/helpers/color";
+import { getSettings } from "store/features/settings/settingsState";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -67,7 +69,7 @@ const ColorValueFormItem = styled.div`
 `;
 
 interface ColorButtonProps {
-  selected?: boolean;
+  $selected?: boolean;
 }
 
 const ColorButton = styled.button<ColorButtonProps>`
@@ -90,15 +92,15 @@ const ColorButton = styled.button<ColorButtonProps>`
     color: ${(props) => props.theme.colors.text};
   }
 
-  :hover {
+  &:hover {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.input.border};
   }
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           &,
-          :hover {
+          &:hover {
             box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
           }
         `
@@ -109,29 +111,6 @@ const hexToDecimal = hexDec;
 
 const clamp31 = (value: number) => {
   return clamp(value, 0, 31);
-};
-
-// 5-bit rgb value => GBC representative hex value
-const rgbToGBCHex = (red: number, green: number, blue: number) => {
-  const value = (blue << 10) + (green << 5) + red;
-  const r = value & 0x1f;
-  const g = (value >> 5) & 0x1f;
-  const b = (value >> 10) & 0x1f;
-  return (
-    (((r * 13 + g * 2 + b) >> 1) << 16) |
-    ((g * 3 + b) << 9) |
-    ((r * 3 + g * 2 + b * 11) >> 1)
-  )
-    .toString(16)
-    .padStart(6, "0");
-};
-
-// 24-bit hex value => GBC representative Hex value
-const hexToGBCHex = (hex: string) => {
-  const r = clamp31(Math.floor(hexToDecimal(hex.substring(0, 2)) / 8));
-  const g = clamp31(Math.floor(hexToDecimal(hex.substring(2, 4)) / 8));
-  const b = clamp31(Math.floor(hexToDecimal(hex.substring(4)) / 8));
-  return rgbToGBCHex(r, g, b).toUpperCase();
 };
 
 const decimalToHexString = (number: number) => {
@@ -237,6 +216,10 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
     paletteSelectors.selectById(state, paletteId)
   );
 
+  const colorCorrection = useAppSelector(
+    (state) => getSettings(state).colorCorrection
+  );
+
   const [selectedColor, setSelectedColor] = useState<ColorIndex>(0);
   const [colorR, setColorR] = useState(0);
   const [colorG, setColorG] = useState(0);
@@ -317,9 +300,9 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   const updateColorFromRGB = useCallback(
     (r: number, g: number, b: number) => {
       const hexString =
-        decimalToHexString(r * 8) +
-        decimalToHexString(g * 8) +
-        decimalToHexString(b * 8);
+        decimalToHexString(Math.round((r / 31) * 255)) +
+        decimalToHexString(Math.round((g / 31) * 255)) +
+        decimalToHexString(Math.round((b / 31) * 255));
 
       updateCurrentColor(hexString);
 
@@ -328,9 +311,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorH(Math.floor(hsv.h * 360));
       setColorS(Math.floor(hsv.s * 100));
       setColorV(Math.floor(hsv.v * 100));
-      setCurrentCustomHex("#" + hexToGBCHex(hexString).toLowerCase());
+      setCurrentCustomHex(
+        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase()
+      );
     },
-    [updateCurrentColor]
+    [updateCurrentColor, colorCorrection]
   );
 
   const updateColorFromHSV = useCallback(
@@ -354,9 +339,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorR(r);
       setColorG(g);
       setColorB(b);
-      setCurrentCustomHex("#" + hexToGBCHex(hexString).toLowerCase());
+      setCurrentCustomHex(
+        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase()
+      );
     },
-    [updateCurrentColor]
+    [updateCurrentColor, colorCorrection]
   );
 
   const applyHexToState = useCallback((hex: string) => {
@@ -395,14 +382,23 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         editHex = getBlackHex();
       }
       setSelectedColor(colorIndex);
-      setCurrentCustomHex("#" + hexToGBCHex(editHex).toLowerCase());
+      setCurrentCustomHex(
+        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase()
+      );
       applyHexToState(editHex);
     },
-    [applyHexToState, getBlackHex, getDarkHex, getLightHex, getWhiteHex]
+    [
+      applyHexToState,
+      getBlackHex,
+      getDarkHex,
+      getLightHex,
+      getWhiteHex,
+      colorCorrection,
+    ]
   );
 
   const onHexChange = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const parsedValue = e.target.value.replace(/[^#A-Fa-f0-9]/g, "");
       const croppedValue = parsedValue.startsWith("#")
         ? parsedValue.substring(0, 7)
@@ -413,17 +409,22 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
       }
       if (hex.length === 6) {
-        hex = GBCHexToClosestHex(hex);
+        if (colorCorrection === "default") {
+          hex = GBCHexToColorCorrectedHex(hex);
+        }
         applyHexToState(hex);
         updateCurrentColor(hex);
       }
     },
-    [applyHexToState, updateCurrentColor]
+    [applyHexToState, updateCurrentColor, colorCorrection]
   );
 
   const onChangeR = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorR(value);
       updateColorFromRGB(value, colorG, colorB);
@@ -432,8 +433,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeG = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorG(value);
       updateColorFromRGB(colorR, value, colorB);
@@ -442,8 +446,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeB = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp31(newValue);
       setColorB(value);
       updateColorFromRGB(colorR, colorG, value);
@@ -452,8 +459,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeH = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 360);
       setColorH(value);
       updateColorFromHSV(value, colorS, colorV);
@@ -462,8 +472,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeS = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 100);
       setColorS(value);
       updateColorFromHSV(colorH, value, colorV);
@@ -472,8 +485,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   );
 
   const onChangeV = useCallback(
-    (e) => {
-      const newValue = e.currentTarget ? e.currentTarget.value : e;
+    (e: React.ChangeEvent<HTMLInputElement> | number) => {
+      const newValue =
+        typeof e === "number"
+          ? e
+          : Number(e.currentTarget ? e.currentTarget.value : e);
       const value = clamp(newValue, 0, 100);
       setColorV(value);
       updateColorFromHSV(colorH, colorS, value);
@@ -486,8 +502,13 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   }, [dispatch, paletteId]);
 
   const onCopy = useCallback(
-    (e) => {
-      if (e.target.nodeName !== "BODY" && e.target.value.length > 0) {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
+      if (
+        e.target.nodeName !== "BODY" &&
+        e.target instanceof HTMLInputElement &&
+        e.target.value.length > 0
+      ) {
         return;
       }
       e.preventDefault();
@@ -501,14 +522,17 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   const initialiseColorValues = useCallback(
     (color: string | undefined, paletteIndex: number) => {
       const editHex = color || defaultColors[paletteIndex];
-      setCurrentCustomHex("#" + hexToGBCHex(editHex).toLowerCase());
+      setCurrentCustomHex(
+        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase()
+      );
       applyHexToState(editHex);
     },
-    [applyHexToState]
+    [applyHexToState, colorCorrection]
   );
 
   const onPaste = useCallback(
-    async (e) => {
+    async (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
       }
@@ -578,11 +602,14 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         {colorIndexes.map((index) => (
           <ColorButton
             key={index}
-            selected={selectedColor === index}
+            $selected={selectedColor === index}
             className="focus-visible"
             onClick={() => onColorSelect(index)}
             style={{
-              background: `#${hexToGBCHex(palette.colors[index])}`,
+              background: `#${hex2GBChex(
+                palette.colors[index],
+                colorCorrection
+              )}`,
             }}
           >
             {index === 0 && <span>{l10n("FIELD_COLOR_LIGHTEST")}</span>}
@@ -607,9 +634,13 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
           <ColorSlider
             steps={11}
             value={(colorR || 0) / 31}
-            onChange={(value) => onChangeR(Math.round(value * 31))}
+            onChange={(value) => onChangeR(Math.round(Number(value) * 31))}
             colorAtValue={(value) => {
-              return `#${rgbToGBCHex(Math.round(value * 31), colorG, colorB)}`;
+              return `#${rgb5BitToGBCHex(
+                Math.round(value * 31),
+                colorG,
+                colorB
+              )}`;
             }}
           />
         </ColorValueFormItem>
@@ -631,7 +662,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             value={(colorG || 0) / 31}
             onChange={(value) => onChangeG(Math.round(value * 31))}
             colorAtValue={(value) => {
-              return `#${rgbToGBCHex(colorR, Math.round(value * 31), colorB)}`;
+              return `#${rgb5BitToGBCHex(
+                colorR,
+                Math.round(value * 31),
+                colorB
+              )}`;
             }}
           />
         </ColorValueFormItem>
@@ -653,7 +688,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             value={(colorB || 0) / 31}
             onChange={(value) => onChangeB(Math.round(value * 31))}
             colorAtValue={(value) => {
-              return `#${rgbToGBCHex(colorR, colorG, Math.round(value * 31))}`;
+              return `#${rgb5BitToGBCHex(
+                colorR,
+                colorG,
+                Math.round(value * 31)
+              )}`;
             }}
           />
         </ColorValueFormItem>
@@ -705,7 +744,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               if (r > 31) r = 31;
               if (g > 31) g = 31;
               if (b > 31) b = 31;
-              return `#${rgbToGBCHex(r, g, b)}`;
+              return `#${rgb5BitToGBCHex(r, g, b)}`;
             }}
           />
         </ColorValueFormItem>
@@ -734,7 +773,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               if (r > 31) r = 31;
               if (g > 31) g = 31;
               if (b > 31) b = 31;
-              return `#${rgbToGBCHex(r, g, b)}`;
+              return `#${rgb5BitToGBCHex(r, g, b)}`;
             }}
           />
         </ColorValueFormItem>

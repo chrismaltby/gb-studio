@@ -18,7 +18,6 @@ import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 import API from "renderer/lib/api";
 import { NavigationSection } from "store/features/navigation/navigationState";
-import { Background } from "shared/lib/entities/entitiesTypes";
 import { isZoomSection } from "store/features/editor/editorHelpers";
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -163,11 +162,11 @@ store.subscribe(() => {
 });
 
 API.project.onBuildLog((_event, message) => {
-  store.dispatch(consoleActions.stdOut(message));
+  store.dispatch(consoleActions.stdOut({ text: message }));
 });
 
 API.project.onBuildError((_event, message) => {
-  store.dispatch(consoleActions.stdErr(message));
+  store.dispatch(consoleActions.stdErr({ text: message }));
 });
 
 // Watch Sprites
@@ -188,9 +187,7 @@ API.events.watch.sprite.removed.subscribe((_, filename, plugin) => {
 // Watch Backgrounds
 
 API.events.watch.background.changed.subscribe((_, _filename, data) => {
-  store.dispatch(
-    entitiesActions.loadBackground({ data: data as unknown as Background })
-  );
+  store.dispatch(entitiesActions.loadBackground({ data }));
 });
 
 API.events.watch.background.removed.subscribe((_, filename, plugin) => {
@@ -445,4 +442,8 @@ API.events.debugger.disconnected.subscribe(() => {
 
 API.events.project.saveProgress.subscribe((_, completed, total) => {
   store.dispatch(projectActions.setSaveWriteProgress({ completed, total }));
+});
+
+API.events.debugger.romusage.subscribe((_, usageData) => {
+  store.dispatch(debuggerActions.setUsageData(usageData));
 });

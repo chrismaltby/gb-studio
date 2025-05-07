@@ -1,5 +1,12 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
+const rendererConfig = require("./webpack.renderer.config.js");
+
+const rendererPreloadConfig = {
+  ...rendererConfig,
+  plugins: [],
+};
 
 module.exports = async () => {
   const { MakerAppImage } = await import("@reforged/maker-appimage");
@@ -22,11 +29,19 @@ module.exports = async () => {
       new MakerAppImage({}),
       {
         name: "@electron-forge/maker-deb",
-        config: {},
+        config: {
+          options: {
+            icon: "src/assets/app/icon/app_icon.png",
+          },
+        },
       },
       {
         name: "@electron-forge/maker-rpm",
-        config: {},
+        config: {
+          options: {
+            icon: "src/assets/app/icon/app_icon.png",
+          },
+        },
       },
     ],
     packagerConfig: {
@@ -56,6 +71,7 @@ module.exports = async () => {
       {
         name: "@electron-forge/plugin-webpack",
         config: {
+          devServer: { liveReload: false },
           mainConfig: "./webpack.main.config.js",
           renderer: {
             config: "./webpack.renderer.config.js",
@@ -66,6 +82,7 @@ module.exports = async () => {
                 js: "./src/app/project/ProjectRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
+                  config: rendererPreloadConfig,
                 },
                 name: "main_window",
                 additionalChunks: [
@@ -80,6 +97,7 @@ module.exports = async () => {
                 js: "./src/app/splash/SplashRoot.tsx",
                 preload: {
                   js: "./src/app/splash/preload.ts",
+                  config: rendererPreloadConfig,
                 },
                 name: "splash_window",
                 additionalChunks: [
@@ -93,6 +111,7 @@ module.exports = async () => {
                 js: "./src/app/preferences/PreferencesRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
+                  config: rendererPreloadConfig,
                 },
                 name: "preferences_window",
                 additionalChunks: [
@@ -102,10 +121,20 @@ module.exports = async () => {
                 ],
               },
               {
+                html: "./src/app/plugins/plugins.html",
+                js: "./src/app/plugins/PluginsRoot.tsx",
+                preload: {
+                  js: "./src/app/plugins/preload.ts",
+                  config: rendererPreloadConfig,
+                },
+                name: "plugins_window",
+              },
+              {
                 html: "./src/app/music/music.html",
                 js: "./src/app/music/MusicRoot.tsx",
                 preload: {
                   js: "./src/app/project/preload.ts",
+                  config: rendererPreloadConfig,
                 },
                 name: "music_window",
                 additionalChunks: [
@@ -118,6 +147,7 @@ module.exports = async () => {
                 name: "game_window",
                 preload: {
                   js: "./src/app/game/preload.ts",
+                  config: rendererPreloadConfig,
                 },
               },
             ],

@@ -3,6 +3,7 @@
   "id": "114806de-0098-4bac-a152-7f61497f7c99",
   "_index": 0,
   "symbol": "actor_chest",
+  "prefabId": "",
   "name": "Chest",
   "x": 27,
   "y": 15,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "ea4b563c-2be6-4022-845d-a436911059c5",

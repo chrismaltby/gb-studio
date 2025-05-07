@@ -1,15 +1,19 @@
 import {
+  ActorPrefabResource,
   ActorResource,
   CompressedSceneResourceWithChildren,
   PaletteResource,
   Resource,
   ScriptResource,
+  TriggerPrefabResource,
   TriggerResource,
 } from "shared/lib/resources/types";
 import Path from "path";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 
 type Entity = { id: string; name: string };
+
+export const projectResourcesFolder = "project";
 
 const entityToFilePath = (entity: Entity, fallbackName: string): string => {
   return (
@@ -42,6 +46,8 @@ const resourceTypeFolderLookup = {
   scene: "scenes",
   actor: "actors",
   trigger: "triggers",
+  actorPrefab: "prefabs/actors",
+  triggerPrefab: "prefabs/triggers",
 };
 
 export const getResourceAssetPath = (resource: Resource): string =>
@@ -54,6 +60,7 @@ export const getSceneFolderPath = (
   scene: CompressedSceneResourceWithChildren
 ): string =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[scene._resourceType],
     `${entityToFilePath(scene, "scene")}`
   );
@@ -106,12 +113,30 @@ export const getSceneResourcePaths = (
 
 export const getPaletteResourcePath = (palette: PaletteResource) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[palette._resourceType],
     `${entityToFilePath(palette, "palette")}.gbsres`
   );
 
 export const getScriptResourcePath = (script: ScriptResource) =>
   Path.join(
+    projectResourcesFolder,
     resourceTypeFolderLookup[script._resourceType],
     `${entityToFilePath(script, "script")}.gbsres`
+  );
+
+export const getActorPrefabResourcePath = (actorPrefab: ActorPrefabResource) =>
+  Path.join(
+    projectResourcesFolder,
+    resourceTypeFolderLookup[actorPrefab._resourceType],
+    `${entityToFilePath(actorPrefab, "actor")}.gbsres`
+  );
+
+export const getTriggerPrefabResourcePath = (
+  triggerPrefab: TriggerPrefabResource
+) =>
+  Path.join(
+    projectResourcesFolder,
+    resourceTypeFolderLookup[triggerPrefab._resourceType],
+    `${entityToFilePath(triggerPrefab, "trigger")}.gbsres`
   );

@@ -3,6 +3,7 @@
   "id": "277dbec5-c10b-40f2-842d-48a3b41b468e",
   "_index": 2,
   "symbol": "actor_save_point_1",
+  "prefabId": "",
   "name": "Save Point",
   "x": 19,
   "y": 14,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "fbbe5361-c713-410e-9880-c3394a0ce77b",

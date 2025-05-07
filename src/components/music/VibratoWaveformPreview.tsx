@@ -17,7 +17,7 @@ export const VibratoWaveformPreview = ({
     } `;
   });
 
-  const defaultColor = themeContext.colors.highlight;
+  const defaultColor = themeContext?.colors.highlight;
 
   return (
     <div style={{ height: 20 }}>

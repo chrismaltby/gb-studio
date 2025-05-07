@@ -253,19 +253,49 @@ export const compileFXHammerSingle = async (
     throw new Error("Invalid file format");
   }
 
-  const channels = file[0x300 + effectnum];
+  // Clamp to within range of available effects
+  let numEffects = 0;
+  for (let effectnum = 0; effectnum < 0x3c; effectnum++) {
+    const channels = file[0x300 + effectnum];
+    if (channels !== 0) {
+      numEffects++;
+    }
+  }
+  const playEffectNum = Math.max(0, Math.min(effectnum, numEffects - 1));
+
+  const channels = file[0x300 + playEffectNum];
   if (channels === 0) {
     throw new Error(
-      `No channels for FX Hammer ${filename} Effect ${effectnum}`
+      `No channels for FX Hammer ${filename} Effect ${playEffectNum}`
     );
   }
 
   return compileFXHammerEffect(
     channels,
-    file.slice(0x400 + effectnum * 256, 0x400 + (effectnum + 1) * 256),
+    file.slice(0x400 + playEffectNum * 256, 0x400 + (playEffectNum + 1) * 256),
     fmt,
     options
   );
+};
+
+export const readFXHammerNumEffects = async (
+  filename: string
+): Promise<number> => {
+  let numEffects = 0;
+  const file = await readFile(filename);
+
+  if (unpackString(file.slice(0x9, 0x12)) !== "FX HAMMER") {
+    return 0;
+  }
+
+  for (let effectnum = 0; effectnum < 0x3c; effectnum++) {
+    const channels = file[0x300 + effectnum];
+    if (channels !== 0) {
+      numEffects++;
+    }
+  }
+
+  return numEffects;
 };
 
 const unpackString = (data: number[] | Buffer): string => {

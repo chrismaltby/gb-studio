@@ -219,7 +219,7 @@ const WorldPage = () => {
         style={{
           transition: "opacity 0.3s ease-in-out",
           width: showNavigator ? leftPaneWidth : 0,
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           opacity: leftPaneWidth < 100 ? 0.1 : 1,
           overflow: "hidden",
           position: "relative",
@@ -245,8 +245,8 @@ const WorldPage = () => {
           minWidth: 0,
           flexShrink: 0,
           overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
+          background: themeContext?.colors.background,
+          color: themeContext?.colors.text,
           height: windowHeight - 38,
           position: "relative",
           display: "flex",
@@ -257,8 +257,8 @@ const WorldPage = () => {
           ref={documentContainerRef}
           style={{
             overflow: "hidden",
-            background: themeContext.colors.document.background,
-            color: themeContext.colors.text,
+            background: themeContext?.colors.background,
+            color: themeContext?.colors.text,
             flexGrow: 1,
             position: "relative",
           }}
@@ -298,7 +298,7 @@ const WorldPage = () => {
       <div
         style={{
           width: rightPaneWidth,
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           height: "100%",
           overflow: "hidden",
           position: "relative",

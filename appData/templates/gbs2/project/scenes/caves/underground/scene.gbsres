@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "3509d273-bf7e-4946-89ce-a489df5a449d",
+  "_index": 2,
   "type": "TOPDOWN",
   "name": "caves/Underground",
   "symbol": "scene_underground",

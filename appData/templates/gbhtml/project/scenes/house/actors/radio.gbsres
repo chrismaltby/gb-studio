@@ -3,6 +3,7 @@
   "id": "9603b702-aa07-4ad7-8906-16112f308854",
   "_index": 1,
   "symbol": "actor_radio",
+  "prefabId": "",
   "name": "Radio",
   "x": 15,
   "y": 5,
@@ -16,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "prefabScriptOverrides": {},
   "script": [
     {
       "id": "63aff028-03a3-4bf4-9aac-afed5fc88ad2",

@@ -2,7 +2,7 @@
   "goldTier": [
     {
       "attributes": {
-        "full_name": "Brandon Morris"
+        "full_name": "BMo"
       },
       "id": "483773",
       "type": "user"
@@ -67,9 +67,23 @@
     },
     {
       "attributes": {
+        "full_name": "Erik Rogers"
+      },
+      "id": "7794289",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "evan niedojadlo"
       },
       "id": "7767557",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Greg"
+      },
+      "id": "25608244",
       "type": "user"
     },
     {
@@ -81,9 +95,9 @@
     },
     {
       "attributes": {
-        "full_name": "Justin Kocian"
+        "full_name": "Johndo"
       },
-      "id": "59293884",
+      "id": "74199063",
       "type": "user"
     },
     {
@@ -102,23 +116,16 @@
     },
     {
       "attributes": {
+        "full_name": "mloukhiyye"
+      },
+      "id": "134643376",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "MsRiaCayde"
       },
       "id": "64844487",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "npckc"
-      },
-      "id": "14825686",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "The Judge"
-      },
-      "id": "111003767",
       "type": "user"
     }
   ],
@@ -132,6 +139,13 @@
     },
     {
       "attributes": {
+        "full_name": "Goosifer"
+      },
+      "id": "2840872",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Gumpy Function"
       },
       "id": "128473778",
@@ -139,9 +153,23 @@
     },
     {
       "attributes": {
+        "full_name": "Justin Kocian"
+      },
+      "id": "59293884",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Martin Gauer"
       },
       "id": "3319189",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "npckc"
+      },
+      "id": "14825686",
       "type": "user"
     },
     {
@@ -156,6 +184,13 @@
         "full_name": "Skittle"
       },
       "id": "57539298",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "The Judge"
+      },
+      "id": "111003767",
       "type": "user"
     },
     {

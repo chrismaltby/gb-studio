@@ -1,5 +1,5 @@
 import flatten from "lodash/flatten";
-import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
+import { UnknownAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -13,9 +13,12 @@ import {
   scriptEventSelectors,
   generateScriptEventInsertActions,
   sceneSelectors,
+  actorPrefabSelectors,
+  triggerPrefabSelectors,
 } from "store/features/entities/entitiesState";
 import {
   ActorNormalized,
+  ActorPrefabNormalized,
   CustomEventNormalized,
   Metasprite,
   MetaspriteTile,
@@ -23,6 +26,7 @@ import {
   ScriptEventNormalized,
   SpriteAnimation,
   TriggerNormalized,
+  TriggerPrefabNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
@@ -41,8 +45,12 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import {
+  actorName,
   customEventName,
+  isActorPrefabEqual,
   isCustomEventEqual,
+  isTriggerPrefabEqual,
+  triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import {
@@ -63,13 +71,14 @@ import {
   walkTriggerScriptsKeys,
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
+import { sortSubsetStringArray } from "shared/lib/helpers/array";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
   newId: string,
   variables: Variable[]
 ) => {
-  const actions: AnyAction[] = [];
+  const actions: UnknownAction[] = [];
   for (const variable of variables) {
     if (variable.id.startsWith(originalId)) {
       const variableId = variable.id.replace(originalId, newId);
@@ -85,11 +94,11 @@ const generateLocalVariableInsertActions = (
 
 const generateCustomEventInsertActions = async (
   customEvent: CustomEventNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingCustomEvents: CustomEventNormalized[],
-  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
-): Promise<AnyAction[]> => {
-  const actions: AnyAction[] = [];
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
 
   const existingEvent = existingCustomEvents.find(
     (e) => e.id === customEvent.id
@@ -148,13 +157,13 @@ const generateCustomEventInsertActions = async (
 
 const generateActorInsertActions = (
   actor: ActorNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addActorAction = entitiesActions.addActor({
     sceneId,
     x,
@@ -184,15 +193,76 @@ const generateActorInsertActions = (
   return actions;
 };
 
+const generateActorPrefabInsertActions = async (
+  prefab: ActorPrefabNormalized,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  existingActorPrefabs: ActorPrefabNormalized[],
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
+
+  const existingPrefab = existingActorPrefabs.find((e) => e.id === prefab.id);
+  if (
+    existingPrefab &&
+    isActorPrefabEqual(
+      prefab,
+      scriptEventsLookup,
+      existingPrefab,
+      existingScriptEventsLookup
+    )
+  ) {
+    return [];
+  }
+
+  if (existingPrefab) {
+    const existingEventIndex = existingActorPrefabs.indexOf(existingPrefab);
+    const existingName = actorName(existingPrefab, existingEventIndex);
+    const cancel = await API.dialog.confirmReplacePrefab(existingName);
+    if (cancel) {
+      return [];
+    }
+  }
+
+  if (!existingPrefab) {
+    const addActorPrefabAction = entitiesActions.addActorPrefab({
+      actorPrefabId: prefab.id,
+      defaults: prefab,
+    });
+    actions.push(addActorPrefabAction);
+  } else {
+    const addActorPrefabAction = entitiesActions.editActorPrefab({
+      actorPrefabId: prefab.id,
+      changes: {
+        ...prefab,
+        script: [],
+      },
+    });
+    actions.push(addActorPrefabAction);
+  }
+
+  const scriptEventIds = prefab.script;
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      prefab.id,
+      "actorPrefab",
+      "script"
+    )
+  );
+
+  return actions;
+};
+
 const generateTriggerInsertActions = (
   trigger: TriggerNormalized,
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addTriggerAction = entitiesActions.addTrigger({
     sceneId,
     x,
@@ -224,17 +294,78 @@ const generateTriggerInsertActions = (
   return actions;
 };
 
+const generateTriggerPrefabInsertActions = async (
+  prefab: TriggerPrefabNormalized,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  existingTriggerPrefabs: TriggerPrefabNormalized[],
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+): Promise<UnknownAction[]> => {
+  const actions: UnknownAction[] = [];
+
+  const existingPrefab = existingTriggerPrefabs.find((e) => e.id === prefab.id);
+  if (
+    existingPrefab &&
+    isTriggerPrefabEqual(
+      prefab,
+      scriptEventsLookup,
+      existingPrefab,
+      existingScriptEventsLookup
+    )
+  ) {
+    return [];
+  }
+
+  if (existingPrefab) {
+    const existingEventIndex = existingTriggerPrefabs.indexOf(existingPrefab);
+    const existingName = triggerName(existingPrefab, existingEventIndex);
+    const cancel = await API.dialog.confirmReplacePrefab(existingName);
+    if (cancel) {
+      return [];
+    }
+  }
+
+  if (!existingPrefab) {
+    const addTriggerPrefabAction = entitiesActions.addTriggerPrefab({
+      triggerPrefabId: prefab.id,
+      defaults: prefab,
+    });
+    actions.push(addTriggerPrefabAction);
+  } else {
+    const addTriggerPrefabAction = entitiesActions.editTriggerPrefab({
+      triggerPrefabId: prefab.id,
+      changes: {
+        ...prefab,
+        script: [],
+      },
+    });
+    actions.push(addTriggerPrefabAction);
+  }
+
+  const scriptEventIds = prefab.script;
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      prefab.id,
+      "triggerPrefab",
+      "script"
+    )
+  );
+
+  return actions;
+};
+
 const generateSceneInsertActions = (
   scene: SceneNormalized,
   actors: ActorNormalized[],
   triggers: TriggerNormalized[],
-  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
   y: number
-): AnyAction[] => {
-  const actions: AnyAction[] = [];
+): UnknownAction[] => {
+  const actions: UnknownAction[] = [];
   const addSceneAction = entitiesActions.addScene({
     x,
     y,
@@ -290,11 +421,9 @@ const generateSceneInsertActions = (
   );
 
   const actorMapping: Record<string, string> = actions
-    .filter((action) => {
-      return action.type === "entities/addActor";
-    })
+    .filter((action) => entitiesActions.addActor.match(action))
     .reduce((memo, action) => {
-      const oldId: string = action.payload?.defaults?.id;
+      const oldId: string = action.payload?.defaults?.id ?? "";
       const newId: string = action.payload?.actorId;
       if (oldId && newId) {
         memo[oldId] = newId;
@@ -303,14 +432,14 @@ const generateSceneInsertActions = (
     }, {} as Record<string, string>);
 
   const remappedActions = actions.map((action) => {
-    if (action.type !== "entities/addScriptEvents") {
+    if (!entitiesActions.addScriptEvents.match(action)) {
       return action;
     }
     return {
       ...action,
       payload: {
         ...action.payload,
-        data: action.payload.data.map((eventData: ScriptEventNormalized) => {
+        data: action.payload.data.map((eventData) => {
           return {
             ...eventData,
             args: patchEventArgs(
@@ -387,7 +516,21 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const metaspriteTilesLookup =
         metaspriteTileSelectors.selectEntities(state);
 
-      const metasprites = action.payload.metaspriteIds
+      const spriteAnimation = spriteAnimationSelectors.selectById(
+        state,
+        action.payload.spriteAnimationId
+      );
+
+      if (!spriteAnimation) {
+        return;
+      }
+
+      const sortedMetaspriteIds = sortSubsetStringArray(
+        action.payload.metaspriteIds,
+        spriteAnimation.frames
+      );
+
+      const metasprites = sortedMetaspriteIds
         .map((id) => {
           return metaspritesLookup[id];
         })
@@ -478,10 +621,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const triggers: TriggerNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const triggerPrefabs: TriggerPrefabNormalized[] = [];
+      const triggerPrefabsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.triggerIds.find((id) =>
@@ -511,9 +657,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedTriggerScripts(
             trigger,
             scriptEventsLookup,
+            {},
             { includeCommented: true },
             addEvent
           );
+          const prefab = triggerPrefabsLookup[trigger.prefabId];
+          if (prefab && !triggerPrefabsSeen[prefab.id]) {
+            triggerPrefabsSeen[prefab.id] = true;
+            triggerPrefabs.push(prefab);
+            walkNormalizedTriggerScripts(
+              prefab,
+              scriptEventsLookup,
+              {},
+              { includeCommented: true },
+              addEvent
+            );
+          }
         }
       });
       for (const customEvent of customEvents) {
@@ -532,6 +691,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvents,
           variables,
           scriptEvents,
+          triggerPrefabs,
         },
       });
     } else if (actions.copyActors.match(action)) {
@@ -539,10 +699,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorsLookup = actorSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const actors: ActorNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const actorPrefabs: ActorPrefabNormalized[] = [];
+      const actorPrefabsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.actorIds.find((id) => variable.id.startsWith(id));
@@ -570,9 +733,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalizedActorScripts(
             actor,
             scriptEventsLookup,
+            {},
             { includeCommented: true },
             addEvent
           );
+          const prefab = actorPrefabsLookup[actor.prefabId];
+          if (prefab && !actorPrefabsSeen[prefab.id]) {
+            actorPrefabsSeen[prefab.id] = true;
+            actorPrefabs.push(prefab);
+            walkNormalizedActorScripts(
+              prefab,
+              scriptEventsLookup,
+              {},
+              { includeCommented: true },
+              addEvent
+            );
+          }
         }
       });
       for (const customEvent of customEvents) {
@@ -591,6 +767,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvents,
           variables,
           scriptEvents,
+          actorPrefabs,
         },
       });
     } else if (actions.copyScenes.match(action)) {
@@ -600,11 +777,18 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
+      const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+      const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const scenes: SceneNormalized[] = [];
       const actors: ActorNormalized[] = [];
       const triggers: TriggerNormalized[] = [];
       const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
+      const actorPrefabs: ActorPrefabNormalized[] = [];
+      const actorPrefabsSeen: Record<string, boolean> = {};
+      const triggerPrefabs: TriggerPrefabNormalized[] = [];
+      const triggerPrefabsSeen: Record<string, boolean> = {};
+
       const scriptEvents: ScriptEventNormalized[] = [];
 
       const addEvent = (scriptEvent: ScriptEventNormalized) => {
@@ -637,9 +821,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedActorScripts(
                 actor,
                 scriptEventsLookup,
+                {},
                 { includeCommented: true },
                 addEvent
               );
+              const prefab = actorPrefabsLookup[actor.prefabId];
+              if (prefab && !actorPrefabsSeen[prefab.id]) {
+                actorPrefabsSeen[prefab.id] = true;
+                actorPrefabs.push(prefab);
+                walkNormalizedActorScripts(
+                  prefab,
+                  scriptEventsLookup,
+                  {},
+                  { includeCommented: true },
+                  addEvent
+                );
+              }
             }
           });
           scene.triggers.forEach((triggerId) => {
@@ -649,9 +846,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalizedTriggerScripts(
                 trigger,
                 scriptEventsLookup,
+                {},
                 { includeCommented: true },
                 addEvent
               );
+              const prefab = triggerPrefabsLookup[trigger.prefabId];
+              if (prefab && !triggerPrefabsSeen[prefab.id]) {
+                triggerPrefabsSeen[prefab.id] = true;
+                triggerPrefabs.push(prefab);
+                walkNormalizedTriggerScripts(
+                  prefab,
+                  scriptEventsLookup,
+                  {},
+                  { includeCommented: true },
+                  addEvent
+                );
+              }
             }
           });
           walkNormalizedSceneSpecificScripts(
@@ -685,6 +895,8 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           variables,
           customEvents,
           scriptEvents,
+          actorPrefabs,
+          triggerPrefabs,
         },
       });
     } else if (actions.pasteScriptEvents.match(action)) {
@@ -759,8 +971,23 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingTriggerPrefabs = triggerPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+
+        for (const prefab of clipboard.data.triggerPrefabs ?? []) {
+          const actions = await generateTriggerPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingTriggerPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
         for (const trigger of clipboard.data.triggers) {
           const actions = generateTriggerInsertActions(
             trigger,
@@ -797,8 +1024,22 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+        for (const prefab of clipboard.data.actorPrefabs ?? []) {
+          const actions = await generateActorPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingActorPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
         for (const actor of clipboard.data.actors) {
           const actions = generateActorInsertActions(
             actor,
@@ -836,8 +1077,39 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const scriptEventsLookup = keyBy(scriptEvents, "id");
         const scriptEventDefs = selectScriptEventDefs(state);
         const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
+        const existingTriggerPrefabs = triggerPrefabSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
+
+        for (const prefab of clipboard.data.actorPrefabs ?? []) {
+          const actions = await generateActorPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingActorPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
+
+        for (const prefab of clipboard.data.triggerPrefabs ?? []) {
+          const actions = await generateTriggerPrefabInsertActions(
+            prefab,
+            scriptEventsLookup,
+            existingTriggerPrefabs,
+            existingScriptEventsLookup
+          );
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
+        }
+
         for (const scene of clipboard.data.scenes) {
           const actions = generateSceneInsertActions(
             scene,
@@ -933,6 +1205,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             return entitiesActions.addMetasprite({
               spriteSheetId: action.payload.spriteSheetId,
               spriteAnimationId: animationId,
+              afterMetaspriteId: "",
             });
           });
 
@@ -951,7 +1224,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               }
               return memo;
             },
-            {} as Dictionary<string>
+            {} as Record<string, string>
           );
 
           const newTileActions = data.metaspriteTiles.map((tile) => {
@@ -977,10 +1250,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       } else if (clipboard.format === ClipboardTypeMetasprites) {
         const data = clipboard.data;
 
-        const newActions = data.metasprites.map(() => {
+        const newActions = data.metasprites.reverse().map(() => {
           return entitiesActions.addMetasprite({
             spriteSheetId: action.payload.spriteSheetId,
             spriteAnimationId: action.payload.spriteAnimationId,
+            afterMetaspriteId: action.payload.metaspriteId,
           });
         });
 
@@ -997,7 +1271,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             }
             return memo;
           },
-          {} as Dictionary<string>
+          {} as Record<string, string>
         );
 
         const newTileActions = data.metaspriteTiles.map((tile) => {

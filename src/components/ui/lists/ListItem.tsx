@@ -16,7 +16,7 @@ export const ListItem = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.activeBackground};
   }
 
@@ -25,7 +25,7 @@ export const ListItem = styled.div`
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 
-  :focus {
+  &:focus {
     outline: 0 !important;
     box-shadow: none !important;
   }

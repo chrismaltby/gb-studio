@@ -18,6 +18,7 @@ const fields = [
     label: l10n("FIELD_FADE_SPEED"),
     description: l10n("FIELD_SPEED_FADE_DESC"),
     type: "fadeSpeed",
+    allowNone: true,
     defaultValue: "2",
     width: "50%",
   },
@@ -36,5 +37,4 @@ module.exports = {
   subGroups,
   fields,
   compile,
-  waitUntilAfterInitFade: true,
 };

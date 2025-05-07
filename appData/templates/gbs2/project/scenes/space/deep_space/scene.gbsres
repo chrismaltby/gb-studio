@@ -1,6 +1,7 @@
 {
   "_resourceType": "scene",
   "id": "51d42da5-b7ce-48b4-a435-1902368d6d5c",
+  "_index": 7,
   "type": "TOPDOWN",
   "name": "space/Deep Space",
   "symbol": "scene_deep_space",

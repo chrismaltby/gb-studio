@@ -665,7 +665,7 @@ export const SongTracker = ({
   );
 
   const onSelectAll = useCallback(
-    (e) => {
+    (e: Event) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -744,7 +744,8 @@ export const SongTracker = ({
   }, []);
 
   const onCopy = useCallback(
-    (e) => {
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName === "INPUT") {
         return;
       }
@@ -875,7 +876,7 @@ export const SongTracker = ({
               playbackState[0] === sequenceId && playbackState[1] === i;
             const isSelected = selectedTrackerRows?.indexOf(i) !== -1;
             return (
-              <span ref={isPlaying ? playingRowRef : null}>
+              <span ref={isPlaying ? playingRowRef : null} key={`__${i}`}>
                 <SongRow
                   id={`__${i}`}
                   n={i}

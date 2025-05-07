@@ -40,7 +40,3 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
     )}
   </Wrapper>
 );
-
-CheckboxField.defaultProps = {
-  checked: undefined,
-};

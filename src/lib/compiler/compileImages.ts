@@ -24,6 +24,8 @@ import {
 import type { ColorModeSetting } from "store/features/settings/settingsState";
 import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { ReferencedBackground } from "./precompile/determineUsedAssets";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -34,6 +36,8 @@ type PrecompiledBackgroundData = BackgroundData & {
   tilemap: number[];
   attr: number[];
   autoPalettes?: Palette[];
+  is360: boolean;
+  colorMode: ColorModeSetting;
 };
 
 type CompileImageOptions = {
@@ -137,6 +141,7 @@ const compileImage = async (
   commonTileset: TilesetData | undefined,
   is360: boolean,
   colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData> => {
@@ -166,7 +171,7 @@ const compileImage = async (
   let autoPalettes: Palette[] | undefined = undefined;
   if (autoColorMode === ImageColorMode.AUTO_COLOR) {
     // Extract both tiles and colors from color PNG
-    const paletteData = await readFileToPalettes(filename);
+    const paletteData = await readFileToPalettes(filename, colorCorrection);
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
@@ -212,6 +217,8 @@ const compileImage = async (
       tilemap,
       attr,
       autoPalettes,
+      is360,
+      colorMode,
     };
   }
 
@@ -283,14 +290,15 @@ const compileImage = async (
     tilemap,
     attr,
     autoPalettes,
+    is360,
+    colorMode,
   };
 };
 
 const compileImages = async (
-  imgs: BackgroundData[],
+  imgs: ReferencedBackground[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
-  generate360Ids: string[],
-  colorMode: ColorModeSetting,
+  colorCorrection: ColorCorrectionSetting,
   projectPath: string,
   { warnings }: CompileImageOptions
 ): Promise<PrecompiledBackgroundData[]> => {
@@ -299,23 +307,36 @@ const compileImages = async (
     imgs
       .map((img) => {
         const commonTilesets = commonTilesetsLookup[img.id] ?? [];
+        // If this background has never been used with a common tileset
+        // or has been referenced without a common tileset at any point
+        // it's tiles should always be generated
+        const forceGenerateTileset =
+          commonTilesets.length === 0 || img.forceTilesetGeneration;
         return [
-          () =>
-            compileImage(
-              img,
-              undefined,
-              generate360Ids.includes(img.id),
-              colorMode,
-              projectPath,
-              { warnings }
-            ),
+          // Generate background with no common tilesets applied
+          ...(forceGenerateTileset
+            ? [
+                () =>
+                  compileImage(
+                    img,
+                    undefined,
+                    img.is360,
+                    img.colorMode,
+                    colorCorrection,
+                    projectPath,
+                    { warnings }
+                  ),
+              ]
+            : []),
+          // Generate background with each used common tileset
           ...commonTilesets.map((commonTileset) => {
             return () =>
               compileImage(
                 img,
                 commonTileset,
-                generate360Ids.includes(img.id),
-                colorMode,
+                img.is360,
+                img.colorMode,
+                colorCorrection,
                 projectPath,
                 { warnings }
               );

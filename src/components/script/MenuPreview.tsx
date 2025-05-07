@@ -3,8 +3,9 @@ import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
-import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
+import { loadFont, drawFrame, drawText } from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
+import { FontData } from "shared/lib/helpers/fonts";
 
 interface MenuPreviewProps {
   items: string[];
@@ -103,6 +104,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
             item || `Item ${i + 1}`,
             x,
             y,
+            Infinity,
             fontsData,
             defaultFontId,
             fonts[0]?.id

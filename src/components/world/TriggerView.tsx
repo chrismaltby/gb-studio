@@ -14,7 +14,7 @@ interface TriggerViewProps {
 }
 
 interface WrapperProps {
-  selected?: boolean;
+  $selected?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -26,7 +26,7 @@ const Wrapper = styled.div<WrapperProps>`
   -webkit-transform: translate3d(0, 0, 0);
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
           background-color: rgba(255, 199, 40, 0.9);
         `
@@ -110,7 +110,7 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
 
   return (
     <Wrapper
-      selected={selected}
+      $selected={selected}
       onMouseDown={onMouseDown}
       onContextMenu={onContextMenu}
       style={{
