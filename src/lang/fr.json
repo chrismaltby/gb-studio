@@ -1345,7 +1345,7 @@
   "EVENT_GROUP_SCRIPT": "Script",
   "EVENT_GROUP_TILES": "Tuiles",
   "EVENT_GROUP_SCENE_STACK": "Pile de scènes",
-  "EVENT_GROUP_OVERLAY": "Masquue",
+  "EVENT_GROUP_OVERLAY": "Masque",
   "EVENT_GROUP_RANDOM": "Aléatoire",
   "EVENT_GROUP_RESET": "Réinitialisation",
   "EVENT_GROUP_FLAGS": "État des bits",
