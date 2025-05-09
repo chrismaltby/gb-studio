@@ -1089,7 +1089,7 @@
   "EVENT_COMMENT": "Commentaire",
   "EVENT_COMMENT_DESC": "Vous permet de laisser des notes dans vos scripts. N'apporte aucune fonctionnalité en jeu. Le texte que vous tapez est automatiquement défini comme titre de l'événement, vous pouvez donc réduire le commentaire tout en lisant son contenu.",
   "EVENT_DEFINE_LABEL": "Définir marqueur",
-  "EVENT_GOTO_LABEL": "Aller à marqueur",
+  "EVENT_GOTO_LABEL": "Aller au marqueur",
   "EVENT_TEXT": "Afficher un dialogue",
   "EVENT_TEXT_DESC": "Affiche une boîte de dialogue en bas de l'écran de jeu. Lors de l'affichage, la boîte de dialogue glisse depuis le bas de l'écran et disparaît après l'affichage du texte.",
   "EVENT_CAMERA_MOVE_TO": "Déplacer la caméra vers",
