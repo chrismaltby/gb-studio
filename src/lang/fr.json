@@ -964,7 +964,7 @@
   "FIELD_REPOSITORY_URL": "URL du dépôt",
   "FIELD_ADD_REPOSITORY": "Ajouter un dépôt",
   "FIELD_DELETE_REPOSITORY": "Supprimer le dépôt",
-  "FIELD_ADDING": "Ajout…",
+  "FIELD_ADDING": "Ajout...",
   "FIELD_CLOSE": "Fermer",
   "FIELD_LICENSE": "Licence",
   "FIELD_RUN_SCENE": "Exécuter la scène",
