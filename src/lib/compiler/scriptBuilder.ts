@@ -625,7 +625,7 @@ const scriptValueToSubpixels = (
 
 // ------------------------
 
-class ScriptBuilder {
+export class ScriptBuilder {
   byteSize: number;
   output: ScriptOutput;
   options: ScriptBuilderOptions;
