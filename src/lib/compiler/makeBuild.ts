@@ -15,6 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
 import psTree from "ps-tree";
 import { promisify } from "util";
+import { envWith } from "lib/helpers/cli/env";
 
 const psTreeAsync = promisify(psTree);
 
@@ -56,10 +57,7 @@ const makeBuild = async ({
     "utf8"
   );
 
-  env.PATH = [
-    Path.join(buildToolsPath, "gbdk", "bin"),
-    env.PATH ?? env.Path,
-  ].join(Path.delimiter);
+  env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
 
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
@@ -155,7 +153,7 @@ const makeBuild = async ({
   }
 
   progress(`${l10n("COMPILER_PACKING")}...`);
-  const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
+  const { cartSize, report } = await gbspack(await getPackFiles(buildRoot), {
     bankOffset: 1,
     filter: 255,
     extension: "rel",
@@ -168,6 +166,9 @@ const makeBuild = async ({
           }
         : {},
   });
+
+  const packReportFilePath = `${buildRoot}/build/rom/bank_usage.txt`;
+  await fs.writeFile(packReportFilePath, report);
 
   // Link ROM ---
 
@@ -224,6 +225,9 @@ export const cancelBuildCommandsInProgress = async () => {
   // Kill all spawned commands and any commands that were spawned by those
   // e.g lcc spawns sdcc, etc.
   for (const child of childSet) {
+    if (child.pid === undefined) {
+      continue;
+    }
     const spawnedChildren = await psTreeAsync(child.pid);
     for (const childChild of spawnedChildren) {
       try {

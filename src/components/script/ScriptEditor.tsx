@@ -25,7 +25,7 @@ const ScriptEditor = React.memo(
   ({ value, showAutoFadeIndicator }: ScriptEditorProps) => {
     const context = useContext(ScriptEditorContext);
     const [renderTo, setRenderTo] = useState(0);
-    const timerRef = useRef<number>(0);
+    const timerRef = useRef<ReturnType<typeof setTimeout>>();
     const scriptEventsLookup = useAppSelector((state) =>
       scriptEventSelectors.selectEntities(state)
     );

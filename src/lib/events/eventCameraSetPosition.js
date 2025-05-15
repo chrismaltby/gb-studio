@@ -64,7 +64,6 @@ module.exports = {
   groups,
   fields,
   compile,
-  waitUntilAfterInitFade: false,
   helper: {
     type: "camera",
     x: "x",

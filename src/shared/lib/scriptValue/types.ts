@@ -5,12 +5,16 @@ export const valueAtomTypes = [
   "direction",
   "variable",
   "indirect",
+  "constant",
   "property",
   "expression",
   "true",
   "false",
 ] as const;
 export type ValueAtomType = typeof valueAtomTypes[number];
+
+export const constValueAtomTypes = ["number", "constant"] as const;
+export type ConstValueAtomType = typeof constValueAtomTypes[number];
 
 export const valueOperatorTypes = [
   "add",
@@ -108,6 +112,10 @@ export type ScriptValueAtom =
       value: string;
     }
   | {
+      type: "constant";
+      value: string;
+    }
+  | {
       type: "direction";
       value: string;
     }
@@ -131,7 +139,19 @@ export type ScriptValueAtom =
       type: "false";
     };
 
+export type ConstScriptValueAtom =
+  | {
+      type: "number";
+      value: number;
+    }
+  | {
+      type: "constant";
+      value: string;
+    };
+
 export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
+
+export type ConstScriptValue = ConstScriptValueAtom;
 
 export type ValueFunctionMenuItem = {
   value: ValueOperatorType;
@@ -146,6 +166,10 @@ const validProperties = [
   "pypos",
   "direction",
   "frame",
+  "xdeadzone",
+  "ydeadzone",
+  "xoffset",
+  "yoffset",
 ];
 
 export const isScriptValue = (value: unknown): value is ScriptValue => {
@@ -163,6 +187,12 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   }
   if (
     scriptValue.type === "variable" &&
+    typeof scriptValue.value === "string"
+  ) {
+    return true;
+  }
+  if (
+    scriptValue.type === "constant" &&
     typeof scriptValue.value === "string"
   ) {
     return true;
@@ -201,6 +231,27 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
     return true;
   }
 
+  return false;
+};
+
+export const isConstScriptValue = (
+  value: unknown
+): value is ConstScriptValue => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const scriptValue = value as ConstScriptValue;
+  // Is a number
+  if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
+    return true;
+  }
+  // Is a constant
+  if (
+    scriptValue.type === "constant" &&
+    typeof scriptValue.value === "string"
+  ) {
+    return true;
+  }
   return false;
 };
 
@@ -270,6 +321,10 @@ export type PrecompiledValueRPNOperation =
   | {
       type: "number";
       value: number;
+    }
+  | {
+      type: "constant";
+      value: string;
     }
   | {
       type: "variable";

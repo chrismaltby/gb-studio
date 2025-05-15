@@ -1,4 +1,12 @@
-import React, { memo, useCallback, useContext } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
@@ -6,19 +14,18 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
+import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
 import {
   FormField,
   FormFieldProps,
   ToggleableFormField,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
-  ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
-import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
+import { FlexBreak } from "ui/spacing/Spacing";
 import { TabBar, TabBarVariant } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
@@ -30,6 +37,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
+import { throttle, isEqual } from "lodash";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -75,7 +83,7 @@ const MultiInputButton = styled.button`
     height: 8px;
   }
 
-  :hover {
+  &:hover {
     opacity: 1;
   }
 
@@ -96,11 +104,11 @@ const InputRow = styled.div`
   position: relative;
   margin-bottom: 3px;
 
-  :last-child {
+  &:last-child {
     margin-bottom: 0;
   }
 
-  :hover ${MultiInputButton} {
+  &:hover ${MultiInputButton} {
     opacity: 1;
   }
 `;
@@ -120,6 +128,8 @@ const ScriptEventFormField = memo(
 
     const context = useContext(ScriptEditorContext);
 
+    const lastUpdateSource = useRef<"user" | "store">("store");
+
     const overrides = useAppSelector((state) => {
       if (context.entityType === "actorPrefab" && context.instanceId) {
         const instance = actorSelectors.selectById(state, context.instanceId);
@@ -131,9 +141,12 @@ const ScriptEventFormField = memo(
     });
 
     const args = scriptEvent?.args;
-    const value: unknown = field.multiple
-      ? ([] as unknown[]).concat([], args?.[field.key || ""])
-      : args?.[field.key || ""];
+
+    const [value, setValue] = useState(
+      field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""]
+    );
 
     const setArgsValues = useCallback(
       (newArgs: Record<string, unknown>) => {
@@ -167,11 +180,17 @@ const ScriptEventFormField = memo(
           );
         }
       },
-      [context.entityType, context.instanceId, dispatch, scriptEvent]
+      [context.entityType, context.instanceId, dispatch, scriptEvent.id]
     );
 
-    const setArgValue = useCallback(
-      (key: string, value: unknown) => {
+    const latestArgs = useRef(args);
+
+    useEffect(() => {
+      latestArgs.current = args;
+    }, [args]);
+
+    const throttledPublishArgValue = useMemo(() => {
+      return throttle((key: string, value: unknown) => {
         if (context.entityType === "actorPrefab" && context.instanceId) {
           dispatch(
             entitiesActions.editActorPrefabScriptEventOverride({
@@ -204,13 +223,13 @@ const ScriptEventFormField = memo(
             })
           );
         }
-        if (scriptEvent && field.key && field.hasPostUpdateFn) {
+        if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
           API.script
             .scriptEventPostUpdateFn(
               scriptEvent.command,
               field.key,
-              { ...scriptEvent.args, [key]: value },
-              scriptEvent.args || {}
+              { ...latestArgs.current, [key]: value },
+              latestArgs.current || {}
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
@@ -218,16 +237,27 @@ const ScriptEventFormField = memo(
               }
             });
         }
+        lastUpdateSource.current = "store";
+      }, 64);
+    }, [
+      context.entityType,
+      context.instanceId,
+      dispatch,
+      field.hasPostUpdateFn,
+      field.key,
+      scriptEvent.command,
+      scriptEvent.id,
+      setArgsValues,
+    ]);
+
+    // Set local state value + queue a store update
+    const setArgValue = useCallback(
+      (key: string, value: unknown) => {
+        lastUpdateSource.current = "user";
+        setValue(value);
+        throttledPublishArgValue(key, value);
       },
-      [
-        context.entityType,
-        context.instanceId,
-        dispatch,
-        field.hasPostUpdateFn,
-        field.key,
-        scriptEvent,
-        setArgsValues,
-      ]
+      [throttledPublishArgValue]
     );
 
     const onChange = useCallback(
@@ -249,6 +279,20 @@ const ScriptEventFormField = memo(
       },
       [field.key, setArgValue, value]
     );
+
+    // Handle value updating from store (only if not currently updating due to user input)
+    useEffect(() => {
+      if (lastUpdateSource.current !== "store") {
+        return;
+      }
+      const storeValue = field.multiple
+        ? ([] as unknown[]).concat([], args?.[field.key || ""])
+        : args?.[field.key || ""];
+
+      if (!isEqual(value, storeValue)) {
+        setValue(storeValue);
+      }
+    }, [value, throttledPublishArgValue, field.key, field.multiple, args]);
 
     const onAddValue = useCallback(
       (valueIndex: number) => {
@@ -342,16 +386,11 @@ const ScriptEventFormField = memo(
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
-          conditional={true}
-          onClick={() => onChange(!value)}
+          onToggle={() => onChange(!value)}
           nestLevel={nestLevel}
           altBg={altBg}
-          open={!value}
+          isOpen={!value}
         >
-          <ScriptEventHeaderCaret open={!value}>
-            <ArrowIcon />
-          </ScriptEventHeaderCaret>
-          <FixedSpacer width={5} />
           {label || ""}
         </ScriptEventBranchHeader>
       );
@@ -393,7 +432,6 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
-                onChangeArg={setArgValue}
                 onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
@@ -419,7 +457,6 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
-          onChangeArg={setArgValue}
           onInsertEventAfter={onInsertEventAfter}
         />
       );
@@ -428,11 +465,9 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{
-            flexBasis: field.flexBasis,
-            flexGrow: field.flexGrow,
-            minWidth: field.minWidth,
-          }}
+          flexBasis={field.flexBasis}
+          flexGrow={field.flexGrow}
+          minWidth={field.minWidth}
         >
           <ToggleableFormField
             name={genKey(scriptEvent.id, field.key || "")}
@@ -450,13 +485,11 @@ const ScriptEventFormField = memo(
     return (
       <ScriptEventField
         halfWidth={field.width === "50%"}
-        inline={field.inline}
         alignBottom={field.alignBottom || field.type === "checkbox"}
-        style={{
-          flexBasis: field.flexBasis,
-          flexGrow: field.flexGrow,
-          minWidth: field.minWidth,
-        }}
+        inline={field.inline}
+        flexBasis={field.flexBasis}
+        flexGrow={field.flexGrow}
+        minWidth={field.minWidth}
       >
         <FormField
           name={genKey(scriptEvent.id, field.key || "")}

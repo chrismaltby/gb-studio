@@ -5,6 +5,7 @@ import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
+import { StyledButton } from "ui/buttons/style";
 import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
 import { StarIcon } from "ui/icons/Icons";
@@ -83,7 +84,7 @@ const ValueButton = styled.button`
   overflow: hidden;
   line-height: 11px;
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.highlight};
   }
 `;
@@ -94,8 +95,8 @@ const Content = styled.div`
 `;
 
 interface MenuItemFavoriteProps {
-  visible: boolean;
-  isFavorite: boolean;
+  $visible: boolean;
+  $isFavorite: boolean;
 }
 
 const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
@@ -107,7 +108,7 @@ const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
     fill: ${(props) => props.theme.colors.text};
   }
 
-  ${Button} {
+  ${StyledButton} {
     margin-right: -5px;
     transition: all 0.1s ease-out;
     height: 16px;
@@ -117,19 +118,19 @@ const VariableRowFavorite = styled.div<MenuItemFavoriteProps>`
   }
 
   ${(props) =>
-    props.isFavorite
+    props.$isFavorite
       ? css`
           opacity: 1;
         `
       : ""}
   ${(props) =>
-    !props.isFavorite
+    !props.$isFavorite
       ? css`
           svg {
             opacity: 0.3;
           }
 
-          ${Button}:active {
+          ${StyledButton}:active {
             transform: scale(1.5);
             svg {
               opacity: 1;
@@ -353,8 +354,8 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                   />
                 </InputWrapper>
                 <VariableRowFavorite
-                  visible={false}
-                  isFavorite={variableData.isFavorite}
+                  $visible={false}
+                  $isFavorite={variableData.isFavorite}
                 >
                   <Button
                     size="small"

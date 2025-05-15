@@ -9,7 +9,7 @@ export type PlaybackPosition = [number, number];
 
 let currentSong: Song | null = null;
 
-let onSongProgressIntervalId: number | undefined;
+let onSongProgressIntervalId: ReturnType<typeof setTimeout> | undefined;
 let romFile: Uint8Array;
 
 let currentSequence = -1;
@@ -253,7 +253,9 @@ const stop = (position?: PlaybackPosition) => {
     setStartPosition(position);
   }
 
-  clearInterval(onSongProgressIntervalId);
+  if (onSongProgressIntervalId) {
+    clearInterval(onSongProgressIntervalId);
+  }
   onSongProgressIntervalId = undefined;
 };
 

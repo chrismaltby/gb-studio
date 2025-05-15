@@ -39,6 +39,10 @@ export const isVariable = (token: string): boolean => {
   return !!/^[$A-Z_][0-9A-Z_$]*$/i.exec(token);
 };
 
+export const isConstant = (token: string): boolean => {
+  return !!/^@[a-z0-9-]{36}@$/i.exec(token);
+};
+
 export const getPrecedence = (token: Token): number => {
   if (token.type === "FUN") {
     return 4;

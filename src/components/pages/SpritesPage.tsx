@@ -93,6 +93,9 @@ const SpritesPage = () => {
   const metaspriteId = useAppSelector(
     (state) => state.editor.selectedMetaspriteId
   );
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds
+  );
   const precisionTileMode = useAppSelector(
     (state) => state.editor.precisionTileMode
   );
@@ -305,7 +308,7 @@ const SpritesPage = () => {
         style={{
           transition: "opacity 0.3s ease-in-out",
           width: Math.max(200, leftPaneWidth),
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           overflow: "hidden",
           position: "relative",
         }}
@@ -334,8 +337,8 @@ const SpritesPage = () => {
           flex: "1 1 0",
           minWidth: 0,
           overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
+          background: themeContext?.colors.background,
+          color: themeContext?.colors.text,
           height: windowHeight - 38,
           position: "relative",
           display: "flex",
@@ -427,6 +430,7 @@ const SpritesPage = () => {
             spriteSheetId={viewSpriteId}
             animationId={selectedAnimation?.id || ""}
             metaspriteId={selectedMetaspriteId}
+            additionalMetaspriteIds={selectedAdditionalMetaspriteIds}
           />
         )}
       </div>
@@ -434,7 +438,7 @@ const SpritesPage = () => {
       <div
         style={{
           width: rightPaneWidth,
-          background: themeContext.colors.sidebar.background,
+          background: themeContext?.colors.sidebar.background,
           height: "100%",
           overflow: "hidden",
           position: "relative",

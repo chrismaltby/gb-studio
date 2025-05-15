@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useCallback } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
-import { FormField, FormRow } from "ui/form/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { NumberInput } from "ui/form/NumberInput";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 
@@ -29,7 +29,7 @@ export const TextGotoSelect = ({
   onBlur,
 }: TextGotoSelectProps) => {
   const [internalValue, setValue] = useState(value);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const options = useMemo(
     () => [
@@ -71,7 +71,7 @@ export const TextGotoSelect = ({
   }, []);
 
   const onFocusOut = useCallback(
-    (event) => {
+    (event: React.FocusEvent<HTMLFormElement, Element>) => {
       if (event.currentTarget.contains(event.relatedTarget)) {
         return;
       }
@@ -91,7 +91,7 @@ export const TextGotoSelect = ({
   );
 
   const onChangeX = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValue({
         ...internalValue,
         offsetX: parseInt(event.currentTarget.value, 10),
@@ -101,7 +101,7 @@ export const TextGotoSelect = ({
   );
 
   const onChangeY = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValue({
         ...internalValue,
         offsetY: parseInt(event.currentTarget.value, 10),

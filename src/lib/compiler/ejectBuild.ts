@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import Path from "path";
-import { engineRoot } from "consts";
+import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import ejectEngineChangelog, {
   isKnownEngineVersion,
@@ -22,10 +22,19 @@ import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 import { ProjectResources } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 
+const engineIgnore = [
+  ".git",
+  "examples",
+  "test",
+  "obj",
+  "build",
+  "third-party",
+  "unused",
+];
+
 const rmdir = promisify(rimraf);
 
 type EjectOptions = {
-  projectType: "gb";
   engineFields: EngineFieldSchema[];
   sceneTypes: SceneTypeSchema[];
   projectData: ProjectResources;
@@ -41,7 +50,6 @@ type EjectOptions = {
 };
 
 const ejectBuild = async ({
-  projectType = "gb",
   engineFields = [],
   sceneTypes = [],
   projectData,
@@ -52,10 +60,8 @@ const ejectBuild = async ({
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: EjectOptions) => {
-  const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
   const pluginsPath = `${projectRoot}/plugins`;
-  const expectedEngineMetaPath = `${corePath}/engine.json`;
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
   const colorEnabled = settings.colorMode !== "mono";
@@ -65,9 +71,15 @@ const ejectBuild = async ({
   await fs.ensureDir(outputRoot);
   progress(l10n("COMPILER_COPY_DEFAULT_ENGINE"));
 
-  await copy(corePath, outputRoot);
+  await copy(defaultEngineRoot, outputRoot, {
+    ignore: (path) => {
+      return engineIgnore.some((ignoreDir) =>
+        path.startsWith(Path.join(defaultEngineRoot, ignoreDir))
+      );
+    },
+  });
 
-  const expectedEngineVersion = await readEngineVersion(expectedEngineMetaPath);
+  const expectedEngineVersion = await readEngineVersion(defaultEngineMetaPath);
 
   try {
     progress(
@@ -127,10 +139,19 @@ const ejectBuild = async ({
     }
   }
 
+  // Remove old states_ptrs.h if in ejected engine
+  const legacyFiles = [`src/states/states_ptrs.s`];
+  for (const filename of legacyFiles) {
+    const legacyFilePath = Path.join(outputRoot, filename);
+    if (isFilePathWithinFolder(legacyFilePath, outputRoot)) {
+      await fs.remove(legacyFilePath);
+    }
+  }
+
   progress(
     l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" })
   );
-  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     progress(
       l10n("COMPILER_USING_ENGINE_PLUGIN", {
@@ -218,6 +239,7 @@ const ejectBuild = async ({
   await fs.ensureDir(`${outputRoot}/include/data`);
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/src/data/music`);
+  await fs.ensureDir(`${outputRoot}/src/data/sounds`);
   await fs.ensureDir(`${outputRoot}/obj`);
   await fs.ensureDir(`${outputRoot}/build/rom`);
 

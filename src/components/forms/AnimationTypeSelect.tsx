@@ -2,6 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import { SpriteAnimationType } from "shared/lib/entities/entitiesTypes";
 import { OptGroup, Option, Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface AnimationTypeSelectProps {
   name: string;
@@ -19,7 +20,7 @@ interface AnimationTypeOptGroup extends OptGroup {
 
 export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
   name,
-  value,
+  value = "fixed",
   onChange,
 }) => {
   const [currentValue, setCurrentValue] = useState<AnimationTypeOption>();
@@ -83,14 +84,11 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: AnimationTypeOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<AnimationTypeOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
-};
-
-AnimationTypeSelect.defaultProps = {
-  name: undefined,
-  value: "fixed",
 };

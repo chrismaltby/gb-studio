@@ -179,7 +179,7 @@ export const animationMapBySpriteType = <T, U>(
   items: T[],
   type: SpriteAnimationType,
   flipLeft: boolean,
-  fn: (item: T, flip: boolean) => U
+  fn: (item: T | undefined, flip: boolean) => U
 ): U[] => {
   return Array.from(Array(8)).map((_item, index) => {
     if (type === "fixed") {

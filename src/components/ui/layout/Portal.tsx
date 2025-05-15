@@ -1,10 +1,14 @@
-import { FC } from "react";
+import { ReactNode } from "react";
 import ReactDOM from "react-dom";
 
 export const portalRoot: HTMLElement = document.getElementById(
   "MenuPortal"
 ) as HTMLElement;
 
-export const Portal: FC = (props) => {
-  return ReactDOM.createPortal(props.children, portalRoot);
+interface PortalProps {
+  children: ReactNode;
+}
+
+export const Portal = ({ children }: PortalProps) => {
+  return ReactDOM.createPortal(children, portalRoot);
 };

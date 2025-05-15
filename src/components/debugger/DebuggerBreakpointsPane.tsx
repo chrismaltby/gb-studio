@@ -91,7 +91,10 @@ const DebuggerBreakpointsPane = () => {
       {!isCollapsed && (
         <BreakpointsWrapper>
           {breakpoints.map((breakpoint) => (
-            <DebuggerBreakpointItem breakpoint={breakpoint} />
+            <DebuggerBreakpointItem
+              key={breakpoint.scriptEventId}
+              breakpoint={breakpoint}
+            />
           ))}
         </BreakpointsWrapper>
       )}

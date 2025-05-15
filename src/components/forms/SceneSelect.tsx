@@ -17,6 +17,7 @@ import editorActions from "store/features/editor/editorActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
@@ -75,7 +76,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   );
   const [options, setOptions] = useState<SceneOption[]>([]);
   const [currentScene, setCurrentScene] = useState<SceneNormalized>();
-  const [currentValue, setCurrentValue] = useState<Option>();
+  const [currentValue, setCurrentValue] = useState<SceneOption>();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -110,8 +111,10 @@ export const SceneSelect: FC<SceneSelectProps> = ({
     }
   }, [currentScene, scenes]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   const onJumpToScene = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

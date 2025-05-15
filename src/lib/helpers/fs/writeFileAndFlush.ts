@@ -1,22 +1,25 @@
-import { open, writeFile, close, fdatasync } from "fs";
+import { open, writeFile, close, fdatasync, WriteFileOptions } from "fs";
 
 export interface WriteFileAndFlushOptions {
-  encoding: string;
+  encoding: BufferEncoding;
   mode: string | number | null | undefined;
   flag: string;
 }
 
 export const writeFileAndFlush = (
   path: string,
-  data: unknown,
-  options: WriteFileAndFlushOptions | string,
+  data: string | NodeJS.ArrayBufferView,
+  options: WriteFileAndFlushOptions | BufferEncoding,
   callback: (err?: NodeJS.ErrnoException | null) => void
 ) => {
   // If options passed in as a string convert to WriteFileAndFlushOptions
-  const writeOptions =
+  const writeOptions: WriteFileOptions =
     typeof options === "string"
       ? { encoding: options, mode: 0o666, flag: "w" }
-      : options;
+      : {
+          ...options,
+          mode: options.mode ?? 0o666,
+        };
 
   // Open the file with same flags and mode as fs.writeFile()
   open(path, writeOptions.flag, writeOptions.mode, (openError, fd) => {
@@ -25,7 +28,7 @@ export const writeFileAndFlush = (
     }
 
     // It is valid to pass a fd handle to fs.writeFile() and this will keep the handle open!
-    return writeFile(fd, data, writeOptions.encoding, (writeError) => {
+    return writeFile(fd, data, writeOptions, (writeError) => {
       if (writeError) {
         return close(fd, () => callback(writeError)); // still need to close the handle on error!
       }
@@ -40,8 +43,8 @@ export const writeFileAndFlush = (
 
 export const writeFileAndFlushAsync = (
   path: string,
-  data: unknown,
-  options: WriteFileAndFlushOptions | string = "utf8"
+  data: string | NodeJS.ArrayBufferView,
+  options: WriteFileAndFlushOptions | BufferEncoding = "utf8"
 ) => {
   return new Promise<void>((resolve, reject) => {
     writeFileAndFlush(path, data, options, (err) => {

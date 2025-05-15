@@ -9,6 +9,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
+import { SingleValue } from "react-select";
 
 const defaultInstrumentOptions = Array(15)
   .fill("")
@@ -18,11 +19,11 @@ const defaultInstrumentOptions = Array(15)
   })) as Option[];
 
 interface LabelColorProps {
-  color: string;
+  $color: string;
 }
 
 const LabelColor = styled.div.attrs<LabelColorProps>((props) => ({
-  className: `label--instrument-${props.color}`,
+  className: `label--instrument-${props.$color}`,
 }))`
   width: 10px;
   height: 10px;
@@ -95,8 +96,10 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
     }
   }, [currentInstrument, options]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (
@@ -106,14 +109,16 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(option: Option) => {
         return (
-          <OptionLabelWithPreview preview={<LabelColor color={option.value} />}>
+          <OptionLabelWithPreview
+            preview={<LabelColor $color={option.value} />}
+          >
             {option.label}
           </OptionLabelWithPreview>
         );
       }}
       components={{
         SingleValue: () => (
-          <SingleValueWithPreview preview={<LabelColor color={value || ""} />}>
+          <SingleValueWithPreview preview={<LabelColor $color={value || ""} />}>
             {currentValue?.label}
           </SingleValueWithPreview>
         ),

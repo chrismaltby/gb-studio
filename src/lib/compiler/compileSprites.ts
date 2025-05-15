@@ -11,6 +11,8 @@ import type {
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
+import { ReferencedSprite } from "./precompile/determineUsedAssets";
+import { ColorModeSetting } from "shared/lib/resources/types";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -36,6 +38,7 @@ export type PrecompiledSpriteSheetData = SpriteSheetData & {
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
   metaspritesOrder: number[];
+  colorMode: ColorModeSetting;
 };
 
 interface SpriteTileData {
@@ -113,7 +116,7 @@ const makeProps = (
 };
 
 export const compileSprite = async (
-  spriteSheet: SpriteSheetData,
+  spriteSheet: ReferencedSprite,
   cgbOnly: boolean,
   projectRoot: string
 ): Promise<PrecompiledSpriteSheetData> => {
@@ -146,6 +149,9 @@ export const compileSprite = async (
           state.animationType,
           state.flipLeft,
           (animation, flip) => {
+            if (!animation) {
+              return [];
+            }
             return animation.frames.map((frame) => {
               let currentX = 0;
               let currentY = 0;
@@ -255,8 +261,7 @@ export const compileSprite = async (
 };
 
 const compileSprites = async (
-  spriteSheets: SpriteSheetData[],
-  cgbOnly: boolean,
+  spriteSheets: ReferencedSprite[],
   projectRoot: string
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
@@ -266,7 +271,12 @@ const compileSprites = async (
   const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
-      (spriteSheet) => () => compileSprite(spriteSheet, cgbOnly, projectRoot)
+      (spriteSheet) => () =>
+        compileSprite(
+          spriteSheet,
+          spriteSheet.colorMode === "color",
+          projectRoot
+        )
     )
   );
   const stateNames = spritesData

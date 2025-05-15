@@ -10,20 +10,21 @@ import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
-import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
+import { Menu, MenuGroup, MenuItem, MenuItemCaret } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
-import { Dictionary } from "@reduxjs/toolkit";
 import settingsActions from "store/features/settings/settingsActions";
 import {
   ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
+  CustomEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  customEventSelectors,
   emoteSelectors,
   musicSelectors,
   sceneSelectors,
@@ -33,7 +34,7 @@ import {
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import { EVENT_TEXT } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -41,6 +42,9 @@ import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { StyledButton } from "ui/buttons/style";
+import { StyledMenu, StyledMenuItem } from "ui/menu/style";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -57,6 +61,8 @@ type MenuElement = HTMLDivElement & {
 
 interface EventOption {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
+  description?: string; // override tooltip
   value: string;
   group?: string;
   groupLabel?: string;
@@ -69,6 +75,7 @@ interface EventOption {
 
 interface EventOptGroup {
   label: string;
+  displayLabel?: string; // non searchable label, used only to display in the menu
   groupLabel?: string;
   options: EventOption[];
 }
@@ -211,7 +218,7 @@ const instanciateScriptEvent = (
             ...memo,
             [key]: [],
           };
-        }, {} as Dictionary<string[]>)
+        }, {} as Record<string, string[]>)
       : undefined;
   return {
     command,
@@ -243,10 +250,45 @@ const eventToOption =
     };
   };
 
+const customEventToOption =
+  (scriptEventDefs: ScriptEventDefs) =>
+  (event: CustomEventNormalized): EventOption => {
+    return {
+      label: event.name,
+      displayLabel: `${l10n(EVENT_CALL_CUSTOM_EVENT)} "${event.name}"`,
+      description: event.description.trim(),
+      value: `call_script_${event.id}`,
+      isFavorite: false,
+      event: scriptEventDefs[EVENT_CALL_CUSTOM_EVENT] as ScriptEventDef,
+      defaultArgs: {
+        customEventId: event.id,
+      },
+    } as EventOption;
+  };
+
+const titleForOption = (
+  option: EventOption | EventOptGroup
+): string | undefined => {
+  // If option description is provided with a non-empty
+  // string then use that as the title for menu item
+  if (
+    "description" in option &&
+    option.description &&
+    option.description.length > 0
+  ) {
+    return option.description;
+  }
+  // Otherwise use event description if available
+  if ("event" in option) {
+    return option.event.description;
+  }
+  return undefined;
+};
+
 const SelectMenu = styled.div`
   width: 300px;
 
-  ${Menu} {
+  ${StyledMenu} {
     width: 100%;
     height: 450px;
     min-height: 300px;
@@ -271,7 +313,7 @@ const SelectMenuInput = styled(IMEUnstyledInput)`
   box-sizing: border-box;
   width: 100%;
   height: 28px;
-  :focus {
+  &:focus {
     border: 2px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
     box-shadow: none;
@@ -299,7 +341,7 @@ const SelectMenuBackButton = styled.button`
 `;
 
 interface SelectMenuHeaderProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
@@ -331,7 +373,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
   }
 
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           ${SelectMenuTitle}:nth-child(1) {
             transform: translateX(-80px);
@@ -349,7 +391,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
 `;
 
 interface SelectMenuOptionsWrapperProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
@@ -360,7 +402,7 @@ const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
   flex-grow: 1;
   transition: transform 0.2s ease-in-out;
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           transform: translateX(-50%);
         `
@@ -375,20 +417,9 @@ const SelectMenuOptions = styled.div`
   flex-shrink: 0;
 `;
 
-const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
-`;
-
 interface MenuItemFavoriteProps {
-  visible: boolean;
-  isFavorite: boolean;
+  $visible: boolean;
+  $isFavorite: boolean;
 }
 
 const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
@@ -400,7 +431,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
     fill: ${(props) => props.theme.colors.text};
   }
 
-  ${Button} {
+  ${StyledButton} {
     height: 18px;
     padding: 0;
     margin: -10px -5px;
@@ -408,19 +439,19 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
   }
 
   ${(props) =>
-    props.visible
+    props.$visible
       ? css`
           opacity: 1;
         `
       : ""}
   ${(props) =>
-    !props.isFavorite
+    !props.$isFavorite
       ? css`
           svg {
             opacity: 0.3;
           }
 
-          ${Button}:active {
+          ${StyledButton}:active {
             transform: scale(1.5);
             svg {
               opacity: 1;
@@ -428,7 +459,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
           }
         `
       : ""}      
-  ${MenuItem}:hover > & {
+  ${StyledMenuItem}:hover > & {
     opacity: 1;
   }
 `;
@@ -530,6 +561,9 @@ const AddScriptEventMenu = ({
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefsWithPresets(state)
   );
+  const customEventsLookup = useAppSelector((state) =>
+    customEventSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -541,7 +575,13 @@ const AddScriptEventMenu = ({
     const eventList = (
       Object.values(scriptEventDefs).filter(identity) as ScriptEventDef[]
     ).filter(notDeprecated);
-    fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
+
+    const allEvents = ([] as EventOption[]).concat(
+      eventList.map(eventToOption(favoriteEvents)),
+      customEventsLookup.map(customEventToOption(scriptEventDefs))
+    );
+
+    fuseRef.current = new Fuse(allEvents, {
       includeScore: true,
       includeMatches: true,
       ignoreLocation: true,
@@ -573,7 +613,7 @@ const AddScriptEventMenu = ({
         }
       }
       return memo;
-    }, {} as Dictionary<ScriptEventDef[]>);
+    }, {} as Record<string, ScriptEventDef[]>);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 
@@ -623,7 +663,7 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [favoriteEvents, favoritesCache, scriptEventDefs]);
+  }, [customEventsLookup, favoriteEvents, favoritesCache, scriptEventDefs]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
@@ -644,9 +684,18 @@ const AddScriptEventMenu = ({
           ? searchOptions
           : [
               {
-                value: "",
+                value: "fallback_option_0",
                 label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
                 event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
+                defaultArgs: {
+                  text: [searchTerm],
+                },
+                isFavorite: false,
+              },
+              {
+                value: "fallback_option_1",
+                label: `${l10n(EVENT_COMMENT)} "${searchTerm}"`,
+                event: scriptEventDefs[EVENT_COMMENT] as ScriptEventDef,
                 defaultArgs: {
                   text: [searchTerm],
                 },
@@ -876,7 +925,7 @@ const AddScriptEventMenu = ({
     <SelectMenu>
       <Menu style={{ height: menuHeight }}>
         <SelectMenuHeader
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
           <SelectMenuTitle>{l10n("SIDEBAR_ADD_EVENT")}</SelectMenuTitle>
@@ -898,7 +947,7 @@ const AddScriptEventMenu = ({
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
@@ -920,35 +969,31 @@ const AddScriptEventMenu = ({
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
                   onClick={() => onSelectOption(optionIndex)}
-                  title={
-                    "event" in option ? option.event.description : undefined
-                  }
+                  title={titleForOption(option)}
                 >
                   {searchTerm.length > 0 && highlightWords.length > 0 ? (
                     <HighlightWords
-                      text={option.label}
+                      text={option.displayLabel ?? option.label}
                       words={highlightWords}
                     />
                   ) : (
-                    option.label
+                    option.displayLabel ?? option.label
                   )}
 
                   {"options" in option ? (
-                    <MenuItemCaret>
-                      <CaretRightIcon />
-                    </MenuItemCaret>
+                    <MenuItemCaret />
                   ) : (
                     <>
                       <FlexGrow />
                       {!option.defaultArgs && (
                         <MenuItemFavorite
-                          visible={
+                          $visible={
                             (selectedCategoryIndex === -1 &&
                               selectedIndex === optionIndex) ||
                             selectedCategoryIndex === optionIndex ||
                             ("isFavorite" in option && option.isFavorite)
                           }
-                          isFavorite={option.isFavorite}
+                          $isFavorite={option.isFavorite}
                         >
                           <Button
                             size="small"
@@ -986,16 +1031,16 @@ const AddScriptEventMenu = ({
                       selected={selectedIndex === childOptionIndex}
                       onMouseOver={() => setSelectedIndex(childOptionIndex)}
                       onClick={() => onSelectOption(childOptionIndex)}
-                      title={childOption.event.description}
+                      title={titleForOption(childOption)}
                     >
-                      {childOption.label}
+                      {childOption.displayLabel ?? childOption.label}
                       <FlexGrow />
                       <MenuItemFavorite
-                        visible={
+                        $visible={
                           selectedIndex === childOptionIndex ||
                           childOption.isFavorite
                         }
-                        isFavorite={childOption.isFavorite}
+                        $isFavorite={childOption.isFavorite}
                       >
                         <Button
                           size="small"

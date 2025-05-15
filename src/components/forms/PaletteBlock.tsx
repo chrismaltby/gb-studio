@@ -10,8 +10,8 @@ type PaletteBlockProps = {
 };
 
 type WrapperProps = {
-  type?: "tile" | "sprite";
-  highlight?: boolean;
+  $type?: "tile" | "sprite";
+  $highlight?: boolean;
 };
 
 const Wrapper = styled.div<WrapperProps>`
@@ -21,15 +21,15 @@ const Wrapper = styled.div<WrapperProps>`
   gap: 0px 0px;
   border: 1px solid
     ${(props) =>
-      props.highlight
+      props.$highlight
         ? props.theme.colors.highlight
         : props.theme.colors.input.background};
   border-radius: 3px;
   overflow: hidden;
   flex-shrink: 0;
   transition: border 0.2s ease-in-out;
-  transition-delay: ${(props) => (props.highlight ? "0.5s" : "0")};
-  ${(props) => (props.type === "sprite" ? spriteStyles : "")}
+  transition-delay: ${(props) => (props.$highlight ? "0.5s" : "0")};
+  ${(props) => (props.$type === "sprite" ? spriteStyles : "")}
 `;
 
 const spriteStyles = css`
@@ -46,8 +46,8 @@ const PaletteBlock: React.FC<PaletteBlockProps> = ({
   highlight,
 }) => (
   <Wrapper
-    type={type}
-    highlight={highlight}
+    $type={type}
+    $highlight={highlight}
     style={{
       width: size,
       height: size,

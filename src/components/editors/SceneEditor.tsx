@@ -18,7 +18,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
-} from "ui/form/FormLayout";
+} from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
   ActorDirection,
@@ -26,7 +26,7 @@ import {
   SceneParallaxLayer,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   DropdownButton,
   InlineDropdownWrapper,
@@ -65,7 +65,7 @@ import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor"
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -73,6 +73,8 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
+import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
+import { ColorModeOverrideSetting } from "shared/lib/resources/types";
 
 interface SceneEditorProps {
   id: string;
@@ -146,10 +148,16 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
+  const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
+    scene?.colorModeOverride && scene?.colorModeOverride !== "none"
+  );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId
   );
 
+  const projectColorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode
+  );
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono"
   );
@@ -276,13 +284,18 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSceneProp("notes", e.currentTarget.value),
     [onChangeSceneProp]
   );
 
   const onChangeType = useCallback(
     (e: string) => onChangeSceneProp("type", e),
+    [onChangeSceneProp]
+  );
+
+  const onChangeColorModeOverride = useCallback(
+    (e: ColorModeOverrideSetting) => onChangeSceneProp("colorModeOverride", e),
     [onChangeSceneProp]
   );
 
@@ -346,6 +359,15 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
   const onAddNotes = () => {
     setNotesOpen(true);
+  };
+
+  const onOverrideColorMode = () => {
+    if (projectColorMode === "mixed") {
+      onChangeColorModeOverride("color");
+    } else {
+      onChangeColorModeOverride("mixed");
+    }
+    setColorModeOverrideOpen(true);
   };
 
   const onToggleCommonTileset = useCallback(() => {
@@ -453,6 +475,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   }
 
   const showNotes = scene.notes || notesOpen;
+  const showColorModeOverride =
+    (scene.colorModeOverride && scene.colorModeOverride !== "none") ||
+    colorModeOverrideOpen;
 
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
@@ -563,6 +588,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
                   </MenuItem>
                 )}
+                {!showColorModeOverride && colorsEnabled && (
+                  <MenuItem onClick={onOverrideColorMode}>
+                    {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
                 {clipboardFormat === ClipboardTypeScenes && (
                   <MenuItem onClick={onPaste}>
@@ -741,6 +772,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
             {colorsEnabled && (
               <SidebarColumn>
+                {showColorModeOverride && (
+                  <FormRow>
+                    <FormField
+                      name="colorModeOverride"
+                      label={l10n("FIELD_COLOR_MODE_OVERRIDE")}
+                    >
+                      <ColorModeOverrideSelect
+                        name="colorModeOverride"
+                        value={scene.colorModeOverride}
+                        onChange={onChangeColorModeOverride}
+                      />
+                    </FormField>
+                  </FormRow>
+                )}
+
                 <FormRow>
                   <FormField
                     name="playerSpriteSheetId"
@@ -758,24 +804,28 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                                 : "FIELD_MANUAL"
                             )}
                           >
-                            <MenuItem onClick={() => onChangeAutoColor(true)}>
-                              <MenuItemIcon>
-                                {background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(true)}
+                              icon={
+                                background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_AUTOMATIC")}
                             </MenuItem>
-                            <MenuItem onClick={() => onChangeAutoColor(false)}>
-                              <MenuItemIcon>
-                                {!background?.autoColor ? (
+                            <MenuItem
+                              onClick={() => onChangeAutoColor(false)}
+                              icon={
+                                !background?.autoColor ? (
                                   <CheckIcon />
                                 ) : (
                                   <BlankIcon />
-                                )}
-                              </MenuItemIcon>
+                                )
+                              }
+                            >
                               {l10n("FIELD_MANUAL")}
                             </MenuItem>
                           </DropdownButton>

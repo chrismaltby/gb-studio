@@ -81,6 +81,18 @@ export const getAutoLabel = (
       if (value === "frame") {
         return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
       }
+      if (value === "xdeadzone") {
+        return l10n("FIELD_DEADZONE_X").replace(/ /g, "");
+      }
+      if (value === "ydeadzone") {
+        return l10n("FIELD_DEADZONE_Y").replace(/ /g, "");
+      }
+      if (value === "xoffset") {
+        return l10n("FIELD_OFFSET_X").replace(/ /g, "");
+      }
+      if (value === "yoffset") {
+        return l10n("FIELD_OFFSET_Y").replace(/ /g, "");
+      }
       return value;
     };
 
@@ -152,6 +164,7 @@ export const getAutoLabel = (
     ) {
       return scriptValueToString(value, {
         variableNameForId: (id) => `||variable:${id}||`,
+        constantNameForId: (id) => `||constant:${id}||`,
         actorNameForId: (id) => `||actor:${id}||`,
         propertyNameForId,
         directionForValue,
@@ -166,9 +179,13 @@ export const getAutoLabel = (
         propertyParts[1]
       )}`;
     } else if (fieldType === "matharea") {
-      return String(value).replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
-        return `||variable:${match}||`;
-      });
+      return String(value)
+        .replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
+          return `||variable:${match}||`;
+        })
+        .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
+          return `||constant:${match}||`;
+        });
     } else if (fieldType === "scene") {
       return `||scene:${value}||`;
     } else if (fieldType === "direction") {
@@ -196,6 +213,8 @@ export const getAutoLabel = (
             return `%c||variable:${t.variableId}||`;
           } else if (t.type === "gotoxy") {
             return " ";
+          } else if (t.type === "input" || t.type === "wait") {
+            return "";
           }
           return "";
         })
@@ -213,6 +232,7 @@ export const replaceAutoLabelLocalValues = (
   lookups: {
     actorNameForId: (value: unknown) => string;
     variableNameForId: (value: unknown) => string;
+    constantNameForId: (value: unknown) => string;
     sceneNameForId: (value: unknown) => string;
     spriteNameForId: (value: unknown) => string;
     emoteNameForId: (value: unknown) => string;
@@ -227,6 +247,10 @@ export const replaceAutoLabelLocalValues = (
     .replace(
       /\|\|variable:([a-zA-Z0-9$-]+)\|\|/g,
       (match, id) => lookups.variableNameForId(id) ?? match
+    )
+    .replace(
+      /\|\|constant:([a-zA-Z0-9$-]+)\|\|/g,
+      (match, id) => lookups.constantNameForId(id) ?? match
     )
     .replace(
       /\|\|scene:([a-zA-Z0-9$-]+)\|\|/g,

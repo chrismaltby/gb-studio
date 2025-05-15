@@ -38,11 +38,13 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -77,6 +79,7 @@ const SettingsPage: FC = () => {
 
   const {
     colorMode,
+    colorCorrection,
     sgbEnabled,
     customHead,
     defaultBackgroundPaletteIds,
@@ -118,6 +121,11 @@ const SettingsPage: FC = () => {
 
   const onChangeColorMode = useCallback(
     (e: ColorModeSetting) => onChangeSettingProp("colorMode", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeColorCorrection = useCallback(
+    (e: ColorCorrectionSetting) => onChangeSettingProp("colorCorrection", e),
     [onChangeSettingProp]
   );
 
@@ -288,6 +296,7 @@ const SettingsPage: FC = () => {
             l10n("FIELD_EXPORT_IN_COLOR"),
             l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
             l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
           <CardAnchor id="settingsColor" />
@@ -339,6 +348,28 @@ const SettingsPage: FC = () => {
           </SearchableSettingRow>
           {colorEnabled && (
             <>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_COLOR_CORRECTION")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_COLOR_CORRECTION")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <ColorCorrectionSelect
+                    name="colorCorrection"
+                    value={colorCorrection}
+                    onChange={onChangeColorCorrection}
+                  />
+                  <FormInfo>
+                    {colorCorrection === "default" &&
+                      l10n("FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO")}
+                    {colorCorrection === "none" &&
+                      l10n("FIELD_COLOR_CORRECTION_NONE_INFO")}
+                  </FormInfo>
+                </SettingRowInput>
+              </SearchableSettingRow>
+
               <SearchableSettingRow
                 searchTerm={searchTerm}
                 searchMatches={[l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")]}

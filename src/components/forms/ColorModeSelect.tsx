@@ -7,6 +7,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
+import { SingleValue } from "react-select";
 
 interface ColorModeSelectProps extends SelectCommonProps {
   name: string;
@@ -23,7 +24,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
   value,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] = useState<Option>();
+  const [currentValue, setCurrentValue] = useState<ColorModeOption>();
   const colorModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       mono: l10n("FIELD_COLOR_MODE_MONO_INFO"),
@@ -59,8 +60,10 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
   }, [colorModeOptions, value]);
 
   const onSelectChange = useCallback(
-    (newValue: ColorModeOption) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<ColorModeOption>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

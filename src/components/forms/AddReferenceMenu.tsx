@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { OptGroup } from "ui/form/Select";
 import styled, { css } from "styled-components";
-import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
+import { Menu, MenuGroup, MenuItem, MenuItemCaret } from "ui/menu/Menu";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { useAppSelector } from "store/hooks";
@@ -46,6 +46,7 @@ import { allVariables } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
+import { StyledMenu } from "ui/menu/style";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -164,7 +165,7 @@ const customEventToOption = (
 const SelectMenu = styled.div`
   width: 300px;
 
-  ${Menu} {
+  ${StyledMenu} {
     width: 100%;
     height: 450px;
     min-height: 300px;
@@ -189,7 +190,7 @@ const SelectMenuInput = styled(IMEUnstyledInput)`
   box-sizing: border-box;
   width: 100%;
   height: 28px;
-  :focus {
+  &:focus {
     border: 2px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
     box-shadow: none;
@@ -217,7 +218,7 @@ const SelectMenuBackButton = styled.button`
 `;
 
 interface SelectMenuHeaderProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
@@ -249,7 +250,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
   }
 
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           ${SelectMenuTitle}:nth-child(1) {
             transform: translateX(-80px);
@@ -267,7 +268,7 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
 `;
 
 interface SelectMenuOptionsWrapperProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
@@ -278,7 +279,7 @@ const SelectMenuOptionsWrapper = styled.div<SelectMenuOptionsWrapperProps>`
   flex-grow: 1;
   transition: transform 0.2s ease-in-out;
   ${(props) =>
-    props.isOpen
+    props.$isOpen
       ? css`
           transform: translateX(-50%);
         `
@@ -291,17 +292,6 @@ const SelectMenuOptions = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 0;
-`;
-
-const MenuItemCaret = styled.div`
-  flex-grow: 1;
-  text-align: right;
-  svg {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    fill: ${(props) => props.theme.colors.text};
-  }
 `;
 
 const collator = new Intl.Collator(undefined, {
@@ -589,7 +579,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     <SelectMenu>
       <Menu style={{ height: menuHeight, minHeight: menuHeight }}>
         <SelectMenuHeader
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
           onClick={() => onSelectOption(-1)}
         >
           <SelectMenuTitle>{l10n("FIELD_ADD_REFERENCE")}</SelectMenuTitle>
@@ -611,7 +601,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
           />
         </SelectMenuSearchWrapper>
         <SelectMenuOptionsWrapper
-          isOpen={!searchTerm && selectedCategoryIndex > -1}
+          $isOpen={!searchTerm && selectedCategoryIndex > -1}
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
@@ -634,9 +624,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
                 >
                   {option.label}
                   {"options" in option ? (
-                    <MenuItemCaret>
-                      <CaretRightIcon />
-                    </MenuItemCaret>
+                    <MenuItemCaret />
                   ) : (
                     <>
                       <FlexGrow />

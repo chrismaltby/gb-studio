@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
 
@@ -15,7 +16,7 @@ interface TextSpeedOption {
 
 export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
   name,
-  value,
+  value = 3,
   onChange,
   ...selectProps
 }) => {
@@ -37,15 +38,12 @@ export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: TextSpeedOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<TextSpeedOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       {...selectProps}
     />
   );
-};
-
-TextSpeedSelect.defaultProps = {
-  name: undefined,
-  value: 3,
 };

@@ -12,11 +12,11 @@ export const EditableText = styled.input`
   box-sizing: border-box;
   font-weight: bold;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.2);
   }
 
-  :focus {
+  &:focus {
     background: ${(props) => props.theme.colors.input.background};
     color: ${(props) => props.theme.colors.input.text};
     border: 1px solid ${(props) => props.theme.colors.highlight};
@@ -45,7 +45,7 @@ export const EditableTextOverlay = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  :focus {
+  &:focus {
     background: ${(props) => props.theme.colors.input.background};
     color: ${(props) => props.theme.colors.input.text};
     border: 1px solid ${(props) => props.theme.colors.highlight};

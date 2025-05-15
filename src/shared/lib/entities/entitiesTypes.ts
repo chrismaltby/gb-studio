@@ -1,5 +1,9 @@
-import type { EntityState, Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+import type { EntityState } from "@reduxjs/toolkit";
+import type {
+  ColorModeOverrideSetting,
+  Constant,
+  ScriptEditorCtxType,
+} from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
@@ -58,7 +62,7 @@ export type ScriptEvent = {
 };
 
 export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
-  children?: Dictionary<string[]>;
+  children?: Record<string, string[]>;
 };
 
 export type ScriptEventArgsOverride = {
@@ -210,7 +214,7 @@ export type Font = {
   height: number;
   plugin?: string;
   inode: string;
-  mapping: Record<string, number>;
+  mapping: Record<string, number | number[]>;
   _v: number;
 };
 
@@ -322,8 +326,8 @@ export type CustomEvent = {
   name: string;
   symbol: string;
   description: string;
-  variables: Dictionary<CustomEventVariable>;
-  actors: Dictionary<CustomEventActor>;
+  variables: Record<string, CustomEventVariable>;
+  actors: Record<string, CustomEventActor>;
   script: ScriptEvent[];
 };
 
@@ -333,7 +337,7 @@ export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
 
 export type EngineFieldValue = {
   id: string;
-  value?: number | string | boolean | undefined;
+  value?: number | string | undefined;
 };
 
 export type MetaspriteTile = {
@@ -434,6 +438,7 @@ export type Scene = {
   height: number;
   backgroundId: string;
   tilesetId: string;
+  colorModeOverride: ColorModeOverrideSetting;
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];
@@ -479,32 +484,34 @@ export type ProjectEntitiesData = {
   emotes: EmoteData[];
   tilesets: TilesetData[];
   variables: Variable[];
+  constants: Constant[];
   engineFieldValues: EngineFieldValue[];
 };
 
 export interface EntitiesState {
-  actors: EntityState<ActorNormalized>;
-  triggers: EntityState<TriggerNormalized>;
-  scenes: EntityState<SceneNormalized>;
-  actorPrefabs: EntityState<ActorPrefabNormalized>;
-  triggerPrefabs: EntityState<TriggerPrefabNormalized>;
-  scriptEvents: EntityState<ScriptEventNormalized>;
-  backgrounds: EntityState<Background>;
-  spriteSheets: EntityState<SpriteSheetNormalized>;
-  metasprites: EntityState<Metasprite>;
-  metaspriteTiles: EntityState<MetaspriteTile>;
-  spriteAnimations: EntityState<SpriteAnimation>;
-  spriteStates: EntityState<SpriteState>;
-  palettes: EntityState<Palette>;
-  customEvents: EntityState<CustomEventNormalized>;
-  music: EntityState<Music>;
-  sounds: EntityState<Sound>;
-  fonts: EntityState<Font>;
-  avatars: EntityState<Avatar>;
-  emotes: EntityState<Emote>;
-  tilesets: EntityState<Tileset>;
-  variables: EntityState<Variable>;
-  engineFieldValues: EntityState<EngineFieldValue>;
+  actors: EntityState<ActorNormalized, string>;
+  triggers: EntityState<TriggerNormalized, string>;
+  scenes: EntityState<SceneNormalized, string>;
+  actorPrefabs: EntityState<ActorPrefabNormalized, string>;
+  triggerPrefabs: EntityState<TriggerPrefabNormalized, string>;
+  scriptEvents: EntityState<ScriptEventNormalized, string>;
+  backgrounds: EntityState<Background, string>;
+  spriteSheets: EntityState<SpriteSheetNormalized, string>;
+  metasprites: EntityState<Metasprite, string>;
+  metaspriteTiles: EntityState<MetaspriteTile, string>;
+  spriteAnimations: EntityState<SpriteAnimation, string>;
+  spriteStates: EntityState<SpriteState, string>;
+  palettes: EntityState<Palette, string>;
+  customEvents: EntityState<CustomEventNormalized, string>;
+  music: EntityState<Music, string>;
+  sounds: EntityState<Sound, string>;
+  fonts: EntityState<Font, string>;
+  avatars: EntityState<Avatar, string>;
+  emotes: EntityState<Emote, string>;
+  tilesets: EntityState<Tileset, string>;
+  variables: EntityState<Variable, string>;
+  constants: EntityState<Constant, string>;
+  engineFieldValues: EntityState<EngineFieldValue, string>;
 }
 
 export interface ScriptEventFieldCondition {

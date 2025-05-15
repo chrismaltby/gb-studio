@@ -8,10 +8,11 @@ src/data/output
 coverage
 .cache
 .parcelCache
-/.vscode
 /dist
 .DS_Store
 test/projects/*/build
+buildTools/*/gbdk
+.turbo/
 
 # Webpack
 .webpack/
@@ -19,7 +20,18 @@ test/projects/*/build
 # IDEs
 .idea/
 
-# Performance
+# Storybook
+*storybook.log
+
+# Performance   
 isolate*-v8.log
 flamegraph.html
-.turbo/
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

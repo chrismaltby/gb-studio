@@ -13,7 +13,7 @@ import { Tool } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import settingsActions from "store/features/settings/settingsActions";
@@ -119,11 +119,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
 
   const enableNavigator = useCallback(() => {
     dispatch(editorActions.resizeNavigatorSidebar(NAVIGATOR_MIN_WIDTH));
-    dispatch(
-      settingsActions.editSettings({
-        showNavigator: true,
-      })
-    );
+    dispatch(settingsActions.setShowNavigator(true));
   }, [dispatch]);
 
   return (

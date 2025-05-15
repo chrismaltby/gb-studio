@@ -26,11 +26,14 @@ export const toValidSymbol = (inputSymbol: string) => {
  * @param existingSymbols Array of existing symbols
  * @returns unique C symbol
  */
-export const genSymbol = (inputSymbol: string, existingSymbols: string[]) => {
+export const genSymbol = (
+  inputSymbol: string,
+  existingSymbols: Set<string>
+) => {
   const initialSymbol = toValidSymbol(inputSymbol);
   let symbol = initialSymbol;
   let count = 0;
-  while (existingSymbols.includes(symbol)) {
+  while (existingSymbols.has(symbol)) {
     symbol = `${initialSymbol.replace(/_[0-9]+/, "")}_${count++}`;
   }
   return symbol;

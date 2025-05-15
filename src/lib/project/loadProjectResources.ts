@@ -88,7 +88,9 @@ export const loadProjectResources = async (
   metadataResource: ProjectMetadataResource
 ): Promise<CompressedProjectResources> => {
   const projectResources = naturalSortPaths(
-    await globAsync(path.join(projectRoot, "project", "**/*.gbsres"))
+    await globAsync(
+      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres")
+    )
   );
 
   const resources = (
@@ -238,8 +240,13 @@ export const loadProjectResources = async (
       };
     });
 
-  const variablesResource: VariablesResource = resourcesLookup.variables[0]
-    ?.data ?? { _resourceType: "variables", variables: [] };
+  const variablesResource: VariablesResource =
+    resourcesLookup.variables[0]?.data ??
+    ({
+      _resourceType: "variables",
+      variables: [],
+      constants: [],
+    } as VariablesResource);
 
   const engineFieldValuesResource: EngineFieldValuesResource =
     (resourcesLookup.engineFieldValues ?? [])[0]?.data ?? {

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { StyledFormSectionTitle } from "ui/form/layout/style";
 
 export const SidebarColumn = styled.div`
   padding-top: 10px;
@@ -6,6 +7,10 @@ export const SidebarColumn = styled.div`
   border-left: 1px solid ${(props) => props.theme.colors.sidebar.border};
   margin-top: -1px;
   margin-left: -1px;
+
+  & > ${StyledFormSectionTitle}:first-child {
+    margin-top: -11px;
+  }
 `;
 
 export const Sidebar = styled.div`

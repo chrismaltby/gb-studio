@@ -138,8 +138,7 @@ const useSplitPane = ({
         });
         resetSizes(newSizes);
       } else if (
-        index === firstUncollapsedIndex ||
-        index < lastUncollapsedIndex
+        index === 0
       ) {
         // Collapse upwards
         const newSizes = sizes.map((size, i) => {

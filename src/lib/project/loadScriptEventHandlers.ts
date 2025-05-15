@@ -6,10 +6,10 @@ import * as eventHelpers from "lib/events/helpers";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
 import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
+import * as scriptValueTypes from "shared/lib/scriptValue/types";
 
 const globAsync = promisify(glob);
 
@@ -131,7 +131,7 @@ export type ScriptEventHandler = ScriptEventDef & {
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
-export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
+export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
@@ -159,6 +159,7 @@ const vm = new NodeVM({
       "../helpers/trimlines": trimLines,
       "shared/lib/helpers/trimlines": trimLines,
       "shared/lib/scriptValue/helpers": scriptValueHelpers,
+      "shared/lib/scriptValue/types": scriptValueTypes,
     },
   },
 });
@@ -236,7 +237,7 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/**/events/event*.js`
+    `${projectRoot}/plugins/*/**/events/event*.js`
   );
 
   const eventHandlers: ScriptEventHandlers = {};

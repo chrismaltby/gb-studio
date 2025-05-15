@@ -12,6 +12,7 @@ import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
+import { SingleValue } from "react-select";
 
 interface AnimationStateSelectProps extends SelectCommonProps {
   name: string;
@@ -56,13 +57,13 @@ const StateRenameButton = styled.button`
     opacity: 1;
   }
 
-  :focus {
+  &:focus {
     opacity: 1;
   }
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
 
@@ -91,10 +92,10 @@ const StateRenameCompleteButton = styled.button`
   background: transparent;
   border-color: transparent;
 
-  :hover {
+  &:hover {
     background: rgba(128, 128, 128, 0.3);
   }
-  :active {
+  &:active {
     background: rgba(128, 128, 128, 0.4);
   }
   svg {
@@ -186,8 +187,6 @@ const AnimationStateSelect = ({
     });
   }, [allowDefault, value]);
 
-  const Select = canRename ? CreatableSelect : DefaultSelect;
-
   return (
     <Wrapper>
       {renameVisible ? (
@@ -200,12 +199,25 @@ const AnimationStateSelect = ({
           onBlur={onRenameFinish}
           autoFocus
         />
-      ) : (
-        <Select
+      ) : canRename ? (
+        <CreatableSelect
           name={name}
           value={currentValue}
-          onChange={(e: Option) => {
-            onChange?.(e.value);
+          onChange={(e: SingleValue<Option>) => {
+            if (e) {
+              onChange?.(e.value);
+            }
+          }}
+          options={options}
+        />
+      ) : (
+        <DefaultSelect
+          name={name}
+          value={currentValue}
+          onChange={(e: SingleValue<Option>) => {
+            if (e) {
+              onChange?.(e.value);
+            }
           }}
           options={options}
         />

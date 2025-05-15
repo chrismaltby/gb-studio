@@ -11,7 +11,11 @@ import {
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+} from "ui/form/layout/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -43,12 +47,12 @@ interface VariableEditorProps {
   id: string;
 }
 interface UsesWrapperProps {
-  showSymbols: boolean;
+  $showSymbols: boolean;
 }
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: ${(props) => (props.showSymbols ? `71px` : `38px`)};
+  top: ${(props) => (props.$showSymbols ? `71px` : `38px`)};
   left: 0;
   bottom: 0;
   right: 0;
@@ -217,7 +221,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
             </>
           )}
         </FormContainer>
-        <UsesWrapper ref={observe} showSymbols={showSymbols}>
+        <UsesWrapper ref={observe} $showSymbols={showSymbols}>
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>

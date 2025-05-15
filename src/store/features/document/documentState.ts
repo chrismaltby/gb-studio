@@ -1,4 +1,4 @@
-import { createSlice, AnyAction } from "@reduxjs/toolkit";
+import { createSlice, UnknownAction } from "@reduxjs/toolkit";
 import projectActions, {
   SaveStep,
 } from "store/features/project/projectActions";
@@ -66,7 +66,7 @@ const documentSlice = createSlice({
         state.saveWriteProgress = action.payload;
       })
       .addMatcher(
-        (action: AnyAction): action is AnyAction =>
+        (action: UnknownAction): action is UnknownAction =>
           action.type.startsWith("entities/") ||
           action.type.startsWith("metadata/") ||
           action.type.startsWith("settings/") ||

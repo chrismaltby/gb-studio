@@ -3,7 +3,7 @@ import Path from "path";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
 import { PreferencesWrapper } from "ui/preferences/Preferences";
-import { FormField, FormRow } from "ui/form/FormLayout";
+import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { Button } from "ui/buttons/Button";
 import { DotsIcon } from "ui/icons/Icons";
@@ -164,8 +164,10 @@ const Preferences = () => {
             <Select
               value={currentZoomValue}
               options={zoomOptions}
-              onChange={(newValue: Options) => {
-                onChangeZoomLevel(newValue.value);
+              onChange={(newValue) => {
+                if (newValue) {
+                  onChangeZoomLevel(newValue.value);
+                }
               }}
             />
           </FormField>
@@ -179,8 +181,10 @@ const Preferences = () => {
             <Select
               value={currentTrackerKeyBindings}
               options={trackerKeyBindingsOptions}
-              onChange={(newValue: Options) => {
-                onChangeTrackerKeyBindings(newValue.value);
+              onChange={(newValue) => {
+                if (newValue) {
+                  onChangeTrackerKeyBindings(newValue.value);
+                }
               }}
               formatOptionLabel={(
                 option: Options,

@@ -27,7 +27,7 @@ interface SpriteSheetSelectProps {
 }
 
 interface WrapperProps {
-  includeInfo?: boolean;
+  $includeInfo?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -36,7 +36,7 @@ const Wrapper = styled.div<WrapperProps>`
   min-width: 0;
   width: 60px;
   ${(props) =>
-    props.includeInfo
+    props.$includeInfo
       ? css`
           width: 100%;
         `
@@ -69,11 +69,11 @@ const Button = styled.button`
   align-items: stretch;
   overflow: hidden;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus,
+  &:focus,
   &&&:focus:not(.focus-visible) {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
@@ -151,7 +151,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   optionalValue,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, value || optionalValue || "")
   );
@@ -225,7 +225,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   };
 
   return (
-    <Wrapper includeInfo={includeInfo}>
+    <Wrapper $includeInfo={includeInfo}>
       <Button
         id={name}
         ref={buttonRef}

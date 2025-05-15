@@ -70,20 +70,7 @@ CustomMention.propTypes = {
   markup: PropTypes.string,
   displayTransform: PropTypes.func,
   allowSpaceInQuery: PropTypes.bool,
-  isLoading: PropTypes.bool,
-};
-
-CustomMention.defaultProps = {
-  trigger: "@",
-  markup: "@[__display__](__id__)",
-  displayTransform: function (id: string, display: string) {
-    return display || id;
-  },
-  onAdd: () => null,
-  onRemove: () => null,
-  renderSuggestion: undefined,
-  isLoading: false,
-  appendSpaceOnAdd: false,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default CustomMention;

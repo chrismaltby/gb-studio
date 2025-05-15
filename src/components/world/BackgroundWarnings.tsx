@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppSelector } from "store/hooks";
-import Alert, { AlertItem } from "ui/alerts/Alert";
+import { Alert, AlertItem } from "ui/alerts/Alert";
 
 interface BackgroundWarningsProps {
   id: string;

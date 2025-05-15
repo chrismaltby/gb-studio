@@ -52,7 +52,7 @@ export const Textarea = styled.textarea`
   resize: none;
   overflow: hidden;
 
-  :focus {
+  &:focus {
     box-shadow: 0 0 0px 2px #2686b3 !important;
   }
 `;

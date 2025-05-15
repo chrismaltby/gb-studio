@@ -125,7 +125,7 @@ export const TriggerPrefabEditorScripts: FC<TriggerPrefabEditorScriptsProps> =
 
     return (
       <>
-        <StickyTabs style={isInstance ? { top: 38 } : undefined}>
+        <StickyTabs top={isInstance ? 38 : undefined}>
           <TabBar
             value={scriptMode}
             values={scriptTabs}

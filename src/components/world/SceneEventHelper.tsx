@@ -1,7 +1,8 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
+  constantSelectors,
   scriptEventSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
@@ -14,6 +15,7 @@ import {
   ensureString,
 } from "shared/types";
 import { DialoguePreview } from "components/script/DialoguePreview";
+import { Constant } from "shared/lib/resources/types";
 
 const TILE_SIZE = 8;
 
@@ -45,14 +47,14 @@ const ScreenMarker = styled.div`
 `;
 
 interface PosMarkerProps {
-  tileWidth: number;
-  tileHeight: number;
+  $tileWidth: number;
+  $tileHeight: number;
 }
 
 const PosMarker = styled.div<PosMarkerProps>`
   position: absolute;
-  width: ${(props) => props.tileWidth * 8}px;
-  height: ${(props) => props.tileHeight * 8}px;
+  width: ${(props) => props.$tileWidth * 8}px;
+  height: ${(props) => props.$tileHeight * 8}px;
   outline: 3px solid red;
   box-shadow: 0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
@@ -102,7 +104,7 @@ const ScanlinePos = styled.div`
   height: 144px;
   maxheight: 144px;
   background: #e0f8cf;
-  ::before {
+  &:before {
     content: "";
     position: absolute;
     left: 0;
@@ -113,7 +115,7 @@ const ScanlinePos = styled.div`
     box-shadow: 0px 0px 2px rgba(148, 239, 218, 0.9),
       0px 0px 10px rgba(0, 249, 106, 0.8);
   }
-  ::after {
+  &:after {
     content: "";
     position: absolute;
     left: 100%;
@@ -142,11 +144,18 @@ const PosOffset = styled.div`
   }
 `;
 
-export const argValue = (arg: unknown): unknown => {
+export const getArgValue = (
+  arg: unknown,
+  constantsLookup: Record<string, Constant>
+): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
     if (unionArg.type === "variable" || unionArg.type === "property") {
       return undefined;
+    }
+    if (unionArg.type === "constant") {
+      const constant = constantsLookup[String(unionArg.value)];
+      return constant?.value ?? 0;
     }
     return unionArg.value;
   }
@@ -182,6 +191,15 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const event = sceneEventVisible ? scriptEventsLookup[eventId] : undefined;
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+  );
+
+  const constantsLookup = useAppSelector(constantSelectors.selectEntities);
+
+  const argValue = useCallback(
+    (arg: unknown): unknown => {
+      return getArgValue(arg, constantsLookup);
+    },
+    [constantsLookup]
   );
 
   const args = useMemo(() => {
@@ -267,8 +285,8 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     return (
       <EventHelperWrapper>
         <PosMarker
-          tileWidth={tileWidth}
-          tileHeight={tileHeight}
+          $tileWidth={tileWidth}
+          $tileHeight={tileHeight}
           style={{
             left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),

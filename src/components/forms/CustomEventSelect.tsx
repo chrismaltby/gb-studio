@@ -9,6 +9,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { sortByLabel } from "shared/lib/helpers/sort";
+import { SingleValue } from "react-select";
 
 interface CustomEventSelectProps extends SelectCommonProps {
   name: string;
@@ -47,8 +48,10 @@ export const CustomEventSelect = ({
   }, [options, value]);
 
   const onSelectChange = useCallback(
-    (newValue: Option) => {
-      onChange?.(newValue.value);
+    (newValue: SingleValue<Option>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
     },
     [onChange]
   );

@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from "react";
+import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
 
@@ -17,7 +18,7 @@ interface CameraSpeedOption {
 
 export const CameraSpeedSelect: FC<CameraSpeedSelectProps> = ({
   name,
-  value,
+  value = 2,
   allowNone,
   allowDefault,
   onChange,
@@ -43,14 +44,11 @@ export const CameraSpeedSelect: FC<CameraSpeedSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: CameraSpeedOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<CameraSpeedOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
     />
   );
-};
-
-CameraSpeedSelect.defaultProps = {
-  name: undefined,
-  value: 2,
 };

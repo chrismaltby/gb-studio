@@ -1,0 +1,3 @@
+[submodule "appData/engine/gbvm"]
+	path = appData/engine/gbvm
+	url = https://github.com/chrismaltby/gbvm.git

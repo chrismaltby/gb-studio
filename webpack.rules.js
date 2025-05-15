@@ -1,21 +1,5 @@
 module.exports = [
   {
-    test: /\.worker\.(ts|js)$/,
-    exclude: /(node_modules|.webpack)/,
-    rules: [
-      {
-        loader: "worker-loader",
-        options: { publicPath: "../" },
-      },
-      {
-        loader: "ts-loader",
-        options: {
-          transpileOnly: true,
-        },
-      },
-    ],
-  },
-  {
     test: /\.(ts|tsx|js|jsx)?$/,
     exclude: /(node_modules|.webpack)/,
     rules: [

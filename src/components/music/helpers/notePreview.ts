@@ -28,7 +28,7 @@ import {
   AUD3_WAVE_RAM,
 } from "shared/lib/music/constants";
 
-let previewTimeoutId: number | null = null;
+let previewTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 export const playNotePreview = (
   note: number,

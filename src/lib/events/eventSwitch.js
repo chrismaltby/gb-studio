@@ -1,3 +1,5 @@
+const { isConstScriptValue } = require("shared/lib/scriptValue/types");
+
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SWITCH";
@@ -27,7 +29,6 @@ const fields = [].concat(
     .reduce((arr, _, i) => {
       arr.push({
         key: `__collapseCase${i}`,
-        label: `${l10n("FIELD_WHEN")}: $$value${i}$$`,
         conditions: [
           {
             key: "choices",
@@ -36,25 +37,20 @@ const fields = [].concat(
         ],
         type: "collapsable",
         defaultValue: false,
-      });
-      arr.push({
-        key: `value${i}`,
-        label: l10n("FIELD_VALUE"),
-        description: l10n("FIELD_VALUE_SWITCH_DESC"),
-        conditions: [
+        fields: [
           {
-            key: `__collapseCase${i}`,
-            ne: true,
-          },
-          {
-            key: "choices",
-            gt: i,
+            key: `value${i}`,
+            label: l10n("FIELD_WHEN"),
+            description: l10n("FIELD_VALUE_SWITCH_DESC"),
+            type: "constvalue",
+            min: -32768,
+            max: 32767,
+            defaultValue: {
+              type: "number",
+              value: i + 1,
+            },
           },
         ],
-        type: "number",
-        min: -32768,
-        max: 32767,
-        defaultValue: i + 1,
       });
       arr.push({
         key: `true${i}`,
@@ -103,24 +99,25 @@ const fields = [].concat(
 );
 
 const compile = (input, helpers) => {
-  const { caseVariableValue } = helpers;
+  const { caseVariableConstValue } = helpers;
   const falsePath = input.__disableElse ? [] : input.false;
 
   const choiceLookup = Array(input.choices)
     .fill()
-    .reduce((memo, _, i) => {
-      const value = input[`value${i}`];
-      const key = Number.isInteger(parseInt(value, 10)) ? value : i + 1;
-      if (!memo[key]) {
-        return {
-          ...memo,
-          [key]: input[`true${i}`],
-        };
-      }
-      return memo;
-    }, {});
+    .map((_, i) => {
+      const value = isConstScriptValue(input[`value${i}`])
+        ? input[`value${i}`]
+        : {
+            type: "number",
+            value: i + 1,
+          };
+      return {
+        value,
+        branch: input[`true${i}`],
+      };
+    });
 
-  caseVariableValue(input.variable, choiceLookup, falsePath);
+  caseVariableConstValue(input.variable, choiceLookup, falsePath);
 };
 
 module.exports = {

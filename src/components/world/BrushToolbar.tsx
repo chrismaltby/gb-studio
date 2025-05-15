@@ -1,11 +1,12 @@
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import l10n from "shared/lib/lang/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import {
   PaintBucketIcon,
   WandIcon,
@@ -16,6 +17,9 @@ import {
   PriorityTileIcon,
   SlopeIcon,
   AutoColorIcon,
+  CheckIcon,
+  BlankIcon,
+  TileValueIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -26,21 +30,10 @@ import {
   BRUSH_FILL,
   BRUSH_MAGIC,
   DMG_PALETTE,
-  COLLISION_TOP,
-  COLLISION_BOTTOM,
-  COLLISION_LEFT,
-  COLLISION_RIGHT,
-  COLLISION_ALL,
-  TILE_PROP_LADDER,
   TILE_COLOR_PROP_PRIORITY,
-  COLLISION_SLOPE_45_RIGHT,
-  COLLISION_SLOPE_22_RIGHT_BOT,
-  COLLISION_SLOPE_22_RIGHT_TOP,
-  COLLISION_SLOPE_45_LEFT,
-  COLLISION_SLOPE_22_LEFT_BOT,
-  COLLISION_SLOPE_22_LEFT_TOP,
-  COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
+  defaultCollisionTileDefs,
+  defaultProjectSettings,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
 import editorActions from "store/features/editor/editorActions";
@@ -57,29 +50,18 @@ import { Brush } from "store/features/editor/editorState";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import styled, { css } from "styled-components";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
-import { Checkbox } from "ui/form/Checkbox";
-import {
-  BrushToolbarExtraTileIcon,
-  BrushToolbarLadderTileIcon,
-  BrushToolbarTileBottomIcon,
-  BrushToolbarTileLeftIcon,
-  BrushToolbarTileRightIcon,
-  BrushToolbarTileSlope22LeftBottomIcon,
-  BrushToolbarTileSlope22LeftTopIcon,
-  BrushToolbarTileSlope22RightBottomIcon,
-  BrushToolbarTileSlope22RightTopIcon,
-  BrushToolbarTileSlope45LeftIcon,
-  BrushToolbarTileSlope45RightIcon,
-  BrushToolbarTileSolidIcon,
-  BrushToolbarTileTopIcon,
-} from "./BrushToolbarIcons";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
+import { StyledButton } from "ui/buttons/style";
+import { Slider } from "ui/form/Slider";
+import { StyledFloatingPanel } from "ui/panels/style";
+import { CollisionTileIcon } from "components/collisions/CollisionTileIcon";
+import { isCollisionTileActive } from "shared/lib/collisions/collisionTiles";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -87,13 +69,6 @@ interface BrushToolbarProps {
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
-
-const collisionDirectionFlags = [
-  COLLISION_TOP,
-  COLLISION_BOTTOM,
-  COLLISION_LEFT,
-  COLLISION_RIGHT,
-];
 
 function useHiglightPalette() {
   const hoverScene = useAppSelector((state) =>
@@ -115,24 +90,55 @@ function useHiglightPalette() {
 }
 
 interface BrushToolbarWrapperProps {
-  visible: boolean;
+  $visible: boolean;
 }
 
-const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
+const BrushToolbarWrapper = styled.div<BrushToolbarWrapperProps>`
   position: absolute;
   left: 56px;
-  top: ${(props) => (props.visible ? "10px" : "-45px")};
+  top: ${(props) => (props.$visible ? "10px" : "-80px")};
   transition: top 0.2s ease-in-out;
   z-index: 10;
-  flex-wrap: wrap;
-  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+
+  ${StyledFloatingPanel} {
+    flex-wrap: wrap;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    align-self: flex-start;
+  }
 
   ${(props) =>
-    !props.visible
+    !props.$visible
       ? css`
-          flex-wrap: nowrap;
+          ${StyledFloatingPanel} {
+            flex-wrap: nowrap;
+          }
         `
       : ""}
+`;
+
+const LayerVisibilityPanel = styled(FloatingPanel)`
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  label {
+    color: ${(props) => props.theme.colors.button.text};
+  }
+  label:first-child {
+    padding-left: 1px;
+  }
+  ${StyledButton} {
+    height: 22px;
+    width: auto;
+    min-width: 20px;
+    padding: 2px;
+
+    svg ~ span {
+      margin-left: 5px;
+    }
+  }
 `;
 
 const PaletteModal = styled.div`
@@ -143,8 +149,20 @@ const PaletteModal = styled.div`
   background: ${(props) => props.theme.colors.menu.background};
   z-index: 1001;
   min-width: 200px;
-  ${Button} {
+  ${StyledButton} {
     margin-top: 5px;
+  }
+`;
+
+const SliderWrapper = styled.div`
+  display: flex;
+  width: 80px;
+  margin-left: 10px;
+  margin-right: 5px;
+  align-items: center;
+
+  & > * {
+    height: 22px;
   }
 `;
 
@@ -170,137 +188,43 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const showCollisionExtraTiles = useAppSelector(
     (state) => state.project.present.settings.showCollisionExtraTiles
   );
+  const showCollisionTileValues = useAppSelector(
+    (state) => state.project.present.settings.showCollisionTileValues
+  );
+  const collisionLayerOpacity = useAppSelector(
+    (state) => state.project.present.settings.collisionLayerOpacity
+  );
+  const collisionTileDefs = useAppSelector((state) => {
+    if (!scene || !scene.type || !state.engine.sceneTypes)
+      return defaultCollisionTileDefs;
+    const key = scene.type || "";
+    const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
+    if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
+    return defaultCollisionTileDefs;
+  });
+  const namedCollisionTileDefs = useMemo(
+    () =>
+      collisionTileDefs.map((tile, index) => {
+        const name =
+          tile.name && tile.name.trim().length > 0
+            ? l10n(tile.name as L10NKey, { tile: index + 1 })
+            : l10n("FIELD_COLLISION_TILE_N", { tile: index + 1 });
+        return {
+          ...tile,
+          name: name,
+        };
+      }),
+    [collisionTileDefs]
+  );
 
-  const tileTypes = useMemo(
-    () => [
-      {
-        key: "solid",
-        name: l10n("FIELD_SOLID"),
-        flag: COLLISION_ALL,
-        icon: <BrushToolbarTileSolidIcon />,
-      },
-      {
-        key: "top",
-        name: l10n("FIELD_COLLISION_TOP"),
-        flag: COLLISION_TOP,
-        icon: <BrushToolbarTileTopIcon />,
-      },
-      {
-        key: "bottom",
-        name: l10n("FIELD_COLLISION_BOTTOM"),
-        flag: COLLISION_BOTTOM,
-        icon: <BrushToolbarTileBottomIcon />,
-      },
-      {
-        key: "left",
-        name: l10n("FIELD_COLLISION_LEFT"),
-        flag: COLLISION_LEFT,
-        icon: <BrushToolbarTileLeftIcon />,
-      },
-      {
-        key: "right",
-        name: l10n("FIELD_COLLISION_RIGHT"),
-        flag: COLLISION_RIGHT,
-        icon: <BrushToolbarTileRightIcon />,
-      },
-      {
-        key: "ladder",
-        name: l10n("FIELD_COLLISION_LADDER"),
-        flag: TILE_PROP_LADDER,
-        icon: <BrushToolbarLadderTileIcon />,
-      },
-      {
-        key: "slope_45_right",
-        name: l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
-        flag: COLLISION_SLOPE_45_RIGHT,
-        extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-        icon: <BrushToolbarTileSlope45RightIcon />,
-      },
-      {
-        key: "slope_45_left",
-        name: l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
-        flag: COLLISION_SLOPE_45_LEFT,
-        extra: COLLISION_BOTTOM | COLLISION_LEFT,
-        icon: <BrushToolbarTileSlope45LeftIcon />,
-      },
-      {
-        key: "slope_22_right_bot",
-        name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
-        flag: COLLISION_SLOPE_22_RIGHT_BOT,
-        extra: COLLISION_BOTTOM,
-        icon: <BrushToolbarTileSlope22RightBottomIcon />,
-      },
-      {
-        key: "slope_22_right_top",
-        name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
-        flag: COLLISION_SLOPE_22_RIGHT_TOP,
-        extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-        icon: <BrushToolbarTileSlope22RightTopIcon />,
-      },
-      {
-        key: "slope_22_left_top",
-        name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
-        flag: COLLISION_SLOPE_22_LEFT_TOP,
-        extra: COLLISION_BOTTOM | COLLISION_LEFT,
-        icon: <BrushToolbarTileSlope22LeftTopIcon />,
-      },
-      {
-        key: "slope_22_left_bot",
-        name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
-        flag: COLLISION_SLOPE_22_LEFT_BOT,
-        extra: COLLISION_BOTTOM,
-        icon: <BrushToolbarTileSlope22LeftBottomIcon />,
-      },
-      {
-        key: "spare_08",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
-        flag: 0x80,
-        icon: <BrushToolbarExtraTileIcon value="8" />,
-      },
-      {
-        key: "spare_09",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
-        flag: 0x90,
-        icon: <BrushToolbarExtraTileIcon value="9" />,
-      },
-      {
-        key: "spare_10",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
-        flag: 0xa0,
-        icon: <BrushToolbarExtraTileIcon value="10" />,
-      },
-      {
-        key: "spare_11",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
-        flag: 0xb0,
-        icon: <BrushToolbarExtraTileIcon value="11" />,
-      },
-      {
-        key: "spare_12",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
-        flag: 0xc0,
-        icon: <BrushToolbarExtraTileIcon value="12" />,
-      },
-      {
-        key: "spare_13",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
-        flag: 0xd0,
-        icon: <BrushToolbarExtraTileIcon value="13" />,
-      },
-      {
-        key: "spare_14",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
-        flag: 0xe0,
-        icon: <BrushToolbarExtraTileIcon value="14" />,
-      },
-      {
-        key: "spare_15",
-        name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
-        flag: 0xf0,
-        icon: <BrushToolbarExtraTileIcon value="15" />,
-      },
-    ],
-    []
+  const slopesAvailable = useMemo(
+    () => collisionTileDefs.some((tile) => tile.group === "slope"),
+    [collisionTileDefs]
+  );
+
+  const spareAvailable = useMemo(
+    () => collisionTileDefs.some((tile) => tile.group === "spare"),
+    [collisionTileDefs]
   );
 
   const setBrush = (brush: Brush) => {
@@ -321,45 +245,39 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       if (showPalettes) {
         dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
       }
-      if (showTileTypes && tileTypes[index]) {
-        if (
-          e.shiftKey &&
-          collisionDirectionFlags.includes(tileTypes[index].flag)
-        ) {
-          if (
-            selectedTileType !== tileTypes[index].flag &&
-            selectedTileType & tileTypes[index].flag
-          ) {
-            dispatch(
-              editorActions.setSelectedTileType({
-                tileType:
-                  selectedTileType & COLLISION_ALL & ~tileTypes[index].flag,
-              })
-            );
-          } else {
-            dispatch(
-              editorActions.setSelectedTileType({
-                tileType:
-                  (selectedTileType & COLLISION_ALL) | tileTypes[index].flag,
-              })
-            );
-          }
-        } else if (
-          e.shiftKey &&
-          COLLISION_SLOPE_VALUES.includes(tileTypes[index].flag)
-        ) {
-          dispatch(
-            editorActions.setSelectedTileType({
-              tileType: tileTypes[index].flag | (tileTypes[index].extra ?? 0),
-            })
-          );
-        } else {
-          dispatch(
-            editorActions.setSelectedTileType({
-              tileType: tileTypes[index].flag,
-            })
-          );
+      if (showTileTypes && namedCollisionTileDefs[index]) {
+        const selectedTile = namedCollisionTileDefs[index];
+        if (!selectedTile) {
+          return;
         }
+
+        let newValue = selectedTile.flag;
+
+        if (e.shiftKey) {
+          if (selectedTile.multi) {
+            // If multi selectable tile toggle on/off when shift clicking
+            const mask = selectedTile.mask ?? 0xff;
+            if (
+              selectedTileType !== selectedTile.flag &&
+              selectedTileType & selectedTile.flag
+            ) {
+              newValue = selectedTileType & mask & ~selectedTile.flag;
+            } else {
+              newValue =
+                (selectedTileType & mask) | namedCollisionTileDefs[index].flag;
+            }
+          }
+          // If extra tiles defined also set them on shift click
+          if (selectedTile.extra !== undefined) {
+            newValue = newValue | selectedTile.extra;
+          }
+        }
+
+        dispatch(
+          editorActions.setSelectedTileType({
+            tileType: newValue,
+          })
+        );
       }
     };
 
@@ -403,7 +321,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       setModalColorIndex(-1);
     }
   }, [selectedTool]);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const startReplacePalette = (paletteIndex: number) => () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -436,6 +354,25 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId]
   );
 
+  const onChangeCollisionLayerOpacity = useCallback(
+    (opacity?: number) => {
+      dispatch(
+        settingsActions.editSettings({
+          collisionLayerOpacity: opacity,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const onResetCollisionLayerOpacity = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        collisionLayerOpacity: defaultProjectSettings.collisionLayerOpacity,
+      })
+    );
+  }, [dispatch]);
+
   const onToggleViewSlopeTiles = useCallback(() => {
     dispatch(
       settingsActions.editSettings({
@@ -451,6 +388,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       })
     );
   }, [dispatch, showCollisionExtraTiles]);
+
+  const onToggleViewTileValues = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        showCollisionTileValues: !showCollisionTileValues,
+      })
+    );
+  }, [dispatch, showCollisionTileValues]);
 
   const onToggleAutoColor = useCallback(() => {
     scene?.backgroundId &&
@@ -515,198 +460,232 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   return (
     <>
-      <BrushToolbarWrapper visible={visible}>
-        <Button
-          variant="transparent"
-          onClick={() => setBrush(BRUSH_8PX)}
-          active={selectedBrush === BRUSH_8PX}
-          title={`${l10n("TOOL_BRUSH", { size: "8px" })} (8)`}
-        >
-          <SquareIconSmall />
-        </Button>
-        <Button
-          variant="transparent"
-          onClick={() => setBrush(BRUSH_16PX)}
-          active={selectedBrush === BRUSH_16PX}
-          title={`${l10n("TOOL_BRUSH", { size: "16px" })} (9)`}
-        >
-          <SquareIcon />
-        </Button>
-        <Button
-          variant="transparent"
-          onClick={() => setBrush(BRUSH_FILL)}
-          active={selectedBrush === BRUSH_FILL}
-          title={`${l10n("TOOL_FILL")} (0)`}
-        >
-          <PaintBucketIcon />
-        </Button>
-        <Button
-          variant="transparent"
-          onClick={() => setBrush(BRUSH_MAGIC)}
-          active={selectedBrush === BRUSH_MAGIC}
-          title={`${l10n("TOOL_MAGIC")}`}
-        >
-          <WandIcon />
-        </Button>
-        {showTileTypes && (
+      <BrushToolbarWrapper $visible={visible}>
+        <FloatingPanel>
           <Button
             variant="transparent"
-            onClick={() => setBrush(BRUSH_SLOPE)}
-            active={selectedBrush === BRUSH_SLOPE}
-            title={`${l10n("TOOL_SLOPE")}`}
+            onClick={() => setBrush(BRUSH_8PX)}
+            active={selectedBrush === BRUSH_8PX}
+            title={`${l10n("TOOL_BRUSH", { size: "8px" })} (8)`}
           >
-            <SlopeIcon />
+            <SquareIconSmall />
           </Button>
-        )}
-        <FloatingPanelDivider />
-        {showPalettes &&
-          !background?.autoColor &&
-          paletteIndexes.map((paletteIndex) => (
+          <Button
+            variant="transparent"
+            onClick={() => setBrush(BRUSH_16PX)}
+            active={selectedBrush === BRUSH_16PX}
+            title={`${l10n("TOOL_BRUSH", { size: "16px" })} (9)`}
+          >
+            <SquareIcon />
+          </Button>
+          <Button
+            variant="transparent"
+            onClick={() => setBrush(BRUSH_FILL)}
+            active={selectedBrush === BRUSH_FILL}
+            title={`${l10n("TOOL_FILL")} (0)`}
+          >
+            <PaintBucketIcon />
+          </Button>
+          <Button
+            variant="transparent"
+            onClick={() => setBrush(BRUSH_MAGIC)}
+            active={selectedBrush === BRUSH_MAGIC}
+            title={`${l10n("TOOL_MAGIC")}`}
+          >
+            <WandIcon />
+          </Button>
+          {showTileTypes && (
             <Button
               variant="transparent"
-              key={paletteIndex}
-              onClick={setSelectedPalette(paletteIndex)}
-              onMouseDown={startReplacePalette(paletteIndex)}
-              active={paletteIndex === selectedPalette}
-              title={`${l10n("TOOL_PALETTE_N", {
-                number: paletteIndex + 1,
-              })} (${paletteIndex + 1}) - ${paletteName(palettes[paletteIndex], -1)}`}
+              onClick={() => setBrush(BRUSH_SLOPE)}
+              active={selectedBrush === BRUSH_SLOPE}
+              title={`${l10n("TOOL_SLOPE")}`}
             >
-              <PaletteBlock
-                colors={palettes[paletteIndex]?.colors ?? []}
-                highlight={paletteIndex === highlightPalette}
-              />
+              <SlopeIcon />
             </Button>
-          ))}
-        {showPalettes && background && (
-          <Button
-            variant="transparent"
-            onClick={onToggleAutoColor}
-            active={background.autoColor}
-            title={l10n("FIELD_AUTO_COLOR")}
-          >
-            <AutoColorIcon />
-          </Button>
-        )}
-        {showPalettes && <FloatingPanelDivider />}
-        {showPalettes && (
-          <Button
-            variant="transparent"
-            onClick={
-              TILE_COLOR_PROP_PRIORITY !== selectedPalette
-                ? setSelectedPalette(TILE_COLOR_PROP_PRIORITY)
-                : setSelectedPalette(0)
-            }
-            active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
-            title={l10n("TOOL_TILE_PRIORITY")}
-          >
-            <PriorityTileIcon />
-          </Button>
-        )}
-        {showPalettes && <FloatingPanelDivider />}
-        {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
-          <>
-            {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
+          )}
+          {(showPalettes ||
+            (showTileTypes && selectedBrush !== BRUSH_SLOPE)) && (
+            <FloatingPanelDivider />
+          )}
+          {showPalettes &&
+            !background?.autoColor &&
+            paletteIndexes.map((paletteIndex) => (
               <Button
                 variant="transparent"
-                key={tileType.name}
-                onClick={setSelectedPalette(tileTypeIndex)}
-                active={
-                  tileType.flag === COLLISION_ALL
-                    ? selectedTileType === tileType.flag
-                    : selectedTileType !== COLLISION_ALL &&
-                      !!(selectedTileType & tileType.flag)
-                }
-                title={`${tileType.name} (${tileTypeIndex + 1})`}
+                key={paletteIndex}
+                onClick={setSelectedPalette(paletteIndex)}
+                onMouseDown={startReplacePalette(paletteIndex)}
+                active={paletteIndex === selectedPalette}
+                title={`${l10n("TOOL_PALETTE_N", {
+                  number: paletteIndex + 1,
+                })} (${paletteIndex + 1}) - ${paletteName(
+                  palettes[paletteIndex],
+                  -1
+                )}`}
               >
-                {tileType.icon}
+                <PaletteBlock
+                  colors={palettes[paletteIndex]?.colors ?? []}
+                  highlight={paletteIndex === highlightPalette}
+                />
               </Button>
             ))}
-            <FloatingPanelDivider />
-            {tileTypes.slice(5, 6).map((tileType, tileTypeIndex) => (
+          {showPalettes && background && (
+            <Button
+              variant="transparent"
+              onClick={onToggleAutoColor}
+              active={background.autoColor}
+              title={l10n("FIELD_AUTO_COLOR")}
+            >
+              <AutoColorIcon />
+            </Button>
+          )}
+          {showPalettes && <FloatingPanelDivider />}
+          {showPalettes && (
+            <Button
+              variant="transparent"
+              onClick={
+                TILE_COLOR_PROP_PRIORITY !== selectedPalette
+                  ? setSelectedPalette(TILE_COLOR_PROP_PRIORITY)
+                  : setSelectedPalette(0)
+              }
+              active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
+              title={l10n("TOOL_TILE_PRIORITY")}
+            >
+              <PriorityTileIcon />
+            </Button>
+          )}
+          {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
+            <>
+              {namedCollisionTileDefs
+                .filter((tileDef) => {
+                  if (!showCollisionSlopeTiles && tileDef.group === "slope") {
+                    return false;
+                  }
+                  if (!showCollisionExtraTiles && tileDef.group === "spare") {
+                    return false;
+                  }
+                  return true;
+                })
+                .map((tileDef, tileTypeIndex) => {
+                  const selected = isCollisionTileActive(
+                    selectedTileType,
+                    tileDef
+                  );
+                  return (
+                    <Fragment key={tileTypeIndex}>
+                      {tileTypeIndex > 0 &&
+                        tileDef.group !==
+                          namedCollisionTileDefs[tileTypeIndex - 1].group && (
+                          <FloatingPanelDivider />
+                        )}
+                      <Button
+                        variant="transparent"
+                        key={tileDef.key}
+                        onClick={setSelectedPalette(tileTypeIndex)}
+                        active={selected}
+                        title={
+                          tileTypeIndex < 6
+                            ? `${tileDef.name} (${tileTypeIndex + 1})`
+                            : tileDef.name
+                        }
+                      >
+                        <CollisionTileIcon
+                          icon={tileDef.icon}
+                          color={tileDef.color}
+                        />
+                      </Button>
+                    </Fragment>
+                  );
+                })}
+            </>
+          )}
+          {selectedBrush !== BRUSH_SLOPE &&
+            showTileTypes &&
+            (slopesAvailable || spareAvailable) && (
+              <>
+                <FloatingPanelDivider />
+                <DropdownButton
+                  size="small"
+                  variant="transparent"
+                  menuDirection="right"
+                >
+                  {slopesAvailable && (
+                    <MenuItem
+                      onClick={onToggleViewSlopeTiles}
+                      icon={
+                        showCollisionSlopeTiles ? <CheckIcon /> : <BlankIcon />
+                      }
+                    >
+                      {l10n("FIELD_VIEW_SLOPE_TILES")}
+                    </MenuItem>
+                  )}
+                  {spareAvailable && (
+                    <MenuItem
+                      onClick={onToggleViewExtraTiles}
+                      icon={
+                        showCollisionExtraTiles ? <CheckIcon /> : <BlankIcon />
+                      }
+                    >
+                      {l10n("FIELD_VIEW_EXTRA_TILES")}
+                    </MenuItem>
+                  )}
+                </DropdownButton>
+              </>
+            )}
+        </FloatingPanel>
+        <LayerVisibilityPanel>
+          {selectedTool === TOOL_COLLISIONS && (
+            <>
+              <label
+                id="collisionLayerOpacityLabel"
+                onClick={onResetCollisionLayerOpacity}
+              >
+                {l10n("FIELD_LAYER_OPACITY")}
+              </label>
+              <SliderWrapper
+                title={`${l10n(
+                  "FIELD_LAYER_OPACITY"
+                )} (${collisionLayerOpacity}%)`}
+              >
+                <Slider
+                  labelledBy="collisionLayerOpacityLabel"
+                  value={collisionLayerOpacity}
+                  min={0}
+                  max={100}
+                  step={10}
+                  onChange={onChangeCollisionLayerOpacity}
+                ></Slider>
+              </SliderWrapper>
+              <FloatingPanelDivider />
+            </>
+          )}
+          {selectedTool === TOOL_COLLISIONS && (
+            <>
               <Button
                 variant="transparent"
-                key={tileType.name}
-                onClick={setSelectedPalette(tileTypeIndex + 5)}
-                active={selectedTileType === tileType.flag}
-                title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
+                onClick={onToggleViewTileValues}
+                active={showCollisionTileValues}
+                title={l10n("FIELD_SHOW_TILE_VALUES")}
               >
-                {tileType.icon}
+                <TileValueIcon />
               </Button>
-            ))}
+              <FloatingPanelDivider />
+            </>
+          )}
 
-            {showCollisionSlopeTiles && (
-              <>
-                <FloatingPanelDivider />
-
-                {tileTypes.slice(6, 12).map((tileType, tileTypeIndex) => (
-                  <Button
-                    variant="transparent"
-                    key={tileType.name}
-                    onClick={setSelectedPalette(tileTypeIndex + 6)}
-                    active={(selectedTileType & 0xf0) === tileType.flag}
-                    title={`${tileType.name}`}
-                  >
-                    {tileType.icon}
-                  </Button>
-                ))}
-              </>
-            )}
-
-            {showCollisionExtraTiles && (
-              <>
-                <FloatingPanelDivider />
-                {tileTypes.slice(12).map((tileType, tileTypeIndex) => (
-                  <Button
-                    variant="transparent"
-                    key={tileType.name}
-                    onClick={setSelectedPalette(tileTypeIndex + 12)}
-                    active={(selectedTileType & 0xf0) === tileType.flag}
-                    title={`${tileType.name}`}
-                  >
-                    {tileType.icon}
-                  </Button>
-                ))}
-              </>
-            )}
-            <FloatingPanelDivider />
-          </>
-        )}
-        <Button
-          variant="transparent"
-          onClick={toggleShowLayers}
-          active={!showLayers}
-          title={`${
-            showLayers ? l10n("TOOL_HIDE_LAYERS") : l10n("TOOL_SHOW_LAYERS")
-          } (-)`}
-        >
-          {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
-        </Button>
-
-        {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
-          <DropdownButton
-            size="small"
+          <Button
             variant="transparent"
-            menuDirection="right"
+            onClick={toggleShowLayers}
+            active={!showLayers}
+            title={`${
+              showLayers ? l10n("TOOL_HIDE_LAYERS") : l10n("TOOL_SHOW_LAYERS")
+            } (-)`}
           >
-            <MenuItem onClick={onToggleViewSlopeTiles}>
-              <Checkbox
-                id="showCollisionSlopeTiles"
-                name="showCollisionSlopeTiles"
-                checked={showCollisionSlopeTiles}
-              />
-              {` ${l10n("FIELD_VIEW_SLOPE_TILES")}`}
-            </MenuItem>
-            <MenuItem onClick={onToggleViewExtraTiles}>
-              <Checkbox
-                id="showCollisionSlopeTiles"
-                name="showCollisionSlopeTiles"
-                checked={showCollisionExtraTiles}
-              />
-              {` ${l10n("FIELD_VIEW_EXTRA_TILES")}`}
-            </MenuItem>
-          </DropdownButton>
-        )}
+            {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
+            <span>{l10n("FIELD_HIDE_OTHER_LAYERS")}</span>
+          </Button>
+        </LayerVisibilityPanel>
       </BrushToolbarWrapper>
 
       {modalColorIndex > -1 && (

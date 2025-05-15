@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   ActorNormalized,
@@ -21,6 +21,7 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
+import { components, SingleValue } from "react-select";
 
 interface ActorSelectProps {
   name: string;
@@ -86,6 +87,21 @@ export const ActorSelect = ({
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
+  const getActorSpriteId = useCallback(
+    (actorId: string): string => {
+      const actor = actorsLookup[actorId];
+      if (!actor) {
+        return "";
+      }
+      const prefab = actorPrefabsLookup[actor.prefabId];
+      if (!prefab) {
+        return actor.spriteSheetId;
+      }
+      return prefab.spriteSheetId;
+    },
+    [actorPrefabsLookup, actorsLookup]
+  );
+
   useEffect(() => {
     if (context.type === "script" && customEvent) {
       setOptions([
@@ -119,7 +135,7 @@ export const ActorSelect = ({
                   sceneActorIndex
                 )})`,
                 value: "$self$",
-                spriteSheetId: sceneActor.spriteSheetId,
+                spriteSheetId: getActorSpriteId(sceneActor.id),
                 direction: sceneActor.direction,
               },
             ]
@@ -134,7 +150,7 @@ export const ActorSelect = ({
           return {
             label: actorName(actor, actorIndex),
             value: actor.id,
-            spriteSheetId: actor.spriteSheetId,
+            spriteSheetId: getActorSpriteId(actor.id),
             direction: actor.direction,
           };
         }),
@@ -181,6 +197,7 @@ export const ActorSelect = ({
     sceneActorIndex,
     selfPrefab,
     selfPrefabIndex,
+    getActorSpriteId,
   ]);
 
   useEffect(() => {
@@ -196,8 +213,10 @@ export const ActorSelect = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: ActorOption) => {
-        onChange?.(newValue.value);
+      onChange={(newValue: SingleValue<ActorOption>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
       }}
       formatOptionLabel={(option: ActorOption) => {
         return option.spriteSheetId ? (
@@ -217,7 +236,7 @@ export const ActorSelect = ({
         );
       }}
       components={{
-        SingleValue: () =>
+        SingleValue: (props) =>
           currentValue?.spriteSheetId ? (
             <SingleValueWithPreview
               preview={
@@ -231,7 +250,9 @@ export const ActorSelect = ({
               {currentValue?.label}
             </SingleValueWithPreview>
           ) : (
-            currentValue?.label
+            <components.SingleValue {...props}>
+              {currentValue?.label}
+            </components.SingleValue>
           ),
       }}
     />

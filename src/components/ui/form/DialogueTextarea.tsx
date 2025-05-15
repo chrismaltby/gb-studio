@@ -22,14 +22,21 @@ import { portalRoot } from "ui/layout/Portal";
 import { TextGotoSelect } from "components/forms/TextGotoSelect";
 import { decOct, fromSigned8Bit } from "shared/lib/helpers/8bit";
 import { ensureNumber } from "shared/types";
+import { TextWaitInputSelect } from "components/forms/TextWaitInputSelect";
+import {
+  parseWaitCodeValue,
+  parseWaitCodeUnits,
+} from "shared/lib/text/textCodes";
+import { TextWaitTimeSelect } from "components/forms/TextWaitTimeSelect";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
 const gotoRegex = /(\\00[34]\\[0-7][0-7][0-7]\\[0-7][0-7][0-7])/g;
+const waitRegex = /(\\006\\[0-7][0-7][0-7]|!W:[0-9.]+[fs]!)/g;
 
 interface DialogueTextareaWrapperProps {
-  singleLine?: boolean;
+  $singleLine?: boolean;
 }
 
 type ExtendedSuggestionDataItem = SuggestionDataItem & {
@@ -54,7 +61,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     padding: 5px;
     line-height: 16px;
-    ${(props) => (!props.singleLine ? `min-height: 38px;` : "")}
+    ${(props) => (!props.$singleLine ? `min-height: 38px;` : "")}
   }
 
   .MentionsInput__highlighter {
@@ -93,11 +100,11 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     line-height: 16px;
     padding: 5px;
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.input.hoverBackground};
     }
 
-    :focus {
+    &:focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
       z-index: 0;
@@ -111,7 +118,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.variable};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.variable};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -124,7 +131,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.character};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.character};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -137,7 +144,7 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -150,20 +157,21 @@ const DialogueTextareaWrapper = styled.div<DialogueTextareaWrapperProps>`
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
   }
 
-  .Mentions__TokenGoto {
+  .Mentions__TokenGoto,
+  .Mentions__TokenWait {
     position: relative;
     z-index: 1;
     cursor: pointer;
     border-radius: 4px;
     color: ${(props) => props.theme.colors.token.code};
 
-    :hover {
+    &:hover {
       background: ${(props) => props.theme.colors.token.code};
       color: ${(props) => props.theme.colors.input.background};
     }
@@ -197,6 +205,24 @@ const extractGotoCoords = (code: string): [number, number] => {
   ];
 };
 
+const buttons = ["right", "left", "up", "down", "a", "b", "select", "start"];
+
+const extractInputMask = (code: string) => {
+  const parts = code.split("\\");
+  const mask = fromSigned8Bit(parseInt(parts[2], 8));
+  return buttons.filter((_, index) => (mask & (1 << index)) !== 0);
+};
+
+const createMaskFromInput = (input: string[]): number => {
+  return input.reduce((mask, key) => {
+    const index = buttons.indexOf(key);
+    if (index !== -1) {
+      mask |= 1 << index;
+    }
+    return mask;
+  }, 0);
+};
+
 export interface DialogueTextareaProps {
   id?: string;
   value: string;
@@ -224,6 +250,23 @@ type EditModeOptions =
       offsetX: number;
       offsetY: number;
       relative: boolean;
+      x: number;
+      y: number;
+    }
+  | {
+      type: "input";
+      id: string;
+      index: number;
+      input: string[];
+      x: number;
+      y: number;
+    }
+  | {
+      type: "wait";
+      id: string;
+      index: number;
+      time: number;
+      units: "time" | "frames";
       x: number;
       y: number;
     }
@@ -291,6 +334,27 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         id: "\\004\\002\\002",
         display: l10n("FIELD_MOVE_CURSOR_POSITION_BY"),
         searchName: `cursormove ${l10n("FIELD_MOVE_CURSOR_POSITION_BY")}`,
+      },
+    ],
+    []
+  );
+
+  const waitCodes: ExtendedSuggestionDataItem[] = useMemo(
+    () => [
+      {
+        id: "!W:1s!",
+        display: `${l10n("EVENT_WAIT")} ${l10n("FIELD_SECONDS")}`,
+        searchName: `wait ${l10n("EVENT_WAIT")} ${l10n("FIELD_SECONDS")}`,
+      },
+      {
+        id: "!W:60f!",
+        display: `${l10n("EVENT_WAIT")} ${l10n("FIELD_FRAMES")}`,
+        searchName: `wait ${l10n("EVENT_WAIT")} ${l10n("FIELD_FRAMES")}`,
+      },
+      {
+        id: "\\006\\020",
+        display: l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED"),
+        searchName: `wait ${l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")}`,
       },
     ],
     []
@@ -376,14 +440,24 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     [moveCodes, searchLocalisedSuggestions]
   );
 
+  const searchWaitCodes = useCallback(
+    (searchTerm: string): ExtendedSuggestionDataItem[] => {
+      const searchTermLowerCase = searchTerm.toLocaleLowerCase();
+      if ("wait".includes(searchTermLowerCase)) {
+        return waitCodes;
+      }
+      return searchLocalisedSuggestions(waitCodes, searchTermLowerCase);
+    },
+    [waitCodes, searchLocalisedSuggestions]
+  );
+
   return (
-    <DialogueTextareaWrapper singleLine={singleLine}>
+    <DialogueTextareaWrapper $singleLine={singleLine}>
       {editMode && (
         <RelativePortal
           offsetX={editMode.x}
           offsetY={editMode.y}
           pin="bottom-right"
-          zIndex={10000}
         >
           <SelectMenu>
             {editMode.type === "font" && (
@@ -499,6 +573,75 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                 }}
               />
             )}
+            {editMode.type === "input" && (
+              <TextWaitInputSelect
+                value={editMode.input}
+                onChange={(v) => {
+                  if (v.length === 0) {
+                    return;
+                  }
+                  const mask = createMaskFromInput(v);
+                  let matches = 0;
+                  const newValue = value.replace(waitRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `\\006\\${decOct(mask).padStart(3, "0")}`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  setEditMode({
+                    ...editMode,
+                    input: v,
+                  });
+                  onChange(newValue);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+              />
+            )}
+            {editMode.type === "wait" && (
+              <TextWaitTimeSelect
+                value={editMode.time}
+                units={editMode.units}
+                onChange={(t) => {
+                  let matches = 0;
+                  const newValue = value.replace(waitRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `!W:${t}${editMode.units === "time" ? "s" : "f"}!`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  setEditMode({
+                    ...editMode,
+                    time: t,
+                  });
+                  onChange(newValue);
+                }}
+                onChangeUnits={(u) => {
+                  let matches = 0;
+                  const newValue = value.replace(waitRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `!W:${editMode.time}${u === "time" ? "s" : "f"}!`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  setEditMode({
+                    ...editMode,
+                    units: u,
+                  });
+                  onChange(newValue);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+              />
+            )}
           </SelectMenu>
         </RelativePortal>
       )}
@@ -544,6 +687,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenChar"
@@ -574,6 +718,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenSpeed"
@@ -601,6 +746,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenFont"
@@ -628,6 +774,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
         />
         <CustomMention
           className="Mentions__TokenGoto"
@@ -639,7 +786,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             const [offsetX, offsetY] = extractGotoCoords(code);
             return `${code[3] === "3" ? "Ｐ" : "Ｍ"}(${
               code[3] === "3" || offsetX < 0 ? offsetX : `+${offsetX}`
-            },${code[3] === "3" || offsetY < 0 ? offsetY : `+${offsetY}`})`;
+            }﹐${code[3] === "3" || offsetY < 0 ? offsetY : `+${offsetY}`})`;
           }}
           hoverTransform={(code) =>
             code[3] === "3"
@@ -665,6 +812,72 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               y: rect2.top - rect.top,
             });
           }}
+          isLoading={false}
+        />
+        <CustomMention
+          className="Mentions__TokenWait"
+          trigger={/(!([\p{L}0-9]+))$/u}
+          data={searchWaitCodes}
+          markup={`__id__`}
+          regex={/(\\006\\[0-7][0-7][0-7]|!W:[0-9.]+[fs]!)/}
+          displayTransform={(code: string) => {
+            if (code[0] === "!") {
+              const time = parseWaitCodeValue(code);
+              if (time !== undefined) {
+                const units = parseWaitCodeUnits(code);
+                return `Ｗ(${
+                  units === "time"
+                    ? l10n("FIELD_TIME_SECONDS", { seconds: time })
+                    : Math.round(time)
+                })`;
+              } else {
+                return `Ｗ`;
+              }
+            } else {
+              const buttons = extractInputMask(code);
+              return `Ｗ(${buttons.join("﹐")})`;
+            }
+          }}
+          hoverTransform={(code: string) =>
+            code[0] === "!"
+              ? l10n("EVENT_WAIT")
+              : l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")
+          }
+          onClick={(e, code, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+
+            if (code[0] === "!") {
+              const time = parseWaitCodeValue(code);
+              if (time !== undefined) {
+                const units = parseWaitCodeUnits(code);
+                setEditMode({
+                  type: "wait",
+                  id: code,
+                  time,
+                  units,
+                  index,
+                  x: rect2.left - rect.left,
+                  y: rect2.top - rect.top,
+                });
+              }
+            } else {
+              const buttons = extractInputMask(code);
+              setEditMode({
+                type: "input",
+                id: code,
+                input: buttons,
+                index,
+                x: rect2.left - rect.left,
+                y: rect2.top - rect.top,
+              });
+            }
+          }}
+          isLoading={false}
         />
       </MentionsInput>
     </DialogueTextareaWrapper>

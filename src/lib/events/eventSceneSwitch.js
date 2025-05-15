@@ -21,6 +21,7 @@ const fields = [
   },
   {
     type: "group",
+    wrapItems: true,
     fields: [
       {
         key: "x",
@@ -87,5 +88,4 @@ module.exports = {
   groups,
   fields,
   compile,
-  waitUntilAfterInitFade: true,
 };

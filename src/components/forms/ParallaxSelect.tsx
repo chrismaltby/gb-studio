@@ -3,11 +3,12 @@ import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { SceneParallaxLayer } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import { FormField } from "ui/form/FormLayout";
+import { FormField } from "ui/form/layout/FormLayout";
 import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch } from "store/hooks";
+import { SingleValue } from "react-select";
 
 interface ParallaxOption {
   value: number;
@@ -64,7 +65,7 @@ const LayerRow = styled.div`
     margin-right: 0px;
   }
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.sidebar.well.hoverBackground};
     ${LayerIndex} {
       background: ${(props) => props.theme.colors.sidebar.well.background};
@@ -225,12 +226,14 @@ const ParallaxSelect = ({
         name={name}
         value={selectValue}
         options={options}
-        onChange={(newValue: ParallaxOption) => {
-          if (newValue.value > 0) {
-            onChange?.(sliceLayers(value, newValue.value));
-          } else {
-            onChange?.(undefined);
-            setHoverLayer(undefined);
+        onChange={(newValue: SingleValue<ParallaxOption>) => {
+          if (newValue) {
+            if (newValue.value > 0) {
+              onChange?.(sliceLayers(value, newValue.value));
+            } else {
+              onChange?.(undefined);
+              setHoverLayer(undefined);
+            }
           }
         }}
       />

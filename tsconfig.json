@@ -17,6 +17,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "baseUrl": "src",
+    "sourceMap": true,
     "paths": {
       "store/*": [ "./store/*" ],
       "lib/*": [ "./lib/*" ],

@@ -27,7 +27,8 @@ workerCtx.onmessage = async (evt) => {
   const palette = evt.data.palette;
   const palettes: [string, string, string, string][] = evt.data.palettes;
   const previewAsMono = evt.data.previewAsMono;
-  const key = JSON.stringify({ src, palettes, previewAsMono });
+  const colorCorrection = evt.data.colorCorrection;
+  const key = JSON.stringify({ src, palettes, previewAsMono, colorCorrection });
 
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;
@@ -71,7 +72,12 @@ workerCtx.onmessage = async (evt) => {
         tileImageData.width,
         tileImageData.height
       );
-      colorizeSpriteData(imageDataCopy.data, objPalette, palette);
+      colorizeSpriteData(
+        imageDataCopy.data,
+        objPalette,
+        palette,
+        colorCorrection
+      );
       ctx.putImageData(imageDataCopy, 0, 0);
     });
 
@@ -91,7 +97,7 @@ workerCtx.onmessage = async (evt) => {
           tileImageData.width,
           tileImageData.height
         );
-        colorizeSpriteData(imageDataCopy.data, null, colors);
+        colorizeSpriteData(imageDataCopy.data, null, colors, colorCorrection);
         ctx.putImageData(imageDataCopy, 0, 0);
       });
     }

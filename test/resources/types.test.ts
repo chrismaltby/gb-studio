@@ -178,6 +178,7 @@ describe("TypeBox Schemas", () => {
       height: 40,
       backgroundId: "background1",
       tilesetId: "tileset1",
+      colorModeOverride: "none",
       paletteIds: ["palette1", "palette2"],
       spritePaletteIds: ["spritePalette1"],
       autoFadeSpeed: 1,
@@ -459,7 +460,7 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate FontResource", () => {
-    const validFont = {
+    const validFont: FontResource = {
       _resourceType: "font",
       id: "font1",
       name: "Font 1",
@@ -467,6 +468,7 @@ describe("TypeBox Schemas", () => {
       filename: "filename",
       width: 16,
       height: 16,
+      mapping: {},
     };
     const invalidFont = {
       _resourceType: "font",
@@ -567,6 +569,8 @@ describe("TypeBox Schemas", () => {
       showConnections: "all",
       showCollisionSlopeTiles: true,
       showCollisionExtraTiles: true,
+      showCollisionTileValues: false,
+      collisionLayerOpacity: 50,
       worldScrollX: 0,
       worldScrollY: 0,
       zoom: 1,
@@ -625,12 +629,14 @@ describe("TypeBox Schemas", () => {
       debuggerBreakpoints: [],
       debuggerWatchedVariables: [],
       colorMode: "mono",
+      colorCorrection: "default",
       previewAsMono: false,
       openBuildLogOnWarnings: true,
       generateDebugFilesEnabled: false,
       compilerPreset: 3000,
       scriptEventPresets: {},
       scriptEventDefaultPresets: {},
+      runSceneSelectionOnly: false,
     };
     const invalidSettings = {
       _resourceType: "settings",
@@ -641,9 +647,11 @@ describe("TypeBox Schemas", () => {
       startAnimSpeed: null,
       startDirection: "down",
       showCollisions: true,
+      collisionLayerOpacity: 50,
       showConnections: "all",
       showCollisionSlopeTiles: true,
       showCollisionExtraTiles: true,
+      showCollisionTileValues: false,
       worldScrollX: 0,
       worldScrollY: 0,
       zoom: 1,
@@ -722,10 +730,12 @@ describe("TypeBox Schemas", () => {
     const validVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+      constants: [],
     };
     const invalidVariables = {
       _resourceType: "variables",
       variables: [{ id: "var1", name: "Variable 1" }],
+      constants: [],
     };
 
     expect(() => Value.Decode(VariablesResource, validVariables)).not.toThrow();

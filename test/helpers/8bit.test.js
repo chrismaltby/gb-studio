@@ -1,4 +1,10 @@
-import { decBin, decHex, hi, lo } from "shared/lib/helpers/8bit";
+import {
+  decBin,
+  decHex,
+  hi,
+  lo,
+  wrapSigned8Bit,
+} from "shared/lib/helpers/8bit";
 
 test("Should convert decimal to 8 bit binary", () => {
   expect(decBin(1)).toBe("00000001");
@@ -55,4 +61,26 @@ test("Should wrap when returning lower bits of 16 bit num", () => {
 
 test("Should wrap when returning higher bits of 16 bit num", () => {
   expect(hi(-1)).toBe(255);
+});
+
+describe("wrapSigned8Bit", () => {
+  test("Should keep values already in signed 8-bit range unchanged", () => {
+    expect(wrapSigned8Bit(0)).toBe(0);
+    expect(wrapSigned8Bit(1)).toBe(1);
+    expect(wrapSigned8Bit(127)).toBe(127);
+    expect(wrapSigned8Bit(-1)).toBe(-1);
+    expect(wrapSigned8Bit(-128)).toBe(-128);
+  });
+
+  test("Should wrap values above 8-bit signed range", () => {
+    expect(wrapSigned8Bit(128)).toBe(-128);
+    expect(wrapSigned8Bit(255)).toBe(-1);
+    expect(wrapSigned8Bit(496)).toBe(-16);
+  });
+
+  test("Should wrap values below 8-bit signed range", () => {
+    expect(wrapSigned8Bit(-129)).toBe(127);
+    expect(wrapSigned8Bit(-130)).toBe(126);
+    expect(wrapSigned8Bit(-386)).toBe(126);
+  });
 });

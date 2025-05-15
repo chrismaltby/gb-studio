@@ -1,10 +1,11 @@
-import { Dictionary } from "@reduxjs/toolkit";
-import {
-  EVENT_SWITCH_SCENE,
-  MAX_NESTED_SCRIPT_DEPTH,
-  MIDDLE_MOUSE,
-} from "consts";
-import React, { useCallback, useEffect, useState } from "react";
+import { MIDDLE_MOUSE } from "consts";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -14,60 +15,27 @@ import {
   triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  ActorNormalized,
-  ActorDirection,
-  CustomEventNormalized,
-  SceneNormalized,
-  ScriptEventNormalized,
-  TriggerNormalized,
-  ActorPrefabNormalized,
-  TriggerPrefabNormalized,
-} from "shared/lib/entities/entitiesTypes";
+import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
-import { ShowConnectionsSetting } from "store/features/settings/settingsState";
-import {
-  walkNormalizedActorScripts,
-  walkNormalizedSceneSpecificScripts,
-  walkNormalizedTriggerScripts,
-} from "shared/lib/scripts/walk";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ensureScriptValue } from "shared/lib/scriptValue/types";
+import ConnectionsWorker, {
+  ConnectionsWorkerRequest,
+  ConnectionsWorkerResult,
+  SceneTransitionCoords,
+} from "./Connections.worker";
+import { throttle } from "lodash";
 import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
+import { ensureScriptValue } from "shared/lib/scriptValue/types";
+import { filterUndefined } from "shared/lib/helpers/array";
+
+const worker = new ConnectionsWorker();
 
 interface ConnectionsProps {
   width: number;
   height: number;
   zoomRatio: number;
   editable: boolean;
-}
-
-interface CalculateTransitionCoordsProps {
-  type: "actor" | "trigger" | "scene";
-  scriptEvent: ScriptEventNormalized;
-  scene: SceneNormalized;
-  destScene: SceneNormalized;
-  entityId: string;
-  entityX?: number;
-  entityY?: number;
-  entityWidth?: number;
-  entityHeight?: number;
-  direction?: ActorDirection;
-}
-
-interface TransitionCoords {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  qx: number;
-  qy: number;
-  type: "actor" | "trigger" | "scene";
-  eventId: string;
-  sceneId: string;
-  entityId: string;
-  direction: ActorDirection;
 }
 
 const ConnectionsSvg = styled.svg`
@@ -90,7 +58,7 @@ interface ConnectionMarkerProps {
 type ConnectionMarkerType = "destination" | "player-start";
 
 interface ConnectionMarkerSVGProps {
-  type: ConnectionMarkerType;
+  $type: ConnectionMarkerType;
 }
 
 type DestinationMarkerProps = {
@@ -118,195 +86,11 @@ const defaultCoord = {
   value: 0,
 } as const;
 
-const calculateTransitionCoords = ({
-  type,
-  scriptEvent,
-  scene,
-  destScene,
-  entityId,
-  entityX = 0,
-  entityY = 0,
-  entityWidth = 0,
-  entityHeight = 0,
-}: CalculateTransitionCoordsProps): TransitionCoords => {
-  const startX = scene.x;
-  const startY = scene.y;
-  const destX = destScene.x;
-  const destY = destScene.y;
-
-  const scriptEventX = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.x, defaultCoord)
-  );
-  const scriptEventY = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.y, defaultCoord)
-  );
-
-  const x1 = startX + (entityX + entityWidth / 2) * 8;
-  const x2 =
-    destX + (scriptEventX.type === "number" ? scriptEventX.value : 0) * 8 + 5;
-  const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
-  const y2 =
-    20 +
-    destY +
-    (scriptEventY.type === "number" ? scriptEventY.value : 0) * 8 +
-    5;
-
-  const xDiff = Math.abs(x1 - x2);
-  const yDiff = Math.abs(y1 - y2);
-
-  const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
-  const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
-
-  const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
-  const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
-
-  return {
-    x1,
-    y1,
-    x2,
-    y2,
-    qx,
-    qy,
-    type,
-    eventId: scriptEvent.id,
-    sceneId: scene.id,
-    entityId,
-    direction: scriptEvent.args?.direction as ActorDirection,
-  };
-};
-
-const getSceneConnections = (
-  showConnections: ShowConnectionsSetting,
-  selectedSceneId: string,
-  scene: SceneNormalized,
-  eventsLookup: Dictionary<ScriptEventNormalized>,
-  scenesLookup: Dictionary<SceneNormalized>,
-  actorsLookup: Dictionary<ActorNormalized>,
-  triggersLookup: Dictionary<TriggerNormalized>,
-  actorPrefabsLookup: Dictionary<ActorPrefabNormalized>,
-  triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized>,
-  customEventsLookup: Dictionary<CustomEventNormalized>
-) => {
-  const ifMatches = (
-    scriptEvent: ScriptEventNormalized,
-    callback: (destScene: SceneNormalized) => void
-  ) => {
-    if (scriptEvent.command === EVENT_SWITCH_SCENE) {
-      const destId = String(scriptEvent.args?.sceneId || "");
-      if (
-        showConnections === "all" ||
-        scene.id === selectedSceneId ||
-        destId === selectedSceneId
-      ) {
-        const destScene = scenesLookup[destId];
-        if (destScene) {
-          callback(destScene);
-        }
-      }
-    }
-  };
-
-  const connections: TransitionCoords[] = [];
-  walkNormalizedSceneSpecificScripts(
-    scene,
-    eventsLookup,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (scriptEvent) => {
-      ifMatches(scriptEvent, (destScene) => {
-        connections.push(
-          calculateTransitionCoords({
-            type: "scene",
-            scriptEvent,
-            scene,
-            destScene,
-            entityId: "",
-          })
-        );
-      });
-    }
-  );
-
-  scene.actors.forEach((entityId) => {
-    const entity = actorsLookup[entityId];
-    if (entity) {
-      walkNormalizedActorScripts(
-        entity,
-        eventsLookup,
-        actorPrefabsLookup,
-        {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          },
-        },
-        (scriptEvent) => {
-          ifMatches(scriptEvent, (destScene) => {
-            connections.push(
-              calculateTransitionCoords({
-                type: "actor",
-                scriptEvent,
-                scene,
-                destScene,
-                entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: 2,
-                entityHeight: 1,
-              })
-            );
-          });
-        }
-      );
-    }
-  });
-
-  scene.triggers.forEach((entityId) => {
-    const entity = triggersLookup[entityId];
-    if (entity) {
-      walkNormalizedTriggerScripts(
-        entity,
-        eventsLookup,
-        triggerPrefabsLookup,
-        {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          },
-        },
-        (scriptEvent) => {
-          ifMatches(scriptEvent, (destScene) => {
-            connections.push(
-              calculateTransitionCoords({
-                type: "trigger",
-                scriptEvent,
-                scene,
-                destScene,
-                entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: entity.width || 2,
-                entityHeight: entity.height || 1,
-              })
-            );
-          });
-        }
-      );
-    }
-  });
-
-  return connections;
-};
-
 const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
   pointer-events: all;
 
   ${(props) =>
-    props.type === "player-start"
+    props.$type === "player-start"
       ? css`
           rect {
             fill: rgb(255, 87, 34);
@@ -320,7 +104,7 @@ const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
       : ""}
 
   ${(props) =>
-    props.type === "destination"
+    props.$type === "destination"
       ? css`
           rect {
             fill: rgb(0, 188, 212);
@@ -342,7 +126,7 @@ const ConnectionMarker = ({
   type,
 }: ConnectionMarkerProps) => {
   return (
-    <ConnectionMarkerSVG type={type} onMouseDown={onMouseDown}>
+    <ConnectionMarkerSVG $type={type} onMouseDown={onMouseDown}>
       <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
@@ -455,13 +239,12 @@ const Connections = ({
   editable,
 }: ConnectionsProps) => {
   const dispatch = useAppDispatch();
-  const [connections, setConnections] = useState<
-    ReturnType<typeof calculateTransitionCoords>[]
-  >([]);
+  const [connections, setConnections] = useState<SceneTransitionCoords[]>([]);
   const showConnections = useAppSelector(
     (state) => state.project.present.settings.showConnections
   );
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
+  const selectedEventId = useAppSelector((state) => state.editor.eventId);
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId
   );
@@ -473,9 +256,6 @@ const Connections = ({
   );
   const startDirection = useAppSelector(
     (state) => state.project.present.settings.startDirection
-  );
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, selectedSceneId)
   );
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const scenesLookup = useAppSelector((state) =>
@@ -501,42 +281,79 @@ const Connections = ({
     triggerPrefabSelectors.selectEntities
   );
 
-  useEffect(() => {
+  const calculate = useCallback(() => {
     if (!showConnections) {
+      isWorkQueued.current = false;
+      isWorking.current = false;
       setConnections([]);
       return;
     }
-    setConnections(
-      scenes
-        .map((scene) =>
-          getSceneConnections(
-            showConnections,
-            selectedSceneId,
-            scene,
-            eventsLookup,
-            scenesLookup,
-            actorsLookup,
-            triggersLookup,
-            actorPrefabsLookup,
-            triggerPrefabsLookup,
-            customEventsLookup
-          )
-        )
-        .flat()
-    );
+    if (isWorking.current) {
+      isWorkQueued.current = true;
+      return;
+    }
+    isWorking.current = true;
+    const request: ConnectionsWorkerRequest = {
+      showConnections,
+      selectedSceneId,
+      scenes,
+      eventsLookup,
+      scenesLookup,
+      actorsLookup,
+      triggersLookup,
+      actorPrefabsLookup,
+      triggerPrefabsLookup,
+      customEventsLookup,
+    };
+    worker.postMessage(request);
   }, [
-    showConnections,
-    scene,
-    scenes,
-    actorsLookup,
-    triggersLookup,
-    eventsLookup,
-    scenesLookup,
-    customEventsLookup,
-    selectedSceneId,
     actorPrefabsLookup,
+    actorsLookup,
+    customEventsLookup,
+    eventsLookup,
+    scenes,
+    scenesLookup,
+    selectedSceneId,
+    showConnections,
     triggerPrefabsLookup,
+    triggersLookup,
   ]);
+
+  const isWorking = useRef(false);
+  const isWorkQueued = useRef(false);
+
+  const onWorkerComplete = useCallback(
+    (e: MessageEvent<ConnectionsWorkerResult>) => {
+      isWorking.current = false;
+      setConnections(e.data.connections);
+      if (isWorkQueued.current) {
+        isWorkQueued.current = false;
+        calculate();
+      }
+    },
+    [calculate]
+  );
+
+  useEffect(() => {
+    worker.addEventListener("message", onWorkerComplete);
+    return () => {
+      worker.removeEventListener("message", onWorkerComplete);
+    };
+  }, [onWorkerComplete]);
+
+  const currentCalculate = useRef(calculate);
+  useEffect(() => {
+    currentCalculate.current = calculate;
+  }, [calculate]);
+
+  const throttledCalculate = useMemo(
+    () => throttle(() => currentCalculate.current(), 100),
+    []
+  );
+
+  useEffect(() => {
+    throttledCalculate();
+  }, [calculate, throttledCalculate]);
 
   const onDragPlayerStop = useCallback(() => {
     dispatch(editorActions.dragPlayerStop());
@@ -558,6 +375,101 @@ const Connections = ({
   const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
   const startY2 = startScene && 20 + startScene.y + (startY || 0) * 8 + 5;
 
+  // Calculate absolute values of connections
+  // by combining with the latest entity position values
+  const absoluteConnections = useMemo(() => {
+    return filterUndefined(
+      connections.map((connection) => {
+        let toX = connection.toX;
+        let toY = connection.toY;
+        let toSceneId = connection.toSceneId;
+
+        // If currently editing a script event by dragging destination marker
+        // then perform full calculation to get most up to date values for that event
+        if (connection.eventId === selectedEventId) {
+          const scriptEvent = eventsLookup[connection.eventId];
+          if (scriptEvent) {
+            const scriptEventX = optimiseScriptValue(
+              ensureScriptValue(scriptEvent.args?.x, defaultCoord)
+            );
+            const scriptEventY = optimiseScriptValue(
+              ensureScriptValue(scriptEvent.args?.y, defaultCoord)
+            );
+            toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
+            toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
+            toSceneId = String(scriptEvent.args?.sceneId || "");
+          }
+        }
+
+        const fromScene = scenesLookup[connection.fromSceneId];
+        const toScene = scenesLookup[toSceneId];
+
+        if (!fromScene || !toScene) {
+          return undefined;
+        }
+
+        const startX = fromScene.x;
+        const startY = fromScene.y;
+        const destX = toScene.x;
+        const destY = toScene.y;
+
+        let entityX = 0;
+        let entityY = 0;
+        let entityWidth = 0;
+        let entityHeight = 0;
+
+        if (connection.type === "trigger") {
+          const trigger = triggersLookup[connection.entityId];
+          if (trigger) {
+            entityX = trigger.x;
+            entityY = trigger.y;
+            entityWidth = trigger.width ?? 2;
+            entityHeight = trigger.height ?? 1;
+          }
+        } else if (connection.type === "actor") {
+          const actor = actorsLookup[connection.entityId];
+          if (actor) {
+            entityX = actor.x;
+            entityY = actor.y;
+            entityWidth = 2;
+            entityHeight = 1;
+          }
+        }
+
+        const x1 = startX + (entityX + entityWidth / 2) * 8;
+        const x2 = destX + toX * 8 + 5;
+        const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
+        const y2 = 20 + destY + toY * 8 + 5;
+
+        const xDiff = Math.abs(x1 - x2);
+        const yDiff = Math.abs(y1 - y2);
+
+        const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
+        const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
+
+        const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
+        const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
+
+        return {
+          ...connection,
+          x1,
+          y1,
+          x2,
+          y2,
+          qx,
+          qy,
+        };
+      })
+    );
+  }, [
+    actorsLookup,
+    connections,
+    eventsLookup,
+    scenesLookup,
+    selectedEventId,
+    triggersLookup,
+  ]);
+
   return (
     <ConnectionsSvg
       width={width}
@@ -566,9 +478,9 @@ const Connections = ({
         strokeWidth: 2 / zoomRatio,
       }}
     >
-      {connections.map((connection) => (
+      {absoluteConnections.map((connection) => (
         <React.Fragment
-          key={`m_${connection.sceneId}_${connection.entityId}_${connection.eventId}`}
+          key={`m_${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`}
         >
           <Connection
             x1={connection.x1}
@@ -581,7 +493,7 @@ const Connections = ({
           <DestinationMarker
             x={connection.x2}
             y={connection.y2}
-            sceneId={connection.sceneId}
+            sceneId={connection.fromSceneId}
             entityId={connection.entityId}
             eventId={connection.eventId}
             direction={connection.direction}

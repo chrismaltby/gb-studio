@@ -2,6 +2,7 @@ import { ScriptValue } from "./types";
 
 interface ScriptValueToStringOptions {
   variableNameForId: (value: string) => string;
+  constantNameForId: (value: string) => string;
   actorNameForId: (value: string) => string;
   propertyNameForId: (value: string) => string;
   directionForValue: (value: string) => string;
@@ -22,6 +23,8 @@ export const scriptValueToString = (
     return String(value.value);
   } else if (value.type === "variable") {
     return options.variableNameForId(value.value);
+  } else if (value.type === "constant") {
+    return options.constantNameForId(value.value);
   } else if (value.type === "direction") {
     return options.directionForValue(value.value);
   } else if (value.type === "property") {
@@ -29,12 +32,13 @@ export const scriptValueToString = (
       value.property
     )}`;
   } else if (value.type === "expression") {
-    return String(value.value || "0").replace(
-      /\$([VLT]*[0-9]+)\$/g,
-      (_, match) => {
+    return String(value.value || "0")
+      .replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
         return options.variableNameForId(match);
-      }
-    );
+      })
+      .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
+        return `||constant:${match}||`;
+      });
   } else if (value.type === "true") {
     return "true";
   } else if (value.type === "false") {

@@ -1,10 +1,8 @@
 import path from "path";
 import uuid from "uuid/v4";
-import loadAllBackgroundData, {
-  BackgroundAssetData,
-} from "./loadBackgroundData";
-import loadAllSpriteData, { SpriteAssetData } from "./loadSpriteData";
-import loadAllMusicData, { MusicAssetData } from "./loadMusicData";
+import loadAllBackgroundData from "./loadBackgroundData";
+import loadAllSpriteData from "./loadSpriteData";
+import loadAllMusicData from "./loadMusicData";
 import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
@@ -19,16 +17,17 @@ import type {
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
-import { Dictionary } from "@reduxjs/toolkit";
 import { loadEngineFields } from "lib/project/engineFields";
 import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadAllTilesetData from "lib/project/loadTilesetData";
 import {
   CompressedBackgroundResource,
+  CompressedBackgroundResourceAsset,
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
   EngineFieldValuesResource,
   MusicResource,
+  MusicResourceAsset,
   PaletteResource,
   ProjectMetadataResource,
   SettingsResource,
@@ -37,14 +36,20 @@ import {
   isProjectMetadataResource,
 } from "shared/lib/resources/types";
 import { defaultPalettes } from "consts";
-import { migrateLegacyProject } from "./migrateLegacyProject";
+import { migrateLegacyProject } from "./migration/legacy/migrateLegacyProject";
 import { loadProjectResources } from "./loadProjectResources";
 import { readJson } from "lib/helpers/fs/readJson";
 import type { ProjectData } from "store/features/project/projectActions";
+import { migrateProjectResources } from "./migration/migrateProjectResources";
+import { resizeTiles } from "shared/lib/helpers/tiles";
+import {
+  compress8bitNumberArray,
+  decompress8bitNumberString,
+} from "shared/lib/resources/compression";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
-  scriptEventDefs: Dictionary<ScriptEventDef>;
+  scriptEventDefs: Record<string, ScriptEventDef>;
   engineFields: EngineFieldSchema[];
   sceneTypes: SceneTypeSchema[];
   modifiedSpriteIds: string[];
@@ -81,13 +86,15 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   const scriptEventDefs = await loadAllScriptEventHandlers(projectRoot);
   const originalJson = await readJson(projectPath);
 
-  const resources = !isProjectMetadataResource(originalJson)
+  const unmigratedResources = !isProjectMetadataResource(originalJson)
     ? migrateLegacyProject(
         originalJson as ProjectData,
         projectRoot,
         scriptEventDefs
       )
     : await loadProjectResources(projectRoot, originalJson);
+
+  const resources = await migrateProjectResources(unmigratedResources);
 
   const engineFields = await loadEngineFields(projectRoot);
   const sceneTypes = await loadSceneTypes(projectRoot);
@@ -190,10 +197,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     B extends string
   >(
     assets: A[],
-    resources: Omit<
-      A & { _resourceType: B },
-      "inode" | "_v" | "plugin" | "mapping"
-    >[],
+    resources: Omit<A & { _resourceType: B }, "inode" | "_v" | "plugin">[],
     resourceType: B
   ) => {
     return mergeAssetsWithResources(assets, resources, (asset, resource) => {
@@ -208,30 +212,43 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const backgroundResources = mergeAssetsWithResources<
     CompressedBackgroundResource,
-    BackgroundAssetData
+    CompressedBackgroundResourceAsset
   >(backgrounds, resources.backgrounds, (asset, resource) => {
     if (resource) {
+      let tileColors =
+        resource?.tileColors !== undefined
+          ? resource.tileColors
+          : asset.tileColors;
+
+      if (resource.width !== asset.width || resource.height !== asset.height) {
+        tileColors = compress8bitNumberArray(
+          resizeTiles(
+            decompress8bitNumberString(resource.tileColors),
+            resource.width,
+            resource.height,
+            asset.width,
+            asset.height
+          )
+        );
+      }
+
       return {
-        _resourceType: "background",
         ...asset,
         id: resource.id,
         symbol: resource?.symbol !== undefined ? resource.symbol : asset.symbol,
-        tileColors:
-          resource?.tileColors !== undefined ? resource.tileColors : "",
+        tileColors,
         autoColor:
-          resource?.autoColor !== undefined ? resource.autoColor : false,
+          resource?.autoColor !== undefined
+            ? resource.autoColor
+            : asset.autoColor,
       };
     }
-    return {
-      _resourceType: "background",
-      ...asset,
-      tileColors: "",
-    };
+    return asset;
   });
 
   const spriteResources = mergeAssetsWithResources<
     SpriteResource,
-    SpriteAssetData
+    SpriteResource
   >(sprites, resources.sprites, (asset, resource) => {
     if (!resource || !resource.states || resource.numTiles === undefined) {
       modifiedSpriteIds.push(resource?.id ?? asset.id);
@@ -242,22 +259,15 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       id: resource?.id ?? asset.id,
       symbol: resource?.symbol ?? asset.symbol,
       filename: asset.filename,
+      width: asset.width,
+      height: asset.height,
       name: resource?.name ?? asset.name,
       canvasWidth: resource?.canvasWidth || 32,
       canvasHeight: resource?.canvasHeight || 32,
-      states: (
-        resource?.states || [
-          {
-            id: uuid(),
-            name: "",
-            animationType: "multi_movement",
-            flipLeft: true,
-            animations: [],
-          },
-        ]
-      ).map((oldState) => {
+      states: (resource?.states || asset.states).map((oldState) => {
         return {
           ...oldState,
+          id: oldState.id || uuid(),
           animations: Array.from(Array(8)).map((_, animationIndex) => ({
             id:
               (oldState.animations &&
@@ -310,24 +320,20 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const musicResources = mergeAssetsWithResources<
     MusicResource,
-    MusicAssetData
+    MusicResourceAsset
   >(music, resources.music, (asset, resource) => {
     if (resource) {
       return {
-        _resourceType: "music",
         ...asset,
         id: resource.id,
         symbol: resource?.symbol !== undefined ? resource.symbol : asset.symbol,
         settings: {
+          ...asset.settings,
           ...resource.settings,
         },
       };
     }
-    return {
-      _resourceType: "music",
-      ...asset,
-      settings: {},
-    };
+    return asset;
   });
 
   const paletteResources: PaletteResource[] =

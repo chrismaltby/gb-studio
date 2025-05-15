@@ -62,20 +62,25 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const sceneSelectionIds = useAppSelector(
     (state) => state.editor.sceneSelectionIds
   );
-
+  const runSceneSelectionOnly = useAppSelector(
+    (state) => state.project.present.settings.runSceneSelectionOnly
+  );
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.colorMode !== "mono"
+  );
   const [folderId, setFolderId] = useState("");
 
   const dispatch = useAppDispatch();
 
   const addToSelection = useRef(false);
 
-  const onKeyDown = useCallback((e) => {
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.shiftKey) {
       addToSelection.current = true;
     }
   }, []);
 
-  const onKeyUp = useCallback((e) => {
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
     if (!e.shiftKey) {
       addToSelection.current = false;
     }
@@ -165,7 +170,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const [renameId, setRenameId] = useState("");
 
   const listenForRenameStart = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setRenameId(selectedId);
       }
@@ -229,7 +234,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: SceneNavigatorItem) => {
+    (item: SceneNavigatorItem, onClose: () => void) => {
       if (item.type === "scene") {
         return renderSceneContextMenu({
           dispatch,
@@ -239,7 +244,11 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           startDirection,
           hoverX: 0,
           hoverY: 0,
+          colorsEnabled,
+          colorModeOverride: item.scene.colorModeOverride,
           onRename: () => setRenameId(item.id),
+          runSceneSelectionOnly,
+          onClose,
         });
       } else if (item.type === "actor") {
         return renderActorContextMenu({
@@ -264,7 +273,15 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         assertUnreachable(item);
       }
     },
-    [dispatch, sceneSelectionIds, scenes, startDirection, startSceneId]
+    [
+      dispatch,
+      runSceneSelectionOnly,
+      sceneSelectionIds,
+      scenes,
+      startDirection,
+      startSceneId,
+      colorsEnabled,
+    ]
   );
 
   const renderLabel = useCallback(

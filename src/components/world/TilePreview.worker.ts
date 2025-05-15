@@ -67,10 +67,10 @@ workerCtx.onmessage = async (evt) => {
     };
   }
 
-  const tileWidth = Math.floor(img.width / tileSize);
+  const tileWidth = Math.floor(img.width / TILE_SIZE);
 
-  const offsetX = tileSize * (tileIndex % tileWidth);
-  const offsetY = tileSize * Math.floor(tileIndex / tileWidth);
+  const offsetX = TILE_SIZE * (tileIndex % tileWidth);
+  const offsetY = TILE_SIZE * Math.floor(tileIndex / tileWidth);
 
   canvas.width = tileSize;
   canvas.height = tileSize;

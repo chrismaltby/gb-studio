@@ -7,9 +7,15 @@ import {
   MenuItemConstructorOptions,
   shell,
 } from "electron";
-import { assetsRoot } from "./consts";
+import {
+  assetsRoot,
+  EMULATOR_MUTED_SETTING_KEY,
+  LOCALE_SETTING_KEY,
+  THEME_SETTING_KEY,
+} from "./consts";
 import l10n from "shared/lib/lang/l10n";
-import { locales } from "lib/lang/initElectronL10N";
+import { ThemeManager } from "lib/themes/themeManager";
+import { L10nManager } from "lib/lang/l10nManager";
 
 declare const COMMITHASH: string;
 
@@ -36,6 +42,7 @@ type MenuListenerKey =
   | "updateShowConnections"
   | "updateShowNavigator"
   | "updateCheckSpelling"
+  | "updateEmulatorMuted"
   | "run"
   | "build"
   | "ejectEngine"
@@ -43,6 +50,9 @@ type MenuListenerKey =
   | "exportProjectData"
   | "pasteInPlace"
   | "preferences"
+  | "pluginManager"
+  | "globalPlugins"
+  | "projectPlugins"
   | "openMusic";
 
 export type MenuZoomType = "in" | "out" | "reset";
@@ -65,6 +75,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateShowConnections: [],
   updateShowNavigator: [],
   updateCheckSpelling: [],
+  updateEmulatorMuted: [],
   run: [],
   build: [],
   ejectEngine: [],
@@ -72,6 +83,9 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   exportProjectData: [],
   pasteInPlace: [],
   preferences: [],
+  pluginManager: [],
+  globalPlugins: [],
+  projectPlugins: [],
   openMusic: [],
 };
 
@@ -102,7 +116,16 @@ const openAbout = () => {
   });
 };
 
-const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
+interface BuildMenuProps {
+  themeManager: ThemeManager;
+  l10nManager: L10nManager;
+}
+
+const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
+  const pluginThemes = themeManager.getPluginThemes();
+  const pluginLangs = l10nManager.getPluginL10Ns();
+  const systemLangs = l10nManager.getSystemL10Ns();
+
   const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
@@ -275,6 +298,30 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
       ],
     },
     {
+      label: l10n("MENU_PLUGINS"),
+      submenu: [
+        {
+          label: l10n("MENU_PLUGIN_MANAGER"),
+          click: () => {
+            notifyListeners("pluginManager");
+          },
+        },
+        { type: "separator" },
+        {
+          label: l10n("MENU_GLOBAL_PLUGINS"),
+          click: () => {
+            notifyListeners("globalPlugins");
+          },
+        },
+        {
+          label: l10n("MENU_PROJECT_PLUGINS"),
+          click: () => {
+            notifyListeners("projectPlugins");
+          },
+        },
+      ],
+    },
+    {
       label: l10n("MENU_VIEW"),
       submenu: [
         {
@@ -341,7 +388,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
               id: "themeDefault",
               label: l10n("MENU_THEME_DEFAULT"),
               type: "checkbox",
-              checked: settings.get("theme") === undefined,
+              checked: settings.get(THEME_SETTING_KEY) === undefined,
               click() {
                 notifyListeners("updateTheme", undefined);
               },
@@ -351,7 +398,7 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
               id: "themeLight",
               label: l10n("MENU_THEME_LIGHT"),
               type: "checkbox",
-              checked: settings.get("theme") === "light",
+              checked: settings.get(THEME_SETTING_KEY) === "light",
               click() {
                 notifyListeners("updateTheme", "light");
               },
@@ -360,11 +407,25 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
               id: "themeDark",
               label: l10n("MENU_THEME_DARK"),
               type: "checkbox",
-              checked: settings.get("theme") === "dark",
+              checked: settings.get(THEME_SETTING_KEY) === "dark",
               click() {
                 notifyListeners("updateTheme", "dark");
               },
             },
+            ...(pluginThemes.length > 0
+              ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
+              : []),
+            ...pluginThemes.map(
+              (theme): MenuItemConstructorOptions => ({
+                id: `theme-${theme.id}`,
+                label: theme.name,
+                type: "checkbox",
+                checked: settings.get(THEME_SETTING_KEY) === theme.id,
+                click() {
+                  notifyListeners("updateTheme", theme.id);
+                },
+              })
+            ),
           ],
         },
         {
@@ -375,24 +436,38 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
                 id: "localeDefault",
                 label: l10n("MENU_LANGUAGE_DEFAULT"),
                 type: "checkbox",
-                checked: settings.get("locale") === undefined,
+                checked: settings.get(LOCALE_SETTING_KEY) === undefined,
                 click() {
                   notifyListeners("updateLocale", undefined);
                 },
               },
               { type: "separator" },
             ],
-            locales.map((locale) => {
+            systemLangs.map((language) => {
               return {
-                id: `locale-${locale}`,
-                label: locale,
+                id: `locale-${language.id}`,
+                label: language.name,
                 type: "checkbox",
-                checked: settings.get("locale") === locale,
+                checked: settings.get(LOCALE_SETTING_KEY) === language.id,
                 click() {
-                  notifyListeners("updateLocale", locale);
+                  notifyListeners("updateLocale", language.id);
                 },
               };
-            })
+            }),
+            ...(pluginLangs.length > 0
+              ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
+              : []),
+            ...pluginLangs.map(
+              (language): MenuItemConstructorOptions => ({
+                id: `locale-${language.id}`,
+                label: language.name,
+                type: "checkbox",
+                checked: settings.get(LOCALE_SETTING_KEY) === language.id,
+                click() {
+                  notifyListeners("updateLocale", language.id);
+                },
+              })
+            )
           ),
         },
         { type: "separator" },
@@ -478,6 +553,20 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
       label: l10n("MENU_WINDOW"),
       submenu: [
         {
+          label: l10n("MENU_PLAY_WINDOW"),
+          submenu: [
+            {
+              label: l10n("MENU_MUTE_AUDIO"),
+              type: "checkbox",
+              checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
+              click: (item: MenuItem) => {
+                notifyListeners("updateEmulatorMuted", item.checked);
+              },
+            },
+          ],
+        },
+        { type: "separator" },
+        {
           label: l10n("MENU_MINIMIZE"),
           role: "minimize",
         },
@@ -502,14 +591,6 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
       ],
     },
   ];
-
-  if (plugins && plugins.length > 0) {
-    template.splice(3, 0, {
-      id: "plugins",
-      label: l10n("MENU_PLUGINS"),
-      submenu: plugins,
-    });
-  }
 
   if (isDevMode) {
     const submenu = template[template.length - 3].submenu || [];
@@ -581,6 +662,20 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
 
     // Window menu
     template[template.length - 2].submenu = [
+      {
+        label: l10n("MENU_PLAY_WINDOW"),
+        submenu: [
+          {
+            label: l10n("MENU_MUTE_AUDIO"),
+            type: "checkbox",
+            checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
+            click: (item: MenuItem) => {
+              notifyListeners("updateEmulatorMuted", item.checked);
+            },
+          },
+        ],
+      },
+      { type: "separator" },
       { label: l10n("MENU_MINIMIZE"), role: "minimize" },
       { role: "zoom" },
       { type: "separator" },
@@ -631,9 +726,7 @@ const appMenu = {
   on,
   off,
   ref: () => menu,
-  buildMenu: (plugins: MenuItemConstructorOptions[]) => {
-    buildMenu(plugins);
-  },
+  buildMenu,
 };
 
 export const setMenuItemChecked = (id: string, checkedValue: boolean) => {

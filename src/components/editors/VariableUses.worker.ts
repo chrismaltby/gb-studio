@@ -1,4 +1,3 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import { lexText } from "shared/lib/compiler/lexText";
 import {
   actorName,
@@ -29,6 +28,10 @@ import {
 } from "shared/lib/scripts/walk";
 import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  variableInDialogueText,
+  variableInExpressionText,
+} from "shared/lib/variables/variablesInText";
 
 export type VariableUse = {
   id: string;
@@ -76,23 +79,24 @@ workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const variableId: string = evt.data.variableId;
   const scenes: SceneNormalized[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
+  const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
+  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Record<string, TriggerNormalized> =
+    evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
-  const actorPrefabsLookup: Dictionary<ActorPrefabNormalized> =
+  const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
     evt.data.actorPrefabsLookup;
-  const triggerPrefabsLookup: Dictionary<TriggerPrefabNormalized> =
+  const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
     evt.data.triggerPrefabsLookup;
-  const customEventsLookup: Dictionary<CustomEventNormalized> =
+  const customEventsLookup: Record<string, CustomEventNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
 
   const uses: VariableUse[] = [];
-  const useLookup: Dictionary<boolean> = {};
+  const useLookup: Record<string, boolean> = {};
 
   const isVariableInArg = (
     scriptEvent: ScriptEventNormalized,
@@ -132,25 +136,11 @@ workerCtx.onmessage = async (evt) => {
       const allText = String(
         Array.isArray(argValue) ? argValue.join("|") : argValue
       );
-      const textTokens = lexText(allText);
-      if (
-        textTokens.some(
-          (token) =>
-            token.type === "variable" &&
-            token.variableId.replace(/^0+/, "") === variableId
-        )
-      ) {
+      if (variableInDialogueText(variableId, allText)) {
         return true;
       }
     } else if (field.type === "matharea" && typeof argValue === "string") {
-      const expressionTokens = tokenizer(argValue);
-      if (
-        expressionTokens.some(
-          (token) =>
-            token.type === "VAR" &&
-            token.symbol.replace(/\$/g, "").replace(/^0/g, "") === variableId
-        )
-      ) {
+      if (variableInExpressionText(variableId, argValue)) {
         return true;
       }
     }

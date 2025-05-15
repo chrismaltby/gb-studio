@@ -79,6 +79,7 @@ export const dummySceneNormalized: SceneNormalized = {
   height: 18,
   type: "0",
   autoFadeSpeed: 1,
+  colorModeOverride: "none",
   paletteIds: [],
   spritePaletteIds: [],
   collisions: [0],
@@ -185,6 +186,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
     symbol: "ta_1",
     data: new Uint8Array(),
   },
+  colorMode: "mixed",
 };
 
 export const dummyBackground: Background = {
@@ -254,6 +256,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   height: 32,
   animSpeed: 15,
   vramData: [[], []],
+  colorMode: "mixed",
 };
 
 export const dummyMusic: Music = {
@@ -288,6 +291,7 @@ export const dummyProjectData: ProjectData = {
   palettes: [],
   customEvents: [],
   variables: [],
+  constants: [],
   music: [],
   fonts: [],
   avatars: [],
@@ -305,6 +309,7 @@ export const dummyProjectData: ProjectData = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
@@ -325,6 +330,7 @@ export const dummyProjectData: ProjectData = {
     favoriteEvents: [],
     showCollisionSlopeTiles: false,
     showCollisionExtraTiles: false,
+    showCollisionTileValues: false,
     customColorsWhite: "E8F8E0",
     customColorsLight: "B0F088",
     customColorsDark: "509878",
@@ -346,12 +352,14 @@ export const dummyProjectData: ProjectData = {
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
     colorMode: "mono",
+    colorCorrection: "default",
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 
@@ -543,6 +551,7 @@ export const dummyFontResource: FontResource = {
   filename: "font.png",
   width: 16,
   height: 16,
+  mapping: {},
 };
 
 export const dummySettingsResource: SettingsResource = {
@@ -557,6 +566,8 @@ export const dummySettingsResource: SettingsResource = {
   showConnections: "all",
   showCollisionSlopeTiles: true,
   showCollisionExtraTiles: true,
+  showCollisionTileValues: false,
+  collisionLayerOpacity: 50,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 1,
@@ -615,17 +626,20 @@ export const dummySettingsResource: SettingsResource = {
   debuggerBreakpoints: [],
   debuggerWatchedVariables: [],
   colorMode: "mono",
+  colorCorrection: "default",
   previewAsMono: false,
   openBuildLogOnWarnings: true,
   generateDebugFilesEnabled: false,
   compilerPreset: 3000,
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
+  runSceneSelectionOnly: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
   variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+  constants: [],
 };
 
 export const dummyVariable: Variable = {
@@ -658,6 +672,7 @@ export const dummyProjectResources: ProjectResources = {
   variables: {
     _resourceType: "variables",
     variables: [],
+    constants: [],
   },
   music: [],
   fonts: [],
@@ -680,6 +695,7 @@ export const dummyProjectResources: ProjectResources = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
     zoom: 100,
@@ -700,6 +716,7 @@ export const dummyProjectResources: ProjectResources = {
     favoriteEvents: [],
     showCollisionSlopeTiles: false,
     showCollisionExtraTiles: false,
+    showCollisionTileValues: false,
     customColorsWhite: "E8F8E0",
     customColorsLight: "B0F088",
     customColorsDark: "509878",
@@ -721,12 +738,14 @@ export const dummyProjectResources: ProjectResources = {
     debuggerBreakpoints: [],
     debuggerWatchedVariables: [],
     colorMode: "mono",
+    colorCorrection: "default",
     previewAsMono: false,
     openBuildLogOnWarnings: true,
     generateDebugFilesEnabled: false,
     compilerPreset: 3000,
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
+    runSceneSelectionOnly: false,
   },
 };
 

@@ -1,4 +1,4 @@
-import { createAction, AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { createAction, UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { actions } from "./clipboardState";
 import {
   sceneSelectors,
@@ -31,6 +31,7 @@ const copyScenes = createAction<{
 }>("clipboard/copyScenes");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
+  spriteAnimationId: string;
 }>("clipboard/copyMetasprites");
 const copyMetaspriteTiles = createAction<{
   metaspriteTileIds: string[];
@@ -80,7 +81,7 @@ const pasteSceneAt = createAction<{
 const copySelectedEntity =
   () =>
   (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const state = getState();
@@ -104,7 +105,7 @@ const copySelectedEntity =
   };
 
 const pasteClipboardEntity =
-  () => async (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+  () => async (dispatch: ThunkDispatch<RootState, unknown, UnknownAction>) => {
     const clipboard = await pasteAny();
     if (!clipboard) {
       return;
@@ -124,7 +125,7 @@ const pasteClipboardEntity =
 const pasteClipboardEntityInPlace =
   () =>
   async (
-    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState
   ) => {
     const clipboard = await pasteAny();

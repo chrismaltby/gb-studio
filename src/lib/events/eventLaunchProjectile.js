@@ -181,22 +181,6 @@ const fields = [
     ],
   },
   {
-    key: "initialOffset",
-    label: l10n("FIELD_DIRECTION_OFFSET"),
-    description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
-    type: "number",
-    min: 0,
-    max: 256,
-    width: "50%",
-    defaultValue: 0,
-    conditions: [
-      {
-        key: "__section",
-        in: ["source"],
-      },
-    ],
-  },
-  {
     type: "group",
     conditions: [
       {
@@ -225,19 +209,35 @@ const fields = [
     ],
   },
   {
-    key: "lifeTime",
-    label: l10n("FIELD_LIFE_TIME"),
-    description: l10n("FIELD_PROJECTILE_LIFE_TIME_DESC"),
-    type: "number",
-    min: 0,
-    max: 4,
-    step: 0.1,
-    width: "50%",
-    defaultValue: 1,
+    type: "group",
+    alignBottom: true,
     conditions: [
       {
         key: "__section",
         in: ["projectile", undefined],
+      },
+    ],
+    fields: [
+      {
+        key: "lifeTime",
+        label: l10n("FIELD_LIFE_TIME"),
+        description: l10n("FIELD_PROJECTILE_LIFE_TIME_DESC"),
+        type: "number",
+        min: 0,
+        max: 4,
+        step: 0.1,
+        width: "50%",
+        defaultValue: 1,
+      },
+      {
+        key: "initialOffset",
+        label: l10n("FIELD_INITIAL_OFFSET"),
+        description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
+        type: "number",
+        min: 0,
+        max: 256,
+        width: "50%",
+        defaultValue: 0,
       },
     ],
   },
@@ -366,8 +366,10 @@ const compile = (input, helpers) => {
     input.spriteStateId,
     input.speed,
     input.animSpeed,
+    input.loopAnim,
     input.lifeTime,
     input.initialOffset,
+    input.destroyOnHit,
     input.collisionGroup,
     input.collisionMask
   );
@@ -379,64 +381,37 @@ const compile = (input, helpers) => {
       projectileIndex,
       input.x,
       input.y,
-      input.direction,
-      input.destroyOnHit,
-      input.loopAnim
+      input.direction
     );
   } else if (input.directionType === "angle") {
-    launchProjectileInAngle(
-      projectileIndex,
-      input.x,
-      input.y,
-      input.angle,
-      input.destroyOnHit,
-      input.loopAnim
-    );
+    launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
   } else if (input.directionType === "anglevar") {
     launchProjectileInAngleVariable(
       projectileIndex,
       input.x,
       input.y,
-      input.angleVariable,
-      input.destroyOnHit,
-      input.loopAnim
+      input.angleVariable
     );
   } else if (input.directionType === "actor") {
     if (input.actorId === input.otherActorId) {
-      launchProjectileInSourceActorDirection(
-        projectileIndex,
-        input.x,
-        input.y,
-        input.destroyOnHit,
-        input.loopAnim
-      );
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
     } else {
       launchProjectileInActorDirection(
         projectileIndex,
         input.x,
         input.y,
-        input.otherActorId,
-        input.destroyOnHit,
-        input.loopAnim
+        input.otherActorId
       );
     }
   } else if (input.directionType === "target") {
     if (input.actorId === input.targetActorId) {
-      launchProjectileInSourceActorDirection(
-        projectileIndex,
-        input.x,
-        input.y,
-        input.destroyOnHit,
-        input.loopAnim
-      );
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
     } else {
       launchProjectileTowardsActor(
         projectileIndex,
         input.x,
         input.y,
-        input.targetActorId,
-        input.destroyOnHit,
-        input.loopAnim
+        input.targetActorId
       );
     }
   }

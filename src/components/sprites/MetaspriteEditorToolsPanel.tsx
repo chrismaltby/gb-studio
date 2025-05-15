@@ -9,7 +9,7 @@ import {
   GridIcon,
   PauseIcon,
 } from "ui/icons/Icons";
-import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
@@ -32,7 +32,7 @@ const MetaspriteEditorToolsPanel = ({
   metaspriteId,
 }: MetaspriteEditorToolsPanelProps) => {
   const dispatch = useAppDispatch();
-  const intervalRef = useRef<number>();
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   const play = useAppSelector((state) => state.editor.playSpriteAnimation);
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
@@ -85,7 +85,9 @@ const MetaspriteEditorToolsPanel = ({
       intervalRef.current = id;
     }
     return () => {
-      clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [play, dispatch, frames, metaspriteId]);
 

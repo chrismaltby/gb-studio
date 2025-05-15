@@ -755,6 +755,65 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e2",
+    description: createDescription("Updates", [
+      "Update VM_PROJECTILE_LOAD_TYPE to allow setting both source and destination index",
+      "Flags for 'anim_once' and 'strong' moved into projectile_def_t rather than being defined at launch time",
+      "Improved collision handling for ladders and one-way platforms in the Platformer scene type. Ladders now use the player's bottom edge for anchoring, and one-way platforms no longer snap the player to the platform when colliding from below",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/projectiles.h",
+      "include/vm.i",
+      "include/vm_projectiles.h",
+      "src/core/projectiles.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+      "src/states/platform.c",
+    ],
+  },
+  {
+    version: "4.2.0-e3",
+    description: createDescription("Fixes", [
+      "Fix bottom margins on GB Printer",
+    ]),
+    modifiedFiles: ["src/core/gbprinter.c"],
+  },
+  {
+    version: "4.2.0-e4",
+    description: createDescription("Fixes", [
+      "Fix text draw position when using VM_DISPLAY_TEXT_EX with .DISPLAY_PRESERVE_POS flag",
+      "Fix vm_music_setpos() being interrupted by the music ISR",
+      "Remove unused members of projectile_t struct",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "src/core/ui.c",
+      "src/core/vm_music.c",
+    ],
+  },
+  {
+    version: "4.2.0-e5",
+    description: createDescription("Fixes", [
+      "Fix UI palette text control code. Palette indices now go from 1 to 8, because zero byte is a string terminator",
+    ]),
+    modifiedFiles: ["src/core/ui.c"],
+  },
+  {
+    version: "4.2.0-e6",
+    description: createDescription("Updates", [
+      "Add pause_state_update boolean which when set to true will cause the current state_update function to not be called in the run loop",
+    ]),
+    modifiedFiles: ["include/states_caller.h", "src/core/core.c"],
+  },
+  {
+    version: "4.2.0-e7",
+    description: createDescription("Updates", [
+      "Optimize input processing through persistent storage of pressed buttons",
+    ]),
+    modifiedFiles: ["include/input.h", "src/core/input.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

@@ -4,6 +4,12 @@ declare const __brand: unique symbol;
 type Brand<B> = { [__brand]: B };
 export type Branded<T, B> = T & Brand<B>;
 
+export type DeepReadonly<T> = {
+  readonly [Key in keyof T]: T[Key] extends unknown[] | Record<string, unknown>
+    ? DeepReadonly<T[Key]>
+    : T[Key];
+};
+
 /* KeysMatching<T, V>
  *
  * Find all keys in T which have the type V
@@ -25,7 +31,7 @@ export const isString = (value: unknown): value is string => {
 };
 
 export const isNumber = (value: unknown): value is number => {
-  return typeof value === "number" && !isNaN(value);
+  return typeof value === "number" && !isNaN(value) && isFinite(value);
 };
 
 export const isBoolean = (value: unknown): value is boolean => {

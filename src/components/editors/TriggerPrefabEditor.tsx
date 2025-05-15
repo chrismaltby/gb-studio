@@ -2,8 +2,8 @@ import React, { FC, useCallback, useState } from "react";
 import { triggerPrefabSelectors } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -16,10 +16,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
 import { FlexGrow } from "ui/spacing/Spacing";
-import {
-  SplitPaneHeader,
-  Wrapper as SplitPaneHeaderWrapper,
-} from "ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { TriggerPrefabUsesList } from "./prefab/TriggerPrefabUsesList";
 import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
@@ -33,39 +30,14 @@ const FlexWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  ${FormHeader} {
-    background: ${(props) => props.theme.colors.prefab.background};
-    color: ${(props) => props.theme.colors.prefab.text};
-    input {
-      color: ${(props) => props.theme.colors.prefab.text};
-
-      ::placeholder {
-        color: ${(props) => props.theme.colors.prefab.text};
-        opacity: 0.5;
-      }
-      :focus {
-        background: ${(props) => props.theme.colors.input.background};
-        color: ${(props) => props.theme.colors.input.text};
-        border: 1px solid ${(props) => props.theme.colors.highlight};
-      }
-    }
-    svg {
-      fill: ${(props) => props.theme.colors.prefab.text};
-    }
-  }
 `;
 
 const UsesCollapsedWrapper = styled.div`
   position: sticky;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${SplitPaneHeaderWrapper} {
-    border-bottom: 0;
-  }
 `;
 
 export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
@@ -115,7 +87,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
   );
 
   const onChangeNotes = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeTriggerPrefabProp("notes", e.currentTarget.value),
     [onChangeTriggerPrefabProp]
   );
@@ -161,7 +133,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
         <FlexWrapper>
           {!lockScriptEditor && (
             <FormContainer>
-              <FormHeader>
+              <FormHeader variant="prefab">
                 <EditableText
                   name="name"
                   placeholder={triggerName(prefab, index)}
@@ -175,10 +147,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
                   onMouseDown={onFetchClipboard}
                 >
                   {!showNotes && !showUses && (
-                    <MenuItem onClick={onAddNotes}>
-                      <MenuItemIcon>
-                        <BlankIcon />
-                      </MenuItemIcon>
+                    <MenuItem onClick={onAddNotes} icon={<BlankIcon />}>
                       {l10n("FIELD_ADD_NOTES")}
                     </MenuItem>
                   )}
@@ -186,23 +155,19 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
                   <MenuItem
                     key="view-editor"
                     onClick={() => setShowUses(false)}
+                    icon={!showUses ? <CheckIcon /> : <BlankIcon />}
                   >
-                    <MenuItemIcon>
-                      {!showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
                     {l10n("MENU_EDIT_PREFAB")}
                   </MenuItem>
-                  <MenuItem key="view-uses" onClick={() => setShowUses(true)}>
-                    <MenuItemIcon>
-                      {showUses ? <CheckIcon /> : <BlankIcon />}
-                    </MenuItemIcon>
+                  <MenuItem
+                    key="view-uses"
+                    onClick={() => setShowUses(true)}
+                    icon={showUses ? <CheckIcon /> : <BlankIcon />}
+                  >
                     {l10n("FIELD_VIEW_PREFAB_USES")}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={onRemove}>
-                    <MenuItemIcon>
-                      <BlankIcon />
-                    </MenuItemIcon>
+                  <MenuItem onClick={onRemove} icon={<BlankIcon />}>
                     {l10n("MENU_DELETE_PREFAB")}
                   </MenuItem>
                 </DropdownButton>
@@ -243,6 +208,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
                 <SplitPaneHeader
                   collapsed={true}
                   onToggle={() => setShowUses(true)}
+                  borderBottom={false}
                 >
                   {l10n("SIDEBAR_PREFAB_USES")}
                 </SplitPaneHeader>

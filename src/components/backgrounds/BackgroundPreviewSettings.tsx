@@ -27,8 +27,8 @@ const Wrapper = styled.div`
   left: 10px;
   z-index: 11;
   border-radius: 16px;
-  background: ${(props) => props.theme.colors.document.background};
-  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
+  background: ${(props) => props.theme.colors.background};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.background};
   font-size: ${(props) => props.theme.typography.fontSize};
 `;
 
@@ -40,7 +40,7 @@ const Pill = styled.button`
   padding: 3px 10px;
   font-size: ${(props) => props.theme.typography.fontSize};
 
-  :active {
+  &:active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 `;
@@ -59,7 +59,7 @@ const BackgroundPreviewSettings = ({
   const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)

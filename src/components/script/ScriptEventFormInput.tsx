@@ -41,7 +41,7 @@ import {
   UnitType,
 } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
-import { Button, ButtonPrefixIcon } from "ui/buttons/Button";
+import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
@@ -51,7 +51,7 @@ import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon, PlusIcon } from "ui/icons/Icons";
-import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
@@ -63,9 +63,15 @@ import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import ValueSelect from "components/forms/ValueSelect";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isConstScriptValue,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
+import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
+import { SingleValue } from "react-select";
+import ConstantValueSelect from "components/forms/ConstantValueSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -78,12 +84,11 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
-  onChangeArg: (key: string, newValue: unknown) => void;
   onInsertEventAfter: () => void;
 }
 
 const ConnectButton = styled.div`
-  ${Button} {
+  ${StyledButton} {
     min-width: 15px;
     padding: 0;
     height: 28px;
@@ -111,7 +116,6 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
-  onChangeArg,
   onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
@@ -153,8 +157,10 @@ const ScriptEventFormInput = ({
   );
 
   const onChangeSelectField = useCallback(
-    (e: { value: unknown }) => {
-      onChange(e.value, index);
+    (e: SingleValue<{ value: unknown }>) => {
+      if (e) {
+        onChange(e.value, index);
+      }
     },
     [index, onChange]
   );
@@ -344,10 +350,11 @@ const ScriptEventFormInput = ({
           }
         >
           {(field.options || []).map(([type, label]) => (
-            <MenuItem key={String(type)} onClick={() => onChangeField(type)}>
-              <MenuItemIcon>
-                {type === value ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
+            <MenuItem
+              key={String(type)}
+              onClick={() => onChangeField(type)}
+              icon={type === value ? <CheckIcon /> : <BlankIcon />}
+            >
               {label}
             </MenuItem>
           ))}
@@ -395,6 +402,26 @@ const ScriptEventFormInput = ({
       <ValueSelect
         name={id}
         entityId={entityId}
+        value={
+          isValueScript ? value : isDefaultScript ? defaultValue : undefined
+        }
+        onChange={onChangeField}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        placeholder={String(
+          field.placeholder ||
+            (isValueScript && value.type === "number" ? value.value : "")
+        )}
+      />
+    );
+  } else if (type === "constvalue") {
+    const isValueScript = isConstScriptValue(value);
+    const isDefaultScript = isConstScriptValue(defaultValue);
+
+    return (
+      <ConstantValueSelect
+        name={id}
         value={
           isValueScript ? value : isDefaultScript ? defaultValue : undefined
         }
@@ -854,7 +881,6 @@ const ScriptEventFormInput = ({
             allowRename={false}
             args={args}
             onChange={onChangeUnionField}
-            onChangeArg={onChangeArg}
             onInsertEventAfter={onInsertEventAfter}
           />
         </div>
@@ -869,10 +895,11 @@ const ScriptEventFormInput = ({
             }
           >
             {(field.types || []).map((type) => (
-              <MenuItem key={type} onClick={() => onChangeUnionType(type)}>
-                <MenuItemIcon>
-                  {type === currentType ? <CheckIcon /> : <BlankIcon />}
-                </MenuItemIcon>
+              <MenuItem
+                key={type}
+                onClick={() => onChangeUnionType(type)}
+                icon={type === currentType ? <CheckIcon /> : <BlankIcon />}
+              >
                 {type}
               </MenuItem>
             ))}

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, Grammar } from "prismjs";
 import "prismjs/components/prism-clike";
@@ -22,7 +22,14 @@ interface CodeViewerProps {
   currentLineNum?: number;
 }
 
-const Wrapper = styled.div`
+interface WrapperProps {
+  $gutterWidth: number;
+}
+
+const LINE_NO_CHAR_WIDTH = 7;
+const LINE_NO_MARGIN = 5;
+
+const Wrapper = styled.div<WrapperProps>`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border: 1px solid ${(props) => props.theme.colors.input.border};
@@ -32,16 +39,16 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
 
-  :hover {
+  &:hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
   }
 
-  :focus {
+  &:focus {
     border: 1px solid ${(props) => props.theme.colors.highlight};
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
-  :disabled {
+  &:disabled {
     opacity: 0.5;
   }
 
@@ -97,11 +104,13 @@ const Wrapper = styled.div`
 
   .editor textarea {
     outline: none;
-    padding-left: 30px !important;
+    padding-left: ${(props) =>
+      props.$gutterWidth * LINE_NO_CHAR_WIDTH + LINE_NO_MARGIN}px !important;
   }
 
   .editor pre {
-    padding-left: 30px !important;
+    padding-left: ${(props) =>
+      props.$gutterWidth * LINE_NO_CHAR_WIDTH + LINE_NO_MARGIN}px !important;
   }
 
   .preview pre {
@@ -111,7 +120,8 @@ const Wrapper = styled.div`
     white-space: pre-wrap;
     word-break: keep-all;
     overflow-wrap: break-word;
-    padding-left: 30px;
+    padding-left: ${(props) =>
+      props.$gutterWidth * LINE_NO_CHAR_WIDTH + LINE_NO_MARGIN}px;
   }
 
   .editorLineNumber {
@@ -120,9 +130,10 @@ const Wrapper = styled.div`
     color: ${(props) => props.theme.colors.token.code};
     opacity: 0.5;
     text-align: right;
-    width: 25px;
+    width: ${(props) => props.$gutterWidth * LINE_NO_CHAR_WIDTH}px;
     font-weight: 100;
     user-select: none;
+    white-space: nowrap;
   }
 
   .currentLine {
@@ -138,20 +149,26 @@ const Wrapper = styled.div`
   }
 `;
 
-const hightlightWithLineNumbers = (
+const highlightWithLineNumbers = (
   input: string,
   currentLineNum: number,
   language: Grammar
-) =>
-  highlight(input, language, "gbvm")
-    .split("\n")
-    .map(
-      (line, i) =>
-        `<span class='line-${i + 1}${
-          i + 1 === currentLineNum ? " currentLine " : ""
-        }'><span class='editorLineNumber'>${i + 1}</span>${line}</span>`
-    )
-    .join("\n");
+) => {
+  const highlighted = highlight(input, language, "gbvm");
+  const lines = highlighted.split("\n");
+  const gutterWidth = String(lines.length).length;
+  return {
+    highlightedCode: lines
+      .map(
+        (line, i) =>
+          `<span class='line-${i + 1}${
+            i + 1 === currentLineNum ? " currentLine " : ""
+          }'><span class='editorLineNumber'>${i + 1}</span>${line}</span>`
+      )
+      .join("\n"),
+    gutterWidth,
+  };
+};
 
 const noop = () => {};
 
@@ -160,18 +177,20 @@ export const CodeEditor = ({
   currentLineNum,
   onChange,
 }: CodeEditorProps) => {
+  const [gutterWidth, setGutterWidth] = useState(3);
   return (
-    <Wrapper>
+    <Wrapper $gutterWidth={gutterWidth}>
       <Editor
         className="editor"
         value={value}
         onValueChange={onChange ?? noop}
         highlight={(code) => {
-          return hightlightWithLineNumbers(
-            code,
-            currentLineNum ?? -1,
-            gbvmGrammar
-          );
+          const { highlightedCode, gutterWidth: newGutterWidth } =
+            highlightWithLineNumbers(code, currentLineNum ?? -1, gbvmGrammar);
+          if (newGutterWidth !== gutterWidth) {
+            setGutterWidth(newGutterWidth);
+          }
+          return highlightedCode;
         }}
         padding={0}
         style={{
@@ -213,10 +232,13 @@ const GBVMLabel = ({ line }: { line: string }) => {
 };
 
 export const CodeViewer = ({ value, currentLineNum }: CodeViewerProps) => {
-  const highlightedCode = useMemo(() => {
-    return highlight(String(value), gbvmGrammar, "gbvm")
-      .split("\n")
-      .map((line, i) => {
+  const { highlightedCode, gutterWidth } = useMemo(() => {
+    const highlighted = highlight(String(value), gbvmGrammar, "gbvm");
+    const lines = highlighted.split("\n");
+    const gutterWidth = String(lines.length).length;
+
+    return {
+      highlightedCode: lines.map((line, i) => {
         let lineEl: JSX.Element | null = (
           <span dangerouslySetInnerHTML={{ __html: line }} />
         );
@@ -242,11 +264,13 @@ export const CodeViewer = ({ value, currentLineNum }: CodeViewerProps) => {
             {"\n"}
           </>
         );
-      });
+      }),
+      gutterWidth,
+    };
   }, [currentLineNum, value]);
 
   return (
-    <Wrapper>
+    <Wrapper $gutterWidth={gutterWidth}>
       <div className="preview">
         <pre
           style={{

@@ -1,7 +1,9 @@
 import chroma from "chroma-js";
 import { TILE_SIZE } from "consts";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
-import { rgbToClosestGBCHex } from "shared/lib/color/gbcColors";
+import { rgbToColorCorrectedHex } from "shared/lib/color/colorCorrection";
+import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { rgb2hex } from "shared/lib/helpers/color";
 
 type VariableLengthHexPalette = string[];
 
@@ -29,7 +31,8 @@ export type AutoPaletteResult = {
 export const autoPalette = (
   width: number,
   height: number,
-  pixels: Buffer | Uint8ClampedArray
+  pixels: Buffer | Uint8ClampedArray,
+  colorCorrection: ColorCorrectionSetting
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -54,7 +57,7 @@ export const autoPalette = (
       const tileKey = tileToCacheKey(pixels, width, txi, tyi);
       let palette = tilePaletteCache[tileKey];
       if (!palette) {
-        palette = extractTilePalette(pixels, width, txi, tyi);
+        palette = extractTilePalette(pixels, width, txi, tyi, colorCorrection);
         tilePaletteCache[tileKey] = palette;
       }
       const key = palette.join("");
@@ -190,7 +193,8 @@ const extractTilePalette = (
   pixels: Buffer | Uint8ClampedArray,
   width: number,
   tileX: number,
-  tileY: number
+  tileY: number,
+  colorCorrection: ColorCorrectionSetting
 ): VariableLengthHexPalette => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -204,7 +208,9 @@ const extractTilePalette = (
       const key = `${pixels[i]},${pixels[i + 1]},${pixels[i + 2]}`;
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
-        const hex = rgbToClosestGBCHex(pixels[i], pixels[i + 1], pixels[i + 2]);
+        const colorCorrectionFn =
+          colorCorrection === "default" ? rgbToColorCorrectedHex : rgb2hex;
+        const hex = colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]);
         colors.push(hex);
         if (colors.length === 4) {
           return sortHexPalette(colors);
@@ -243,7 +249,11 @@ const extractTilePaletteWithHint = (
       const key = `${pixels[i]},${pixels[i + 1]},${pixels[i + 2]}`;
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
-        const hex = rgbToClosestGBCHex(pixels[i], pixels[i + 1], pixels[i + 2]);
+        const hex = rgbToColorCorrectedHex(
+          pixels[i],
+          pixels[i + 1],
+          pixels[i + 2]
+        );
         colors[index] = hex;
         seenCount++;
         if (seenCount === 4) {
@@ -299,7 +309,7 @@ const buildIndexedTile = (
         // Otherwise check image wide cache for palette + RGB to closest hex
         if (!recolorCache[key]) {
           recolorCache[key] = findClosestHexColor(
-            rgbToClosestGBCHex(pixels[i], pixels[i + 1], pixels[i + 2]),
+            rgbToColorCorrectedHex(pixels[i], pixels[i + 1], pixels[i + 2]),
             palette
           );
         }

@@ -3,6 +3,7 @@ import Path from "path";
 import ensureBuildTools from "lib/compiler/ensureBuildTools";
 import spawn from "lib/helpers/cli/spawn";
 import l10n from "shared/lib/lang/l10n";
+import { envWith } from "lib/helpers/cli/env";
 
 type RomUsageOptions = {
   buildRoot: string;
@@ -43,10 +44,7 @@ const romUsage = async ({
     "utf8"
   );
 
-  env.PATH = [
-    Path.join(buildToolsPath, "gbdk", "bin"),
-    env.PATH ?? env.Path,
-  ].join(Path.delimiter);
+  env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
 
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;

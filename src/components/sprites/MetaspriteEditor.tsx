@@ -36,11 +36,11 @@ interface MetaspriteEditorProps {
 }
 
 export interface MetaspriteDraggableTileProps {
-  selected?: boolean;
+  $selected?: boolean;
 }
 
 interface ScrollWrapperProps {
-  hidden?: boolean;
+  $hidden?: boolean;
 }
 
 type BlurableDOMElement = {
@@ -57,7 +57,7 @@ const ScrollWrapper = styled.div<ScrollWrapperProps>`
   bottom: 0;
 
   ${(props) =>
-    props.hidden
+    props.$hidden
       ? css`
           display: none;
         `
@@ -90,7 +90,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   width: 8px;
   height: 16px;
 
-  :hover::after {
+  &:hover:after {
     content: "";
     position: absolute;
     top: 0;
@@ -102,9 +102,9 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   }
 
   ${(props) =>
-    props.selected
+    props.$selected
       ? css`
-          &&::after {
+          &&:after {
             content: "";
             position: absolute;
             top: 0;
@@ -208,6 +208,9 @@ const MetaspriteEditor = ({
   );
   const defaultSpritePaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultSpritePaletteIds
+  );
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds
   );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
@@ -601,12 +604,18 @@ const MetaspriteEditor = ({
   }, [dispatch, selectedTileIds]);
 
   const onCopyMetasprite = useCallback(() => {
+    const selectionIds =
+      selectedAdditionalMetaspriteIds.length === 0
+        ? [metaspriteId]
+        : selectedAdditionalMetaspriteIds;
+
     dispatch(
       clipboardActions.copyMetasprites({
-        metaspriteIds: [metaspriteId],
+        metaspriteIds: selectionIds,
+        spriteAnimationId: animationId,
       })
     );
-  }, [dispatch, metaspriteId]);
+  }, [animationId, dispatch, metaspriteId, selectedAdditionalMetaspriteIds]);
 
   const onCopy = useCallback(() => {
     if (selectedTileIds.length > 0) {
@@ -635,17 +644,14 @@ const MetaspriteEditor = ({
     setIsOverEditor(false);
   }, [setIsOverEditor]);
 
-  const onSelectAll = useCallback(
-    (_e) => {
-      const selection = window.getSelection();
-      if (!selection || selection.focusNode) {
-        return;
-      }
-      window.getSelection()?.empty();
-      setSelectedTileIds(metasprite?.tiles || []);
-    },
-    [metasprite?.tiles, setSelectedTileIds]
-  );
+  const onSelectAll = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.focusNode) {
+      return;
+    }
+    window.getSelection()?.empty();
+    setSelectedTileIds(metasprite?.tiles || []);
+  }, [metasprite?.tiles, setSelectedTileIds]);
 
   // Keyboard handlers
   useEffect(() => {
@@ -820,7 +826,7 @@ const MetaspriteEditor = ({
                   top: -metaspriteTile.y - 16,
                   pointerEvents: newTiles ? "none" : "auto",
                 }}
-                selected={selectedTileIds.includes(metaspriteTile.id)}
+                $selected={selectedTileIds.includes(metaspriteTile.id)}
                 onMouseDown={onDragStart(metaspriteTile.id)}
                 onContextMenu={onContextMenu}
               >

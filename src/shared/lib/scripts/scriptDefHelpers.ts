@@ -1,4 +1,3 @@
-import type { Dictionary } from "@reduxjs/toolkit";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
   ScriptEventArgs,
@@ -9,7 +8,7 @@ import {
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
 
-export type ScriptEventDefs = Dictionary<ScriptEventDef>;
+export type ScriptEventDefs = Record<string, ScriptEventDef>;
 
 const SECTION_TAB_KEY = "__section";
 

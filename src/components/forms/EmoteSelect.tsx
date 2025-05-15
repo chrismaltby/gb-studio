@@ -10,6 +10,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { EmoteCanvas } from "components/world/EmoteCanvas";
+import { SingleValue } from "react-select";
 
 interface EmoteSelectProps extends SelectCommonProps {
   name: string;
@@ -88,8 +89,10 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
     }
   }, [currentEmote, emotes, optional, optionalDefaultEmoteId, optionalLabel]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
+  const onSelectChange = (newValue: SingleValue<Option>) => {
+    if (newValue) {
+      onChange?.(newValue.value);
+    }
   };
 
   return (
