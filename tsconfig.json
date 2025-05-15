@@ -30,5 +30,6 @@
       "patrons.json": ["../patrons.json"]
     }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "build"]
 }

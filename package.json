@@ -121,6 +121,8 @@
     "wavefile": "^11.0.0"
   },
   "devDependencies": {
+    "acorn": "^8.14.1",
+    "acorn-walk": "^8.3.4",
     "@chromatic-com/storybook": "^1.9.0",
     "@electron-forge/cli": "^7.3.0",
     "@electron-forge/maker-deb": "^7.3.0",
@@ -204,13 +206,9 @@
     "webpack-cli": "^4.7.0",
     "worker-loader": "^3.0.8"
   },
-  "packageManager": "yarn@4.4.1+sha256.920b4530755296dc2ce8b4351f057d4a26429524fcb2789d277560d94837c27e",
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
     ]
-  },
-  "resolutions": {
-    "@types/react": "^18.3.5"
   }
 }

@@ -27,27 +27,30 @@ module.exports = async () => {
         platforms: ["darwin", "win32", "linux"],
       },
       new MakerAppImage({}),
-      {
-        name: "@electron-forge/maker-deb",
-        config: {
-          options: {
-            icon: "src/assets/app/icon/app_icon.png",
-          },
-        },
-      },
-      {
-        name: "@electron-forge/maker-rpm",
-        config: {
-          options: {
-            icon: "src/assets/app/icon/app_icon.png",
-          },
-        },
-      },
+      // {
+      //   name: "@electron-forge/maker-deb",
+      //   config: {
+      //     options: {
+      //       icon: "src/assets/app/icon/app_icon.png",
+      //     },
+      //   },
+      // },
+      // {
+      //   name: "@electron-forge/maker-zip"
+      // },
+      // {
+      //   name: "@electron-forge/maker-rpm",
+      //   config: {
+      //     options: {
+      //       icon: "src/assets/app/icon/app_icon.png",
+      //     },
+      //   },
+      // },
     ],
     packagerConfig: {
       name: "GB Studio",
       executableName: "gb-studio",
-      packageManager: "yarn",
+      packageManager: "pnpm",
       icon: "src/assets/app/icon/app_icon",
       darwinDarkModeSupport: true,
       extendInfo: "src/assets/app/Info.plist",

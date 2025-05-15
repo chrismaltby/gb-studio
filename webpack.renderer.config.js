@@ -13,10 +13,10 @@ const rendererRules = [
     test: /\.worker\.(ts|js)$/,
     exclude: /(node_modules|.webpack)/,
     rules: [
-      {
-        loader: "worker-loader",
-        options: { publicPath: "../" },
-      },
+      // {
+      //   loader: "worker-loader",
+      //   options: { publicPath: "../" },
+      // },
       {
         loader: "ts-loader",
         options: {
