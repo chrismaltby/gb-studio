@@ -1,7 +1,9 @@
 {
   "RTL": false,
+
   "GBSTUDIO_DESCRIPTION": "Créateur visuel de jeux rétro",
   "GBSTUDIO_COPYRIGHT": " Distribué sous licence MIT.",
+
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Acteur",
   "TRIGGER": "Déclencheur",
@@ -9,6 +11,7 @@
   "PROJECT": "Projet",
   "CUSTOM_EVENT": "Script",
   "CONSTANT": "Constantes",
+
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Monde du jeu",
   "NAV_SPRITES": "Sprites",
@@ -21,6 +24,7 @@
   "NAV_BUILD_AND_RUN": "Compiler & Exécuter",
   "NAV_SETTINGS": "Paramètres",
   "NAV_IMAGES": "Images",
+
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "Modifié",
   "TOOLBAR_ZOOM_IN": "Agrandir",
@@ -36,6 +40,7 @@
   "TOOLBAR_SAVING": "Enregistrement",
   "TOOLBAR_SAVING_ERROR": "Erreur lors de l’enregistrement",
   "TOOLBAR_WRITING_FILES": "Écriture sur le disque",
+
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Sélectionner",
   "TOOL_ADD_LABEL": "Ajouter",
@@ -59,6 +64,7 @@
   "TOOL_TILE_PRIORITY": "Priorité des tuiles",
   "TOOL_MAGIC": "Pinceau magique",
   "TOOL_SLOPE": "Pentes",
+
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",
   "SIDEBAR_STARTING_SCENE": "Scène de départ",
@@ -90,6 +96,7 @@
   "SIDEBAR_CONSTANTS": "Constantes",
   "SIDEBAR_ADD_CONSTANT": "Ajouter une constante",
   "SIDEBAR_CONSTANT_USES": "Utilisations de la constante",
+
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nom",
   "FIELD_DESCRIPTION": "Description",
@@ -992,10 +999,12 @@
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Désactive la correction intégrée des couleurs, autorise un plus large spectre de couleurs sur du matériel moderne ou des émulateurs.",
   "FIELD_COLOR_MODE_OVERRIDE": "Forcer le mode couleur",
   "FIELD_SET_COLOR_MODE_OVERRIDE": "Définir le mode couleur forcé",
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Rechercher…",
   "ASSET_EDIT": "Modifier",
   "ASSET_ADD": "Ajouter",
+
   "// 8": "Build ----------------------------------------------------",
   "BUILD_RUN": "Exécuter",
   "BUILD_EXPORT_ROM": "Export ROM",
@@ -1006,6 +1015,7 @@
   "BUILD_CANCEL": "Annuler la compilation",
   "BUILD_CANCELLING": "Compilation en cours d’annulation",
   "BUILD_CANCELLED": "Compilation annulée",
+
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_GROUP_ACTOR": "Acteur",
   "EVENT_GROUP_CAMERA": "Caméra",
@@ -1392,6 +1402,7 @@
   "EVENT_SCENE_UPDATE_RESUME_DESC": "Relance l’exécution de la logique de la scène actuelle.",
 
   "// 10": "Menu -----------------------------------------------------",
+
   "MENU_FILE": "Fichier",
   "MENU_NEW_PROJECT": "Nouveau projet",
   "MENU_OPEN": "Ouvrir…",
@@ -1530,7 +1541,9 @@
   "MENU_PROJECT_PLUGINS": "Plugins du projet…",
   "MENU_PLAY_WINDOW": "Fenêtre de jeu",
   "MENU_MUTE_AUDIO": "Couper le son",
+
   "// 11": "Warnings -----------------------------------------------------",
+
   "WARNING_BACKGROUND_TOO_SMALL": "L’arrière-plan est trop petit, il doit être au moins de 160px x 144px",
   "WARNING_BACKGROUND_TOO_LARGE": "L’arrière-plan est trop grand, il doit être au maximum de 256px x 256px",
   "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "La largeur ou la hauteur de l’arrière-plan n’est pas un multiple de 8px",
@@ -1559,7 +1572,9 @@
   "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "L’arrière-plan \"{filename}\" n’est pas un fichier PNG valide",
   "WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES": "L’arrière-plan \"{filename}\" est utilisé dans plusieurs modes couleur et pourrait ne pas s’afficher correctement sur tous les appareils. En cas de remplacement du mode couleur d’une scène, évitez de réutiliser des sprites ou arrière-plans provenant de scènes sans remplacement. Dupliquez les fichiers si nécessaire",
   "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Le sprite \"{filename}\" est utilisé dans plusieurs modes couleur et pourrait ne pas s’afficher correctement sur tous les appareils. En cas de remplacement du mode couleur d’une scène, évitez de réutiliser des sprites ou arrière-plans provenant de scènes sans remplacement. Dupliquez les fichiers si nécessaire",
+
   "// 12": "Errors -------------------------------------------------------",
+
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Veuillez saisir un nom de projet",
   "ERROR_PLEASE_ENTER_PROJECT_PATH": "Veuillez saisir un emplacement de projet",
   "ERROR_PROJECT_ALREADY_EXISTS": "Le projet existe déjà",
@@ -1580,7 +1595,9 @@
   "ERROR_PLUGIN_NOT_FOUND": "Plugin introuvable",
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Impossible de supprimer le plugin",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Impossible d’installer le plugin",
+
   "// 13": "Splash -------------------------------------------------------",
+
   "SPLASH_NEW": "Nouveau",
   "SPLASH_OPEN": "Ouvrir",
   "SPLASH_RECENT": "Récent",
@@ -1601,13 +1618,17 @@
   "SPLASH_NO_RECENT_PROJECTS": "Aucun projet n’a été ouvert récemment.",
   "SPLASH_CREDITS": "Crédits",
   "SPLASH_CONTRIBUTORS": "Contributeurs",
+
   "// 14": "Dialogue Review ------------------------------------------------",
+
   "DIALOGUE_REVIEW": "Dialogue",
   "DIALOGUE_LINE": "Ligne",
   "DIALOGUE_LINES": "Lignes",
   "DIALOGUE_WORD": "Mot",
   "DIALOGUE_WORDS": "Mots",
+
   "// 15": "Dialogs ------------------------------------------------------",
+
   "DIALOG_SAVE_CHANGES": "Voulez-vous sauvegarder les modifications que vous avez apportées à \"{name}\" ?",
   "DIALOG_SAVE_WARNING": "Vos modifications seront perdues si vous ne les enregistrez pas.",
   "DIALOG_DOWNLOAD": "Télécharger",
@@ -1680,7 +1701,9 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "Ce plugin pourrait ne pas être compatible avec votre version de GB Studio",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "Ce plugin listé comme étant compatible avec les versions {pluginSupportedVersion}, mais vous utilisez la version {version}.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ce plugin listé comme étant compatible avec les versions {pluginSupportedVersion}, mais vous utilisez une version préliminaire {version}.",
+
   "// 16": "Settings ----------------------------------------------------",
+
   "SETTINGS": "Paramètres",
   "SETTINGS_SCENES": "Scènes",
   "SETTINGS_SCENE": "Scène",
@@ -1699,23 +1722,31 @@
   "SETTINGS_MUSIC": "Musique",
   "SETTINGS_COLOR": "Options de couleur",
   "SETTINGS_BUILD": "Options de compilation",
+
   "// 17 ": "Palettes ---------------------------------------------------",
+
   "PALETTES_EDITOR": "Éditeur de palettes",
+
   "// 18 ": "Error ------------------------------------------------------",
+
   "ERROR_TITLE": "GB Studio a rencontré une erreur",
   "ERROR_WHAT_CAN_I_DO": "Que puis-je faire ?",
   "ERROR_VIEW_STACK_TRACE": "Voir la trace d’appels",
   "ERROR_CLOSE": "Fermer",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Impossible d’enregistrer le fichier musical",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Vérifiez que le fichier que vous essayez de modifier n’est pas en lecture seule.",
+
   "// 19 ": "Game Type --------------------------------------------------",
+
   "GAMETYPE_TOP_DOWN": "Top Down 2D",
   "GAMETYPE_PLATFORMER": "Platformer",
   "GAMETYPE_ADVENTURE": "Aventure",
   "GAMETYPE_SHMUP": "Shoot Em’ Up",
   "GAMETYPE_POINT_N_CLICK": "Point and Click",
   "GAMETYPE_LOGO": "Logo",
+
   "// 20": "Compiler -----------------------------------------------------",
+
   "COMPILER_COMPILING": "Compilation",
   "COMPILER_LINKING": "Liaison",
   "COMPILER_PACKING": "Empaquètement des données",
@@ -1745,7 +1776,9 @@
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Moteur local introuvable, utilisation du moteur par défaut",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Recherche des plugins moteur dans {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Utilisation du plugin moteur : {path}",
+
   "// 21": "Messages -----------------------------------------------------",
+
   "MESSAGE_NO_SONGS_FOUND": "Aucun son trouvé",
   "MESSAGE_ADD_UGE_FILES": "Veuillez ajouter les fichiers .uge au dossier assets/music du projet. Vous pouvez également créer une nouvelle musique avec le bouton + ci-dessus.",
   "MESSAGE_WHAT_ABOUT_MOD": "À propos des fichiers .mod ?",
