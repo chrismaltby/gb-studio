@@ -723,6 +723,7 @@ export const precompileTilesets = async (
   tilesets: TilesetData[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
+  scriptEventHandlers: ScriptEventHandlers,
   projectRoot: string,
   {
     warnings,
@@ -750,9 +751,15 @@ export const precompileTilesets = async (
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
       },
     },
-    (cmd) => {
-      if (cmd.args && cmd.args.tilesetId) {
-        addTileset(ensureString(cmd.args.tilesetId, ""));
+    (cmd) => {		
+      if (cmd.args) {
+        for (const key in cmd.args) {
+          const value = cmd.args[key];
+          const fieldType = scriptEventHandlers[cmd.command]?.fieldsLookup[key]?.type;
+          if (fieldType == "tileset") {
+            addTileset(ensureString(value, ""));
+          }
+        }
       }
       if (eventHasArg(cmd, "references")) {
         const referencedIds = ensureReferenceArray(cmd.args?.references, [])
@@ -1175,6 +1182,7 @@ const precompile = async (
     projectData.tilesets,
     projectData.scenes,
     customEventsLookup,
+	scriptEventHandlers,
     projectRoot,
     { warnings }
   );

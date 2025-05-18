@@ -289,7 +289,9 @@ export const determineUsedAssets = ({
                 addFontsFromString(row);
               }
             }
-          }
+          } else if (fieldType == "tileset"){
+		     console.log(cmd);
+		  }
         }
       }
     }
