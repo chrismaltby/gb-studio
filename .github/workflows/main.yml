@@ -91,7 +91,7 @@ jobs:
           yarn
 
       - name: Update credits
-        if: ${{ vars.FETCH_CREDITS == 'true' }}
+        if: ${{ vars.FETCH_CREDITS == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
         env:
           PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
           PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
