@@ -146,10 +146,10 @@ jobs:
         if: matrix.name == 'linux-arm64'
         run: |
           yarn fetch-deps -- --arch=linux-arm64
-          yarn make:linux-arm64
           cd buildTools/linux-arm64/mod2gbt
           sh build_linux.sh
-          cd ../../..
+          cd ../../..          
+          yarn make:linux-arm64
           mkdir -p ./out/keep
           mv ./out/make/deb/arm64/*.deb ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_arm64.deb
           mv ./out/make/rpm/arm64/*.rpm ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_arm64.rpm
