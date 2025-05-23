@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
 - Add ability to click label to the right of ROM usage bar to toggle between showing ROM usage values as byte values rather than rounding to KiB/MiB
 - Generate file `bank_usage.txt` when exporting ROM giving a breakdown of which assets were assigned to each memory bank and how many bytes were used
+- Add support for running GB Studio on Linux ARM64 (including Raspberry Pi)
 
 ### Changed
 
@@ -54,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 
 ### Fixed
 
