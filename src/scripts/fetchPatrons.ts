@@ -86,7 +86,7 @@ const fetchPatreonAPI = async (url: string) => {
 const onlyUnique = (
   value: PatreonUser,
   index: number,
-  array: PatreonUser[]
+  array: PatreonUser[],
 ): boolean => array.findIndex((p) => p.id === value.id) === index;
 
 const fetchPatrons = async (): Promise<LatestPatrons> => {
@@ -104,14 +104,14 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
     res.data.forEach((member) => {
       if (
         member.relationships.currently_entitled_tiers.data.some(
-          (tier) => tier.id === GOLD_TIER_ID
+          (tier) => tier.id === GOLD_TIER_ID,
         )
       ) {
         console.log("GOLD TIER: " + member.relationships.user.data.id);
         goldTierUserIds.add(member.relationships.user.data.id);
       } else if (
         member.relationships.currently_entitled_tiers.data.some(
-          (tier) => tier.id === SILVER_TIER_ID
+          (tier) => tier.id === SILVER_TIER_ID,
         )
       ) {
         console.log("SILVER TIER: " + member.relationships.user.data.id);
@@ -128,8 +128,8 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
     });
 
     if (res.links?.next) {
-      // Wait 3 seconds between API calls to prevent API limits being hit in CI/CD
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Wait 8 seconds between API calls to prevent API limits being hit in CI/CD
+      await new Promise((resolve) => setTimeout(resolve, 8000));
       await fetchPage(res.links.next);
     }
   };
@@ -154,7 +154,7 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
 
 const mergePatrons = (
   newPatrons: LatestPatrons,
-  prevPatrons: Patrons
+  prevPatrons: Patrons,
 ): Patrons => {
   const currentAllTierPatronIds = [
     ...newPatrons.goldTier,
