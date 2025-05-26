@@ -7,12 +7,14 @@ interface ScenePriorityMapProps {
   width: number;
   height: number;
   tileColors: number[];
+  selectedPalette: number;
 }
 
 const ScenePriorityMap = ({
   width,
   height,
   tileColors,
+  selectedPalette,
 }: ScenePriorityMapProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -28,7 +30,7 @@ const ScenePriorityMap = ({
         for (let xi = 0; xi < width; xi++) {
           const tileIndex = width * yi + xi;
           const tile = tileColors[tileIndex];
-          if ((tile & TILE_COLOR_PROP_PRIORITY) === TILE_COLOR_PROP_PRIORITY) {
+          if ((tile & selectedPalette) === selectedPalette) {
             ctx.fillStyle = "rgba(40,250,40,0.3)";
           } else {
             ctx.fillStyle = "rgba(40,40,40,0.6)";
@@ -37,7 +39,7 @@ const ScenePriorityMap = ({
         }
       }
     }
-  }, [tileColors, height, width]);
+  }, [selectedPalette, tileColors, height, width]);
 
   return (
     <canvas

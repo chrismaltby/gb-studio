@@ -18,6 +18,7 @@ import {
   DMG_PALETTE,
   MIDDLE_MOUSE,
   TILE_COLOR_PROP_PRIORITY,
+  TILE_COLOR_PROPS,
   TOOL_SELECT,
 } from "consts";
 import SceneInfo from "./SceneInfo";
@@ -254,6 +255,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const tool = useAppSelector((state) => state.editor.tool);
   const showLayers = useAppSelector((state) => state.editor.showLayers);
+  const selectedPalette = useAppSelector((state) => state.editor.selectedPalette);
 
   const showEntities =
     (tool !== TOOL_COLORS &&
@@ -269,7 +271,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const showPriorityMap = useAppSelector(
     (state) =>
       tool === TOOL_COLORS &&
-      state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY
+      state.editor.selectedPalette & TILE_COLOR_PROPS
   );
 
   const zoom = useAppSelector((state) => state.editor.zoom);
@@ -711,6 +713,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
               width={scene.width}
               height={scene.height}
               tileColors={tileColors}
+			  selectedPalette={selectedPalette}
             />
           </SceneOverlay>
         )}

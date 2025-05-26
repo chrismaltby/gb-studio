@@ -62,6 +62,8 @@
   "TOOL_ADD_SONG_LABEL": "Add new song",
   "TOOL_SYNC_INSTRUMENT_NAVIGATOR": "Use selected instrument when adding notes",
   "TOOL_TILE_PRIORITY": "Tile Priority",
+  "TOOL_TILE_FLIP_HORIZONTAL": "Horizontal Flip",
+  "TOOL_TILE_FLIP_VERTICAL": "Vertical Flip",
   "TOOL_MAGIC": "Magic Brush",
   "TOOL_SLOPE": "Slope Brush",
 

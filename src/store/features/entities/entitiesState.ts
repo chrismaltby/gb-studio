@@ -3227,7 +3227,7 @@ const paintColor: CaseReducer<
 
   const getValue = (x: number, y: number) => {
     const tileColorIndex = background.width * y + x;
-    return tileColors[tileColorIndex];
+	return tileColors[tileColorIndex];
   };
 
   const setValue = (x: number, y: number, value: number) => {
@@ -3235,15 +3235,21 @@ const paintColor: CaseReducer<
     let newValue = value;
     if (isTileProp) {
       // If is prop keep previous color value
-      newValue =
-        (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
-        (value & TILE_COLOR_PROPS);
+	  if (value !== 0){
+	    newValue =
+          (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
+          (value & TILE_COLOR_PROPS);
+	  } else {
+	    newValue = (tileColors[tileColorIndex] & TILE_COLOR_PALETTE)
+	  }      
     } else if (value !== 0) {
       // If is color keep prop unless erasing
       newValue =
         (value & TILE_COLOR_PALETTE) +
         (tileColors[tileColorIndex] & TILE_COLOR_PROPS);
-    }
+    } else {
+	  newValue = (tileColors[tileColorIndex] & TILE_COLOR_PROPS)
+	}
     tileColors[tileColorIndex] = newValue;
   };
 

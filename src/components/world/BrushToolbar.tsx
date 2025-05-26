@@ -15,6 +15,8 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
   PriorityTileIcon,
+  FlipVerticalTileIcon,
+  FlipHorizontalTileIcon,
   SlopeIcon,
   AutoColorIcon,
   CheckIcon,
@@ -31,6 +33,8 @@ import {
   BRUSH_MAGIC,
   DMG_PALETTE,
   TILE_COLOR_PROP_PRIORITY,
+  TILE_COLOR_PROP_FLIP_HORIZONTAL,
+  TILE_COLOR_PROP_FLIP_VERTICAL,
   BRUSH_SLOPE,
   defaultCollisionTileDefs,
   defaultProjectSettings,
@@ -553,6 +557,34 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               title={l10n("TOOL_TILE_PRIORITY")}
             >
               <PriorityTileIcon />
+            </Button>
+          )}
+		  {showPalettes && (
+            <Button
+              variant="transparent"
+              onClick={
+                TILE_COLOR_PROP_FLIP_HORIZONTAL !== selectedPalette
+                  ? setSelectedPalette(TILE_COLOR_PROP_FLIP_HORIZONTAL)
+                  : setSelectedPalette(0)
+              }
+              active={TILE_COLOR_PROP_FLIP_HORIZONTAL === selectedPalette}
+              title={l10n("TOOL_TILE_FLIP_HORIZONTAL")}
+            >
+              <FlipHorizontalTileIcon />
+            </Button>
+          )}
+		  {showPalettes && (
+            <Button
+              variant="transparent"
+              onClick={
+                TILE_COLOR_PROP_FLIP_VERTICAL !== selectedPalette
+                  ? setSelectedPalette(TILE_COLOR_PROP_FLIP_VERTICAL)
+                  : setSelectedPalette(0)
+              }
+              active={TILE_COLOR_PROP_FLIP_VERTICAL === selectedPalette}
+              title={l10n("TOOL_TILE_FLIP_VERTICAL")}
+            >
+              <FlipVerticalTileIcon />
             </Button>
           )}
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (

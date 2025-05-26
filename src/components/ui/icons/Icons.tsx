@@ -528,6 +528,28 @@ export const PriorityTileIcon = () => (
   </svg>
 );
 
+export const FlipHorizontalTileIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 16 16">
+    <path d="M6 9L6 13L5 13L-3.15903e-06 8L5 3L6 3L6 7L10 7L10 3L11 3L16 8L11 13L10 13L10 9L6 9Z" />
+  </svg>
+);
+
+export const FlipVerticalTileIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 16 16">
+    <path d="M9 10H13V11L8 16L3 11L3 10H7L6.99999 6L3 6L3 5L8 0L13 5V6L9 6L9 10Z" />
+  </svg>
+);
+
+/*
+<svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 9L6 13L5 13L-3.15903e-06 8L5 3L6 3L6 7L10 7L10 3L11 3L16 8L11 13L10 13L10 9L6 9Z" fill="#000000"/>
+</svg>
+
+<svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 10H13V11L8 16L3 11L3 10H7L6.99999 6L3 6L3 5L8 0L13 5V6L9 6L9 10Z" fill="#000000"/>
+</svg>
+*/
+
 export const EraserIcon = () => (
   <svg
     width="24"

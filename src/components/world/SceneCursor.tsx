@@ -814,13 +814,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       // paint tileColors rather than remove them
       if (selectedPalette & TILE_COLOR_PROPS) {
         // If drawing props replace but keep tileColors
-        const tileProp = selectedPalette & TILE_COLOR_PROPS;
-        const currentProp = hoverPalette & TILE_COLOR_PROPS;
-        if (currentProp !== tileProp) {
-          data.current.drawTile = tileProp;
-        } else {
-          data.current.drawTile = hoverPalette & TILE_COLOR_PALETTE;
-        }
+        let tileProp = selectedPalette & TILE_COLOR_PROPS;
+		const currentProp = hoverPalette & TILE_COLOR_PROPS;
+		data.current.drawTile = currentProp ^ tileProp;
       } else {
         data.current.drawTile = selectedPalette;
       }
