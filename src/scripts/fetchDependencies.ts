@@ -5,37 +5,43 @@ import spawn from "../../src/lib/helpers/cli/spawn";
 
 const buildToolsRoot = Path.join(
   Path.normalize(`${__dirname}/../../`),
-  "buildTools"
+  "buildTools",
 );
 
 const dependencies = {
   "darwin-arm64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.3.0/gbdk-macos-arm64.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos-arm64.tar.gz",
       type: "targz",
     },
   },
   "darwin-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.3.0/gbdk-macos.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos.tar.gz",
       type: "targz",
     },
   },
   "linux-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.3.0/gbdk-linux64.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux64.tar.gz",
+      type: "targz",
+    },
+  },
+  "linux-arm64": {
+    gbdk: {
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux-arm64.tar.gz",
       type: "targz",
     },
   },
   "win32-ia32": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.3.0/gbdk-win32.zip",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win32.zip",
       type: "zip",
     },
   },
   "win32-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.3.0/gbdk-win64.zip",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win64.zip",
       type: "zip",
     },
   },
@@ -54,7 +60,7 @@ const fetchArch =
 
 const extractTarGz = async (
   archivePath: string,
-  outputDir: string
+  outputDir: string,
 ): Promise<void> => {
   const res = spawn("tar", ["-zxf", archivePath, "-C", outputDir], {}, {});
   await res.completed;
@@ -62,7 +68,7 @@ const extractTarGz = async (
 
 const extractZip = async (
   archivePath: string,
-  outputDir: string
+  outputDir: string,
 ): Promise<void> => {
   const zip = new AdmZip(archivePath);
   await zip.extractAllTo(outputDir, true);
