@@ -87,26 +87,22 @@ workerCtx.onmessage = async (evt) => {
 
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
-  const data_copy = [...data];
   for (let t = 0; t < tilesLength; t++) {
     const tX = t % tileWidth;
     const tY = Math.floor(t / tileWidth);
     const palette =
       palettesRGB[tiles[t] & TILE_COLOR_PALETTE] || palettesRGB[0];
-	const flipH = (tiles[t] & TILE_COLOR_PROP_FLIP_HORIZONTAL) == TILE_COLOR_PROP_FLIP_HORIZONTAL;
-	const flipV = (tiles[t] & TILE_COLOR_PROP_FLIP_VERTICAL) == TILE_COLOR_PROP_FLIP_VERTICAL;
     const p1X = tX * 8;
     const p2X = p1X + 8;
     const p1Y = tY * 8;
     const p2Y = p1Y + 8;
     for (let pX = p1X; pX < p2X; pX++) {
       for (let pY = p1Y; pY < p2Y; pY++) {
-        let index = (pX + pY * width) * 4;
-        const colorIndex = indexColour(data_copy[index + 1]);
+        const index = (pX + pY * width) * 4;
+        const colorIndex = indexColour(data[index + 1]);
         const color = previewAsMono
           ? dmgPalette[colorIndex]
           : palette[colorIndex];
-		index = (((flipH)?(p1X + (p2X - (pX + 1))):pX) + (((flipV)?(p1Y + (p2Y - (pY + 1))):pY) * width)) * 4;
         data[index] = color.r;
         data[index + 1] = color.g;
         data[index + 2] = color.b;

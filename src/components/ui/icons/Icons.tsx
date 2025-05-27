@@ -99,6 +99,21 @@ export const AutoColorIcon = () => (
   </svg>
 );
 
+export const AutoFlipIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 16 16">
+    <path fill="#444" d="M0 15l6-5-6-4.9z"></path>
+	<path fill="#444" d="M9 10.1l6 4.9v-10l-6 5.1zM14 12.9l-3.4-2.8 3.4-3v5.8z"></path>
+	<path fill="#444" d="M7 5h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 3h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 7h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 9h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 11h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 13h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7 15h1v1h-1v-1z"></path>
+	<path fill="#444" d="M7.5 1v0c1.3 0 2.6 0.7 3.6 1.9l-1.1 1.1h3v-3l-1.2 1.2c-1.2-1.4-2.7-2.2-4.3-2.2 0 0 0 0 0 0-1.9 0-3.6 1-4.9 2.9l0.8 0.6c1.1-1.6 2.5-2.5 4.1-2.5z"></path>
+  </svg>
+);
+
 export const FlipHorizontalIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <g
@@ -539,16 +554,6 @@ export const FlipVerticalTileIcon = () => (
     <path d="M9 10H13V11L8 16L3 11L3 10H7L6.99999 6L3 6L3 5L8 0L13 5V6L9 6L9 10Z" />
   </svg>
 );
-
-/*
-<svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M6 9L6 13L5 13L-3.15903e-06 8L5 3L6 3L6 7L10 7L10 3L11 3L16 8L11 13L10 13L10 9L6 9Z" fill="#000000"/>
-</svg>
-
-<svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 10H13V11L8 16L3 11L3 10H7L6.99999 6L3 6L3 5L8 0L13 5V6L9 6L9 10Z" fill="#000000"/>
-</svg>
-*/
 
 export const EraserIcon = () => (
   <svg

@@ -4,10 +4,14 @@ import {
   tileArrayToTileData,
   tilesAndLookupToTilemap,
   toTileLookup,
+  tileDataIndexFn,
+  hashTileData,
+  TileLookup,
 } from "shared/lib/tiles/tileData";
 import {
   readFileToTilesDataArray,
   indexedImageToTilesDataArray,
+  readFileToIndexedImage,
 } from "lib/tiles/readFileToTiles";
 import {
   BackgroundData,
@@ -15,7 +19,12 @@ import {
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import promiseLimit from "lib/helpers/promiseLimit";
-import { FLAG_VRAM_BANK_1 } from "consts";
+import { 
+  FLAG_VRAM_BANK_1, 
+  TILE_COLOR_PROP_FLIP_HORIZONTAL, 
+  TILE_COLOR_PROP_FLIP_VERTICAL, 
+  TILE_SIZE, 
+} from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import {
   readFileToPalettes,
@@ -26,6 +35,14 @@ import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ReferencedBackground } from "./precompile/determineUsedAssets";
+import {
+  IndexedImage,
+  flipIndexedImageX,
+  flipIndexedImageY,
+  makeIndexedImage,
+  sliceIndexedImage,
+  indexedImageTo2bppTileData,
+} from "shared/lib/tiles/indexedImage";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -169,10 +186,11 @@ const compileImage = async (
   let tileData: Uint8Array[] = [];
   let autoTileColors: number[] = [];
   let autoPalettes: Palette[] | undefined = undefined;
+  let indexedImage: IndexedImage | undefined = undefined;
   if (autoColorMode === ImageColorMode.AUTO_COLOR) {
     // Extract both tiles and colors from color PNG
     const paletteData = await readFileToPalettes(filename, colorCorrection);
-    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    indexedImage = paletteData.indexedImage;
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
       id: `${img.id}_p${index}`,
@@ -185,7 +203,7 @@ const compileImage = async (
       filename,
       tilesFileName
     );
-    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    indexedImage = paletteData.indexedImage;
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
       id: `${img.id}_p${index}`,
@@ -194,9 +212,80 @@ const compileImage = async (
     }));
   } else {
     // Extract tiles from PNG and use manual color data
-    tileData = await readFileToTilesDataArray(tilesFileName);
+	indexedImage = await readFileToIndexedImage(tilesFileName, tileDataIndexFn);    
   }
-
+  
+  //Flip tiles as needed
+  const xTiles = Math.floor(indexedImage.width / TILE_SIZE);
+  const yTiles = Math.floor(indexedImage.height / TILE_SIZE);    
+  let tileLookup: TileLookup = {};  
+  //Prefill the tileLookup with the commontileset to respect the tileset order when auto flipping
+  if (commonTileset && img.autoFlip){
+    const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
+    const commonTileData = await readFileToTilesDataArray(commonFilename);
+	tileLookup = toTileLookup(commonTileData) ?? {};
+  }
+  
+  for (let tyi = 0; tyi < yTiles; tyi++) {
+    for (let txi = 0; txi < xTiles; txi++) {
+      let tileHash = "";
+    const singleTileAttr = img.tileColors[tyi * xTiles + txi];
+    let slicedTile = sliceIndexedImage(
+            indexedImage,
+            txi * TILE_SIZE,
+            tyi * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+          );
+    if (colorMode !== "mono"){
+      if (!img.autoFlip) {		  
+        if ((singleTileAttr & TILE_COLOR_PROP_FLIP_HORIZONTAL) == TILE_COLOR_PROP_FLIP_HORIZONTAL){
+          slicedTile = flipIndexedImageX(slicedTile);
+        }
+        if ((singleTileAttr & TILE_COLOR_PROP_FLIP_VERTICAL) == TILE_COLOR_PROP_FLIP_VERTICAL){
+          slicedTile = flipIndexedImageY(slicedTile);
+        }
+        tileData.push(indexedImageTo2bppTileData(slicedTile));
+      } else {
+        const singleTileData = indexedImageTo2bppTileData(slicedTile);
+        let tileDataHash = hashTileData(singleTileData);
+        if (tileLookup[tileDataHash]){
+          tileData.push(singleTileData);
+      	  img.tileColors[tyi * xTiles + txi] = singleTileAttr & ~(TILE_COLOR_PROP_FLIP_VERTICAL | TILE_COLOR_PROP_FLIP_HORIZONTAL);
+            continue;		  
+        }
+        let flippedTileData = indexedImageTo2bppTileData(flipIndexedImageX(slicedTile));
+        tileDataHash = hashTileData(flippedTileData);
+        if (tileLookup[tileDataHash]){
+          tileData.push(flippedTileData);
+          img.tileColors[tyi * xTiles + txi] = singleTileAttr | TILE_COLOR_PROP_FLIP_HORIZONTAL;
+          continue;	
+        }
+        flippedTileData = indexedImageTo2bppTileData(flipIndexedImageY(slicedTile));
+        tileDataHash = hashTileData(flippedTileData);
+        if (tileLookup[tileDataHash]){
+          tileData.push(flippedTileData);	
+          img.tileColors[tyi * xTiles + txi] = singleTileAttr | TILE_COLOR_PROP_FLIP_VERTICAL;
+          continue;	
+        }
+        flippedTileData = indexedImageTo2bppTileData(flipIndexedImageX(flipIndexedImageY(slicedTile)));
+        tileDataHash = hashTileData(flippedTileData);
+        if (tileLookup[tileDataHash]){
+          tileData.push(flippedTileData);
+          img.tileColors[tyi * xTiles + txi] = singleTileAttr | TILE_COLOR_PROP_FLIP_VERTICAL | TILE_COLOR_PROP_FLIP_HORIZONTAL;		  
+          continue;	
+        }
+        tileLookup[hashTileData(singleTileData)] = singleTileData;
+          img.tileColors[tyi * xTiles + txi] = singleTileAttr & ~(TILE_COLOR_PROP_FLIP_VERTICAL | TILE_COLOR_PROP_FLIP_HORIZONTAL);
+          tileData.push(singleTileData);	
+        }
+      } else {
+	    img.tileColors[tyi * xTiles + txi] = singleTileAttr & ~(TILE_COLOR_PROP_FLIP_VERTICAL | TILE_COLOR_PROP_FLIP_HORIZONTAL);
+        tileData.push(indexedImageTo2bppTileData(slicedTile));
+      }		
+    }
+  }
+  
   // Warn if auto palettes extracted too many unique palettes
   if (autoPalettes && autoPalettes.length > 8) {
     warnings(

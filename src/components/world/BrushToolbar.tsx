@@ -19,6 +19,7 @@ import {
   FlipHorizontalTileIcon,
   SlopeIcon,
   AutoColorIcon,
+  AutoFlipIcon,
   CheckIcon,
   BlankIcon,
   TileValueIcon,
@@ -410,6 +411,16 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         })
       );
   }, [dispatch, scene?.backgroundId, background]);
+  
+  const onToggleAutoFlip = useCallback(() => {
+    scene?.backgroundId &&
+      dispatch(
+        entitiesActions.editBackgroundAutoFlip({
+          backgroundId: scene.backgroundId,
+          autoFlip: !background?.autoFlip,
+        })
+      );
+  }, [dispatch, scene?.backgroundId, background]);
 
   const onMouseUp = () => {
     if (timerRef.current) {
@@ -559,7 +570,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               <PriorityTileIcon />
             </Button>
           )}
-		  {showPalettes && (
+		  {showPalettes && !background?.autoFlip && (
             <Button
               variant="transparent"
               onClick={
@@ -573,7 +584,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               <FlipHorizontalTileIcon />
             </Button>
           )}
-		  {showPalettes && (
+		  {showPalettes && !background?.autoFlip && (
             <Button
               variant="transparent"
               onClick={
@@ -585,6 +596,16 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               title={l10n("TOOL_TILE_FLIP_VERTICAL")}
             >
               <FlipVerticalTileIcon />
+            </Button>
+          )}
+		  {showPalettes && background && (
+            <Button
+              variant="transparent"
+              onClick={onToggleAutoFlip}
+              active={background.autoFlip}
+              title={l10n("FIELD_AUTO_FLIP")}
+            >
+              <AutoFlipIcon />
             </Button>
           )}
           {selectedBrush !== BRUSH_SLOPE && showTileTypes && (

@@ -198,6 +198,7 @@ export type Background = {
   tileColors: number[];
   monoOverrideId?: string;
   autoColor?: boolean;
+  autoFlip?: boolean;
   plugin?: string;
   inode: string;
   _v: number;

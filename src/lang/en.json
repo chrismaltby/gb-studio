@@ -821,6 +821,7 @@
   "FIELD_COMMON_TILESET": "Common Tileset",
   "FIELD_COMMON_TILESET_DESC": "Setting a common tileset for a scene will cause the selected tileset tiles to always be loaded in the same order. Careful use of this on two scenes will allow you to seamlessly switch between the scenes with no transition and no tile glitching.",
   "FIELD_AUTO_COLOR": "Auto Color",
+  "FIELD_AUTO_FLIP": "Auto Flip",
   "FIELD_MANUAL": "Manual",
   "FIELD_PREVIEW_AS_MONO": "Preview as Monochrome",
   "FIELD_MONO_OVERRIDE_DESC": "This image is using automatic palettes with a monochrome override defined at \"{tilesFilename}\" which will determine the tile data used, while \"{filename}\" will determine the colors",
