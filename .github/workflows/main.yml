@@ -91,6 +91,7 @@ jobs:
           yarn
 
       - name: Update credits
+        if: ${{ vars.FETCH_CREDITS == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
         env:
           PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
           PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
@@ -112,7 +113,7 @@ jobs:
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
-          DEBUG=electron-osx-sign,electron-forge:* yarn make:mac
+          yarn make:mac
           mkdir -p ./out/keep
           mv ./out/make/zip/darwin/arm64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_arm64.zip
 
@@ -127,7 +128,7 @@ jobs:
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
-          DEBUG=electron-osx-sign,electron-forge:* yarn make:mac-intel
+          yarn make:mac-intel
           mkdir -p ./out/keep
           mv ./out/make/zip/darwin/x64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_x64.zip
 
