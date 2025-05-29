@@ -2,20 +2,6 @@
   "goldTier": [
     {
       "attributes": {
-        "full_name": "BMo"
-      },
-      "id": "483773",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Incube8 Games"
-      },
-      "id": "108878934",
-      "type": "user"
-    },
-    {
-      "attributes": {
         "full_name": "Kevin"
       },
       "id": "89121289",
@@ -30,7 +16,7 @@
     },
     {
       "attributes": {
-        "full_name": "Pmoth Demakes"
+        "full_name": "Rdust"
       },
       "id": "104804333",
       "type": "user"
@@ -67,23 +53,9 @@
     },
     {
       "attributes": {
-        "full_name": "Erik Rogers"
-      },
-      "id": "7794289",
-      "type": "user"
-    },
-    {
-      "attributes": {
         "full_name": "evan niedojadlo"
       },
       "id": "7767557",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Greg"
-      },
-      "id": "25608244",
       "type": "user"
     },
     {
@@ -109,16 +81,16 @@
     },
     {
       "attributes": {
-        "full_name": "Michel Iwaniec"
+        "full_name": "Michael Wild"
       },
-      "id": "27034715",
+      "id": "101678212",
       "type": "user"
     },
     {
       "attributes": {
-        "full_name": "mloukhiyye"
+        "full_name": "Michel Iwaniec"
       },
-      "id": "134643376",
+      "id": "27034715",
       "type": "user"
     },
     {
@@ -127,14 +99,35 @@
       },
       "id": "64844487",
       "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Skittle"
+      },
+      "id": "57539298",
+      "type": "user"
     }
   ],
   "pastPatrons": [
     {
       "attributes": {
+        "full_name": "BMo"
+      },
+      "id": "483773",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Diante Clark"
       },
       "id": "111731287",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Erik Rogers"
+      },
+      "id": "7794289",
       "type": "user"
     },
     {
@@ -146,9 +139,23 @@
     },
     {
       "attributes": {
+        "full_name": "Greg"
+      },
+      "id": "25608244",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "Gumpy Function"
       },
       "id": "128473778",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Incube8 Games"
+      },
+      "id": "108878934",
       "type": "user"
     },
     {
@@ -167,6 +174,13 @@
     },
     {
       "attributes": {
+        "full_name": "mloukhiyye"
+      },
+      "id": "134643376",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "npckc"
       },
       "id": "14825686",
@@ -177,13 +191,6 @@
         "full_name": "Pearacidic"
       },
       "id": "7243786",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Skittle"
-      },
-      "id": "57539298",
       "type": "user"
     },
     {
