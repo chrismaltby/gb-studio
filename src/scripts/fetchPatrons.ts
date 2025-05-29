@@ -1,6 +1,8 @@
 import { writeJSON } from "fs-extra";
 import currentPatrons from "../../patrons.json";
 
+console.log("Fetching Patrons");
+
 if (!process.env.PATREON_ACCESS_TOKEN) {
   console.log("Env variable PATREON_ACCESS_TOKEN is not set");
   process.exit();
@@ -177,11 +179,11 @@ const mergePatrons = (
 const main = async () => {
   const newPatrons = await fetchPatrons();
   const mergedPatrons = mergePatrons(newPatrons, currentPatrons as Patrons);
-  writeJSON("./patrons.json", mergedPatrons, {
+  await writeJSON("./patrons.json", mergedPatrons, {
     spaces: 2,
   });
 };
 
-main();
+main().then(() => console.log("Fetched Patrons!"));
 
 export {};
