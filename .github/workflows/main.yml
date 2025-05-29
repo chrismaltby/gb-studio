@@ -113,7 +113,7 @@ jobs:
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
-          DEBUG=electron-forge:* yarn make:mac
+          DEBUG=electron-osx-sign,electron-forge:* yarn make:mac
           mkdir -p ./out/keep
           mv ./out/make/zip/darwin/arm64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_arm64.zip
 
@@ -128,7 +128,7 @@ jobs:
           export APPLE_ID=${APPLE_ID}
           export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
           export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
-          DEBUG=electron-forge:* yarn make:mac-intel
+          DEBUG=electron-osx-sign,electron-forge:* yarn make:mac-intel
           mkdir -p ./out/keep
           mv ./out/make/zip/darwin/x64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_x64.zip
 
