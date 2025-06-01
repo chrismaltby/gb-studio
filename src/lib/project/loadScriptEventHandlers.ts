@@ -10,6 +10,7 @@ import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
 import * as scriptValueTypes from "shared/lib/scriptValue/types";
+import { readJson } from "lib/helpers/fs/readJson";
 
 const globAsync = promisify(glob);
 
@@ -133,39 +134,46 @@ export type ScriptEventHandler = ScriptEventDef & {
 
 export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
 
-const vm = new NodeVM({
-  timeout: 1000,
-  console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
-  sandbox: {},
-  compiler: (code: string) => {
-    // Convert es6 style modules to commonjs
-    let moduleCode = code;
-    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
-    if (moduleCode.indexOf("module.exports") === -1) {
-      const moduleExports =
-        code
-          .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
-          ?.map((c) => c.replace(/.* /, "")) ?? [];
-      moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
-    }
-    return moduleCode;
-  },
-  require: {
-    mock: {
-      "./helpers": eventHelpers,
-      "../helpers/l10n": l10n,
-      "../helpers/eventSystem": eventSystemHelpers,
-      "../compiler/compileEntityEvents": compileEntityEvents,
-      "../helpers/trimlines": trimLines,
-      "shared/lib/helpers/trimlines": trimLines,
-      "shared/lib/scriptValue/helpers": scriptValueHelpers,
-      "shared/lib/scriptValue/types": scriptValueTypes,
+const getVm = (jsonFileMap?: {[index: string]:object}) => {
+  const vm_settings = {
+    timeout: 1000,
+    console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
+    sandbox: {},
+    compiler: (code: string) => {
+      // Convert es6 style modules to commonjs
+      let moduleCode = code;
+      moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
+      if (moduleCode.indexOf("module.exports") === -1) {
+        const moduleExports =
+          code
+            .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
+            ?.map((c) => c.replace(/.* /, "")) ?? [];
+        moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
+      }
+      return moduleCode;
     },
-  },
-});
+    require: {
+      mock: {
+        "./helpers": eventHelpers,
+        "../helpers/l10n": l10n,
+        "../helpers/eventSystem": eventSystemHelpers,
+        "../compiler/compileEntityEvents": compileEntityEvents,
+        "../helpers/trimlines": trimLines,
+        "shared/lib/helpers/trimlines": trimLines,
+        "shared/lib/scriptValue/helpers": scriptValueHelpers,
+        ...jsonFileMap
+      },
+    },
+  }
+
+  const vm = new NodeVM(vm_settings);
+  return vm;
+}
+
 
 const loadScriptEventHandler = async (
-  path: string
+  path: string,
+  vm: typeof NodeVM
 ): Promise<ScriptEventHandler> => {
   const handlerCode = await readFile(path, "utf8");
 
@@ -240,13 +248,30 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
     `${projectRoot}/plugins/*/**/events/event*.js`
   );
 
+  const pluginDataTablePaths = await globAsync(
+    `${projectRoot}/plugins/**/events/data*.json`
+  );
+
+  const pluginDataTableFileNameMapping: {[index: string]: object} = {};
+  const pluginRoot = `${projectRoot}/plugins/`
+  for (const dataTable of pluginDataTablePaths){
+    let dataTablePath = dataTable.replace(pluginRoot, '')
+    dataTablePath = dataTablePath.replace(/.*events\//, '')
+    pluginDataTableFileNameMapping[dataTablePath] = (await readJson(dataTable)) as Object;
+  }
+
+  const coreVm = getVm()
+
   const eventHandlers: ScriptEventHandlers = {};
   for (const path of corePaths) {
-    const handler = await loadScriptEventHandler(path);
+    const handler = await loadScriptEventHandler(path, coreVm);
     eventHandlers[handler.id] = handler;
   }
+
+  const pluginVm = getVm(pluginDataTableFileNameMapping)
+
   for (const path of pluginPaths) {
-    const handler = await loadScriptEventHandler(path);
+    const handler = await loadScriptEventHandler(path, pluginVm);
     eventHandlers[handler.id] = handler;
   }
 
