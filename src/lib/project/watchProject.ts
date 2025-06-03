@@ -214,7 +214,7 @@ const watchProject = (
   const pluginEventsWatcher = chokidar
     .watch([
       `${pluginsRoot}/**/events/event*.js`,
-      `${pluginsRoot}/**/events/data*.js`
+      `${pluginsRoot}/**/events/data*.json`
     ], {
       ignoreInitial: true,
       persistent: true,
