@@ -1514,29 +1514,29 @@ class ScriptBuilder {
             if (propertyValue === "xpos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_x")
-                .int16(tileToSubpx(1))
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("tiles"))
+                .operator(".SHR")                
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "ypos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_y")
-                .int16(tileToSubpx(1))
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("tiles"))
+                .operator(".SHR")                
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "pxpos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_x")
-                .int16(16)
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("pixels"))
+                .operator(".SHR")                
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "pypos") {
               this._rpn()
                 .refMem(".MEM_I16", "camera_y")
-                .int16(16)
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("pixels"))
+                .operator(".SHR")                          
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "xdeadzone") {
@@ -1591,8 +1591,8 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 1))
-                .int16(tileToSubpx(1))
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("tiles"))
+                .operator(".SHR")
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "ypos") {
@@ -1603,8 +1603,8 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 2))
-                .int16(tileToSubpx(1))
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("tiles"))
+                .operator(".SHR")                
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "pxpos") {
@@ -1615,8 +1615,8 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 1))
-                .int16(16)
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("pixels"))
+                .operator(".SHR")                     
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "pypos") {
@@ -1627,8 +1627,8 @@ class ScriptBuilder {
               }
               this._rpn() //
                 .ref(this._localRef(actorRef, 2))
-                .int16(16)
-                .operator(".DIV")
+                .int16(subpxShiftForUnits("pixels"))
+                .operator(".SHR")                          
                 .refSet(localVar)
                 .stop();
             } else if (propertyValue === "direction") {
