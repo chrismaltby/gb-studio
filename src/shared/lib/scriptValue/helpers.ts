@@ -14,8 +14,10 @@ import {
   RPNOperation,
   RPNUnaryOperation,
   ScriptValueAtom,
+  OptimisedScriptValue,
 } from "./types";
 import { OperatorSymbol } from "shared/lib/rpn/types";
+import { subpxShiftForUnits } from "shared/lib/helpers/subpixels";
 
 const boolToInt = (val: boolean) => (val ? 1 : 0);
 const zero = {
@@ -23,7 +25,9 @@ const zero = {
   value: 0,
 } as const;
 
-export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
+export const optimiseScriptValue = (
+  input: ScriptValue,
+): OptimisedScriptValue => {
   if (isValueOperation(input)) {
     const optimisedA = input.valueA ? optimiseScriptValue(input.valueA) : zero;
     const optimisedB = input.valueB ? optimiseScriptValue(input.valueB) : zero;
@@ -501,16 +505,160 @@ export const precompileScriptValue = (
   rpnOperations: PrecompiledValueRPNOperation[] = [],
   fetchOperations: PrecompiledValueFetch[] = [],
 ): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
-  if (input.type === "property" || input.type === "expression") {
-    const localName = `local_${localsLabel}${fetchOperations.length}`;
-    rpnOperations.push({
-      type: "local",
-      value: localName,
-    });
-    fetchOperations.push({
-      local: localName,
-      value: input,
-    });
+  return precompileOptimisedScriptValue(
+    optimiseScriptValue(input),
+    localsLabel,
+    rpnOperations,
+    fetchOperations,
+  );
+};
+
+export const precompileOptimisedScriptValue = (
+  input: OptimisedScriptValue,
+  localsLabel = "",
+  rpnOperations: PrecompiledValueRPNOperation[] = [],
+  fetchOperations: PrecompiledValueFetch[] = [],
+): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
+  if (input.type === "property") {
+    if (input.target === "camera") {
+      const positionPropertiesX = ["xpos", "pxpos", "spxpos"];
+      const positionPropertiesY = ["ypos", "pypos", "spypos"];
+      const positionProperties = [
+        ...positionPropertiesX,
+        ...positionPropertiesY,
+      ];
+
+      if (positionProperties.includes(input.property)) {
+        if (positionPropertiesX.includes(input.property)) {
+          rpnOperations.push({
+            type: "memI16",
+            value: "camera_x",
+          });
+        } else if (positionPropertiesY.includes(input.property)) {
+          rpnOperations.push({
+            type: "memI16",
+            value: "camera_y",
+          });
+        }
+
+        if (input.property === "xpos" || input.property === "ypos") {
+          rpnOperations.push({
+            type: "number",
+            value: subpxShiftForUnits("tiles"),
+          });
+          rpnOperations.push({
+            type: "shr",
+          });
+        } else if (input.property === "pxpos" || input.property === "pypos") {
+          rpnOperations.push({
+            type: "number",
+            value: subpxShiftForUnits("pixels"),
+          });
+          rpnOperations.push({
+            type: "shr",
+          });
+        }
+      } else if (input.property === "xdeadzone") {
+        rpnOperations.push({
+          type: "memU8",
+          value: "camera_deadzone_x",
+        });
+      } else if (input.property === "ydeadzone") {
+        rpnOperations.push({
+          type: "memU8",
+          value: "camera_deadzone_y",
+        });
+      } else if (input.property === "xoffset") {
+        rpnOperations.push({
+          type: "memU8",
+          value: "camera_offset_x",
+        });
+      } else if (input.property === "yoffset") {
+        rpnOperations.push({
+          type: "memU8",
+          value: "camera_offset_y",
+        });
+      } else {
+        throw new Error(`Unsupported property type "${input.property}"`);
+      }
+    } else {
+      const localName = `local_${localsLabel}${fetchOperations.length}`;
+
+      const positionPropertiesX = ["xpos", "pxpos", "spxpos"];
+      const positionPropertiesY = ["ypos", "pypos", "spypos"];
+      const positionProperties = [
+        ...positionPropertiesX,
+        ...positionPropertiesY,
+      ];
+
+      if (positionProperties.includes(input.property)) {
+        fetchOperations.push({
+          local: localName,
+          value: {
+            type: "actorPosition",
+            target: input.target,
+          },
+        });
+        if (positionPropertiesX.includes(input.property)) {
+          rpnOperations.push({
+            type: "local",
+            value: localName,
+            offset: 1,
+          });
+        } else if (positionPropertiesY.includes(input.property)) {
+          rpnOperations.push({
+            type: "local",
+            value: localName,
+            offset: 2,
+          });
+        }
+
+        if (input.property === "xpos" || input.property === "ypos") {
+          rpnOperations.push({
+            type: "number",
+            value: subpxShiftForUnits("tiles"),
+          });
+          rpnOperations.push({
+            type: "shr",
+          });
+        } else if (input.property === "pxpos" || input.property === "pypos") {
+          rpnOperations.push({
+            type: "number",
+            value: subpxShiftForUnits("pixels"),
+          });
+          rpnOperations.push({
+            type: "shr",
+          });
+        }
+      } else if (input.property === "direction") {
+        fetchOperations.push({
+          local: localName,
+          value: {
+            type: "actorDirection",
+            target: input.target,
+          },
+        });
+        rpnOperations.push({
+          type: "local",
+          value: localName,
+        });
+      } else if (input.property === "frame") {
+        fetchOperations.push({
+          local: localName,
+          value: {
+            type: "actorFrame",
+            target: input.target,
+          },
+        });
+        rpnOperations.push({
+          type: "local",
+          value: localName,
+          offset: 1,
+        });
+      } else {
+        throw new Error(`Unsupported property type "${input.property}"`);
+      }
+    }
   } else if (isValueOperation(input)) {
     if (input.valueA) {
       precompileScriptValue(
@@ -547,28 +695,27 @@ export const precompileScriptValue = (
     rpnOperations.push({ type: "number", value: 1 });
   } else if (input.type === "false") {
     rpnOperations.push({ type: "number", value: 0 });
-  } else if (input.type === "constant") {
-    rpnOperations.push({ type: "constant", value: input.value });
   } else {
     rpnOperations.push(input);
   }
-  return [rpnOperations, fetchOperations];
+  return [peepholeRPN(rpnOperations), fetchOperations];
 };
 
 export const sortFetchOperations = (
   input: PrecompiledValueFetch[],
 ): PrecompiledValueFetch[] => {
   return [...input].sort((a, b) => {
-    if (a.value.type === "property" && b.value.type === "property") {
-      if (a.value.target === b.value.target) {
-        // Sort on Prop
-        return a.value.property.localeCompare(b.value.property);
-      } else {
-        // Sort on Target
-        return a.value.target.localeCompare(b.value.target);
-      }
-    }
-    return a.value.type.localeCompare(b.value.type);
+    const aSymbol =
+      typeof a.value.target === "string"
+        ? a.value.target
+        : a.value.target.symbol;
+    const bSymbol =
+      typeof b.value.target === "string"
+        ? b.value.target
+        : b.value.target.symbol;
+    const aKey = `${aSymbol}::${a.value.type}`;
+    const bKey = `${bSymbol}::${b.value.type}`;
+    return aKey.localeCompare(bKey);
   });
 };
 
@@ -659,4 +806,78 @@ export const clampScriptValueConst = (
       valueB: value,
     },
   };
+};
+
+export const maskScriptValueConst = (
+  value: ScriptValue,
+  mask: number,
+): ScriptValue => {
+  return {
+    type: "bAND",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: mask,
+    },
+  };
+};
+
+export const peepholeRPN = (
+  rpn: PrecompiledValueRPNOperation[],
+): PrecompiledValueRPNOperation[] => {
+  const optimised: PrecompiledValueRPNOperation[] = [];
+  let i = 0;
+
+  while (i < rpn.length) {
+    // Match SHR X + Add/Sub Y + SHL X
+    // commonly used in calculations involving adding tiles/pixels values to subpixel variables
+    if (
+      i + 5 < rpn.length &&
+      rpn[i].type === "number" &&
+      rpn[i + 1].type === "shr" &&
+      rpn[i + 2].type === "number" &&
+      (rpn[i + 3].type === "add" || rpn[i + 3].type === "sub") &&
+      rpn[i + 4].type === "number" &&
+      rpn[i + 5].type === "shl"
+    ) {
+      const shrAmount = (rpn[i] as { value: number }).value;
+      const addAmount = (rpn[i + 2] as { value: number }).value;
+      const op = rpn[i + 3];
+      const shlAmount = (rpn[i + 4] as { value: number }).value;
+
+      if (shrAmount === shlAmount) {
+        const combined = addAmount << shlAmount;
+        const mask = ~((1 << shlAmount) - 1) & 0xffff;
+
+        optimised.push({ type: "number", value: combined });
+        optimised.push(op);
+        optimised.push({ type: "number", value: mask });
+        optimised.push({ type: "bAND" });
+
+        i += 6;
+        continue;
+      }
+    }
+
+    // SHR N followed by SHL N = noop
+    if (
+      i + 3 < rpn.length &&
+      rpn[i].type === "number" &&
+      rpn[i + 1].type === "shr" &&
+      rpn[i + 2].type === "number" &&
+      rpn[i + 3].type === "shl"
+    ) {
+      const shrAmount = (rpn[i] as { value: number }).value;
+      const shlAmount = (rpn[i + 2] as { value: number }).value;
+      if (shrAmount === shlAmount) {
+        i += 4;
+        continue;
+      }
+    }
+
+    optimised.push(rpn[i]);
+    i++;
+  }
+
+  return optimised;
 };

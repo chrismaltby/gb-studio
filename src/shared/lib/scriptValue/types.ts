@@ -1,3 +1,4 @@
+import type { ScriptBuilderFunctionArg } from "lib/compiler/scriptBuilder";
 import { ensureTypeGenerator } from "shared/types";
 
 export const valueAtomTypes = [
@@ -159,6 +160,27 @@ export type ValueFunctionMenuItem = {
   symbol: string;
 };
 
+type OptimisedScriptValueAtom = Exclude<
+  ScriptValueAtom,
+  { type: "expression" }
+>;
+
+export type OptimisedScriptValue =
+  | RPNOperationWithOptimisedValues
+  | RPNUnaryOperationWithOptimisedValue
+  | OptimisedScriptValueAtom;
+
+type RPNOperationWithOptimisedValues = {
+  type: ValueOperatorType;
+  valueA: OptimisedScriptValue;
+  valueB: OptimisedScriptValue;
+};
+
+type RPNUnaryOperationWithOptimisedValue = {
+  type: ValueUnaryOperatorType;
+  value: OptimisedScriptValue;
+};
+
 const validProperties = [
   "xpos",
   "ypos",
@@ -307,13 +329,16 @@ export type PrecompiledValueFetch = {
   local: string;
   value:
     | {
-        type: "property";
-        target: string;
-        property: string;
+        type: "actorPosition";
+        target: string | ScriptBuilderFunctionArg;
       }
     | {
-        type: "expression";
-        value: string;
+        type: "actorDirection";
+        target: string | ScriptBuilderFunctionArg;
+      }
+    | {
+        type: "actorFrame";
+        target: string | ScriptBuilderFunctionArg;
       };
 };
 
@@ -340,6 +365,19 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "local";
+      value: string;
+      offset?: number;
+    }
+  | {
+      type: "memI16";
+      value: string;
+    }
+  | {
+      type: "memU8";
+      value: string;
+    }
+  | {
+      type: "memI8";
       value: string;
     }
   | {

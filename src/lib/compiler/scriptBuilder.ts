@@ -75,6 +75,7 @@ import {
   addScriptValueToScriptValue,
   shiftLeftScriptValueConst,
   clampScriptValueConst,
+  maskScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -85,6 +86,7 @@ import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
   pxToSubpx,
   subpxShiftForUnits,
+  subpxSnapMaskForUnits,
   tileToSubpx,
   unitsValueToSubpx,
 } from "shared/lib/helpers/subpixels";
@@ -119,7 +121,7 @@ export type ScriptBuilderEntityType =
 
 type ScriptBuilderStackVariable = string | number;
 
-type ScriptBuilderFunctionArg = {
+export type ScriptBuilderFunctionArg = {
   type: "argument";
   indirect: boolean;
   symbol: string;
@@ -313,6 +315,7 @@ type RPNHandler = {
   refVariable: (variable: ScriptBuilderVariable) => RPNHandler;
   int8: (value: number | string) => RPNHandler;
   int16: (value: number | string) => RPNHandler;
+  refMem: (type: RPNMemType, address: string) => RPNHandler;
   intConstant: (value: string) => RPNHandler;
   operator: (op: ScriptBuilderRPNOperation) => RPNHandler;
   stop: () => void;
@@ -412,12 +415,23 @@ const toASMDir = (direction: string) => {
   return ".DIR_DOWN";
 };
 
-const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
+const toASMMoveFlags = (
+  moveType: string,
+  useCollisions: boolean,
+  relative?: boolean,
+  relativeUnits?: DistanceUnitType,
+) => {
   return unionFlags(
     ([] as string[]).concat(
       useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
       moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : [],
       moveType === "diagonal" ? ".ACTOR_ATTR_DIAGONAL" : [],
+      relative && relativeUnits === "pixels"
+        ? ".ACTOR_ATTR_RELATIVE_SNAP_PX"
+        : [],
+      relative && relativeUnits === "tiles"
+        ? ".ACTOR_ATTR_RELATIVE_SNAP_TILE"
+        : [],
     ),
   );
 };
@@ -651,6 +665,13 @@ const scriptValueToSubpixels = (
   units: DistanceUnitType,
 ) => {
   return shiftLeftScriptValueConst(value, subpxShiftForUnits(units));
+};
+
+const _snapScriptValueToUnits = (
+  value: ScriptValue,
+  units: DistanceUnitType,
+) => {
+  return maskScriptValueConst(value, subpxSnapMaskForUnits(units));
 };
 
 // ------------------------
@@ -1503,169 +1524,60 @@ class ScriptBuilder {
     const localsLookup: Record<string, string> = {};
     const sortedFetchOps = sortFetchOperations(fetchOps);
 
-    let currentActor = "-1";
-    let currentProperty = "";
-    let currentPropData = "";
+    let currentTarget = "-1";
+    let currentProperty: PrecompiledValueFetch["value"]["type"] | undefined =
+      undefined;
     let prevLocalVar = "";
+
     for (const fetchOp of sortedFetchOps) {
-      const localVar = this._declareLocal("local", 1, true);
-      localsLookup[fetchOp.local] = localVar;
-      switch (fetchOp.value.type) {
-        case "property":
-          if (fetchOp.value.target === "camera") {
-            const propertyValue = fetchOp.value.property || "xpos";
-            this._addComment(`-- Fetch Camera ${propertyValue}`);
+      const targetValue = fetchOp.value.target || "player";
+      const targetSymbol =
+        typeof targetValue === "string" ? targetValue : targetValue.symbol;
+      const property = fetchOp.value.type;
+      let localVar = "";
 
-            if (propertyValue === "xpos") {
-              this._rpn()
-                .refMem(".MEM_I16", "camera_x")
-                .int16(subpxShiftForUnits("tiles"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "ypos") {
-              this._rpn()
-                .refMem(".MEM_I16", "camera_y")
-                .int16(subpxShiftForUnits("tiles"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "pxpos") {
-              this._rpn()
-                .refMem(".MEM_I16", "camera_x")
-                .int16(subpxShiftForUnits("pixels"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "pypos") {
-              this._rpn()
-                .refMem(".MEM_I16", "camera_y")
-                .int16(subpxShiftForUnits("pixels"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "xdeadzone") {
-              this._rpn()
-                .refMem(".MEM_U8", "camera_deadzone_x")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "ydeadzone") {
-              this._rpn()
-                .refMem(".MEM_U8", "camera_deadzone_y")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "xoffset") {
-              this._rpn()
-                .refMem(".MEM_U8", "camera_offset_x")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "yoffset") {
-              this._rpn()
-                .refMem(".MEM_U8", "camera_offset_y")
-                .refSet(localVar)
-                .stop();
-            } else {
-              throw new Error(`Unsupported property type "${propertyValue}"`);
-            }
-          } else {
-            const actorValue = fetchOp.value.target || "player";
-            const propertyValue = fetchOp.value.property || "xpos";
+      if (
+        targetSymbol === currentTarget &&
+        property === currentProperty &&
+        prevLocalVar !== ""
+      ) {
+        // If requested prop was fetched previously, reuse local var, don't fetch again
+        localsLookup[fetchOp.local] = prevLocalVar;
+        continue;
+      }
 
-            if (
-              actorValue === currentActor &&
-              propertyValue === currentProperty &&
-              prevLocalVar
-            ) {
-              // If requested prop was fetched previously, reuse local var, don't fetch again
-              localsLookup[fetchOp.local] = prevLocalVar;
-              delete this.localsLookup[localVar];
-              continue;
-            }
+      this._addComment(`-- Fetch ${targetSymbol} ${property}`);
 
-            this._addComment(`-- Fetch ${actorValue} ${propertyValue}`);
-            if (currentActor !== actorValue) {
-              this.actorSetById(actorValue);
-              currentActor = actorValue;
-              currentPropData = "";
-            }
-            if (propertyValue === "xpos") {
-              const actorRef = this._declareLocal("actor", 4);
-              if (currentPropData !== "pos") {
-                this._actorGetPosition(actorRef);
-                currentPropData = "pos";
-              }
-              this._rpn() //
-                .ref(this._localRef(actorRef, 1))
-                .int16(subpxShiftForUnits("tiles"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "ypos") {
-              const actorRef = this._declareLocal("actor", 4);
-              if (currentPropData !== "pos") {
-                this._actorGetPosition(actorRef);
-                currentPropData = "pos";
-              }
-              this._rpn() //
-                .ref(this._localRef(actorRef, 2))
-                .int16(subpxShiftForUnits("tiles"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "pxpos") {
-              const actorRef = this._declareLocal("actor", 4);
-              if (currentPropData !== "pos") {
-                this._actorGetPosition(actorRef);
-                currentPropData = "pos";
-              }
-              this._rpn() //
-                .ref(this._localRef(actorRef, 1))
-                .int16(subpxShiftForUnits("pixels"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "pypos") {
-              const actorRef = this._declareLocal("actor", 4);
-              if (currentPropData !== "pos") {
-                this._actorGetPosition(actorRef);
-                currentPropData = "pos";
-              }
-              this._rpn() //
-                .ref(this._localRef(actorRef, 2))
-                .int16(subpxShiftForUnits("pixels"))
-                .operator(".SHR")
-                .refSet(localVar)
-                .stop();
-            } else if (propertyValue === "direction") {
-              const actorRef = this._declareLocal("actor", 4);
-              this._actorGetDirection(actorRef, localVar);
-            } else if (propertyValue === "frame") {
-              const actorRef = this._declareLocal("actor", 4);
-              if (currentPropData !== "frame") {
-                this._actorGetAnimFrame(actorRef);
-                currentPropData = "frame";
-              }
-              this._set(localVar, this._localRef(actorRef, 1));
-            } else {
-              throw new Error(`Unsupported property type "${propertyValue}"`);
-            }
-            currentProperty = propertyValue;
-            prevLocalVar = localVar;
-          }
-          break;
-        case "expression": {
-          this._addComment(
-            `-- Evaluate expression ${this._expressionToHumanReadable(
-              fetchOp.value.value,
-            )}`,
-          );
-          this._stackPushEvaluatedExpression(fetchOp.value.value, localVar);
+      switch (property) {
+        case "actorPosition": {
+          localVar = this._declareLocal("actor_pos", 4, true);
+          this.setActorId(localVar, targetValue);
+          this._actorGetPosition(localVar);
           break;
         }
+        case "actorDirection": {
+          localVar = this._declareLocal("actor_dir", 1, true);
+          const actorRef = this._declareLocal("actor", 4);
+          this.setActorId(actorRef, targetValue);
+          this._actorGetDirection(actorRef, localVar);
+          break;
+        }
+        case "actorFrame": {
+          localVar = this._declareLocal("actor_frame", 2, true);
+          this.setActorId(localVar, targetValue);
+          this._actorGetAnimFrame(localVar);
+          break;
+        }
+
         default: {
           assertUnreachable(fetchOp.value);
         }
       }
+
+      currentTarget = targetSymbol;
+      currentProperty = property;
+      prevLocalVar = localVar;
+      localsLookup[fetchOp.local] = localVar;
     }
 
     return localsLookup;
@@ -1692,7 +1604,7 @@ class ScriptBuilder {
         }
         case "local": {
           this._markLocalUse(localsLookup[rpnOp.value]);
-          rpn.ref(localsLookup[rpnOp.value]);
+          rpn.ref(this._localRef(localsLookup[rpnOp.value], rpnOp.offset ?? 0));
           break;
         }
         case "indirect": {
@@ -1701,6 +1613,18 @@ class ScriptBuilder {
         }
         case "direction": {
           rpn.int16(toASMDir(rpnOp.value));
+          break;
+        }
+        case "memI16": {
+          rpn.refMem(".MEM_I16", rpnOp.value);
+          break;
+        }
+        case "memI8": {
+          rpn.refMem(".MEM_I8", rpnOp.value);
+          break;
+        }
+        case "memU8": {
+          rpn.refMem(".MEM_U8", rpnOp.value);
           break;
         }
         default: {
@@ -3000,14 +2924,15 @@ extern void __mute_mask_${symbol};
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
 
-    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
-      "x",
+    const optimisedX = optimiseScriptValue(
+      scriptValueToSubpixels(valueX, units),
     );
-    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
-      "y",
+    const optimisedY = optimiseScriptValue(
+      scriptValueToSubpixels(valueY, units),
     );
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(optimisedX, "x");
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(optimisedY, "y");
 
     const localsLookup = this._performFetchOperations([
       ...fetchOpsX,
@@ -3020,19 +2945,17 @@ extern void __mute_mask_${symbol};
 
     // X Value
     this._performValueRPN(rpn, rpnOpsX, localsLookup);
-    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 1));
 
     // Y Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
-    rpn.int16(0).operator(".MAX");
     rpn.refSet(this._localRef(actorRef, 2));
 
+    rpn.int16(toASMMoveFlags(moveType, useCollisions));
+    rpn.refSet(this._localRef(actorRef, 3));
+
     rpn.stop();
-    this._setConst(
-      this._localRef(actorRef, 3),
-      toASMMoveFlags(moveType, useCollisions),
-    );
+
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
@@ -3087,40 +3010,27 @@ extern void __mute_mask_${symbol};
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
 
+    const optimisedX = optimiseScriptValue(valueX);
+    const optimisedY = optimiseScriptValue(valueY);
+
+    const moveX = optimisedX.type !== "number" || optimisedX.value !== 0;
+    const moveY = optimisedY.type !== "number" || optimisedY.value !== 0;
+
+    if (!moveX && !moveY) {
+      return;
+    }
+
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
-      optimiseScriptValue(
-        scriptValueToSubpixels(
-          addScriptValueToScriptValue(
-            {
-              type: "property",
-              target: actorId,
-              property: units === "tiles" ? "xpos" : "pxpos",
-            },
-            valueX,
-          ),
-          units,
-        ),
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
       "x",
     );
+
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
-      optimiseScriptValue(
-        scriptValueToSubpixels(
-          addScriptValueToScriptValue(
-            {
-              type: "property",
-              target: actorId,
-              property: units === "tiles" ? "ypos" : "pypos",
-            },
-            valueY,
-          ),
-          units,
-        ),
-      ),
+      optimiseScriptValue(scriptValueToSubpixels(valueY, units)),
       "y",
     );
 
-    const localsLookup = this._performFetchOperations([
+    const localsLookup2 = this._performFetchOperations([
       ...fetchOpsX,
       ...fetchOpsY,
     ]);
@@ -3130,20 +3040,18 @@ extern void __mute_mask_${symbol};
     this._addComment(`-- Calculate coordinate values`);
 
     // X Value
-    this._performValueRPN(rpn, rpnOpsX, localsLookup);
-    rpn.int16(0).operator(".MAX");
+    this._performValueRPN(rpn, rpnOpsX, localsLookup2);
     rpn.refSet(this._localRef(actorRef, 1));
 
     // Y Value
-    this._performValueRPN(rpn, rpnOpsY, localsLookup);
-    rpn.int16(0).operator(".MAX");
+    this._performValueRPN(rpn, rpnOpsY, localsLookup2);
     rpn.refSet(this._localRef(actorRef, 2));
 
+    rpn.int16(toASMMoveFlags(moveType, useCollisions, true, units));
+    rpn.refSet(this._localRef(actorRef, 3));
+
     rpn.stop();
-    this._setConst(
-      this._localRef(actorRef, 3),
-      toASMMoveFlags(moveType, useCollisions),
-    );
+
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
@@ -3290,6 +3198,7 @@ extern void __mute_mask_${symbol};
       ),
       "x",
     );
+
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(
       optimiseScriptValue(
         scriptValueToSubpixels(
