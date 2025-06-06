@@ -4,7 +4,7 @@ const useOnScreen = (ref: React.MutableRefObject<Element | null>) => {
   const [isIntersecting, setIntersecting] = useState(false);
   const observer = useMemo(() => {
     return new IntersectionObserver(([entry]) =>
-      setIntersecting(entry.isIntersecting)
+      setIntersecting(entry.isIntersecting),
     );
   }, []);
 

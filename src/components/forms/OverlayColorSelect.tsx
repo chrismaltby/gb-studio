@@ -25,7 +25,7 @@ export const OverlayColorSelect: FC<OverlayColorSelectProps> = ({
       { value: "black", label: `${l10n("FIELD_BLACK")}` },
       { value: "white", label: `${l10n("FIELD_WHITE")}` },
     ],
-    []
+    [],
   );
   const currentValue = options.find((o) => o.value === value);
   return (

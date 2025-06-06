@@ -54,7 +54,7 @@ const makeBuild = async ({
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const buildToolsVersion = await fs.readFile(
     `${buildToolsPath}/tools_version`,
-    "utf8"
+    "utf8",
   );
 
   env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
@@ -137,13 +137,13 @@ const makeBuild = async ({
             {
               onLog: (msg) => warnings(msg), // LCC writes errors to stdout
               onError: (msg) => warnings(msg),
-            }
+            },
           );
           childSet.add(child);
           await completed;
           childSet.delete(child);
         }
-      })
+      }),
   );
 
   // GBSPack ---
@@ -194,7 +194,7 @@ const makeBuild = async ({
     colorOnly,
     settings.musicDriver,
     debug,
-    targetPlatform
+    targetPlatform,
   );
 
   const { completed: linkCompleted, child } = spawn(
@@ -209,7 +209,7 @@ const makeBuild = async ({
         }
         warnings(msg);
       },
-    }
+    },
   );
 
   childSet.add(child);

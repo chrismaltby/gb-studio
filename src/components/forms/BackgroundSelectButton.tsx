@@ -171,18 +171,18 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, value || "")
+    backgroundSelectors.selectById(state, value || ""),
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const numTiles = useAppSelector(
-    (state) => state.assets.backgrounds[value || ""]?.numTiles
+    (state) => state.assets.backgrounds[value || ""]?.numTiles,
   );
   const isCGBOnly = useAppSelector(
-    (state) => state.project.present.settings.colorMode === "color"
+    (state) => state.project.present.settings.colorMode === "color",
   );
   const isColor = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const dispatch = useAppDispatch();
 
@@ -193,7 +193,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           backgroundId: value,
           tilesetId,
           is360,
-        })
+        }),
       );
     }
   }, [dispatch, value, is360, tilesetId]);
@@ -288,18 +288,20 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
             <SpriteInfo>
               <SpriteInfoTitle>
                 <FormatFolderLabel label={background?.name} />
-                {isColor && background?.autoColor && background.monoOverrideId && (
-                  <Pill
-                    title={l10n("FIELD_MONO_OVERRIDE_DESC", {
-                      filename: background.filename,
-                      tilesFilename: monoOverrideForFilename(
-                        background.filename
-                      ),
-                    })}
-                  >
-                    +
-                  </Pill>
-                )}
+                {isColor &&
+                  background?.autoColor &&
+                  background.monoOverrideId && (
+                    <Pill
+                      title={l10n("FIELD_MONO_OVERRIDE_DESC", {
+                        filename: background.filename,
+                        tilesFilename: monoOverrideForFilename(
+                          background.filename,
+                        ),
+                      })}
+                    >
+                      +
+                    </Pill>
+                  )}
               </SpriteInfoTitle>
               <FlexGrow />
               <SpriteInfoRow>

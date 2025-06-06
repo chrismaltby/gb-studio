@@ -27,7 +27,7 @@ export const TileCanvas = ({
   const tileset = useAppSelector(
     (state) =>
       tilesetSelectors.selectById(state, tilesetId) ??
-      tilesetSelectors.selectAll(state)[0]
+      tilesetSelectors.selectAll(state)[0],
   );
 
   const onWorkerComplete = useCallback(
@@ -47,7 +47,7 @@ export const TileCanvas = ({
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [height, tileset, width, workerId]
+    [height, tileset, width, workerId],
   );
 
   useEffect(() => {

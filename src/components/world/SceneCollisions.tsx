@@ -30,17 +30,17 @@ const SceneCollisions = ({
   const canvas = useRef<HTMLCanvasElement>(null);
 
   const showCollisionTileValues = useAppSelector(
-    (state) => state.project.present.settings.showCollisionTileValues
+    (state) => state.project.present.settings.showCollisionTileValues,
   );
 
   const collisionLayerOpacity = useAppSelector(
     (state) =>
-      Math.floor(state.project.present.settings.collisionLayerOpacity) / 100
+      Math.floor(state.project.present.settings.collisionLayerOpacity) / 100,
   );
 
   const collisionTileDefs = useAppSelector((state) => {
     const sceneType = state.engine.sceneTypes.find(
-      (s) => s.key === sceneTypeKey
+      (s) => s.key === sceneTypeKey,
     );
     if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
     return defaultCollisionTileDefs;
@@ -50,11 +50,11 @@ const SceneCollisions = ({
     tile: CollisionTileDef,
     ctx: CanvasRenderingContext2D,
     xi: number,
-    yi: number
+    yi: number,
   ) => {
     const tileIcon = renderCollisionTileIcon(
       tile.icon ?? defaultCollisionTileIcon,
-      tile.color ?? defaultCollisionTileColor
+      tile.color ?? defaultCollisionTileColor,
     );
     ctx.drawImage(
       tileIcon,
@@ -65,7 +65,7 @@ const SceneCollisions = ({
       xi * TILE_SIZE,
       yi * TILE_SIZE,
       TILE_SIZE,
-      TILE_SIZE
+      TILE_SIZE,
     );
   };
 
@@ -73,7 +73,7 @@ const SceneCollisions = ({
     letter: string,
     ctx: CanvasRenderingContext2D,
     x: number,
-    y: number
+    y: number,
   ) => {
     ctx.textBaseline = "middle";
     const tx = x * TILE_SIZE;

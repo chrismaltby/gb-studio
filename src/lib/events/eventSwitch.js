@@ -95,7 +95,7 @@ const fields = [].concat(
       ],
       type: "events",
     },
-  ]
+  ],
 );
 
 const compile = (input, helpers) => {

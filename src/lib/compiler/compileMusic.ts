@@ -53,7 +53,7 @@ const compileModTrack = async (
     cacheRoot,
     progress = (_msg) => {},
     warnings = (_msg) => {},
-  }: CompileModTrackOptions
+  }: CompileModTrackOptions,
 ): Promise<string> => {
   const env = { ...process.env };
 
@@ -68,7 +68,7 @@ const compileModTrack = async (
 
   const checksum = await checksumFile(modPath);
   const buildChecksum = checksumString(
-    checksum + buildToolsVersion + JSON.stringify(track.settings)
+    checksum + buildToolsVersion + JSON.stringify(track.settings),
   );
   const cachedFilePath = `${cacheRoot}/${buildChecksum}`;
 
@@ -122,7 +122,7 @@ const compileModTrack = async (
 
   const output = (await readFile(tmpFilePath, "utf8")).replace(
     /#pragma bank=255/,
-    `#pragma bank 255\n\n#include "gbs_types.h"\n\nBANKREF(MUSICTRACKNAME_Data)\n`
+    `#pragma bank 255\n\n#include "gbs_types.h"\n\nBANKREF(MUSICTRACKNAME_Data)\n`,
   );
 
   await writeFile(cachedFilePath, output);
@@ -139,14 +139,14 @@ const compileModTracks = async (
     output,
     progress = (_msg) => {},
     warnings = (_msg) => {},
-  }: CompileMusicOptions
+  }: CompileMusicOptions,
 ): Promise<void> => {
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
   ensureDir(cacheRoot);
   const buildToolsVersion = await readFile(
     `${buildToolsPath}/tools_version`,
-    "utf8"
+    "utf8",
   );
 
   for (const track of tracks) {
@@ -160,14 +160,14 @@ const compileModTracks = async (
     });
     output[`music/${track.dataName}_Data.c`] = fileData.replace(
       /MUSICTRACKNAME/g,
-      track.dataName
+      track.dataName,
     );
   }
 };
 
 const compileUgeTrack = async (
   track: PrecompiledMusicTrack,
-  { projectRoot }: CompileHugeTrackOptions
+  { projectRoot }: CompileHugeTrackOptions,
 ): Promise<string> => {
   const ugePath = assetFilename(projectRoot, "music", track);
   const data = await readFile(ugePath);
@@ -187,14 +187,14 @@ const compileUgeTracks = async (
     output,
     progress = (_msg) => {},
     warnings = (_msg) => {},
-  }: CompileMusicOptions
+  }: CompileMusicOptions,
 ): Promise<void> => {
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
   ensureDir(cacheRoot);
   const buildToolsVersion = await readFile(
     `${buildToolsPath}/tools_version`,
-    "utf8"
+    "utf8",
   );
 
   for (const track of tracks) {
@@ -216,7 +216,7 @@ export const compileMusicHeader = (tracks: PrecompiledMusicTrack[]) => {
 ${tracks
   .map(
     (track) => `extern const void __bank_${track.dataName}_Data;
-extern const void ${track.dataName}_Data;`
+extern const void ${track.dataName}_Data;`,
   )
   .join("\n")}
 
@@ -226,7 +226,7 @@ extern const void ${track.dataName}_Data;`
 
 export const compileMusicTracks = (
   tracks: PrecompiledMusicTrack[],
-  options: CompileMusicOptions
+  options: CompileMusicOptions,
 ) => {
   if (options.engine === "gbt") {
     return compileModTracks(tracks, options);

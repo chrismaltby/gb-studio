@@ -12,7 +12,7 @@ type ThrottleableAction = {
 };
 
 const isThrottleableAction = (
-  action: unknown
+  action: unknown,
 ): action is ThrottleableAction => {
   if (typeof action !== "object" || action === null) return false;
   const actionWithMeta = action as { meta?: unknown };
@@ -29,8 +29,10 @@ const isThrottleableAction = (
   );
 };
 
-const throttled: Record<string, DebouncedFunc<Dispatch<ThrottleableAction>>> =
-  {};
+const throttled: Record<
+  string,
+  DebouncedFunc<Dispatch<ThrottleableAction>>
+> = {};
 
 const throttleMiddleware: Middleware<Dispatch, RootState> =
   (_store) => (next) => async (action) => {

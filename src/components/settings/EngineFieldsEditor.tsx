@@ -35,7 +35,7 @@ export interface EngineFieldInputProps {
 
 const fieldMin = (
   customMin: number | undefined,
-  cType: EngineFieldCType
+  cType: EngineFieldCType,
 ): number => {
   let min = 0;
   if (cType === "BYTE") {
@@ -52,7 +52,7 @@ const fieldMin = (
 
 const fieldMax = (
   customMax: number | undefined,
-  cType: EngineFieldCType
+  cType: EngineFieldCType,
 ): number => {
   let max = 255;
   if (cType === "BYTE") {
@@ -167,7 +167,7 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
       dispatch(
         removeEngineFieldValue({
           engineFieldId: field.key,
-        })
+        }),
       );
     });
   };
@@ -202,7 +202,7 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
                       editEngineFieldValue({
                         engineFieldId: field.key,
                         value: e,
-                      })
+                      }),
                     );
                   }}
                 />

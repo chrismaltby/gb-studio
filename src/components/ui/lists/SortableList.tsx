@@ -22,7 +22,7 @@ interface SortableListProps<T> {
       isDragging: boolean;
       isDraggingAny: boolean;
       isOver: boolean;
-    }
+    },
   ) => JSX.Element;
   extractKey: (item: T) => string;
   onSelect: (item: T, e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -79,7 +79,7 @@ export const SortableList = <T,>({
         }
       }
     },
-    [hasFocus, onKeyDown, orientation, items, selectedIndex, onSelect]
+    [hasFocus, onKeyDown, orientation, items, selectedIndex, onSelect],
   );
 
   const throttledNext = useRef(
@@ -89,7 +89,7 @@ export const SortableList = <T,>({
       if (nextItem) {
         onSelect(nextItem);
       }
-    }, 150)
+    }, 150),
   );
 
   const throttledPrev = useRef(
@@ -99,7 +99,7 @@ export const SortableList = <T,>({
       if (prevItem) {
         onSelect(prevItem);
       }
-    }, 150)
+    }, 150),
   );
 
   useEffect(() => {

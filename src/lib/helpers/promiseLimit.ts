@@ -32,14 +32,14 @@ class Semaphore {
 
 const promiseLimit = async <T>(
   n: number,
-  list: (() => Promise<T>)[]
+  list: (() => Promise<T>)[],
 ): Promise<T[]> => {
   const semaphore = new Semaphore(n);
   const results: T[] = [];
 
   const limitedFn = async (
     fn: () => Promise<T>,
-    index: number
+    index: number,
   ): Promise<void> => {
     await semaphore.acquire();
     try {

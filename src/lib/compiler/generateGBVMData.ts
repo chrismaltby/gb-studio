@@ -231,7 +231,7 @@ export const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
 export const maybeScriptDependency = (
-  scriptSymbol: string | null | undefined
+  scriptSymbol: string | null | undefined,
 ) => (scriptSymbol ? scriptSymbol : []);
 
 export const toASMTriggerScriptFlags = (trigger: Trigger) => {
@@ -272,7 +272,7 @@ const toDataHeader = (type: string, symbol: string, comment: string) =>
 #include "gbs_types.h"
 
 ${bankRefExtern(symbol)}
-extern ${type} ${symbol};`
+extern ${type} ${symbol};`,
   );
 
 const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
@@ -283,7 +283,7 @@ const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
 #include "gbs_types.h"
 
 ${bankRefExtern(symbol)}
-extern ${type} ${symbol}[];`
+extern ${type} ${symbol}[];`,
   );
 
 export const sceneActorsSymbol = (sceneSymbol: string): string =>
@@ -307,7 +307,7 @@ export const scriptSymbol = (sceneIndex: number): string =>
 export const toStructData = <T extends Record<string, unknown>>(
   object: T,
   indent = 0,
-  perLine = 16
+  perLine = 16,
 ): string => {
   const keys = Object.keys(object) as unknown as [keyof T];
   return keys
@@ -330,7 +330,7 @@ ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
             return `{\n${toStructData(
               v,
               indent + 2 * INDENT_SPACES,
-              perLine
+              perLine,
             )}\n${" ".repeat(indent + INDENT_SPACES)}}`;
           }
           return v;
@@ -338,8 +338,8 @@ ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
         .join(
           r[0] && r[0] instanceof Object
             ? `,\n${" ".repeat(indent + INDENT_SPACES)}`
-            : ", "
-        )
+            : ", ",
+        ),
   )
   .join(",\n")}
 ${" ".repeat(indent)}}`;
@@ -349,7 +349,7 @@ ${" ".repeat(indent)}}`;
 ${toStructData(
   object[key] as Record<string, unknown>,
   indent + INDENT_SPACES,
-  perLine
+  perLine,
 )}
 ${" ".repeat(indent)}}`;
       }
@@ -364,7 +364,7 @@ export const toStructDataFile = <T extends Record<string, unknown>>(
   symbol: string,
   comment: string,
   object: T,
-  dependencies?: string[]
+  dependencies?: string[],
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
@@ -389,7 +389,7 @@ export const toStructArrayDataFile = <T extends Record<string, unknown>>(
   symbol: string,
   comment: string,
   array: Array<T>,
-  dependencies?: string[]
+  dependencies?: string[],
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
@@ -409,7 +409,7 @@ ${array
   .map(
     (object) => `${" ".repeat(INDENT_SPACES)}{
 ${toStructData(object, 2 * INDENT_SPACES)}
-${" ".repeat(INDENT_SPACES)}}`
+${" ".repeat(INDENT_SPACES)}}`,
   )
   .join(",\n")}
 };
@@ -421,7 +421,7 @@ export const toArrayDataFile = (
   comment: string,
   array: (string | number)[],
   perLine: number,
-  dependencies?: string[]
+  dependencies?: string[],
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
@@ -461,7 +461,7 @@ export const parallaxStep = (
 };
 
 export const compileParallax = (
-  parallax: SceneParallaxLayer[] | undefined
+  parallax: SceneParallaxLayer[] | undefined,
 ): string[] | undefined => {
   if (parallax) {
     let row = 0;
@@ -502,7 +502,7 @@ export const compileScene = (
     bgPalette: number;
     actorsPalette: number;
     eventPtrs: PrecompiledSceneEventPtrs[];
-  }
+  },
 ) => {
   const playerSpriteSymbol = scene.playerSprite
     ? scene.playerSprite.symbol
@@ -520,7 +520,7 @@ export const compileScene = (
       background: toFarPtr(scene.background.symbol),
       collisions: toFarPtr(sceneCollisionsSymbol(scene.symbol)),
       parallax_rows: compileParallax(
-        scene.width > SCREEN_WIDTH ? scene.parallax : undefined
+        scene.width > SCREEN_WIDTH ? scene.parallax : undefined,
       ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
@@ -561,19 +561,19 @@ export const compileScene = (
       scene.sprites.length > 0 ? sceneSpritesSymbol(scene.symbol) : [],
       scene.projectiles.length > 0 ? sceneProjectilesSymbol(scene.symbol) : [],
       maybeScriptDependency(eventPtrs[sceneIndex].start),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1)
-    )
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1),
+    ),
   );
 };
 
 export const compileSceneHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toDataHeader(
     SCENE_TYPE,
     scene.symbol,
-    `// Scene: ${sceneName(scene, sceneIndex)}`
+    `// Scene: ${sceneName(scene, sceneIndex)}`,
   );
 
 export const compileBounds = ({
@@ -608,7 +608,7 @@ export const compileSceneActors = (
   scene: PrecompiledScene,
   sceneIndex: number,
   sprites: PrecompiledSprite[],
-  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] }
+  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] },
 ) => {
   const events = eventPtrs[sceneIndex];
 
@@ -640,7 +640,7 @@ export const compileSceneActors = (
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           reserve_tiles: scene.actorsExclusiveLookup[actor.id] ?? 0,
         };
-      })
+      }),
     ),
     // Dependencies
     flatten(
@@ -650,27 +650,27 @@ export const compileSceneActors = (
         return ([] as string[]).concat(
           sprite.symbol,
           maybeScriptDependency(events.actorsMovement[actorIndex]),
-          maybeScriptDependency(events.actors[actorIndex])
+          maybeScriptDependency(events.actors[actorIndex]),
         );
-      })
-    )
+      }),
+    ),
   );
 };
 
 export const compileSceneActorsHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataHeader(
     ACTOR_TYPE,
     sceneActorsSymbol(scene.symbol),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
   );
 
 export const compileSceneTriggers = (
   scene: PrecompiledScene,
   sceneIndex: number,
-  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] }
+  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] },
 ) =>
   toStructArrayDataFile(
     TRIGGER_TYPE,
@@ -689,25 +689,25 @@ export const compileSceneTriggers = (
     flatten(
       scene.triggers.map((trigger, triggerIndex) => {
         return ([] as string[]).concat(
-          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex])
+          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex]),
         );
-      })
-    )
+      }),
+    ),
   );
 
 export const compileSceneTriggersHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataHeader(
     TRIGGER_TYPE,
     sceneTriggersSymbol(scene.symbol),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`,
   );
 
 export const compileSceneSprites = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataFile(
     FARPTR_TYPE,
@@ -715,23 +715,23 @@ export const compileSceneSprites = (
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`,
     scene.sprites.map((sprite) => toFarPtr(sprite.symbol)),
     1,
-    scene.sprites.map((sprite) => sprite.symbol)
+    scene.sprites.map((sprite) => sprite.symbol),
   );
 
 export const compileSceneSpritesHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataHeader(
     FARPTR_TYPE,
     sceneSpritesSymbol(scene.symbol),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`,
   );
 
 export const compileSceneProjectiles = (
   scene: PrecompiledScene,
   sceneIndex: number,
-  sprites: PrecompiledSprite[]
+  sprites: PrecompiledSprite[],
 ) =>
   toStructArrayDataFile(
     PROJECTILE_TYPE,
@@ -743,7 +743,7 @@ export const compileSceneProjectiles = (
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         if (!sprite) return null;
         const stateIndex = sprite.states.findIndex(
-          (state) => state.name === projectile.spriteStateId
+          (state) => state.name === projectile.spriteStateId,
         );
         const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
         return {
@@ -760,7 +760,7 @@ export const compileSceneProjectiles = (
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: pxToSubpx(projectile.initialOffset || 0),
         };
-      })
+      }),
     ),
     // Dependencies
     flatten(
@@ -768,23 +768,23 @@ export const compileSceneProjectiles = (
         const sprite =
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         return sprite.symbol;
-      })
-    )
+      }),
+    ),
   );
 
 export const compileSceneProjectilesHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataHeader(
     FARPTR_TYPE,
     sceneProjectilesSymbol(scene.symbol),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`,
   );
 
 export const compileGlobalProjectiles = (
   projectiles: GlobalProjectiles,
-  sprites: PrecompiledSprite[]
+  sprites: PrecompiledSprite[],
 ) =>
   toStructArrayDataFile(
     PROJECTILE_TYPE,
@@ -796,7 +796,7 @@ export const compileGlobalProjectiles = (
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         if (!sprite) return null;
         const stateIndex = sprite.states.findIndex(
-          (state) => state.name === projectile.spriteStateId
+          (state) => state.name === projectile.spriteStateId,
         );
         const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
         return {
@@ -813,7 +813,7 @@ export const compileGlobalProjectiles = (
           animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: pxToSubpx(projectile.initialOffset || 0),
         };
-      })
+      }),
     ),
     // Dependencies
     flatten(
@@ -821,40 +821,40 @@ export const compileGlobalProjectiles = (
         const sprite =
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         return sprite.symbol;
-      })
-    )
+      }),
+    ),
   );
 
 export const compileGlobalProjectilesHeader = (
-  projectiles: GlobalProjectiles
+  projectiles: GlobalProjectiles,
 ) =>
   toArrayDataHeader(
     FARPTR_TYPE,
     projectiles.symbol,
-    `// Global Projectiles: ${projectiles.symbol}`
+    `// Global Projectiles: ${projectiles.symbol}`,
   );
 
 export const compileSceneCollisions = (
   scene: PrecompiledScene,
   sceneIndex: number,
-  collisions: number[]
+  collisions: number[],
 ) =>
   toArrayDataFile(
     DATA_TYPE,
     sceneCollisionsSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`,
     collisions.map(toHex),
-    scene.width
+    scene.width,
   );
 
 export const compileSceneCollisionsHeader = (
   scene: PrecompiledScene,
-  sceneIndex: number
+  sceneIndex: number,
 ) =>
   toArrayDataHeader(
     DATA_TYPE,
     sceneCollisionsSymbol(scene.symbol),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`,
   );
 
 export const compileTileset = (tileset: PrecompiledTileData) =>
@@ -865,9 +865,9 @@ export const compileTileset = (tileset: PrecompiledTileData) =>
     {
       n_tiles: Math.ceil(tileset.data.length / 16),
       tiles: Array.from(tileset.data.length > 0 ? tileset.data : [0]).map(
-        toHex
+        toHex,
       ),
-    }
+    },
   );
 
 export const compileTilesetHeader = (tileset: PrecompiledTileData) =>
@@ -879,12 +879,12 @@ export const compileSpriteSheet = (
   {
     statesOrder,
     stateReferences,
-  }: { statesOrder: string[]; stateReferences: string[] }
+  }: { statesOrder: string[]; stateReferences: string[] },
 ) => {
   const stateNames = spriteSheet.states.map((state) => state.name);
   const maxState = Math.max.apply(
     null,
-    stateNames.map((state) => statesOrder.indexOf(state))
+    stateNames.map((state) => statesOrder.indexOf(state)),
   );
 
   return `#pragma bank 255
@@ -905,7 +905,7 @@ ${stateReferences
     (state, n) =>
       `#define SPRITE_${spriteSheetIndex}_${state} ${
         Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
-      }`
+      }`,
   )
   .join("\n")}
 
@@ -934,7 +934,7 @@ ${spriteSheet.animationOffsets
   .map(
     (object) => `${" ".repeat(INDENT_SPACES)}{
 ${toStructData(object as unknown as Record<string, unknown>, 2 * INDENT_SPACES)}
-${" ".repeat(INDENT_SPACES)}}`
+${" ".repeat(INDENT_SPACES)}}`,
   )
   .join(",\n")}
 };
@@ -962,7 +962,7 @@ ${toStructData(
       : "{ NULL, NULL }",
   },
 
-  INDENT_SPACES
+  INDENT_SPACES,
 )}
 };
 `;
@@ -972,7 +972,7 @@ export const compileSpriteSheetHeader = (spriteSheet: PrecompiledSprite) =>
   toDataHeader(
     SPRITESHEET_TYPE,
     spriteSheet.symbol,
-    `// SpriteSheet: ${spriteSheet.name}`
+    `// SpriteSheet: ${spriteSheet.name}`,
   );
 
 export const compileBackground = (background: PrecompiledBackground) => {
@@ -1000,8 +1000,8 @@ export const compileBackground = (background: PrecompiledBackground) => {
       background.tileset?.symbol ?? [],
       background.cgbTileset?.symbol ?? [],
       background.tilemap.symbol,
-      isColor ? background.tilemapAttr.symbol : []
-    )
+      isColor ? background.tilemapAttr.symbol : [],
+    ),
   );
 };
 
@@ -1009,7 +1009,7 @@ export const compileBackgroundHeader = (background: PrecompiledBackground) =>
   toDataHeader(
     BACKGROUND_TYPE,
     background.symbol,
-    `// Background: ${background.name}`
+    `// Background: ${background.name}`,
   );
 
 export const compileTilemap = (tilemap: PrecompiledTilemapData) => {
@@ -1018,7 +1018,7 @@ export const compileTilemap = (tilemap: PrecompiledTilemapData) => {
     tilemap.symbol,
     `// Tilemap ${tilemap.symbol}`,
     Array.from(tilemap.data).map(wrap8Bit).map(toHex),
-    16
+    16,
   );
 };
 
@@ -1031,14 +1031,14 @@ export const compileTilemapAttr = (tilemapAttr: PrecompiledTileData) =>
     tilemapAttr.symbol,
     `// Tilemap Attr ${tilemapAttr.symbol}`,
     Array.from(tilemapAttr.data).map(toHex),
-    16
+    16,
   );
 
 export const compileTilemapAttrHeader = (tilemapAttr: PrecompiledTileData) =>
   toArrayDataHeader(
     DATA_TYPE,
     tilemapAttr.symbol,
-    `// Tilemap Attr ${tilemapAttr.symbol}`
+    `// Tilemap Attr ${tilemapAttr.symbol}`,
   );
 
 export const compileColor = (hex: string): string => {
@@ -1050,7 +1050,7 @@ export const compileColor = (hex: string): string => {
 
 export const compilePalette = (
   palette: PrecompiledPalette,
-  paletteIndex: number
+  paletteIndex: number,
 ) => `#pragma bank 255
 
 // Palette: ${paletteIndex}
@@ -1065,7 +1065,7 @@ ${PALETTE_TYPE} ${paletteSymbol(paletteIndex)} = {
 ${palette.dmg
   .map(
     (paletteColors: string[]) =>
-      `        DMG_PALETTE(${paletteColors.join(", ")})`
+      `        DMG_PALETTE(${paletteColors.join(", ")})`,
   )
   .join(",\n")}
     }${
@@ -1075,7 +1075,7 @@ ${palette.dmg
 ${palette.colors
   .map(
     (paletteColors: string[]) =>
-      `        CGB_PALETTE(${paletteColors.map(compileColor).join(", ")})`
+      `        CGB_PALETTE(${paletteColors.map(compileColor).join(", ")})`,
   )
   .join(",\n")}
     }`
@@ -1086,12 +1086,12 @@ ${palette.colors
 
 export const compilePaletteHeader = (
   palette: PrecompiledPalette,
-  paletteIndex: number
+  paletteIndex: number,
 ) =>
   toDataHeader(
     PALETTE_TYPE,
     paletteSymbol(paletteIndex),
-    `// Palette: ${paletteIndex}`
+    `// Palette: ${paletteIndex}`,
   );
 
 export const compileFont = (font: PrecompiledFontData) => `#pragma bank 255
@@ -1141,7 +1141,7 @@ export const compileFontHeader = (font: PrecompiledFontData) =>
 
 export const compileAvatarFont = (
   avatars: AvatarData[],
-  avatarFontIndex: number
+  avatarFontIndex: number,
 ) => `#pragma bank 255
 
 // Avatar Font ${avatarFontIndex}
@@ -1151,7 +1151,7 @@ export const compileAvatarFont = (
 static const UBYTE ${avatarFontSymbol(avatarFontIndex)}_table[] = {
 ${chunk(
   Array.from(Array(4 * avatars.length)).map((_, i) => toHex(i)),
-  16
+  16,
 )
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
@@ -1177,7 +1177,7 @@ export const compileAvatarFontHeader = (avatarFontIndex: number) =>
   toArrayDataHeader(
     DATA_TYPE,
     avatarFontSymbol(avatarFontIndex),
-    `// Avatar Font ${avatarFontIndex}`
+    `// Avatar Font ${avatarFontIndex}`,
   );
 
 export const compileFrameImage = (data: Uint8Array) =>
@@ -1186,7 +1186,7 @@ export const compileFrameImage = (data: Uint8Array) =>
     "frame_image",
     `// Frame`,
     Array.from(data).map(toHex),
-    16
+    16,
   );
 
 export const compileFrameImageHeader = (_data: Uint8Array) =>
@@ -1198,7 +1198,7 @@ export const compileEmote = (emote: PrecompiledEmote) =>
     emote.symbol,
     `// Emote ${emote.name}`,
     Array.from(emote.data).map(toHex),
-    16
+    16,
   );
 
 export const compileEmoteHeader = (emote: PrecompiledEmote) =>
@@ -1210,7 +1210,7 @@ export const compileCursorImage = (data: Uint8Array) =>
     "cursor_image",
     `// Cursor`,
     Array.from(data).map(toHex),
-    16
+    16,
   );
 
 export const compileCursorImageHeader = (_data: Uint8Array) =>
@@ -1221,7 +1221,7 @@ export const compileScriptHeader = (scriptName: string) =>
 
 export const replaceScriptSymbols = (
   script: string,
-  replaceSymbols: Record<string, string>
+  replaceSymbols: Record<string, string>,
 ) => {
   let newScript = script;
   for (const key in replaceSymbols) {
@@ -1233,10 +1233,10 @@ export const replaceScriptSymbols = (
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
-  stateReferences: string[]
+  stateReferences: string[],
 ) => {
   const variables = Object.values(variableAliasLookup).map(
-    (v) => v?.symbol
+    (v) => v?.symbol,
   ) as string[];
   return (
     variables
@@ -1262,7 +1262,7 @@ export const compileGameGlobalsInclude = (
 export const compileGameGlobalsHeader = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
-  stateReferences: string[]
+  stateReferences: string[],
 ) => {
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
@@ -1345,7 +1345,7 @@ export const compileSceneFnPtrs = (sceneTypes: SceneTypeSchema[]) => {
 export const compileStateDefines = (
   engineFields: EngineFieldSchema[],
   engineFieldValues: EngineFieldValue[],
-  usedSceneTypeIds: string[]
+  usedSceneTypeIds: string[],
 ) => {
   return (
     `#ifndef STATES_DEFINES_H\n#define STATES_DEFINES_H\n\n` +
@@ -1357,11 +1357,11 @@ export const compileStateDefines = (
           engineField.cType === "define" &&
           !engineField.file &&
           (!engineField.sceneType ||
-            usedSceneTypeIds.includes(engineField.sceneType))
+            usedSceneTypeIds.includes(engineField.sceneType)),
       )
       .map((engineField, defineIndex, defineFields) => {
         const engineValue = engineFieldValues.find(
-          (v) => v.id === engineField.key
+          (v) => v.id === engineField.key,
         );
         const value =
           engineValue && engineValue.value !== undefined

@@ -24,7 +24,7 @@ interface NavigatorItem {
 
 const constantToNavigatorItem = (
   constant: Constant,
-  index: number
+  index: number,
 ): NavigatorItem => ({
   id: constant.id,
   name: constantName(constant, index),
@@ -64,9 +64,9 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
         .filter(
           (value) =>
             searchTermUpperCase.length === 0 ||
-            value.name.toLocaleUpperCase().includes(searchTermUpperCase)
+            value.name.toLocaleUpperCase().includes(searchTermUpperCase),
         )
-        .sort(sortByName)
+        .sort(sortByName),
     );
   }, [searchTerm, constants]);
 
@@ -82,7 +82,7 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameComplete = useCallback(
@@ -92,12 +92,12 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
           entitiesActions.renameConstant({
             constantId: renameId,
             name,
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -121,7 +121,7 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderLabel = useCallback(
@@ -137,7 +137,7 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
         </FlexRow>
       );
     },
-    [constantsLookup]
+    [constantsLookup],
   );
 
   return (

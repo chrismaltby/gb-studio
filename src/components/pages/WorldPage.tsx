@@ -32,10 +32,10 @@ const WorldPage = () => {
   const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
-    (state) => state.editor.worldSidebarWidth
+    (state) => state.editor.worldSidebarWidth,
   );
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -43,10 +43,10 @@ const WorldPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
   const showNavigator = useAppSelector(
-    (state) => state.project.present.settings.showNavigator
+    (state) => state.project.present.settings.showNavigator,
   );
   const debuggerEnabled = useAppSelector(
-    (state) => state.project.present.settings.debuggerEnabled
+    (state) => state.project.present.settings.debuggerEnabled,
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -55,7 +55,7 @@ const WorldPage = () => {
     minSize: 50,
     maxSize: Math.max(
       101,
-      windowWidth - minCenterPaneWidth - NAVIGATOR_MIN_WIDTH
+      windowWidth - minCenterPaneWidth - NAVIGATOR_MIN_WIDTH,
     ),
     onResize: (_v) => {
       recalculateRightColumn();
@@ -100,13 +100,13 @@ const WorldPage = () => {
           dispatch(
             settingsActions.editSettings({
               debuggerEnabled: false,
-            })
+            }),
           );
         } else if (height > 30 && !debuggerEnabled) {
           dispatch(
             settingsActions.editSettings({
               debuggerEnabled: true,
-            })
+            }),
           );
         }
       },
@@ -118,14 +118,14 @@ const WorldPage = () => {
       dispatch(
         settingsActions.editSettings({
           debuggerEnabled: true,
-        })
+        }),
       );
     } else {
       setDebuggerPaneSize(30);
       dispatch(
         settingsActions.editSettings({
           debuggerEnabled: false,
-        })
+        }),
       );
     }
   }, [debuggerPaneHeight, dispatch, setDebuggerPaneSize, windowHeight]);
@@ -172,18 +172,18 @@ const WorldPage = () => {
     debounce((leftPaneWidth: number, rightPaneWidth: number) => {
       dispatch(editorActions.resizeWorldSidebar(rightPaneWidth));
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(
     () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
-    [leftPaneWidth, rightPaneWidth]
+    [leftPaneWidth, rightPaneWidth],
   );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(
       leftPaneWidth,
-      windowWidth - rightPaneWidth - minCenterPaneWidth
+      windowWidth - rightPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== leftPaneWidth) {
       setLeftPaneSize(newWidth);
@@ -193,7 +193,7 @@ const WorldPage = () => {
   const recalculateRightColumn = () => {
     const newWidth = Math.min(
       rightPaneWidth,
-      windowWidth - leftPaneWidth - minCenterPaneWidth
+      windowWidth - leftPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== rightPaneWidth) {
       setRightPaneSize(newWidth);

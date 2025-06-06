@@ -82,7 +82,7 @@ export const SequenceEditorFwd = ({
       dispatch(trackerActions.setSelectedPatternCells([]));
       dispatch(editorActions.setSelectedSequence(sequenceId));
     },
-    [dispatch]
+    [dispatch],
   );
   useEffect(() => {
     if (sequence) {
@@ -102,7 +102,7 @@ export const SequenceEditorFwd = ({
   }
 
   const sequenceOptions: SequenceOption[] = Array.from(
-    Array(patterns || 0).keys()
+    Array(patterns || 0).keys(),
   )
     .map((i) => ({
       value: i,
@@ -121,10 +121,10 @@ export const SequenceEditorFwd = ({
         trackerDocumentActions.editSequence({
           sequenceIndex: index,
           sequenceId: newValue.value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onAddSequence = useCallback(() => {
@@ -133,7 +133,7 @@ export const SequenceEditorFwd = ({
 
   const onRemoveSequence = useCallback(() => {
     dispatch(
-      trackerDocumentActions.removeSequence({ sequenceIndex: sequenceId })
+      trackerDocumentActions.removeSequence({ sequenceIndex: sequenceId }),
     );
   }, [dispatch, sequenceId]);
 
@@ -149,7 +149,7 @@ export const SequenceEditorFwd = ({
         e.preventDefault();
         const id = sequenceId - 1;
         setSequenceId(
-          ((id % sequence.length) + sequence.length) % sequence.length
+          ((id % sequence.length) + sequence.length) % sequence.length,
         );
       } else if (
         (direction === "vertical" && e.key === "ArrowDown") ||
@@ -158,7 +158,7 @@ export const SequenceEditorFwd = ({
         e.preventDefault();
         const id = sequenceId + 1;
         setSequenceId(
-          ((id % sequence.length) + sequence.length) % sequence.length
+          ((id % sequence.length) + sequence.length) % sequence.length,
         );
       } else if (e.key === "Backspace" || e.key === "Delete") {
         onRemoveSequence();
@@ -172,7 +172,7 @@ export const SequenceEditorFwd = ({
       sequence,
       sequenceId,
       setSequenceId,
-    ]
+    ],
   );
 
   useEffect(() => {

@@ -31,7 +31,7 @@ function playMOD(filename: string, settings: MusicSettings) {
   if (modPlayer) {
     modPlayer.loadModule(
       `gbs://project/${filename}`,
-      !!settings.disableSpeedConversion
+      !!settings.disableSpeedConversion,
     );
   }
 }

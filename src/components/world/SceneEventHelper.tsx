@@ -112,7 +112,8 @@ const ScanlinePos = styled.div`
     width: 100%;
     height: 1px;
     background: rgba(116, 216, 58, 0.8);
-    box-shadow: 0px 0px 2px rgba(148, 239, 218, 0.9),
+    box-shadow:
+      0px 0px 2px rgba(148, 239, 218, 0.9),
       0px 0px 10px rgba(0, 249, 106, 0.8);
   }
   &:after {
@@ -131,7 +132,8 @@ const ScanlinePos = styled.div`
 const BoundsMarker = styled.div`
   position: absolute;
   background: rgba(255, 193, 7, 0.58);
-  box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset,
+  box-shadow:
+    0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset,
     0 0 1000px 1000px rgba(0, 0, 0, 0.6);
 `;
 
@@ -146,7 +148,7 @@ const PosOffset = styled.div`
 
 export const getArgValue = (
   arg: unknown,
-  constantsLookup: Record<string, Constant>
+  constantsLookup: Record<string, Constant>,
 ): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
   if (unionArg && unionArg.value !== undefined) {
@@ -164,7 +166,7 @@ export const getArgValue = (
 
 export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
 
   const editorType = useAppSelector((state) => state.editor.type);
@@ -174,14 +176,14 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const editorTriggerId = editorType === "trigger" ? entityId : undefined;
 
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
 
   const editorActor = useAppSelector((state) =>
-    actorSelectors.selectById(state, editorActorId ?? "")
+    actorSelectors.selectById(state, editorActorId ?? ""),
   );
   const editorTrigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, editorTriggerId ?? "")
+    triggerSelectors.selectById(state, editorTriggerId ?? ""),
   );
 
   const eventId = useAppSelector((state) => state.editor.eventId);
@@ -190,7 +192,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   const sceneEventVisible = eventId && sceneId === scene.id;
   const event = sceneEventVisible ? scriptEventsLookup[eventId] : undefined;
   const scriptEventDef = useAppSelector(
-    (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+    (state) => state.scriptEventDefs.lookup[event?.command ?? ""],
   );
 
   const constantsLookup = useAppSelector(constantSelectors.selectEntities);
@@ -199,7 +201,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     (arg: unknown): unknown => {
       return getArgValue(arg, constantsLookup);
     },
-    [constantsLookup]
+    [constantsLookup],
   );
 
   const args = useMemo(() => {
@@ -265,7 +267,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
     const tileSize = ensureMaybeString(
       argValue(args[scriptEventDef.helper.tileSize ?? ""]),
-      ""
+      "",
     );
     let tileWidth = 1;
     let tileHeight = 1;
@@ -299,7 +301,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   if (scriptEventDef.helper.type === "distance") {
     const distance = ensureMaybeNumber(
       argValue(args[scriptEventDef.helper.distance]),
-      0
+      0,
     );
 
     if (distance === undefined) {
@@ -308,7 +310,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
 
     const otherActorId = ensureMaybeString(
       argValue(args[scriptEventDef.helper.actorId]),
-      ""
+      "",
     );
     if (otherActorId === undefined) {
       return <div />;
@@ -418,7 +420,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
       scriptEventDef.helper.units
         ? argValue(args[scriptEventDef.helper.units])
         : undefined,
-      "pixels"
+      "pixels",
     );
     console.log({ args, units });
     if (y === undefined) {
@@ -448,7 +450,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
       ensureMaybeNumber(argValue(args[scriptEventDef.helper.height]), 0) ?? 8;
     const actorId = ensureMaybeString(
       argValue(args[scriptEventDef.helper.actorId ?? ""]),
-      ""
+      "",
     );
 
     if (actorId === undefined || (x === undefined && y === undefined)) {
@@ -484,17 +486,17 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     const text = ensureString(argValue(args[scriptEventDef.helper.text]), "");
     const location = ensureString(
       argValue(args[scriptEventDef.helper.location]),
-      "background"
+      "background",
     );
     const x = ensureNumber(
       argValue(args[scriptEventDef.helper.x]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.x]?.defaultValue,
-      0
+      0,
     );
     const y = ensureNumber(
       argValue(args[scriptEventDef.helper.y]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.y]?.defaultValue,
-      0
+      0,
     );
     if (location !== "background") {
       return <div />;

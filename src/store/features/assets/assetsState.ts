@@ -31,7 +31,7 @@ const assetsSlice = createSlice({
         backgroundId: string;
         tilesetId?: string;
         is360: boolean;
-      }>
+      }>,
     ) => {
       state.backgroundsLoading = true;
     },
@@ -45,7 +45,7 @@ const assetsSlice = createSlice({
         warnings: string[];
         numTiles: number;
         lookup: number[];
-      }>
+      }>,
     ) => {
       state.backgroundsLoading = false;
       state.backgrounds[action.payload.id] = {

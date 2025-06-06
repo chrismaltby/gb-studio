@@ -120,10 +120,10 @@ const ScriptEventFormInput = ({
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds || []
+    (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
   const context = useContext(ScriptEditorContext);
@@ -132,28 +132,28 @@ const ScriptEventFormInput = ({
     (e: unknown) => {
       onChange(e, index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeTextInputField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       onChange(e.currentTarget.value, index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeNumberInputField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(castEventToFloat(e, Number(defaultValue) ?? 0), index);
     },
-    [defaultValue, index, onChange]
+    [defaultValue, index, onChange],
   );
 
   const onChangeCheckboxField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(castEventToBool(e), index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeSelectField = useCallback(
@@ -162,7 +162,7 @@ const ScriptEventFormInput = ({
         onChange(e.value, index);
       }
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -176,7 +176,7 @@ const ScriptEventFormInput = ({
         type: prevValue?.type ?? field.defaultType,
         value: newValue,
       },
-      index
+      index,
     );
   };
 
@@ -204,11 +204,11 @@ const ScriptEventFormInput = ({
             type: newType,
             value: replaceValue,
           },
-          index
+          index,
         );
       }
     },
-    [context, field.defaultValue, index, onChange, value]
+    [context, field.defaultValue, index, onChange, value],
   );
 
   if (type === "textarea") {
@@ -319,7 +319,7 @@ const ScriptEventFormInput = ({
     }));
     const currentValue =
       options.find((o) =>
-        value ? o.value === value : o.value === defaultValue
+        value ? o.value === value : o.value === defaultValue,
       ) || options[0];
     return (
       <Select
@@ -332,7 +332,7 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "selectbutton") {
     const selectedOption = (field.options || []).find(
-      ([type]) => type === value
+      ([type]) => type === value,
     );
     const selectedLabel = selectedOption ? selectedOption[1] : undefined;
     return (
@@ -411,7 +411,7 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(
           field.placeholder ||
-            (isValueScript && value.type === "number" ? value.value : "")
+            (isValueScript && value.type === "number" ? value.value : ""),
         )}
       />
     );
@@ -431,7 +431,7 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(
           field.placeholder ||
-            (isValueScript && value.type === "number" ? value.value : "")
+            (isValueScript && value.type === "number" ? value.value : ""),
         )}
       />
     );
@@ -823,17 +823,17 @@ const ScriptEventFormInput = ({
             isValueScript
               ? value
               : isDefaultScript
-              ? engineDefaultValue
-              : undefined
+                ? engineDefaultValue
+                : undefined
           }
           onChange={onChangeField}
           min={clampToCType(
             setDefault(engineField.min, -Infinity),
-            engineField.cType
+            engineField.cType,
           )}
           max={clampToCType(
             setDefault(engineField.max, Infinity),
-            engineField.cType
+            engineField.cType,
           )}
           step={field.step}
           placeholder={String(engineField.defaultValue ?? 0)}

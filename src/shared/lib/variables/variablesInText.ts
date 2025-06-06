@@ -26,7 +26,7 @@ export const expressionTokenToVariableId = (token: ExpressionToken) =>
  */
 export const variableInDialogueText = (
   variableId: string,
-  input: string
+  input: string,
 ): boolean => {
   const textTokens = lexText(input);
   const isMatch = (token: TextToken) =>
@@ -42,7 +42,7 @@ export const variableInDialogueText = (
  */
 export const variableInExpressionText = (
   variableId: string,
-  input: string
+  input: string,
 ): boolean => {
   const expressionTokens = tokenizer(input);
   const isMatch = (token: ExpressionToken) =>

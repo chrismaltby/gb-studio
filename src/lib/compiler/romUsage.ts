@@ -41,7 +41,7 @@ const romUsage = async ({
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const buildToolsVersion = await fs.readFile(
     `${buildToolsPath}/tools_version`,
-    "utf8"
+    "utf8",
   );
 
   env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
@@ -77,7 +77,7 @@ const romUsage = async ({
         }
         warnings(msg);
       },
-    }
+    },
   );
 
   await romusageCompleted;

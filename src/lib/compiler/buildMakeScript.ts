@@ -30,7 +30,7 @@ export const getBuildCommands = async (
     targetPlatform,
     cartType,
     compilerPreset,
-  }: BuildOptions
+  }: BuildOptions,
 ) => {
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -105,13 +105,13 @@ export const getBuildCommands = async (
         "-c",
         "-o",
         Path.relative(buildRoot, objFile),
-        Path.relative(buildRoot, file)
+        Path.relative(buildRoot, file),
       );
 
       output.push({
         label: `${l10n("COMPILER_COMPILING")}: ${Path.relative(
           buildRoot,
-          file
+          file,
         )}`,
         command: CC,
         args: buildArgs,
@@ -170,7 +170,7 @@ export const buildPackFlags = (packFilePath: string, batteryless = false) => {
     // Batteryless
     batteryless ? ["-a 4"] : [],
     // Input
-    ["-i", packFilePath]
+    ["-i", packFilePath],
   );
 };
 
@@ -183,7 +183,7 @@ export const buildLinkFlags = (
   colorOnly = false,
   musicDriver = "gbtplayer",
   debug = false,
-  targetPlatform = "gb"
+  targetPlatform = "gb",
 ) => {
   const validName =
     name
@@ -224,18 +224,18 @@ export const buildLinkFlags = (
     // Output
     targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
     targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
-    [`-Wl-f${linkFile}`]
+    [`-Wl-f${linkFile}`],
   );
 };
 
 export const makefileInjectToolsPath = async (
   filename: string,
-  buildToolsPath: string
+  buildToolsPath: string,
 ) => {
   const makefile = await readFile(filename, "utf8");
   const updatedMakefile = makefile.replace(
     /GBSTOOLS_DIR =.*/,
-    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`
+    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`,
   );
   await writeFile(filename, updatedMakefile);
 };
@@ -255,7 +255,7 @@ export const buildMakeDotBuildFile = ({
         sgb ? ["SGB"] : [],
         musicDriver === "huge" ? ["hUGE"] : ["GBT"],
         cartType === "mbc3" ? ["MBC3"] : ["MBC5"],
-        batteryless ? ["batteryless"] : []
+        batteryless ? ["batteryless"] : [],
       )
       .join(" ")
   );

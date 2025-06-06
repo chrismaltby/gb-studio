@@ -110,7 +110,7 @@ const InputPicker = ({ id, ...props }: InputPickerProps) => {
           title: "Select",
         },
       ] as InputOption[],
-    []
+    [],
   );
   return <ToggleButtonGroup name={id} options={options} {...props} />;
 };

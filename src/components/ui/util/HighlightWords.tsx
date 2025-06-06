@@ -31,7 +31,7 @@ export const HighlightWords = ({ text, words }: HighlightWordsProps) => {
       {parts.map((part, index) => {
         if (
           escapeWords.some((word) =>
-            new RegExp(`\\b${word}\\b`, "i").test(part)
+            new RegExp(`\\b${word}\\b`, "i").test(part),
           )
         ) {
           return <span key={index}>{part}</span>;

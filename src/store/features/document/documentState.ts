@@ -73,7 +73,7 @@ const documentSlice = createSlice({
           action.type.startsWith("sprite/detect/fulfilled"),
         (state, _action) => {
           state.modified = true;
-        }
+        },
       ),
 });
 

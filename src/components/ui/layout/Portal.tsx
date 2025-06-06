@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import ReactDOM from "react-dom";
 
 export const portalRoot: HTMLElement = document.getElementById(
-  "MenuPortal"
+  "MenuPortal",
 ) as HTMLElement;
 
 interface PortalProps {

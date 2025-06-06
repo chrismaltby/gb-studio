@@ -72,17 +72,17 @@ const DebuggerPanes = () => {
         buildType: "web",
         exportBuild: false,
         debugEnabled: true,
-      })
+      }),
     );
   }, [dispatch]);
 
   const numColumns = !wrapperSize.width
     ? 0
     : wrapperSize.width > 960
-    ? 3
-    : wrapperSize.width > 560
-    ? 2
-    : 1;
+      ? 3
+      : wrapperSize.width > 560
+        ? 2
+        : 1;
 
   if (isLogOpen) {
     return (

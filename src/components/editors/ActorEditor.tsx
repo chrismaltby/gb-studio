@@ -52,18 +52,18 @@ interface ActorEditorProps {
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const prefab = useAppSelector((state) =>
-    actorPrefabSelectors.selectById(state, actor?.prefabId ?? "")
+    actorPrefabSelectors.selectById(state, actor?.prefabId ?? ""),
   );
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
@@ -84,46 +84,46 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorProp("name", e.currentTarget.value),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorProp("notes", e.currentTarget.value),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorProp("x", castEventToInt(e, 0)),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorProp("y", castEventToInt(e, 0)),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeDirection = useCallback(
     (e: ActorDirection) => onChangeActorProp("direction", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangePrefabId = useCallback(
     (e: string) => {
       onChangeActorProp("prefabId", e);
     },
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onToggleField = (key: KeysMatching<ActorNormalized, boolean>) => () => {
@@ -134,7 +134,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         changes: {
           [key]: !currentValue,
         },
-      })
+      }),
     );
   };
 
@@ -328,7 +328,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 (+
                 {l10n(
                   numOverrides === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
-                  { n: numOverrides }
+                  { n: numOverrides },
                 )}
                 )
               </span>
@@ -348,7 +348,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     dispatch(
                       editorActions.selectActorPrefab({
                         actorPrefabId: prefab.id,
-                      })
+                      }),
                     );
                     dispatch(editorActions.setShowScriptUses(false));
                   }}
@@ -360,7 +360,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     dispatch(
                       editorActions.selectActorPrefab({
                         actorPrefabId: prefab.id,
-                      })
+                      }),
                     );
                     dispatch(editorActions.setShowScriptUses(true));
                   }}
@@ -374,7 +374,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       dispatch(
                         entitiesActions.applyActorPrefabScriptEventOverrides({
                           actorId: actor.id,
-                        })
+                        }),
                       );
                     }}
                   >
@@ -387,7 +387,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                       dispatch(
                         entitiesActions.revertActorPrefabScriptEventOverrides({
                           actorId: actor.id,
-                        })
+                        }),
                       );
                     }}
                   >
@@ -401,7 +401,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     dispatch(
                       entitiesActions.unpackActorPrefab({
                         actorId: actor.id,
-                      })
+                      }),
                     );
                   }}
                 >

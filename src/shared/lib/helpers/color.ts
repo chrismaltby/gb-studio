@@ -47,7 +47,7 @@ export const hex2GBCrgb =
 
 export const hex2GBChex = (
   hex: string,
-  colorCorrection: ColorCorrectionSetting
+  colorCorrection: ColorCorrectionSetting,
 ): string => {
   if (colorCorrection === "none") {
     return hex;
@@ -62,7 +62,7 @@ export const hex2GBChex = (
 export const rgb5BitToGBCHex = (
   red5: number,
   green5: number,
-  blue5: number
+  blue5: number,
 ) => {
   const value = (blue5 << 10) + (green5 << 5) + red5;
   const r = value & 0x1f;
@@ -94,14 +94,14 @@ export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
   objPalette: ObjPalette | null,
   palette: string[],
-  colorCorrection: ColorCorrectionSetting
+  colorCorrection: ColorCorrectionSetting,
 ) => {
   const colorCorrectionFn = hex2GBCrgb(colorCorrection);
   const paletteRGB = palette.map(colorCorrectionFn);
   for (let index = 0; index < mutData.length; index += 4) {
     const colorIndex = indexSpriteColour(
       mutData[index + 1],
-      objPalette || "OBP0"
+      objPalette || "OBP0",
     );
     const color = paletteRGB[colorIndex];
     const r = mutData[index];

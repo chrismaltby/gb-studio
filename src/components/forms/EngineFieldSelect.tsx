@@ -33,7 +33,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
           value: f.key,
           label: l10n(f.label as L10NKey),
         })),
-      }))
+      })),
     );
   }, [groupedFields]);
 

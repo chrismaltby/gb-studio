@@ -50,11 +50,11 @@ export const TriggerEditorScripts = ({
   sceneId,
 }: TriggerEditorScriptsProps) => {
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
 
   const lastScriptTab = useAppSelector(
-    (state) => state.editor.lastScriptTabTrigger
+    (state) => state.editor.lastScriptTabTrigger,
   );
 
   const scriptTabs: Record<DefaultTab, string> = useMemo(
@@ -62,14 +62,14 @@ export const TriggerEditorScripts = ({
       trigger: l10n("SIDEBAR_ON_ENTER"),
       leave: l10n("SIDEBAR_ON_LEAVE"),
     }),
-    []
+    [],
   );
 
   const pointNClickScriptTabs: Record<PointNClickTab, string> = useMemo(
     () => ({
       trigger: l10n("SIDEBAR_ON_INTERACT"),
     }),
-    []
+    [],
   );
 
   const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
@@ -77,7 +77,7 @@ export const TriggerEditorScripts = ({
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
 
   const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
+    initialTab as keyof ScriptHandlers,
   );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
@@ -88,7 +88,7 @@ export const TriggerEditorScripts = ({
   const scriptKey = getScriptKey(scriptMode);
 
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const dispatch = useAppDispatch();
@@ -112,7 +112,7 @@ export const TriggerEditorScripts = ({
         {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
       </Button>
     ),
-    [lockScriptEditor, onToggleLockScriptEditor]
+    [lockScriptEditor, onToggleLockScriptEditor],
   );
 
   const scriptButton = useMemo(
@@ -125,7 +125,7 @@ export const TriggerEditorScripts = ({
           scriptKey={scriptKey}
         />
       ),
-    [scriptKey, trigger]
+    [scriptKey, trigger],
   );
 
   const scriptCtx: ScriptEditorCtx = useMemo(
@@ -136,7 +136,7 @@ export const TriggerEditorScripts = ({
       sceneId,
       scriptKey,
     }),
-    [trigger.id, sceneId, scriptKey]
+    [trigger.id, sceneId, scriptKey],
   );
 
   if (!scene || !trigger) {

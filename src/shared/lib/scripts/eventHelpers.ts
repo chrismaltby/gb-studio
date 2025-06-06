@@ -15,7 +15,7 @@ export const patchEventArgs = (
   type: string,
   args: Record<string, unknown>,
   replacements: Record<string, unknown>,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const events = scriptEventDefs;
   const eventSchema = events[command];
@@ -57,7 +57,7 @@ export const calculateAutoFadeEventIdNormalized = (
   script: string[],
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   customEventsLookup: Record<string, CustomEventNormalized>,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const events = scriptEventDefs;
   let fadeEventId = "";
@@ -98,7 +98,7 @@ export const calculateAutoFadeEventIdNormalized = (
           return true;
         },
       },
-      checkEvent(eventValue)
+      checkEvent(eventValue),
     );
     if (fadeEventId.length > 0) {
       break;
@@ -110,7 +110,7 @@ export const calculateAutoFadeEventIdNormalized = (
 export const calculateAutoFadeEventId = (
   script: ScriptEvent[],
   customEventsLookup: Record<string, CustomEvent>,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const events = scriptEventDefs;
   let fadeEventId = "";
@@ -148,7 +148,7 @@ export const calculateAutoFadeEventId = (
           return true;
         },
       },
-      checkEvent(scriptEvent.id)
+      checkEvent(scriptEvent.id),
     );
     if (fadeEventId.length > 0) {
       break;

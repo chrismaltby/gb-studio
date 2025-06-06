@@ -22,7 +22,7 @@ export const filterUndefined = <T>(arr: (T | undefined)[]): T[] => {
 export const moveArrayElement = <T>(
   x: number,
   y: number,
-  [...xs]: T[]
+  [...xs]: T[],
 ): T[] => {
   if (
     xs.length <= 1 ||
@@ -42,13 +42,13 @@ export const moveArrayElement = <T>(
 export const moveArrayElements = <T>(
   fromIndexes: number[],
   to: number,
-  arr: T[]
+  arr: T[],
 ): T[] => {
   const sortedIndexes = uniq([...fromIndexes].sort((a, b) => a - b));
   const selectedItems = sortedIndexes.map((index) => arr[index]);
 
   const remainingItems = arr.filter(
-    (_, index) => !sortedIndexes.includes(index)
+    (_, index) => !sortedIndexes.includes(index),
   );
 
   const adjustedIndex =
@@ -65,7 +65,7 @@ export const moveArrayElements = <T>(
 
 export const sortSubsetStringArray = (
   arr: string[],
-  sortOrder: string[]
+  sortOrder: string[],
 ): string[] => {
   const orderMap = new Map<string, number>();
   sortOrder.forEach((element, index) => orderMap.set(element, index));
@@ -77,7 +77,7 @@ export const sortSubsetStringArray = (
 export const insertAfterElement = <T>(
   arr: T[],
   insertElement: T,
-  afterElement: T
+  afterElement: T,
 ): T[] => {
   const insertIndex = arr.indexOf(afterElement);
   if (insertIndex !== -1) {

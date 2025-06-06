@@ -112,7 +112,7 @@ const ToggleButtons = (props: ToggleButtonsProps) => {
         props.onChange(type);
       }
     },
-    [props]
+    [props],
   );
 
   return (

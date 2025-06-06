@@ -165,7 +165,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   } = useAppSelector((state) => state.editor);
 
   const showCollisions = useAppSelector(
-    (state) => state.project.present.settings.showCollisions
+    (state) => state.project.present.settings.showCollisions,
   );
 
   const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
@@ -199,13 +199,13 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     slopeDirectionVertical: "left",
   });
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, hoverSceneId)
+    sceneSelectors.selectById(state, hoverSceneId),
   );
 
   const backgroundId = scene?.backgroundId ?? "";
 
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, backgroundId)
+    backgroundSelectors.selectById(state, backgroundId),
   );
 
   const hoverPalette =
@@ -221,7 +221,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const tileLookup = useAppSelector((state) =>
     selectedBrush === BRUSH_MAGIC
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
-      : undefined
+      : undefined,
   );
 
   const recalculateSlopePreview = useCallback(() => {
@@ -233,7 +233,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         y,
         data.current.slopeDirectionHorizontal,
         data.current.slopeDirectionVertical,
-        data.current.drawWall
+        data.current.drawWall,
       );
       dispatch(
         editorActions.setSlopePreview({
@@ -246,7 +246,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             offset: data.current.drawLine,
             slopeIncline,
           },
-        })
+        }),
       );
     }
   }, [dispatch, sceneId, x, y]);
@@ -274,7 +274,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         }
       }
     },
-    [dispatch, enabled, recalculateSlopePreview, sceneId, x, y]
+    [dispatch, enabled, recalculateSlopePreview, sceneId, x, y],
   );
 
   const onKeyUp = useCallback(
@@ -291,7 +291,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         recalculateSlopePreview();
       }
     },
-    [recalculateSlopePreview]
+    [recalculateSlopePreview],
   );
 
   // Keyboard handlers
@@ -316,7 +316,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           startY: data.current.startY,
           x,
           y,
-        })
+        }),
       );
       data.current.currentX = x;
       data.current.currentY = y;
@@ -338,7 +338,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         y,
         data.current.slopeDirectionHorizontal,
         data.current.slopeDirectionVertical,
-        data.current.drawWall
+        data.current.drawWall,
       );
 
       dispatch(
@@ -352,7 +352,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             offset: data.current.drawLine,
             slopeIncline,
           },
-        })
+        }),
       );
     } else if (data.current.currentX !== x || data.current.currentY !== y) {
       if (data.current.drawLine) {
@@ -388,7 +388,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
-          })
+          }),
         );
         data.current.startX = x1;
         data.current.startY = y1;
@@ -414,7 +414,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
-          })
+          }),
         );
 
         data.current.startX = x1;
@@ -464,7 +464,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
-          })
+          }),
         );
         data.current.startX = x1;
         data.current.startY = y1;
@@ -491,7 +491,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
-          })
+          }),
         );
         data.current.startX = x1;
         data.current.startY = y1;
@@ -523,7 +523,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           x <= width * 0.5 ? "left" : "right";
       }
     },
-    []
+    [],
   );
 
   const onMouseMove = useCallback(() => {
@@ -566,7 +566,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         y,
         data.current.slopeDirectionHorizontal,
         data.current.slopeDirectionVertical,
-        data.current.drawWall
+        data.current.drawWall,
       );
 
       dispatch(
@@ -583,7 +583,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             Math.sign(data.current.startY - endY)
               ? "right"
               : "left",
-        })
+        }),
       );
     }
     data.current.isPainting = false;
@@ -606,7 +606,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           sceneId,
           x,
           y,
-        })
+        }),
       );
     } else {
       dispatch(
@@ -619,7 +619,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
                 prefabId: editorPrefabId,
               }
             : undefined,
-        })
+        }),
       );
     }
     dispatch(editorActions.setTool({ tool: "select" }));
@@ -632,7 +632,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           sceneId,
           x,
           y,
-        })
+        }),
       );
     } else {
       dispatch(
@@ -647,7 +647,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
                 prefabId: editorPrefabId,
               }
             : undefined,
-        })
+        }),
       );
     }
 
@@ -661,7 +661,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       if (e.altKey) {
         data.current.drawTile = hoverCollision;
         dispatch(
-          editorActions.setSelectedTileType({ tileType: hoverCollision })
+          editorActions.setSelectedTileType({ tileType: hoverCollision }),
         );
         return;
       }
@@ -717,7 +717,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             value: data.current.drawTile,
             isTileProp: data.current.isTileProp,
             tileLookup,
-          })
+          }),
         );
       } else if (selectedBrush === BRUSH_MAGIC) {
         if (tileLookup) {
@@ -730,7 +730,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               y,
               value: data.current.drawTile,
               isTileProp: data.current.isTileProp,
-            })
+            }),
           );
         } else {
           dispatch(editorActions.selectScene({ sceneId }));
@@ -743,7 +743,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           editorActions.setSlopePreview({
             sceneId,
             slopePreview: undefined,
-          })
+          }),
         );
       } else {
         if (
@@ -763,7 +763,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               isTileProp: data.current.isTileProp,
               drawLine: true,
               tileLookup,
-            })
+            }),
           );
           data.current.startX = x;
           data.current.startY = y;
@@ -779,7 +779,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               value: data.current.drawTile,
               isTileProp: data.current.isTileProp,
               tileLookup,
-            })
+            }),
           );
         }
         data.current.isPainting = true;
@@ -795,14 +795,14 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       tileLookup,
       x,
       y,
-    ]
+    ],
   );
 
   const onMouseDownColors = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (e.altKey) {
         dispatch(
-          editorActions.setSelectedPalette({ paletteIndex: hoverPalette })
+          editorActions.setSelectedPalette({ paletteIndex: hoverPalette }),
         );
         return;
       }
@@ -836,7 +836,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             paletteIndex: data.current.drawTile,
             isTileProp: data.current.isTileProp,
             tileLookup,
-          })
+          }),
         );
       } else if (selectedBrush === BRUSH_MAGIC) {
         if (tileLookup) {
@@ -850,7 +850,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               y,
               paletteIndex: data.current.drawTile,
               isTileProp: data.current.isTileProp,
-            })
+            }),
           );
         } else {
           dispatch(editorActions.selectScene({ sceneId }));
@@ -874,7 +874,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               drawLine: true,
               isTileProp: data.current.isTileProp,
               tileLookup,
-            })
+            }),
           );
           data.current.startX = x;
           data.current.startY = y;
@@ -891,7 +891,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               paletteIndex: data.current.drawTile,
               isTileProp: data.current.isTileProp,
               tileLookup,
-            })
+            }),
           );
         }
         data.current.isPainting = true;
@@ -907,7 +907,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       tileLookup,
       x,
       y,
-    ]
+    ],
   );
 
   const onMouseDownEraser = useCallback(() => {
@@ -924,7 +924,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             value: data.current.drawTile,
             isTileProp: data.current.isTileProp,
             tileLookup,
-          })
+          }),
         );
       } else if (selectedBrush === BRUSH_MAGIC) {
         if (tileLookup) {
@@ -937,7 +937,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               y,
               value: 0,
               isTileProp: data.current.isTileProp,
-            })
+            }),
           );
         } else {
           dispatch(editorActions.selectScene({ sceneId }));
@@ -960,7 +960,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               isTileProp: data.current.isTileProp,
               drawLine: true,
               tileLookup,
-            })
+            }),
           );
           data.current.startX = x;
           data.current.startY = y;
@@ -976,7 +976,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               value: 0,
               isTileProp: data.current.isTileProp,
               tileLookup,
-            })
+            }),
           );
         }
         data.current.isPainting = true;
@@ -991,10 +991,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         dispatch(entitiesActions.removeActorAt({ sceneId, x, y: y + 1 }));
         dispatch(entitiesActions.removeTriggerAt({ sceneId, x, y: y + 1 }));
         dispatch(
-          entitiesActions.removeActorAt({ sceneId, x: x + 1, y: y + 1 })
+          entitiesActions.removeActorAt({ sceneId, x: x + 1, y: y + 1 }),
         );
         dispatch(
-          entitiesActions.removeTriggerAt({ sceneId, x: x + 1, y: y + 1 })
+          entitiesActions.removeTriggerAt({ sceneId, x: x + 1, y: y + 1 }),
         );
       }
     }
@@ -1060,7 +1060,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       sceneFiltered,
       sceneId,
       tool,
-    ]
+    ],
   );
 
   if (!enabled) {

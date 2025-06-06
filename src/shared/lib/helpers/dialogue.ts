@@ -17,6 +17,6 @@ export const calculateTextBoxHeight = ({
     minHeight,
     Math.min(
       maxHeight,
-      Math.min(textLines, textHeight) + textY + (showFrame ? 1 : 0)
-    )
+      Math.min(textLines, textHeight) + textY + (showFrame ? 1 : 0),
+    ),
   );

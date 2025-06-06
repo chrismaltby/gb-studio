@@ -39,12 +39,12 @@ const MetaspriteEditorToolsPanel = ({
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
 
   const spriteAnimation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, selectedAnimationId)
+    spriteAnimationSelectors.selectById(state, selectedAnimationId),
   );
 
   const frames = useMemo(
     () => spriteAnimation?.frames || [],
-    [spriteAnimation?.frames]
+    [spriteAnimation?.frames],
   );
 
   const nextFrame = useCallback(() => {
@@ -76,12 +76,15 @@ const MetaspriteEditorToolsPanel = ({
 
   useEffect(() => {
     if (play) {
-      const id = setInterval(() => {
-        const currentIndex = frames.indexOf(metaspriteId);
-        const nextMetaspriteId =
-          frames[(currentIndex + 1) % frames.length] || "";
-        dispatch(editorActions.setSelectedMetaspriteId(nextMetaspriteId));
-      }, 1000 / (60 / 8));
+      const id = setInterval(
+        () => {
+          const currentIndex = frames.indexOf(metaspriteId);
+          const nextMetaspriteId =
+            frames[(currentIndex + 1) % frames.length] || "";
+          dispatch(editorActions.setSelectedMetaspriteId(nextMetaspriteId));
+        },
+        1000 / (60 / 8),
+      );
       intervalRef.current = id;
     }
     return () => {

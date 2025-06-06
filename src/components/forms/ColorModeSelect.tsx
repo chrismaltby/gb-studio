@@ -31,7 +31,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
       mixed: l10n("FIELD_COLOR_MODE_COLOR_MONO_INFO"),
       color: l10n("FIELD_COLOR_MODE_COLOR_ONLY_INFO"),
     }),
-    []
+    [],
   );
 
   const colorModeOptions: ColorModeOption[] = useMemo(
@@ -49,7 +49,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
         label: l10n("FIELD_COLOR_MODE_COLOR_ONLY"),
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -75,7 +75,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(
         option: Option,
-        { context }: { context: "menu" | "value" }
+        { context }: { context: "menu" | "value" },
       ) => {
         return (
           <OptionLabelWithInfo

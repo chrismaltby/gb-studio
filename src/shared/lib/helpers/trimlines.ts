@@ -45,7 +45,7 @@ const trimlines = (
   string: string,
   maxCharsPerLine = CHARS_PER_LINE,
   maxLines = LINE_MAX,
-  maxTotal = CHARS_MAX_TOTAL
+  maxTotal = CHARS_MAX_TOTAL,
 ): string => {
   let lengthCount = 0;
 
@@ -70,7 +70,7 @@ const trimlines = (
                 return `${cropped}\n${trimlines(
                   line.substring(cropped.length + 1, line.length),
                   maxCharsPerLine,
-                  maxLines
+                  maxLines,
                 )}`;
               }
             }

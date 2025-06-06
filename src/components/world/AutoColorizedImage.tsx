@@ -26,13 +26,13 @@ const AutoColorizedImage = ({
   previewAsMono,
 }: AutoColorizedImageProps) => {
   const colorCorrection = useAppSelector(
-    (state) => getSettings(state).colorCorrection
+    (state) => getSettings(state).colorCorrection,
   );
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerId = useRef(Math.random());
   const worker = useRef(
-    workerPool[Math.floor(workerPool.length * Math.random())]
+    workerPool[Math.floor(workerPool.length * Math.random())],
   );
 
   const onWorkerComplete = useCallback(
@@ -52,7 +52,7 @@ const AutoColorizedImage = ({
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [height, width]
+    [height, width],
   );
 
   useEffect(() => {

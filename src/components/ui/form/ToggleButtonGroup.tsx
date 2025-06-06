@@ -129,7 +129,7 @@ export const ToggleButtonGroup = <T,>({
         props.onChange(value);
       }
     },
-    [props]
+    [props],
   );
 
   const autoFocusIndex = useMemo(() => {
@@ -138,7 +138,7 @@ export const ToggleButtonGroup = <T,>({
     }
     const firstSelectedValue = props.multiple ? props.value[0] : props.value;
     const firstSelectedIndex = options.findIndex(
-      (o) => o.value === firstSelectedValue
+      (o) => o.value === firstSelectedValue,
     );
     return firstSelectedIndex > -1 ? firstSelectedIndex : 0;
   }, [autoFocus, options, props.multiple, props.value]);

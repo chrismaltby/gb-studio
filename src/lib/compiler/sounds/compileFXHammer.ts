@@ -29,7 +29,7 @@ const compileFXHammerEffect = (
   ch: number,
   data: Buffer,
   fmt: CompileOutputFmt = "c",
-  options: FXHammerOptions
+  options: FXHammerOptions,
 ) => {
   const decHex = ((fmt?: CompileOutputFmt) => (v: number) => {
     const prefix = fmt === "asm" ? "$" : "0x";
@@ -43,7 +43,7 @@ const compileFXHammerEffect = (
     b: number,
     c: number,
     d: number,
-    cache: number[]
+    cache: number[],
   ) => {
     let mask = 0b01001000 | ch;
     let result = `,${decHex(a)}`;
@@ -114,11 +114,11 @@ const compileFXHammerEffect = (
           ch2vol,
           freq & 0xff,
           ((freq >> 8) | 0x80) & 0xff,
-          ch2Cache
+          ch2Cache,
         )}`;
       } else {
         result += `,${binPrefix}01111001,${decHex(ch2duty)},${decHex(
-          ch2vol
+          ch2vol,
         )},${decHex(freq & 0xff)},${decHex(((freq >> 8) | 0x80) & 0xff)}`;
       }
     }
@@ -129,7 +129,7 @@ const compileFXHammerEffect = (
         result += `,${makeFrame(3, 0x2a, ch4vol, ch4freq, 0x80, ch4Cache)}`;
       } else {
         result += `,${binPrefix}01111011,0x2a,${decHex(ch4vol)},${decHex(
-          ch4freq
+          ch4freq,
         )},0x80`;
       }
     }
@@ -171,7 +171,7 @@ const compileFXHammerEffect = (
 
 export const compileFXHammer = async (
   filename: string,
-  symbol: string
+  symbol: string,
 ): Promise<CompiledSound> => {
   const options = {
     delay: 4,
@@ -197,15 +197,15 @@ export const compileFXHammer = async (
           channels,
           file.slice(0x400 + effectnum * 256, 0x400 + (effectnum + 1) * 256),
           "c",
-          options
+          options,
         );
       const effectSymbol = `${symbol}_${String(effectnum).padStart(2, "0")}`;
       effectSrcs += `BANKREF(${effectSymbol})\nconst uint8_t ${effectSymbol}[] = {\n${effectOutput}\n};\nvoid AT(0b${decBin(
-        effectMuteMask
+        effectMuteMask,
       )}) __mute_mask_${effectSymbol};\n\n`;
 
       effectHeaders += `#define MUTE_MASK_${effectSymbol} 0b${decBin(
-        effectMuteMask
+        effectMuteMask,
       )}
       BANKREF_EXTERN(${effectSymbol})
       extern const uint8_t ${effectSymbol}[];
@@ -238,7 +238,7 @@ ${effectHeaders}
 export const compileFXHammerSingle = async (
   filename: string,
   effectnum: number,
-  fmt: CompileOutputFmt = "c"
+  fmt: CompileOutputFmt = "c",
 ): Promise<CompiledSoundOutput> => {
   const options = {
     delay: 4,
@@ -266,7 +266,7 @@ export const compileFXHammerSingle = async (
   const channels = file[0x300 + playEffectNum];
   if (channels === 0) {
     throw new Error(
-      `No channels for FX Hammer ${filename} Effect ${playEffectNum}`
+      `No channels for FX Hammer ${filename} Effect ${playEffectNum}`,
     );
   }
 
@@ -274,12 +274,12 @@ export const compileFXHammerSingle = async (
     channels,
     file.slice(0x400 + playEffectNum * 256, 0x400 + (playEffectNum + 1) * 256),
     fmt,
-    options
+    options,
   );
 };
 
 export const readFXHammerNumEffects = async (
-  filename: string
+  filename: string,
 ): Promise<number> => {
   let numEffects = 0;
   const file = await readFile(filename);

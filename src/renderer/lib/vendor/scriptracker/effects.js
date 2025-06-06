@@ -50,7 +50,7 @@ var Effects = {
       } else if (tick > 0) {
         registers.period = Math.min(
           2047,
-          registers.period + registers.porta.step
+          registers.period + registers.porta.step,
         );
         var freq = (131072 * 1.8) / (2048 - registers.period);
         registers.sample.step = Math.min(64, freq / player.sampleStepping);
@@ -193,7 +193,7 @@ var Effects = {
         ((param & 0xf0) != 0 ? (param & 0xf0) >> 4 : -(param & 0x0f)) / 64.0;
       registers.volume.channelVolume = Math.max(
         0.0,
-        Math.min(registers.volume.channelVolume + slide, 1.0)
+        Math.min(registers.volume.channelVolume + slide, 1.0),
       );
     },
   },
@@ -222,7 +222,7 @@ var Effects = {
           : -(registers.volume.channelVolumeSlide & 0x0f)) / 64.0;
       registers.volume.channelVolume = Math.max(
         0.0,
-        Math.min(registers.volume.channelVolume + slide, 1.0)
+        Math.min(registers.volume.channelVolume + slide, 1.0),
       );
     },
   },
@@ -315,7 +315,7 @@ var Effects = {
         // Set Volume
         registers.volume.channelVolumeSet = Math.max(
           0.0,
-          Math.min(vol / 16.0, 1.0)
+          Math.min(vol / 16.0, 1.0),
         );
         registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
         // If we have a note this row, use volume and slide immediately
@@ -435,12 +435,12 @@ var Effects = {
         if (channel === 2) {
           registers.volume.channelVolumeSet = Math.max(
             0.0,
-            Math.min(Math.round(param / 16.0) / 4.0, 1.0)
+            Math.min(Math.round(param / 16.0) / 4.0, 1.0),
           );
         } else {
           registers.volume.channelVolumeSet = Math.max(
             0.0,
-            Math.min(Math.round(param / 4.0) / 16.0, 1.0)
+            Math.min(Math.round(param / 4.0) / 16.0, 1.0),
           );
         }
         registers.volume.channelVolume = registers.volume.channelVolumeSet; //GBT Take max volume from set vol
@@ -617,7 +617,7 @@ var Effects = {
           registers.instrument,
           registers.note,
           Effects.RETRIGGER,
-          param
+          param,
         );
       }
     },
@@ -630,7 +630,7 @@ var Effects = {
       if (tick === 0) {
         registers.volume.channelVolume = Math.min(
           registers.volume.channelVolume + (param & 0x0f) / 15.0,
-          1.0
+          1.0,
         );
       }
     },
@@ -643,7 +643,7 @@ var Effects = {
       if (tick === 0) {
         registers.volume.channelVolume = Math.max(
           0.0,
-          registers.volume.channelVolume - (param & 0x0f) / 15.0
+          registers.volume.channelVolume - (param & 0x0f) / 15.0,
         );
       }
     },
@@ -793,7 +793,7 @@ var Effects = {
 
         registers.volume.channelVolume = Math.max(
           0.0,
-          Math.min(registers.volume.channelVolume, 1.0)
+          Math.min(registers.volume.channelVolume, 1.0),
         );
       }
     },
@@ -823,7 +823,7 @@ var Effects = {
       if (tick > 0 && player.masterVolSlide !== 0) {
         player.masterVolume = Math.max(
           0.0,
-          Math.min(player.getMasterVolume() + player.masterVolSlide, 1.0)
+          Math.min(player.getMasterVolume() + player.masterVolSlide, 1.0),
         );
       }
     },
@@ -853,7 +853,7 @@ var Effects = {
       if (tick > 0) {
         registers.panning.pan = Math.max(
           0,
-          Math.min(registers.panning.pan + registers.panning.panSlide, 1)
+          Math.min(registers.panning.pan + registers.panning.panSlide, 1),
         );
       }
     },

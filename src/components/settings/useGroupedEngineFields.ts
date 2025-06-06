@@ -24,11 +24,11 @@ export const useGroupedEngineFields = () => {
           searchMatches: ([] as string[]).concat(
             l10n(g as L10NKey),
             groupFields.map((field) => field.key),
-            groupFields.map((field) => l10n(field.label as L10NKey))
+            groupFields.map((field) => l10n(field.label as L10NKey)),
           ),
           fields: groupFields,
         };
-      })
+      }),
     );
   }, [fields]);
 

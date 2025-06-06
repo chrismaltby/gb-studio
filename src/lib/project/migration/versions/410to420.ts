@@ -5,7 +5,7 @@ import {
 } from "lib/project/migration/helpers";
 
 export const migrateFrom410r1To420r1Event: ScriptEventMigrationFn = (
-  scriptEvent
+  scriptEvent,
 ) => {
   if (scriptEvent.args && scriptEvent.command === "EVENT_SWITCH") {
     const args: Record<string, unknown> = { ...scriptEvent.args };
@@ -36,7 +36,7 @@ export const migrate410r1To420r1: ProjectResourcesMigration = {
 };
 
 export const migrateFrom420r1To420r2Event: ScriptEventMigrationFn = (
-  scriptEvent
+  scriptEvent,
 ) => {
   if (scriptEvent.args && scriptEvent.command === "EVENT_WAIT") {
     const args: Record<string, unknown> = { ...scriptEvent.args };

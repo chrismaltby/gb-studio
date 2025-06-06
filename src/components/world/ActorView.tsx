@@ -72,40 +72,40 @@ const ActorView = memo(
     const dispatch = useAppDispatch();
 
     const actor = useAppSelector((state) =>
-      actorSelectors.selectById(state, id)
+      actorSelectors.selectById(state, id),
     );
     const prefab = useAppSelector((state) =>
-      actorPrefabSelectors.selectById(state, actor?.prefabId ?? "")
+      actorPrefabSelectors.selectById(state, actor?.prefabId ?? ""),
     );
 
     const sprite = useAppSelector((state) =>
       spriteSheetSelectors.selectById(
         state,
-        prefab?.spriteSheetId ?? actor?.spriteSheetId ?? ""
-      )
+        prefab?.spriteSheetId ?? actor?.spriteSheetId ?? "",
+      ),
     );
     const selected = useAppSelector(
       (state) =>
         state.editor.type === "actor" &&
         state.editor.scene === sceneId &&
-        state.editor.entityId === id
+        state.editor.entityId === id,
     );
     const isDragging = useAppSelector(
-      (state) => selected && state.editor.dragging
+      (state) => selected && state.editor.dragging,
     );
     const showSprite = useAppSelector((state) => state.editor.zoom > 80);
     const previewAsMono = useAppSelector(
       (state) =>
         state.project.present.settings.colorMode === "mono" ||
         (state.project.present.settings.colorMode === "mixed" &&
-          state.project.present.settings.previewAsMono)
+          state.project.present.settings.previewAsMono),
     );
     const boundsWidth = sprite?.boundsWidth || 16;
     const boundsHeight = sprite?.boundsHeight || 16;
     const boundsX = sprite?.boundsX || 0;
     const boundsY = sprite?.boundsY || 0;
     const showBoundingBox = useAppSelector(
-      (state) => state.editor.tool === TOOL_COLLISIONS
+      (state) => state.editor.tool === TOOL_COLLISIONS,
     );
 
     const onMouseUp = useCallback(() => {
@@ -121,7 +121,7 @@ const ActorView = memo(
           window.addEventListener("mouseup", onMouseUp);
         }
       },
-      [dispatch, editable, id, onMouseUp, sceneId]
+      [dispatch, editable, id, onMouseUp, sceneId],
     );
 
     useEffect(() => {
@@ -133,12 +133,11 @@ const ActorView = memo(
       };
     }, [onMouseUp, isDragging]);
 
-    const [contextMenu, setContextMenu] =
-      useState<{
-        x: number;
-        y: number;
-        menu: JSX.Element[];
-      }>();
+    const [contextMenu, setContextMenu] = useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
 
     const renderContextMenu = useCallback(() => {
       return renderActorContextMenu({
@@ -157,7 +156,7 @@ const ActorView = memo(
         }
         setContextMenu({ x: e.pageX, y: e.pageY, menu });
       },
-      [renderContextMenu]
+      [renderContextMenu],
     );
 
     const onContextMenuClose = useCallback(() => {
@@ -215,7 +214,7 @@ const ActorView = memo(
         </Wrapper>
       </>
     );
-  }
+  },
 );
 
 export default ActorView;

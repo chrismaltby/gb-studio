@@ -38,7 +38,7 @@ import styled from "styled-components";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
-  customEventIndex: number
+  customEventIndex: number,
 ) => (customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`);
 
 interface CustomEventEditorProps {
@@ -61,17 +61,17 @@ const UsesCollapsedWrapper = styled.div`
 
 const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, id)
+    customEventSelectors.selectById(state, id),
   );
   const index = React.useMemo(
     () => customEvents.findIndex((p) => p.id === id),
-    [customEvents, id]
+    [customEvents, id],
   );
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const [showSymbols, setShowSymbols] = useState(false);
@@ -83,13 +83,13 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
     () => ({
       script: l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT"),
     }),
-    []
+    [],
   );
 
   const onChangeCustomEventProp = useCallback(
     <K extends keyof CustomEventNormalized>(
       key: K,
-      value: CustomEventNormalized[K]
+      value: CustomEventNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editCustomEvent({
@@ -97,22 +97,22 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeCustomEventProp("name", e.currentTarget.value),
-    [onChangeCustomEventProp]
+    [onChangeCustomEventProp],
   );
 
   const onChangeDescription = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeCustomEventProp("description", e.currentTarget.value),
-    [onChangeCustomEventProp]
+    [onChangeCustomEventProp],
   );
 
   const onEditVariableName = useCallback(
@@ -133,10 +133,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
               ...variable,
               name: e.currentTarget.value,
             },
-          })
+          }),
         );
       },
-    [customEvent, onChangeCustomEventProp]
+    [customEvent, onChangeCustomEventProp],
   );
 
   const onEditVariablePassByReference = useCallback(
@@ -156,10 +156,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
             ...variable,
             passByReference,
           },
-        })
+        }),
       );
     },
-    [customEvent, onChangeCustomEventProp]
+    [customEvent, onChangeCustomEventProp],
   );
 
   const onEditActorName = useCallback(
@@ -180,10 +180,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
               ...actor,
               name: e.currentTarget.value,
             },
-          })
+          }),
         );
       },
-    [customEvent, onChangeCustomEventProp]
+    [customEvent, onChangeCustomEventProp],
   );
 
   const onRemove = React.useCallback(() => {
@@ -191,7 +191,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
       return;
     }
     dispatch(
-      entitiesActions.removeCustomEvent({ customEventId: customEvent.id })
+      entitiesActions.removeCustomEvent({ customEventId: customEvent.id }),
     );
   }, [dispatch, customEvent]);
 
@@ -209,14 +209,14 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
       sceneId: "",
       scriptKey: "script",
     }),
-    [id]
+    [id],
   );
 
   const setShowUses = useCallback(
     (value: boolean) => {
       dispatch(editorActions.setShowScriptUses(value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (!customEvent) {
@@ -379,7 +379,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                         >
                                           {variable.passByReference
                                             ? l10n(
-                                                "FIELD_PASS_BY_REFERENCE_SHORT"
+                                                "FIELD_PASS_BY_REFERENCE_SHORT",
                                               )
                                             : l10n("FIELD_PASS_BY_VALUE_SHORT")}
                                         </span>
@@ -387,10 +387,10 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                       title={
                                         variable.passByReference
                                           ? l10n(
-                                              "FIELD_PASS_BY_REFERENCE_DESCRIPTION"
+                                              "FIELD_PASS_BY_REFERENCE_DESCRIPTION",
                                             )
                                           : l10n(
-                                              "FIELD_PASS_BY_VALUE_DESCRIPTION"
+                                              "FIELD_PASS_BY_VALUE_DESCRIPTION",
                                             )
                                       }
                                     >
@@ -398,7 +398,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                         onClick={() =>
                                           onEditVariablePassByReference(
                                             variable.id,
-                                            false
+                                            false,
                                           )
                                         }
                                         icon={
@@ -415,7 +415,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
                                         onClick={() =>
                                           onEditVariablePassByReference(
                                             variable.id,
-                                            true
+                                            true,
                                           )
                                         }
                                         icon={

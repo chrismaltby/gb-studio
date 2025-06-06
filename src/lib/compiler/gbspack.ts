@@ -73,7 +73,7 @@ export const parseSizes = (contents: string): ObjectBankData[] => {
 export const replaceBank = (
   objectString: string,
   originalBank: number,
-  bankNo: number
+  bankNo: number,
 ): string => {
   let newString = objectString;
   const lines = objectString.split("\n");
@@ -90,7 +90,7 @@ export const replaceBank = (
         const replaceBankedFnDef = `b_${fnName} Def${toHex(bankNo, 6)}`;
         newString = newString.replace(
           new RegExp(findBankedFnDef, "g"),
-          replaceBankedFnDef
+          replaceBankedFnDef,
         );
       }
     }
@@ -100,7 +100,7 @@ export const replaceBank = (
   const replaceCode = `CODE_${bankNo}`;
   const replacedString = newString.replace(
     new RegExp(findCode, "g"),
-    replaceCode
+    replaceCode,
   );
   const re = new RegExp(`__bank_([^ ]*) Def[0]*${toHex(originalBank, 6)}`, "g");
   const result = replacedString.replace(re, (_, capture) => {
@@ -112,7 +112,7 @@ export const replaceBank = (
 
 export const replaceAllBanks = (
   objectString: string,
-  replacements: BankReplacement[]
+  replacements: BankReplacement[],
 ): string => {
   return replacements.reduce((memo, replacement) => {
     return replaceBank(memo, replacement.from, replacement.to);
@@ -127,7 +127,7 @@ export const toCartSize = (maxBank: number): number => {
 export const toOutputFilename = (
   originalFilename: string,
   outputPath: string,
-  ext: string
+  ext: string,
 ): string => {
   const fileStem = Path.basename(originalFilename).replace(/\.[^.]*/, "");
   const newFilename = `${fileStem}.${ext}`;
@@ -142,7 +142,7 @@ export const toOutputFilename = (
 const getBankReplacements = (
   index: number,
   packed: Bank[],
-  mbc1: boolean
+  mbc1: boolean,
 ): BankReplacement[] => {
   const replacements: BankReplacement[] = [];
 
@@ -201,7 +201,7 @@ export const packObjectData = (
       .map((object) => `    ${Path.basename(object.filename)}`)
       .join("\n");
     throw new Error(
-      `Object files too large to fit in bank.\n${oversizedObjects}`
+      `Object files too large to fit in bank.\n${oversizedObjects}`,
     );
   }
 
@@ -238,7 +238,7 @@ export const packObjectData = (
       throw new Error(
         `Bank overflow in ${
           bankIndex + 1
-        }. Size was ${size} bytes where max allowed is ${BANK_SIZE} bytes`
+        }. Size was ${size} bytes where max allowed is ${BANK_SIZE} bytes`,
       );
     }
   }
@@ -328,7 +328,7 @@ export const toObjectData = (filename: string): Promise<ObjectData> => {
 
 export const writeAsync = (
   filename: string,
-  contents: string
+  contents: string,
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     fs.writeFile(filename, contents, (err) => {
@@ -374,7 +374,7 @@ export const generateReport = (
 
 export const gbspack = async (
   inputFiles: string[],
-  args: PackArgs
+  args: PackArgs,
 ): Promise<PackResult> => {
   const bankOffset = args.bankOffset ?? 0;
   const outputPath = args.outputPath ?? "";

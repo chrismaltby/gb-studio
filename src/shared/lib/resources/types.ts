@@ -9,7 +9,7 @@ export const ActorDirection = Type.Union(
     Type.Literal("left"),
     Type.Literal("right"),
   ],
-  { default: "down" }
+  { default: "down" },
 );
 
 export type ActorDirection = Static<typeof ActorDirection>;
@@ -29,7 +29,7 @@ export const CollisionGroup = Type.Union(
     Type.Literal("3"),
     Type.Literal("player"),
   ],
-  { default: "" }
+  { default: "" },
 );
 
 export type CollisionGroup = Static<typeof CollisionGroup>;
@@ -79,10 +79,10 @@ const ScriptEvent = Type.Recursive((This) =>
     children: Type.Optional(
       Type.Record(
         Type.String(),
-        Type.Union([Type.Array(This), Type.Undefined()])
-      )
+        Type.Union([Type.Array(This), Type.Undefined()]),
+      ),
     ),
-  })
+  }),
 );
 type ScriptEvent = Static<typeof ScriptEvent>;
 
@@ -503,7 +503,7 @@ export const PaletteResource = Type.Object({
   ]),
   defaultName: Type.Optional(Type.String()),
   defaultColors: Type.Optional(
-    Type.Tuple([Type.String(), Type.String(), Type.String(), Type.String()])
+    Type.Tuple([Type.String(), Type.String(), Type.String(), Type.String()]),
   ),
 });
 
@@ -695,7 +695,7 @@ export const SettingsResource = Type.Object({
   compilerPreset: Type.Number({ default: 3000 }),
   scriptEventPresets: Type.Record(
     Type.String(),
-    Type.Record(Type.String(), ScriptEventPreset)
+    Type.Record(Type.String(), ScriptEventPreset),
   ),
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
   runSceneSelectionOnly: Type.Boolean(),
@@ -821,7 +821,7 @@ export type WriteResourcesPatch = {
 };
 
 export const isProjectMetadataResource = (
-  x: unknown
+  x: unknown,
 ): x is ProjectMetadataResource => {
   return (
     x !== null &&

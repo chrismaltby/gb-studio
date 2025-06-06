@@ -84,7 +84,7 @@ workerCtx.onmessage = async (evt) => {
     0,
     0,
     tileSize,
-    tileSize
+    tileSize,
   );
 
   const imageData = ctx.getImageData(0, 0, tileSize, tileSize);

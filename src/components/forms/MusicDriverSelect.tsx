@@ -41,12 +41,12 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
       huge: l10n("FIELD_HUGE_DRIVER_INFO"),
       gbt: l10n("FIELD_GBT_PLAYER_INFO"),
     }),
-    []
+    [],
   );
 
   useEffect(() => {
     const currentMusicDriver = musicDriverOptions.find(
-      (e) => e.value === value
+      (e) => e.value === value,
     );
     if (currentMusicDriver) {
       setCurrentValue(currentMusicDriver);
@@ -59,7 +59,7 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -69,7 +69,7 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(
         option: Option,
-        { context }: { context: "menu" | "value" }
+        { context }: { context: "menu" | "value" },
       ) => {
         return (
           <OptionLabelWithInfo

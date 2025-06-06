@@ -19,17 +19,17 @@ const statAsync = promisify(stat);
 const loadBackgroundData =
   (projectRoot: string) =>
   async (
-    filename: string
+    filename: string,
   ): Promise<CompressedBackgroundResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(
       filename,
       projectRoot,
-      "backgrounds"
+      "backgrounds",
     );
 
     const resource = await getAssetResource(
       CompressedBackgroundResource,
-      filename
+      filename,
     );
 
     try {
@@ -65,17 +65,17 @@ const loadBackgroundData =
 
 const loadAllBackgroundData = async (projectRoot: string) => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/backgrounds/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/backgrounds/**/@(*.png|*.PNG)`,
   );
   const imageData = (
     await Promise.all(
       ([] as Array<Promise<CompressedBackgroundResourceAsset | null>>).concat(
         imagePaths.map(loadBackgroundData(projectRoot)),
-        pluginPaths.map(loadBackgroundData(projectRoot))
-      )
+        pluginPaths.map(loadBackgroundData(projectRoot)),
+      ),
     )
   ).filter((i) => i) as CompressedBackgroundResourceAsset[];
   return imageData;

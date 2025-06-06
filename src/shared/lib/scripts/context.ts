@@ -19,7 +19,7 @@ export type ScriptEditorCtx = {
 };
 
 export const defaultVariableForContext = (
-  context: ScriptEditorCtxType
+  context: ScriptEditorCtxType,
 ): string => {
   if (context === "script") {
     return "V0";

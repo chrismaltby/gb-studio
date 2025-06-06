@@ -50,7 +50,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
                 ? project.scenes.filter(
                     (scene) =>
                       scene.id === startSceneId ||
-                      selectionIds.includes(scene.id)
+                      selectionIds.includes(scene.id),
                   )
                 : project.scenes,
             settings: {
@@ -66,7 +66,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
             exportBuild,
             debugEnabled,
             sceneTypes,
-          }
+          },
         );
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
@@ -101,7 +101,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           project,
           engineFields,
           sceneTypes,
-          exportType
+          exportType,
         );
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));

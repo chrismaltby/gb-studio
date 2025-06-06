@@ -12,6 +12,6 @@ import PluginsManager from "components/app/PluginsManager";
   root.render(
     <React.StrictMode>
       <PluginsManager />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 })();

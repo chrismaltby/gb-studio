@@ -14,7 +14,7 @@ const DebuggerControls = () => {
   const isPaused = useAppSelector((state) => state.debug.isPaused);
   const isLogOpen = useAppSelector((state) => state.debug.isLogOpen);
   const debuggerEnabled = useAppSelector(
-    (state) => state.project.present.settings.debuggerEnabled
+    (state) => state.project.present.settings.debuggerEnabled,
   );
 
   const onPlayPause = useCallback(() => {
@@ -52,7 +52,7 @@ const DebuggerControls = () => {
         onStepFrame();
       }
     },
-    [onPlayPause, onStep, onStepFrame]
+    [onPlayPause, onStep, onStepFrame],
   );
 
   useEffect(() => {

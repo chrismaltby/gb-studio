@@ -106,7 +106,7 @@ export const determineUsedAssets = ({
   const addReferences = (
     references: Reference[],
     filterType: string,
-    addFn: (id: string) => void
+    addFn: (id: string) => void,
   ) => {
     const referencedIds = references
       .filter((ref) => ref.type === filterType)
@@ -128,7 +128,7 @@ export const determineUsedAssets = ({
 
   const isIncompatibleColorMode = (
     colorModeA: string,
-    colorModeB: string
+    colorModeB: string,
   ): boolean => {
     return (
       colorModeA !== colorModeB &&
@@ -142,7 +142,7 @@ export const determineUsedAssets = ({
     backgroundId: string,
     is360: boolean,
     colorMode: ColorModeSetting,
-    forceTilesetGeneration: boolean
+    forceTilesetGeneration: boolean,
   ) => {
     const id = ensureString(backgroundId, defaultBackgroundId);
     const asset = backgroundsLookup[id];
@@ -158,14 +158,14 @@ export const determineUsedAssets = ({
         if (
           isIncompatibleColorMode(
             colorMode,
-            usedBackgroundsLookup[id].colorMode
+            usedBackgroundsLookup[id].colorMode,
           )
         ) {
           if (!incompatibleWarnedIds.has(asset.id)) {
             warnings(
               l10n("WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES", {
                 filename: asset.filename,
-              })
+              }),
             );
             incompatibleWarnedIds.add(asset.id);
           }
@@ -195,7 +195,7 @@ export const determineUsedAssets = ({
             warnings(
               l10n("WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES", {
                 filename: asset.filename,
-              })
+              }),
             );
             incompatibleWarnedIds.add(asset.id);
           }
@@ -212,15 +212,15 @@ export const determineUsedAssets = ({
       ensureString(scene.backgroundId, defaultBackgroundId),
       scene.type === "LOGO",
       colorMode,
-      !scene.tilesetId
+      !scene.tilesetId,
     );
 
     addSpriteById(
       ensureString(
         scene.playerSpriteSheetId || defaultPlayerSprites[scene.type],
-        ""
+        "",
       ),
-      colorMode
+      colorMode,
     );
     for (let a = 0; a < scene.actors.length; a++) {
       const actor = scene.actors[a];
@@ -292,7 +292,7 @@ export const determineUsedAssets = ({
           }
         }
       }
-    }
+    },
   );
 
   return {

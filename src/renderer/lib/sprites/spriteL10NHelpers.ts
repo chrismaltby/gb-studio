@@ -46,7 +46,7 @@ export const getAnimationNameForType = (type: AnimationType) => {
 export const getAnimationNameByIndex = (
   type: SpriteAnimationType,
   flipLeft: boolean,
-  animationIndex: number
+  animationIndex: number,
 ) => {
   if (type === "fixed" || type === "fixed_movement") {
     const fixedAnimationNames = [l10n("FIELD_IDLE"), l10n("FIELD_MOVING")];
@@ -96,7 +96,7 @@ export const getAnimationNameById = (
   type: SpriteAnimationType,
   flipLeft: boolean,
   selectedId: string,
-  animationIds: string[]
+  animationIds: string[],
 ) => {
   const filteredIds =
     filterAnimationsBySpriteType(animationIds, type, flipLeft) || [];

@@ -23,7 +23,7 @@ Components in the UI section come from `components/ui`. These components should 
 - Should not include any files outside of `components/ui`.
 - Should localise use of styled-components to be within `style.ts` files.
 - The `style.ts` files are not intended to be used outside of `components/ui` so you should provide wrapper components where needed.
-- Don't expose [transient props](https://styled-components.com/docs/api#transient-props) in wrapper components.  
+- Don't expose [transient props](https://styled-components.com/docs/api#transient-props) in wrapper components.
   ```
   // e.g. wrapper <Label /> converts `gold` to the tranient prop `$gold`
   const Label = ({gold, children}) => <StyledLabel $gold={gold} children={children} />

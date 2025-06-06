@@ -78,18 +78,18 @@ const MetaspriteEditorPreviewSettings = ({
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const value = useAppSelector((state) => state.editor.previewAsSceneId);
   const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
+    spriteSheetSelectors.selectById(state, spriteSheetId),
   );
   const metasprite = useAppSelector((state) =>
-    metaspriteSelectors.selectById(state, metaspriteId)
+    metaspriteSelectors.selectById(state, metaspriteId),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, value)
+    sceneSelectors.selectById(state, value),
   );
   const scenes = useAppSelector((state) => sceneSelectors.selectIds(state));
   const sceneIndex = scenes.indexOf(value);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
 
   useEffect(() => {

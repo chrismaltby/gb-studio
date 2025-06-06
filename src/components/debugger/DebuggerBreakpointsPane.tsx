@@ -25,16 +25,16 @@ const BreakpointsWrapper = styled.div`
 const DebuggerBreakpointsPane = () => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) =>
-    getSettings(state).debuggerCollapsedPanes.includes("breakpoints")
+    getSettings(state).debuggerCollapsedPanes.includes("breakpoints"),
   );
   const pauseOnScriptChanged = useAppSelector(
-    (state) => getSettings(state).debuggerPauseOnScriptChanged
+    (state) => getSettings(state).debuggerPauseOnScriptChanged,
   );
   const pauseOnWatchedVariableChanged = useAppSelector(
-    (state) => getSettings(state).debuggerPauseOnWatchedVariableChanged
+    (state) => getSettings(state).debuggerPauseOnWatchedVariableChanged,
   );
   const breakpoints = useAppSelector(
-    (state) => getSettings(state).debuggerBreakpoints
+    (state) => getSettings(state).debuggerBreakpoints,
   );
 
   const onToggleCollapsed = useCallback(() => {
@@ -46,7 +46,7 @@ const DebuggerBreakpointsPane = () => {
     dispatch(
       settingsActions.editSettings({
         debuggerPauseOnScriptChanged: !pauseOnScriptChanged,
-      })
+      }),
     );
   }, [dispatch, pauseOnScriptChanged]);
 
@@ -55,7 +55,7 @@ const DebuggerBreakpointsPane = () => {
     dispatch(
       settingsActions.editSettings({
         debuggerPauseOnWatchedVariableChanged: !pauseOnWatchedVariableChanged,
-      })
+      }),
     );
   }, [dispatch, pauseOnWatchedVariableChanged]);
 

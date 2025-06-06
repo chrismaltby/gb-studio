@@ -6,7 +6,7 @@ const collisonTileCache: Record<string, HTMLCanvasElement> = {};
 
 export const renderCollisionTileIcon = (
   icon: string,
-  color: string
+  color: string,
 ): HTMLCanvasElement => {
   const key = `${color}:${icon}`;
 
@@ -59,7 +59,7 @@ export const renderCollisionTileIcon = (
 
 export const isCollisionTileActive = (
   value: number,
-  tileDef: CollisionTileDef
+  tileDef: CollisionTileDef,
 ): boolean => {
   const mask = tileDef.mask || 0xff;
   const maskedValue = value & mask;

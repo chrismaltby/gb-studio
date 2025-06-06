@@ -25,7 +25,7 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
           entitiesActions.refreshCustomEventArgs({
             customEventId: entityId,
             scriptEventDefs,
-          })
+          }),
         );
       }
 
@@ -42,7 +42,7 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
         entitiesActions.applyScriptEventPresetChanges({
           ...action.payload,
           previousArgs,
-        })
+        }),
       );
     } else if (settingsActions.removeScriptEventPreset.match(action)) {
       // Fetch values of preset from before change
@@ -50,7 +50,7 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       store.dispatch(
         entitiesActions.removeScriptEventPresetReferences({
           ...action.payload,
-        })
+        }),
       );
     }
 

@@ -30,30 +30,30 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, actor.id]
+    [dispatch, actor.id],
   );
 
   const onChangeSpriteSheetId = useCallback(
     (e: string) => onChangeActorProp("spriteSheetId", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeMoveSpeed = useCallback(
     (e: number) => onChangeActorProp("moveSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeAnimSpeed = useCallback(
     (e: number) => onChangeActorProp("animSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeCollisionGroup = useCallback(
     (e: CollisionGroup) => onChangeActorProp("collisionGroup", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   if (!actor) {

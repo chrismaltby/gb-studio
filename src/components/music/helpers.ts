@@ -2,7 +2,7 @@ import { Song } from "shared/lib/uge/song/Song";
 import { InstrumentType } from "store/features/editor/editorState";
 
 export const getInstrumentTypeByChannel = (
-  channel: number
+  channel: number,
 ): InstrumentType | null => {
   switch (channel) {
     case 0:

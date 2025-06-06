@@ -102,27 +102,27 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
               dispatch(
                 editorActions.selectCustomEvent({
                   customEventId: link.entityId,
-                })
+                }),
               );
             } else if (link.type === "actor") {
               dispatch(
                 editorActions.selectActor({
                   actorId: link.entityId,
                   sceneId: link.sceneId,
-                })
+                }),
               );
             } else if (link.type === "trigger") {
               dispatch(
                 editorActions.selectTrigger({
                   triggerId: link.entityId,
                   sceneId: link.sceneId,
-                })
+                }),
               );
             } else if (link.type === "scene") {
               dispatch(
                 editorActions.selectScene({
                   sceneId: link.sceneId,
-                })
+                }),
               );
             }
           }}
@@ -142,10 +142,10 @@ const DebuggerBuildLog = () => {
   const warnings = useAppSelector((state) => state.console.warnings);
   const status = useAppSelector((state) => state.console.status);
   const openBuildLogOnWarnings = useAppSelector(
-    (state) => getSettings(state).openBuildLogOnWarnings
+    (state) => getSettings(state).openBuildLogOnWarnings,
   );
   const generateDebugFilesEnabled = useAppSelector(
-    (state) => getSettings(state).generateDebugFilesEnabled
+    (state) => getSettings(state).generateDebugFilesEnabled,
   );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
@@ -195,25 +195,25 @@ const DebuggerBuildLog = () => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onToggleOpenBuildLogOnWarnings = useCallback(
     () =>
       onChangeSettingProp("openBuildLogOnWarnings", !openBuildLogOnWarnings),
-    [onChangeSettingProp, openBuildLogOnWarnings]
+    [onChangeSettingProp, openBuildLogOnWarnings],
   );
 
   const onToggleGenerateDebugFilesEnabled = useCallback(
     () =>
       onChangeSettingProp(
         "generateDebugFilesEnabled",
-        !generateDebugFilesEnabled
+        !generateDebugFilesEnabled,
       ),
-    [onChangeSettingProp, generateDebugFilesEnabled]
+    [onChangeSettingProp, generateDebugFilesEnabled],
   );
 
   return (

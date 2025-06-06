@@ -244,7 +244,7 @@ const playNotePreview = (
   song: Song,
   channel: number,
   note: number,
-  instrument: number
+  instrument: number,
 ) => {
   const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
   const instrumentList = getInstrumentListByType(song, instrumentType);
@@ -267,10 +267,10 @@ export const SongPianoRoll = ({
   const playing = useAppSelector((state) => state.tracker.playing);
   const hoverNote = useAppSelector((state) => state.tracker.hoverNote);
   const startPlaybackPosition = useAppSelector(
-    (state) => state.tracker.startPlaybackPosition
+    (state) => state.tracker.startPlaybackPosition,
   );
   const subpatternEditorFocus = useAppSelector(
-    (state) => state.tracker.subpatternEditorFocus
+    (state) => state.tracker.subpatternEditorFocus,
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -300,14 +300,14 @@ export const SongPianoRoll = ({
       const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
 
       dispatch(
-        trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
+        trackerActions.setDefaultStartPlaybackPosition([sequenceId, col]),
       );
       API.music.sendToMusicWindow({
         action: "position",
         position: [sequenceId, col],
       });
     },
-    [dispatch, sequenceId]
+    [dispatch, sequenceId],
   );
 
   const playingRowRef = useRef<HTMLDivElement>(null);
@@ -328,24 +328,26 @@ export const SongPianoRoll = ({
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
   const selectedChannel = useAppSelector(
-    (state) => state.tracker.selectedChannel
+    (state) => state.tracker.selectedChannel,
   );
   const visibleChannels = useAppSelector(
-    (state) => state.tracker.visibleChannels
+    (state) => state.tracker.visibleChannels,
   );
 
   const tool = useAppSelector((state) => state.tracker.tool);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const [draggingSelection, setDraggingSelection] = useState(false);
-  const [selectionOrigin, setSelectionOrigin] =
-    useState<Position | undefined>();
-  const [selectionRect, setSelectionRect] =
-    useState<SelectionRect | undefined>();
+  const [selectionOrigin, setSelectionOrigin] = useState<
+    Position | undefined
+  >();
+  const [selectionRect, setSelectionRect] = useState<
+    SelectionRect | undefined
+  >();
   const [addToSelection, setAddToSelection] = useState(false);
 
   const selectedPatternCells = useAppSelector(
-    (state) => state.tracker.selectedPatternCells
+    (state) => state.tracker.selectedPatternCells,
   );
 
   useEffect(() => {
@@ -372,7 +374,7 @@ export const SongPianoRoll = ({
   const hoverColumn = useAppSelector((state) => state.tracker.hoverColumn);
 
   const defaultInstruments = useAppSelector(
-    (state) => state.tracker.defaultInstruments
+    (state) => state.tracker.defaultInstruments,
   );
   const currentInstrument = defaultInstruments[selectedChannel];
 
@@ -407,7 +409,7 @@ export const SongPianoRoll = ({
       }
       return [];
     },
-    [selectedChannel, pattern]
+    [selectedChannel, pattern],
   );
 
   const onSelectAll = useCallback(() => {
@@ -476,7 +478,7 @@ export const SongPianoRoll = ({
         }
         setRenderPattern(newPattern);
         setRenderSelectedPatternCells(
-          selectedPatternCells.map((i) => i + deltaX)
+          selectedPatternCells.map((i) => i + deltaX),
         );
       }
     },
@@ -487,7 +489,7 @@ export const SongPianoRoll = ({
       moveNoteFrom?.note,
       pattern,
       selectedPatternCells,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -525,7 +527,7 @@ export const SongPianoRoll = ({
         setRenderPattern(newPattern);
       }
     },
-    [selectedChannel, hoverColumn, hoverNote, pattern]
+    [selectedChannel, hoverColumn, hoverNote, pattern],
   );
 
   // Mouse
@@ -541,7 +543,7 @@ export const SongPianoRoll = ({
           trackerDocumentActions.editPattern({
             patternId: patternId,
             pattern: renderPattern,
-          })
+          }),
         );
         setPastedPattern(undefined);
       } else if (tool === "pencil" && e.button === 0) {
@@ -564,7 +566,7 @@ export const SongPianoRoll = ({
               patternId: patternId,
               cell: [col, selectedChannel],
               changes: changes,
-            })
+            }),
           );
 
           if (song) {
@@ -587,7 +589,7 @@ export const SongPianoRoll = ({
                 instrument: null,
                 note: null,
               },
-            })
+            }),
           );
           const newSelectedCells = [...selectedPatternCells];
           newSelectedCells.splice(col, 1);
@@ -601,7 +603,7 @@ export const SongPianoRoll = ({
               const newSelectedPatterns = [...selectedPatternCells];
               newSelectedPatterns.push(col);
               dispatch(
-                trackerActions.setSelectedPatternCells(newSelectedPatterns)
+                trackerActions.setSelectedPatternCells(newSelectedPatterns),
               );
             } else {
               dispatch(trackerActions.setSelectedPatternCells([col]));
@@ -617,12 +619,12 @@ export const SongPianoRoll = ({
             Math.floor((e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE) *
               CELL_SIZE,
             0,
-            63 * CELL_SIZE
+            63 * CELL_SIZE,
           );
           const y = clamp(
             Math.floor((e.pageY - bounds.top) / CELL_SIZE) * CELL_SIZE,
             0,
-            12 * 6 * CELL_SIZE - CELL_SIZE
+            12 * 6 * CELL_SIZE - CELL_SIZE,
           );
 
           const newSelectionRect = {
@@ -634,7 +636,7 @@ export const SongPianoRoll = ({
 
           const newSelectedPatterns = selectCellsInRange(
             addToSelection ? selectedPatternCells : [],
-            newSelectionRect
+            newSelectionRect,
           );
 
           setSelectionOrigin({ x, y });
@@ -658,7 +660,7 @@ export const SongPianoRoll = ({
       currentInstrument,
       selectCellsInRange,
       addToSelection,
-    ]
+    ],
   );
 
   const handleMouseUp = useCallback(
@@ -669,12 +671,12 @@ export const SongPianoRoll = ({
             trackerDocumentActions.editPattern({
               patternId: patternId,
               pattern: renderPattern,
-            })
+            }),
           );
           dispatch(
             trackerActions.setSelectedPatternCells(
-              renderSelectedPatternCells.filter((c) => c >= 0 && c < 64)
-            )
+              renderSelectedPatternCells.filter((c) => c >= 0 && c < 64),
+            ),
           );
         }
         setMoveNoteFrom({ note: 0, column: 0 });
@@ -693,7 +695,7 @@ export const SongPianoRoll = ({
       renderPattern,
       renderSelectedPatternCells,
       selectedPatternCells.length,
-    ]
+    ],
   );
 
   const handleMouseMove = useCallback(
@@ -703,7 +705,7 @@ export const SongPianoRoll = ({
       const bounds = gridRef.current.getBoundingClientRect();
 
       const newColumn = Math.floor(
-        (e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE
+        (e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE,
       );
       const newRow = Math.floor((e.pageY - bounds.top) / CELL_SIZE);
       const newNote = 12 * 6 - 1 - newRow;
@@ -748,7 +750,7 @@ export const SongPianoRoll = ({
 
         const selectedCells = selectCellsInRange(
           addToSelection ? selectedPatternCells : [],
-          selectionRect
+          selectionRect,
         );
         dispatch(trackerActions.setSelectedPatternCells(selectedCells));
       }
@@ -773,7 +775,7 @@ export const SongPianoRoll = ({
       selectionRect,
       song,
       tool,
-    ]
+    ],
   );
 
   const handleMouseLeave = useCallback(
@@ -782,7 +784,7 @@ export const SongPianoRoll = ({
         dispatch(trackerActions.setHoverNote(null));
       }
     },
-    [hoverNote, dispatch]
+    [hoverNote, dispatch],
   );
 
   useEffect(() => {
@@ -824,7 +826,7 @@ export const SongPianoRoll = ({
             trackerDocumentActions.editPattern({
               patternId: patternId,
               pattern: newPattern,
-            })
+            }),
           );
         }
       }
@@ -844,7 +846,7 @@ export const SongPianoRoll = ({
       pattern,
       patternId,
       selectedPatternCells,
-    ]
+    ],
   );
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
@@ -876,12 +878,12 @@ export const SongPianoRoll = ({
         const parsedSelectedPattern = parsePatternToClipboard(
           pattern,
           selectedChannel,
-          selectedPatternCells
+          selectedPatternCells,
         );
         dispatch(clipboardActions.copyText(parsedSelectedPattern));
       }
     },
-    [selectedChannel, dispatch, pattern, selectedPatternCells]
+    [selectedChannel, dispatch, pattern, selectedPatternCells],
   );
 
   const onCut = useCallback(() => {
@@ -889,7 +891,7 @@ export const SongPianoRoll = ({
       const parsedSelectedPattern = parsePatternToClipboard(
         pattern,
         selectedChannel,
-        selectedPatternCells
+        selectedPatternCells,
       );
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
       //delete selection
@@ -905,7 +907,7 @@ export const SongPianoRoll = ({
         trackerDocumentActions.editPattern({
           patternId: patternId,
           pattern: newPattern,
-        })
+        }),
       );
     }
   }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
@@ -913,7 +915,7 @@ export const SongPianoRoll = ({
   const onPaste = useCallback(async () => {
     if (pattern) {
       const newPastedPattern = parseClipboardToPattern(
-        await API.clipboard.readText()
+        await API.clipboard.readText(),
       );
       if (newPastedPattern) {
         refreshPastedPattern(newPastedPattern);
@@ -933,7 +935,7 @@ export const SongPianoRoll = ({
   const onPasteInPlace = useCallback(async () => {
     if (pattern) {
       const newPastedPattern = parseClipboardToPattern(
-        await API.clipboard.readText()
+        await API.clipboard.readText(),
       );
 
       if (newPastedPattern) {
@@ -966,7 +968,7 @@ export const SongPianoRoll = ({
           trackerDocumentActions.editPattern({
             patternId: patternId,
             pattern: newPattern,
-          })
+          }),
         );
         setPastedPattern(undefined);
         dispatch(trackerActions.setSelectedPatternCells([]));

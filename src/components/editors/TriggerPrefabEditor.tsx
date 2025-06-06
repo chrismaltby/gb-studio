@@ -43,18 +43,18 @@ const UsesCollapsedWrapper = styled.div`
 export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
   const triggerPrefabIds = useAppSelector(triggerPrefabSelectors.selectIds);
   const prefab = useAppSelector((state) =>
-    triggerPrefabSelectors.selectById(state, id)
+    triggerPrefabSelectors.selectById(state, id),
   );
 
   const index = React.useMemo(
     () => triggerPrefabIds.indexOf(id),
-    [triggerPrefabIds, id]
+    [triggerPrefabIds, id],
   );
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!prefab?.notes);
 
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
@@ -66,7 +66,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
   const onChangeTriggerPrefabProp = useCallback(
     <K extends keyof TriggerPrefabNormalized>(
       key: K,
-      value: TriggerPrefabNormalized[K]
+      value: TriggerPrefabNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editTriggerPrefab({
@@ -74,22 +74,22 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerPrefabProp("name", e.currentTarget.value),
-    [onChangeTriggerPrefabProp]
+    [onChangeTriggerPrefabProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeTriggerPrefabProp("notes", e.currentTarget.value),
-    [onChangeTriggerPrefabProp]
+    [onChangeTriggerPrefabProp],
   );
 
   const selectSidebar = () => {
@@ -99,7 +99,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
   const onRemove = () => {
     if (prefab) {
       dispatch(
-        entitiesActions.removeTriggerPrefab({ triggerPrefabId: prefab.id })
+        entitiesActions.removeTriggerPrefab({ triggerPrefabId: prefab.id }),
       );
     }
   };
@@ -116,7 +116,7 @@ export const TriggerPrefabEditor: FC<TriggerPrefabEditorProps> = ({ id }) => {
     (value: boolean) => {
       dispatch(editorActions.setShowScriptUses(value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (!prefab) {

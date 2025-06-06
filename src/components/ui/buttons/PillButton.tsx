@@ -9,5 +9,5 @@ export interface PillButtonProps
 export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
   ({ variant, ...props }, ref) => (
     <StyledPillButton ref={ref} $variant={variant} {...props} />
-  )
+  ),
 );

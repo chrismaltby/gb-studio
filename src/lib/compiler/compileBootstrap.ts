@@ -44,7 +44,7 @@ export const compileScriptEngineInit = ({
     (engineField: EngineFieldSchema) =>
       engineField.cType !== "define" &&
       (!engineField.sceneType ||
-        usedSceneTypeIds.includes(engineField.sceneType))
+        usedSceneTypeIds.includes(engineField.sceneType)),
   );
 
   return `.include "vm.i"
@@ -71,7 +71,7 @@ ${fonts.map((font) => `        IMPORT_FAR_PTR_DATA _${font.symbol}`).join("\n")}
 ${avatarFonts
   .map(
     (_, avatarFontIndex) =>
-      `        IMPORT_FAR_PTR_DATA _${avatarFontSymbol(avatarFontIndex)}`
+      `        IMPORT_FAR_PTR_DATA _${avatarFontSymbol(avatarFontIndex)}`,
   )
   .join("\n")}
 

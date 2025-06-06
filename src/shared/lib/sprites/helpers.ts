@@ -51,7 +51,7 @@ const cursorAnimationTypes: AnimationType[] = ["idle", "hover"];
 export const getAnimationTypeByIndex = (
   type: SpriteAnimationType,
   flipLeft: boolean,
-  animationIndex: number
+  animationIndex: number,
 ): AnimationType => {
   if (type === "fixed" || type === "fixed_movement") {
     return fixedAnimationTypes[animationIndex];
@@ -88,7 +88,7 @@ const cursorIndexes = [0, 1];
 export const filterAnimationsBySpriteType = <T>(
   animationIds: T[],
   type: SpriteAnimationType,
-  flipLeft: boolean
+  flipLeft: boolean,
 ): T[] => {
   if (type === "fixed") {
     return fixedIndexes.map((i) => animationIds[i]);
@@ -120,7 +120,7 @@ export const filterAnimationsBySpriteType = <T>(
 export const animationIndexBySpriteType = (
   animationIndex: number,
   type: SpriteAnimationType,
-  flipLeft: boolean
+  flipLeft: boolean,
 ): number => {
   if (type === "fixed") {
     return fixedIndexes[animationIndex % fixedIndexes.length];
@@ -149,7 +149,7 @@ export const animationIndexBySpriteType = (
 export const animationFlipBySpriteType = (
   animationIndex: number,
   type: SpriteAnimationType,
-  flipLeft: boolean
+  flipLeft: boolean,
 ): boolean => {
   if (type === "fixed") {
     return false;
@@ -179,7 +179,7 @@ export const animationMapBySpriteType = <T, U>(
   items: T[],
   type: SpriteAnimationType,
   flipLeft: boolean,
-  fn: (item: T | undefined, flip: boolean) => U
+  fn: (item: T | undefined, flip: boolean) => U,
 ): U[] => {
   return Array.from(Array(8)).map((_item, index) => {
     if (type === "fixed") {

@@ -24,7 +24,7 @@ export const ActorPrefabSelect = ({
   ...selectProps
 }: ActorPrefabSelectProps) => {
   const actorPrefabs = useAppSelector((state) =>
-    actorPrefabSelectors.selectAll(state)
+    actorPrefabSelectors.selectAll(state),
   );
   const [options, setOptions] = useState<Option[]>([]);
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -42,8 +42,8 @@ export const ActorPrefabSelect = ({
             label: actorName(actorPrefab, actorPrefabIndex),
             value: actorPrefab.id,
           }))
-          .sort(sortByLabel)
-      )
+          .sort(sortByLabel),
+      ),
     );
   }, [actorPrefabs]);
 
@@ -51,7 +51,7 @@ export const ActorPrefabSelect = ({
     setCurrentValue(
       options.find((option) => {
         return option.value === value;
-      })
+      }),
     );
   }, [options, value]);
 
@@ -61,7 +61,7 @@ export const ActorPrefabSelect = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

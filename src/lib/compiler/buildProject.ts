@@ -37,7 +37,7 @@ const buildProject = async (
     make = true,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
-  }: BuildOptions
+  }: BuildOptions,
 ) => {
   cancelling = false;
 
@@ -70,7 +70,7 @@ const buildProject = async (
     await copy(binjgbRoot, `${outputRoot}/build/web`);
     await copy(
       `${outputRoot}/build/rom/${gameFile}`,
-      `${outputRoot}/build/web/rom/${gameFile}`
+      `${outputRoot}/build/web/rom/${gameFile}`,
     );
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.metadata.name);
@@ -105,7 +105,7 @@ const buildProject = async (
       .replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`)
       .replace(
         /CGB_COLOR_CURVE = [0-9]+/g,
-        `CGB_COLOR_CURVE = ${colorCorrection}`
+        `CGB_COLOR_CURVE = ${colorCorrection}`,
       );
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
@@ -114,7 +114,7 @@ const buildProject = async (
     await fs.mkdir(`${outputRoot}/build/pocket`);
     await copy(
       `${outputRoot}/build/rom/game.pocket`,
-      `${outputRoot}/build/pocket/game.pocket`
+      `${outputRoot}/build/pocket/game.pocket`,
     );
   }
   return compiledData;

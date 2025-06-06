@@ -16,7 +16,7 @@ import {
  */
 export const imageToIndexedImage = (
   img: ImageBitmap,
-  indexFn: ImageIndexFunction
+  indexFn: ImageIndexFunction,
 ): IndexedImage => {
   const canvas = new OffscreenCanvas(img.width, img.height);
   const ctx = canvas.getContext("2d");
@@ -29,6 +29,6 @@ export const imageToIndexedImage = (
     img.width,
     img.height,
     imageData.data,
-    indexFn
+    indexFn,
   );
 };

@@ -30,17 +30,17 @@ const customEventActorsLookup = keyBy(
     id: String(i),
     name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
   })),
-  "id"
+  "id",
 );
 
 export const useScriptEventTitle = (
   command: string,
   args: Record<string, unknown>,
-  isVisible: boolean
+  isVisible: boolean,
 ): string => {
   const context = useContext(ScriptEditorContext);
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
   const localisedCommand = l10n(command as L10NKey);
   const eventName =
@@ -56,49 +56,49 @@ export const useScriptEventTitle = (
   const { entityType, sceneId, entityId } = context;
 
   const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state)
+    variableSelectors.selectEntities(state),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, entityId)
+    customEventSelectors.selectById(state, entityId),
   );
   const sceneActorIds = useAppSelector((state) =>
-    getSceneActorIds(state, { id: sceneId })
+    getSceneActorIds(state, { id: sceneId }),
   );
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const scenesLookup = useAppSelector((state) =>
-    sceneSelectors.selectEntities(state)
+    sceneSelectors.selectEntities(state),
   );
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const spriteSheetsLookup = useAppSelector((state) =>
-    spriteSheetSelectors.selectEntities(state)
+    spriteSheetSelectors.selectEntities(state),
   );
   const spriteSheets = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
   );
   const emotesLookup = useAppSelector((state) =>
-    emoteSelectors.selectEntities(state)
+    emoteSelectors.selectEntities(state),
   );
   const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
   const constantsLookup = useAppSelector((state) =>
-    constantSelectors.selectEntities(state)
+    constantSelectors.selectEntities(state),
   );
   const constants = useAppSelector((state) =>
-    constantSelectors.selectAll(state)
+    constantSelectors.selectAll(state),
   );
 
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
       variablesLookup,
-      customEvent
+      customEvent,
     );
     const namedLookup = keyBy(variables, "id");
     setNamedVariablesLookup(namedLookup);
@@ -129,7 +129,7 @@ export const useScriptEventTitle = (
             const actor = actorsLookup[value as string] as ActorNormalized;
             return actorName(actor, sceneActorIds?.indexOf(actor.id)).replace(
               / /g,
-              ""
+              "",
             );
           } else if (
             actorsLookup[entityId] &&
@@ -155,7 +155,7 @@ export const useScriptEventTitle = (
           if (constant) {
             return constantName(constant, constants.indexOf(constant)).replace(
               / /g,
-              ""
+              "",
             );
           }
           return "0";
@@ -186,7 +186,7 @@ export const useScriptEventTitle = (
           if (customEvent) {
             return customEventName(
               customEvent,
-              customEvents.indexOf(customEvent)
+              customEvents.indexOf(customEvent),
             ).replace(/ /g, "");
           }
           return String(value);
@@ -205,8 +205,8 @@ export const useScriptEventTitle = (
                   spriteNameForId,
                   emoteNameForId,
                   customEventNameForId,
-                }
-              )
+                },
+              ),
             );
           }
         } catch (e) {

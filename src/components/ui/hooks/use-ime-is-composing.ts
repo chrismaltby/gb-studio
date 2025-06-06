@@ -18,7 +18,7 @@ export const useIMEIsComposing = (inputRef: RefObject<HTMLInputElement>) => {
       if (inputElement) {
         inputElement.removeEventListener(
           "compositionstart",
-          onCompositionStart
+          onCompositionStart,
         );
         inputElement.removeEventListener("compositionend", onCompositionEnd);
       }

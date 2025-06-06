@@ -17,7 +17,7 @@ const FLIP_X = 0x40;
 const FLIP_Y = 0x80;
 const BLANK_TILE: number[] = Array.from(Array(TILE_SIZE * TILE_SIZE)).fill(0);
 const TRANSPARENT_TILE: number[] = Array.from(
-  Array(TILE_SIZE * TILE_SIZE)
+  Array(TILE_SIZE * TILE_SIZE),
 ).fill(-1);
 
 const toIndex = (x: number, y: number): number =>
@@ -60,7 +60,7 @@ function rgb2lab(rgb: [number, number, number]): [number, number, number] {
 
 function deltaE(
   rgbA: [number, number, number],
-  rgbB: [number, number, number]
+  rgbB: [number, number, number],
 ) {
   const labA = rgb2lab(rgbA);
   const labB = rgb2lab(rgbB);
@@ -85,7 +85,7 @@ function deltaE(
 const distance15Bit = (colorA: number, colorB: number) => {
   return deltaE(
     rgb2lab(color15BitToRGB(colorA)),
-    rgb2lab(color15BitToRGB(colorB))
+    rgb2lab(color15BitToRGB(colorB)),
   );
 };
 
@@ -148,11 +148,11 @@ const toPaletteColorIndex = (color: number, palette: number[]) => {
     return index;
   }
   const distances = palette.map((pColor, pIndex) =>
-    pIndex > 1 ? distance15Bit(color, pColor) : Infinity
+    pIndex > 1 ? distance15Bit(color, pColor) : Infinity,
   );
   const minDistance = Math.min.apply(null, distances);
   const closestIndex = distances.findIndex(
-    (distance) => distance === minDistance
+    (distance) => distance === minDistance,
   );
 
   return closestIndex;

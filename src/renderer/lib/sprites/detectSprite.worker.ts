@@ -33,7 +33,7 @@ workerCtx.onmessage = async (evt) => {
   const hintTileDefs = autoHint2(indexedImage);
   const { tileDefs, spriteTileLocations } = spritesToTiles2(
     spriteDefs,
-    hintTileDefs
+    hintTileDefs,
   );
   const spriteClusters = clusterSprites(spriteDefs);
 

@@ -2,8 +2,8 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_LINK_HOST";
 const subGroups = {
-  "EVENT_GROUP_MISC": "EVENT_GROUP_MULTIPLAYER",
-}
+  EVENT_GROUP_MISC: "EVENT_GROUP_MULTIPLAYER",
+};
 
 const fields = [
   {

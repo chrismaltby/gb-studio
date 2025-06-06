@@ -19,7 +19,7 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const emote = useAppSelector((state) =>
-    emoteSelectors.selectById(state, emoteId)
+    emoteSelectors.selectById(state, emoteId),
   );
 
   const onWorkerComplete = useCallback(
@@ -39,7 +39,7 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [emote, workerId]
+    [emote, workerId],
   );
 
   useEffect(() => {

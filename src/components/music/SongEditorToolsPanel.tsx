@@ -73,11 +73,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const play = useAppSelector((state) => state.tracker.playing);
   const playerReady = useAppSelector((state) => state.tracker.playerReady);
   const subpatternEditorFocus = useAppSelector(
-    (state) => state.tracker.subpatternEditorFocus
+    (state) => state.tracker.subpatternEditorFocus,
   );
 
   const modified = useAppSelector(
-    (state) => state.trackerDocument.present.modified
+    (state) => state.trackerDocument.present.modified,
   );
 
   const view = useAppSelector((state) => state.tracker.view);
@@ -87,7 +87,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
   const defaultStartPlaybackPosition = useAppSelector(
-    (state) => state.tracker.defaultStartPlaybackPosition
+    (state) => state.tracker.defaultStartPlaybackPosition,
   );
 
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
@@ -134,7 +134,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       setPreviousTool(tool);
       dispatch(trackerActions.setTool(newTool));
     },
-    [dispatch, tool]
+    [dispatch, tool],
   );
 
   const saveSong = useCallback(() => {
@@ -144,7 +144,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   }, [dispatch, modified, selectedSong]);
 
   const defaultInstruments = useAppSelector(
-    (state) => state.tracker.defaultInstruments
+    (state) => state.tracker.defaultInstruments,
   );
 
   const setDefaultInstruments = useCallback(
@@ -155,10 +155,10 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           instrument,
           instrument,
           instrument,
-        ])
+        ]),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const octaveOffset = useAppSelector((state) => state.tracker.octaveOffset);
@@ -167,7 +167,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     (offset: number) => {
       dispatch(trackerActions.setOctaveOffset(offset));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onKeyDown = useCallback(
@@ -225,7 +225,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       toggleView,
       togglePlay,
       setDefaultInstruments,
-    ]
+    ],
   );
 
   const onKeyUp = useCallback(
@@ -238,7 +238,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setTmpSelectionMode(false);
       }
     },
-    [tmpSelectionMode, setTool, previousTool]
+    [tmpSelectionMode, setTool, previousTool],
   );
 
   useEffect(() => {
@@ -252,10 +252,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const song = useAppSelector((state) => state.trackerDocument.present.song);
   const selectedChannel = useAppSelector(
-    (state) => state.tracker.selectedChannel
+    (state) => state.tracker.selectedChannel,
   );
-  const [instrumentType, setInstrumentType] =
-    useState<InstrumentType | undefined>();
+  const [instrumentType, setInstrumentType] = useState<
+    InstrumentType | undefined
+  >();
   useEffect(() => {
     if (view === "roll") {
       switch (selectedChannel) {

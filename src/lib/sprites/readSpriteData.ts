@@ -26,7 +26,7 @@ import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
  * @returns Uint8Array of 2bpp tile data
  */
 export const readFileToSpriteTilesData = async (
-  filename: string
+  filename: string,
 ): Promise<Uint8Array> => {
   const img = await readFileToIndexedImage(filename, spriteDataIndexFn);
   const xTiles = Math.floor(img.width / TILE_SIZE);
@@ -42,8 +42,8 @@ export const readFileToSpriteTilesData = async (
           txi * TILE_SIZE,
           tyi * TILE_SIZE,
           TILE_SIZE,
-          TILE_SIZE
-        )
+          TILE_SIZE,
+        ),
       );
       output.set(tileData, index);
       index += tileData.length;
@@ -56,7 +56,7 @@ export const optimiseTiles = async (
   filename: string,
   spriteWidth: number,
   spriteHeight: number,
-  metasprites: MetaspriteTile[][]
+  metasprites: MetaspriteTile[][],
 ): Promise<{
   tiles: IndexedImage[];
   lookup: Record<string, OptimisedTile | undefined>;
@@ -69,7 +69,7 @@ export const optimiseTiles = async (
   const optimisedLookup2: Record<string, OptimisedTile | undefined> = {};
   const indexedImage = await readFileToIndexedImage(
     filename,
-    spriteDataIndexFn
+    spriteDataIndexFn,
   );
 
   for (const myTiles of metasprites) {
@@ -81,7 +81,7 @@ export const optimiseTiles = async (
         tileDef.sliceX,
         tileDef.sliceY,
         8,
-        16
+        16,
       );
       if (tileDef.flipX) {
         slicedTile = flipIndexedImageX(slicedTile);
@@ -94,14 +94,14 @@ export const optimiseTiles = async (
         slicedTile,
         mask,
         spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - 16 - tileDef.y
+        spriteHeight - 16 - tileDef.y,
       );
 
       mask = blitIndexedImageData(
         mask,
         slicedTile,
         spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - 16 - tileDef.y
+        spriteHeight - 16 - tileDef.y,
       );
 
       tileLookup[tileDef.id] = allTiles.length;
@@ -184,10 +184,10 @@ export const optimiseTiles = async (
 
   for (const tile of uniqTiles) {
     uniqTileData.push(
-      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 0, 8, 8))
+      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 0, 8, 8)),
     );
     uniqTileData.push(
-      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 8, 8, 8))
+      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 8, 8, 8)),
     );
   }
 

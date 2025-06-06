@@ -136,8 +136,8 @@ export const optimiseScriptValue = (input: ScriptValue): ScriptValue => {
           value: Math.floor(
             wrap8Bit(
               Math.atan2(optimisedA.value, optimisedB.value) * (128 / Math.PI) +
-                64
-            )
+                64,
+            ),
           ),
         };
       }
@@ -207,7 +207,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
     const stack: ScriptValue[] = [];
 
     function mapOperator(
-      operator: OperatorSymbol
+      operator: OperatorSymbol,
     ): ValueOperatorType | ValueUnaryOperatorType {
       const operatorMap: Record<
         OperatorSymbol,
@@ -356,7 +356,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
 
 export const walkScriptValue = (
   input: ScriptValue,
-  fn: (val: ScriptValue) => void
+  fn: (val: ScriptValue) => void,
 ): void => {
   fn(input);
   if ("valueA" in input && input.valueA) {
@@ -373,7 +373,7 @@ export const walkScriptValue = (
 // recursively search script value for matching node, stop iterating on first match
 export const someInScriptValue = (
   input: ScriptValue,
-  fn: (val: ScriptValue) => boolean
+  fn: (val: ScriptValue) => boolean,
 ): boolean => {
   const stack: ScriptValue[] = [input];
 
@@ -405,7 +405,7 @@ export type MappedScriptValue<T> =
 
 export const mapScriptValueLeafNodes = <T>(
   input: ScriptValue,
-  fn: (val: ScriptValueAtom) => T
+  fn: (val: ScriptValueAtom) => T,
 ): MappedScriptValue<T> => {
   if (isValueOperation(input)) {
     const mappedA = input.valueA && mapScriptValueLeafNodes(input.valueA, fn);
@@ -461,7 +461,7 @@ export const extractScriptValueVariables = (input: ScriptValue): string[] => {
 // recursively search script value for node containing variable, stop iterating on first match
 export const variableInScriptValue = (
   variable: string,
-  input: ScriptValue
+  input: ScriptValue,
 ): boolean => {
   return someInScriptValue(input, (val) => {
     if (val.type === "variable" && val.value === variable) {
@@ -479,7 +479,7 @@ export const variableInScriptValue = (
 
 export const constantInScriptValue = (
   constantId: string,
-  input: ScriptValue
+  input: ScriptValue,
 ): boolean => {
   return someInScriptValue(input, (val) => {
     if (val.type === "constant" && val.value === constantId) {
@@ -499,7 +499,7 @@ export const precompileScriptValue = (
   input: ScriptValue,
   localsLabel = "",
   rpnOperations: PrecompiledValueRPNOperation[] = [],
-  fetchOperations: PrecompiledValueFetch[] = []
+  fetchOperations: PrecompiledValueFetch[] = [],
 ): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
   if (input.type === "property" || input.type === "expression") {
     const localName = `local_${localsLabel}${fetchOperations.length}`;
@@ -517,7 +517,7 @@ export const precompileScriptValue = (
         input.valueA,
         localsLabel,
         rpnOperations,
-        fetchOperations
+        fetchOperations,
       );
     }
     if (input.valueB) {
@@ -525,7 +525,7 @@ export const precompileScriptValue = (
         input.valueB,
         localsLabel,
         rpnOperations,
-        fetchOperations
+        fetchOperations,
       );
     }
     rpnOperations.push({
@@ -537,7 +537,7 @@ export const precompileScriptValue = (
         input.value,
         localsLabel,
         rpnOperations,
-        fetchOperations
+        fetchOperations,
       );
     }
     rpnOperations.push({
@@ -556,7 +556,7 @@ export const precompileScriptValue = (
 };
 
 export const sortFetchOperations = (
-  input: PrecompiledValueFetch[]
+  input: PrecompiledValueFetch[],
 ): PrecompiledValueFetch[] => {
   return [...input].sort((a, b) => {
     if (a.value.type === "property" && b.value.type === "property") {
@@ -574,7 +574,7 @@ export const sortFetchOperations = (
 
 export const multiplyScriptValueConst = (
   value: ScriptValue,
-  num: number
+  num: number,
 ): ScriptValue => {
   return {
     type: "mul",
@@ -588,7 +588,7 @@ export const multiplyScriptValueConst = (
 
 export const shiftLeftScriptValueConst = (
   value: ScriptValue,
-  num: number
+  num: number,
 ): ScriptValue => {
   return {
     type: "shl",
@@ -602,7 +602,7 @@ export const shiftLeftScriptValueConst = (
 
 export const shiftRightScriptValueConst = (
   value: ScriptValue,
-  num: number
+  num: number,
 ): ScriptValue => {
   return {
     type: "shr",
@@ -616,7 +616,7 @@ export const shiftRightScriptValueConst = (
 
 export const addScriptValueConst = (
   value: ScriptValue,
-  num: number
+  num: number,
 ): ScriptValue => {
   return {
     type: "add",
@@ -630,7 +630,7 @@ export const addScriptValueConst = (
 
 export const addScriptValueToScriptValue = (
   valueA: ScriptValue,
-  valueB: ScriptValue
+  valueB: ScriptValue,
 ): ScriptValue => {
   return {
     type: "add",
@@ -642,7 +642,7 @@ export const addScriptValueToScriptValue = (
 export const clampScriptValueConst = (
   value: ScriptValue,
   min: number,
-  max: number
+  max: number,
 ): ScriptValue => {
   return {
     type: "max",

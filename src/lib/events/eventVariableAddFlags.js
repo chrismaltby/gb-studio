@@ -66,7 +66,7 @@ const fields = [].concat(
         flexBasis: "40%",
         defaultValue: false,
       };
-    })
+    }),
 );
 
 const compile = (input, helpers) => {

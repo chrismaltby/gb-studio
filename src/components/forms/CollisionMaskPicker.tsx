@@ -69,9 +69,9 @@ const CollisionMaskPicker = ({
             label: "3",
             title: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
           },
-        ]
+        ],
       ) as CollisionMaskPickerOption[],
-    [includeNone, includePlayer, props.multiple]
+    [includeNone, includePlayer, props.multiple],
   );
   return <ToggleButtonGroup name={id} options={options} {...props} />;
 };

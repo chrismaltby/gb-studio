@@ -28,7 +28,7 @@ import { isScriptValue } from "shared/lib/scriptValue/types";
 const decoder = new TextDecoder("utf-8");
 
 const isClipboardMetaspriteTiles = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardMetaspriteTiles => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -38,7 +38,7 @@ const isClipboardMetaspriteTiles = (
 };
 
 const isClipboardMetasprites = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardMetasprites => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -48,7 +48,7 @@ const isClipboardMetasprites = (
 };
 
 const isClipboardSpriteState = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardSpriteState => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -68,7 +68,7 @@ const isClipboardSpriteState = (
 };
 
 const isClipboardPaletteIds = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardPaletteIds => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -78,7 +78,7 @@ const isClipboardPaletteIds = (
 };
 
 const isClipboardScriptEvents = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardScriptEvents => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -122,7 +122,7 @@ const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
 };
 
 const isClipboardScriptValue = (
-  input: unknown
+  input: unknown,
 ): input is ClipboardScriptValue => {
   if (typeof input !== "object" || input === null) {
     return false;
@@ -137,7 +137,7 @@ export const copy = (payload: ClipboardType) => {
 };
 
 export const paste = async <T extends ClipboardFormat>(
-  format: T
+  format: T,
 ): Promise<NarrowClipboardType<ClipboardType, T> | undefined> => {
   const buffer = await API.clipboard.readBuffer(format);
 

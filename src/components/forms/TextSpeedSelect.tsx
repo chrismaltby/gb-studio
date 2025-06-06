@@ -29,7 +29,7 @@ export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
       { value: 4, label: `${l10n("FIELD_SPEED")} 4` },
       { value: 5, label: `${l10n("FIELD_SPEED")} 5` },
     ],
-    []
+    [],
   );
 
   const currentValue = options.find((o) => o.value === value);

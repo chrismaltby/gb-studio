@@ -73,28 +73,28 @@ export const SpriteEditor = ({
   spriteStateId,
 }: SpriteEditorProps) => {
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const sprite = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, id)
+    spriteSheetSelectors.selectById(state, id),
   );
   const spriteState = useAppSelector((state) =>
-    spriteStateSelectors.selectById(state, spriteStateId)
+    spriteStateSelectors.selectById(state, spriteStateId),
   );
   const animation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, animationId)
+    spriteAnimationSelectors.selectById(state, animationId),
   );
   const selectedTileIds = useAppSelector(
-    (state) => state.editor.selectedMetaspriteTileIds
+    (state) => state.editor.selectedMetaspriteTileIds,
   );
   const metaspriteTile = useAppSelector((state) =>
-    metaspriteTileSelectors.selectById(state, selectedTileIds[0])
+    metaspriteTileSelectors.selectById(state, selectedTileIds[0]),
   );
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
   const replaceSpriteTileMode = useAppSelector(
-    (state) => state.editor.replaceSpriteTileMode
+    (state) => state.editor.replaceSpriteTileMode,
   );
 
   const selectedTileId = selectedTileIds[0];
@@ -108,7 +108,7 @@ export const SpriteEditor = ({
   const onChangeSpriteSheetProp = useCallback(
     <K extends keyof SpriteSheetNormalized>(
       key: K,
-      value: SpriteSheetNormalized[K]
+      value: SpriteSheetNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editSpriteSheet({
@@ -116,10 +116,10 @@ export const SpriteEditor = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeSpriteStateProp = useCallback(
@@ -130,10 +130,10 @@ export const SpriteEditor = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, spriteStateId]
+    [dispatch, spriteStateId],
   );
 
   const onChangeMultipleTilesProp = useCallback(
@@ -145,10 +145,10 @@ export const SpriteEditor = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id, selectedTileIds]
+    [dispatch, id, selectedTileIds],
   );
 
   const onChangeTileProp = useCallback(
@@ -160,96 +160,96 @@ export const SpriteEditor = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id, selectedTileId]
+    [dispatch, id, selectedTileId],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("name", e.currentTarget.value),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeCanvasWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("canvasWidth", castEventToInt(e, 16)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeCanvasHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("canvasHeight", castEventToInt(e, 16)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeBoundsX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsX", castEventToInt(e, 0)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeBoundsY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsY", castEventToInt(e, 0)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeBoundsWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsWidth", castEventToInt(e, 16)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeBoundsHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsHeight", castEventToInt(e, 16)),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeStateName = useCallback(
     (e: string) => onChangeSpriteStateProp("name", e),
-    [onChangeSpriteStateProp]
+    [onChangeSpriteStateProp],
   );
 
   const onChangeStateAnimationType = useCallback(
     (e: SpriteAnimationType) => onChangeSpriteStateProp("animationType", e),
-    [onChangeSpriteStateProp]
+    [onChangeSpriteStateProp],
   );
 
   const onChangeStateFlipLeft = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteStateProp("flipLeft", castEventToBool(e)),
-    [onChangeSpriteStateProp]
+    [onChangeSpriteStateProp],
   );
 
   const onChangeTileX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTileProp("x", castEventToInt(e, 0)),
-    [onChangeTileProp]
+    [onChangeTileProp],
   );
 
   const onChangeTileY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTileProp("y", castEventToInt(e, 0)),
-    [onChangeTileProp]
+    [onChangeTileProp],
   );
 
   const onChangeTilesObjPalette = useCallback(
     (e: ObjPalette) => onChangeMultipleTilesProp("objPalette", e),
-    [onChangeMultipleTilesProp]
+    [onChangeMultipleTilesProp],
   );
 
   const onChangeTilesPaletteIndex = useCallback(
     (e: number) => onChangeMultipleTilesProp("paletteIndex", e),
-    [onChangeMultipleTilesProp]
+    [onChangeMultipleTilesProp],
   );
 
   const onChangeTilesPriority = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeMultipleTilesProp("priority", castEventToBool(e)),
-    [onChangeMultipleTilesProp]
+    [onChangeMultipleTilesProp],
   );
 
   const onToggleFlipX = useCallback(() => {
@@ -257,7 +257,7 @@ export const SpriteEditor = ({
       entitiesActions.flipXMetaspriteTiles({
         spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, id, selectedTileIds]);
 
@@ -266,7 +266,7 @@ export const SpriteEditor = ({
       entitiesActions.flipYMetaspriteTiles({
         spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, id, selectedTileIds]);
 
@@ -276,7 +276,7 @@ export const SpriteEditor = ({
         spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
-      })
+      }),
     );
   }, [dispatch, id, selectedTileIds, metaspriteId]);
 
@@ -286,7 +286,7 @@ export const SpriteEditor = ({
         spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
-      })
+      }),
     );
   }, [dispatch, id, selectedTileIds, metaspriteId]);
 
@@ -302,7 +302,7 @@ export const SpriteEditor = ({
     dispatch(
       clipboardActions.copyMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, selectedTileIds]);
 
@@ -311,7 +311,7 @@ export const SpriteEditor = ({
       clipboardActions.copyMetasprites({
         metaspriteIds: [metaspriteId],
         spriteAnimationId: animationId,
-      })
+      }),
     );
   }, [animationId, dispatch, metaspriteId]);
 
@@ -319,7 +319,7 @@ export const SpriteEditor = ({
     dispatch(
       clipboardActions.copySpriteState({
         spriteStateId,
-      })
+      }),
     );
   }, [dispatch, spriteStateId]);
 
@@ -330,7 +330,7 @@ export const SpriteEditor = ({
         metaspriteId,
         spriteAnimationId: animationId,
         spriteStateId,
-      })
+      }),
     );
   }, [dispatch, id, metaspriteId, animationId, spriteStateId]);
 
@@ -344,7 +344,7 @@ export const SpriteEditor = ({
         spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId,
-      })
+      }),
     );
   }, [dispatch, id, selectedTileIds, metaspriteId]);
 
@@ -354,7 +354,7 @@ export const SpriteEditor = ({
         spriteSheetId: id,
         metaspriteId,
         spriteAnimationId: animationId,
-      })
+      }),
     );
   }, [dispatch, id, metaspriteId, animationId]);
 
@@ -363,7 +363,7 @@ export const SpriteEditor = ({
       entitiesActions.removeSpriteState({
         spriteSheetId: id,
         spriteStateId,
-      })
+      }),
     );
   }, [dispatch, id, spriteStateId]);
 
@@ -375,7 +375,7 @@ export const SpriteEditor = ({
     dispatch(
       spriteActions.detectSprite({
         spriteSheetId: id,
-      })
+      }),
     );
   }, [dispatch, id]);
 

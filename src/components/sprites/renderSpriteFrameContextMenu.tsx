@@ -37,12 +37,12 @@ const renderSpriteFrameContextMenu = ({
             spriteSheetId,
             spriteAnimationId,
             metaspriteIds: selectionIds,
-          })
+          }),
         )
       }
     >
       {l10n(
-        selectionIds.length > 1 ? "FIELD_CLONE_FRAMES" : "FIELD_CLONE_FRAME"
+        selectionIds.length > 1 ? "FIELD_CLONE_FRAMES" : "FIELD_CLONE_FRAME",
       )}
     </MenuItem>,
     <MenuItem
@@ -52,12 +52,14 @@ const renderSpriteFrameContextMenu = ({
           clipboardActions.copyMetasprites({
             metaspriteIds: selectionIds,
             spriteAnimationId,
-          })
+          }),
         )
       }
     >
       {l10n(
-        selectionIds.length > 1 ? "MENU_SPRITE_FRAMES_COPY" : "MENU_SPRITE_COPY"
+        selectionIds.length > 1
+          ? "MENU_SPRITE_FRAMES_COPY"
+          : "MENU_SPRITE_COPY",
       )}
     </MenuItem>,
     ...(clipboard?.format === ClipboardTypeMetasprites
@@ -71,14 +73,14 @@ const renderSpriteFrameContextMenu = ({
                   metaspriteId,
                   spriteAnimationId,
                   spriteStateId: "",
-                })
+                }),
               )
             }
           >
             {l10n(
               clipboard.data.metasprites.length > 1
                 ? "MENU_SPRITE_FRAMES_PASTE"
-                : "MENU_SPRITE_PASTE"
+                : "MENU_SPRITE_PASTE",
             )}
           </MenuItem>,
         ]
@@ -92,14 +94,14 @@ const renderSpriteFrameContextMenu = ({
             spriteSheetId,
             spriteAnimationId,
             metaspriteIds: selectionIds,
-          })
+          }),
         )
       }
     >
       {l10n(
         selectionIds.length > 1
           ? "MENU_SPRITE_FRAMES_DELETE"
-          : "MENU_SPRITE_DELETE"
+          : "MENU_SPRITE_DELETE",
       )}
     </MenuItem>,
   ];

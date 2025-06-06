@@ -59,7 +59,7 @@ type TemplateInfo = {
 };
 
 const splashTabs = ["new", "recent"] as const;
-type SplashTabSection = typeof splashTabs[number];
+type SplashTabSection = (typeof splashTabs)[number];
 
 const getLastUsedPath = async () => {
   const storedPath = String(await API.settings.get("__lastUsedPath"));
@@ -95,7 +95,7 @@ const filteredContributors = contributors.filter((user) => {
 });
 
 const goldContributors = filteredContributors.filter(
-  (user) => user.contributions >= 10
+  (user) => user.contributions >= 10,
 );
 const silverContributors = [...contributorsExternal]
   // eslint-disable-next-line camelcase
@@ -149,7 +149,7 @@ export const Splash = () => {
 
   useEffect(() => {
     const unsubscribe = API.events.templates.templatesListChanged.subscribe(
-      (_, templatePlugins) => setTemplatePlugins(templatePlugins)
+      (_, templatePlugins) => setTemplatePlugins(templatePlugins),
     );
     return unsubscribe;
   });
@@ -178,7 +178,7 @@ export const Splash = () => {
         description: l10n("SPLASH_BLANK_PROJECT_DESCRIPTION"),
       },
     ],
-    []
+    [],
   );
 
   const onSetTab = (tab: SplashTabSection) => () => {

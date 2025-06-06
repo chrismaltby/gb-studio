@@ -26,7 +26,7 @@ export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
       { value: 50000, label: l10n("FIELD_SLOWER") },
       { value: 100000, label: l10n("FIELD_PLACEBO") },
     ],
-    []
+    [],
   );
 
   const currentValue = options.find((o) => o.value === value);

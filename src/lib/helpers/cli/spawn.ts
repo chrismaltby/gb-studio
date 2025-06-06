@@ -11,7 +11,7 @@ const spawn = (
   command: string,
   args: string[],
   options: childProcess.SpawnOptions,
-  { onLog = () => {}, onError = () => {} }: SpawnLogFns
+  { onLog = () => {}, onError = () => {} }: SpawnLogFns,
 ) => {
   let complete = false;
   let code = 0;

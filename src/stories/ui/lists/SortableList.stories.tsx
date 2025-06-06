@@ -32,7 +32,7 @@ const moveItems = <T,>(arr: T[], fromIndexes: number[], to: number): T[] => {
   const selectedItems = sortedIndexes.map((index) => arr[index]);
 
   const remainingItems = arr.filter(
-    (_, index) => !sortedIndexes.includes(index)
+    (_, index) => !sortedIndexes.includes(index),
   );
 
   const adjustedIndex =
@@ -86,7 +86,7 @@ export const Horizontal = () => {
   const [items, setItems] = useState(initialItems);
   const selectedIndex = useMemo(
     () => items.findIndex((i) => i.id === selectedId),
-    [items, selectedId]
+    [items, selectedId],
   );
   return (
     <SortableList
@@ -98,11 +98,11 @@ export const Horizontal = () => {
         if (e?.shiftKey) {
           if (multiSelectionIds.includes(item.id)) {
             setMultiSelectionIds(
-              multiSelectionIds.filter((i) => i !== item.id)
+              multiSelectionIds.filter((i) => i !== item.id),
             );
           } else {
             setMultiSelectionIds(
-              ([] as string[]).concat(multiSelectionIds, item.id)
+              ([] as string[]).concat(multiSelectionIds, item.id),
             );
           }
         } else {
@@ -114,7 +114,7 @@ export const Horizontal = () => {
       }}
       moveItems={(from, to) => {
         const multiSelectionIndexes = multiSelectionIds.map((id) =>
-          items.findIndex((i) => i.id === id)
+          items.findIndex((i) => i.id === id),
         );
         if (multiSelectionIndexes.includes(to)) {
           return;
@@ -140,8 +140,8 @@ export const Horizontal = () => {
               selectedId === item.id
                 ? "3px solid red"
                 : multiSelectionIds.includes(item.id)
-                ? "1px solid red"
-                : "none",
+                  ? "1px solid red"
+                  : "none",
           }}
         >
           {item.text}
@@ -157,7 +157,7 @@ export const Vertical = () => {
   const [items, setItems] = useState(initialItems);
   const selectedIndex = useMemo(
     () => items.findIndex((i) => i.id === selectedId),
-    [items, selectedId]
+    [items, selectedId],
   );
   return (
     <SortableList
@@ -170,11 +170,11 @@ export const Vertical = () => {
         if (e?.shiftKey) {
           if (multiSelectionIds.includes(item.id)) {
             setMultiSelectionIds(
-              multiSelectionIds.filter((i) => i !== item.id)
+              multiSelectionIds.filter((i) => i !== item.id),
             );
           } else {
             setMultiSelectionIds(
-              ([] as string[]).concat(multiSelectionIds, item.id)
+              ([] as string[]).concat(multiSelectionIds, item.id),
             );
           }
         } else {
@@ -186,7 +186,7 @@ export const Vertical = () => {
       }}
       moveItems={(from, to) => {
         const multiSelectionIndexes = multiSelectionIds.map((id) =>
-          items.findIndex((i) => i.id === id)
+          items.findIndex((i) => i.id === id),
         );
         if (multiSelectionIndexes.includes(to)) {
           return;
@@ -211,8 +211,8 @@ export const Vertical = () => {
               selectedId === item.id
                 ? "3px solid red"
                 : multiSelectionIds.includes(item.id)
-                ? "1px solid red"
-                : "none",
+                  ? "1px solid red"
+                  : "none",
           }}
         >
           {item.text}
@@ -228,7 +228,7 @@ export const HorizontalWithAppended = () => {
   const [items, setItems] = useState(initialItems);
   const selectedIndex = useMemo(
     () => items.findIndex((i) => i.id === selectedId),
-    [items, selectedId]
+    [items, selectedId],
   );
   return (
     <SortableList
@@ -241,11 +241,11 @@ export const HorizontalWithAppended = () => {
         if (e?.shiftKey) {
           if (multiSelectionIds.includes(item.id)) {
             setMultiSelectionIds(
-              multiSelectionIds.filter((i) => i !== item.id)
+              multiSelectionIds.filter((i) => i !== item.id),
             );
           } else {
             setMultiSelectionIds(
-              ([] as string[]).concat(multiSelectionIds, item.id)
+              ([] as string[]).concat(multiSelectionIds, item.id),
             );
           }
         } else {
@@ -257,7 +257,7 @@ export const HorizontalWithAppended = () => {
       }}
       moveItems={(from, to) => {
         const multiSelectionIndexes = multiSelectionIds.map((id) =>
-          items.findIndex((i) => i.id === id)
+          items.findIndex((i) => i.id === id),
         );
         if (multiSelectionIndexes.includes(to)) {
           return;
@@ -282,8 +282,8 @@ export const HorizontalWithAppended = () => {
               selectedId === item.id
                 ? "3px solid red"
                 : multiSelectionIds.includes(item.id)
-                ? "1px solid red"
-                : "none",
+                  ? "1px solid red"
+                  : "none",
           }}
         >
           {item.text}
@@ -296,7 +296,7 @@ export const HorizontalWithAppended = () => {
               ([] as { id: string; text: string }[]).concat(items, {
                 id: String(items.length + 1),
                 text: "New item" + (items.length + 1),
-              })
+              }),
             );
           }}
         >
@@ -313,7 +313,7 @@ export const VerticalWithAppended = () => {
   const [items, setItems] = useState(initialItems);
   const selectedIndex = useMemo(
     () => items.findIndex((i) => i.id === selectedId),
-    [items, selectedId]
+    [items, selectedId],
   );
   return (
     <SortableList
@@ -326,11 +326,11 @@ export const VerticalWithAppended = () => {
         if (e?.shiftKey) {
           if (multiSelectionIds.includes(item.id)) {
             setMultiSelectionIds(
-              multiSelectionIds.filter((i) => i !== item.id)
+              multiSelectionIds.filter((i) => i !== item.id),
             );
           } else {
             setMultiSelectionIds(
-              ([] as string[]).concat(multiSelectionIds, item.id)
+              ([] as string[]).concat(multiSelectionIds, item.id),
             );
           }
         } else {
@@ -342,7 +342,7 @@ export const VerticalWithAppended = () => {
       }}
       moveItems={(from, to) => {
         const multiSelectionIndexes = multiSelectionIds.map((id) =>
-          items.findIndex((i) => i.id === id)
+          items.findIndex((i) => i.id === id),
         );
         if (multiSelectionIndexes.includes(to)) {
           return;
@@ -367,8 +367,8 @@ export const VerticalWithAppended = () => {
               selectedId === item.id
                 ? "3px solid red"
                 : multiSelectionIds.includes(item.id)
-                ? "1px solid red"
-                : "none",
+                  ? "1px solid red"
+                  : "none",
           }}
         >
           {item.text}
@@ -381,7 +381,7 @@ export const VerticalWithAppended = () => {
               ([] as { id: string; text: string }[]).concat(items, {
                 id: String(items.length + 1),
                 text: "New item" + (items.length + 1),
-              })
+              }),
             );
           }}
         >
