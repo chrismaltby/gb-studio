@@ -213,7 +213,7 @@ export const SpriteEditor = ({
   const onChangeSpriteMode = useCallback(
     (e: SpriteModeSetting | undefined) =>
       onChangeSpriteSheetProp("spriteMode", e),
-    [onChangeSpriteSheetProp]
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeStateName = useCallback(

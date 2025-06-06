@@ -22,17 +22,18 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
   allowDefault,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] =
-    useState<SpriteModeOption | undefined>();
+  const [currentValue, setCurrentValue] = useState<
+    SpriteModeOption | undefined
+  >();
   const defaultSpriteMode = useAppSelector(
-    (state) => state.project.present.settings.spriteMode
+    (state) => state.project.present.settings.spriteMode,
   );
   const spriteModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       "8x8": l10n("FIELD_SPRITE_MODE_8x8_INFO"),
       "8x16": l10n("FIELD_SPRITE_MODE_8x16_INFO"),
     }),
-    []
+    [],
   );
 
   const spriteModeOptions: SpriteModeOption[] = useMemo(() => {
@@ -75,7 +76,7 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
       }}
       formatOptionLabel={(
         option: SpriteModeOption,
-        { context }: { context: "menu" | "value" }
+        { context }: { context: "menu" | "value" },
       ) => {
         let info = "";
         if (context === "menu") {

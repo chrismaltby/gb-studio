@@ -140,7 +140,7 @@ const SettingsPage: FC = () => {
 
   const onChangeSpriteMode = useCallback(
     (e: SpriteModeSetting) => onChangeSettingProp("spriteMode", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeDefaultFontId = useCallback(
