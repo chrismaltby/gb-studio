@@ -85,7 +85,7 @@
     "open": "^7.3.0",
     "path-browserify": "^1.0.1",
     "pngjs": "^6.0.0",
-    "prismjs": "^1.27.0",
+    "prismjs": "^1.30.0",
     "prop-types": "^15.7.2",
     "ps-tree": "^1.2.0",
     "raw-loader": "^4.0.2",

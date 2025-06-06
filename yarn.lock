@@ -11954,7 +11954,7 @@ __metadata:
     path-browserify: "npm:^1.0.1"
     pngjs: "npm:^6.0.0"
     prettier: "npm:^3.5.3"
-    prismjs: "npm:^1.27.0"
+    prismjs: "npm:^1.30.0"
     prop-types: "npm:^15.7.2"
     ps-tree: "npm:^1.2.0"
     raw-loader: "npm:^4.0.2"
@@ -16973,10 +16973,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prismjs@npm:^1.27.0":
-  version: 1.27.0
-  resolution: "prismjs@npm:1.27.0"
-  checksum: 10c0/841cbf53e837a42df9155c5ce1be52c4a0a8967ac916b52a27d066181a3578186c634e52d06d0547fb62b65c486b99b95f826dd54966619f9721b884f486b498
+"prismjs@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "prismjs@npm:1.30.0"
+  checksum: 10c0/f56205bfd58ef71ccfcbcb691fd0eb84adc96c6ff21b0b69fc6fdcf02be42d6ef972ba4aed60466310de3d67733f6a746f89f2fb79c00bf217406d465b3e8f23
   languageName: node
   linkType: hard
 
