@@ -135,7 +135,7 @@ export const buildPackFile = async (buildRoot: string) => {
   return output.join("\n");
 };
 
-export const getPackFiles = async (buildRoot: string) => {
+export const buildLinkFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -143,20 +143,6 @@ export const getPackFiles = async (buildRoot: string) => {
     const objFile = `${file
       .replace(/src.*\//, "obj/")
       .replace(/\.[cs]$/, "")}.o`;
-
-    output.push(objFile);
-  }
-  return output;
-};
-
-export const buildLinkFile = async (buildRoot: string, cartSize: number) => {
-  const output = [`-g __start_save=${cartSize - 4}`];
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
-  for (const file of buildFiles) {
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.rel`;
 
     output.push(objFile);
   }
@@ -182,6 +168,7 @@ export const buildLinkFlags = (
   sgb = false,
   colorOnly = false,
   musicDriver = "gbtplayer",
+  batteryless = false,
   debug = false,
   targetPlatform = "gb",
 ) => {
@@ -195,9 +182,14 @@ export const buildLinkFlags = (
   return ([] as Array<string>).concat(
     // General
     [
+      // Cart
       `-Wm-yt${cart}`,
+      // Banks
+      "-autobank",
+      "-Wb-ext=.rel",
       "-Wm-yoA",
       "-Wm-ya4",
+      // Symbols
       "-Wl-j",
       "-Wl-m",
       "-Wl-w",
@@ -220,7 +212,17 @@ export const buildLinkFlags = (
       ? // hugetracker
         ["-Wl-lhUGEDriver.lib"]
       : // gbtplayer
-        ["-Wl-lgbt_player.lib"],
+        ["-Wl-lgbt_player.lib", "-Wb-reserve=1:800"],
+    // Batteryless cart
+    batteryless
+      ? [
+          "-Wb-reserve=15:4000",
+          "-Wb-reserve=14:4000",
+          "-Wb-reserve=13:4000",
+          "-Wb-reserve=12:4000",
+          "-Wl-g__start_save=12",
+        ]
+      : ["-Wl-g__start_save=0"],
     // Output
     targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
     targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],

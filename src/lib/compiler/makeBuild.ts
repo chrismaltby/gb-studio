@@ -5,12 +5,10 @@ import {
   buildLinkFile,
   buildLinkFlags,
   getBuildCommands,
-  getPackFiles,
 } from "./buildMakeScript";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
 import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
-import { gbspack } from "./gbspack";
 import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
 import psTree from "ps-tree";
@@ -152,24 +150,6 @@ const makeBuild = async ({
     throw new Error("BUILD_CANCELLED");
   }
 
-  progress(`${l10n("COMPILER_PACKING")}...`);
-  const { cartSize, report } = await gbspack(await getPackFiles(buildRoot), {
-    bankOffset: 1,
-    filter: 255,
-    extension: "rel",
-    additional: batterylessEnabled ? 4 : 0,
-    reserve:
-      settings.musicDriver !== "huge"
-        ? {
-            // Reserve space in bank1 for gbt_player.lib
-            1: 0x800,
-          }
-        : {},
-  });
-
-  const packReportFilePath = `${buildRoot}/build/rom/bank_usage.txt`;
-  await fs.writeFile(packReportFilePath, report);
-
   // Link ROM ---
 
   if (cancelling) {
@@ -177,7 +157,7 @@ const makeBuild = async ({
   }
 
   progress(`${l10n("COMPILER_LINKING")}...`);
-  const linkFile = await buildLinkFile(buildRoot, cartSize);
+  const linkFile = await buildLinkFile(buildRoot);
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
@@ -193,6 +173,7 @@ const makeBuild = async ({
     sgbEnabled,
     colorOnly,
     settings.musicDriver,
+    batterylessEnabled,
     debug,
     targetPlatform,
   );
