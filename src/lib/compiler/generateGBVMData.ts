@@ -188,6 +188,8 @@ export const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
+export const enginePxToSubPx = (px?: number): string => `PX_TO_SUBPX(${px || 0})`
+
 export const toASMCollisionGroup = (group: string) => {
   if (group === "player") {
     return "COLLISION_GROUP_PLAYER";
@@ -587,20 +589,20 @@ export const compileBounds = ({
   boundsWidth?: number;
   boundsHeight?: number;
 }): {
-  left: number;
-  bottom: number;
-  right: number;
-  top: number;
+  left: string;
+  bottom: string;
+  right: string;
+  top: string;
 } => {
   const bX = boundsX || 0;
   const bY = boundsY || 0;
   const bW = boundsWidth || 16;
   const bH = boundsHeight || 16;
   return {
-    left: bX,
-    bottom: 7 - bY,
-    right: bX + bW - 1,
-    top: 8 - (bY + bH),
+    left: enginePxToSubPx(bX),
+    bottom: enginePxToSubPx(7 - bY),
+    right: enginePxToSubPx(bX + bW - 1),
+    top: enginePxToSubPx(8 - (bY + bH)),
   };
 };
 
