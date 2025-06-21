@@ -197,6 +197,11 @@ const makeBuild = async ({
   await linkCompleted;
   childSet.delete(child);
 
+  // Export game globals to ROM directory
+  const gameGlobalsPath = `${buildRoot}/include/data/game_globals.i`;
+  const gameGlobalsExportPath = `${buildRoot}/build/rom/globals.i`;
+  await fs.copyFile(gameGlobalsPath, gameGlobalsExportPath);
+
   // Store /obj in cache
   await cacheObjData(buildRoot, tmpPath, env);
 };
