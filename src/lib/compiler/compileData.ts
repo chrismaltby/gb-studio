@@ -103,6 +103,7 @@ import {
   determineUsedAssets,
   ReferencedEmote,
   ReferencedSprite,
+  ReferencedTileset,
 } from "./precompile/determineUsedAssets";
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
@@ -723,9 +724,7 @@ export const precompileEmotes = async (
 };
 
 export const precompileTilesets = async (
-  tilesets: TilesetData[],
-  scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  referencedTilesets: ReferencedTileset[],
   projectRoot: string,
   {
     warnings,
@@ -733,48 +732,11 @@ export const precompileTilesets = async (
     warnings: (msg: string) => void;
   },
 ) => {
-  const usedTilesets: TilesetData[] = [];
-  const usedTilesetLookup: Record<string, TilesetData> = {};
-  const tilesetLookup = indexById(tilesets);
-
-  const addTileset = (id: string) => {
-    const tileset = tilesetLookup[id];
-    if (!usedTilesetLookup[id] && tileset) {
-      usedTilesets.push(tileset);
-      usedTilesetLookup[id] = tileset;
-    }
-  };
-
-  walkScenesScripts(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (cmd.args && cmd.args.tilesetId) {
-        addTileset(ensureString(cmd.args.tilesetId, ""));
-      }
-      if (eventHasArg(cmd, "references")) {
-        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
-          .filter((ref) => ref.type === "tileset")
-          .map((ref) => ref.id);
-        for (const id of referencedIds) {
-          addTileset(id);
-        }
-      }
-    },
-  );
-
-  const tilesetData = await compileTilesets(usedTilesets, projectRoot, {
+  const tilesetData = await compileTilesets(referencedTilesets, projectRoot, {
     warnings,
   });
-
   return {
     usedTilesets: tilesetData,
-    tilesetLookup,
   };
 };
 
@@ -1175,9 +1137,7 @@ const precompile = async (
 
   progress(`${l10n("COMPILER_PREPARING_TILESETS")}...`);
   const { usedTilesets } = await precompileTilesets(
-    projectData.tilesets,
-    projectData.scenes,
-    customEventsLookup,
+    usedAssets.referencedTilesets,
     projectRoot,
     { warnings },
   );

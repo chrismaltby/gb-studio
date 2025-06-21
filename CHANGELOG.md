@@ -89,6 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where clicking "Show Navigator" toolbar button would not cause "Show Navigator" option in menu to be checked
 - Fix issue where font mappings were not being displayed in app text previews
 - Fix overflow warning when using "Fixed Position" parallax layers
+- Fix issue where referenced tilesets from event plugins were not always being included in the built project [@Mico27](https://github.com/Mico27)
 
 ## [4.1.3] - 2024-09-16
 

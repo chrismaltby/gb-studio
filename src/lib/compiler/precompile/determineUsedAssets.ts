@@ -9,6 +9,7 @@ import type {
   Scene,
   SoundData,
   SpriteSheetData,
+  TilesetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
@@ -32,6 +33,8 @@ export type ReferencedSprite = SpriteSheetData & {
 
 export type ReferencedEmote = EmoteData;
 
+export type ReferencedTileset = TilesetData;
+
 export const determineUsedAssets = ({
   projectData,
   customEventsLookup,
@@ -49,6 +52,7 @@ export const determineUsedAssets = ({
   const backgroundsLookup = keyBy(projectData.backgrounds, "id");
   const spritesLookup = keyBy(projectData.sprites, "id");
   const emotesLookup = keyBy(projectData.emotes, "id");
+  const tilesetsLookup = keyBy(projectData.tilesets, "id");
 
   const defaultPlayerSprites = projectData.settings.defaultPlayerSprites;
   const projectColorMode = projectData.settings.colorMode;
@@ -59,6 +63,7 @@ export const determineUsedAssets = ({
   const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
   const usedSpritesLookup: Record<string, ReferencedSprite> = {};
   const usedEmotesLookup: Record<string, ReferencedEmote> = {};
+  const usedTilesetsLookup: Record<string, ReferencedTileset> = {};
 
   const getSceneColorMode = (scene: Scene): ColorModeSetting => {
     if (scene.colorModeOverride === "none" || projectColorMode === "mono") {
@@ -96,6 +101,8 @@ export const determineUsedAssets = ({
   const addFontById = addAssetById(fontsLookup, usedFontsLookup);
 
   const addEmoteById = addAssetById(emotesLookup, usedEmotesLookup);
+
+  const addTilesetById = addAssetById(tilesetsLookup, usedTilesetsLookup);
 
   const addFontsFromString = (s: string) => {
     (s.match(/(!F:[0-9a-f-]+!)/g) || [])
@@ -244,6 +251,7 @@ export const determineUsedAssets = ({
         addReferences(references, "sound", addSoundById);
         addReferences(references, "font", addFontById);
         addReferences(references, "emote", addEmoteById);
+        addReferences(references, "tileset", addTilesetById);
         addReferences(references, "background", (id: string) => {
           const colorMode = getSceneColorMode(scene);
           addBackgroundById(id, false, colorMode, true);
@@ -289,6 +297,8 @@ export const determineUsedAssets = ({
                 addFontsFromString(row);
               }
             }
+          } else if (fieldType === "tileset" && typeof value === "string") {
+            addTilesetById(value);
           }
         }
       }
@@ -302,5 +312,6 @@ export const determineUsedAssets = ({
     referencedBackgrounds: valuesOf(usedBackgroundsLookup),
     referencedSprites: valuesOf(usedSpritesLookup),
     referencedEmotes: valuesOf(usedEmotesLookup),
+    referencedTilesets: valuesOf(usedTilesetsLookup),
   };
 };
