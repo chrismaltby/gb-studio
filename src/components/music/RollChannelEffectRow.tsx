@@ -48,8 +48,8 @@ const Wrapper = styled.div<WrapperProps>`
     );
   background-size: ${props.$size}px ${props.$size}px,
     ${props.$size}px ${props.$size}px, ${props.$size * 8}px ${
-    props.$size * 12
-  }px;
+      props.$size * 12
+    }px;
   }
 
   `}
@@ -83,7 +83,7 @@ export const RollChannelEffectRowFwd = ({
   const tool = useAppSelector((state) => state.tracker.tool);
 
   const selectedEffectCell = useAppSelector(
-    (state) => state.tracker.selectedEffectCell
+    (state) => state.tracker.selectedEffectCell,
   );
 
   // Mouse
@@ -112,7 +112,7 @@ export const RollChannelEffectRowFwd = ({
               patternId: patternId,
               cell: [col, channelId],
               changes: changes,
-            })
+            }),
           );
           dispatch(trackerActions.setSelectedEffectCell(col));
           // Dispatch twice preserve effect param data when not arpeggio
@@ -121,7 +121,7 @@ export const RollChannelEffectRowFwd = ({
               patternId: patternId,
               cell: [col, channelId],
               changes: changes,
-            })
+            }),
           );
         }
       } else if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
@@ -135,7 +135,7 @@ export const RollChannelEffectRowFwd = ({
                 effectcode: null,
                 effectparam: null,
               },
-            })
+            }),
           );
         }
       }
@@ -148,7 +148,7 @@ export const RollChannelEffectRowFwd = ({
       dispatch,
       patternId,
       selectedEffectCell,
-    ]
+    ],
   );
 
   return (

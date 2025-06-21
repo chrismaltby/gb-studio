@@ -58,7 +58,7 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
         options: [{ label: l10n("FIELD_CURSOR"), value: "cursor" }],
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {

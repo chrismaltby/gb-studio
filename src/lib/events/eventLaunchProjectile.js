@@ -371,7 +371,7 @@ const compile = (input, helpers) => {
     input.initialOffset,
     input.destroyOnHit,
     input.collisionGroup,
-    input.collisionMask
+    input.collisionMask,
   );
   if (projectileIndex < 0) {
     return;
@@ -381,7 +381,7 @@ const compile = (input, helpers) => {
       projectileIndex,
       input.x,
       input.y,
-      input.direction
+      input.direction,
     );
   } else if (input.directionType === "angle") {
     launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
@@ -390,7 +390,7 @@ const compile = (input, helpers) => {
       projectileIndex,
       input.x,
       input.y,
-      input.angleVariable
+      input.angleVariable,
     );
   } else if (input.directionType === "actor") {
     if (input.actorId === input.otherActorId) {
@@ -400,7 +400,7 @@ const compile = (input, helpers) => {
         projectileIndex,
         input.x,
         input.y,
-        input.otherActorId
+        input.otherActorId,
       );
     }
   } else if (input.directionType === "target") {
@@ -411,7 +411,7 @@ const compile = (input, helpers) => {
         projectileIndex,
         input.x,
         input.y,
-        input.targetActorId
+        input.targetActorId,
       );
     }
   }

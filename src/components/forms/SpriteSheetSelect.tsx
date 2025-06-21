@@ -32,7 +32,7 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
 const buildOptions = (
   memo: OptGroup[],
   plugin: string | undefined,
-  spriteSheets: SpriteSheetNormalized[]
+  spriteSheets: SpriteSheetNormalized[],
 ) => {
   memo.push({
     label: plugin ? plugin : "",
@@ -56,7 +56,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   ...selectProps
 }) => {
   const spriteSheets = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] =
@@ -66,7 +66,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   useEffect(() => {
     const filteredSpriteSheets = spriteSheets.filter(filter || (() => true));
     const plugins = uniq(
-      filteredSpriteSheets.map((s) => s.plugin || "")
+      filteredSpriteSheets.map((s) => s.plugin || ""),
     ).sort();
     const options = plugins.reduce(
       (memo, plugin) => {
@@ -74,8 +74,8 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
           memo,
           plugin,
           filteredSpriteSheets.filter((s) =>
-            plugin ? s.plugin === plugin : !s.plugin
-          )
+            plugin ? s.plugin === plugin : !s.plugin,
+          ),
         );
         return memo;
       },
@@ -86,7 +86,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
               options: [{ value: "", label: optionalLabel || "None" }],
             },
           ] as OptGroup[])
-        : ([] as OptGroup[])
+        : ([] as OptGroup[]),
     );
 
     setOptions(options);

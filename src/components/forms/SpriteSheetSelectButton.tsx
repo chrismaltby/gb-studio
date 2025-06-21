@@ -153,7 +153,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, value || optionalValue || "")
+    spriteSheetSelectors.selectById(state, value || optionalValue || ""),
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);

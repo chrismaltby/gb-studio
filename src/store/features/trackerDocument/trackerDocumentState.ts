@@ -34,26 +34,32 @@ export const initialState: TrackerDocumentState = {
 };
 
 export const requestAddNewSongFile = createAction<string>(
-  "tracker/requestAddNewSong"
+  "tracker/requestAddNewSong",
 );
 
 export const addNewSongFile = createAsyncThunk<
   { data: MusicResourceAsset },
   string
->("tracker/addNewSong", async (path, _thunkApi): Promise<{
-  data: MusicResourceAsset;
-}> => {
-  return {
-    data: await API.tracker.addNewUGEFile(path),
-  };
-});
+>(
+  "tracker/addNewSong",
+  async (
+    path,
+    _thunkApi,
+  ): Promise<{
+    data: MusicResourceAsset;
+  }> => {
+    return {
+      data: await API.tracker.addNewUGEFile(path),
+    };
+  },
+);
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
   "tracker/loadSong",
   async (path, _thunkApi): Promise<Song | null> => {
     const song = await API.tracker.loadUGEFile(path);
     return song;
-  }
+  },
 );
 
 export const saveSongFile = createAsyncThunk<void, void>(
@@ -75,7 +81,7 @@ export const saveSongFile = createAsyncThunk<void, void>(
       console.log(e);
       throw e;
     }
-  }
+  },
 );
 
 const trackerSlice = createSlice({
@@ -103,7 +109,7 @@ const trackerSlice = createSlice({
       _action: PayloadAction<{
         instrumentId: number;
         changes: Partial<DutyInstrument>;
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -132,7 +138,7 @@ const trackerSlice = createSlice({
       _action: PayloadAction<{
         instrumentId: number;
         changes: Partial<WaveInstrument>;
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -162,7 +168,7 @@ const trackerSlice = createSlice({
       _action: PayloadAction<{
         instrumentId: number;
         changes: Partial<NoiseInstrument>;
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -193,7 +199,7 @@ const trackerSlice = createSlice({
         patternId: number;
         cell: [number, number];
         changes: Partial<PatternCell>;
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -232,7 +238,7 @@ const trackerSlice = createSlice({
       _action: PayloadAction<{
         patternId: number;
         pattern: PatternCell[][];
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -252,7 +258,7 @@ const trackerSlice = createSlice({
         instrumentId: number;
         cell: [number, number];
         changes: Partial<SubPatternCell>;
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -321,7 +327,7 @@ const trackerSlice = createSlice({
         instrumentId: number;
         instrumentType: "duty" | "wave" | "noise";
         subpattern: SubPatternCell[];
-      }>
+      }>,
     ) => {
       if (!state.song) {
         return;
@@ -365,7 +371,7 @@ const trackerSlice = createSlice({
     },
     editWaveform: (
       state,
-      _action: PayloadAction<{ index: number; waveForm: Uint8Array }>
+      _action: PayloadAction<{ index: number; waveForm: Uint8Array }>,
     ) => {
       if (!state.song) {
         return;
@@ -381,7 +387,7 @@ const trackerSlice = createSlice({
     },
     editSequence: (
       state,
-      _action: PayloadAction<{ sequenceIndex: number; sequenceId: number }>
+      _action: PayloadAction<{ sequenceIndex: number; sequenceId: number }>,
     ) => {
       if (!state.song) {
         return;
@@ -445,7 +451,7 @@ const trackerSlice = createSlice({
     },
     removeSequence: (
       state,
-      _action: PayloadAction<{ sequenceIndex: number }>
+      _action: PayloadAction<{ sequenceIndex: number }>,
     ) => {
       if (!state.song) {
         return;
@@ -499,7 +505,7 @@ const trackerSlice = createSlice({
           action.type.startsWith("tracker/removeSequence"),
         (state, _action) => {
           state.modified = true;
-        }
+        },
       ),
 });
 

@@ -28,11 +28,11 @@ import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
 export const ScriptEventRenameInput = (
-  props: React.InputHTMLAttributes<HTMLInputElement>
+  props: React.InputHTMLAttributes<HTMLInputElement>,
 ) => <StyledScriptEventRenameInput {...props} />;
 
 export const ScriptEventRenameInputCompleteButton = (
-  props: React.ButtonHTMLAttributes<HTMLButtonElement>
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
 interface ScriptEventHeaderProps {
@@ -75,7 +75,7 @@ export const ScriptEventHeader = forwardRef<
       onContextMenu,
       children,
     },
-    outerRef
+    outerRef,
   ) => {
     return (
       <StyledScriptEventHeader
@@ -121,7 +121,7 @@ export const ScriptEventHeader = forwardRef<
         )}
       </StyledScriptEventHeader>
     );
-  }
+  },
 );
 
 interface ScriptEventBranchHeaderProps {

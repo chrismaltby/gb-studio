@@ -231,7 +231,7 @@ const engineFieldValuesResourceSchema = new schema.Entity(
   "engineFieldValueResources",
   {
     engineFieldValues: [engineFieldValuesSchema],
-  }
+  },
 );
 
 const resourcesSchema = {
@@ -255,13 +255,13 @@ const resourcesSchema = {
 };
 
 export const normalizeEntityResources = (
-  projectResources: ProjectEntityResources
+  projectResources: ProjectEntityResources,
 ): NormalizedData => {
   return normalize(projectResources, resourcesSchema);
 };
 
 export const denormalizeEntities = (
-  state: EntitiesState
+  state: EntitiesState,
 ): ProjectEntityResources => {
   const input = {
     scenes: state.scenes.ids,
@@ -343,7 +343,7 @@ export const denormalizeEntities = (
   const denormalizedEntities: DenormalizedEntities = denormalize(
     input,
     resourcesSchema,
-    entities
+    entities,
   );
 
   const entityToResource =
@@ -369,18 +369,18 @@ export const denormalizeEntities = (
       })),
     })),
     actorPrefabs: denormalizedEntities.actorPrefabs.map((actorPrefab) =>
-      entityToResource("actorPrefab")(actorFixNulls(actorPrefab))
+      entityToResource("actorPrefab")(actorFixNulls(actorPrefab)),
     ),
     triggerPrefabs: denormalizedEntities.triggerPrefabs.map((triggerPrefab) =>
-      entityToResource("triggerPrefab")(triggerFixNulls(triggerPrefab))
+      entityToResource("triggerPrefab")(triggerFixNulls(triggerPrefab)),
     ),
     backgrounds: denormalizedEntities.backgrounds.map(
-      entityToResource("background")
+      entityToResource("background"),
     ),
     sprites: denormalizedEntities.sprites.map(entityToResource("sprite")),
     music: denormalizedEntities.music.map(entityToResource("music")),
     scripts: denormalizedEntities.scripts.map((script) =>
-      entityToResource("script")(scriptFixNulls(script))
+      entityToResource("script")(scriptFixNulls(script)),
     ),
     palettes: denormalizedEntities.palettes.map(entityToResource("palette")),
     emotes: denormalizedEntities.emotes.map(entityToResource("emote")),
@@ -389,7 +389,7 @@ export const denormalizeEntities = (
     tilesets: denormalizedEntities.tilesets.map(entityToResource("tileset")),
     sounds: denormalizedEntities.sounds.map(entityToResource("sound")),
     engineFieldValues: entityToResource("engineFieldValues")(
-      denormalizedEntities.engineFieldValues
+      denormalizedEntities.engineFieldValues,
     ),
     variables: entityToResource("variables")(denormalizedEntities.variables),
   };
@@ -420,7 +420,7 @@ export const denormalizeSprite = ({
 };
 
 export const normalizeSprite = (
-  sprite: SpriteSheet
+  sprite: SpriteSheet,
 ): {
   entities: {
     spriteSheets: Record<string, SpriteSheetNormalized>;
@@ -461,7 +461,7 @@ export const isUnionValue = (input: unknown): input is UnionValue => {
 };
 
 export const isUnionVariableValue = (
-  input: unknown
+  input: unknown,
 ): input is UnionVariableValue => {
   if (!isUnionValue(input)) {
     return false;
@@ -473,7 +473,7 @@ export const isUnionVariableValue = (
 };
 
 export const isUnionPropertyValue = (
-  input: unknown
+  input: unknown,
 ): input is UnionPropertyValue => {
   if (!isUnionValue(input)) {
     return false;
@@ -485,7 +485,7 @@ export const isUnionPropertyValue = (
 };
 
 export const isUnionNumberValue = (
-  input: unknown
+  input: unknown,
 ): input is UnionNumberValue => {
   if (!isUnionValue(input)) {
     return false;
@@ -497,7 +497,7 @@ export const isUnionNumberValue = (
 };
 
 export const isUnionDirectionValue = (
-  input: unknown
+  input: unknown,
 ): input is UnionDirectionValue => {
   if (!isUnionValue(input)) {
     return false;
@@ -525,7 +525,7 @@ export const isVariableTemp = (variable: string) => {
 export const isVariableCustomEvent = (variable: string) => {
   return (
     ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(
-      variable
+      variable,
     ) > -1
   );
 };
@@ -534,7 +534,7 @@ export const isCustomEventEqual = (
   customEventA: CustomEventNormalized,
   lookupA: Record<string, ScriptEventNormalized>,
   customEventB: CustomEventNormalized,
-  lookupB: Record<string, ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>,
 ) => {
   const compareA = {
     ...customEventA,
@@ -553,7 +553,7 @@ export const isCustomEventEqual = (
     customEventA.script,
     lookupA,
     customEventB.script,
-    lookupB
+    lookupB,
   );
 };
 
@@ -561,7 +561,7 @@ export const isActorPrefabEqual = (
   prefabA: ActorPrefabNormalized,
   lookupA: Record<string, ScriptEventNormalized>,
   prefabB: ActorPrefabNormalized,
-  lookupB: Record<string, ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>,
 ) => {
   type CompareType = Omit<ActorPrefabNormalized, ActorScriptKey | "id"> &
     Record<ActorScriptKey | "id", undefined>;
@@ -598,7 +598,7 @@ export const isActorPrefabEqual = (
       prefabA[key],
       lookupA,
       prefabB[key],
-      lookupB
+      lookupB,
     );
   });
   return scriptMatch;
@@ -608,7 +608,7 @@ export const isTriggerPrefabEqual = (
   prefabA: TriggerPrefabNormalized,
   lookupA: Record<string, ScriptEventNormalized>,
   prefabB: TriggerPrefabNormalized,
-  lookupB: Record<string, ScriptEventNormalized>
+  lookupB: Record<string, ScriptEventNormalized>,
 ) => {
   type CompareType = Omit<TriggerPrefabNormalized, TriggerScriptKey | "id"> &
     Record<TriggerScriptKey | "id", undefined>;
@@ -637,7 +637,7 @@ export const isTriggerPrefabEqual = (
       prefabA[key],
       lookupA,
       prefabB[key],
-      lookupB
+      lookupB,
     );
   });
   return scriptMatch;
@@ -657,7 +657,7 @@ export const sceneName = (scene: NamedEntity, sceneIndex: number) => {
 
 export const customEventName = (
   customEvent: NamedEntity,
-  customEventIndex: number
+  customEventIndex: number,
 ) => {
   return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
 };
@@ -713,10 +713,10 @@ export const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
 const extractEntitySymbols = (
-  entities: EntityState<{ symbol?: string }, string>
+  entities: EntityState<{ symbol?: string }, string>,
 ): Set<string> => {
   return new Set(
-    Object.values(entities.entities).map((entity) => entity?.symbol ?? "")
+    Object.values(entities.entities).map((entity) => entity?.symbol ?? ""),
   );
 };
 
@@ -750,7 +750,7 @@ export const genEntitySymbol = (state: EntitiesState, name: string) => {
 
 export const ensureEntitySymbolsUnique = (
   entities: EntityState<{ symbol?: string }, string>,
-  seenSymbols: Set<string>
+  seenSymbols: Set<string>,
 ) => {
   for (const entity of Object.values(entities.entities)) {
     if (entity) {
@@ -783,10 +783,10 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
 
 export const matchAssetEntity = <
   A extends Asset & { inode: string },
-  T extends Asset & { inode: string }
+  T extends Asset & { inode: string },
 >(
   entity: A,
-  existingEntities: T[]
+  existingEntities: T[],
 ) => {
   return existingEntities.find(matchAsset(entity));
 };
@@ -794,10 +794,10 @@ export const matchAssetEntity = <
 export const mergeAssetEntity = <T extends Asset & { inode: string }>(
   entities: EntityState<T, string>,
   entity: T,
-  keepProps: (keyof T)[]
+  keepProps: (keyof T)[],
 ): T => {
   const existingEntities = entities.ids.map(
-    (id) => entities.entities[id]
+    (id) => entities.entities[id],
   ) as T[];
 
   // Check if asset already exists or was recently deleted
@@ -820,17 +820,17 @@ export const mergeAssetEntity = <T extends Asset & { inode: string }>(
 };
 
 export const storeRemovedAssetInInodeCache = <
-  T extends Asset & { inode: string }
+  T extends Asset & { inode: string },
 >(
   filename: string,
   projectRoot: string,
   assetFolder: string,
-  entities: EntityState<T, string>
+  entities: EntityState<T, string>,
 ): Asset => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
 
   const existingEntities = entities.ids.map(
-    (id) => entities.entities[id]
+    (id) => entities.entities[id],
   ) as T[];
 
   const asset = {
@@ -856,12 +856,12 @@ export const storeRemovedAssetInInodeCache = <
  * @param keepProps array of props to keep
  */
 export const upsertAssetEntity = <
-  T extends Asset & { id: string; inode: string }
+  T extends Asset & { id: string; inode: string },
 >(
   entities: EntityState<T, string>,
   adapter: EntityAdapter<T, string>,
   entity: T,
-  keepProps: (keyof T)[]
+  keepProps: (keyof T)[],
 ) => {
   const mergedEntity = mergeAssetEntity(entities, entity, keepProps);
   const didInsert = entity === mergedEntity;
@@ -876,14 +876,14 @@ export const upsertAssetEntity = <
  * @param asset asset to remove
  */
 export const removeAssetEntity = <
-  T extends Asset & { id: string; inode: string }
+  T extends Asset & { id: string; inode: string },
 >(
   entities: EntityState<T, string>,
   adapter: EntityAdapter<T, string>,
-  asset: Asset
+  asset: Asset,
 ) => {
   const existingEntities = entities.ids.map(
-    (id) => entities.entities[id]
+    (id) => entities.entities[id],
   ) as T[];
   const existingAsset = existingEntities.find(matchAsset(asset));
   if (existingAsset) {
@@ -904,15 +904,15 @@ export const renameAssetEntity = <
     inode: string;
     filename: string;
     name: string;
-  }
+  },
 >(
   entities: EntityState<T, string>,
   adapter: EntityAdapter<T, string>,
   asset: Asset,
-  newFilename: string
+  newFilename: string,
 ) => {
   const existingEntities = entities.ids.map(
-    (id) => entities.entities[id]
+    (id) => entities.entities[id],
   ) as T[];
   const existingAsset = existingEntities.find(matchAsset(asset));
   if (existingAsset) {
@@ -932,7 +932,7 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   entities: EntityState<T, string>,
   adapter: EntityAdapter<T, string>,
   id: string,
-  inputSymbol: string
+  inputSymbol: string,
 ) => {
   const entity = entities.entities[id];
   if (!entity || entity.symbol === inputSymbol) {
@@ -956,7 +956,7 @@ export const isSlope = (value: number) => {
 export const updateCustomEventArgs = (
   customEvent: CustomEventNormalized,
   scriptEventLookup: Record<string, ScriptEventNormalized>,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const variables = {} as Record<string, CustomEventVariable>;
   const actors = {} as Record<string, CustomEventActor>;
@@ -973,7 +973,7 @@ export const updateCustomEventArgs = (
       Object.keys(args).forEach((arg) => {
         const addActor = (actor: string) => {
           const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(actor)
+            "A".charCodeAt(0) + parseInt(actor),
           );
           actors[actor] = {
             id: actor,
@@ -982,7 +982,7 @@ export const updateCustomEventArgs = (
         };
         const addVariable = (variable: string) => {
           const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(variable[1])
+            "A".charCodeAt(0) + parseInt(variable[1]),
           );
           variables[variable] = {
             id: variable,
@@ -994,7 +994,7 @@ export const updateCustomEventArgs = (
           const actor = property && property.replace(/:.*/, "");
           if (actor !== "player" && actor !== "$self$" && actor !== "camera") {
             const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(actor)
+              "A".charCodeAt(0) + parseInt(actor),
             );
             actors[actor] = {
               id: actor,
@@ -1069,7 +1069,7 @@ export const updateCustomEventArgs = (
             variablePtrs.forEach((variablePtr: string) => {
               const variable = variablePtr[2];
               const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(variable, 10)
+                "A".charCodeAt(0) + parseInt(variable, 10),
               ).toUpperCase();
               const variableId = `V${variable}`;
               variables[variableId] = {
@@ -1082,7 +1082,7 @@ export const updateCustomEventArgs = (
           }
         }
       }
-    }
+    },
   );
 
   customEvent.variables = sortByKey(variables);
@@ -1092,7 +1092,7 @@ export const updateCustomEventArgs = (
 export const updateAllCustomEventsArgs = (
   customEvents: CustomEventNormalized[],
   scriptEventLookup: Record<string, ScriptEventNormalized>,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   for (const customEvent of customEvents) {
     updateCustomEventArgs(customEvent, scriptEventLookup, scriptEventDefs);
@@ -1120,7 +1120,7 @@ export const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
 };
 
 export const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
-  trigger: T
+  trigger: T,
 ): T => {
   const newTrigger = { ...trigger };
   walkTriggerScriptsKeys((key) => {

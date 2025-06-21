@@ -18,7 +18,7 @@ export const SearchableSettingRow: FC<SearchableSettingRowProps> = ({
   }
   const upperSearchTerm = searchTerm.toLocaleUpperCase();
   const match = searchMatches.find((s) =>
-    s.toLocaleUpperCase().includes(upperSearchTerm)
+    s.toLocaleUpperCase().includes(upperSearchTerm),
   );
   if (match) {
     return component;

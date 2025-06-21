@@ -30,12 +30,12 @@ interface DetectedSprite {
 
 export const detect = (
   spriteSheet: SpriteSheetNormalized,
-  projectRoot: string
+  projectRoot: string,
 ): Promise<DetectedSprite> => {
   const filename = `file://${assetFilename(
     projectRoot,
     "sprites",
-    spriteSheet
+    spriteSheet,
   )}?_v=${spriteSheet._v}`;
 
   return new Promise((resolve, reject) => {
@@ -142,7 +142,7 @@ export const detect = (
         null,
         metaspriteTiles.map((tile) => {
           return tile.x > 0 ? tile.x : 8 - tile.x;
-        })
+        }),
       );
 
       const furthestY =
@@ -150,7 +150,7 @@ export const detect = (
           null,
           metaspriteTiles.map((tile) => {
             return tile.y;
-          })
+          }),
         ) + 16;
 
       const state: SpriteState = {
@@ -182,7 +182,7 @@ export const detect = (
 
 // Classic detection - GB Studio 1.0 & 2.0 sprite format
 export const detectClassic = (
-  spriteSheet: SpriteSheetNormalized
+  spriteSheet: SpriteSheetNormalized,
 ): DetectedSprite => {
   const numFrames = Math.floor(spriteSheet.width / 16);
 
@@ -245,10 +245,10 @@ export const detectClassic = (
     [4, 2, 0].forEach((index) => {
       const originalMetasprite = metasprites[index];
       const originalTileLeft = metaspriteTiles.find(
-        (tile) => originalMetasprite.tiles[0] === tile.id
+        (tile) => originalMetasprite.tiles[0] === tile.id,
       ) as MetaspriteTile;
       const originalTileRight = metaspriteTiles.find(
-        (tile) => originalMetasprite.tiles[1] === tile.id
+        (tile) => originalMetasprite.tiles[1] === tile.id,
       ) as MetaspriteTile;
       const tileLeft: MetaspriteTile = {
         ...originalTileLeft,

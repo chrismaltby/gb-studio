@@ -16,7 +16,7 @@ const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
-  filename: string
+  filename: string,
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     createReadStream(filename)
@@ -54,20 +54,20 @@ const loadAvatarData =
   };
 
 const loadAllAvatarData = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<AvatarResourceAsset[]> => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/avatars/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/avatars/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/avatars/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/avatars/**/@(*.png|*.PNG)`,
   );
   const imageData = (
     await Promise.all(
       ([] as Promise<AvatarResourceAsset | null>[]).concat(
         imagePaths.map(loadAvatarData(projectRoot)),
-        pluginPaths.map(loadAvatarData(projectRoot))
-      )
+        pluginPaths.map(loadAvatarData(projectRoot)),
+      ),
     )
   ).filter((i) => i);
   return imageData as AvatarResourceAsset[];

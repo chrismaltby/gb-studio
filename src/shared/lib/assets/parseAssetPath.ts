@@ -14,7 +14,7 @@ const extractPluginPath = (relativePath: string, assetFolder: string) => {
 
   const extractedPath = relativePath.substring(
     "plugins".length + 1,
-    assetFolderIndex - 1
+    assetFolderIndex - 1,
   );
   return extractedPath.split(sep).join("/");
 };
@@ -22,7 +22,7 @@ const extractPluginPath = (relativePath: string, assetFolder: string) => {
 const parseAssetPath = (
   filename: string,
   projectRoot: string,
-  assetFolder: string
+  assetFolder: string,
 ) => {
   const relativePath = relative(projectRoot, filename);
   const plugin = relativePath.startsWith("plugins")
@@ -31,7 +31,7 @@ const parseAssetPath = (
   const file = pathToPosix(
     plugin
       ? relative(`plugins/${plugin}/${assetFolder}/`, relativePath)
-      : relative(`assets/${assetFolder}/`, relativePath)
+      : relative(`assets/${assetFolder}/`, relativePath),
   );
   return {
     relativePath,

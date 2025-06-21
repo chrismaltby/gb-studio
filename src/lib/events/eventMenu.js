@@ -103,7 +103,7 @@ const fields = [].concat(
               eq: true,
             },
           ],
-        }
+        },
       );
       return arr;
     }, []),
@@ -133,7 +133,7 @@ const fields = [].concat(
       ["menu", l10n("FIELD_LAYOUT_MENU")],
     ],
     defaultValue: "dialogue",
-  }
+  },
 );
 
 const compile = (input, helpers) => {
@@ -152,7 +152,7 @@ const compile = (input, helpers) => {
     ].splice(0, input.items),
     input.layout,
     input.cancelOnLastOption,
-    input.cancelOnB
+    input.cancelOnB,
   );
 };
 

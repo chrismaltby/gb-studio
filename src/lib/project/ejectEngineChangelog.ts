@@ -822,7 +822,7 @@ export const isKnownEngineVersion = (currentVersion: string): boolean => {
 
 const ejectEngineChangelog = (currentVersion: string) => {
   const startIndex = changes.findIndex(
-    (change) => change.version === currentVersion
+    (change) => change.version === currentVersion,
   );
   let changelog = l10n("WARNING_MISSING_UPDATES") + ":\n\n";
   const modifiedFiles = [];

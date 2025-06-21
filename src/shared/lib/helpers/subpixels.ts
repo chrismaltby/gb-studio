@@ -11,6 +11,15 @@ export const subpxShiftForUnits = (units: DistanceUnitType) => {
   return units === "tiles" ? NUM_SUBPIXEL_BITS + 3 : NUM_SUBPIXEL_BITS;
 };
 
+export const subpxSnapMaskForUnits = (units: DistanceUnitType) => {
+  const bitsToClear =
+    units === "tiles"
+      ? NUM_SUBPIXEL_BITS + 3 // 3 extra bits for 8px tiles
+      : NUM_SUBPIXEL_BITS;
+
+  return ~((1 << bitsToClear) - 1) & 0xffff;
+};
+
 export const unitsValueToSubpx = (x: number, units: DistanceUnitType) => {
   if (units === "tiles") {
     return tileToSubpx(x);

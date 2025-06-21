@@ -9,7 +9,7 @@ const paint = <T>(
   size: number,
   value: T,
   setValue: SetValueFn<T>,
-  isInBounds: InBoundsFn
+  isInBounds: InBoundsFn,
 ) => {
   for (let xi = x; xi < x + size; xi++) {
     for (let yi = y; yi < y + size; yi++) {
@@ -28,7 +28,7 @@ const paintLine = <T>(
   size: number,
   value: T,
   setValue: SetValueFn<T>,
-  isInBounds: InBoundsFn
+  isInBounds: InBoundsFn,
 ) => {
   let x1 = startX;
   let y1 = startY;
@@ -64,7 +64,7 @@ const paintMagic = <T>(
   y: number,
   value: T,
   setValue: SetValueFn<T>,
-  isInBounds: InBoundsFn
+  isInBounds: InBoundsFn,
 ) => {
   const tileindex = bgWidth * y + x;
   const targetTileID = tileLookup[tileindex];

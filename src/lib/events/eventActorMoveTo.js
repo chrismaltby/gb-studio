@@ -103,7 +103,7 @@ const compile = (input, helpers) => {
     input.y,
     input.useCollisions,
     input.moveType,
-    input.units
+    input.units,
   );
 };
 

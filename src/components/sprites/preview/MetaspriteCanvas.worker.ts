@@ -52,7 +52,7 @@ workerCtx.onmessage = async (evt) => {
       0,
       0,
       img.width,
-      img.height
+      img.height,
     );
     chromaKeyData(tileImageData.data);
 
@@ -70,13 +70,13 @@ workerCtx.onmessage = async (evt) => {
       const imageDataCopy = new ImageData(
         new Uint8ClampedArray(tileImageData.data),
         tileImageData.width,
-        tileImageData.height
+        tileImageData.height,
       );
       colorizeSpriteData(
         imageDataCopy.data,
         objPalette,
         palette,
-        colorCorrection
+        colorCorrection,
       );
       ctx.putImageData(imageDataCopy, 0, 0);
     });
@@ -95,7 +95,7 @@ workerCtx.onmessage = async (evt) => {
         const imageDataCopy = new ImageData(
           new Uint8ClampedArray(tileImageData.data),
           tileImageData.width,
-          tileImageData.height
+          tileImageData.height,
         );
         colorizeSpriteData(imageDataCopy.data, null, colors, colorCorrection);
         ctx.putImageData(imageDataCopy, 0, 0);
@@ -151,7 +151,7 @@ workerCtx.onmessage = async (evt) => {
       Math.max(0, width / 2 - 8) + tile.x * (tile.flipX ? -1 : 1),
       height - 16 - tile.y * (tile.flipY ? -1 : 1),
       8,
-      16
+      16,
     );
     ctx.restore();
   }

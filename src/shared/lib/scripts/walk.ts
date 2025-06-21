@@ -51,7 +51,7 @@ type ScriptMapOptions =
  */
 export const mapScript = (
   script: ScriptEvent[] = [],
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): ScriptEvent[] => {
   return script.map((scriptEvent): ScriptEvent => {
     if (scriptEvent && scriptEvent.children) {
@@ -60,7 +60,7 @@ export const mapScript = (
         ...newEvent,
         children: mapValues(
           newEvent.children || scriptEvent.children,
-          (childEvents) => mapScript(childEvents, callback)
+          (childEvents) => mapScript(childEvents, callback),
         ),
       };
     }
@@ -74,7 +74,7 @@ export const mapScript = (
 export const mapPrefabOverrides = (
   overrides: Record<string, ScriptEventArgsOverride>,
   prefabEventsLookup: Record<string, ScriptEvent>,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): Record<string, ScriptEventArgsOverride> => {
   return Object.fromEntries(
     Object.entries(overrides).map(([key, value]) => {
@@ -99,7 +99,7 @@ export const mapPrefabOverrides = (
           mappedEvent.args && key in mappedEvent.args
             ? mappedEvent.args[key]
             : value.args[key],
-        ])
+        ]),
       );
 
       return [
@@ -109,7 +109,7 @@ export const mapPrefabOverrides = (
           args: migratedOverrideArgs,
         },
       ];
-    })
+    }),
   );
 };
 
@@ -122,7 +122,7 @@ export const mapPrefabOverrides = (
  */
 export const mapUncommentedScript = (
   script: ScriptEvent[] = [],
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): ScriptEvent[] => {
   return script
     .map((scriptEvent): ScriptEvent | undefined => {
@@ -136,7 +136,7 @@ export const mapUncommentedScript = (
           ...newEvent,
           children: mapValues(
             newEvent.children || scriptEvent.children,
-            (childEvents) => mapUncommentedScript(childEvents, callback)
+            (childEvents) => mapUncommentedScript(childEvents, callback),
           ),
         };
       }
@@ -156,11 +156,11 @@ export const mapUncommentedScript = (
  * @returns A new denormalized scene with updated scripts.
  */
 export const mapSceneScript = <
-  T extends Scene | SceneResource | CompressedSceneResourceWithChildren
+  T extends Scene | SceneResource | CompressedSceneResourceWithChildren,
 >(
   scene: T,
   options: ScriptMapOptions,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
   const newScene = {
     ...scene,
@@ -173,7 +173,7 @@ export const mapSceneScript = <
         newActor.prefabScriptOverrides = mapPrefabOverrides(
           newActor.prefabScriptOverrides,
           options.prefabEventsLookup,
-          callback
+          callback,
         );
       }
       return newActor;
@@ -187,7 +187,7 @@ export const mapSceneScript = <
         newTrigger.prefabScriptOverrides = mapPrefabOverrides(
           newTrigger.prefabScriptOverrides,
           options.prefabEventsLookup,
-          callback
+          callback,
         );
       }
       return newTrigger;
@@ -207,11 +207,11 @@ export const mapSceneScript = <
  * @returns A new denormalized scene with updated scripts.
  */
 export const mapScenesScript = <
-  T extends Scene | SceneResource | CompressedSceneResourceWithChildren
+  T extends Scene | SceneResource | CompressedSceneResourceWithChildren,
 >(
   scenes: T[],
   options: ScriptMapOptions,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T[] => {
   return scenes.map((scene) => {
     return mapSceneScript(scene, options, callback);
@@ -220,7 +220,7 @@ export const mapScenesScript = <
 
 export const mapActorScript = <T extends Actor | ActorPrefab>(
   actor: T,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
   const newActor = { ...actor };
   walkActorScriptsKeys((key) => {
@@ -231,7 +231,7 @@ export const mapActorScript = <T extends Actor | ActorPrefab>(
 
 export const mapActorsScript = <T extends Actor | ActorPrefab>(
   actors: T[],
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T[] => {
   return actors.map((actor) => {
     return mapActorScript(actor, callback);
@@ -240,7 +240,7 @@ export const mapActorsScript = <T extends Actor | ActorPrefab>(
 
 export const mapTriggerScript = <T extends Trigger | TriggerPrefab>(
   trigger: T,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
   const newTrigger = { ...trigger };
   walkTriggerScriptsKeys((key) => {
@@ -251,7 +251,7 @@ export const mapTriggerScript = <T extends Trigger | TriggerPrefab>(
 
 export const mapTriggersScript = <T extends Trigger | TriggerPrefab>(
   triggers: T[],
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T[] => {
   return triggers.map((trigger) => {
     return mapTriggerScript(trigger, callback);
@@ -260,7 +260,7 @@ export const mapTriggersScript = <T extends Trigger | TriggerPrefab>(
 
 export const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
   customScript: T,
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
   return {
     ...customScript,
@@ -270,7 +270,7 @@ export const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
 
 export const mapCustomScriptsScript = <T extends CustomEvent | ScriptResource>(
   customScripts: T[],
-  callback: (e: ScriptEvent) => ScriptEvent
+  callback: (e: ScriptEvent) => ScriptEvent,
 ): T[] => {
   return customScripts.map((customScript) => {
     return mapCustomScriptScript(customScript, callback);
@@ -290,7 +290,7 @@ export const mapCustomScriptsScript = <T extends CustomEvent | ScriptResource>(
  */
 export const filterEvents = (
   data: ScriptEvent[] = [],
-  callback: (e: ScriptEvent) => boolean
+  callback: (e: ScriptEvent) => boolean,
 ) => {
   return data.reduce((memo, o) => {
     if (callback(o)) {
@@ -299,7 +299,7 @@ export const filterEvents = (
         children:
           o.children &&
           mapValues(o.children, (childEvents) =>
-            filterEvents(childEvents, callback)
+            filterEvents(childEvents, callback),
           ),
       });
     }
@@ -332,7 +332,7 @@ type WalkOptions =
 export const walkScript = (
   script: ScriptEvent[] = [],
   options: WalkOptions,
-  callback: (e: ScriptEvent) => void
+  callback: (e: ScriptEvent) => void,
 ) => {
   if (!script) {
     return;
@@ -375,7 +375,7 @@ export const walkScript = (
         const visitedIds = new Set<string>(
           options.customEvents.visitedIds
             ? [...options.customEvents.visitedIds, customEvent.id]
-            : [customEvent.id]
+            : [customEvent.id],
         );
 
         walkScript(
@@ -389,7 +389,7 @@ export const walkScript = (
               visitedIds,
             },
           },
-          callback
+          callback,
         );
       }
     }
@@ -406,7 +406,7 @@ export const walkScript = (
 export const walkSceneSpecificScripts = (
   scene: Scene,
   options: WalkOptions,
-  callback: (e: ScriptEvent) => void
+  callback: (e: ScriptEvent) => void,
 ) => {
   walkSceneScriptsKeys((key) => {
     walkScript(scene[key], options, callback);
@@ -422,7 +422,7 @@ export const walkSceneSpecificScripts = (
 export const walkActorScripts = (
   actor: Actor | ActorPrefab,
   options: WalkOptions,
-  callback: (e: ScriptEvent) => void
+  callback: (e: ScriptEvent) => void,
 ) => {
   walkActorScriptsKeys((key) => {
     walkScript(actor[key], options, callback);
@@ -438,7 +438,7 @@ export const walkActorScripts = (
 export const walkTriggerScripts = (
   trigger: Trigger | TriggerPrefab,
   options: WalkOptions,
-  callback: (e: ScriptEvent) => void
+  callback: (e: ScriptEvent) => void,
 ) => {
   walkTriggerScriptsKeys((key) => {
     walkScript(trigger[key], options, callback);
@@ -455,17 +455,17 @@ export const walkTriggerScripts = (
 export const walkSceneScripts = (
   scene: Scene,
   options: WalkOptions,
-  callback: (event: ScriptEvent, actor?: Actor, trigger?: Trigger) => void
+  callback: (event: ScriptEvent, actor?: Actor, trigger?: Trigger) => void,
 ) => {
   walkSceneSpecificScripts(scene, options, (e) =>
-    callback(e, undefined, undefined)
+    callback(e, undefined, undefined),
   );
   scene.actors.forEach((actor) => {
     walkActorScripts(actor, options, (e) => callback(e, actor, undefined));
   });
   scene.triggers.forEach((trigger) => {
     walkTriggerScripts(trigger, options, (e) =>
-      callback(e, undefined, trigger)
+      callback(e, undefined, trigger),
     );
   });
 };
@@ -484,12 +484,12 @@ export const walkScenesScripts = (
     event: ScriptEvent,
     scene: Scene,
     actor?: Actor,
-    trigger?: Trigger
-  ) => void
+    trigger?: Trigger,
+  ) => void,
 ) => {
   scenes.forEach((scene) => {
     walkSceneScripts(scene, options, (e, actor, trigger) =>
-      callback(e, scene, actor, trigger)
+      callback(e, scene, actor, trigger),
     );
   });
 };
@@ -517,11 +517,11 @@ type WalkNormalizedOptions =
 export const replaceCustomEventArgs = <
   T extends {
     args?: Record<string, unknown>;
-  }
+  },
 >(
   scriptEvent: T,
   customEventArgs: Record<string, unknown> | undefined,
-  overrideArgs?: Record<string, unknown> | undefined
+  overrideArgs?: Record<string, unknown> | undefined,
 ): T => {
   if (!customEventArgs && !overrideArgs) {
     return scriptEvent;
@@ -560,7 +560,7 @@ export const walkNormalizedScript = (
   ids: string[] = [],
   lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEventNormalized) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void,
 ) => {
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
@@ -578,8 +578,8 @@ export const walkNormalizedScript = (
         replaceCustomEventArgs(
           scriptEvent,
           options?.customEvents?.args,
-          override?.args
-        )
+          override?.args,
+        ),
       );
       if (
         scriptEvent.children &&
@@ -609,7 +609,7 @@ export const walkNormalizedScript = (
           const visitedIds = new Set<string>(
             options.customEvents.visitedIds
               ? [...options.customEvents.visitedIds, customEvent.id]
-              : [customEvent.id]
+              : [customEvent.id],
           );
 
           walkNormalizedScript(
@@ -624,7 +624,7 @@ export const walkNormalizedScript = (
                 visitedIds,
               },
             },
-            callback
+            callback,
           );
         }
       }
@@ -645,7 +645,7 @@ export const walkNormalizedSceneSpecificScripts = (
   scene: SceneNormalized,
   lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEventNormalized) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void,
 ) => {
   walkSceneScriptsKeys((key) => {
     walkNormalizedScript(scene[key], lookup, options, callback);
@@ -657,7 +657,7 @@ export const walkNormalizedActorScripts = (
   lookup: Record<string, ScriptEventNormalized>,
   prefabsLookup: Record<string, ActorPrefabNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEventNormalized) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void,
 ) => {
   const prefabId = "prefabId" in actor ? actor.prefabId : "";
   const prefab = prefabsLookup[prefabId];
@@ -683,7 +683,7 @@ export const walkNormalizedTriggerScripts = (
   lookup: Record<string, ScriptEventNormalized>,
   prefabsLookup: Record<string, TriggerPrefabNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEventNormalized) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void,
 ) => {
   const prefabId = "prefabId" in trigger ? trigger.prefabId : "";
   const prefab = prefabsLookup[prefabId];
@@ -716,11 +716,11 @@ export const walkNormalizedSceneScripts = (
   callback: (
     scriptEvent: ScriptEventNormalized,
     actor?: ActorNormalized,
-    trigger?: TriggerNormalized
-  ) => void
+    trigger?: TriggerNormalized,
+  ) => void,
 ) => {
   walkNormalizedSceneSpecificScripts(scene, lookup, options, (e) =>
-    callback(e, undefined, undefined)
+    callback(e, undefined, undefined),
   );
   scene.actors.forEach((actorId) => {
     const actor = actorsLookup[actorId];
@@ -730,7 +730,7 @@ export const walkNormalizedSceneScripts = (
         lookup,
         actorPrefabsLookup,
         options,
-        (e) => callback(e, actor, undefined)
+        (e) => callback(e, actor, undefined),
       );
     }
   });
@@ -742,7 +742,7 @@ export const walkNormalizedSceneScripts = (
         lookup,
         triggerPrefabsLookup,
         options,
-        (e) => callback(e, undefined, trigger)
+        (e) => callback(e, undefined, trigger),
       );
     }
   });
@@ -760,8 +760,8 @@ export const walkNormalizedScenesScripts = (
     scriptEvent: ScriptEventNormalized,
     scene: SceneNormalized,
     actor?: ActorNormalized,
-    trigger?: TriggerNormalized
-  ) => void
+    trigger?: TriggerNormalized,
+  ) => void,
 ) => {
   scenes.forEach((scene) => {
     walkNormalizedSceneScripts(
@@ -772,7 +772,7 @@ export const walkNormalizedScenesScripts = (
       actorPrefabsLookup,
       triggerPrefabsLookup,
       options,
-      (e, actor, trigger) => callback(e, scene, actor, trigger)
+      (e, actor, trigger) => callback(e, scene, actor, trigger),
     );
   });
 };
@@ -781,25 +781,25 @@ export const walkNormalizedCustomEventScripts = (
   customEvent: CustomEventNormalized,
   lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEventNormalized) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void,
 ) => {
   walkNormalizedScript(customEvent.script, lookup, options, callback);
 };
 
 export const walkActorScriptsKeys = (
-  callback: (scriptKey: ActorScriptKey) => void
+  callback: (scriptKey: ActorScriptKey) => void,
 ) => {
   actorScriptKeys.forEach((key) => callback(key));
 };
 
 export const walkTriggerScriptsKeys = (
-  callback: (scriptKey: TriggerScriptKey) => void
+  callback: (scriptKey: TriggerScriptKey) => void,
 ) => {
   triggerScriptKeys.forEach((key) => callback(key));
 };
 
 export const walkSceneScriptsKeys = (
-  callback: (scriptKey: SceneScriptKey) => void
+  callback: (scriptKey: SceneScriptKey) => void,
 ) => {
   sceneScriptKeys.forEach((key) => callback(key));
 };

@@ -43,7 +43,7 @@ window.addEventListener("error", (error) => {
       line: error.lineno,
       col: error.colno,
       stackTrace: error.error.stack,
-    })
+    }),
   );
   return false;
 });
@@ -60,7 +60,7 @@ window.addEventListener("unhandledrejection", (error) => {
       line: 0,
       col: 0,
       stackTrace: error.reason.stack,
-    })
+    }),
   );
   return false;
 });
@@ -84,25 +84,25 @@ const onRedo = () => {
 (async () => {
   const worldSidebarWidth = await API.settings.getNumber(
     "worldSidebarWidth",
-    0
+    0,
   );
   const filesSidebarWidth = await API.settings.getNumber(
     "filesSidebarWidth",
-    0
+    0,
   );
   const navigatorSidebarWidth = await API.settings.getNumber(
     "navigatorSidebarWidth",
-    0
+    0,
   );
 
   if (worldSidebarWidth) {
     store.dispatch(
-      editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth))
+      editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth)),
     );
   }
   if (filesSidebarWidth) {
     store.dispatch(
-      editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth))
+      editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth)),
     );
   }
   if (navigatorSidebarWidth) {
@@ -116,15 +116,15 @@ window.addEventListener(
     const state = store.getState();
     store.dispatch(
       editorActions.resizeWorldSidebar(
-        clampSidebarWidth(state.editor.worldSidebarWidth)
-      )
+        clampSidebarWidth(state.editor.worldSidebarWidth),
+      ),
     );
     store.dispatch(
       editorActions.resizeFilesSidebar(
-        clampSidebarWidth(state.editor.filesSidebarWidth)
-      )
+        clampSidebarWidth(state.editor.filesSidebarWidth),
+      ),
     );
-  }, 500)
+  }, 500),
 );
 
 // Overide Accelerator undo for windows, fixes chrome undo conflict
@@ -180,7 +180,7 @@ API.events.watch.sprite.removed.subscribe((_, filename, plugin) => {
     entitiesActions.removedAsset({
       assetType: "sprites",
       asset: { filename, plugin },
-    })
+    }),
   );
 });
 
@@ -195,7 +195,7 @@ API.events.watch.background.removed.subscribe((_, filename, plugin) => {
     entitiesActions.removedAsset({
       assetType: "backgrounds",
       asset: { filename, plugin },
-    })
+    }),
   );
 });
 
@@ -210,7 +210,7 @@ API.events.watch.music.removed.subscribe((_, filename, plugin) => {
     entitiesActions.removedAsset({
       assetType: "music",
       asset: { filename, plugin },
-    })
+    }),
   );
 });
 
@@ -225,7 +225,7 @@ API.events.watch.sound.removed.subscribe((_, filename, plugin) => {
     entitiesActions.removedAsset({
       assetType: "sounds",
       asset: { filename, plugin },
-    })
+    }),
   );
 });
 
@@ -270,7 +270,7 @@ API.events.watch.tileset.removed.subscribe((_, filename, plugin) => {
     entitiesActions.removedAsset({
       assetType: "tilesets",
       asset: { filename, plugin },
-    })
+    }),
   );
 });
 
@@ -348,7 +348,7 @@ API.events.menu.run.subscribe((_, debugEnabled) => {
       buildType: "web",
       exportBuild: false,
       debugEnabled,
-    })
+    }),
   );
 });
 
@@ -357,7 +357,7 @@ API.events.menu.build.subscribe((_, buildType) => {
     buildGameActions.buildGame({
       buildType,
       exportBuild: true,
-    })
+    }),
   );
 });
 
@@ -391,7 +391,7 @@ API.events.settings.settingChanged.subscribe((_, key, value) => {
   store.dispatch(
     settingsActions.editSettings({
       [key]: value,
-    })
+    }),
   );
 });
 
@@ -410,7 +410,7 @@ API.events.debugger.data.subscribe((_, packet) => {
           scriptContexts: packet.scriptContexts,
           currentSceneSymbol: packet.currentSceneSymbol,
           isPaused: packet.isPaused,
-        })
+        }),
       );
       break;
     }
@@ -424,16 +424,16 @@ API.events.debugger.symbols.subscribe(
         variableDataBySymbol: variableMap,
         sceneMap,
         gbvmScripts,
-      })
+      }),
     );
     if (!store.getState().project.present.settings.debuggerEnabled) {
       store.dispatch(
         settingsActions.editSettings({
           debuggerEnabled: true,
-        })
+        }),
       );
     }
-  }
+  },
 );
 
 API.events.debugger.disconnected.subscribe(() => {

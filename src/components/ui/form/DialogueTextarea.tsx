@@ -186,7 +186,7 @@ const searchVariables =
       .filter(
         (v) =>
           v.code.indexOf(upperSearch) > -1 ||
-          v.name.toUpperCase().indexOf(upperSearch) > -1
+          v.name.toUpperCase().indexOf(upperSearch) > -1,
       )
       .slice(0, 5)
       .map((v) => ({
@@ -318,7 +318,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         searchName: `speed5 ${l10n("FIELD_SPEED")}\u00a05`,
       },
     ],
-    []
+    [],
   );
 
   const speedCodeLookup = useMemo(() => keyBy(speedCodes, "id"), [speedCodes]);
@@ -336,7 +336,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         searchName: `cursormove ${l10n("FIELD_MOVE_CURSOR_POSITION_BY")}`,
       },
     ],
-    []
+    [],
   );
 
   const waitCodes: ExtendedSuggestionDataItem[] = useMemo(
@@ -357,7 +357,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         searchName: `wait ${l10n("FIELD_WAIT_UNTIL_BUTTON_PRESSED")}`,
       },
     ],
-    []
+    [],
   );
 
   const variablesLookup = useMemo(() => {
@@ -395,7 +395,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   const searchLocalisedSuggestions = useCallback(
     (
       items: ExtendedSuggestionDataItem[],
-      searchTerm: string
+      searchTerm: string,
     ): ExtendedSuggestionDataItem[] => {
       const searchTermLowerCase = searchTerm.toLocaleLowerCase();
       return items.filter((item) => {
@@ -404,7 +404,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           .includes(searchTermLowerCase);
       });
     },
-    []
+    [],
   );
 
   const searchFonts = useCallback(
@@ -415,7 +415,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       }
       return searchLocalisedSuggestions(fontItems, searchTermLowerCase);
     },
-    [fontItems, searchLocalisedSuggestions]
+    [fontItems, searchLocalisedSuggestions],
   );
 
   const searchSpeedCodes = useCallback(
@@ -426,7 +426,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       }
       return searchLocalisedSuggestions(speedCodes, searchTermLowerCase);
     },
-    [searchLocalisedSuggestions, speedCodes]
+    [searchLocalisedSuggestions, speedCodes],
   );
 
   const searchMoveCodes = useCallback(
@@ -437,7 +437,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       }
       return searchLocalisedSuggestions(moveCodes, searchTermLowerCase);
     },
-    [moveCodes, searchLocalisedSuggestions]
+    [moveCodes, searchLocalisedSuggestions],
   );
 
   const searchWaitCodes = useCallback(
@@ -448,7 +448,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
       }
       return searchLocalisedSuggestions(waitCodes, searchTermLowerCase);
     },
-    [waitCodes, searchLocalisedSuggestions]
+    [waitCodes, searchLocalisedSuggestions],
   );
 
   return (
@@ -475,7 +475,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                       }
                       matches++;
                       return match;
-                    }
+                    },
                   );
                   onChange(newValue);
                   setEditMode(undefined);
@@ -506,7 +506,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                       }
                       matches++;
                       return match;
-                    }
+                    },
                   );
                   onChange(newValue);
                   setEditMode(undefined);
@@ -557,9 +557,9 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                           ? newGoto.offsetY + 1
                           : newGoto.offsetY;
                       return `\\00${newGoto.relative ? "4" : "3"}\\${decOct(
-                        fromSigned8Bit(ensureNumber(newX, 1))
+                        fromSigned8Bit(ensureNumber(newX, 1)),
                       ).padStart(3, "0")}\\${decOct(
-                        fromSigned8Bit(ensureNumber(newY, 1))
+                        fromSigned8Bit(ensureNumber(newY, 1)),
                       )}`;
                     }
                     matches++;

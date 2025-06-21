@@ -25,7 +25,7 @@ function afterCopy(buildPath, electronVersion, platform, arch, callback) {
       return fs.copy(__dirname + "/../../../.." + dir, buildPath + dir, {
         filter: fileFilter,
       });
-    })
+    }),
   )
     .then(() => {
       const dynamicChunks = glob(__dirname + "/.webpack/renderer/[0-9]");
@@ -36,7 +36,7 @@ function afterCopy(buildPath, electronVersion, platform, arch, callback) {
             "/.webpack/renderer/main_window/" +
             Path.basename(dynamicChunk);
           return fs.copy(dynamicChunk, outputPath, { filter: fileFilter });
-        })
+        }),
       );
     })
     .then(() => callback())

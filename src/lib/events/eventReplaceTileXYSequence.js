@@ -159,7 +159,7 @@ const compile = (input, helpers) => {
       type: "variable",
       value: input.variable,
     },
-    input.tileSize
+    input.tileSize,
   );
 
   if (input.tileSize === "16px") {

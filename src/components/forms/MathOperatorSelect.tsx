@@ -29,7 +29,7 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
       { value: "/=", label: l10n("FIELD_DIV_VARIABLE") },
       { value: "%=", label: l10n("FIELD_MOD_VARIABLE") },
     ],
-    []
+    [],
   );
   const currentValue = options.find((o) => o.value === value);
   return (

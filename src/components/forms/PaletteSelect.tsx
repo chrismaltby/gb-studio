@@ -101,8 +101,8 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
           value: palette.id,
           label: palette.name,
           palette,
-        }))
-      )
+        })),
+      ),
     );
   }, [
     palettes,

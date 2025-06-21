@@ -1,3 +1,4 @@
+import type { ScriptBuilderFunctionArg } from "lib/compiler/scriptBuilder";
 import { ensureTypeGenerator } from "shared/types";
 
 export const valueAtomTypes = [
@@ -11,10 +12,10 @@ export const valueAtomTypes = [
   "true",
   "false",
 ] as const;
-export type ValueAtomType = typeof valueAtomTypes[number];
+export type ValueAtomType = (typeof valueAtomTypes)[number];
 
 export const constValueAtomTypes = ["number", "constant"] as const;
-export type ConstValueAtomType = typeof constValueAtomTypes[number];
+export type ConstValueAtomType = (typeof constValueAtomTypes)[number];
 
 export const valueOperatorTypes = [
   "add",
@@ -40,7 +41,7 @@ export const valueOperatorTypes = [
   "bOR",
   "bXOR",
 ] as const;
-export type ValueOperatorType = typeof valueOperatorTypes[number];
+export type ValueOperatorType = (typeof valueOperatorTypes)[number];
 
 export const valueUnaryOperatorTypes = [
   "rnd",
@@ -50,7 +51,7 @@ export const valueUnaryOperatorTypes = [
   // Bitwise
   "bNOT",
 ] as const;
-export type ValueUnaryOperatorType = typeof valueUnaryOperatorTypes[number];
+export type ValueUnaryOperatorType = (typeof valueUnaryOperatorTypes)[number];
 
 export type ValueType =
   | ValueAtomType
@@ -64,7 +65,7 @@ export const isValueOperatorType = (type: unknown): type is ValueOperatorType =>
   valueOperatorTypes.includes(type as ValueOperatorType);
 
 export const isValueUnaryOperatorType = (
-  type: unknown
+  type: unknown,
 ): type is ValueUnaryOperatorType =>
   valueUnaryOperatorTypes.includes(type as ValueUnaryOperatorType);
 
@@ -159,6 +160,27 @@ export type ValueFunctionMenuItem = {
   symbol: string;
 };
 
+type OptimisedScriptValueAtom = Exclude<
+  ScriptValueAtom,
+  { type: "expression" }
+>;
+
+export type OptimisedScriptValue =
+  | RPNOperationWithOptimisedValues
+  | RPNUnaryOperationWithOptimisedValue
+  | OptimisedScriptValueAtom;
+
+type RPNOperationWithOptimisedValues = {
+  type: ValueOperatorType;
+  valueA: OptimisedScriptValue;
+  valueB: OptimisedScriptValue;
+};
+
+type RPNUnaryOperationWithOptimisedValue = {
+  type: ValueUnaryOperatorType;
+  value: OptimisedScriptValue;
+};
+
 const validProperties = [
   "xpos",
   "ypos",
@@ -235,7 +257,7 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
 };
 
 export const isConstScriptValue = (
-  value: unknown
+  value: unknown,
 ): value is ConstScriptValue => {
   if (!value || typeof value !== "object") {
     return false;
@@ -261,18 +283,18 @@ export type ScriptValueUnaryOperation = ScriptValue & {
 };
 
 export const isUnaryOperation = (
-  value?: ScriptValue
+  value?: ScriptValue,
 ): value is ScriptValueUnaryOperation => {
   return (
     !!value &&
     valueUnaryOperatorTypes.includes(
-      value.type as unknown as ValueUnaryOperatorType
+      value.type as unknown as ValueUnaryOperatorType,
     )
   );
 };
 
 export const isValueOperation = (
-  value?: ScriptValue
+  value?: ScriptValue,
 ): value is ScriptValueFunction => {
   return (
     !!value &&
@@ -287,7 +309,7 @@ export const isValueAtom = (value?: ScriptValue): value is ScriptValueAtom => {
 };
 
 export const isValueNumber = (
-  value: unknown
+  value: unknown,
 ): value is {
   type: "number";
   value: number;
@@ -307,13 +329,16 @@ export type PrecompiledValueFetch = {
   local: string;
   value:
     | {
-        type: "property";
-        target: string;
-        property: string;
+        type: "actorPosition";
+        target: string | ScriptBuilderFunctionArg;
       }
     | {
-        type: "expression";
-        value: string;
+        type: "actorDirection";
+        target: string | ScriptBuilderFunctionArg;
+      }
+    | {
+        type: "actorFrame";
+        target: string | ScriptBuilderFunctionArg;
       };
 };
 
@@ -340,6 +365,19 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "local";
+      value: string;
+      offset?: number;
+    }
+  | {
+      type: "memI16";
+      value: string;
+    }
+  | {
+      type: "memU8";
+      value: string;
+    }
+  | {
+      type: "memI8";
       value: string;
     }
   | {

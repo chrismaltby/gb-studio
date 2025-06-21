@@ -55,7 +55,7 @@ const compile = (input, helpers) => {
     input.spriteSheetId,
     offset,
     input.collisionGroup,
-    input.collisionMask
+    input.collisionMask,
   );
 };
 

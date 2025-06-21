@@ -28,7 +28,7 @@ export const assetPath = (assetType: AssetType, asset: Asset) => {
 export const assetFilename = (
   projectRoot: string,
   assetType: AssetType,
-  asset: Asset
+  asset: Asset,
 ) => {
   return Path.join(projectRoot, assetPath(assetType, asset));
 };

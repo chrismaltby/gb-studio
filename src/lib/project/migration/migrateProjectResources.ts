@@ -17,7 +17,7 @@ export const LATEST_PROJECT_VERSION = lastMigration.to.version;
 export const LATEST_PROJECT_MINOR_VERSION = lastMigration.to.release;
 
 export const migrateProjectResources = async (
-  resources: CompressedProjectResources
+  resources: CompressedProjectResources,
 ): Promise<CompressedProjectResources> => {
   return migrations.reduce((migratedResources, migration) => {
     return applyProjectResourcesMigration(migratedResources, migration);

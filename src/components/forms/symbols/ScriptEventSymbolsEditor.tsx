@@ -21,7 +21,7 @@ export const ScriptEventSymbolsEditor = ({
           entitiesActions.setScriptEventSymbol({
             scriptEventId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

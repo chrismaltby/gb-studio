@@ -43,26 +43,26 @@ interface TriggerEditorProps {
 
 export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const trigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, id)
+    triggerSelectors.selectById(state, id),
   );
   const prefab = useAppSelector((state) =>
-    triggerPrefabSelectors.selectById(state, trigger?.prefabId ?? "")
+    triggerPrefabSelectors.selectById(state, trigger?.prefabId ?? ""),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
 
   const lastScriptTab = useAppSelector(
-    (state) => state.editor.lastScriptTabTrigger
+    (state) => state.editor.lastScriptTabTrigger,
   );
 
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const [showSymbols, setShowSymbols] = useState(false);
@@ -74,7 +74,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const onChangeTriggerProp = useCallback(
     <K extends keyof TriggerNormalized>(
       key: K,
-      value: TriggerNormalized[K]
+      value: TriggerNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editTrigger({
@@ -82,51 +82,51 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("name", e.currentTarget.value),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeTriggerProp("notes", e.currentTarget.value),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangeX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("x", castEventToInt(e, 0)),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangeY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("y", castEventToInt(e, 0)),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangeWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("width", castEventToInt(e, 1)),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangeHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeTriggerProp("height", castEventToInt(e, 1)),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const onChangePrefabId = useCallback(
     (e: string) => onChangeTriggerProp("prefabId", e),
-    [onChangeTriggerProp]
+    [onChangeTriggerProp],
   );
 
   const selectSidebar = () => {
@@ -138,7 +138,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
       dispatch(
         clipboardActions.copyTriggers({
           triggerIds: [id],
-        })
+        }),
       );
     }
   };
@@ -150,7 +150,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const convertToPrefab = () => {
     if (trigger) {
       dispatch(
-        entitiesActions.convertTriggerToPrefab({ triggerId: trigger.id })
+        entitiesActions.convertTriggerToPrefab({ triggerId: trigger.id }),
       );
     }
   };
@@ -158,7 +158,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const onRemove = () => {
     if (trigger) {
       dispatch(
-        entitiesActions.removeTrigger({ triggerId: trigger.id, sceneId })
+        entitiesActions.removeTrigger({ triggerId: trigger.id, sceneId }),
       );
     }
   };
@@ -319,7 +319,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                 (+
                 {l10n(
                   numOverrides === 1 ? "FIELD_N_CHANGE" : "FIELD_N_CHANGES",
-                  { n: numOverrides }
+                  { n: numOverrides },
                 )}
                 )
               </span>
@@ -339,7 +339,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                     dispatch(
                       editorActions.selectTriggerPrefab({
                         triggerPrefabId: prefab.id,
-                      })
+                      }),
                     );
                     dispatch(editorActions.setShowScriptUses(false));
                   }}
@@ -351,7 +351,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                     dispatch(
                       editorActions.selectTriggerPrefab({
                         triggerPrefabId: prefab.id,
-                      })
+                      }),
                     );
                     dispatch(editorActions.setShowScriptUses(true));
                   }}
@@ -365,7 +365,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                       dispatch(
                         entitiesActions.applyTriggerPrefabScriptEventOverrides({
                           triggerId: trigger.id,
-                        })
+                        }),
                       );
                     }}
                   >
@@ -379,8 +379,8 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                         entitiesActions.revertTriggerPrefabScriptEventOverrides(
                           {
                             triggerId: trigger.id,
-                          }
-                        )
+                          },
+                        ),
                       );
                     }}
                   >
@@ -393,7 +393,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
                     dispatch(
                       entitiesActions.unpackTriggerPrefab({
                         triggerId: trigger.id,
-                      })
+                      }),
                     );
                   }}
                 >

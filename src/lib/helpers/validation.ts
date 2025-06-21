@@ -26,7 +26,7 @@ export interface BackgroundInfo {
 const mergeCommonTiles = async (
   tileData: Uint8Array[],
   commonTileset: Tileset | undefined,
-  projectPath: string
+  projectPath: string,
 ) => {
   if (!commonTileset) {
     return tileData;
@@ -42,7 +42,7 @@ export const getBackgroundInfo = async (
   is360: boolean,
   isCGBOnly: boolean,
   projectPath: string,
-  precalculatedTilesetLength?: number
+  precalculatedTilesetLength?: number,
 ): Promise<BackgroundInfo> => {
   const warnings: string[] = [];
 
@@ -56,7 +56,7 @@ export const getBackgroundInfo = async (
       const tileDataWithCommon = await mergeCommonTiles(
         tileData,
         commonTileset,
-        projectPath
+        projectPath,
       );
       const tilesetLookup = toTileLookup(tileDataWithCommon);
       tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
@@ -69,7 +69,7 @@ export const getBackgroundInfo = async (
         l10n("WARNING_BACKGROUND_IS_NOT_A_VALID_PNG", {
           filename: Path.relative(
             projectPath,
-            assetFilename(projectPath, "backgrounds", background)
+            assetFilename(projectPath, "backgrounds", background),
           ),
         }),
       ],
@@ -86,7 +86,7 @@ export const getBackgroundInfo = async (
       l10n("WARNING_BACKGROUND_TOO_WIDE", {
         width: background.imageWidth,
         maxWidth: MAX_IMAGE_WIDTH,
-      })
+      }),
     );
   }
   if (background.imageHeight > MAX_IMAGE_HEIGHT) {
@@ -94,7 +94,7 @@ export const getBackgroundInfo = async (
       l10n("WARNING_BACKGROUND_TOO_TALL", {
         height: background.imageHeight,
         maxHeight: MAX_IMAGE_HEIGHT,
-      })
+      }),
     );
   }
   if (background.imageWidth * background.imageHeight > MAX_PIXELS) {
@@ -104,7 +104,7 @@ export const getBackgroundInfo = async (
         height: background.imageHeight,
         numPixels: background.imageWidth * background.imageHeight,
         maxPixels: MAX_PIXELS,
-      })
+      }),
     );
   }
   if (
@@ -118,7 +118,7 @@ export const getBackgroundInfo = async (
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
         maxTilesetLength: MAX_BACKGROUND_TILES,
-      })
+      }),
     );
   }
 
@@ -127,7 +127,7 @@ export const getBackgroundInfo = async (
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
         maxTilesetLength: MAX_BACKGROUND_TILES_CGB,
-      })
+      }),
     );
   }
 
@@ -139,7 +139,7 @@ export const getBackgroundInfo = async (
       l10n("WARNING_LOGO_WRONG_SIZE", {
         width: background.imageWidth,
         height: background.imageHeight,
-      })
+      }),
     );
   }
   return {

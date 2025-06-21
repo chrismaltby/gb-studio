@@ -8,7 +8,7 @@ const rmdir = promisify(rimraf);
 
 export const removeEmptyFoldersBetweenPaths = async (
   basePath: string,
-  targetPath: string
+  targetPath: string,
 ): Promise<void> => {
   const basePathAbs = resolve(basePath);
   const targetPathAbs = resolve(targetPath);

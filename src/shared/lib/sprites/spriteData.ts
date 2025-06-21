@@ -75,7 +75,7 @@ export const spriteDataWithDividerIndexFn: ImageIndexFunction = (
   r,
   g,
   b,
-  a
+  a,
 ) => {
   if (b >= 200 && g < 20) {
     return Color.Divider;
@@ -87,7 +87,7 @@ export const removeIndexedImageMask = (
   inData: IndexedImage,
   maskData: IndexedImage,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
 ): IndexedImage => {
   const output = cloneIndexedImage(inData);
   const inWidth = inData.width;
@@ -110,7 +110,7 @@ export const blitIndexedImageData = (
   canvasData: IndexedImage,
   inData: IndexedImage,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
 ): IndexedImage => {
   const output = cloneIndexedImage(canvasData);
   const drawWidth = inData.width;
@@ -130,7 +130,7 @@ export const blitIndexedImageData = (
 
 export const isIndexedImageEqual = (
   dataA: IndexedImage,
-  dataB: IndexedImage
+  dataB: IndexedImage,
 ): boolean => {
   if (
     dataA.width !== dataB.width ||
@@ -153,7 +153,7 @@ export const isIndexedImageEqual = (
 
 const isIndexedImageStrictEqual = (
   dataA: IndexedImage,
-  dataB: IndexedImage
+  dataB: IndexedImage,
 ): boolean => {
   if (
     dataA.width !== dataB.width ||
@@ -188,7 +188,7 @@ const fillIndexedImage = (
   startY: number,
   width: number,
   height: number,
-  value: number
+  value: number,
 ): IndexedImage => {
   const output = cloneIndexedImage(inData);
   for (let y = startY; y < startY + height; y++) {
@@ -204,7 +204,7 @@ const subtractData = (
   inData: IndexedImage,
   removeData: IndexedImage,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
 ): IndexedImage => {
   const output = cloneIndexedImage(inData);
   const width = removeData.width;
@@ -226,7 +226,7 @@ const subtractData = (
 
 export const mergeIndexedImages = (
   dataA: IndexedImage,
-  dataB: IndexedImage
+  dataB: IndexedImage,
 ): IndexedImage => {
   const output = cloneIndexedImage(dataA);
   for (let i = 0; i < output.data.length; i++) {
@@ -238,7 +238,7 @@ export const mergeIndexedImages = (
 };
 
 export const indexedUnknownToTransparent = (
-  inData: IndexedImage
+  inData: IndexedImage,
 ): IndexedImage => {
   const output = cloneIndexedImage(inData);
   for (let i = 0; i < output.data.length; i++) {
@@ -380,7 +380,7 @@ export const indexedImageToSprites = (data: IndexedImage): SliceDef[] => {
       snappedBox.left,
       snappedBox.top,
       snappedWidth,
-      snappedHeight
+      snappedHeight,
     );
     const bl = box.left - snappedBox.left;
     const br = snappedBox.right - box.right;
@@ -410,7 +410,7 @@ export const indexedImageToSprites = (data: IndexedImage): SliceDef[] => {
 
 const indexedImageToUsedTileImage = (
   inData: IndexedImage,
-  tileSize: number
+  tileSize: number,
 ): IndexedImage => {
   const width = inData.width;
   const height = inData.height;
@@ -453,7 +453,7 @@ const indexedImageToUsedTileImage = (
       dividerY,
       tileWidth,
       tileHeight - dividerY,
-      Color.Transparent
+      Color.Transparent,
     );
   }
 
@@ -487,7 +487,7 @@ const findBoundingBoxAt = (
   startX: number,
   startY: number,
   imageData: IndexedImage,
-  seen: number[] = []
+  seen: number[] = [],
 ): Bounds => {
   const width = imageData.width;
   const height = imageData.height;
@@ -539,7 +539,7 @@ const findBoundingBoxAt = (
 
 const spriteAlignmentOffset = (
   sprite: IndexedImage,
-  baseSprite: IndexedImage
+  baseSprite: IndexedImage,
 ): Position => {
   type OffsetSimilarity = { tx: number; ty: number; similarity: number };
 
@@ -599,7 +599,7 @@ export const spriteAlignmentOffsets = (sprites: SliceDef[]): Position[] => {
 
 const removeHint = (
   inData: IndexedImage,
-  hintData: IndexedImage
+  hintData: IndexedImage,
 ): { data: IndexedImage; locations: TileLocation[] } => {
   const width = inData.width;
   const height = inData.height;
@@ -731,7 +731,7 @@ const getHintDividerY = (inData: IndexedImage): number => {
 
 export const spritesToTiles2 = (
   spriteDefs: SliceDef[],
-  hintDefs: SliceDef[] = []
+  hintDefs: SliceDef[] = [],
 ): {
   tileDefs: SliceDef[];
   spriteTileLocations: SpriteTileLocation[][];
@@ -749,7 +749,7 @@ export const spritesToTiles2 = (
       // for (const hintTile of hints) {
       const { data: dtmp, locations: loc } = removeHint(
         hintRemovedSprite,
-        hintTile
+        hintTile,
       );
       if (!isIndexedImageStrictEqual(dtmp, hintRemovedSprite)) {
         const loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
@@ -764,7 +764,7 @@ export const spritesToTiles2 = (
         } else {
           locations[tileIndex] = ([] as SpriteTileLocation[]).concat(
             locations[tileIndex],
-            loc2
+            loc2,
           );
         }
         hintRemovedSprite = dtmp;
@@ -897,14 +897,14 @@ export const clusterSprites = (spriteDefs: SliceDef[]): SpriteCluster[] => {
           cluster.minY,
           cluster.maxY,
           spriteDef.coordinates.y,
-          spriteDef.coordinates.y + spriteDef.coordinates.height
+          spriteDef.coordinates.y + spriteDef.coordinates.height,
         )
       ) {
         clusterFound = true;
         cluster.minY = Math.min(cluster.minY, spriteDef.coordinates.y);
         cluster.maxY = Math.max(
           cluster.maxY,
-          spriteDef.coordinates.y + spriteDef.coordinates.height
+          spriteDef.coordinates.y + spriteDef.coordinates.height,
         );
         cluster.sprites.push(spriteDef);
         break;
@@ -928,7 +928,7 @@ export const clusterSprites = (spriteDefs: SliceDef[]): SpriteCluster[] => {
           cluster.minY,
           cluster.maxY,
           otherCluster.minY,
-          otherCluster.maxY
+          otherCluster.maxY,
         )
       ) {
         // Merge
@@ -956,7 +956,7 @@ const rangeOverlap = (minA: number, maxA: number, minB: number, maxB: number) =>
 // To 2bpp
 
 export const indexedImageTo2bppSpriteData = (
-  image: IndexedImage
+  image: IndexedImage,
 ): Uint8Array => {
   const output = new Uint8Array(roundUp8((image.width * image.height) / 4));
   let i = 0;

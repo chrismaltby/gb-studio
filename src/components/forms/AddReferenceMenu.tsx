@@ -153,7 +153,7 @@ const tilesetToOption = (tileset: Tileset): EventOption => {
 
 const customEventToOption = (
   customEvent: CustomEventNormalized,
-  index: number
+  index: number,
 ): EventOption => {
   return {
     label: customEventName(customEvent, index),
@@ -233,7 +233,9 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
     top: 0;
     left: 0;
     right: 0;
-    transition: transform 0.2s linear, opacity 0.2s linear;
+    transition:
+      transform 0.2s linear,
+      opacity 0.2s linear;
   }
   ${SelectMenuTitle}:nth-child(2) {
     position: absolute;
@@ -242,7 +244,9 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
     right: 0;
     opacity: 0;
     transform: translateX(80px);
-    transition: transform 0.2s linear, opacity 0.2s linear;
+    transition:
+      transform 0.2s linear,
+      opacity 0.2s linear;
   }
   ${SelectMenuBackButton} {
     transition: opacity 0.2s linear;
@@ -301,7 +305,7 @@ const collator = new Intl.Collator(undefined, {
 
 const sortAlphabeticallyByLabel = (
   a: { label: string },
-  b: { label: string }
+  b: { label: string },
 ) => {
   if (a.label === b.label) {
     return 0;
@@ -318,7 +322,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
-    []
+    [],
   );
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
@@ -329,16 +333,16 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const childOptionsListRef = useRef<List>(null);
 
   const backgrounds = useAppSelector((state) =>
-    backgroundSelectors.selectAll(state)
+    backgroundSelectors.selectAll(state),
   );
   const sprites = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
   );
   const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
   const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state)
+    variableSelectors.selectEntities(state),
   );
   const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
@@ -347,7 +351,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
   const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
   const musicDriver = useAppSelector(
-    (state) => state.project.present.settings.musicDriver
+    (state) => state.project.present.settings.musicDriver,
   );
 
   useEffect(() => {
@@ -372,7 +376,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
           .filter(
             (track) =>
               (musicDriver === "huge" && track.type === "uge") ||
-              (musicDriver !== "huge" && track.type !== "uge")
+              (musicDriver !== "huge" && track.type !== "uge"),
           )
           .map(musicToOption)
           .sort(sortAlphabeticallyByLabel),
@@ -460,7 +464,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     (index: number) => {
       if (childOptionsRef.current && selectedCategoryIndex > -1) {
         const el = childOptionsRef.current.querySelector(
-          `[data-index="${index}"]`
+          `[data-index="${index}"]`,
         ) as MenuElement;
         if (el) {
           el.focus();
@@ -468,7 +472,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         }
       } else if (rootOptionsRef.current && selectedCategoryIndex === -1) {
         const el = rootOptionsRef.current.querySelector(
-          `[data-index="${index}"]`
+          `[data-index="${index}"]`,
         ) as MenuElement;
         if (el) {
           el.focus();
@@ -476,7 +480,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         }
       }
     },
-    [selectedCategoryIndex]
+    [selectedCategoryIndex],
   );
 
   const onSelectOption = useCallback(
@@ -514,7 +518,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         }
       }
     },
-    [onAdd, onBlur, options, selectedCategoryIndex]
+    [onAdd, onBlur, options, selectedCategoryIndex],
   );
 
   const onKeyDown = useCallback(
@@ -554,7 +558,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
       searchTerm.length,
       selectedCategoryIndex,
       selectedIndex,
-    ]
+    ],
   );
 
   const onChangeSearchTerm = useCallback(
@@ -566,7 +570,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         setSearchTerm(e.currentTarget.value);
       }
     },
-    []
+    [],
   );
 
   const menuHeight = MENU_HEADER_HEIGHT + allOptions.length * MENU_ITEM_HEIGHT;

@@ -13,7 +13,7 @@ const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
-  filename: string
+  filename: string,
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     createReadStream(filename)
@@ -53,20 +53,20 @@ const loadEmoteData =
   };
 
 const loadAllEmoteData = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<EmoteResourceAsset[]> => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/emotes/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/emotes/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/emotes/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/emotes/**/@(*.png|*.PNG)`,
   );
   const imageData = (
     await Promise.all(
       ([] as Promise<EmoteResourceAsset | null>[]).concat(
         imagePaths.map(loadEmoteData(projectRoot)),
-        pluginPaths.map(loadEmoteData(projectRoot))
-      )
+        pluginPaths.map(loadEmoteData(projectRoot)),
+      ),
     )
   ).filter((i) => i);
   return imageData as EmoteResourceAsset[];

@@ -43,7 +43,7 @@ export const NumberInput: FC<NumberInputProps> = ({
       setStringValue(newStringValue);
       onChange?.(e);
     },
-    [onChange]
+    [onChange],
   );
 
   const onBlurInternal = useCallback(
@@ -51,7 +51,7 @@ export const NumberInput: FC<NumberInputProps> = ({
       setStringValue(valueToString(value));
       onBlur?.(e);
     },
-    [onBlur, value]
+    [onBlur, value],
   );
 
   useEffect(() => {

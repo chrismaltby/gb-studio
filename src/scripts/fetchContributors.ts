@@ -2,6 +2,8 @@
 import Octokit from "@octokit/rest";
 import { writeJSON } from "fs-extra";
 
+console.log("Fetching Github Contributors");
+
 if (!process.env.CREDITS_GITHUB_ACCESS_TOKEN) {
   console.log("Env variable CREDITS_GITHUB_ACCESS_TOKEN is not set");
   process.exit();
@@ -22,11 +24,14 @@ const main = async () => {
         "X-GitHub-Api-Version": "2022-11-28",
         Authorization: `Bearer ${ACCESS_TOKEN}`,
       },
-    }
+    },
   );
-  writeJSON("./contributors.json", contributors, {
+
+  await writeJSON("./contributors.json", contributors, {
     spaces: 2,
   });
 };
 
-main();
+main().then(() => console.log("Fetched Github Contributors!"));
+
+export {};

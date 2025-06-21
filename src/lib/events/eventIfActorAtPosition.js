@@ -109,7 +109,7 @@ const compile = (input, helpers) => {
     input.y,
     truePath,
     falsePath,
-    input.units
+    input.units,
   );
 };
 

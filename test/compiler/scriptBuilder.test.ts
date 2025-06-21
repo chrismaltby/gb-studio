@@ -203,7 +203,7 @@ _MY_SCRIPT::
         VM_SET_CONST            ^/(.LOCAL_ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/
         VM_ACTOR_MOVE_TO        .LOCAL_ACTOR
 
-`
+`,
   );
 });
 
@@ -261,7 +261,7 @@ _MY_SCRIPT::
 
         ; Stop Script
         VM_STOP
-`
+`,
   );
 });
 
@@ -330,7 +330,7 @@ _MY_SCRIPT::
 
         ; Stop Script
         VM_STOP
-`
+`,
   );
 });
 
@@ -381,7 +381,7 @@ test("Should be able to conditionally execute if variable is true with event arr
         command: "DUMMY2",
         args: {},
       },
-    ]
+    ],
   );
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.module MY_SCRIPT
@@ -406,7 +406,7 @@ _MY_SCRIPT::
         .asciz "True Path"
 2$:
 
-`
+`,
   );
 });
 
@@ -456,7 +456,7 @@ test("Should be able to conditionally execute if variable is true with function 
   sb.ifVariableTrue(
     "0",
     () => sb.textDialogue("Hello World"),
-    () => sb.textDialogue("Goodbye World")
+    () => sb.textDialogue("Goodbye World"),
   );
   sb.scriptEnd();
 
@@ -505,7 +505,7 @@ _MY_SCRIPT::
 
         ; Stop Script
         VM_STOP
-`
+`,
   );
 });
 
@@ -547,15 +547,15 @@ test("Should be able to conditionally execute if variable is true with nested fu
       sb.ifVariableTrue(
         "1",
         () => sb.textDialogue("0=TRUE 1=TRUE"), // 1 == True
-        () => sb.textDialogue("0=TRUE 1=FALSE") // 1 == False
+        () => sb.textDialogue("0=TRUE 1=FALSE"), // 1 == False
       ),
     // 0 == False
     () =>
       sb.ifVariableTrue(
         "2",
         () => sb.textDialogue("0=FALSE 2=TRUE"), // 2 == True
-        () => sb.textDialogue("0=FALSE 2=FALSE") // 2 == False
-      )
+        () => sb.textDialogue("0=FALSE 2=FALSE"), // 2 == False
+      ),
   );
   sb.scriptEnd();
 
@@ -640,7 +640,7 @@ _MY_SCRIPT::
 
         ; Stop Script
         VM_STOP
-`
+`,
   );
 });
 
@@ -684,7 +684,7 @@ ___bank_MY_SCRIPT = 255
 _MY_SCRIPT::
 1$:
         VM_JUMP                 1$
-`
+`,
   );
 });
 
@@ -888,7 +888,7 @@ test("Should do truthy conditional test", () => {
       value: "L0",
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -916,7 +916,7 @@ test("Should do falsy conditional test when condition wrapped with logical NOT",
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -947,7 +947,7 @@ test("Should do falsy conditional test when condition wrapped compared with FALS
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -978,7 +978,7 @@ test("Should do falsy conditional test when condition wrapped compared with FALS
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1010,7 +1010,7 @@ test("Should do falsy conditional test when condition wrapped compared with 0 on
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1042,7 +1042,7 @@ test("Should do falsy conditional test when condition wrapped compared with 0 on
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1202,7 +1202,7 @@ test("should allow passing actors to custom event", async () => {
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`
+    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`,
   );
 });
 
@@ -1289,10 +1289,10 @@ test("should allow passing actors to nested custom event", async () => {
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`
+    `VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `VM_PUSH_VALUE           .SCRIPT_ARG_0_ACTOR`
+    `VM_PUSH_VALUE           .SCRIPT_ARG_0_ACTOR`,
   );
 });
 
@@ -1312,7 +1312,7 @@ test("Should expand expressions for if conditional test", () => {
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1353,7 +1353,7 @@ test("Should expand expressions for if conditional falsy test", () => {
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1398,7 +1398,7 @@ test("Should optimise expressions when expanding for if conditional test", () =>
       },
     },
     () => output.push("        ; TRUE"),
-    () => output.push("        ; FALSE")
+    () => output.push("        ; FALSE"),
   );
 
   expect(output).toEqual([
@@ -1539,13 +1539,13 @@ test("should reuse symbol for input scripts with identical contents", async () =
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `___bank_script_input, _script_input`
+    `___bank_script_input, _script_input`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `___bank_script_input_0, _script_input_0`
+    `___bank_script_input_0, _script_input_0`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `___bank_script_input_1, _script_input_1`
+    `___bank_script_input_1, _script_input_1`,
   );
 });
 
@@ -1704,22 +1704,22 @@ test("should reuse symbol for input scripts with identical contents across multi
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `___bank_script_input, _script_input`
+    `___bank_script_input, _script_input`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `___bank_script_input_0, _script_input_0`
+    `___bank_script_input_0, _script_input_0`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `___bank_script_input_1, _script_input_1`
+    `___bank_script_input_1, _script_input_1`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `___bank_script_input, _script_input`
+    `___bank_script_input, _script_input`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `___bank_script_input_0, _script_input_0`
+    `___bank_script_input_0, _script_input_0`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `___bank_script_input_1, _script_input_1`
+    `___bank_script_input_1, _script_input_1`,
   );
 });
 
@@ -1872,16 +1872,16 @@ test("should reuse input symbol but NOT script symbol when scripts are identical
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `___bank_script_input, _script_input`
+    `___bank_script_input, _script_input`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `___bank_script_input_0, _script_input_0`
+    `___bank_script_input_0, _script_input_0`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `___bank_script_input, _script_input`
+    `___bank_script_input, _script_input`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `___bank_script_input_0, _script_input_0`
+    `___bank_script_input_0, _script_input_0`,
   );
 });
 
@@ -1952,10 +1952,10 @@ test("should insert placeholder symbol for recursive scripts", async () => {
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `VM_CALL_FAR             ___bank_script`
+    `VM_CALL_FAR             ___bank_script`,
   );
   expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
@@ -2261,16 +2261,16 @@ test("should NOT reuse script symbol even if scene hashes are different causing 
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_LOAD_PALETTE`
+    `VM_LOAD_PALETTE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `30, 0, 1, 25, 0, 1, 2, 0, 1, 26, 0, 1`
+    `30, 0, 1, 25, 0, 1, 2, 0, 1, 26, 0, 1`,
   );
   expect(additionalScripts["script_1_0"]?.compiledScript).toContain(
-    `VM_LOAD_PALETTE`
+    `VM_LOAD_PALETTE`,
   );
   expect(additionalScripts["script_1_0"]?.compiledScript).toContain(
-    `0, 30, 1, 0, 23, 1, 0, 0, 2, 0, 27, 1`
+    `0, 30, 1, 0, 23, 1, 0, 0, 2, 0, 27, 1`,
   );
 });
 
@@ -2380,13 +2380,13 @@ test("should not reused script symbol when scripts are not identical", async () 
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(`VM_IDLE`);
   expect(additionalScripts["script_2"]?.compiledScript).not.toContain(
-    `VM_IDLE`
+    `VM_IDLE`,
   );
   expect(additionalScripts["script_2"]?.compiledScript).toContain(
-    `VM_RANDOMIZE`
+    `VM_RANDOMIZE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `VM_RANDOMIZE`
+    `VM_RANDOMIZE`,
   );
 });
 
@@ -2476,13 +2476,13 @@ test("should allow pass by reference for recursive scripts", async () => {
     "",
   ]);
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`,
   );
   expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
@@ -2573,13 +2573,13 @@ test("should allow pass by value for recursive scripts", async () => {
   ]);
 
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
-    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`
+    `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`,
   );
   expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
 });
@@ -2674,12 +2674,12 @@ test("should allow pass by reference between multiple scripts", async () => {
 
   // Read indirect value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Write indirect value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Pass indirect value address
@@ -2688,7 +2688,7 @@ test("should allow pass by reference between multiple scripts", async () => {
       `        ; Call Script: Script 1`,
       `        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -2782,12 +2782,12 @@ test("should allow pass by reference to pass by value between multiple scripts",
 
   // Read value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Write value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Pass variable value
@@ -2796,7 +2796,7 @@ test("should allow pass by reference to pass by value between multiple scripts",
       `        ; Call Script: Script 1`,
       `        VM_PUSH_VALUE_IND       .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -2890,12 +2890,12 @@ test("should allow pass by value to pass by reference between multiple scripts",
 
   // Read indirect value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Write indirect value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Pass indirect value address
@@ -2904,7 +2904,7 @@ test("should allow pass by value to pass by reference between multiple scripts",
       `        ; Call Script: Script 1`,
       `        VM_PUSH_REFERENCE       .SCRIPT_ARG_0_VARIABLE ; Variable V0`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -2998,12 +2998,12 @@ test("should allow pass by value between multiple scripts", async () => {
 
   // Read value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Write value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Pass indirect value address
@@ -3012,7 +3012,7 @@ test("should allow pass by value between multiple scripts", async () => {
       `        ; Call Script: Script 1`,
       `        VM_PUSH_VALUE           .SCRIPT_ARG_0_VARIABLE`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -3123,12 +3123,12 @@ test("should allow pass by reference of script value between multiple scripts", 
 
   // Read indirect value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Write indirect value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`
+    `.R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
   );
 
   // Pass indirect value address
@@ -3137,7 +3137,7 @@ test("should allow pass by reference of script value between multiple scripts", 
       `        ; Call Script: Script 1`,
       `        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -3248,12 +3248,12 @@ test("should allow pass by value of script value between multiple scripts", asyn
 
   // Read value from arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF      .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF      .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Write value back to arg
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
-    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`
+    `.R_REF_SET  .SCRIPT_ARG_0_VARIABLE`,
   );
 
   // Pass indirect value address
@@ -3262,7 +3262,7 @@ test("should allow pass by value of script value between multiple scripts", asyn
       `        ; Call Script: Script 1`,
       `        VM_PUSH_VALUE           .SCRIPT_ARG_0_VARIABLE`,
       `        VM_CALL_FAR             ___bank_script_1, _script_1`,
-    ].join("\n")
+    ].join("\n"),
   );
 });
 
@@ -3320,14 +3320,14 @@ describe("_compileSubScript", () => {
         },
       ],
       "script_input_0",
-      sb.options
+      sb.options,
     );
     expect(symbol).toEqual("script_input_0");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("script_input_0::");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("VM_IDLE");
   });
 
@@ -3348,7 +3348,7 @@ describe("_compileSubScript", () => {
         },
       ],
       "script_input_0",
-      sb.options
+      sb.options,
     );
     const symbolB = sb._compileSubScript(
       "input",
@@ -3359,15 +3359,15 @@ describe("_compileSubScript", () => {
         },
       ],
       "script_input_1",
-      sb.options
+      sb.options,
     );
     expect(symbolA).toEqual("script_input_0");
     expect(symbolB).toEqual("script_input_0");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("script_input_0::");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("VM_IDLE");
     expect(sb.options.additionalScripts["script_input_1"]).toBeFalsy();
   });
@@ -3389,7 +3389,7 @@ describe("_compileSubScript", () => {
         },
       ],
       "script_input_0",
-      sb.options
+      sb.options,
     );
     const symbolB = sb._compileSubScript(
       "custom",
@@ -3400,21 +3400,338 @@ describe("_compileSubScript", () => {
         },
       ],
       "script_input_1",
-      sb.options
+      sb.options,
     );
     expect(symbolA).toEqual("script_input_0");
     expect(symbolB).toEqual("script_input_1");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("script_input_0::");
     expect(
-      sb.options.additionalScripts["script_input_0"]?.compiledScript
+      sb.options.additionalScripts["script_input_0"]?.compiledScript,
     ).toContain("VM_IDLE");
     expect(
-      sb.options.additionalScripts["script_input_1"]?.compiledScript
+      sb.options.additionalScripts["script_input_1"]?.compiledScript,
     ).toContain("script_input_1::");
     expect(
-      sb.options.additionalScripts["script_input_1"]?.compiledScript
+      sb.options.additionalScripts["script_input_1"]?.compiledScript,
     ).toContain("VM_IDLE");
+  });
+});
+
+describe("actorMoveRelativeByScriptValues", () => {
+  test("should combine all calculations into a single rpn call when determining relative destination", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {
+        id: "scene1",
+        name: "Scene 1",
+        symbol: "scene_1",
+        width: 20,
+        height: 18,
+        background: dummyPrecompiledBackground,
+        playerSprite: dummyPrecompiledSpriteSheet,
+        sprites: [],
+        parallax: [],
+        actorsExclusiveLookup: {},
+        type: "TOPDOWN",
+        actors: [
+          { ...dummyActorNormalized, id: "actor1" },
+          { ...dummyActorNormalized, id: "actor2" },
+        ],
+        triggers: [],
+        projectiles: [],
+      } as unknown as PrecompiledScene,
+      entity: {
+        id: "actor1",
+        name: "Actor 1",
+      },
+    });
+    sb.actorSetActive("player");
+    sb.actorMoveRelativeByScriptValues(
+      "player",
+      {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "actor1",
+          property: "xpos",
+        },
+        valueB: {
+          type: "property",
+          target: "actor2",
+          property: "ypos",
+        },
+      },
+      {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 2,
+        },
+        valueB: {
+          type: "expression",
+          value: "$16$ + 5",
+        },
+      },
+      false,
+      "horizontal",
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/VM_RPN/g),
+    ]).toHaveLength(1);
+  });
+
+  test("should not perform bit shifts when moving by fixed numbers", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {
+        id: "scene1",
+        name: "Scene 1",
+        symbol: "scene_1",
+        width: 20,
+        height: 18,
+        background: dummyPrecompiledBackground,
+        playerSprite: dummyPrecompiledSpriteSheet,
+        sprites: [],
+        parallax: [],
+        actorsExclusiveLookup: {},
+        type: "TOPDOWN",
+        actors: [
+          { ...dummyActorNormalized, id: "actor1" },
+          { ...dummyActorNormalized, id: "actor2" },
+        ],
+        triggers: [],
+        projectiles: [],
+      } as unknown as PrecompiledScene,
+      entity: {
+        id: "actor1",
+        name: "Actor 1",
+      },
+    });
+    sb.actorSetActive("player");
+    sb.actorMoveRelativeByScriptValues(
+      "player",
+      {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 10,
+        },
+      },
+      {
+        type: "number",
+        value: 5,
+      },
+      false,
+      "horizontal",
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHL/g),
+    ]).toHaveLength(0);
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHR/g),
+    ]).toHaveLength(0);
+  });
+});
+
+describe("actorMoveToScriptValues", () => {
+  test("should combine all calculations into a single rpn call when determining moveTo destination", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {
+        id: "scene1",
+        name: "Scene 1",
+        symbol: "scene_1",
+        width: 20,
+        height: 18,
+        background: dummyPrecompiledBackground,
+        playerSprite: dummyPrecompiledSpriteSheet,
+        sprites: [],
+        parallax: [],
+        actorsExclusiveLookup: {},
+        type: "TOPDOWN",
+        actors: [
+          { ...dummyActorNormalized, id: "actor1" },
+          { ...dummyActorNormalized, id: "actor2" },
+        ],
+        triggers: [],
+        projectiles: [],
+      } as unknown as PrecompiledScene,
+      entity: {
+        id: "actor1",
+        name: "Actor 1",
+      },
+    });
+    sb.actorSetActive("player");
+    sb.actorMoveToScriptValues(
+      "player",
+      {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "actor1",
+          property: "xpos",
+        },
+        valueB: {
+          type: "property",
+          target: "actor2",
+          property: "ypos",
+        },
+      },
+      {
+        type: "add",
+        valueA: {
+          type: "number",
+          value: 2,
+        },
+        valueB: {
+          type: "expression",
+          value: "$16$ + 5",
+        },
+      },
+      false,
+      "horizontal",
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/VM_RPN/g),
+    ]).toHaveLength(1);
+  });
+
+  test("should not perform bit shifts when moving by fixed numbers", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {
+        id: "scene1",
+        name: "Scene 1",
+        symbol: "scene_1",
+        width: 20,
+        height: 18,
+        background: dummyPrecompiledBackground,
+        playerSprite: dummyPrecompiledSpriteSheet,
+        sprites: [],
+        parallax: [],
+        actorsExclusiveLookup: {},
+        type: "TOPDOWN",
+        actors: [
+          { ...dummyActorNormalized, id: "actor1" },
+          { ...dummyActorNormalized, id: "actor2" },
+        ],
+        triggers: [],
+        projectiles: [],
+      } as unknown as PrecompiledScene,
+      entity: {
+        id: "actor1",
+        name: "Actor 1",
+      },
+    });
+    sb.actorSetActive("player");
+    sb.actorMoveToScriptValues(
+      "player",
+      {
+        type: "sub",
+        valueA: {
+          type: "number",
+          value: 10,
+        },
+        valueB: {
+          type: "number",
+          value: 10,
+        },
+      },
+      {
+        type: "number",
+        value: 5,
+      },
+      false,
+      "horizontal",
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHL/g),
+    ]).toHaveLength(0);
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHR/g),
+    ]).toHaveLength(0);
+  });
+
+  test("should not perform bit shifts when moving by fixed numbers offset from properties", async () => {
+    const output: string[] = [];
+    const scriptEventHandlers = await getTestScriptHandlers();
+    const sb = new ScriptBuilder(output, {
+      scriptEventHandlers,
+      scene: {
+        id: "scene1",
+        name: "Scene 1",
+        symbol: "scene_1",
+        width: 20,
+        height: 18,
+        background: dummyPrecompiledBackground,
+        playerSprite: dummyPrecompiledSpriteSheet,
+        sprites: [],
+        parallax: [],
+        actorsExclusiveLookup: {},
+        type: "TOPDOWN",
+        actors: [
+          { ...dummyActorNormalized, id: "actor1" },
+          { ...dummyActorNormalized, id: "actor2" },
+        ],
+        triggers: [],
+        projectiles: [],
+      } as unknown as PrecompiledScene,
+      entity: {
+        id: "actor1",
+        name: "Actor 1",
+      },
+    });
+    sb.actorSetActive("player");
+    sb.actorMoveToScriptValues(
+      "player",
+      {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "player",
+          property: "xpos",
+        },
+        valueB: {
+          type: "number",
+          value: 10,
+        },
+      },
+      {
+        type: "number",
+        value: 5,
+      },
+      false,
+      "horizontal",
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHL/g),
+    ]).toHaveLength(0);
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHR/g),
+    ]).toHaveLength(0);
   });
 });

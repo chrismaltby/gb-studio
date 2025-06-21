@@ -33,20 +33,21 @@ export const MetaspriteCanvas = memo(
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
     const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
-    const [paletteColors, setPaletteColors] =
-      useState<[string, string, string, string][] | null>(null);
+    const [paletteColors, setPaletteColors] = useState<
+      [string, string, string, string][] | null
+    >(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const spriteSheet = useAppSelector((state) =>
-      spriteSheetSelectors.selectById(state, spriteSheetId)
+      spriteSheetSelectors.selectById(state, spriteSheetId),
     );
     const metasprite = useAppSelector((state) =>
-      metaspriteSelectors.selectById(state, metaspriteId)
+      metaspriteSelectors.selectById(state, metaspriteId),
     );
     const tilesLookup = useAppSelector((state) =>
-      metaspriteTileSelectors.selectEntities(state)
+      metaspriteTileSelectors.selectEntities(state),
     );
     const colorCorrection = useAppSelector(
-      (state) => getSettings(state).colorCorrection
+      (state) => getSettings(state).colorCorrection,
     );
 
     const width = spriteSheet?.canvasWidth || 0;
@@ -83,7 +84,7 @@ export const MetaspriteCanvas = memo(
           ctx.drawImage(offscreenCanvas, 0, 0);
         }
       },
-      [height, spriteSheet, width, workerId]
+      [height, spriteSheet, width, workerId],
     );
 
     useEffect(() => {
@@ -141,5 +142,5 @@ export const MetaspriteCanvas = memo(
         style={{ imageRendering: "pixelated" }}
       />
     );
-  }
+  },
 );

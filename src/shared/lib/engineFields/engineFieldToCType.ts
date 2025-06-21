@@ -30,7 +30,7 @@ export const maxForCType = (cType: EngineFieldCType): number => {
 
 export const clampToCType = (
   value: number,
-  cType: EngineFieldCType
+  cType: EngineFieldCType,
 ): number => {
   const min = minForCType(cType);
   const max = maxForCType(cType);
@@ -38,7 +38,7 @@ export const clampToCType = (
 };
 
 export const gbvmSetConstForCType = (
-  cType: Exclude<EngineFieldCType, "define">
+  cType: Exclude<EngineFieldCType, "define">,
 ): string => {
   if (cType === "WORD" || cType === "UWORD") {
     return "VM_SET_CONST_INT16";

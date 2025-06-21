@@ -32,7 +32,7 @@ const buildTypeForCommand = (command: Command): BuildType => {
 const main = async (
   command: Command,
   projectFile: string,
-  destination: string
+  destination: string,
 ) => {
   initElectronL10N();
 

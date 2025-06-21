@@ -19,7 +19,7 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const avatar = useAppSelector((state) =>
-    avatarSelectors.selectById(state, avatarId)
+    avatarSelectors.selectById(state, avatarId),
   );
 
   const onWorkerComplete = useCallback(
@@ -39,7 +39,7 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [avatar, workerId]
+    [avatar, workerId],
   );
 
   useEffect(() => {

@@ -74,10 +74,10 @@ const MusicPageUge = () => {
   const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
-    (state) => state.editor.worldSidebarWidth
+    (state) => state.editor.worldSidebarWidth,
   );
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -88,13 +88,13 @@ const MusicPageUge = () => {
   const allSongs = useAppSelector(musicSelectors.selectAll);
   const allUgeSongs = useMemo(
     () => allSongs.filter(ugeFilter).sort(sortByFilename),
-    [allSongs]
+    [allSongs],
   );
 
   const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
 
   const song = useAppSelector((state) =>
-    musicSelectors.selectById(state, selectedSongId)
+    musicSelectors.selectById(state, selectedSongId),
   );
 
   const lastSongId = useRef("");
@@ -106,23 +106,23 @@ const MusicPageUge = () => {
 
   const viewSongId = useMemo(
     () => song?.id || lastSongId.current || allUgeSongs[0]?.id,
-    [allUgeSongs, song]
+    [allUgeSongs, song],
   );
 
   const viewSong = useAppSelector((state) =>
-    musicSelectors.selectById(state, viewSongId)
+    musicSelectors.selectById(state, viewSongId),
   );
 
   const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
 
   const songDocument = useAppSelector(
-    (state) => state.trackerDocument.present.song
+    (state) => state.trackerDocument.present.song,
   );
   const modified = useAppSelector(
-    (state) => state.trackerDocument.present.modified
+    (state) => state.trackerDocument.present.modified,
   );
   const status = useAppSelector(
-    (state) => state.trackerDocument.present.status
+    (state) => state.trackerDocument.present.status,
   );
   const error = useAppSelector((state) => state.trackerDocument.present.error);
 
@@ -216,21 +216,21 @@ const MusicPageUge = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number, rightPaneWidth: number) => {
       dispatch(
-        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth))
+        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth)),
       );
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(
     () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
-    [leftPaneWidth, rightPaneWidth]
+    [leftPaneWidth, rightPaneWidth],
   );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(
       leftPaneWidth,
-      windowWidth - rightPaneWidth - minCenterPaneWidth
+      windowWidth - rightPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== leftPaneWidth) {
       setLeftPaneSize(newWidth);
@@ -240,7 +240,7 @@ const MusicPageUge = () => {
   const recalculateRightColumn = () => {
     const newWidth = Math.min(
       rightPaneWidth,
-      windowWidth - leftPaneWidth - minCenterPaneWidth
+      windowWidth - leftPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== rightPaneWidth) {
       setRightPaneSize(newWidth);

@@ -10,7 +10,7 @@ export const PluginType = Type.Union(
     Type.Literal("lang"),
     Type.Literal("template"),
   ],
-  { default: "assetPack" }
+  { default: "assetPack" },
 );
 
 export type PluginType = Static<typeof PluginType>;
@@ -52,7 +52,7 @@ export const PluginRepositoryEntry = Type.Object({
 export type PluginRepositoryEntry = Static<typeof PluginRepositoryEntry>;
 
 export const isPluginRepositoryEntry = (
-  value: unknown
+  value: unknown,
 ): value is PluginRepositoryEntry => {
   return Value.Check(PluginRepositoryEntry, value);
 };

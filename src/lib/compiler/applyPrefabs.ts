@@ -4,7 +4,7 @@ import { ProjectResources } from "shared/lib/resources/types";
 import { mapActorScript, mapTriggerScript } from "shared/lib/scripts/walk";
 
 export const applyPrefabs = (
-  projectData: ProjectResources
+  projectData: ProjectResources,
 ): ProjectResources => {
   const actorPrefabsLookup = keyBy(projectData.actorPrefabs, "id");
   const triggerPrefabsLookup = keyBy(projectData.triggerPrefabs, "id");
@@ -19,7 +19,7 @@ export const applyPrefabs = (
           return actor;
         }
         const applyScriptEventOverrides = (
-          scriptEvent: ScriptEvent
+          scriptEvent: ScriptEvent,
         ): ScriptEvent => {
           const override = actor.prefabScriptOverrides[scriptEvent.id];
           if (!override) {
@@ -46,7 +46,7 @@ export const applyPrefabs = (
           return trigger;
         }
         const applyScriptEventOverrides = (
-          scriptEvent: ScriptEvent
+          scriptEvent: ScriptEvent,
         ): ScriptEvent => {
           const override = trigger.prefabScriptOverrides[scriptEvent.id];
           if (!override) {

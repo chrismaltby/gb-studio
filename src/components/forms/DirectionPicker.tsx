@@ -77,7 +77,7 @@ const DirectionPicker = ({ id, value, onChange }: DirectionPickerProps) => {
           title: l10n("FIELD_DIRECTION_RIGHT"),
         },
       ] as DirectionOption[],
-    []
+    [],
   );
 
   return (

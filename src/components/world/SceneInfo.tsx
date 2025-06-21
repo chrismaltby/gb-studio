@@ -98,34 +98,34 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
 const SceneInfo = () => {
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, selectedSceneId)
+    sceneSelectors.selectById(state, selectedSceneId),
   );
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const spriteSheetsLookup = useAppSelector((state) =>
-    spriteSheetSelectors.selectEntities(state)
+    spriteSheetSelectors.selectEntities(state),
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const defaultPlayerSprites = useAppSelector(
-    (state) => state.project.present.settings.defaultPlayerSprites
+    (state) => state.project.present.settings.defaultPlayerSprites,
   );
   const backgroundNumTiles = useAppSelector(
-    (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles,
   );
   const isCGBOnly = useAppSelector(
     (state) =>
@@ -133,7 +133,7 @@ const SceneInfo = () => {
       scene?.colorModeOverride &&
       scene?.colorModeOverride !== "none"
         ? scene?.colorModeOverride
-        : state.project.present.settings.colorMode) === "color"
+        : state.project.present.settings.colorMode) === "color",
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
@@ -236,7 +236,7 @@ const SceneInfo = () => {
               }
             }
           }
-        }
+        },
       );
 
       // Actor sprites - Non exclusive
@@ -357,12 +357,12 @@ const SceneInfo = () => {
                 const name = actorName(actor, i);
                 console.log("TOO CLOSE");
                 newActorWarnings.push(
-                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName: name })
+                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName: name }),
                 );
                 newActorWarnings.push(
                   l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
                     maxOnscreen: MAX_ONSCREEN,
-                  })
+                  }),
                 );
                 return;
               }

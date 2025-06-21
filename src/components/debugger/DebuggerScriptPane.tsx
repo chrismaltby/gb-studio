@@ -123,19 +123,19 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   const scriptContexts = useAppSelector((state) => state.debug.scriptContexts);
   const gbvmScripts = useAppSelector((state) => state.debug.gbvmScripts);
   const viewScriptType = useAppSelector(
-    (state) => getSettings(state).debuggerScriptType
+    (state) => getSettings(state).debuggerScriptType,
   );
   const isCollapsed = useAppSelector(
     (state) =>
       !!collapsible &&
-      getSettings(state).debuggerCollapsedPanes.includes("script")
+      getSettings(state).debuggerCollapsedPanes.includes("script"),
   );
 
   const onSetScriptTypeEditor = useCallback(() => {
     dispatch(
       settingsActions.editSettings({
         debuggerScriptType: "editor",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -143,7 +143,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
     dispatch(
       settingsActions.editSettings({
         debuggerScriptType: "gbvm",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -156,10 +156,13 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   }, [dispatch]);
 
   const tabs = useMemo(() => {
-    return scriptContexts.reduce((memo, ctx, i) => {
-      memo[i] = `Thread ${i}`;
-      return memo;
-    }, {} as Record<number, string>);
+    return scriptContexts.reduce(
+      (memo, ctx, i) => {
+        memo[i] = `Thread ${i}`;
+        return memo;
+      },
+      {} as Record<number, string>,
+    );
   }, [scriptContexts]);
 
   const runningThreadIndex = useMemo(() => {
@@ -194,7 +197,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
             executingId: currentThread.closestGBVMSymbol?.scriptEventId ?? "",
           }
         : undefined,
-    [currentThread?.closestGBVMSymbol]
+    [currentThread?.closestGBVMSymbol],
   );
 
   const currentScriptLineNum = useMemo(() => {
@@ -214,16 +217,16 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   }, [currentGBVMScript, currentThread?.closestSymbol]);
 
   const actor = useAppSelector((state) =>
-    actorSelectors.selectById(state, scriptCtx?.entityId ?? "")
+    actorSelectors.selectById(state, scriptCtx?.entityId ?? ""),
   );
   const trigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, scriptCtx?.entityId ?? "")
+    triggerSelectors.selectById(state, scriptCtx?.entityId ?? ""),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, scriptCtx?.entityId ?? "")
+    customEventSelectors.selectById(state, scriptCtx?.entityId ?? ""),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, scriptCtx?.sceneId ?? "")
+    sceneSelectors.selectById(state, scriptCtx?.sceneId ?? ""),
   );
 
   const currentScript = useMemo(() => {
@@ -254,7 +257,7 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
     },
-    []
+    [],
   );
 
   return (

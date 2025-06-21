@@ -79,17 +79,17 @@ const loadSpriteData =
 
 const loadAllSpriteData = async (projectRoot: string) => {
   const spritePaths = await globAsync(
-    `${projectRoot}/assets/sprites/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/sprites/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/sprites/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/sprites/**/@(*.png|*.PNG)`,
   );
   const spriteData = (
     await Promise.all(
       ([] as Promise<SpriteResourceAsset | null>[]).concat(
         spritePaths.map(loadSpriteData(projectRoot)),
-        pluginPaths.map(loadSpriteData(projectRoot))
-      )
+        pluginPaths.map(loadSpriteData(projectRoot)),
+      ),
     )
   ).filter((i) => i) as SpriteResourceAsset[];
   return spriteData;

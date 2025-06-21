@@ -119,7 +119,7 @@ type SecondaryTab = "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
   primaryTab: ScriptTab,
-  secondaryTab: SecondaryTab
+  secondaryTab: SecondaryTab,
 ): SceneScriptKey => {
   if (primaryTab === "start") {
     return "script";
@@ -139,55 +139,55 @@ const getScriptKey = (
 export const SceneEditor = ({ id }: SceneEditorProps) => {
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(id)
+    sceneSelectors.selectIds(state).indexOf(id),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
   );
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
-    scene?.colorModeOverride && scene?.colorModeOverride !== "none"
+    scene?.colorModeOverride && scene?.colorModeOverride !== "none",
   );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
-    !!scene?.tilesetId
+    !!scene?.tilesetId,
   );
 
   const projectColorMode = useAppSelector(
-    (state) => state.project.present.settings.colorMode
+    (state) => state.project.present.settings.colorMode,
   );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId
+    (state) => state.project.present.settings.startSceneId,
   );
   const startX = useAppSelector(
-    (state) => state.project.present.settings.startX
+    (state) => state.project.present.settings.startX,
   );
   const startY = useAppSelector(
-    (state) => state.project.present.settings.startY
+    (state) => state.project.present.settings.startY,
   );
   const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection
+    (state) => state.project.present.settings.startDirection,
   );
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds || []
+    (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const defaultPlayerSprites = useAppSelector(
-    (state) => state.project.present.settings.defaultPlayerSprites
+    (state) => state.project.present.settings.defaultPlayerSprites,
   );
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
       start: l10n("SIDEBAR_ON_INIT"),
       hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
     }),
-    []
+    [],
   );
 
   const scriptSecondaryTabs: Record<SecondaryTab, string> = useMemo(
@@ -196,17 +196,17 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
       hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
     }),
-    []
+    [],
   );
 
   const tabs = Object.keys(scriptTabs);
   const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
   const lastScriptTab = useAppSelector(
-    (state) => state.editor.lastScriptTabScene
+    (state) => state.editor.lastScriptTabScene,
   );
   const lastScriptTabSecondary = useAppSelector(
-    (state) => state.editor.lastScriptTabSecondary
+    (state) => state.editor.lastScriptTabSecondary,
   );
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
   const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
@@ -214,13 +214,13 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     : secondaryTabs[0];
 
   const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
+    initialTab as keyof ScriptHandlers,
   );
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
@@ -238,8 +238,8 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           (s) =>
             s.id !== scene?.id &&
             s.backgroundId === scene?.backgroundId &&
-            s.type === "LOGO"
-        )
+            s.type === "LOGO",
+        ),
   );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
@@ -260,10 +260,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeSettingProp = useCallback(
@@ -271,70 +271,70 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSceneProp("name", e.currentTarget.value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSceneProp("notes", e.currentTarget.value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeType = useCallback(
     (e: string) => onChangeSceneProp("type", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeColorModeOverride = useCallback(
     (e: ColorModeOverrideSetting) => onChangeSceneProp("colorModeOverride", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeBackgroundId = useCallback(
     (e: string) => onChangeSceneProp("backgroundId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeTilesetdId = useCallback(
     (e: string) => onChangeSceneProp("tilesetId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeParallax = useCallback(
     (value: SceneParallaxLayer[] | undefined) =>
       onChangeSceneProp("parallax", value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangePlayerSpriteSheetId = useCallback(
     (e: string) => onChangeSceneProp("playerSpriteSheetId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeStartX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startX", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startY", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartDirection = useCallback(
     (e: ActorDirection) => onChangeSettingProp("startDirection", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const selectSidebar = () => {
@@ -390,10 +390,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           entitiesActions.editBackgroundAutoColor({
             backgroundId: scene.backgroundId,
             autoColor: value,
-          })
+          }),
         );
     },
-    [dispatch, scene?.backgroundId]
+    [dispatch, scene?.backgroundId],
   );
 
   const onToggleParallaxSettings = () => {
@@ -405,7 +405,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
             ? undefined
             : parallaxDefaultValues.slice(-2),
         },
-      })
+      }),
     );
   };
 
@@ -416,12 +416,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onCopyBackgroundPaletteIds = useCallback(() => {
     if (scene) {
       const paletteIds = Array.from(Array(8).keys()).map(
-        (n) => scene.paletteIds[n] || defaultBackgroundPaletteIds[n] || ""
+        (n) => scene.paletteIds[n] || defaultBackgroundPaletteIds[n] || "",
       );
       dispatch(
         clipboardActions.copyPaletteIds({
           paletteIds,
-        })
+        }),
       );
     }
   }, [dispatch, scene, defaultBackgroundPaletteIds]);
@@ -429,12 +429,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onCopySpritePaletteIds = useCallback(() => {
     if (scene) {
       const paletteIds = Array.from(Array(8).keys()).map(
-        (n) => scene.spritePaletteIds[n] || defaultSpritePaletteIds[n] || ""
+        (n) => scene.spritePaletteIds[n] || defaultSpritePaletteIds[n] || "",
       );
       dispatch(
         clipboardActions.copyPaletteIds({
           paletteIds,
-        })
+        }),
       );
     }
   }, [dispatch, scene, defaultSpritePaletteIds]);
@@ -444,7 +444,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       clipboardActions.pastePaletteIds({
         sceneId: id,
         type: "background",
-      })
+      }),
     );
   }, [dispatch, id]);
 
@@ -453,7 +453,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       clipboardActions.pastePaletteIds({
         sceneId: id,
         type: "sprite",
-      })
+      }),
     );
   }, [dispatch, id]);
 
@@ -467,7 +467,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       sceneId: id,
       scriptKey,
     }),
-    [id, scriptKey]
+    [id, scriptKey],
   );
 
   if (!scene) {
@@ -801,7 +801,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             label={l10n(
                               background?.autoColor
                                 ? "FIELD_AUTOMATIC"
-                                : "FIELD_MANUAL"
+                                : "FIELD_MANUAL",
                             )}
                           >
                             <MenuItem

@@ -22,7 +22,7 @@ const collator = new Intl.Collator(undefined, {
 
 const sortByName = <T>(
   a: FileSystemNavigatorItem<T>,
-  b: FileSystemNavigatorItem<T>
+  b: FileSystemNavigatorItem<T>,
 ) => {
   return collator.compare(a.name, b.name);
 };
@@ -30,7 +30,7 @@ const sortByName = <T>(
 export const buildAssetNavigatorItems = <T extends Asset>(
   assets: T[],
   openFolders: string[],
-  searchTerm: string
+  searchTerm: string,
 ): FileSystemNavigatorItem<T>[] => {
   const result: FileSystemNavigatorItem<T>[] = [];
   const uniqueFolders = new Set<string>();
@@ -50,7 +50,7 @@ export const buildAssetNavigatorItems = <T extends Asset>(
     const searchTermUpperCase = searchTerm.toLocaleUpperCase();
     assets
       .filter((asset) =>
-        asset.filename.toLocaleUpperCase().includes(searchTermUpperCase)
+        asset.filename.toLocaleUpperCase().includes(searchTermUpperCase),
       )
       .forEach((asset) => {
         result.push({

@@ -147,7 +147,7 @@ var ScripTracker = function () {
   this.audioScriptNode = this.audioContext.createScriptProcessor(
     this.bufferSize,
     1,
-    2
+    2,
   );
   this.sampleRate = this.audioContext.sampleRate;
   this.sampleStepping = Math.round(this.sampleRate * 0.02) * 3;
@@ -176,12 +176,12 @@ ScripTracker.prototype.fillBuffer = function (audioProcessingEvent) {
         var vEnvelopeValue = registers.volume.envelope.getValue(
           registers.envelopePos,
           registers.noteReleased,
-          1.0
+          1.0,
         );
         var pEnvelopeValue = registers.panning.envelope.getValue(
           registers.envelopePos,
           registers.noteReleased,
-          0.5
+          0.5,
         );
         var vol =
           vEnvelopeValue *
@@ -193,8 +193,8 @@ ScripTracker.prototype.fillBuffer = function (audioProcessingEvent) {
             registers.panning.pan +
               (pEnvelopeValue - 0.5) *
                 ((2 - Math.abs(registers.panning.pan - 2)) / 0.5),
-            1.0
-          )
+            1.0,
+          ),
         );
         registers.envelopePos += 1 / this.samplesPerTick;
 
@@ -228,13 +228,13 @@ ScripTracker.prototype.fillBuffer = function (audioProcessingEvent) {
           ) {
             registers.sample.position = Math.max(
               registers.sample.sample.loopStart,
-              registers.sample.position
+              registers.sample.position,
             );
             registers.sample.position = Math.min(
               registers.sample.sample.loopStart +
                 registers.sample.sample.loopLength -
                 1,
-              registers.sample.position
+              registers.sample.position,
             );
             registers.sample.remain = registers.sample.sample.loopLength;
             registers.sample.reversed = !registers.sample.reversed;
@@ -293,7 +293,7 @@ ScripTracker.prototype.processTick = function () {
           registers.instrument,
           note,
           effect,
-          effectParam
+          effectParam,
         );
         var instrument = this.module.instruments[instrIndex - 1];
         if (instrument) {
@@ -367,7 +367,7 @@ ScripTracker.prototype.processTick = function () {
                 registers.instrument,
                 note,
                 effect,
-                effectParam
+                effectParam,
               );
             }
           }
@@ -382,7 +382,7 @@ ScripTracker.prototype.processTick = function () {
         //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
         console.log(
           registers.volume.channelVolume,
-          registers.volume.channelVolumeSet
+          registers.volume.channelVolumeSet,
         );
       } else if (note < 97 && instrIndex !== 0) {
         //if (registers.volume.channelVolumeSlide !== 0) {
@@ -403,7 +403,7 @@ ScripTracker.prototype.processTick = function () {
           registers.instrument,
           note,
           effect,
-          effectParam
+          effectParam,
         );
       }
     }
@@ -415,7 +415,7 @@ ScripTracker.prototype.processTick = function () {
         volume,
         this.currentTick,
         c,
-        this
+        this,
       );
     effect.handler(registers, effectParam, this.currentTick, c, this);
     //Copy of Volume slide to process every tick, Compatability with GBT
@@ -424,7 +424,7 @@ ScripTracker.prototype.processTick = function () {
       var slide = registers.volume.channelVolumeSlide / 256;
       registers.volume.channelVolume = Math.max(
         0.0,
-        Math.min(registers.volume.channelVolume + slide, 1.0)
+        Math.min(registers.volume.channelVolume + slide, 1.0),
       );
     }
   }
@@ -543,14 +543,14 @@ ScripTracker.prototype.resetPlayback = function () {
     this.module.defaultBPM,
     0,
     0,
-    this
+    this,
   );
   Effects.SET_SPEED.handler(
     this.channelRegisters[0],
     this.module.defaultTempo,
     0,
     0,
-    this
+    this,
   );
   //processTick ();
 };
@@ -894,7 +894,7 @@ ScripTracker.prototype.dispatchEvent = function (
   instrument,
   note,
   effect,
-  effectParam
+  effectParam,
 ) {
   var handlers = this.eventHandlers[event];
 
@@ -911,7 +911,7 @@ ScripTracker.prototype.dispatchEvent = function (
           player,
           player.getCurrentOrder(),
           player.getSongLength(),
-          player.getCurrentPattern()
+          player.getCurrentPattern(),
         );
       }
       break;
@@ -931,7 +931,7 @@ ScripTracker.prototype.dispatchEvent = function (
             channel,
             note,
             effect,
-            effectParam
+            effectParam,
           );
       }
       break;
@@ -945,7 +945,7 @@ ScripTracker.prototype.dispatchEvent = function (
             effectParam,
             channel,
             instrument,
-            note
+            note,
           );
       }
       break;

@@ -404,14 +404,14 @@ const ValueSelect = ({
   const context = useContext(ScriptEditorContext);
   const editorType = useSelector((state: RootState) => state.editor.type);
   const defaultConstant = useAppSelector(
-    (state) => constantSelectors.selectAll(state)[0]
+    (state) => constantSelectors.selectAll(state)[0],
   );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
 
   const onCopyValue = useCallback(() => {
@@ -456,9 +456,9 @@ const ValueSelect = ({
       context.type === "script"
         ? "V0"
         : context.type === "entity"
-        ? "L0"
-        : // Default
-          "0";
+          ? "L0"
+          : // Default
+            "0";
     onChange({
       type: "variable",
       value: defaultVariable,
@@ -503,7 +503,7 @@ const ValueSelect = ({
         type: bool ? "true" : "false",
       });
     },
-    [onChange]
+    [onChange],
   );
 
   const setValueFunction = useCallback(
@@ -535,12 +535,14 @@ const ValueSelect = ({
         }
       }
     },
-    [focus, focusSecondChild, onChange, value]
+    [focus, focusSecondChild, onChange, value],
   );
 
   const onKeyDown = useCallback(
     (
-      e: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement | HTMLElement>
+      e: React.KeyboardEvent<
+        HTMLButtonElement | HTMLInputElement | HTMLElement
+      >,
     ): boolean => {
       e.persist();
       if (e.metaKey || e.ctrlKey) {
@@ -613,7 +615,7 @@ const ValueSelect = ({
       setValueFunction,
       setVariable,
       setConstant,
-    ]
+    ],
   );
 
   const mathMenu = useMemo(
@@ -649,7 +651,7 @@ const ValueSelect = ({
         <MenuAccelerator accelerator="r" />
       </MenuItem>,
     ],
-    [setValueFunction, value.type]
+    [setValueFunction, value.type],
   );
 
   const booleanMenu = useMemo(
@@ -690,7 +692,7 @@ const ValueSelect = ({
         </MenuItem>
       )),
     ],
-    [onChange, setValueFunction, value.type]
+    [onChange, setValueFunction, value.type],
   );
 
   const comparisonMenu = useMemo(
@@ -706,7 +708,7 @@ const ValueSelect = ({
         </MenuItem>
       )),
     ],
-    [setValueFunction, value.type]
+    [setValueFunction, value.type],
   );
 
   const bitwiseMenu = useMemo(
@@ -722,7 +724,7 @@ const ValueSelect = ({
         </MenuItem>
       )),
     ],
-    [setValueFunction, value.type]
+    [setValueFunction, value.type],
   );
 
   const menu = useMemo(
@@ -823,7 +825,7 @@ const ValueSelect = ({
       setProperty,
       setVariable,
       value.type,
-    ]
+    ],
   );
 
   const options = useMemo(
@@ -832,9 +834,9 @@ const ValueSelect = ({
         ([value, label]) => ({
           value,
           label: l10n(label as L10NKey),
-        })
+        }),
       ),
-    [inputOverride]
+    [inputOverride],
   );
 
   const [{ isOver }, drop] = useDrop({
@@ -936,7 +938,7 @@ const ValueSelect = ({
                 value={String(
                   value.value !== undefined && value.value !== null
                     ? value.value
-                    : ""
+                    : "",
                 )}
                 min={innerValue ? undefined : min}
                 max={innerValue ? undefined : max}
@@ -985,7 +987,7 @@ const ValueSelect = ({
                     options.find((o) =>
                       value.value
                         ? o.value === value.value
-                        : o.value === value.value
+                        : o.value === value.value,
                     ) || options[0]
                   }
                   options={options}

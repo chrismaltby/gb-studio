@@ -54,8 +54,8 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
           value: avatar.id,
           label: avatar.name,
           avatar,
-        }))
-      )
+        })),
+      ),
     );
   }, [avatars, optional, optionalDefaultAvatarId, optionalLabel]);
 
@@ -72,7 +72,7 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
       });
     } else if (optional) {
       const optionalAvatar = avatars.find(
-        (p) => p.id === optionalDefaultAvatarId
+        (p) => p.id === optionalDefaultAvatarId,
       );
       setCurrentValue({
         value: "",

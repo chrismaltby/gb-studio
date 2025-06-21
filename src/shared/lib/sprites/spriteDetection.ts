@@ -76,7 +76,7 @@ const sliceData = (
   startX: number,
   startY: number,
   width: number,
-  height: number
+  height: number,
 ): Uint16Array => {
   const inWidth = inData[0];
   const inHeight = inData[1];
@@ -142,7 +142,7 @@ const subtractData = (
   inData: Uint16Array,
   removeData: Uint16Array,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
 ): Uint16Array => {
   const width = removeData[0];
   const height = removeData[1];
@@ -167,7 +167,7 @@ const fillData = (
   startY: number,
   width: number,
   height: number,
-  value: number
+  value: number,
 ): Uint16Array => {
   const inWidth = inData[0];
   const data = new Uint16Array(inData);
@@ -324,7 +324,7 @@ const toIndex = (x: number, y: number, width: number): number =>
 
 export const spritesToTiles2 = (
   spriteDefs: SliceDef[],
-  hintDefs: SliceDef[] = []
+  hintDefs: SliceDef[] = [],
 ): {
   tileDefs: SliceDef[];
   spriteTileLocations: SpriteTileLocation[][];
@@ -342,7 +342,7 @@ export const spritesToTiles2 = (
       // for (const hintTile of hints) {
       const { data: dtmp, locations: loc } = removeHint(
         hintRemovedSprite,
-        hintTile
+        hintTile,
       );
       if (!isStrictEqual(dtmp, hintRemovedSprite)) {
         const loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
@@ -357,7 +357,7 @@ export const spritesToTiles2 = (
         } else {
           locations[tileIndex] = ([] as SpriteTileLocation[]).concat(
             locations[tileIndex],
-            loc2
+            loc2,
           );
         }
         hintRemovedSprite = dtmp;
@@ -501,7 +501,7 @@ export const dataToSprites = (data: Uint16Array): SliceDef[] => {
       snappedBox.left,
       snappedBox.top,
       snappedWidth,
-      snappedHeight
+      snappedHeight,
     );
     const bl = box.left - snappedBox.left;
     const br = snappedBox.right - box.right;
@@ -578,7 +578,7 @@ const imageToTileData = (inData: Uint16Array, tileSize: number) => {
       dividerY,
       tileWidth,
       tileHeight - dividerY,
-      Color.Transparent
+      Color.Transparent,
     );
   }
 
@@ -612,7 +612,7 @@ const findBoundingBoxAt = (
   startX: number,
   startY: number,
   imageData: Uint16Array,
-  seen: number[] = []
+  seen: number[] = [],
 ): Bounds => {
   const width = imageData[0];
   const height = imageData[1];
@@ -676,7 +676,7 @@ const uniqWith = <T>(arr: T[], comparator: (a: T, b: T) => boolean) => {
 
 const spriteAlignmentOffset = (
   sprite: Uint16Array,
-  baseSprite: Uint16Array
+  baseSprite: Uint16Array,
 ): Position => {
   type OffsetSimilarity = { tx: number; ty: number; similarity: number };
 
@@ -736,7 +736,7 @@ export const spriteAlignmentOffsets = (sprites: SliceDef[]): Position[] => {
 
 const removeHint = (
   inData: Uint16Array,
-  hintData: Uint16Array
+  hintData: Uint16Array,
 ): { data: Uint16Array; locations: TileLocation[] } => {
   const width = inData[0];
   const height = inData[1];
@@ -888,14 +888,14 @@ export const clusterSprites = (spriteDefs: SliceDef[]): SpriteCluster[] => {
           cluster.minY,
           cluster.maxY,
           spriteDef.coordinates.y,
-          spriteDef.coordinates.y + spriteDef.coordinates.height
+          spriteDef.coordinates.y + spriteDef.coordinates.height,
         )
       ) {
         clusterFound = true;
         cluster.minY = Math.min(cluster.minY, spriteDef.coordinates.y);
         cluster.maxY = Math.max(
           cluster.maxY,
-          spriteDef.coordinates.y + spriteDef.coordinates.height
+          spriteDef.coordinates.y + spriteDef.coordinates.height,
         );
         cluster.sprites.push(spriteDef);
         break;
@@ -919,7 +919,7 @@ export const clusterSprites = (spriteDefs: SliceDef[]): SpriteCluster[] => {
           cluster.minY,
           cluster.maxY,
           otherCluster.minY,
-          otherCluster.maxY
+          otherCluster.maxY,
         )
       ) {
         // Merge

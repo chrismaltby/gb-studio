@@ -61,7 +61,7 @@ export const TextWaitTimeSelect = ({
       }
       debouncedLeave();
     },
-    [debouncedLeave]
+    [debouncedLeave],
   );
 
   const blockSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
@@ -93,7 +93,7 @@ export const TextWaitTimeSelect = ({
             onChange={(e) => {
               const value = Math.max(
                 0,
-                ensureNumber(parseFloat(e.currentTarget.value), 0)
+                ensureNumber(parseFloat(e.currentTarget.value), 0),
               );
               onChange(value);
             }}

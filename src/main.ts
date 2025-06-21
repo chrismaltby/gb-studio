@@ -343,7 +343,7 @@ export const createProjectWindow = async () => {
   projectWindowState.manage(projectWindow);
 
   projectWindow.loadURL(
-    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(projectPath)}`
+    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(projectPath)}`,
   );
 
   projectWindow.setRepresentedFilename(projectPath);
@@ -495,7 +495,7 @@ export const createProjectWindow = async () => {
       const { file, plugin } = parseAssetPath(
         filename,
         projectRoot,
-        "backgrounds"
+        "backgrounds",
       );
       sendToProjectWindow("watch:background:removed", file, plugin);
     },
@@ -526,7 +526,7 @@ export const createProjectWindow = async () => {
       const { file, plugin } = parseAssetPath(
         filename,
         projectRoot,
-        "tilesets"
+        "tilesets",
       );
       sendToProjectWindow("watch:tileset:removed", file, plugin);
     },
@@ -541,7 +541,7 @@ export const createProjectWindow = async () => {
       scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
       sendToProjectWindow(
         "watch:scriptEventDefs:changed",
-        cloneDictionary(scriptEventHandlers)
+        cloneDictionary(scriptEventHandlers),
       );
     },
   });
@@ -611,7 +611,7 @@ const openHelp = async (helpPage: string) => {
 export const createPlay = async (
   url: string,
   sgb: boolean,
-  debugEnabled?: boolean
+  debugEnabled?: boolean,
 ) => {
   if (playWindow && sgb !== playWindowSgb) {
     playWindow.close();
@@ -647,7 +647,7 @@ export const createPlay = async (
   playWindow.loadURL(
     `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
       !!debugEnabled && !!debuggerInitData ? "true" : "false"
-    }`
+    }`,
   );
 
   let firstLoad = true;
@@ -668,7 +668,7 @@ export const createPlay = async (
 
 export const createMusic = async (
   sfx?: string,
-  initialMessage?: MusicDataPacket
+  initialMessage?: MusicDataPacket,
 ) => {
   musicWindowInitialized = false;
 
@@ -851,19 +851,20 @@ ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
 
-ipcMain.handle("get-recent-projects", async (): Promise<
-  RecentProjectData[]
-> => {
-  const recentProjects = settings.get("recentProjects");
-  if (!isStringArray(recentProjects)) return [];
-  return recentProjects.map((path) => {
-    return {
-      name: Path.basename(path),
-      dir: Path.dirname(path),
-      path,
-    };
-  });
-});
+ipcMain.handle(
+  "get-recent-projects",
+  async (): Promise<RecentProjectData[]> => {
+    const recentProjects = settings.get("recentProjects");
+    if (!isStringArray(recentProjects)) return [];
+    return recentProjects.map((path) => {
+      return {
+        name: Path.basename(path),
+        dir: Path.dirname(path),
+        path,
+      };
+    });
+  },
+);
 
 const removeRecentProject = (removePath: string) => {
   const recentProjects = settings.get("recentProjects");
@@ -985,7 +986,7 @@ ipcMain.handle(
   "dialog:show-error",
   (_event, title: string, content: string) => {
     dialog.showErrorBox(title, content);
-  }
+  },
 );
 
 ipcMain.handle("dialog:confirm-color", async () => {
@@ -999,28 +1000,28 @@ ipcMain.handle(
   "dialog:confirm-delete-custom-event",
   async (_event, name: string, sceneNames: string[], count: number) => {
     return confirmDeleteCustomEvent(name, sceneNames, count);
-  }
+  },
 );
 
 ipcMain.handle(
   "dialog:confirm-replace-custom-event",
   async (_event, name: string) => {
     return confirmReplaceCustomEvent(name);
-  }
+  },
 );
 
 ipcMain.handle(
   "dialog:confirm-delete-prefab",
   async (_event, name: string, count: number) => {
     return confirmDeletePrefab(name, count);
-  }
+  },
 );
 
 ipcMain.handle(
   "dialog:confirm-replace-prefab",
   async (_event, name: string) => {
     return confirmReplacePrefab(name);
-  }
+  },
 );
 
 ipcMain.handle("dialog:confirm-unpack-prefab", async (_event) => {
@@ -1039,14 +1040,14 @@ ipcMain.handle(
   "dialog:confirm-delete-constant",
   async (_event, name: string, usesNames: string[]) => {
     return confirmDeleteConstant(name, usesNames);
-  }
+  },
 );
 
 ipcMain.handle(
   "dialog:confirm-tracker-unsaved",
   async (_event, name: string) => {
     return confirmUnsavedChangesTrackerDialog(name);
-  }
+  },
 );
 
 ipcMain.handle("dialog:migrate-warning", async (_event, path: string) => {
@@ -1082,7 +1083,7 @@ ipcMain.handle(
     _event,
     assetType: AssetType,
     asset: Asset,
-    filename: string
+    filename: string,
   ): Promise<boolean> => {
     if (!filename || filename.length === 0) {
       return false;
@@ -1122,11 +1123,11 @@ ipcMain.handle(
       renameEventLookup[assetType],
       asset.filename,
       filename,
-      asset.plugin
+      asset.plugin,
     );
 
     return true;
-  }
+  },
 );
 
 ipcMain.handle(
@@ -1167,11 +1168,11 @@ ipcMain.handle(
     sendToProjectWindow(
       renameEventLookup[assetType],
       asset.filename,
-      asset.plugin
+      asset.plugin,
     );
 
     return true;
-  }
+  },
 );
 
 ipcMain.handle("get-documents-path", async (_event) => {
@@ -1183,7 +1184,7 @@ ipcMain.handle("get-tmp-path", async () => {
 });
 
 ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
-  createProject(input)
+  createProject(input),
 );
 
 ipcMain.handle("build:delete-cache", async (_event) => {
@@ -1197,7 +1198,7 @@ ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   setMenuItemChecked("showConnectionsAll", showConnections === "all");
   setMenuItemChecked(
     "showConnectionsSelected",
-    showConnections === "selected" || showConnections === true
+    showConnections === "selected" || showConnections === true,
   );
   setMenuItemChecked("showConnectionsNone", showConnections === false);
   setMenuItemChecked("showNavigator", showNavigator);
@@ -1296,7 +1297,7 @@ ipcMain.handle(
       action: "set-global",
       data: { symbol, value },
     });
-  }
+  },
 );
 
 ipcMain.handle("debugger:set-breakpoints", (_event, breakpoints: string[]) => {
@@ -1355,7 +1356,7 @@ ipcMain.handle(
   "clipboard:write-buffer",
   (_, format: string, buffer: Buffer) => {
     return clipboard.writeBuffer(format, buffer);
-  }
+  },
 );
 
 ipcMain.handle("project:load", async (): Promise<LoadProjectResult> => {
@@ -1370,14 +1371,15 @@ ipcMain.handle(
         sendToProjectWindow("project:save-progress", completed, total);
       },
     });
-  }
+  },
 );
 
-ipcMain.handle("project:get-resource-checksums", async (): Promise<
-  Record<string, string>
-> => {
-  return loadProjectResourceChecksums(projectPath);
-});
+ipcMain.handle(
+  "project:get-resource-checksums",
+  async (): Promise<Record<string, string>> => {
+    return loadProjectResourceChecksums(projectPath);
+  },
+);
 
 ipcMain.handle(
   "project:build",
@@ -1422,7 +1424,7 @@ ipcMain.handle(
       if (exportBuild) {
         await copy(
           `${outputRoot}/build/${buildType}`,
-          `${projectRoot}/build/${buildType}`
+          `${projectRoot}/build/${buildType}`,
         );
         shell.openPath(Path.join(projectRoot, "build", buildType));
         buildLog(`-`);
@@ -1430,16 +1432,16 @@ ipcMain.handle(
           `${l10n("COMPILER_BUILD_SUCCESS")} ${
             buildType === "web"
               ? `${l10n("COMPILER_SITE_READY_AT")} ${Path.normalize(
-                  `${projectRoot}/build/web/index.html`
+                  `${projectRoot}/build/web/index.html`,
                 )}`
               : buildType === "pocket"
-              ? `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
-                  `${projectRoot}/build/pocket/game.pocket`
-                )}`
-              : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
-                  `${projectRoot}/build/rom/${gameFile}`
-                )}`
-          }`
+                ? `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
+                    `${projectRoot}/build/pocket/game.pocket`,
+                  )}`
+                : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
+                    `${projectRoot}/build/rom/${gameFile}`,
+                  )}`
+          }`,
         );
       }
 
@@ -1456,13 +1458,12 @@ ipcMain.handle(
         buildLog(`-`);
         buildLog(
           `${l10n("COMPILER_BUILD_SUCCESS")} ${l10n(
-            "COMPILER_STARTING_EMULATOR"
-          )}...`
+            "COMPILER_STARTING_EMULATOR",
+          )}...`,
         );
         if (debuggerEnabled) {
-          const { memoryMap, globalVariables } = await readDebuggerSymbols(
-            outputRoot
-          );
+          const { memoryMap, globalVariables } =
+            await readDebuggerSymbols(outputRoot);
           debuggerInitData = {
             memoryMap,
             globalVariables,
@@ -1470,13 +1471,13 @@ ipcMain.handle(
             pauseOnWatchedVariableChanged:
               project.settings.debuggerPauseOnWatchedVariableChanged,
             breakpoints: project.settings.debuggerBreakpoints.map(
-              (breakpoint) => breakpoint.scriptEventId
+              (breakpoint) => breakpoint.scriptEventId,
             ),
             watchedVariables: project.settings.debuggerWatchedVariables,
             variableMap: keyBy(Object.values(compiledData.variableMap), "id"),
           };
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
-            key.endsWith(".s")
+            key.endsWith(".s"),
           );
           sendToProjectWindow("debugger:symbols", {
             variableMap: compiledData.variableMap,
@@ -1487,7 +1488,7 @@ ipcMain.handle(
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
           sgbEnabled && colorMode === "mono",
-          debuggerEnabled
+          debuggerEnabled,
         );
       }
 
@@ -1507,7 +1508,7 @@ ipcMain.handle(
       }
       throw e;
     }
-  }
+  },
 );
 
 ipcMain.handle("project:build-cancel", () => {
@@ -1551,7 +1552,7 @@ ipcMain.handle(
     project: ProjectResources,
     engineFields: EngineFieldSchema[],
     sceneTypes: SceneTypeSchema[],
-    exportType: ProjectExportType
+    exportType: ProjectExportType,
   ) => {
     const buildStartTime = Date.now();
 
@@ -1611,7 +1612,7 @@ ipcMain.handle(
       }
       throw e;
     }
-  }
+  },
 );
 
 ipcMain.handle(
@@ -1621,11 +1622,11 @@ ipcMain.handle(
     background: Background,
     tileset: Tileset | undefined,
     is360: boolean,
-    cgbOnly: boolean
+    cgbOnly: boolean,
   ) => {
     const projectRoot = Path.dirname(projectPath);
     return getBackgroundInfo(background, tileset, is360, cgbOnly, projectRoot);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -1643,7 +1644,7 @@ ipcMain.handle(
 
       if (copyFolder) {
         const destPath = `${projectRoot}/assets/${copyFolder}/${Path.basename(
-          filename
+          filename,
         )}`;
 
         const isInProject = Path.relative(filename, destPath) === "";
@@ -1653,7 +1654,7 @@ ipcMain.handle(
         }
       }
     }
-  }
+  },
 );
 
 ipcMain.handle(
@@ -1668,7 +1669,7 @@ ipcMain.handle(
     const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
     const copy2 = async (
       oPath: string,
-      path: string
+      path: string,
     ): Promise<MusicResourceAsset> => {
       try {
         const exists = await pathExists(path);
@@ -1700,7 +1701,7 @@ ipcMain.handle(
       }
     };
     return await copy2(templatePath, filename);
-  }
+  },
 );
 
 ipcMain.handle("tracker:load", async (_event, assetPath: string) => {
@@ -1766,7 +1767,7 @@ ipcMain.handle(
       const { output: sfx } = await compileFXHammerSingle(
         filename,
         effectIndex,
-        "asm"
+        "asm",
       );
       createMusic(sfx, {
         action: "load-sound",
@@ -1775,7 +1776,7 @@ ipcMain.handle(
     } catch (e) {
       console.error("Unable to play FX Hammer SFX", filename, effectIndex);
     }
-  }
+  },
 );
 
 ipcMain.handle("music:play-uge", async (_event, assetPath: string) => {
@@ -1801,7 +1802,7 @@ ipcMain.handle(
   "sprite:compile",
   async (
     _event,
-    spriteData: SpriteSheetData
+    spriteData: SpriteSheetData,
   ): Promise<PrecompiledSpriteSheetData> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = assetFilename(projectRoot, "sprites", spriteData);
@@ -1810,16 +1811,16 @@ ipcMain.handle(
     return compileSprite(
       { ...spriteData, colorMode: "mixed" },
       false,
-      projectRoot
+      projectRoot,
     );
-  }
+  },
 );
 
 ipcMain.handle(
   "script:get-auto-label",
   async (_, command: string, args: Record<string, unknown>) => {
     return getAutoLabel(command, args, scriptEventHandlers);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -1829,7 +1830,7 @@ ipcMain.handle(
     command: string,
     fieldKey: string,
     args: Record<string, unknown>,
-    prevArgs: Record<string, unknown>
+    prevArgs: Record<string, unknown>,
   ) => {
     const event = scriptEventHandlers[command];
     if (!event) {
@@ -1842,7 +1843,7 @@ ipcMain.handle(
     return {
       ...field.postUpdateFn(args, prevArgs),
     };
-  }
+  },
 );
 
 ipcMain.handle("plugins:fetch-list", (_, force?: boolean) => {
@@ -1874,13 +1875,13 @@ ipcMain.handle(
       if (!projectPath) {
         dialog.showErrorBox(
           l10n("ERROR_UNABLE_TO_REMOVE_PLUGIN"),
-          l10n("ERROR_NO_PROJECT_IS_OPEN")
+          l10n("ERROR_NO_PROJECT_IS_OPEN"),
         );
         return;
       }
       await removePluginFromProject(projectPath, pluginId);
     }
-  }
+  },
 );
 
 ipcMain.handle("plugins:get-installed", async () => {
@@ -1973,7 +1974,7 @@ menu.on("openMusic", () => {
   } else {
     dialog.showErrorBox(
       "No music process running",
-      "Have you selected a song?"
+      "Have you selected a song?",
     );
   }
 });
@@ -2051,7 +2052,7 @@ menu.on("updateShowConnections", (value) => {
   setMenuItemChecked("showConnectionsAll", value === "all");
   setMenuItemChecked(
     "showConnectionsSelected",
-    value === "selected" || value === true
+    value === "selected" || value === true,
   );
   setMenuItemChecked("showConnectionsNone", value === false);
   sendToProjectWindow("setting:changed", "showConnections", value);
@@ -2114,7 +2115,7 @@ const refreshTheme = () => {
 const refreshTemplatesList = () => {
   sendToSplashWindow(
     "templates:list:changed",
-    templateManager.getPluginTemplates()
+    templateManager.getPluginTemplates(),
   );
 };
 
@@ -2181,7 +2182,7 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
-      l10n("ERROR_OPEN_GBSPROJ_FILE")
+      l10n("ERROR_OPEN_GBSPROJ_FILE"),
     );
     removeRecentProject(newProjectPath);
     return false;
@@ -2192,7 +2193,7 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
   } catch (e) {
     dialog.showErrorBox(
       l10n("ERROR_MISSING_PROJECT"),
-      l10n("ERROR_MOVED_OR_DELETED")
+      l10n("ERROR_MOVED_OR_DELETED"),
     );
     removeRecentProject(newProjectPath);
     return false;
@@ -2228,10 +2229,10 @@ const addRecentProject = (projectPath: string) => {
       .reverse()
       .filter(
         (filename: string, index: number, arr: string[]) =>
-          arr.indexOf(filename) === index
+          arr.indexOf(filename) === index,
       ) // Only unique
       .reverse()
-      .slice(-10)
+      .slice(-10),
   );
   app.addRecentDocument(projectPath);
 };
@@ -2242,11 +2243,11 @@ const refreshSpellCheck = () => {
     const session = projectWindow.webContents.session;
     const appLocale = getAppLocale();
     const spellCheckLanguages = session.availableSpellCheckerLanguages.filter(
-      (lang) => lang === appLocale
+      (lang) => lang === appLocale,
     );
     session.setSpellCheckerEnabled(spellCheckEnabled);
     session.setSpellCheckerLanguages(
-      spellCheckLanguages.length > 0 ? spellCheckLanguages : ["en"]
+      spellCheckLanguages.length > 0 ? spellCheckLanguages : ["en"],
     );
   }
 };
@@ -2282,7 +2283,7 @@ const saveAsProject = async (saveAsPath: string) => {
   if (projectExists) {
     dialog.showErrorBox(
       l10n("ERROR_PROJECT_ALREADY_EXISTS"),
-      l10n("ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION")
+      l10n("ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION"),
     );
     return;
   }
@@ -2291,7 +2292,7 @@ const saveAsProject = async (saveAsPath: string) => {
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
-      l10n("ERROR_OPEN_GBSPROJ_FILE")
+      l10n("ERROR_OPEN_GBSPROJ_FILE"),
     );
     return;
   }

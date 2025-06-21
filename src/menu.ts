@@ -219,7 +219,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
               click() {
                 notifyListeners(
                   "updateCheckSpelling",
-                  settings.get("checkSpelling") === false
+                  settings.get("checkSpelling") === false,
                 );
               },
             },
@@ -424,7 +424,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 click() {
                   notifyListeners("updateTheme", theme.id);
                 },
-              })
+              }),
             ),
           ],
         },
@@ -466,8 +466,8 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
                 click() {
                   notifyListeners("updateLocale", language.id);
                 },
-              })
-            )
+              }),
+            ),
           ),
         },
         { type: "separator" },
@@ -656,7 +656,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
         {
           label: l10n("MENU_SPEECH"),
           submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
-        }
+        },
       );
     }
 
@@ -698,7 +698,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
           click: () => {
             notifyListeners("checkUpdates");
           },
-        }
+        },
       );
     }
 
@@ -713,7 +713,7 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
           click: () => {
             notifyListeners("preferences");
           },
-        }
+        },
       );
     }
   }

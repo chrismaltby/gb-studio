@@ -21,7 +21,7 @@ export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => void;
   readonly subMenu?: React.ReactElement[];
   readonly icon?: ReactNode;

@@ -925,6 +925,14 @@ test("should precompile to list of required operations", () => {
       {
         type: "local",
         value: "local_0",
+        offset: 1,
+      },
+      {
+        type: "number",
+        value: 7,
+      },
+      {
+        type: "shr",
       },
       {
         type: "add",
@@ -934,9 +942,8 @@ test("should precompile to list of required operations", () => {
       {
         local: "local_0",
         value: {
-          type: "property",
+          type: "actorPosition",
           target: "player",
-          property: "xpos",
         },
       },
     ],
@@ -1284,33 +1291,29 @@ test("should sort fetch operations so that properties on same target/prop are gr
     {
       local: "tmp1",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor1",
-        property: "xpos",
       },
     },
     {
       local: "tmp2",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor2",
-        property: "xpos",
       },
     },
     {
       local: "tmp3",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor1",
-        property: "ypos",
       },
     },
     {
       local: "tmp4",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor1",
-        property: "xpos",
       },
     },
   ];
@@ -1318,33 +1321,29 @@ test("should sort fetch operations so that properties on same target/prop are gr
     {
       local: "tmp1",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor1",
-        property: "xpos",
-      },
-    },
-    {
-      local: "tmp4",
-      value: {
-        type: "property",
-        target: "actor1",
-        property: "xpos",
       },
     },
     {
       local: "tmp3",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor1",
-        property: "ypos",
+      },
+    },
+    {
+      local: "tmp4",
+      value: {
+        type: "actorPosition",
+        target: "actor1",
       },
     },
     {
       local: "tmp2",
       value: {
-        type: "property",
+        type: "actorPosition",
         target: "actor2",
-        property: "xpos",
       },
     },
   ]);
@@ -1687,7 +1686,7 @@ describe("someInScriptValue", () => {
     };
     const result = someInScriptValue(
       input,
-      (node) => node.type === "number" && node.value === 3
+      (node) => node.type === "number" && node.value === 3,
     );
     expect(result).toBe(true);
   });
@@ -1706,7 +1705,7 @@ describe("someInScriptValue", () => {
     };
     const result = someInScriptValue(
       input,
-      (node) => node.type === "number" && node.value === 4
+      (node) => node.type === "number" && node.value === 4,
     );
     expect(result).toBe(false);
   });
@@ -1732,7 +1731,7 @@ describe("someInScriptValue", () => {
     };
     const result = someInScriptValue(
       input,
-      (node) => node.type === "number" && node.value === 5
+      (node) => node.type === "number" && node.value === 5,
     );
     expect(result).toBe(true);
   });
@@ -1758,7 +1757,7 @@ describe("someInScriptValue", () => {
     };
     const result = someInScriptValue(
       input,
-      (node) => node.type === "number" && node.value === 10
+      (node) => node.type === "number" && node.value === 10,
     );
     expect(result).toBe(false);
   });
@@ -1828,7 +1827,7 @@ describe("someInScriptValue", () => {
     };
     const result = someInScriptValue(
       input,
-      (node) => node.type === "variable" && node.value === "V0"
+      (node) => node.type === "variable" && node.value === "V0",
     );
     expect(result).toBe(true);
   });
@@ -1847,7 +1846,7 @@ describe("someInScriptValue", () => {
     };
 
     const mockFn = jest.fn(
-      (node) => node.type === "number" && node.value === 3
+      (node) => node.type === "number" && node.value === 3,
     );
 
     const result = someInScriptValue(input, mockFn);
@@ -1877,7 +1876,7 @@ describe("someInScriptValue", () => {
     };
 
     const mockFn = jest.fn(
-      (node) => node.type === "number" && node.value === 3
+      (node) => node.type === "number" && node.value === 3,
     );
 
     const result = someInScriptValue(input, mockFn);
@@ -1921,7 +1920,7 @@ describe("someInScriptValue", () => {
     };
 
     const mockFn = jest.fn(
-      (node) => node.type === "number" && node.value === 6
+      (node) => node.type === "number" && node.value === 6,
     );
 
     const result = someInScriptValue(input, mockFn);

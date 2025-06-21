@@ -13,6 +13,6 @@ import "renderer/lib/globalErrorHandling";
   root.render(
     <React.StrictMode>
       <Splash />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 })();

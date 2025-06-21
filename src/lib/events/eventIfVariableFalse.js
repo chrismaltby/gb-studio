@@ -67,5 +67,5 @@ module.exports = {
   groups,
   fields,
   compile,
-  deprecated: true
+  deprecated: true,
 };

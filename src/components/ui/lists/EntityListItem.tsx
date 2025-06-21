@@ -65,7 +65,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   renderContextMenu?: (
     item: T,
-    closeMenu: () => void
+    closeMenu: () => void,
   ) => JSX.Element[] | undefined;
   renderLabel?: (item: T) => React.ReactNode;
 } & (
@@ -108,12 +108,11 @@ export const EntityListItem = <T extends EntityListItemData>({
   renderLabel,
   ...props
 }: EntityListItemProps<T>) => {
-  const [contextMenu, setContextMenu] =
-    useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    menu: JSX.Element[];
+  }>();
 
   const onContextMenuClose = useCallback(() => {
     setContextMenu(undefined);
@@ -130,7 +129,7 @@ export const EntityListItem = <T extends EntityListItemData>({
       }
       setContextMenu({ x: e.pageX, y: e.pageY, menu });
     },
-    [item, renderContextMenu, onContextMenuClose]
+    [item, renderContextMenu, onContextMenuClose],
   );
 
   const onRenameComplete = useCallback(
@@ -139,7 +138,7 @@ export const EntityListItem = <T extends EntityListItemData>({
         props.onRename(newValue, item);
       }
     },
-    [item, props]
+    [item, props],
   );
   const onRenameCancel = useCallback(() => {
     if (props.rename) {

@@ -29,7 +29,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       trackerDocumentActions.editWaveform({
         index: waveId,
         waveForm: newWave,
-      })
+      }),
     );
   };
 

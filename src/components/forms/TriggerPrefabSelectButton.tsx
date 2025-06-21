@@ -56,7 +56,7 @@ export const TriggerPrefabSelectButton: FC<TriggerPrefabSelectButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const prefab = useAppSelector((state) =>
-    triggerPrefabSelectors.selectById(state, value || "")
+    triggerPrefabSelectors.selectById(state, value || ""),
   );
   const prefabIds = useAppSelector(triggerPrefabSelectors.selectIds);
   const [isOpen, setIsOpen] = useState<boolean>(false);

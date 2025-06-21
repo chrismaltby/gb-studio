@@ -3,9 +3,9 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_IF_SAVED_DATA";
 const groups = ["EVENT_GROUP_SAVE_DATA", "EVENT_GROUP_CONTROL_FLOW"];
 const subGroups = {
-  "EVENT_GROUP_SAVE_DATA": "EVENT_GROUP_CONTROL_FLOW",
-  "EVENT_GROUP_CONTROL_FLOW": "EVENT_GROUP_SAVE_DATA"
-}
+  EVENT_GROUP_SAVE_DATA: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_SAVE_DATA",
+};
 const fields = [
   {
     key: "saveSlot",

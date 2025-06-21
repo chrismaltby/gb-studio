@@ -36,7 +36,7 @@ const buildPresets = (lookup: ScriptEventDefs): ScriptEventDefs => {
       }
       return memo;
     },
-    { ...lookup }
+    { ...lookup },
   );
 };
 

@@ -37,13 +37,13 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
   ...selectProps
 }) => {
   const backgrounds = useAppSelector((state) =>
-    backgroundSelectors.selectAll(state)
+    backgroundSelectors.selectAll(state),
   );
   const backgroundsLookup = useAppSelector((state) =>
-    backgroundSelectors.selectEntities(state)
+    backgroundSelectors.selectEntities(state),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, value || "")
+    backgroundSelectors.selectById(state, value || ""),
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentBackground, setCurrentBackground] = useState<Background>();
@@ -58,7 +58,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
           .filter(
             (s) =>
               !isMonoOverride(s.filename) &&
-              (plugin ? s.plugin === plugin : !s.plugin)
+              (plugin ? s.plugin === plugin : !s.plugin),
           )
           .map((background) => {
             return {

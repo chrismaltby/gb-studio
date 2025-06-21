@@ -8,7 +8,7 @@ export const calculateSlope = (
   endY: number,
   slopeDirectionHorizontal: "left" | "right",
   slopeDirectionVertical: "left" | "right",
-  wallMode: boolean
+  wallMode: boolean,
 ) => {
   let newEndX = endX;
   let newEndY = endY;

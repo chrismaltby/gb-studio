@@ -13,7 +13,7 @@ const confirmDeletePrefab = (name: string, count: number) => {
       count === 1
         ? "DIALOG_DELETE_PREFAB_USED_SINGLAR"
         : "DIALOG_DELETE_PREFAB_USED",
-      { count }
+      { count },
     ),
   });
 };

@@ -10,7 +10,7 @@ export const writeFileAndFlush = (
   path: string,
   data: string | NodeJS.ArrayBufferView,
   options: WriteFileAndFlushOptions | BufferEncoding,
-  callback: (err?: NodeJS.ErrnoException | null) => void
+  callback: (err?: NodeJS.ErrnoException | null) => void,
 ) => {
   // If options passed in as a string convert to WriteFileAndFlushOptions
   const writeOptions: WriteFileOptions =
@@ -44,7 +44,7 @@ export const writeFileAndFlush = (
 export const writeFileAndFlushAsync = (
   path: string,
   data: string | NodeJS.ArrayBufferView,
-  options: WriteFileAndFlushOptions | BufferEncoding = "utf8"
+  options: WriteFileAndFlushOptions | BufferEncoding = "utf8",
 ) => {
   return new Promise<void>((resolve, reject) => {
     writeFileAndFlush(path, data, options, (err) => {

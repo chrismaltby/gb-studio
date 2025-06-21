@@ -12,10 +12,10 @@ interface DebuggerCustomEventLinkProps {
 const DebuggerCustomEventLink = ({ id }: DebuggerCustomEventLinkProps) => {
   const dispatch = useAppDispatch();
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, id)
+    customEventSelectors.selectById(state, id),
   );
   const customEventIndex = useAppSelector((state) =>
-    customEventSelectors.selectIds(state).indexOf(id)
+    customEventSelectors.selectIds(state).indexOf(id),
   );
 
   const onSelect = useCallback(() => {

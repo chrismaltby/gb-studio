@@ -11,7 +11,7 @@ import {
 
 export type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
 export type ProjectResourcesMigrationFn = (
-  resources: CompressedProjectResources
+  resources: CompressedProjectResources,
 ) => CompressedProjectResources;
 
 export type ProjectResourcesMigration = {
@@ -22,7 +22,7 @@ export type ProjectResourcesMigration = {
 
 export const applyProjectResourcesMigration = (
   resources: CompressedProjectResources,
-  migration: ProjectResourcesMigration
+  migration: ProjectResourcesMigration,
 ): CompressedProjectResources => {
   if (
     !isProjectVersion(migration.from.version, migration.from.release, resources)
@@ -40,7 +40,7 @@ export const applyProjectResourcesMigration = (
 };
 
 export const buildPrefabEventsLookup = (
-  resources: CompressedProjectResources
+  resources: CompressedProjectResources,
 ): Record<string, ScriptEvent> => {
   const prefabEventsLookup: Record<string, ScriptEvent> = {};
   resources.actorPrefabs.forEach((actorPrefab) => {
@@ -58,7 +58,7 @@ export const buildPrefabEventsLookup = (
 
 export const migrateEvents = (
   resources: CompressedProjectResources,
-  migrateFn: ScriptEventMigrationFn
+  migrateFn: ScriptEventMigrationFn,
 ): CompressedProjectResources => {
   const prefabEventsLookup = buildPrefabEventsLookup(resources);
   return {
@@ -66,7 +66,7 @@ export const migrateEvents = (
     scenes: mapScenesScript(
       resources.scenes,
       { includePrefabOverrides: true, prefabEventsLookup },
-      migrateFn
+      migrateFn,
     ),
     actorPrefabs: mapActorsScript(resources.actorPrefabs, migrateFn),
     triggerPrefabs: mapTriggersScript(resources.triggerPrefabs, migrateFn),
@@ -80,29 +80,29 @@ export const createScriptEventsMigrator =
     migrateEvents(resources, migrateFn);
 
 export const pipeMigrationFns = (
-  migrationFns: ProjectResourcesMigrationFn[]
+  migrationFns: ProjectResourcesMigrationFn[],
 ): ProjectResourcesMigrationFn => {
   return (resources: CompressedProjectResources): CompressedProjectResources =>
     migrationFns.reduce(
       (currentResources, migrationFn) => migrationFn(currentResources),
-      resources
+      resources,
     );
 };
 
 export const pipeScriptEventMigrationFns = (
-  scriptEventMigrationFns: ScriptEventMigrationFn[]
+  scriptEventMigrationFns: ScriptEventMigrationFn[],
 ): ScriptEventMigrationFn => {
   return (scriptEvent: ScriptEvent): ScriptEvent =>
     scriptEventMigrationFns.reduce(
       (currentScriptEvent, migrationFn) => migrationFn(currentScriptEvent),
-      scriptEvent
+      scriptEvent,
     );
 };
 
 export const isProjectVersion = (
   version: string,
   release: string,
-  resources: CompressedProjectResources
+  resources: CompressedProjectResources,
 ): boolean => {
   return (
     resources.metadata._version === version &&

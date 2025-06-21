@@ -31,7 +31,7 @@ type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
 const compileEntityEvents = (
   scriptSymbolName: string,
   input: ScriptEvent[] = [],
-  options: CompileEntityEventsOptions
+  options: CompileEntityEventsOptions,
 ) => {
   const {
     output = [],
@@ -64,7 +64,7 @@ const compileEntityEvents = (
 
   const compileEventsWithScriptBuilder = (
     scriptBuilder: ScriptBuilder,
-    subInput: ScriptEvent[] = []
+    subInput: ScriptEvent[] = [],
   ) => {
     const scriptEventHandlers = options.scriptEventHandlers;
 
@@ -87,14 +87,14 @@ const compileEntityEvents = (
               ...scriptBuilder,
               scriptSymbolName,
               event: subInput[i],
-            }
+            },
           );
         } catch (e) {
           console.error(e);
           throw new Error(
             `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
-              location
-            )}`
+              location,
+            )}`,
           );
         }
         if (scriptEventHandlers[command]?.isConditional) {
@@ -111,13 +111,13 @@ const compileEntityEvents = (
         scriptBuilder.ifParamValue(
           args?.parameter as number,
           args?.value as number,
-          subInput[i]?.children?.true
+          subInput[i]?.children?.true,
         );
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
-            location
-          )}`
+            location,
+          )}`,
         );
       }
     }
@@ -127,7 +127,7 @@ const compileEntityEvents = (
     ...options,
     compileEvents: (
       scriptBuilder: ScriptBuilder,
-      childInput: ScriptEvent[]
+      childInput: ScriptEvent[],
     ) => {
       compileEventsWithScriptBuilder(scriptBuilder, childInput);
     },
@@ -161,7 +161,7 @@ const compileEntityEvents = (
     return scriptBuilder.toScriptString(scriptSymbolName, lock);
   } catch (e) {
     throw new Error(
-      `Compiling failed with error "${e}". ${JSON.stringify(location)}`
+      `Compiling failed with error "${e}". ${JSON.stringify(location)}`,
     );
   }
 };

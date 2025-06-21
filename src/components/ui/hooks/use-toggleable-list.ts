@@ -15,7 +15,7 @@ const useToggleableList = <T>(initialState: T[]) => {
     (id: T) => {
       return values.includes(id);
     },
-    [values]
+    [values],
   );
 
   const toggle = useCallback(
@@ -26,7 +26,7 @@ const useToggleableList = <T>(initialState: T[]) => {
         set(id);
       }
     },
-    [isSet, set, unset]
+    [isSet, set, unset],
   );
 
   return { values, setValues, isSet, toggle, set, unset } as const;

@@ -315,7 +315,7 @@
   "FIELD_COLLIDE_WITH_DESC": "将检查碰撞的角色组。 例如如果它应该通过任何角色，但玩家将此字段设置为“玩家”。",
   "FIELD_COLLISION_GROUP_N": "组 {n}",
   "FIELD_PLAYER": "玩家",
-  "FIELD_ACTOR": "角色",  
+  "FIELD_ACTOR": "角色",
   "FIELD_IS_ABOVE": "是上面",
   "FIELD_IS_BELOW": "是下面",
   "FIELD_IS_LEFT_OF": "是左侧",
@@ -754,7 +754,7 @@
   "FIELD_COLOR_MODE_COLOR_ONLY": "仅彩色",
   "FIELD_COLOR_MODE_MONO_INFO": "GB, GB Color, Pocket",
   "FIELD_COLOR_MODE_COLOR_MONO_INFO": "GB, GB Color, Pocket",
-  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket",  
+  "FIELD_COLOR_MODE_COLOR_ONLY_INFO": "GB Color, Pocket",
   "FIELD_SUPPORTED_PLATFORMS": "支持的平台",
   "FIELD_MONOCHROME_ONLY": "仅单色",
   "FIELD_SGB_UNAVAILABLE": "仅限彩色游戏不支持超级 GB 模式",
@@ -1300,7 +1300,7 @@
   "MENU_DELETE_SOUND_EFFECT": "删除声音效果",
   "MENU_DELETE_PALETTE": "删除调色板",
   "MENU_SPELLING": "拼写和语法",
-  "MENU_CHECK_SPELLING_WHILE_TYPING" : "键入内容时检查拼写",
+  "MENU_CHECK_SPELLING_WHILE_TYPING": "键入内容时检查拼写",
 
   "// 11": "Warnings -----------------------------------------------------",
 

@@ -28,7 +28,7 @@ export const toValidSymbol = (inputSymbol: string) => {
  */
 export const genSymbol = (
   inputSymbol: string,
-  existingSymbols: Set<string>
+  existingSymbols: Set<string>,
 ) => {
   const initialSymbol = toValidSymbol(inputSymbol);
   let symbol = initialSymbol;

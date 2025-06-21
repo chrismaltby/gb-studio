@@ -61,7 +61,7 @@ const consoleSlice = createSlice({
     },
     stdOut: (
       state,
-      action: PayloadAction<{ text: string; link?: ConsoleLink }>
+      action: PayloadAction<{ text: string; link?: ConsoleLink }>,
     ) => {
       if (
         action.payload &&
@@ -79,7 +79,7 @@ const consoleSlice = createSlice({
     },
     stdErr: (
       state,
-      action: PayloadAction<{ text: string; link?: ConsoleLink }>
+      action: PayloadAction<{ text: string; link?: ConsoleLink }>,
     ) => {
       if (action.payload) {
         const line: ConsoleErrorLine = {

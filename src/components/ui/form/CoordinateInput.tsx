@@ -63,7 +63,7 @@ export const CoordinateInput: FC<CoordinateInputProps> = ({
       setStringValue(newStringValue);
       onChange?.(e);
     },
-    [onChange]
+    [onChange],
   );
 
   const onBlurInternal = useCallback(() => {

@@ -26,7 +26,7 @@ const buildGame = createAction(
       buildType: "web",
       exportBuild: false,
       debugEnabled: false,
-    }
+    },
   ) => {
     return {
       payload: {
@@ -39,13 +39,13 @@ const buildGame = createAction(
         onlySelection,
       },
     };
-  }
+  },
 );
 
 const deleteBuildCache = createAction("buildGame/deleteCache");
 const ejectEngine = createAction("buildGame/ejectEngine");
 const exportProject = createAction<ProjectExportType>(
-  "buildGame/exportProject"
+  "buildGame/exportProject",
 );
 
 const buildGameActions = {

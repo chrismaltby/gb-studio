@@ -17,7 +17,7 @@ export type AssetFolder =
 export const sizeOfAsync = promisify(sizeOf);
 
 export const potentialAssetFolders = async (
-  filename: string
+  filename: string,
 ): Promise<AssetFolder[]> => {
   const ext = Path.extname(filename.toLowerCase());
 
@@ -118,7 +118,7 @@ export const potentialAssetFolders = async (
 
 export const getAssetResource = async <T extends TSchema>(
   resourceType: T,
-  filename: string
+  filename: string,
 ): Promise<Static<T> | undefined> => {
   let resource: Static<T> | undefined = undefined;
 

@@ -20,7 +20,7 @@ export const TriggerSymbolsEditor = ({ id }: TriggerSymbolsEditorProps) => {
           entitiesActions.setTriggerSymbol({
             triggerId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

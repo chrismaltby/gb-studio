@@ -197,7 +197,7 @@ const ensureProjectAsset = async (
   }: {
     projectRoot: string;
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const projectPath = `${projectRoot}/${relativePath}`;
   const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
@@ -209,7 +209,7 @@ const ensureProjectAsset = async (
     });
     warnings &&
       warnings(
-        `${relativePath} was missing, copying default file to project assets`
+        `${relativePath} was missing, copying default file to project assets`,
       );
   } catch (e) {
     // Don't need to catch this, if it failed then the file already exists
@@ -230,27 +230,30 @@ export const precompileBackgrounds = async (
     warnings,
   }: {
     warnings: (_msg: string) => void;
-  }
+  },
 ) => {
   const usedTilemaps: CompiledTilemapData[] = [];
   const usedTilemapAttrs: CompiledTilemapData[] = [];
 
   const tilesetLookup = keyBy(tilesets, "id");
 
-  const commonTilesetsLookup = scenes.reduce((memo, scene) => {
-    if (!scene.backgroundId || !scene.tilesetId) {
-      return memo;
-    }
-    const tileset = tilesetLookup[scene.tilesetId];
-    if (memo[scene.backgroundId]) {
-      if (!memo[scene.backgroundId].find((t) => t.id === scene.tilesetId)) {
-        memo[scene.backgroundId].push(tileset);
+  const commonTilesetsLookup = scenes.reduce(
+    (memo, scene) => {
+      if (!scene.backgroundId || !scene.tilesetId) {
+        return memo;
       }
-    } else {
-      memo[scene.backgroundId] = [tileset];
-    }
-    return memo;
-  }, {} as Record<string, TilesetData[]>);
+      const tileset = tilesetLookup[scene.tilesetId];
+      if (memo[scene.backgroundId]) {
+        if (!memo[scene.backgroundId].find((t) => t.id === scene.tilesetId)) {
+          memo[scene.backgroundId].push(tileset);
+        }
+      } else {
+        memo[scene.backgroundId] = [tileset];
+      }
+      return memo;
+    },
+    {} as Record<string, TilesetData[]>,
+  );
 
   const backgroundsData = await compileImages(
     backgroundReferences,
@@ -259,7 +262,7 @@ export const precompileBackgrounds = async (
     projectRoot,
     {
       warnings,
-    }
+    },
   );
 
   const usedTilesets: CompiledTilesetData[] = [];
@@ -282,7 +285,7 @@ export const precompileBackgrounds = async (
       };
 
       const getExistingTileset = (
-        key: string
+        key: string,
       ): CompiledTilesetData | undefined => {
         // If can't reuse tileset always return no match
         return canReuseTilesets ? usedTilesetLookup[key] : undefined;
@@ -355,7 +358,7 @@ export const precompileBackgrounds = async (
         tilemap: usedTilemaps[tilemapIndex],
         tilemapAttr: usedTilemapAttrs[tilemapAttrIndex],
       };
-    }
+    },
   );
 
   const backgroundLookup = indexById(usedBackgroundsWithData);
@@ -373,7 +376,7 @@ export const precompilePalettes = async (
   scenes: Scene[],
   settings: SettingsState,
   palettes: Palette[],
-  backgrounds: Record<string, PrecompiledBackground>
+  backgrounds: Record<string, PrecompiledBackground>,
 ) => {
   const usedPalettes: PrecompiledPalette[] = [];
   const usedPalettesCache: Record<string, number> = {};
@@ -399,14 +402,14 @@ export const precompilePalettes = async (
     index: number,
     sceneBackgroundPaletteIds: string[],
     defaultBackgroundPaletteIds: string[],
-    autoPalettes?: Palette[]
+    autoPalettes?: Palette[],
   ) => {
     if (autoPalettes?.[index]) {
       return autoPalettes[index];
     }
     return getPalette(
       sceneBackgroundPaletteIds[index],
-      defaultBackgroundPaletteIds[index]
+      defaultBackgroundPaletteIds[index],
     );
   };
 
@@ -434,7 +437,7 @@ export const precompilePalettes = async (
           string,
           string,
           string,
-          string
+          string,
         ],
       ],
       colors: isColor
@@ -443,49 +446,49 @@ export const precompilePalettes = async (
               0,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               1,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               2,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               3,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               4,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               5,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               6,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
             getBackgroundPalette(
               7,
               sceneBackgroundPaletteIds,
               defaultBackgroundPaletteIds,
-              background?.autoPalettes
+              background?.autoPalettes,
             ),
           ].map((p) => p.colors)
         : undefined,
@@ -516,48 +519,48 @@ export const precompilePalettes = async (
           string,
           string,
           string,
-          string
+          string,
         ],
         ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"] as [
           string,
           string,
           string,
-          string
+          string,
         ],
       ],
       colors: isColor
         ? [
             getSpritePalette(
               sceneSpritePaletteIds[0],
-              defaultSpritePaletteIds[0]
+              defaultSpritePaletteIds[0],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[1],
-              defaultSpritePaletteIds[1]
+              defaultSpritePaletteIds[1],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[2],
-              defaultSpritePaletteIds[2]
+              defaultSpritePaletteIds[2],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[3],
-              defaultSpritePaletteIds[3]
+              defaultSpritePaletteIds[3],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[4],
-              defaultSpritePaletteIds[4]
+              defaultSpritePaletteIds[4],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[5],
-              defaultSpritePaletteIds[5]
+              defaultSpritePaletteIds[5],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[6],
-              defaultSpritePaletteIds[6]
+              defaultSpritePaletteIds[6],
             ),
             getSpritePalette(
               sceneSpritePaletteIds[7],
-              defaultSpritePaletteIds[7]
+              defaultSpritePaletteIds[7],
             ),
           ].map((p) => p.colors)
         : undefined,
@@ -591,7 +594,7 @@ export const precompileUIImages = async (
     warnings,
   }: {
     warnings: (_msg: string) => void;
-  }
+  },
 ) => {
   const framePath = await ensureProjectAsset("assets/ui/frame.png", {
     projectRoot,
@@ -610,13 +613,13 @@ export const precompileUIImages = async (
 
 export const precompileSprites = async (
   spriteReferences: ReferencedSprite[],
-  projectRoot: string
+  projectRoot: string,
 ) => {
   const usedTilesets: CompiledTilesetData[] = [];
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
-    projectRoot
+    projectRoot,
   );
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
@@ -666,7 +669,7 @@ export const precompileAvatars = async (
     warnings,
   }: {
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const usedAvatars: AvatarData[] = [];
   const usedAvatarLookup: Record<string, AvatarData> = {};
@@ -689,7 +692,7 @@ export const precompileAvatars = async (
           usedAvatarLookup[avatarId] = avatar;
         }
       }
-    }
+    },
   );
 
   const avatarData = await compileAvatars(usedAvatars, projectRoot, {
@@ -709,7 +712,7 @@ export const precompileEmotes = async (
     warnings,
   }: {
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const emoteData = await compileEmotes(referencedEmotes, projectRoot, {
     warnings,
@@ -729,7 +732,7 @@ export const precompileTilesets = async (
     warnings,
   }: {
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const usedTilesets: TilesetData[] = [];
   const usedTilesetLookup: Record<string, TilesetData> = {};
@@ -769,7 +772,7 @@ export const precompileTilesets = async (
           addTileset(id);
         }
       }
-    }
+    },
   );
 
   const tilesetData = await compileTilesets(usedTilesets, projectRoot, {
@@ -786,7 +789,7 @@ export const precompileMusic = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   music: MusicData[],
-  musicDriver: MusicDriverSetting
+  musicDriver: MusicDriverSetting,
 ) => {
   const usedMusicIds: string[] = [];
   const driverMusic =
@@ -818,7 +821,7 @@ export const precompileMusic = (
           .map((ref) => ref.id);
         usedMusicIds.push(...referencedIds);
       }
-    }
+    },
   );
 
   const usedMusic: PrecompiledMusicTrack[] = music
@@ -858,7 +861,7 @@ export const precompileFonts = async (
     warnings,
   }: {
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   if (usedFonts.length === 0) {
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
@@ -887,26 +890,26 @@ export const precompileScenes = (
     warnings,
   }: {
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const scenesData: PrecompiledScene[] = scenes.map((scene) => {
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
-        (!scene.tilesetId || background.commonTilesetId === scene.tilesetId)
+        (!scene.tilesetId || background.commonTilesetId === scene.tilesetId),
     );
 
     const background =
       backgroundWithCommonTileset ??
       usedBackgrounds.find(
-        (background) => background.id === scene.backgroundId
+        (background) => background.id === scene.backgroundId,
       );
 
     if (!background) {
       throw new Error(
         `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
-        } has missing or no background assigned.`
+        } has missing or no background assigned.`,
       );
     }
 
@@ -914,7 +917,7 @@ export const precompileScenes = (
       warnings(
         `Error in scene '${scene.symbol}' : ${
           scene.name ? `'${scene.name}'` : ""
-        } includes a common tileset that can't be located.`
+        } includes a common tileset that can't be located.`,
       );
     }
 
@@ -926,7 +929,7 @@ export const precompileScenes = (
           scene.name ? `'${scene.name}'` : ""
         } contains ${
           scene.actors.length
-        } actors when maximum is ${MAX_ACTORS}. Some actors will be removed.`
+        } actors when maximum is ${MAX_ACTORS}. Some actors will be removed.`,
       );
     }
 
@@ -936,7 +939,7 @@ export const precompileScenes = (
           scene.name ? `'${scene.name}'` : ""
         } contains ${
           scene.triggers.length
-        } triggers when maximum is ${MAX_TRIGGERS}. Some triggers will be removed.`
+        } triggers when maximum is ${MAX_TRIGGERS}. Some triggers will be removed.`,
       );
     }
 
@@ -953,7 +956,7 @@ export const precompileScenes = (
 
     if (!playerSprite && scene.type !== "LOGO") {
       warnings(
-        l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
+        l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type }),
       );
       playerSprite = usedSprites[0];
     }
@@ -1044,7 +1047,7 @@ export const precompileScenes = (
             usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
-            getSpriteTileCount(sprite)
+            getSpriteTileCount(sprite),
           );
         }
 
@@ -1058,10 +1061,10 @@ export const precompileScenes = (
             usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
-            getSpriteTileCount(sprite)
+            getSpriteTileCount(sprite),
           );
         }
-      }
+      },
     );
 
     const actorSpriteIds = actors
@@ -1070,7 +1073,7 @@ export const precompileScenes = (
 
     const sceneSpriteIds = ([] as string[]).concat(
       actorSpriteIds,
-      eventSpriteIds
+      eventSpriteIds,
     );
 
     if (projectiles.length > MAX_PROJECTILES) {
@@ -1079,7 +1082,7 @@ export const precompileScenes = (
           name: scene.name,
           num: projectiles.length,
           max: MAX_PROJECTILES,
-        })
+        }),
       );
       projectiles.splice(MAX_PROJECTILES);
     }
@@ -1097,7 +1100,7 @@ export const precompileScenes = (
         "_" +
         scene.spritePaletteIds +
         "_" +
-        background.autoPalettes
+        background.autoPalettes,
     );
 
     return {
@@ -1146,7 +1149,7 @@ const precompile = async (
   }: {
     progress: (msg: string) => void;
     warnings: (msg: string) => void;
-  }
+  },
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorCorrection = projectData.settings.colorCorrection;
@@ -1174,7 +1177,7 @@ const precompile = async (
     projectData.tilesets,
     colorCorrection,
     projectRoot,
-    { warnings }
+    { warnings },
   );
 
   progress(`${l10n("COMPILER_PREPARING_TILESETS")}...`);
@@ -1184,7 +1187,7 @@ const precompile = async (
     customEventsLookup,
 	scriptEventHandlers,
     projectRoot,
-    { warnings }
+    { warnings },
   );
 
   progress(`${l10n("COMPILER_PREPARING_UI")}...`);
@@ -1193,7 +1196,7 @@ const precompile = async (
     tmpPath,
     {
       warnings,
-    }
+    },
   );
 
   progress(`${l10n("COMPILER_PREPARING_SPRITES")}...`);
@@ -1212,7 +1215,7 @@ const precompile = async (
     projectRoot,
     {
       warnings,
-    }
+    },
   );
 
   progress(`${l10n("COMPILER_PREPARING_EMOTES")}...`);
@@ -1221,7 +1224,7 @@ const precompile = async (
     projectRoot,
     {
       warnings,
-    }
+    },
   );
 
   progress(`${l10n("COMPILER_PREPARING_MUSIC")}...`);
@@ -1229,7 +1232,7 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.music,
-    projectData.settings.musicDriver
+    projectData.settings.musicDriver,
   );
 
   progress(`${l10n("COMPILER_PREPARING_FONTS")}...`);
@@ -1241,7 +1244,7 @@ const precompile = async (
     projectRoot,
     {
       warnings,
-    }
+    },
   );
 
   progress(`${l10n("COMPILER_PREPARING_SCENES")}...`);
@@ -1253,7 +1256,7 @@ const precompile = async (
     usedSprites,
     {
       warnings,
-    }
+    },
   );
 
   const {
@@ -1265,7 +1268,7 @@ const precompile = async (
     projectData.scenes,
     projectData.settings,
     projectData.palettes,
-    backgroundLookup
+    backgroundLookup,
   );
 
   const usedSounds = usedAssets.referencedSounds;
@@ -1321,7 +1324,7 @@ const compile = async (
     debugEnabled?: boolean;
     progress: (_msg: string) => void;
     warnings: (_msg: string) => void;
-  }
+  },
 ): Promise<{
   files: Record<string, string>;
   sceneMap: Record<string, SceneMapData>;
@@ -1335,7 +1338,7 @@ const compile = async (
 
   if (rawProjectData.scenes.length === 0) {
     throw new Error(
-      "No scenes are included in your project. Add some scenes in the Game World editor and try again."
+      "No scenes are included in your project. Add some scenes in the Game World editor and try again.",
     );
   }
   const projectData = applyPrefabs(rawProjectData);
@@ -1348,7 +1351,7 @@ const compile = async (
     {
       progress,
       warnings,
-    }
+    },
   );
 
   const isCGBOnly = projectData.settings.colorMode === "color";
@@ -1402,7 +1405,7 @@ const compile = async (
       }
       return memo;
     },
-    {} as Record<string, VariableMapData>
+    {} as Record<string, VariableMapData>,
   );
 
   const constantsLookup = keyBy(projectData.variables.constants, "id");
@@ -1446,7 +1449,7 @@ const compile = async (
         entityIndex: number,
         loop: boolean,
         lock: boolean,
-        scriptKey: string
+        scriptKey: string,
       ) => {
         let scriptTypeCode = "interact";
         let scriptName = "script";
@@ -1555,7 +1558,7 @@ const compile = async (
                     scriptKey: "startScript",
                   },
                 } as ScriptEvent,
-                actorStartScript.filter((event) => event.command !== EVENT_END)
+                actorStartScript.filter((event) => event.command !== EVENT_END),
               );
             })
             .flat(),
@@ -1571,7 +1574,7 @@ const compile = async (
                 },
               }
             : [],
-          scene.script || []
+          scene.script || [],
         );
 
         // Inject automatic Scene Fade In if required
@@ -1579,7 +1582,7 @@ const compile = async (
           const autoFadeId = calculateAutoFadeEventId(
             initScript,
             customEventsLookup,
-            scriptEventHandlers
+            scriptEventHandlers,
           );
           const autoFadeIndex = autoFadeId
             ? initScript.findIndex((item) => item.id === autoFadeId)
@@ -1606,7 +1609,7 @@ const compile = async (
           sceneIndex,
           false,
           true,
-          "script"
+          "script",
         );
       };
 
@@ -1616,10 +1619,10 @@ const compile = async (
           value: number;
           script: ScriptEvent[];
         }[],
-        canCollapse: boolean
+        canCollapse: boolean,
       ): ScriptEvent[] => {
         const filteredScripts = scripts.filter(
-          (s) => s.script && s.script.length > 0
+          (s) => s.script && s.script.length > 0,
         );
         if (!canCollapse || filteredScripts.length > 1) {
           return filteredScripts.map((s) => {
@@ -1647,7 +1650,7 @@ const compile = async (
           { parameter: 0, value: 4, script: scene.playerHit2Script },
           { parameter: 0, value: 8, script: scene.playerHit3Script },
         ],
-        false
+        false,
       );
 
       return {
@@ -1659,7 +1662,7 @@ const compile = async (
           sceneIndex,
           false,
           false,
-          "playerHit1Script"
+          "playerHit1Script",
         ),
         actorsMovement: scene.actors.map((entity, entityIndex) => {
           if (!entity["updateScript"] || entity["updateScript"].length === 0) {
@@ -1672,7 +1675,7 @@ const compile = async (
             entityIndex,
             true,
             false,
-            "updateScript"
+            "updateScript",
           );
         }),
         actors: scene.actors.map((entity, entityIndex) => {
@@ -1684,7 +1687,7 @@ const compile = async (
               entityIndex,
               false,
               true,
-              "script"
+              "script",
             );
           }
           const combinedActorScript = combineScripts(
@@ -1694,7 +1697,7 @@ const compile = async (
               { parameter: 0, value: 4, script: entity.hit2Script },
               { parameter: 0, value: 8, script: entity.hit3Script },
             ],
-            false
+            false,
           );
           return compileScript(
             combinedActorScript,
@@ -1703,7 +1706,7 @@ const compile = async (
             entityIndex,
             false,
             false,
-            "script"
+            "script",
           );
         }),
         triggers: scene.triggers.map((entity, entityIndex) => {
@@ -1712,7 +1715,7 @@ const compile = async (
               { parameter: 0, value: 1, script: entity.script },
               { parameter: 0, value: 2, script: entity.leaveScript },
             ],
-            true
+            true,
           );
 
           return compileScript(
@@ -1722,11 +1725,11 @@ const compile = async (
             entityIndex,
             false,
             true,
-            "script"
+            "script",
           );
         }),
       };
-    }
+    },
   );
 
   Object.values(additionalScripts).forEach((additional) => {
@@ -1735,7 +1738,7 @@ const compile = async (
     }
     output[`${additional.symbol}.s`] = replaceScriptSymbols(
       additional.compiledScript,
-      recursiveSymbolMap
+      recursiveSymbolMap,
     );
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
@@ -1768,11 +1771,11 @@ const compile = async (
   precompiled.usedPalettes.forEach((palette, paletteIndex) => {
     output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(
       palette,
-      paletteIndex
+      paletteIndex,
     );
     output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(
       palette,
-      paletteIndex
+      paletteIndex,
     );
   });
 
@@ -1813,7 +1816,7 @@ const compile = async (
   avatarFonts.forEach((avatarFont, avatarFontIndex) => {
     output[`avatar_font_${avatarFontIndex}.c`] = compileAvatarFont(
       avatarFont,
-      avatarFontIndex
+      avatarFontIndex,
     );
     output[`avatar_font_${avatarFontIndex}.h`] =
       compileAvatarFontHeader(avatarFontIndex);
@@ -1852,55 +1855,55 @@ const compile = async (
     output[`${scene.symbol}_collisions.c`] = compileSceneCollisions(
       scene,
       sceneIndex,
-      collisions
+      collisions,
     );
     output[`${scene.symbol}_collisions.h`] = compileSceneCollisionsHeader(
       scene,
-      sceneIndex
+      sceneIndex,
     );
 
     if (scene.actors.length > 0) {
       output[`${scene.symbol}_actors.h`] = compileSceneActorsHeader(
         scene,
-        sceneIndex
+        sceneIndex,
       );
       output[`${scene.symbol}_actors.c`] = compileSceneActors(
         scene,
         sceneIndex,
         precompiled.usedSprites,
-        { eventPtrs }
+        { eventPtrs },
       );
     }
     if (scene.triggers.length > 0) {
       output[`${scene.symbol}_triggers.h`] = compileSceneTriggersHeader(
         scene,
-        sceneIndex
+        sceneIndex,
       );
       output[`${scene.symbol}_triggers.c`] = compileSceneTriggers(
         scene,
         sceneIndex,
-        { eventPtrs }
+        { eventPtrs },
       );
     }
     if (scene.sprites.length > 0) {
       output[`${scene.symbol}_sprites.h`] = compileSceneSpritesHeader(
         scene,
-        sceneIndex
+        sceneIndex,
       );
       output[`${scene.symbol}_sprites.c`] = compileSceneSprites(
         scene,
-        sceneIndex
+        sceneIndex,
       );
     }
     if (scene.projectiles.length > 0) {
       output[`${scene.symbol}_projectiles.h`] = compileSceneProjectilesHeader(
         scene,
-        sceneIndex
+        sceneIndex,
       );
       output[`${scene.symbol}_projectiles.c`] = compileSceneProjectiles(
         scene,
         sceneIndex,
-        precompiled.usedSprites
+        precompiled.usedSprites,
       );
     }
   });
@@ -1910,13 +1913,13 @@ const compile = async (
       compileGlobalProjectilesHeader(projectiles);
     output[`${projectiles.symbol}.c`] = compileGlobalProjectiles(
       projectiles,
-      precompiled.usedSprites
+      precompiled.usedSprites,
     );
   });
 
   const startScene =
     precompiled.sceneData.find(
-      (m) => m.id === projectData.settings.startSceneId
+      (m) => m.id === projectData.settings.startSceneId,
     ) || precompiled.sceneData[0];
 
   const {
@@ -1952,13 +1955,13 @@ const compile = async (
   output["game_globals.i"] = compileGameGlobalsInclude(
     variableAliasLookup,
     projectData.variables.constants,
-    precompiled.stateReferences
+    precompiled.stateReferences,
   );
 
   output["game_globals.h"] = compileGameGlobalsHeader(
     variableAliasLookup,
     projectData.variables.constants,
-    precompiled.stateReferences
+    precompiled.stateReferences,
   );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
@@ -1978,10 +1981,10 @@ const compile = async (
     `#endif\n`;
 
   const usedSceneTypeIds = uniq(
-    ["LOGO"].concat(precompiled.sceneData.map((scene) => scene.type))
+    ["LOGO"].concat(precompiled.sceneData.map((scene) => scene.type)),
   );
   const usedSceneTypes = sceneTypes.filter((type) =>
-    usedSceneTypeIds.includes(type.key)
+    usedSceneTypeIds.includes(type.key),
   );
 
   output[`scene_types.h`] = compileSceneTypes(usedSceneTypes);
@@ -1991,7 +1994,7 @@ const compile = async (
   output[`states_defines.h`] = compileStateDefines(
     engineFields,
     projectData.engineFieldValues.engineFieldValues,
-    usedSceneTypeIds
+    usedSceneTypeIds,
   );
 
   output[`script_engine_init.s`] = compileScriptEngineInit({
@@ -2009,7 +2012,7 @@ const compile = async (
   });
 
   output[`game_signature.c`] = compileSaveSignature(
-    JSON.stringify(projectData)
+    JSON.stringify(projectData),
   );
 
   return {

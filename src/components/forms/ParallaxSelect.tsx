@@ -92,7 +92,7 @@ const MAX_PARALLAX_HEIGHT = 17;
 
 const sliceLayers = (
   value: SceneParallaxLayer[] | undefined,
-  length: number
+  length: number,
 ) => {
   const slicedDefaults = defaultValues.slice(-length);
   if (!value) {
@@ -121,7 +121,7 @@ const sliceLayers = (
 const updateParallaxHeight = (
   value: SceneParallaxLayer[],
   layerIndex: number,
-  height: number
+  height: number,
 ) => {
   const maxHeight = MAX_PARALLAX_HEIGHT;
   const maxLayerHeight = maxHeight - Math.max(0, value.length - 2);
@@ -166,7 +166,7 @@ const updateParallaxHeight = (
 const updateParallaxSpeed = (
   value: SceneParallaxLayer[],
   layerIndex: number,
-  speed: number
+  speed: number,
 ) => {
   return value.map((v, i) => {
     if (i === layerIndex) {
@@ -194,7 +194,7 @@ const ParallaxSelect = ({
       { value: 2, label: `2 ${l10n("FIELD_LAYERS")}` },
       { value: 3, label: `3 ${l10n("FIELD_LAYERS")}` },
     ],
-    []
+    [],
   );
 
   const [selectValue, setSelectValue] = useState<ParallaxOption>(options[0]);
@@ -213,7 +213,7 @@ const ParallaxSelect = ({
     (layer: number | undefined) => {
       dispatch(editorActions.setParallaxHoverLayer(layer));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const lastLayerHeight = value?.reduce((memo, value) => {
@@ -272,7 +272,7 @@ const ParallaxSelect = ({
                       value={layer.speed}
                       onChange={(speed) => {
                         onChange?.(
-                          updateParallaxSpeed(value, layerIndex, speed)
+                          updateParallaxSpeed(value, layerIndex, speed),
                         );
                       }}
                     />

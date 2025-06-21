@@ -154,10 +154,10 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
   const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state)
+    variableSelectors.selectEntities(state),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, entityId)
+    customEventSelectors.selectById(state, entityId),
   );
   const dispatch = useAppDispatch();
 
@@ -170,7 +170,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     const variables = namedVariablesByContext(
       context,
       variablesLookup,
-      customEvent
+      customEvent,
     );
     const groupedVariables = groupVariables(variables);
     const groupedOptions: OptGroup[] = groupedVariables.map((g) => {
@@ -231,14 +231,14 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           entitiesActions.renameVariable({
             variableId: `${entityId}__${renameId}`,
             name: editValue,
-          })
+          }),
         );
       } else {
         dispatch(
           entitiesActions.renameVariable({
             variableId: renameId || "0",
             name: editValue,
-          })
+          }),
         );
       }
     }
@@ -247,7 +247,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   };
 
   const onJumpToVariable = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     if (e.altKey) {
       if (

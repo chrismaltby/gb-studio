@@ -33,7 +33,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
 }) => {
   const eventId = useAppSelector((state) => state.editor.eventId);
   const scriptEventDef = useAppSelector(
-    (state) => state.scriptEventDefs.lookup[event?.command ?? ""]
+    (state) => state.scriptEventDefs.lookup[event?.command ?? ""],
   );
 
   const constantsLookup = useAppSelector(constantSelectors.selectEntities);
@@ -42,7 +42,7 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     (arg: unknown): unknown => {
       return getArgValue(arg, constantsLookup);
     },
-    [constantsLookup]
+    [constantsLookup],
   );
 
   if (!event || !scriptEventDef || eventId !== event.id) {
@@ -55,43 +55,43 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     const text = argValue(args[scriptEventDef.helper.text]);
     const avatarId = ensureString(
       argValue(args[scriptEventDef.helper.avatarId]),
-      ""
+      "",
     );
     const showFrame = ensureBoolean(
       argValue(args[scriptEventDef.helper.showFrame]),
-      true
+      true,
     );
     const clearPrevious = ensureBoolean(
       argValue(args[scriptEventDef.helper.clearPrevious]),
-      true
+      true,
     );
     const textX = ensureNumber(
       argValue(args[scriptEventDef.helper.textX]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.textX]?.defaultValue,
-      0
+      0,
     );
     const textY = ensureNumber(
       argValue(args[scriptEventDef.helper.textY]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.textY]?.defaultValue,
-      0
+      0,
     );
     const textHeight = ensureNumber(
       argValue(args[scriptEventDef.helper.textHeight]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.textHeight]
           ?.defaultValue,
-      0
+      0,
     );
     const minHeight = ensureNumber(
       argValue(args[scriptEventDef.helper.minHeight]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.minHeight]
           ?.defaultValue,
-      0
+      0,
     );
     const maxHeight = ensureNumber(
       argValue(args[scriptEventDef.helper.maxHeight]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.maxHeight]
           ?.defaultValue,
-      0
+      0,
     );
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>
@@ -133,17 +133,17 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     const text = ensureString(argValue(args[scriptEventDef.helper.text]), "");
     const location = ensureString(
       argValue(args[scriptEventDef.helper.location]),
-      "background"
+      "background",
     );
     const x = ensureNumber(
       argValue(args[scriptEventDef.helper.x]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.x]?.defaultValue,
-      0
+      0,
     );
     const y = ensureNumber(
       argValue(args[scriptEventDef.helper.y]) ??
         scriptEventDef.fieldsLookup[scriptEventDef.helper.y]?.defaultValue,
-      0
+      0,
     );
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right" zIndex={-1}>

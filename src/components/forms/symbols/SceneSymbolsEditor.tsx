@@ -20,7 +20,7 @@ export const SceneSymbolsEditor = ({ id }: SceneSymbolsEditorProps) => {
           entitiesActions.setSceneSymbol({
             sceneId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

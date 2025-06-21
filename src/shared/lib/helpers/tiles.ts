@@ -3,7 +3,7 @@ export const resizeTiles = (
   initialWidth: number,
   initialHeight: number,
   outputWidth: number,
-  outputHeight: number
+  outputHeight: number,
 ): number[] => {
   const newWidth = Math.max(0, outputWidth);
   const newHeight = Math.max(0, outputHeight);

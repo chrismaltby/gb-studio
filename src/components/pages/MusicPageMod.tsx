@@ -24,7 +24,7 @@ const MusicPageMod = () => {
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -35,11 +35,11 @@ const MusicPageMod = () => {
   const allTracks = useAppSelector(musicSelectors.selectAll);
   const allModTracks = useMemo(
     () => allTracks.filter(modFilter).sort(sortByFilename),
-    [allTracks]
+    [allTracks],
   );
 
   const track = useAppSelector((state) =>
-    musicSelectors.selectById(state, selectedId)
+    musicSelectors.selectById(state, selectedId),
   );
 
   const lastTrackId = useRef("");
@@ -51,7 +51,7 @@ const MusicPageMod = () => {
 
   const viewTrackId = useMemo(
     () => track?.id || lastTrackId.current || allModTracks[0]?.id,
-    [allModTracks, track]
+    [allModTracks, track],
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -84,7 +84,7 @@ const MusicPageMod = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number) => {
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);

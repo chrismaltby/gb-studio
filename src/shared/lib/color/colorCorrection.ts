@@ -21,7 +21,7 @@ export const GBCHexToColorCorrectedHex = (hex: string) => {
 export const rgbToColorCorrectedHex = (
   r: number,
   g: number,
-  b: number
+  b: number,
 ): string => {
   const key = `${r}_${g}_${b}`;
   if (rgbToGBCCache[key]) {

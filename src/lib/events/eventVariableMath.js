@@ -34,7 +34,7 @@ const autoLabel = (fetchArg, input) => {
     value = fetchArg("vectorY");
   } else if (other === "rnd") {
     value = `${l10n("FIELD_RANDOM")}(${fetchArg("minValue")},${fetchArg(
-      "maxValue"
+      "maxValue",
     )})`;
   }
 
@@ -203,7 +203,7 @@ const compile = (input, helpers) => {
         operation,
         min,
         range,
-        input.clamp
+        input.clamp,
       );
     } else if (value !== 0) {
       variableValueOperation(input.vectorX, operation, value, input.clamp);

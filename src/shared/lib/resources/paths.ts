@@ -53,16 +53,16 @@ const resourceTypeFolderLookup = {
 export const getResourceAssetPath = (resource: Resource): string =>
   Path.join(
     resourceTypeFolderLookup[resource._resourceType],
-    `${entityToFilePath(resource, "asset")}.gbsres`
+    `${entityToFilePath(resource, "asset")}.gbsres`,
   );
 
 export const getSceneFolderPath = (
-  scene: CompressedSceneResourceWithChildren
+  scene: CompressedSceneResourceWithChildren,
 ): string =>
   Path.join(
     projectResourcesFolder,
     resourceTypeFolderLookup[scene._resourceType],
-    `${entityToFilePath(scene, "scene")}`
+    `${entityToFilePath(scene, "scene")}`,
   );
 
 export const getSceneResourcePath = (sceneFolder: string): string =>
@@ -70,12 +70,12 @@ export const getSceneResourcePath = (sceneFolder: string): string =>
 
 export const getActorResourcePath = (
   sceneFolder: string,
-  actor: ActorResource
+  actor: ActorResource,
 ): string =>
   Path.join(
     sceneFolder,
     resourceTypeFolderLookup[actor._resourceType],
-    `${actorToFileName(actor)}.gbsres`
+    `${actorToFileName(actor)}.gbsres`,
   );
 
 export const curryActorResourcePath =
@@ -85,12 +85,12 @@ export const curryActorResourcePath =
 
 export const getTriggerResourcePath = (
   sceneFolder: string,
-  trigger: TriggerResource
+  trigger: TriggerResource,
 ): string =>
   Path.join(
     sceneFolder,
     resourceTypeFolderLookup[trigger._resourceType],
-    `${triggerToFileName(trigger)}.gbsres`
+    `${triggerToFileName(trigger)}.gbsres`,
   );
 
 export const curryTriggerResourcePath =
@@ -99,7 +99,7 @@ export const curryTriggerResourcePath =
     getTriggerResourcePath(sceneFolder, actor);
 
 export const getSceneResourcePaths = (
-  scene: CompressedSceneResourceWithChildren
+  scene: CompressedSceneResourceWithChildren,
 ): string[] => {
   const sceneFolder = getSceneFolderPath(scene);
   const getActorPath = curryActorResourcePath(sceneFolder);
@@ -115,28 +115,28 @@ export const getPaletteResourcePath = (palette: PaletteResource) =>
   Path.join(
     projectResourcesFolder,
     resourceTypeFolderLookup[palette._resourceType],
-    `${entityToFilePath(palette, "palette")}.gbsres`
+    `${entityToFilePath(palette, "palette")}.gbsres`,
   );
 
 export const getScriptResourcePath = (script: ScriptResource) =>
   Path.join(
     projectResourcesFolder,
     resourceTypeFolderLookup[script._resourceType],
-    `${entityToFilePath(script, "script")}.gbsres`
+    `${entityToFilePath(script, "script")}.gbsres`,
   );
 
 export const getActorPrefabResourcePath = (actorPrefab: ActorPrefabResource) =>
   Path.join(
     projectResourcesFolder,
     resourceTypeFolderLookup[actorPrefab._resourceType],
-    `${entityToFilePath(actorPrefab, "actor")}.gbsres`
+    `${entityToFilePath(actorPrefab, "actor")}.gbsres`,
   );
 
 export const getTriggerPrefabResourcePath = (
-  triggerPrefab: TriggerPrefabResource
+  triggerPrefab: TriggerPrefabResource,
 ) =>
   Path.join(
     projectResourcesFolder,
     resourceTypeFolderLookup[triggerPrefab._resourceType],
-    `${entityToFilePath(triggerPrefab, "trigger")}.gbsres`
+    `${entityToFilePath(triggerPrefab, "trigger")}.gbsres`,
   );
