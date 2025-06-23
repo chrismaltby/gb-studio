@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-magia-edition] - 2025-06-23
+
+### Changed
+
+- Optimised compilation of backgrounds by reusing tileset data where possible if common tilesets are used [@Mico27](https://github.com/Mico27)
+- Optimised compilation of scene collisions, sharing data with other scenes if they are identical
+
 ## [4.1.0] - 2024-09-02
 
 ### Added

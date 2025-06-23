@@ -99,6 +99,7 @@ export type PrecompiledScene = Scene & {
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
   sprites: PrecompiledSprite[];
+  collisionsSceneSymbol: string;
 };
 
 export interface PrecompiledSceneEventPtrs {
@@ -500,7 +501,7 @@ export const compileScene = (
       height: scene.height,
       type: `SCENE_TYPE_${String(scene.type).toUpperCase()}`,
       background: toFarPtr(scene.background.symbol),
-      collisions: toFarPtr(sceneCollisionsSymbol(scene.symbol)),
+      collisions: toFarPtr(sceneCollisionsSymbol(scene.collisionsSceneSymbol)),
       parallax_rows: compileParallax(
         scene.width > SCREEN_WIDTH ? scene.parallax : undefined
       ),
@@ -534,7 +535,7 @@ export const compileScene = (
     // Dependencies
     ([] as string[]).concat(
       scene.background.symbol,
-      sceneCollisionsSymbol(scene.symbol),
+      sceneCollisionsSymbol(scene.collisionsSceneSymbol),
       paletteSymbol(bgPalette),
       paletteSymbol(actorsPalette),
       playerSpriteSymbol,

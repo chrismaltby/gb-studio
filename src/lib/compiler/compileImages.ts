@@ -28,7 +28,7 @@ import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
 
-type PrecompiledBackgroundData = BackgroundData & {
+export type PrecompiledBackgroundData = BackgroundData & {
   commonTilesetId?: string;
   vramData: [number[], number[]];
   tilemap: number[];
@@ -299,16 +299,22 @@ const compileImages = async (
     imgs
       .map((img) => {
         const commonTilesets = commonTilesetsLookup[img.id] ?? [];
+        const forceGenerateTileset =
+          commonTilesets.length === 0;
         return [
-          () =>
-            compileImage(
-              img,
-              undefined,
-              generate360Ids.includes(img.id),
-              colorMode,
-              projectPath,
-              { warnings }
-            ),
+          ...(forceGenerateTileset
+            ? [
+                () =>
+                  compileImage(
+                    img,
+                    undefined,
+                    generate360Ids.includes(img.id),
+                    colorMode,
+                    projectPath,
+                    { warnings }
+                  ),
+              ]
+            : []),
           ...commonTilesets.map((commonTileset) => {
             return () =>
               compileImage(

@@ -2,7 +2,7 @@ import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import SparkMD5 from "spark-md5";
 import { eventHasArg } from "lib/helpers/eventSystem";
-import compileImages from "./compileImages";
+import compileImages, { PrecompiledBackgroundData } from "./compileImages";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   projectTemplatesRoot,
@@ -293,6 +293,27 @@ export const precompileBackgrounds = async (
 
   const usedTilesets: CompiledTilesetData[] = [];
 
+  const shareTilesetsLookup = new Map<string, number>();
+
+  const getTilesetIndex = (
+    background: PrecompiledBackgroundData,
+    bank: number
+  ): number => {
+    const key = background.vramData[bank].join(":");
+    const matching = shareTilesetsLookup.get(key);
+    if (matching !== undefined) {
+      console.log("CAN REUSE FOR bg", background.name)
+      return matching;
+    }
+    const tilesetIndex = usedTilesets.length;
+    shareTilesetsLookup.set(key, tilesetIndex);
+    usedTilesets.push({
+      symbol: `${background.symbol}_${bank === 1 ? "_cgb_" : ""}tileset`,
+      data: background.vramData[bank],
+    });
+    return tilesetIndex;
+  };
+
   const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
       // Determine tileset
@@ -303,20 +324,12 @@ export const precompileBackgrounds = async (
 
       // VRAM Bank 1
       if (background.vramData[0].length > 0) {
-        tileset1Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_tileset`,
-          data: background.vramData[0],
-        });
+        tileset1Index = getTilesetIndex(background, 0);
       }
 
       // VRAM Bank 2
       if (background.vramData[1].length > 0) {
-        tileset2Index = usedTilesets.length;
-        usedTilesets.push({
-          symbol: `${background.symbol}_cgb_tileset`,
-          data: background.vramData[1],
-        });
+        tileset2Index = getTilesetIndex(background, 1);
       }
 
       // Extract Tilemap
@@ -966,6 +979,18 @@ export const precompileScenes = (
     warnings: (msg: string) => void;
   }
 ) => {
+  const shareCollisionsLookup = new Map<string, Scene>();
+
+  const getCollisionsScene = (scene: Scene, collisions: number[]): Scene => {
+    const key = collisions.join(":");
+    const matching = shareCollisionsLookup.get(key)
+    if(matching) {
+      return matching;
+    }
+    shareCollisionsLookup.set(key, scene);
+    return scene;
+  }
+
   const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const background = usedBackgrounds.find(
       (background) =>
@@ -1135,6 +1160,15 @@ export const precompileScenes = (
       projectiles.splice(MAX_PROJECTILES);
     }
 
+    const collisionsLength = Math.ceil(background.width * background.height);
+    const collisions = Array(collisionsLength)
+      .fill(0)
+      .map((_, index) => {
+        return (scene.collisions && scene.collisions[index]) || 0;
+      });    
+
+    const collisionsSceneSymbol = getCollisionsScene(scene, collisions).symbol      
+
     // Scene hash must be different for any property that could cause
     // called scripts to be generated with different content
     const hash = SparkMD5.hash(
@@ -1179,6 +1213,8 @@ export const precompileScenes = (
       actorsExclusiveLookup,
       actorsData: [],
       triggersData: [],
+      collisionsSceneSymbol,
+      collisions,
       projectiles,
       hash,
     };
@@ -1876,13 +1912,6 @@ const compile = async (
 
   // Add scene data
   precompiled.sceneData.forEach((scene, sceneIndex) => {
-    const sceneImage = scene.background;
-    const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
-    const collisions = Array(collisionsLength)
-      .fill(0)
-      .map((_, index) => {
-        return (scene.collisions && scene.collisions[index]) || 0;
-      });
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
 
@@ -1898,15 +1927,18 @@ const compile = async (
       eventPtrs,
     });
     output[`${scene.symbol}.h`] = compileSceneHeader(scene, sceneIndex);
-    output[`${scene.symbol}_collisions.c`] = compileSceneCollisions(
-      scene,
-      sceneIndex,
-      collisions
-    );
-    output[`${scene.symbol}_collisions.h`] = compileSceneCollisionsHeader(
-      scene,
-      sceneIndex
-    );
+
+    if (scene.collisionsSceneSymbol === scene.symbol) {
+      output[`${scene.symbol}_collisions.c`] = compileSceneCollisions(
+        scene,
+        sceneIndex,
+        scene.collisions
+      );
+      output[`${scene.symbol}_collisions.h`] = compileSceneCollisionsHeader(
+        scene,
+        sceneIndex
+      );
+    }
 
     if (scene.actors.length > 0) {
       output[`${scene.symbol}_actors.h`] = compileSceneActorsHeader(
