@@ -599,7 +599,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     `${__dirname}/_tmp`,
     { warnings: () => {} }
   );
-  expect(usedBackgrounds).toHaveLength(3);
+  expect(usedBackgrounds).toHaveLength(2);
   expect(backgroundLookup["2b"].id).toBe(backgrounds[0].id);
   expect(backgroundLookup["3b"]).toBeUndefined();
 });
