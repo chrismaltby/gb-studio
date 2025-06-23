@@ -79,14 +79,6 @@ jobs:
         run: |
           yarn --ignore-engines
 
-      - name: Update credits
-        env:
-          PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
-          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
-        run: |
-          npm run fetch-contributors
-          npm run fetch-patrons
-
       # ==== Builds ====
 
       - name: Build Mac ARM
