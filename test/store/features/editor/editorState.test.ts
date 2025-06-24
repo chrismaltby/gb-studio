@@ -76,7 +76,7 @@ test("Should be able to set selected tile type", () => {
     ...initialState,
     selectedTileType: 0,
   };
-  const action = actions.setSelectedTileType({ tileType: 5 });
+  const action = actions.setSelectedTileType({ tileType: 5, tileMask: 0x0f });
   const newState = reducer(state, action);
   expect(newState.selectedTileType).toBe(5);
 });
@@ -645,7 +645,7 @@ describe("editor reducer", () => {
 
   describe("setSelectedTileType", () => {
     test("should set selectedTileType", () => {
-      const action = actions.setSelectedTileType({ tileType: 1 });
+      const action = actions.setSelectedTileType({ tileType: 1, tileMask: 0x0f });
       const newState = reducer(state, action);
       expect(newState.selectedTileType).toBe(1);
     });

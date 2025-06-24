@@ -170,7 +170,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useAppDispatch();
 
   const sceneId = useAppSelector((state) => state.editor.scene);
-  const { selectedPalette, selectedTileType, selectedBrush, showLayers } =
+  const { selectedPalette, selectedTileType, selectedTileMask, selectedBrush, showLayers } =
     useAppSelector((state) => state.editor);
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId),
@@ -252,11 +252,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         }
 
         let newValue = selectedTile.flag;
-
+		const mask = selectedTile.mask ?? 0xff;
         if (e.shiftKey) {
           if (selectedTile.multi) {
-            // If multi selectable tile toggle on/off when shift clicking
-            const mask = selectedTile.mask ?? 0xff;
+            // If multi selectable tile toggle on/off when shift clicking            
             if (
               selectedTileType !== selectedTile.flag &&
               selectedTileType & selectedTile.flag
@@ -276,6 +275,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         dispatch(
           editorActions.setSelectedTileType({
             tileType: newValue,
+			tileMask: mask,
           }),
         );
       }

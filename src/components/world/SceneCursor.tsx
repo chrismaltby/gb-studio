@@ -160,6 +160,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     pasteMode,
     entityId,
     selectedTileType,
+	selectedTileMask,
     selectedPalette,
     showLayers,
   } = useAppSelector((state) => state.editor);
@@ -181,7 +182,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     drawLine: boolean;
     drawWall: boolean;
     drawTile: number;
-    isTileProp: boolean;
+    tileMask: number;
     isPainting: boolean;
     isDrawingSlope: boolean;
     slopeDirectionHorizontal: "left" | "right";
@@ -192,7 +193,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     drawLine: false,
     drawWall: false,
     drawTile: 0,
-    isTileProp: false,
+    tileMask: 0,
     isPainting: false,
     isDrawingSlope: false,
     slopeDirectionHorizontal: "left",
@@ -223,7 +224,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
       : undefined,
   );
-
+  
   const recalculateSlopePreview = useCallback(() => {
     if (data.current.isDrawingSlope) {
       const { endX, endY, slopeIncline } = calculateSlope(
@@ -385,7 +386,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             drawLine: true,
             tileLookup,
           }),
@@ -411,7 +412,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             drawLine: true,
             tileLookup,
           }),
@@ -461,7 +462,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             paletteIndex: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             drawLine: true,
             tileLookup,
           }),
@@ -488,7 +489,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             paletteIndex: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             drawLine: true,
             tileLookup,
           }),
@@ -661,7 +662,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       if (e.altKey) {
         data.current.drawTile = hoverCollision;
         dispatch(
-          editorActions.setSelectedTileType({ tileType: hoverCollision }),
+          editorActions.setSelectedTileType({ tileType: hoverCollision, tileMask: selectedTileMask }),
         );
         return;
       }
@@ -675,13 +676,20 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       ) {
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         data.current.drawTile = 0;
-        data.current.isTileProp = (selectedTileType & TILE_PROPS) !== 0;
-
+        data.current.tileMask = selectedTileMask;
+		
         // If any tile under brush is currently not filled then
         // paint collisions rather than remove them
         for (let xi = x; xi < x + brushSize; xi++) {
           for (let yi = y; yi < y + brushSize; yi++) {
             const collisionIndex = scene.width * yi + xi;
+			const currentCollision = scene.collisions[collisionIndex];
+			if ((currentCollision & selectedTileMask) === (selectedTileType & selectedTileMask)){
+				data.current.drawTile = (currentCollision & (0xff ^ selectedTileMask));
+			} else {
+				data.current.drawTile = (currentCollision & (0xff ^ selectedTileMask)) | selectedTileType;
+			}
+			/*
             if (selectedTileType & COLLISION_ALL) {
               // If drawing collisions replace existing collision if selected is different
               if (
@@ -703,7 +711,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
                 data.current.drawTile =
                   scene.collisions[collisionIndex] & COLLISION_ALL;
               }
-            }
+            }*/
           }
         }
       }
@@ -715,7 +723,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             x,
             y,
             value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             tileLookup,
           }),
         );
@@ -729,7 +737,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               value: data.current.drawTile,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
             }),
           );
         } else {
@@ -760,7 +768,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               endX: x,
               endY: y,
               value: data.current.drawTile,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               drawLine: true,
               tileLookup,
             }),
@@ -777,7 +785,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               value: data.current.drawTile,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               tileLookup,
             }),
           );
@@ -807,7 +815,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         return;
       }
 
-      data.current.isTileProp = (selectedPalette & TILE_COLOR_PROPS) !== 0;
+      data.current.tileMask = (selectedPalette & TILE_COLOR_PROPS)? TILE_COLOR_PROPS: TILE_COLOR_PALETTE;
       data.current.drawTile = 0;
 
       // If any tile under brush is currently not filled then
@@ -834,7 +842,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             x,
             y,
             paletteIndex: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             tileLookup,
           }),
         );
@@ -849,7 +857,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               paletteIndex: data.current.drawTile,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
             }),
           );
         } else {
@@ -872,7 +880,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               endY: y,
               paletteIndex: data.current.drawTile,
               drawLine: true,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               tileLookup,
             }),
           );
@@ -889,7 +897,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               paletteIndex: data.current.drawTile,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               tileLookup,
             }),
           );
@@ -913,7 +921,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const onMouseDownEraser = useCallback(() => {
     if (showCollisions) {
       data.current.drawTile = 0;
-      data.current.isTileProp = false;
+      data.current.tileMask = 0xff;
       if (selectedBrush === BRUSH_FILL) {
         dispatch(
           entitiesActions.paintCollision({
@@ -922,7 +930,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             x,
             y,
             value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
+            tileMask: data.current.tileMask,
             tileLookup,
           }),
         );
@@ -936,7 +944,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               value: 0,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
             }),
           );
         } else {
@@ -957,7 +965,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               endX: x,
               endY: y,
               value: 0,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               drawLine: true,
               tileLookup,
             }),
@@ -974,7 +982,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               value: 0,
-              isTileProp: data.current.isTileProp,
+              tileMask: data.current.tileMask,
               tileLookup,
             }),
           );

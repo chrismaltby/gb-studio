@@ -95,7 +95,7 @@ const SceneCollisions = ({
 
       ctx.font = "8px Public Pixel";
       ctx.imageSmoothingEnabled = false;
-
+/*
       const sortedTileDefs = collisionTileDefs.map((t) => t);
       sortedTileDefs.sort((a, b) => {
         if (a.mask) {
@@ -111,14 +111,14 @@ const SceneCollisions = ({
         const bCount = b.flag.toString(2).split("1").length - 1;
         return bCount - aCount;
       });
-
+*/
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex] ?? 0;
           let unknownTile = tile !== 0;
 
-          for (const tileDef of sortedTileDefs) {
+          for (const tileDef of collisionTileDefs) {
             if (isCollisionTileActive(tile, tileDef)) {
               ctx.fillStyle = tileDef.color;
               drawCollisionTile(tileDef, ctx, xi, yi);

@@ -2946,7 +2946,7 @@ const paintCollision: CaseReducer<
       y: number;
       value: number;
       brush: Brush;
-      isTileProp: boolean;
+      tileMask: number;
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
@@ -2959,7 +2959,7 @@ const paintCollision: CaseReducer<
     return;
   }
 
-  const isTileProp = action.payload.isTileProp;
+  const tileMask = action.payload.tileMask;
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
   const collisionsSize = Math.ceil(background.width * background.height);
@@ -2979,8 +2979,11 @@ const paintCollision: CaseReducer<
 
   const setValue = (x: number, y: number, value: number) => {
     const tileIndex = background.width * y + x;
+	const currentCollision = collisions[tileIndex];
     let newValue = value;
-    if (isTileProp) {
+    if (tileMask) {
+	  newValue = (currentCollision & (0xff ^ tileMask)) | value;
+	  /*
       if (value & 0x0f) {
         // If is prop and one way, overwrite both
         newValue = value;
@@ -2992,6 +2995,7 @@ const paintCollision: CaseReducer<
     } else if (value !== 0 && !isSlope(newValue)) {
       // If is collision keep prop unless erasing
       newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
+	  */
     }
     collisions[tileIndex] = newValue;
   };
@@ -3201,7 +3205,7 @@ const paintColor: CaseReducer<
       y: number;
       paletteIndex: number;
       brush: Brush;
-      isTileProp: boolean;
+      tileMask: number;
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
@@ -3213,7 +3217,7 @@ const paintColor: CaseReducer<
     return;
   }
 
-  const isTileProp = action.payload.isTileProp;
+  const tileMask = action.payload.tileMask;
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
   const tileColorsSize = Math.ceil(background.width * background.height);
@@ -3232,8 +3236,11 @@ const paintColor: CaseReducer<
 
   const setValue = (x: number, y: number, value: number) => {
     const tileColorIndex = background.width * y + x;
+	const currentColor = tileColors[tileColorIndex];
     let newValue = value;
-    if (isTileProp) {
+    if (tileMask) {
+		newValue = (currentColor & (0xff ^ tileMask)) | value;
+		/*
       // If is prop keep previous color value
       newValue =
         (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
@@ -3243,6 +3250,7 @@ const paintColor: CaseReducer<
       newValue =
         (value & TILE_COLOR_PALETTE) +
         (tileColors[tileColorIndex] & TILE_COLOR_PROPS);
+		*/
     }
     tileColors[tileColorIndex] = newValue;
   };
