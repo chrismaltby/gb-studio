@@ -346,6 +346,11 @@ const BracketsWrapper = styled.div<BracketsWrapperProps>`
   ${(props) => (props.$isOver ? dropTargetStyle : "")}
 `;
 
+const CheckboxOverrideWrapper = styled.div`
+  border-left: 1px solid ${(props) => props.theme.colors.button.border};
+  padding-left: 10px;
+`;
+
 const Wrapper = styled.div`
   display: flex;
   position: relative;
@@ -370,6 +375,8 @@ type ValueSelectInputOverride = {
       checkboxLabel: string;
     }
 );
+
+export type ValueSelectInputOverrideTypes = ValueSelectInputOverride["type"];
 
 const noop = () => {};
 
@@ -1003,22 +1010,24 @@ const ValueSelect = ({
               )}
             {inputOverride?.type === "checkbox" &&
               (!innerValue || !inputOverride.topLevelOnly) && (
-                <CheckboxField
-                  name={name}
-                  label={String(inputOverride.checkboxLabel || "")}
-                  title={inputOverride.checkboxLabel}
-                  checked={
-                    value.value !== undefined && value.value !== null
-                      ? Boolean(value.value)
-                      : false
-                  }
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    onChange({
-                      type: "number",
-                      value: castEventToBool(e) ? 1 : 0,
-                    });
-                  }}
-                />
+                <CheckboxOverrideWrapper>
+                  <CheckboxField
+                    name={name}
+                    label={String(inputOverride.checkboxLabel || "")}
+                    title={inputOverride.checkboxLabel}
+                    checked={
+                      value.value !== undefined && value.value !== null
+                        ? Boolean(value.value)
+                        : false
+                    }
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      onChange({
+                        type: "number",
+                        value: castEventToBool(e) ? 1 : 0,
+                      });
+                    }}
+                  />
+                </CheckboxOverrideWrapper>
               )}
           </InputGroup>
         </ValueWrapper>

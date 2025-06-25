@@ -90,3 +90,25 @@ export const insertAfterElement = <T>(
     return arr.concat(insertElement);
   }
 };
+
+export const toggleArrayElement = <T>(arr: T[], element: T): T[] => {
+  const index = arr.indexOf(element);
+  if (index !== -1) {
+    return arr.filter((_, i) => i !== index);
+  } else {
+    return [...arr, element];
+  }
+};
+
+export const removeArrayElement = <T>(arr: T[], element: T): T[] => {
+  const index = arr.indexOf(element);
+  if (index !== -1) {
+    return arr.filter((_, i) => i !== index);
+  } else {
+    return arr;
+  }
+};
+
+export const removeArrayElements = <T>(arr: T[], elements: T[]): T[] => {
+  return arr.filter((e) => !elements.includes(e));
+};

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Slider } from "./Slider";
 import { Label } from "./Label";
 import { StyledInput } from "./style";
+import { NumberInput } from "./NumberInput";
 
 export interface SliderFieldProps {
   name: string;
@@ -11,6 +12,7 @@ export interface SliderFieldProps {
   placeholder?: number;
   min: number;
   max: number;
+  step?: number;
   onChange?: (value?: number) => void;
 }
 
@@ -18,8 +20,17 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
+const SliderWrapper = styled.div`
+  width: 100%;
+
+  @container (max-width: 150px) {
+    display: none;
+  }
+`;
+
 const InnerWrapper = styled.div`
   display: flex;
+  container-type: inline-size;
 
   ${StyledInput} {
     width: 70px;
@@ -37,6 +48,7 @@ export const SliderField: FC<SliderFieldProps> = ({
   value,
   min,
   max,
+  step,
   placeholder,
   onChange,
 }) => {
@@ -50,7 +62,7 @@ export const SliderField: FC<SliderFieldProps> = ({
     <Wrapper>
       {label && <Label htmlFor={name}>{label}</Label>}
       <InnerWrapper>
-        <StyledInput
+        <NumberInput
           id={name}
           type="number"
           name={name}
@@ -58,15 +70,24 @@ export const SliderField: FC<SliderFieldProps> = ({
           placeholder={placeholder !== undefined ? String(placeholder) : ""}
           min={min}
           max={max}
+          step={step}
           onChange={(e) => {
             const newValue =
               e.currentTarget.value.length > 0
-                ? clamp(parseInt(e.currentTarget.value), min, max)
+                ? clamp(parseFloat(e.currentTarget.value), min, max)
                 : undefined;
             onChange?.(newValue);
           }}
         />
-        <Slider value={sliderValue} min={min} max={max} onChange={onChange} />
+        <SliderWrapper>
+          <Slider
+            value={sliderValue}
+            min={min}
+            max={max}
+            step={step}
+            onChange={onChange}
+          />
+        </SliderWrapper>
       </InnerWrapper>
     </Wrapper>
   );

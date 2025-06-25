@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generate file `bank_usage.txt` when exporting ROM giving a breakdown of which assets were assigned to each memory bank and how many bytes were used
 - Add support for running GB Studio on Linux ARM64 (including Raspberry Pi)
 - Add "globals.i" file when exporting ROM containing all variable addresses. Allows integration with emulators such as [GodotBoy](https://godotengine.org/asset-library/asset/2920) for handling achievements and other game/rom interactions
+- Add ability to edit scene type (Platformer/TopDown etc.) global settings from Scene sidebar by clicking Cog button rather than needing to go to Settings page.
 
 ### Changed
 

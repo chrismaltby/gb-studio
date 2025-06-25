@@ -1,16 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import keyBy from "lodash/keyBy";
 import { CollisionTileDef } from "shared/lib/resources/types";
+import { BaseCondition } from "shared/lib/conditionsFilter";
 import projectActions from "store/features/project/projectActions";
 
-export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
+export type EngineFieldType = "number" | "slider" | "checkbox" | "select" | "label" | "togglebuttons" | "mask";
 
 export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
+
+export type EngineFieldUnitsType =
+  | "px"
+  | "subpx"
+  | "subpxVel"
+  | "subpxAcc"
+  | "subpxVelPrecise" // Extra precision - take top 8-bits as per frame movement
+  | "subpxAccPrecise";
 
 export type EngineFieldSchema = {
   key: string;
   sceneType?: string;
   label: string;
+  description?: string;
   group: string;
   type: EngineFieldType;
   cType: EngineFieldCType;
@@ -19,6 +29,11 @@ export type EngineFieldSchema = {
   max?: number;
   options?: [number, string][];
   file?: string;
+  conditions?: BaseCondition[];
+  editUnits?: EngineFieldUnitsType;
+  isHeading?: boolean;
+  indent?: number;
+  runtimeOnly?: boolean;
 };
 
 export type SceneTypeSchema = {

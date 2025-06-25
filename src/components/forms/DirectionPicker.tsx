@@ -5,11 +5,20 @@ import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 import styled from "styled-components";
 
-interface DirectionPickerProps {
+type DirectionPickerProps = {
   id: string;
-  value: ActorDirection | undefined;
-  onChange: (newValue: ActorDirection) => void;
-}
+} & (
+  | {
+      allowMultiple: true;
+      value: ActorDirection[];
+      onChange: (newValue: ActorDirection[]) => void;
+    }
+  | {
+      allowMultiple?: undefined | false;
+      value: ActorDirection | undefined;
+      onChange: (newValue: ActorDirection) => void;
+    }
+);
 
 interface DirectionOption {
   value: ActorDirection;
@@ -36,7 +45,12 @@ const RotateDown = styled.div`
   }
 `;
 
-const DirectionPicker = ({ id, value, onChange }: DirectionPickerProps) => {
+const DirectionPicker = ({
+  id,
+  value,
+  allowMultiple,
+  onChange,
+}: DirectionPickerProps) => {
   const options = useMemo(
     () =>
       [
@@ -79,6 +93,18 @@ const DirectionPicker = ({ id, value, onChange }: DirectionPickerProps) => {
       ] as DirectionOption[],
     [],
   );
+
+  if (allowMultiple) {
+    return (
+      <ToggleButtonGroup
+        name={id}
+        value={value ?? []}
+        options={options}
+        onChange={onChange}
+        multiple={allowMultiple}
+      />
+    );
+  }
 
   return (
     <ToggleButtonGroup

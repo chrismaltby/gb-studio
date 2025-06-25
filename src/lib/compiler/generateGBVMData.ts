@@ -1369,6 +1369,12 @@ export const compileStateDefines = (
           engineValue && engineValue.value !== undefined
             ? engineValue.value
             : engineField.defaultValue;
+        if (engineField.type === "checkbox") {
+          if (value) {
+            return `#define ${String(engineField.key).padEnd(32, " ")}\n`;
+          }
+          return "";
+        }
         return `#define ${String(engineField.key).padEnd(32, " ")} ${value}${
           defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
         }`;

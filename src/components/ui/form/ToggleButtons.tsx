@@ -75,28 +75,28 @@ const Label = styled.label`
   }
 `;
 
-type ToggleButtonsProps = {
+type ToggleButtonsProps<T> = {
   name: string;
-  options: [string, string, string?][];
+  options: [T, string, string?][];
   allowNone?: boolean;
 } & (
   | {
       allowMultiple: true;
       name: string;
-      options: [string, string, string?][];
-      value: string[];
-      onChange: (newValue: string[]) => void;
+      options: [T, string, string?][];
+      value: T[];
+      onChange: (newValue: T[]) => void;
     }
   | {
       allowMultiple: undefined | false;
-      value: string;
-      onChange: (newValue: string) => void;
+      value: T;
+      onChange: (newValue: T) => void;
     }
 );
 
-const ToggleButtons = (props: ToggleButtonsProps) => {
+const ToggleButtons = <T,>(props: ToggleButtonsProps<T>) => {
   const onToggle = useCallback(
-    (type: string) => {
+    (type: T) => {
       if (props.allowMultiple) {
         if (!Array.isArray(props.value)) {
           props.onChange([type]);
@@ -106,7 +106,7 @@ const ToggleButtons = (props: ToggleButtonsProps) => {
             props.onChange(props.value.filter((v) => v !== type));
           }
         } else {
-          props.onChange(([] as string[]).concat(props.value, type));
+          props.onChange(([] as T[]).concat(props.value, type));
         }
       } else {
         props.onChange(type);

@@ -57,6 +57,7 @@ export const NumberInput: FC<NumberInputProps> = ({
   useEffect(() => {
     const newStringValue = valueToString(value);
     if (
+      document.activeElement !== inputRef.current &&
       stringValue !== newStringValue &&
       (newStringValue !== "0" || document.activeElement !== inputRef.current)
     ) {
