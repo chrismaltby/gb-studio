@@ -56,7 +56,7 @@ const fields = [
     label: l10n("FIELD_SPEED"),
     description: l10n("FIELD_SPEED_PLUS_INSTANT_DESC"),
     type: "moveSpeed",
-    defaultValue: 0,
+    defaultValue: 1,
     allowNone: true,
     noneLabel: l10n("FIELD_INSTANT"),
   },

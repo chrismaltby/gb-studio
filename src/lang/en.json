@@ -999,7 +999,9 @@
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Disables all in-built color correction, allowing a wider range of colors when using modern hardware and emulators.",
   "FIELD_COLOR_MODE_OVERRIDE": "Color Mode Override",
   "FIELD_SET_COLOR_MODE_OVERRIDE": "Set Color Mode Override",
-
+  "FIELD_PREVENT_BACKTRACKING": "Prevent Backtracking",
+  "FIELD_PREVENT_BACKTRACKING_DESC": "Prevents camera from scrolling in selected directions.",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
   "ASSET_EDIT": "Edit",
@@ -1106,8 +1108,10 @@
   "EVENT_CAMERA_MOVE_TO_DESC": "Move the camera to a new position.",
   "EVENT_CAMERA_SET_POSITION": "Set Camera Position",
   "EVENT_CAMERA_SET_POSITION_DESC": "Set the position of the camera, causing it to instantly move to the new location.",
-  "EVENT_CAMERA_LOCK": "Camera Lock To Player",
+  "EVENT_CAMERA_LOCK": "Camera Move To Lock On Player",
   "EVENT_CAMERA_LOCK_DESC": "Move the camera back to centering on the player, locking into position when the player moves. Optionally allows locking to follow player in only horizontal or vertical axis.",
+  "EVENT_CAMERA_SET_LOCK": "Set Camera Lock On Player",
+  "EVENT_CAMERA_SET_LOCK_DESC": "Set the camera to center on the player, locking into position when the player moves. Optionally allows locking to follow player in only horizontal or vertical axis.",
   "EVENT_FADE_IN": "Fade Screen In",
   "EVENT_FADE_IN_DESC": "Fade the scene from a blank screen.",
   "EVENT_FADE_OUT": "Fade Screen Out",

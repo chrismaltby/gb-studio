@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for running GB Studio on Linux ARM64 (including Raspberry Pi)
 - Add "globals.i" file when exporting ROM containing all variable addresses. Allows integration with emulators such as [GodotBoy](https://godotengine.org/asset-library/asset/2920) for handling achievements and other game/rom interactions
 - Add ability to edit scene type (Platformer/TopDown etc.) global settings from Scene sidebar by clicking Cog button rather than needing to go to Settings page.
+- Add option to prevent backtracking in "Camera Move To Lock On Player" event to stop scroll from following player in selected directions
+- Add event "Set Camera Lock To Player", with same functionality as the move to variant but which will be called before automatic screen fade in event
 
 ### Changed
 
