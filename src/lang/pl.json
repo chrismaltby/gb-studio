@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1792250208",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1796250701",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -96,7 +96,7 @@
   "SIDEBAR_CONSTANTS": "Stałe",
   "SIDEBAR_ADD_CONSTANT": "Dodaj stałą",
   "SIDEBAR_CONSTANT_USES": "Użycie stałej",
-
+  
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
   "FIELD_DESCRIPTION": "Opis",
@@ -274,7 +274,7 @@
   "FIELD_LAST_OPTION_CANCELS": "Ostatnia opcja ustawia wartość na '0'",
   "FIELD_LAST_OPTION_CANCELS_DESC": "Ustawienie dla ostatniej opcji - jej wybranie ustawi wartość zmiennej na '0'",
   "FIELD_CANCEL_IF_B": "Ustaw wartość '0' jeżeli 'B' zostanie naciśnięte.",
-  "FIELD_CANCEL_IF_B_DESC": "Ustawienie dla przycisku 'B', naciśnięcie zamknie menu oraz ustawi wartość zmiennej na '0'.",
+  "FIELD_CANCEL_IF_B_DESC": "Ustawienie dla przycisku 'B', naciśnięcie zamknie menu oraz ustawi wartość zmiennej na '0'.",  
   "FIELD_NUMBER_OF_OPTIONS": "Ilość opcji wyboru",
   "FIELD_NUMBER_OF_OPTIONS_DESC": "Ustawienie ilości wymaganych opcji.",
   "FIELD_LAYOUT": "Układ",
@@ -999,7 +999,9 @@
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Wyłącza wbudowaną korektę kolorów, umożliwiając szerszy zakres barw na nowoczesnym sprzęcie i emulatorach.",
   "FIELD_COLOR_MODE_OVERRIDE": "Nadpisanie trybu kolorów",
   "FIELD_SET_COLOR_MODE_OVERRIDE": "Ustaw nadpisanie trybu kolorów",
-
+  "FIELD_PREVENT_BACKTRACKING": "Zablokuj przewijanie wstecz (przesuwanie kamery)",
+  "FIELD_PREVENT_BACKTRACKING_DESC": "Uniemożliwia przewijanie kamery w wybranych kierunkach.",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1108,7 +1110,9 @@
   "EVENT_CAMERA_SET_POSITION_DESC": "Ustaw pozycję kamery, polecenie spowoduje natychmiastowe przejście do nowej lokalizacji.",
   "EVENT_CAMERA_LOCK": "Kamera: powrót do gracza",
   "EVENT_CAMERA_LOCK_DESC": "Polecenie przywraca kamerę do pierwotnych ustawień, gdzie gracz jest w centrum, kamera jest też zablokowana podczas ruchu gracza. Opcjonalnie umożliwia blokowanie podążania za graczem tylko w osi poziomej lub pionowej.",
-  "EVENT_FADE_IN": "Ekran: wyczyszczenie",
+  "EVENT_CAMERA_SET_LOCK": "Kamera: ustaw na graczu",
+  "EVENT_CAMERA_SET_LOCK_DESC": "Ustawia kamerę tak, aby śledziła gracza i była zablokowana na jego pozycji. Opcjonalnie umożliwia podążanie za graczem tylko w osi poziomej lub pionowej.", 
+ "EVENT_FADE_IN": "Ekran: wyczyszczenie",
   "EVENT_FADE_IN_DESC": "Polecenie przejścia, pozbędzie się czarnego pustego ekranu.",
   "EVENT_FADE_OUT": "Ekran: pojawienie",
   "EVENT_FADE_OUT_DESC": "Polecenie przejścia, przejście do czarnego pustego ekranu.",
@@ -1400,7 +1404,7 @@
   "EVENT_SCENE_UPDATE_PAUSE_DESC": "Zatrzymuje działanie funkcji aktualizacji silnika gry dla bieżącej sceny do momentu jej wznowienia. Pozwala to na uniemożliwienie sterowania postacią podczas wykonywania skryptów wielowątkowych.",
   "EVENT_SCENE_UPDATE_RESUME": "Pauza: wznów logikę dla typu sceny",
   "EVENT_SCENE_UPDATE_RESUME_DESC": "Wznawia działanie funkcji aktualizacji silnika gry dla bieżącej sceny.",
-
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
@@ -1455,7 +1459,7 @@
   "MENU_DISABLE_EVENT": "Wyłącz polecenie",
   "MENU_ENABLE_EVENT": "Włącz polecenie",
   "MENU_DISABLE_EVENTS": "Wyłącz polecenia",
-  "MENU_ENABLE_EVENTS": "Włącz polecenia",
+  "MENU_ENABLE_EVENTS": "Włącz polecenia", 
   "MENU_DISABLE_ELSE": "Wyłącz opcję inny wypadek",
   "MENU_ENABLE_ELSE": "Włącz opcję inny wypadek",
   "MENU_PASTE_VALUES": "Wklej wartości",
@@ -1541,7 +1545,7 @@
   "MENU_PROJECT_PLUGINS": "Wtyczki projektowe",
   "MENU_PLAY_WINDOW": "Okno gry",
   "MENU_MUTE_AUDIO": "Wycisz audio",
-
+  
   "// 11": "Warnings -----------------------------------------------------",
 
   "WARNING_BACKGROUND_TOO_SMALL": "Tło jest za małe, minimalne wymiary dla tła to: 160px x 144px",
@@ -1572,7 +1576,7 @@
   "WARNING_BACKGROUND_IS_NOT_A_VALID_PNG": "Tło \"{filename}\" nie jest prawidłowym plikiem PNG.",
   "WARNING_BACKGROUND_IN_MULTIPLE_COLOR_MODES": "Tło \"{filename}\" jest używane w kilku trybach kolorów, więc może nie być wyświetlane poprawnie na wszystkich urządzeniach. Podczas nadpisywania trybu kolorów sceny, nie używaj ponownie grafik (spritów lub tła) ze scen bez nadpisania. W razie potrzeby duplikuj pliki.",
   "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Sprite \"{filename}\" jest używany w kilku trybach kolorów, więc może nie być wyświetlany poprawnie na wszystkich urządzeniach. Podczas nadpisywania trybu kolorów sceny, nie używaj ponownie grafik (spritów lub tła) ze scen bez nadpisania. W razie potrzeby duplikuj pliki.",
-
+  
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
@@ -1595,7 +1599,7 @@
   "ERROR_PLUGIN_NOT_FOUND": "Nie znaleziono wtyczki",
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Nie można usunąć wtyczki",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Nie można zainstalować wtyczki",
-
+  
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nowy",
@@ -1618,7 +1622,7 @@
   "SPLASH_NO_RECENT_PROJECTS": "Ostatnio nie otwarto żadnych projektów.",
   "SPLASH_CREDITS": "Credits",
   "SPLASH_CONTRIBUTORS": "Kontrybutorzy",
-
+  
   "// 14": "Dialogue Review ------------------------------------------------",
 
   "DIALOGUE_REVIEW": "Przegląd dialogu",
@@ -1701,8 +1705,8 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "Ta wtyczka może być niekompatybilna z Twoją wersją GB Studio.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji {version}.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji przedpremierowej {version}.",
-
-  "// 16": "Settings ----------------------------------------------------",
+  
+ "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
   "SETTINGS_SCENES": ": ilość scen",
@@ -1776,7 +1780,7 @@
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Lokalny silnik nie znaleziony, używanie domyślnego silnika",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Wyszukiwanie wtyczek silnika w {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Używanie wtyczki silnika: {path}",
-
+  
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",
