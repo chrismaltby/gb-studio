@@ -6273,19 +6273,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26":
-  version: 16.18.89
-  resolution: "@types/node@npm:16.18.89"
-  checksum: 10c0/3dcfb6b1e029c776ebc656a6d4815fbd793601d390ca43c21d24df805a21c5ce2f36515bbd0fb905d285f378f8a02fecf72ab6742873baefd1a4b9abdcc6045b
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^18.0.0":
   version: 18.19.50
   resolution: "@types/node@npm:18.19.50"
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c0/36e6bc9eb47213ce94a868dad9504465ad89fba6af9f7954e22bb27fb17a32ac495f263d0cf4fdaee74becd7b2629609a446ec8c2b59b7a07bd587567c8a4782
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.18":
+  version: 18.19.113
+  resolution: "@types/node@npm:18.19.113"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/d96a1849a9b58f24db926cac55fa6ea0bcd5dbc1d0dbd3dcf22e195ed4a47260daec32ffefd0281ee5fc03d621bc36e40cf60406b7473415d74b9db77279e7a1
   languageName: node
   linkType: hard
 
@@ -10020,16 +10022,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:22.3.27":
-  version: 22.3.27
-  resolution: "electron@npm:22.3.27"
+"electron@npm:28.3.2":
+  version: 28.3.2
+  resolution: "electron@npm:28.3.2"
   dependencies:
     "@electron/get": "npm:^2.0.0"
-    "@types/node": "npm:^16.11.26"
+    "@types/node": "npm:^18.11.18"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/4ec1bbdc04686a2c778151ecc989cbe19f26d776c3ac7efc1aebb08c91cc2a4d32ed80f8d1cdea3e9acf22bdbd62ea473dc685201212328491cad6147b7aa3d3
+  checksum: 10c0/5f57a87d28fce037ed2dcd26daaa72bb776c4406d9a79523a6aaf77d68d9a9aa65d32f4b3e6cac1ef6e38e337fef3211ef2f4d21834ba3cac4a960b870508353
   languageName: node
   linkType: hard
 
@@ -11914,7 +11916,7 @@ __metadata:
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^6.0.0"
     deepmerge: "npm:^3.1.0"
-    electron: "npm:22.3.27"
+    electron: "npm:28.3.2"
     electron-compile: "npm:^6.4.4"
     electron-devtools-installer: "npm:^3.2.0"
     electron-is: "npm:^3.0.0"
