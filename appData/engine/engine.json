@@ -220,11 +220,50 @@
       "label": "GAMETYPE_TOP_DOWN",
       "files": ["include/states/topdown.h", "src/states/topdown.c"],
       "collisionTiles": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
-        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
-        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
-        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT", "icon": "E0E0E0E0E0E0E0E0", "multi": true },
-        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT",  "icon": "0707070707070707", "multi": true }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        },
+        {
+          "key": "top",
+          "color": "#2828FAFF",
+          "mask": 15,
+          "flag": 1,
+          "name": "FIELD_COLLISION_TOP",
+          "icon": "FFFFFF0000000000",
+          "multi": true
+        },
+        {
+          "key": "bottom",
+          "color": "#FFFA28FF",
+          "mask": 15,
+          "flag": 2,
+          "name": "FIELD_COLLISION_BOTTOM",
+          "icon": "0000000000FFFFFF",
+          "multi": true
+        },
+        {
+          "key": "left",
+          "color": "#FA28FAFF",
+          "mask": 15,
+          "flag": 4,
+          "name": "FIELD_COLLISION_LEFT",
+          "icon": "E0E0E0E0E0E0E0E0",
+          "multi": true
+        },
+        {
+          "key": "right",
+          "color": "#28FAFAFF",
+          "mask": 15,
+          "flag": 8,
+          "name": "FIELD_COLLISION_RIGHT",
+          "icon": "0707070707070707",
+          "multi": true
+        }
       ]
     },
     {
@@ -232,26 +271,191 @@
       "label": "GAMETYPE_PLATFORMER",
       "files": ["include/states/platform.h", "src/states/platform.c"],
       "collisionTiles": [
-        { "key" : "solid", "color" : "#FA2828FF", "mask": 15, "flag": 15, "name" : "FIELD_SOLID", "icon" : "FFFFFFFFFFFFFFFF" },
-        { "key" : "top", "color" : "#2828FAFF", "mask": 15, "flag": 1, "name" : "FIELD_COLLISION_TOP", "icon" : "FFFFFF0000000000", "multi":true },
-        { "key" : "bottom", "color" : "#FFFA28FF", "mask": 15, "flag": 2, "name" : "FIELD_COLLISION_BOTTOM", "icon" : "0000000000FFFFFF", "multi":true },
-        { "key" : "left", "color" : "#FA28FAFF", "mask": 15, "flag": 4, "name" : "FIELD_COLLISION_LEFT", "icon" : "E0E0E0E0E0E0E0E0", "multi":true },
-        { "key" : "right", "color" : "#28FAFAFF", "mask": 15, "flag": 8, "name" : "FIELD_COLLISION_RIGHT", "icon" : "0707070707070707", "multi":true },
-        { "key" : "ladder", "color" : "#008000FF", "mask": 240, "flag": 16, "name" : "FIELD_LADDER", "icon" : "C3FFFFC3C3FFFFC3", "group" : "prop" },
-        { "key" : "slope_45_right", "color" : "#0000FFFF", "mask": 240, "flag": 32, "name" : "FIELD_COLLISION_SLOPE_45_RIGHT", "icon" : "0103070F1F3F7FFF", "extra":10, "group" : "slope" },
-        { "key" : "slope_45_left", "color" : "#0000FFFF", "mask": 240, "flag": 48, "name" : "FIELD_COLLISION_SLOPE_45_LEFT", "icon" : "80C0E0F0F8FCFEFF", "extra":6, "group" : "slope" },
-        { "key" : "slope_22_right_bot", "color" : "#0000FFFF", "mask": 240, "flag": 64, "name" : "FIELD_COLLISION_SLOPE_22_RIGHT_BOT", "icon" : "00000000030F3FFF", "extra":2, "group" : "slope" },
-        { "key" : "slope_22_right_top", "color" : "#0000FFFF", "mask": 240, "flag": 96, "name" : "FIELD_COLLISION_SLOPE_22_RIGHT_TOP", "icon" : "030F3FFF00000000", "extra":10, "group" : "slope" },
-        { "key" : "slope_22_left_top", "color" : "#0000FFFF", "mask": 240, "flag": 112, "name" : "FIELD_COLLISION_SLOPE_22_LEFT_TOP", "icon" : "C0F0FCFF00000000", "extra":6, "group" : "slope" },
-        { "key" : "slope_22_left_bot", "color" : "#0000FFFF", "mask": 240, "flag": 80, "name" : "FIELD_COLLISION_SLOPE_22_LEFT_BOT", "icon" : "00000000C0F0FCFF", "extra":2, "group" : "slope" },
-        { "key" : "spare_08", "color" : "#00800080", "mask": 240, "flag": 128, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFFC399C399C3FF", "group" : "spare" },
-        { "key" : "spare_09", "color" : "#00800080", "mask": 240, "flag": 144, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFFC399C1F9C3FF", "group" : "spare" },
-        { "key" : "spare_10", "color" : "#80000080", "mask": 240, "flag": 160, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFFC399819999FF", "group" : "spare" },
-        { "key" : "spare_11", "color" : "#80000080", "mask": 240, "flag": 176, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFF8399839983FF", "group" : "spare" },
-        { "key" : "spare_12", "color" : "#00008080", "mask": 240, "flag": 192, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFFC3999F99C3FF", "group" : "spare" },
-        { "key" : "spare_13", "color" : "#00008080", "mask": 240, "flag": 208, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFF8399999983FF", "group" : "spare" },
-        { "key" : "spare_14", "color" : "#80008080", "mask": 240, "flag": 224, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFF819F879F81FF", "group" : "spare" },
-        { "key" : "spare_15", "color" : "#80008080", "mask": 240, "flag": 240, "name" : "FIELD_COLLISION_SPARE", "icon" : "FFFF819F879F9FFF", "group" : "spare" }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        },
+        {
+          "key": "top",
+          "color": "#2828FAFF",
+          "mask": 15,
+          "flag": 1,
+          "name": "FIELD_COLLISION_TOP",
+          "icon": "FFFFFF0000000000",
+          "multi": true
+        },
+        {
+          "key": "bottom",
+          "color": "#FFFA28FF",
+          "mask": 15,
+          "flag": 2,
+          "name": "FIELD_COLLISION_BOTTOM",
+          "icon": "0000000000FFFFFF",
+          "multi": true
+        },
+        {
+          "key": "left",
+          "color": "#FA28FAFF",
+          "mask": 15,
+          "flag": 4,
+          "name": "FIELD_COLLISION_LEFT",
+          "icon": "E0E0E0E0E0E0E0E0",
+          "multi": true
+        },
+        {
+          "key": "right",
+          "color": "#28FAFAFF",
+          "mask": 15,
+          "flag": 8,
+          "name": "FIELD_COLLISION_RIGHT",
+          "icon": "0707070707070707",
+          "multi": true
+        },
+        {
+          "key": "ladder",
+          "color": "#008000FF",
+          "mask": 240,
+          "flag": 16,
+          "name": "FIELD_LADDER",
+          "icon": "667E7E66667E7E66",
+          "group": "prop"
+        },
+        {
+          "key": "slope_45_right",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 32,
+          "name": "FIELD_COLLISION_SLOPE_45_RIGHT",
+          "icon": "0103070F1F3F7FFF",
+          "extra": 10,
+          "group": "slope"
+        },
+        {
+          "key": "slope_45_left",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 48,
+          "name": "FIELD_COLLISION_SLOPE_45_LEFT",
+          "icon": "80C0E0F0F8FCFEFF",
+          "extra": 6,
+          "group": "slope"
+        },
+        {
+          "key": "slope_22_right_bot",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 64,
+          "name": "FIELD_COLLISION_SLOPE_22_RIGHT_BOT",
+          "icon": "00000000030F3FFF",
+          "extra": 2,
+          "group": "slope"
+        },
+        {
+          "key": "slope_22_right_top",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 96,
+          "name": "FIELD_COLLISION_SLOPE_22_RIGHT_TOP",
+          "icon": "030F3FFF00000000",
+          "extra": 10,
+          "group": "slope"
+        },
+        {
+          "key": "slope_22_left_top",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 112,
+          "name": "FIELD_COLLISION_SLOPE_22_LEFT_TOP",
+          "icon": "C0F0FCFF00000000",
+          "extra": 6,
+          "group": "slope"
+        },
+        {
+          "key": "slope_22_left_bot",
+          "color": "#0000FFFF",
+          "mask": 240,
+          "flag": 80,
+          "name": "FIELD_COLLISION_SLOPE_22_LEFT_BOT",
+          "icon": "00000000C0F0FCFF",
+          "extra": 2,
+          "group": "slope"
+        },
+        {
+          "key": "spare_08",
+          "color": "#00800080",
+          "mask": 240,
+          "flag": 128,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFFC399C399C3FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_09",
+          "color": "#00800080",
+          "mask": 240,
+          "flag": 144,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFFC399C1F9C3FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_10",
+          "color": "#80000080",
+          "mask": 240,
+          "flag": 160,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFFC399819999FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_11",
+          "color": "#80000080",
+          "mask": 240,
+          "flag": 176,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFF8399839983FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_12",
+          "color": "#00008080",
+          "mask": 240,
+          "flag": 192,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFFC3999F99C3FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_13",
+          "color": "#00008080",
+          "mask": 240,
+          "flag": 208,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFF8399999983FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_14",
+          "color": "#80008080",
+          "mask": 240,
+          "flag": 224,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFF819F879F81FF",
+          "group": "spare"
+        },
+        {
+          "key": "spare_15",
+          "color": "#80008080",
+          "mask": 240,
+          "flag": 240,
+          "name": "FIELD_COLLISION_SPARE",
+          "icon": "FFFF819F879F9FFF",
+          "group": "spare"
+        }
       ]
     },
     {
@@ -259,11 +463,50 @@
       "label": "GAMETYPE_ADVENTURE",
       "files": ["include/states/adventure.h", "src/states/adventure.c"],
       "collisionTiles": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
-        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
-        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
-        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT", "icon": "E0E0E0E0E0E0E0E0", "multi": true },
-        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT",  "icon": "0707070707070707", "multi": true }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        },
+        {
+          "key": "top",
+          "color": "#2828FAFF",
+          "mask": 15,
+          "flag": 1,
+          "name": "FIELD_COLLISION_TOP",
+          "icon": "FFFFFF0000000000",
+          "multi": true
+        },
+        {
+          "key": "bottom",
+          "color": "#FFFA28FF",
+          "mask": 15,
+          "flag": 2,
+          "name": "FIELD_COLLISION_BOTTOM",
+          "icon": "0000000000FFFFFF",
+          "multi": true
+        },
+        {
+          "key": "left",
+          "color": "#FA28FAFF",
+          "mask": 15,
+          "flag": 4,
+          "name": "FIELD_COLLISION_LEFT",
+          "icon": "E0E0E0E0E0E0E0E0",
+          "multi": true
+        },
+        {
+          "key": "right",
+          "color": "#28FAFAFF",
+          "mask": 15,
+          "flag": 8,
+          "name": "FIELD_COLLISION_RIGHT",
+          "icon": "0707070707070707",
+          "multi": true
+        }
       ]
     },
     {
@@ -271,11 +514,50 @@
       "label": "GAMETYPE_SHMUP",
       "files": ["include/states/shmup.h", "src/states/shmup.c"],
       "collisionTiles": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" },
-        { "key": "top", "color": "#2828FAFF", "mask": 15, "flag": 1, "name": "FIELD_COLLISION_TOP", "icon": "FFFFFF0000000000", "multi": true },
-        { "key": "bottom", "color": "#FFFA28FF", "mask": 15, "flag": 2, "name": "FIELD_COLLISION_BOTTOM", "icon": "0000000000FFFFFF", "multi": true },
-        { "key": "left", "color": "#FA28FAFF", "mask": 15, "flag": 4, "name": "FIELD_COLLISION_LEFT", "icon": "E0E0E0E0E0E0E0E0", "multi": true },
-        { "key": "right", "color": "#28FAFAFF", "mask": 15, "flag": 8, "name": "FIELD_COLLISION_RIGHT",  "icon": "0707070707070707", "multi": true }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        },
+        {
+          "key": "top",
+          "color": "#2828FAFF",
+          "mask": 15,
+          "flag": 1,
+          "name": "FIELD_COLLISION_TOP",
+          "icon": "FFFFFF0000000000",
+          "multi": true
+        },
+        {
+          "key": "bottom",
+          "color": "#FFFA28FF",
+          "mask": 15,
+          "flag": 2,
+          "name": "FIELD_COLLISION_BOTTOM",
+          "icon": "0000000000FFFFFF",
+          "multi": true
+        },
+        {
+          "key": "left",
+          "color": "#FA28FAFF",
+          "mask": 15,
+          "flag": 4,
+          "name": "FIELD_COLLISION_LEFT",
+          "icon": "E0E0E0E0E0E0E0E0",
+          "multi": true
+        },
+        {
+          "key": "right",
+          "color": "#28FAFAFF",
+          "mask": 15,
+          "flag": 8,
+          "name": "FIELD_COLLISION_RIGHT",
+          "icon": "0707070707070707",
+          "multi": true
+        }
       ]
     },
     {
@@ -283,7 +565,14 @@
       "label": "GAMETYPE_POINT_N_CLICK",
       "files": ["include/states/pointnclick.h", "src/states/pointnclick.c"],
       "collisionTiles": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        }
       ]
     },
     {
@@ -291,7 +580,14 @@
       "label": "GAMETYPE_LOGO",
       "files": ["include/states/logo.h", "src/states/logo.c"],
       "collisionTiles": [
-        { "key": "solid", "color": "#FA2828FF", "mask": 15, "flag": 15, "name": "FIELD_SOLID", "icon": "FFFFFFFFFFFFFFFF" }
+        {
+          "key": "solid",
+          "color": "#FA2828FF",
+          "mask": 15,
+          "flag": 15,
+          "name": "FIELD_SOLID",
+          "icon": "FFFFFFFFFFFFFFFF"
+        }
       ]
     }
   ]
