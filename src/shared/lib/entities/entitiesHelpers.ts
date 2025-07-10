@@ -748,13 +748,16 @@ export const genEntitySymbol = (state: EntitiesState, name: string) => {
   return genSymbol(name, extractEntityStateSymbols(state));
 };
 
-export const ensureEntitySymbolsUnique = (
-  entities: EntityState<{ symbol?: string }, string>,
+export const ensureEntitySymbolsUnique = <T extends { symbol?: string }>(
+  entities: EntityState<T, string>,
   seenSymbols: Set<string>,
+  generateDefaultSymbol: (entity: T) => string = () => "",
 ) => {
   for (const entity of Object.values(entities.entities)) {
     if (entity) {
-      entity.symbol = toValidSymbol(entity.symbol ?? "");
+      entity.symbol = toValidSymbol(
+        entity.symbol || generateDefaultSymbol(entity),
+      );
       if (seenSymbols.has(entity.symbol)) {
         const newSymbol = genSymbol(entity.symbol, seenSymbols);
         entity.symbol = newSymbol;
@@ -765,20 +768,26 @@ export const ensureEntitySymbolsUnique = (
 };
 
 export const ensureSymbolsUnique = (state: EntitiesState) => {
+  const fallback =
+    <T extends { name: string }>(type: string) =>
+    (entity: T) => {
+      return `${type}_${entity.name}`;
+    };
+
   const symbols: Set<string> = new Set();
-  ensureEntitySymbolsUnique(state.scenes, symbols);
-  ensureEntitySymbolsUnique(state.actors, symbols);
-  ensureEntitySymbolsUnique(state.triggers, symbols);
-  ensureEntitySymbolsUnique(state.backgrounds, symbols);
-  ensureEntitySymbolsUnique(state.spriteSheets, symbols);
-  ensureEntitySymbolsUnique(state.emotes, symbols);
-  ensureEntitySymbolsUnique(state.tilesets, symbols);
-  ensureEntitySymbolsUnique(state.fonts, symbols);
-  ensureEntitySymbolsUnique(state.variables, symbols);
-  ensureEntitySymbolsUnique(state.constants, symbols);
-  ensureEntitySymbolsUnique(state.customEvents, symbols);
-  ensureEntitySymbolsUnique(state.music, symbols);
-  ensureEntitySymbolsUnique(state.sounds, symbols);
+  ensureEntitySymbolsUnique(state.scenes, symbols, fallback("scene"));
+  ensureEntitySymbolsUnique(state.actors, symbols, fallback("actor"));
+  ensureEntitySymbolsUnique(state.triggers, symbols, fallback("trigger"));
+  ensureEntitySymbolsUnique(state.backgrounds, symbols, fallback("bg"));
+  ensureEntitySymbolsUnique(state.spriteSheets, symbols, fallback("sprite"));
+  ensureEntitySymbolsUnique(state.emotes, symbols, fallback("emote"));
+  ensureEntitySymbolsUnique(state.tilesets, symbols, fallback("tileset"));
+  ensureEntitySymbolsUnique(state.fonts, symbols, fallback("font"));
+  ensureEntitySymbolsUnique(state.variables, symbols, fallback("var"));
+  ensureEntitySymbolsUnique(state.constants, symbols, fallback("const"));
+  ensureEntitySymbolsUnique(state.customEvents, symbols, fallback("script"));
+  ensureEntitySymbolsUnique(state.music, symbols, fallback("song"));
+  ensureEntitySymbolsUnique(state.sounds, symbols, fallback("sound"));
 };
 
 export const matchAssetEntity = <
