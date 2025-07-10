@@ -350,6 +350,8 @@ export const SpriteAnimationType = Type.Union([
   Type.Literal("fixed_movement"),
   Type.Literal("multi"),
   Type.Literal("multi_movement"),
+  Type.Literal("horizontal"),
+  Type.Literal("horizontal_movement"),
   Type.Literal("platform_player"),
   Type.Literal("cursor"),
 ]);

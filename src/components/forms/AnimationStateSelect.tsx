@@ -24,6 +24,7 @@ interface AnimationStateSelectProps extends SelectCommonProps {
 
 const Wrapper = styled.div`
   position: relative;
+  width: 100%;
 `;
 
 const StateRenameInput = styled(IMEInput)`

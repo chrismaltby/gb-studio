@@ -66,6 +66,19 @@ export const getAnimationNameByIndex = (
       animationIndex
     ];
   }
+  if (type === "horizontal" || type === "horizontal_movement") {
+    const horizontalAnimationNames = [
+      l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),
+      l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
+      l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),
+      l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
+    ];
+    return filterAnimationsBySpriteType(
+      horizontalAnimationNames,
+      type,
+      flipLeft,
+    )[animationIndex];
+  }
   if (type === "multi") {
     const multiAnimationNames = [
       l10n("FIELD_DIRECTION_RIGHT"),

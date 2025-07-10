@@ -11,7 +11,8 @@ export type EngineFieldType =
   | "select"
   | "label"
   | "togglebuttons"
-  | "mask";
+  | "mask"
+  | "animationstate";
 
 export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
 

@@ -1947,6 +1947,7 @@ const compile = async (
     engineFields,
     projectData.engineFieldValues.engineFieldValues,
     usedSceneTypeIds,
+    precompiled.statesOrder,
   );
 
   output[`script_engine_init.s`] = compileScriptEngineInit({

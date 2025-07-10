@@ -13,6 +13,8 @@ export type SpriteAnimationType =
   | "fixed_movement"
   | "multi"
   | "multi_movement"
+  | "horizontal"
+  | "horizontal_movement"
   | "platform_player"
   | "cursor";
 export type ObjPalette = "OBP0" | "OBP1";
