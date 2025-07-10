@@ -1485,6 +1485,7 @@ class ScriptBuilder {
       },
       refMem: (type: RPNMemType, address: string) => {
         rpnCmd(".R_REF_MEM", type, `_${address}`);
+        stack.push(0);
         return rpn;
       },
       int8: (value: number | string) => {

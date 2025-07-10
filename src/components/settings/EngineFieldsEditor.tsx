@@ -309,7 +309,7 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
     );
   }
   if (field.type === "label") {
-    return <></>
+    return <></>;
   }
   return <div>Unknown type {field.type}</div>;
 };

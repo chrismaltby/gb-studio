@@ -1437,6 +1437,37 @@ test("Should allow rnd to be used in rpn without script neutral error", () => {
   ]);
 });
 
+test("Should allow camera ref memory to be used in rpn without script neutral error if value NOT stored", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb._rpn().refMem(".MEM_I8", "memory_address").stop();
+  sb._stackPop(1);
+  expect(sb._stop).not.toThrow();
+  expect(output).toEqual([
+    "        VM_RPN",
+    "            .R_REF_MEM  .MEM_I8, _memory_address",
+    "            .R_STOP",
+    "        VM_POP                  1",
+    "        ; Stop Script",
+    "        VM_STOP",
+  ]);
+});
+
+test("Should allow camera ref memory to be used in rpn without script neutral error if value stored", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);
+  sb._rpn().refMem(".MEM_I8", "memory_address").refSet("VAR_0").stop();
+  expect(sb._stop).not.toThrow();
+  expect(output).toEqual([
+    "        VM_RPN",
+    "            .R_REF_MEM  .MEM_I8, _memory_address",
+    "            .R_REF_SET  VAR_0",
+    "            .R_STOP",
+    "        ; Stop Script",
+    "        VM_STOP",
+  ]);
+});
+
 test("should reuse symbol for input scripts with identical contents", async () => {
   const output: string[] = [];
   const additionalScripts: Record<
