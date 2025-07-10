@@ -1001,7 +1001,7 @@
   "FIELD_SET_COLOR_MODE_OVERRIDE": "Set Color Mode Override",
   "FIELD_PREVENT_BACKTRACKING": "Prevent Backtracking",
   "FIELD_PREVENT_BACKTRACKING_DESC": "Prevents camera from scrolling in selected directions.",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
   "ASSET_EDIT": "Edit",

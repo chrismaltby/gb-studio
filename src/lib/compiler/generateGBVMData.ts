@@ -188,7 +188,8 @@ export const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
-export const enginePxToSubPx = (px?: number): string => `PX_TO_SUBPX(${px || 0})`
+export const enginePxToSubPx = (px?: number): string =>
+  `PX_TO_SUBPX(${px || 0})`;
 
 export const toASMCollisionGroup = (group: string) => {
   if (group === "player") {
@@ -682,8 +683,8 @@ export const compileSceneTriggers = (
       __comment: triggerName(trigger, triggerIndex),
       left: trigger.x,
       top: trigger.y,
-      right: trigger.x + trigger.width - 1, 
-      bottom: trigger.y + trigger.height - 1,  
+      right: trigger.x + trigger.width - 1,
+      bottom: trigger.y + trigger.height - 1,
       script: maybeScriptFarPtr(eventPtrs[sceneIndex].triggers[triggerIndex]),
       script_flags: toASMTriggerScriptFlags(trigger),
     })),

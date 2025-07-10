@@ -560,22 +560,22 @@ export const precompileOptimisedScriptValue = (
         }
       } else if (input.property === "xdeadzone") {
         rpnOperations.push({
-          type: "memU8",
+          type: "memI8",
           value: "camera_deadzone_x",
         });
       } else if (input.property === "ydeadzone") {
         rpnOperations.push({
-          type: "memU8",
+          type: "memI8",
           value: "camera_deadzone_y",
         });
       } else if (input.property === "xoffset") {
         rpnOperations.push({
-          type: "memU8",
+          type: "memI8",
           value: "camera_offset_x",
         });
       } else if (input.property === "yoffset") {
         rpnOperations.push({
-          type: "memU8",
+          type: "memI8",
           value: "camera_offset_y",
         });
       } else {
