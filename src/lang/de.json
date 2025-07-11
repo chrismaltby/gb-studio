@@ -327,7 +327,7 @@
   "FIELD_LOW": "Niedrig",
   "FIELD_MEDIUM": "Mittel",
   "FIELD_HIGH": "Hoch",
-  "FIELD_BOUNCE_NOTE": "Betrifft nur Plattformszenen",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Betrifft nur Plattformszenen",
   "FIELD_WEAPON_SPRITE": "Waffen-Spritesheet",
   "FIELD_WORK_IN_PROGRESS": "In Bearbeitung",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Vorgabe für Szenentyp ersetzen",

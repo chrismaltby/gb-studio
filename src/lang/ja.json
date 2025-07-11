@@ -327,7 +327,7 @@
   "FIELD_LOW": "低",
   "FIELD_MEDIUM": "中",
   "FIELD_HIGH": "高",
-  "FIELD_BOUNCE_NOTE": "プラットフォーマーのシーンのみ有効",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "プラットフォーマーのシーンのみ有効",
   "FIELD_WEAPON_SPRITE": "武器のスプライトシート",
   "FIELD_WORK_IN_PROGRESS": "作業進行中",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "シーンタイプのデフォルトとして置換",

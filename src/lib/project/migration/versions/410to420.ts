@@ -2,6 +2,8 @@ import {
   ScriptEventMigrationFn,
   ProjectResourcesMigration,
   createScriptEventsMigrator,
+  ProjectResourcesMigrationFn,
+  pipeMigrationFns,
 } from "lib/project/migration/helpers";
 
 export const migrateFrom410r1To420r1Event: ScriptEventMigrationFn = (
@@ -62,4 +64,75 @@ export const migrate420r1To420r2: ProjectResourcesMigration = {
   from: { version: "4.2.0", release: "1" },
   to: { version: "4.2.0", release: "2" },
   migrationFn: createScriptEventsMigrator(migrateFrom420r1To420r2Event),
+};
+
+export const migrateFrom420r2To420r3Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.args &&
+    (scriptEvent.command === "EVENT_ACTOR_MOVE_TO" ||
+      scriptEvent.command === "EVENT_ACTOR_MOVE_RELATIVE")
+  ) {
+    const args: Record<string, unknown> = { ...scriptEvent.args };
+    // If useCollisions was set default to all collisions
+    args["collideWith"] = args["useCollisions"] ? ["walls", "actors"] : [];
+    return {
+      ...scriptEvent,
+      args,
+    };
+  }
+  return scriptEvent;
+};
+
+export const migrateFrom420r2To420r3EngineFields: ProjectResourcesMigrationFn =
+  (resources) => {
+    const engineFieldValues = resources.engineFieldValues.engineFieldValues.map(
+      (fieldValue) => {
+        if (fieldValue.id === "shooter_scroll_speed") {
+          return {
+            ...fieldValue,
+            value:
+              typeof fieldValue.value === "number" ? fieldValue.value * 2 : 0,
+          };
+        }
+        return fieldValue;
+      },
+    );
+
+    const hasFieldValue = (id: string) => {
+      return engineFieldValues.some((fieldValue) => fieldValue.id === id);
+    };
+
+    const setDefaultFieldValue = (
+      id: string,
+      value: string | number | undefined,
+    ) => {
+      if (!hasFieldValue(id)) {
+        engineFieldValues.push({
+          id: id,
+          value,
+        });
+      }
+    };
+
+    setDefaultFieldValue("FEAT_PLATFORM_COYOTE_TIME", 0);
+    setDefaultFieldValue("FEAT_PLATFORM_DROP_THROUGH", 0);
+
+    return {
+      ...resources,
+      engineFieldValues: {
+        ...resources.engineFieldValues,
+        engineFieldValues,
+      },
+    };
+  };
+
+export const migrate420r2To420r3: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "2" },
+  to: { version: "4.2.0", release: "3" },
+  migrationFn: pipeMigrationFns([
+    createScriptEventsMigrator(migrateFrom420r2To420r3Event),
+    migrateFrom420r2To420r3EngineFields,
+  ]),
 };

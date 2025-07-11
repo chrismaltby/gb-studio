@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add event "Set Camera Lock To Player", with same functionality as the move to variant but which will be called before automatic screen fade in event
 - Add new sprite animation types "Horizontal" and "Horizontal + Movement" for creating sprites which can only face left or right
 - Add ability for engine plugins to define constants, accessible from GBVM scripts, to reduce need for magic numbers
+- Added new features to Platformer scene type based on Platformer+ plugin. Functionality like dashing, double jump, coyote time, fall through, wall jumps, knockback are now included in the inbuilt Platformer, each feature is optional and if disabled will not affect your game's performance.
+- Add ability for actors in Platformer scenes to be marked as "Solid" or "Platform" allowing moving platforms. Scene plugins can opt in to this also
 
 ### Changed
 
@@ -59,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Font PNGs that are 128px tall (16 tile rows) now map tiles starting from ASCII code 0 instead of 32, enabling support for drawing control characters (ASCII 0–31). To draw characters with codes less than 32 they must be escaped with `\005` e.g. to draw character code 7 use `\005\007` (note: this is octal so code 19 would be `\005\023`)
 - Optimised code generation when using properties (actor tileX, camera deadzone etc.) in values
 - Optimised Actor Move Relative code generation
+- Updated "Actor Move To" and "Actor Move Relative" to allow specifying if Walls, Actors, or none or both should be used for collisions
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)

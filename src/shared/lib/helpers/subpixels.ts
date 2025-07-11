@@ -7,14 +7,14 @@ export const tileToSubpx = (x: number) =>
 export const pxToSubpx = (x: number) =>
   Math.floor(x * (1 << NUM_SUBPIXEL_BITS));
 
-export const subpxShiftForUnits = (units: DistanceUnitType) => {
-  return units === "tiles" ? NUM_SUBPIXEL_BITS + 3 : NUM_SUBPIXEL_BITS;
-};
-
 export const pxToSubpxVel = (x: number) => Math.floor(x * (1 << 4));
 
 export const pxToSubpxVelPrecise = (x: number) =>
   Math.floor(x * ((1 << 4) << 8));
+
+export const subpxShiftForUnits = (units: DistanceUnitType) => {
+  return units === "tiles" ? NUM_SUBPIXEL_BITS + 3 : NUM_SUBPIXEL_BITS;
+};
 
 export const subpxSnapMaskForUnits = (units: DistanceUnitType) => {
   const bitsToClear =

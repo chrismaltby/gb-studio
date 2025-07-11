@@ -106,8 +106,8 @@ test("Should be able to move actor to new location", async () => {
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
     "        ; Actor Move To",
-    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 640",
-    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 768",
+    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 1280",
+    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 1536",
     "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/",
     "        VM_ACTOR_MOVE_TO        .LOCAL_ACTOR",
     "",
@@ -198,8 +198,8 @@ _MY_SCRIPT::
         VM_SET_CONST            .LOCAL_ACTOR, 2
 
         ; Actor Move To
-        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 640
-        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 768
+        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 1280
+        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 1536
         VM_SET_CONST            ^/(.LOCAL_ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/
         VM_ACTOR_MOVE_TO        .LOCAL_ACTOR
 
