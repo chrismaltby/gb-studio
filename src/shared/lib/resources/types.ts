@@ -34,6 +34,20 @@ export const CollisionGroup = Type.Union(
 
 export type CollisionGroup = Static<typeof CollisionGroup>;
 
+export const CollisionExtraFlag = Type.Union(
+  [
+    Type.Literal("1"),
+    Type.Literal("2"),
+    Type.Literal("3"),
+    Type.Literal("4"),
+    Type.Literal("solid"),
+    Type.Literal("platform"),
+  ],
+  { default: "" },
+);
+
+export type CollisionExtraFlag = Static<typeof CollisionExtraFlag>;
+
 export const ColorModeSetting = Type.Union([
   Type.Literal("mono"),
   Type.Literal("mixed"),
@@ -112,6 +126,7 @@ export const ActorResource = Type.Object({
   isPinned: Type.Boolean(),
   persistent: Type.Boolean(),
   collisionGroup: CollisionGroup,
+  collisionExtraFlags: Type.Array(CollisionExtraFlag),
   prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   startScript: Type.Array(ScriptEvent),

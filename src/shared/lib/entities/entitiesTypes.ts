@@ -7,6 +7,8 @@ import type {
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
 
+export type CollisionExtraFlag = "1" | "2" | "3" | "4" | "solid" | "platform";
+
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type SpriteAnimationType =
   | "fixed"
@@ -107,6 +109,7 @@ export type Actor = {
   isPinned: boolean;
   persistent: boolean;
   collisionGroup: CollisionGroup;
+  collisionExtraFlags: CollisionExtraFlag[];
   prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
   script: ScriptEvent[];
   startScript: ScriptEvent[];

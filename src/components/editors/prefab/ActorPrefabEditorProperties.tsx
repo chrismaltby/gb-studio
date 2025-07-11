@@ -12,14 +12,16 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch } from "store/hooks";
+import { ActorPrefabEditorExtraCollisionFlags } from "./ActorPrefabEditorExtraCollisionFlags";
 
 interface ActorPrefabEditorPropertiesProps {
   prefab: ActorPrefabNormalized;
+  sceneId?: string;
 }
 
 export const ActorPrefabEditorProperties: FC<
   ActorPrefabEditorPropertiesProps
-> = ({ prefab }) => {
+> = ({ prefab, sceneId }) => {
   const dispatch = useAppDispatch();
 
   const onChangeActorPrefabProp = useCallback(
@@ -123,6 +125,10 @@ export const ActorPrefabEditorProperties: FC<
               />
             </FormField>
           </FormRow>
+          <ActorPrefabEditorExtraCollisionFlags
+            prefab={prefab}
+            sceneId={sceneId}
+          />
         </FormContainer>
       </SidebarColumn>
     </>

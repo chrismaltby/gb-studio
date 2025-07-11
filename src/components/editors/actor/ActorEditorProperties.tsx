@@ -12,13 +12,16 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch } from "store/hooks";
+import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
 
 interface ActorEditorPropertiesProps {
   actor: ActorNormalized;
+  sceneId?: string;
 }
 
 export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
   actor,
+  sceneId,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -126,6 +129,7 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 />
               </FormField>
             </FormRow>
+            <ActorEditorExtraCollisionFlags actor={actor} sceneId={sceneId} />
           </FormContainer>
         </SidebarColumn>
       )}

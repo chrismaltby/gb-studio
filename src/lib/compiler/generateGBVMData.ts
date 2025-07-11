@@ -3,6 +3,7 @@ import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
   Actor,
+  CollisionExtraFlag,
   EngineFieldValue,
   Palette,
   Scene,
@@ -191,20 +192,55 @@ export const toFarPtr = (ref: string): string => {
 export const enginePxToSubPx = (px?: number): string =>
   `PX_TO_SUBPX(${px || 0})`;
 
-export const toASMCollisionGroup = (group: string) => {
+export const toASMCollisionGroup = (
+  group: string,
+  extras?: CollisionExtraFlag[],
+) => {
+  let baseGroup = "COLLISION_GROUP_NONE";
   if (group === "player") {
-    return "COLLISION_GROUP_PLAYER";
+    baseGroup = "COLLISION_GROUP_PLAYER";
   }
   if (group === "1") {
-    return "COLLISION_GROUP_1";
+    baseGroup = "COLLISION_GROUP_1";
   }
   if (group === "2") {
-    return "COLLISION_GROUP_2";
+    baseGroup = "COLLISION_GROUP_2";
   }
   if (group === "3") {
-    return "COLLISION_GROUP_3";
+    baseGroup = "COLLISION_GROUP_3";
   }
-  return "COLLISION_GROUP_NONE";
+
+  if (extras && extras.length > 0) {
+    return (
+      baseGroup +
+      " | " +
+      extras
+        .map((group) => {
+          if (group === "1") {
+            return "COLLISION_GROUP_FLAG_1";
+          }
+          if (group === "2") {
+            return "COLLISION_GROUP_FLAG_2";
+          }
+          if (group === "3") {
+            return "COLLISION_GROUP_FLAG_3";
+          }
+          if (group === "4") {
+            return "COLLISION_GROUP_FLAG_4";
+          }
+          if (group === "solid") {
+            return "COLLISION_GROUP_FLAG_SOLID";
+          }
+          if (group === "platform") {
+            return "COLLISION_GROUP_FLAG_PLATFORM";
+          }
+          return "";
+        })
+        .join(" | ")
+    );
+  }
+
+  return baseGroup;
 };
 
 export const toASMCollisionMask = (mask: string[]) => {
@@ -637,7 +673,10 @@ export const compileSceneActors = (
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
           persistent: actor.persistent ? "TRUE" : "FALSE",
-          collision_group: toASMCollisionGroup(actor.collisionGroup),
+          collision_group: toASMCollisionGroup(
+            actor.collisionGroup,
+            actor.collisionExtraFlags,
+          ),
           collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script: maybeScriptFarPtr(events.actors[actorIndex]),

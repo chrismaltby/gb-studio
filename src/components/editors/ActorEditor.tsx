@@ -415,9 +415,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         {!lockScriptEditor && (
           <SidebarColumns>
             {prefab ? (
-              <ActorPrefabEditorProperties prefab={prefab} />
+              <ActorPrefabEditorProperties prefab={prefab} sceneId={sceneId} />
             ) : (
-              <ActorEditorProperties actor={actor} />
+              <ActorEditorProperties actor={actor} sceneId={sceneId} />
             )}
           </SidebarColumns>
         )}
