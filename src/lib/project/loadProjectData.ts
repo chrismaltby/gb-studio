@@ -10,15 +10,9 @@ import loadAllSoundData from "./loadSoundData";
 import loadAllScriptEventHandlers, {
   ScriptEventDef,
 } from "./loadScriptEventHandlers";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
-import { loadEngineFields } from "lib/project/engineFields";
-import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadAllTilesetData from "lib/project/loadTilesetData";
 import {
   CompressedBackgroundResource,
@@ -46,12 +40,12 @@ import {
   compress8bitNumberArray,
   decompress8bitNumberString,
 } from "shared/lib/resources/compression";
+import { EngineSchema, loadEngineSchema } from "./loadEngineSchema";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
   scriptEventDefs: Record<string, ScriptEventDef>;
-  engineFields: EngineFieldSchema[];
-  sceneTypes: SceneTypeSchema[];
+  engineSchema: EngineSchema;
   modifiedSpriteIds: string[];
   isMigrated: boolean;
 }
@@ -96,8 +90,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const resources = await migrateProjectResources(unmigratedResources);
 
-  const engineFields = await loadEngineFields(projectRoot);
-  const sceneTypes = await loadSceneTypes(projectRoot);
+  const engineSchema = await loadEngineSchema(projectRoot);
 
   const { _version: originalVersion, _release: originalRelease } =
     originalJson as ProjectMetadataResource;
@@ -388,8 +381,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     modifiedSpriteIds,
     isMigrated,
     scriptEventDefs: cloneDictionary(scriptEventDefs),
-    engineFields,
-    sceneTypes,
+    engineSchema,
   };
 };
 

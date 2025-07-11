@@ -1596,10 +1596,11 @@ class ScriptBuilder {
   ) => {
     for (const rpnOp of rpnOps) {
       switch (rpnOp.type) {
-        case "number": {
+        case "number":
+        case "numberSymbol": {
           rpn.int16(rpnOp.value ?? 0);
           break;
-        }
+        }     
         case "constant": {
           rpn.intConstant(rpnOp.value);
           break;
@@ -6100,7 +6101,10 @@ extern void __mute_mask_${symbol};
     const engineField = engineFields[key];
     if (engineField !== undefined && engineField.key) {
       const cType = engineField.cType;
-      const numberValue = Number(engineField.defaultValue || 0);
+      const numberValue =
+        (typeof engineField.defaultValue === "boolean"
+          ? Number(engineField.defaultValue)
+          : engineField.defaultValue) || 0;
       this._addComment(`Engine Field Set To Default`);
       if (is16BitCType(cType)) {
         this._setConstMemInt16(key, numberValue);

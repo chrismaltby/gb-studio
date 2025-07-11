@@ -40,6 +40,7 @@ describe("compileGameGlobalsHeader", () => {
           value: 64,
         },
       ],
+      { PLATFORM_CONST_1: 5 },
       ["STATE_DEFAULT", "STATE_EXPLODE", "STATE_OPEN"],
     );
     expect(output).toInclude("VAR_1 0");
@@ -47,6 +48,7 @@ describe("compileGameGlobalsHeader", () => {
     expect(output).toInclude("MAX_GLOBAL_VARS 2");
     expect(output).toInclude("CONST_0 0");
     expect(output).toInclude("CONST_1 64");
+    expect(output).toInclude("PLATFORM_CONST_1 5");
     expect(output).toInclude("STATE_DEFAULT 0");
     expect(output).toInclude("STATE_EXPLODE 1");
     expect(output).toInclude("STATE_OPEN 2");

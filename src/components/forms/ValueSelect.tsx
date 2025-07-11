@@ -88,6 +88,7 @@ const iconLookup: Record<
 > = {
   // Value
   number: <NumberIcon />,
+  numberSymbol: <NumberIcon />,
   direction: <CompassIcon />,
   variable: <VariableIcon />,
   indirect: <VariableIcon />,
@@ -132,6 +133,7 @@ const l10nKeyLookup: Record<
 > = {
   // Value
   number: "FIELD_NUMBER",
+  numberSymbol: "FIELD_NUMBER",
   direction: "FIELD_DIRECTION",
   variable: "FIELD_VARIABLE",
   indirect: "FIELD_VARIABLE",
@@ -368,7 +370,7 @@ type ValueSelectInputOverride = {
     }
   | {
       type: "select";
-      options?: [number, string][];
+      options?: [number | string, string][];
     }
   | {
       type: "checkbox";
@@ -991,19 +993,22 @@ const ValueSelect = ({
                   id={name}
                   name={name}
                   value={
-                    options.find((o) =>
-                      value.value
-                        ? o.value === value.value
-                        : o.value === value.value,
-                    ) || options[0]
+                    options.find((o) => o.value === value.value) || options[0]
                   }
                   options={options}
-                  onChange={(e: SingleValue<{ value: number }>) => {
+                  onChange={(e: SingleValue<{ value: number | string }>) => {
                     if (e) {
-                      onChange({
-                        type: "number",
-                        value: ensureNumber(e.value, 0),
-                      });
+                      if (typeof e.value === "string" && e.value.length > 0) {
+                        onChange({
+                          type: "numberSymbol",
+                          value: e.value,
+                        });
+                      } else {
+                        onChange({
+                          type: "number",
+                          value: ensureNumber(e.value, 0),
+                        });
+                      }
                     }
                   }}
                 />
@@ -1028,6 +1033,67 @@ const ValueSelect = ({
                     }}
                   />
                 </CheckboxOverrideWrapper>
+              )}
+          </InputGroup>
+        </ValueWrapper>
+      );
+    } else if (value.type === "numberSymbol") {
+      return (
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
+          <InputGroup ref={dropRef}>
+            <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+            {((innerValue && !inputOverride?.topLevelOnly) ||
+              !inputOverride ||
+              inputOverride?.type === "number") && (
+              <NumberInput
+                id={name}
+                type="number"
+                value={String(
+                  value.value !== undefined && value.value !== null
+                    ? value.value
+                    : "",
+                )}
+                min={innerValue ? undefined : min}
+                max={innerValue ? undefined : max}
+                step={innerValue ? undefined : step}
+                placeholder={innerValue ? "0" : String(placeholder ?? "0")}
+                onChange={(e) => {
+                  onChange({
+                    type: "number",
+                    value:
+                      (step ?? 1) % 1 === 0
+                        ? castEventToInt(e, 0)
+                        : castEventToFloat(e, 0),
+                  });
+                }}
+                onKeyDown={onKeyDown}
+              />
+            )}
+            {inputOverride?.type === "select" &&
+              (!innerValue || !inputOverride.topLevelOnly) && (
+                <Select
+                  id={name}
+                  name={name}
+                  value={
+                    options.find((o) => o.value === value.value) || options[0]
+                  }
+                  options={options}
+                  onChange={(e: SingleValue<{ value: number | string }>) => {
+                    if (e) {
+                      if (typeof e.value === "string" && e.value.length > 0) {
+                        onChange({
+                          type: "numberSymbol",
+                          value: e.value,
+                        });
+                      } else {
+                        onChange({
+                          type: "number",
+                          value: ensureNumber(e.value, 0),
+                        });
+                      }
+                    }
+                  }}
+                />
               )}
           </InputGroup>
         </ValueWrapper>

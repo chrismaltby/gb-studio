@@ -14,13 +14,11 @@ import {
 import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 import { ProjectResources } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
+import { EngineSchema } from "lib/project/loadEngineSchema";
 
 const engineIgnore = [
   ".git",
@@ -35,8 +33,7 @@ const engineIgnore = [
 const rmdir = promisify(rimraf);
 
 type EjectOptions = {
-  engineFields: EngineFieldSchema[];
-  sceneTypes: SceneTypeSchema[];
+  engineSchema: EngineSchema;
   projectData: ProjectResources;
   outputRoot: string;
   projectRoot: string;
@@ -50,8 +47,7 @@ type EjectOptions = {
 };
 
 const ejectBuild = async ({
-  engineFields = [],
-  sceneTypes = [],
+  engineSchema,
   projectData,
   outputRoot = "/tmp",
   projectRoot = "/tmp",
@@ -65,6 +61,7 @@ const ejectBuild = async ({
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
   const colorEnabled = settings.colorMode !== "mono";
+  const { fields: engineFields, sceneTypes } = engineSchema;
 
   progress(`${l10n("COMPILER_REMOVING_FOLDER")} ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);

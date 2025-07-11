@@ -51,10 +51,6 @@ import {
   THEME_SETTING_KEY,
 } from "consts";
 import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
-import type {
   Background,
   SpriteSheetData,
   Tileset,
@@ -98,7 +94,6 @@ import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
 import { loadTilesetData } from "lib/project/loadTilesetData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
-import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
 import loadAllScriptEventHandlers, {
   ScriptEventHandlers,
@@ -111,7 +106,6 @@ import {
 } from "shared/lib/debugger/types";
 import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
-import { loadSceneTypes } from "lib/project/sceneTypes";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
@@ -152,6 +146,7 @@ import { ThemeManager } from "lib/themes/themeManager";
 import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 import { L10nManager } from "lib/lang/l10nManager";
 import { TemplateManager } from "lib/templates/templateManager";
+import { EngineSchema, loadEngineSchema } from "lib/project/loadEngineSchema";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -531,9 +526,8 @@ export const createProjectWindow = async () => {
       sendToProjectWindow("watch:tileset:removed", file, plugin);
     },
     onChangedEngineSchema: async (_filename: string) => {
-      const fields = await loadEngineFields(projectRoot);
-      const sceneTypes = await loadSceneTypes(projectRoot);
-      sendToProjectWindow("watch:engineSchema:changed", fields, sceneTypes);
+      const engineSchema = await loadEngineSchema(projectRoot);
+      sendToProjectWindow("watch:engineSchema:changed", engineSchema);
     },
     onChangedEventPlugin: async (_filename: string) => {
       // Reload all script event handlers and push new defs to project window
@@ -1384,7 +1378,7 @@ ipcMain.handle(
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectResources, options: BuildOptions) => {
-    const { exportBuild, buildType, sceneTypes } = options;
+    const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
@@ -1413,7 +1407,6 @@ ipcMain.handle(
       const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
-        sceneTypes,
         outputRoot,
         tmpPath: getTmp(),
         debugEnabled: debuggerEnabled,
@@ -1550,8 +1543,7 @@ ipcMain.handle(
   async (
     event,
     project: ProjectResources,
-    engineFields: EngineFieldSchema[],
-    sceneTypes: SceneTypeSchema[],
+    engineSchema: EngineSchema,
     exportType: ProjectExportType,
   ) => {
     const buildStartTime = Date.now();
@@ -1574,11 +1566,10 @@ ipcMain.handle(
 
       await buildProject(project, {
         projectRoot,
-        sceneTypes,
         outputRoot,
         tmpPath: getTmp(),
         buildType: "rom",
-        engineFields,
+        engineSchema,
         debugEnabled: false,
         make: false,
         progress,

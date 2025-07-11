@@ -3,6 +3,7 @@ import { ensureTypeGenerator } from "shared/types";
 
 export const valueAtomTypes = [
   "number",
+  "numberSymbol",
   "direction",
   "variable",
   "indirect",
@@ -109,6 +110,10 @@ export type ScriptValueAtom =
       value: number;
     }
   | {
+      type: "numberSymbol";
+      value: string;
+    }    
+  | {
       type: "variable";
       value: string;
     }
@@ -203,6 +208,10 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
     return true;
   }
+  // Is a number symbol
+  if (scriptValue.type === "numberSymbol" && typeof scriptValue.value === "string") {
+    return true;
+  }  
   // Is bool
   if (scriptValue.type === "true" || scriptValue.type === "false") {
     return true;
@@ -347,6 +356,10 @@ export type PrecompiledValueRPNOperation =
       type: "number";
       value: number;
     }
+  | {
+      type: "numberSymbol";
+      value: string;
+    }    
   | {
       type: "constant";
       value: string;

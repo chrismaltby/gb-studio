@@ -695,6 +695,8 @@ export const precompileOptimisedScriptValue = (
     rpnOperations.push({ type: "number", value: 1 });
   } else if (input.type === "false") {
     rpnOperations.push({ type: "number", value: 0 });
+  } else if (input.type === "numberSymbol") {
+    rpnOperations.push({ type: "numberSymbol", value: input.value });
   } else {
     rpnOperations.push(input);
   }

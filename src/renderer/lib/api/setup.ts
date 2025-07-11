@@ -13,10 +13,6 @@ import type {
   BuildType,
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type {
   Background,
@@ -55,6 +51,7 @@ import type {
 } from "lib/pluginManager/types";
 import type { ThemeInterface } from "ui/theme/ThemeInterface";
 import type { TemplatePlugin } from "lib/templates/templateManager";
+import { EngineSchema } from "lib/project/loadEngineSchema";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -62,10 +59,9 @@ interface L10NLookup {
 
 export type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
-  engineFields: EngineFieldSchema[];
+  engineSchema: EngineSchema;
   exportBuild: boolean;
   debugEnabled?: boolean;
-  sceneTypes: SceneTypeSchema[];
 };
 
 export type RecentProjectData = {
@@ -245,17 +241,9 @@ const APISetup = {
     ejectEngine: () => ipcRenderer.invoke("project:engine-eject"),
     exportProject: (
       data: ProjectResources,
-      engineFields: EngineFieldSchema[],
-      sceneTypes: SceneTypeSchema[],
+      engineSchema: EngineSchema,
       exportType: ProjectExportType,
-    ) =>
-      ipcRenderer.invoke(
-        "project:export",
-        data,
-        engineFields,
-        sceneTypes,
-        exportType,
-      ),
+    ) => ipcRenderer.invoke("project:export", data, engineSchema, exportType),
     getBackgroundInfo: (
       background: Background,
       tileset: Tileset | undefined,
@@ -510,11 +498,7 @@ const APISetup = {
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<
-          (
-            event: IpcRendererEvent,
-            fields: EngineFieldSchema[],
-            sceneTypes: SceneTypeSchema[],
-          ) => void
+          (event: IpcRendererEvent, engineSchema: EngineSchema) => void
         >("watch:engineSchema:changed"),
       },
       scriptEventDefs: {

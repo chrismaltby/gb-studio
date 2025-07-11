@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { EngineSchema } from "lib/project/loadEngineSchema";
 import keyBy from "lodash/keyBy";
 import { CollisionTileDef } from "shared/lib/resources/types";
 import { BaseCondition } from "shared/lib/conditionsFilter";
@@ -56,6 +57,7 @@ export interface EngineState {
   fields: EngineFieldSchema[];
   lookup: Record<string, EngineFieldSchema>;
   sceneTypes: SceneTypeSchema[];
+  consts: Record<string, number>;
 }
 
 export const initialState: EngineState = {
@@ -63,18 +65,18 @@ export const initialState: EngineState = {
   fields: [],
   lookup: {},
   sceneTypes: [],
+  consts: {},
 };
 
 const engineSlice = createSlice({
   name: "engine",
   initialState,
   reducers: {
-    setEngineFields: (state, action: PayloadAction<EngineFieldSchema[]>) => {
-      state.fields = action.payload;
-      state.lookup = keyBy(action.payload, "key");
-    },
-    setScenetypes: (state, action: PayloadAction<SceneTypeSchema[]>) => {
-      state.sceneTypes = action.payload;
+    setEngineSchema: (state, action: PayloadAction<EngineSchema>) => {
+      state.fields = action.payload.fields;
+      state.lookup = keyBy(action.payload.fields, "key");
+      state.sceneTypes = action.payload.sceneTypes;
+      state.consts = action.payload.consts;
     },
   },
   extraReducers: (builder) =>
@@ -83,9 +85,10 @@ const engineSlice = createSlice({
         state.loaded = false;
       })
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
-        state.fields = action.payload.engineFields;
-        state.lookup = keyBy(action.payload.engineFields, "key");
-        state.sceneTypes = action.payload.sceneTypes;
+        state.fields = action.payload.engineSchema.fields;
+        state.lookup = keyBy(action.payload.engineSchema.fields, "key");
+        state.sceneTypes = action.payload.engineSchema.sceneTypes;
+        state.consts = action.payload.engineSchema.consts;
         state.loaded = true;
       }),
 });

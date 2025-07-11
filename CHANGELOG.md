@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add option to prevent backtracking in "Camera Move To Lock On Player" event to stop scroll from following player in selected directions
 - Add event "Set Camera Lock To Player", with same functionality as the move to variant but which will be called before automatic screen fade in event
 - Add new sprite animation types "Horizontal" and "Horizontal + Movement" for creating sprites which can only face left or right
+- Add ability for engine plugins to define constants, accessible from GBVM scripts, to reduce need for magic numbers
 
 ### Changed
 

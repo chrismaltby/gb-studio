@@ -60,13 +60,16 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
       resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
-      engineFields: [],
-      sceneTypes: [],
+      engineSchema: {
+        fields: [],
+        sceneTypes: [],
+        consts: {},
+      },
       modifiedSpriteIds: [],
       isMigrated: false,
     },
     "randomid",
-    "project.gbsproj"
+    "project.gbsproj",
   );
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.width).toBe(32);
@@ -104,13 +107,16 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
       resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
-      engineFields: [],
-      sceneTypes: [],
+      engineSchema: {
+        fields: [],
+        sceneTypes: [],
+        consts: {},
+      },
       modifiedSpriteIds: [],
       isMigrated: false,
     },
     "randomid",
-    "project.gbsproj"
+    "project.gbsproj",
   );
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.width).toBe(64);
@@ -148,13 +154,16 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
       resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
-      engineFields: [],
-      sceneTypes: [],
+      engineSchema: {
+        fields: [],
+        sceneTypes: [],
+        consts: {},
+      },
       modifiedSpriteIds: [],
       isMigrated: false,
     },
     "randomid",
-    "project.gbsproj"
+    "project.gbsproj",
   );
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.width).toBe(20);
@@ -890,10 +899,10 @@ test("Should be able to add an actor to a scene with default values and variable
 
   expect(newState.scenes.entities["scene1"]?.actors).toEqual([newActorId]);
   expect(newState.actors.entities[newActorId]?.name).toBe(
-    "Clipboard Actor Name"
+    "Clipboard Actor Name",
   );
   expect(newState.variables.entities[`${newActorId}__L0`]?.name).toBe(
-    "Clipboard Variable Name"
+    "Clipboard Variable Name",
   );
 });
 
@@ -1393,7 +1402,7 @@ test("Should not remove trigger outside of delete location", () => {
   const newState = reducer(state, action);
   expect(newState.triggers.ids.length).toBe(1);
   expect(newState.triggers.entities["trigger1"]).toBe(
-    state.triggers.entities.trigger1
+    state.triggers.entities.trigger1,
   );
   expect(newState.scenes.entities["scene1"]?.triggers?.length).toBe(1);
 });
@@ -1409,10 +1418,10 @@ test("Should be able to add a palette", () => {
   const newState = reducer(state, action);
   expect(newState.palettes.ids.length).toBe(1);
   expect(newState.palettes.entities[action.payload.paletteId]?.id).toBe(
-    action.payload.paletteId
+    action.payload.paletteId,
   );
   expect(newState.palettes.entities[action.payload.paletteId]?.colors).toEqual(
-    DMG_PALETTE.colors
+    DMG_PALETTE.colors,
   );
 });
 
@@ -1480,10 +1489,10 @@ test("Should be able to add custom event", () => {
   const newState = reducer(state, action);
   expect(newState.customEvents.ids.length).toBe(1);
   expect(
-    newState.customEvents.entities[action.payload.customEventId]?.name
+    newState.customEvents.entities[action.payload.customEventId]?.name,
   ).toBe("CUSTOM_EVENT 1");
   expect(
-    newState.customEvents.entities[action.payload.customEventId]?.script
+    newState.customEvents.entities[action.payload.customEventId]?.script,
   ).toEqual([]);
 });
 
@@ -1724,7 +1733,7 @@ describe("Actor Prefabs", () => {
 
       expect(newState.actors.entities["actor1"]?.prefabId).toBe("");
       expect(newState.actors.entities["actor1"]?.spriteSheetId).toEqual(
-        "sprite2"
+        "sprite2",
       );
     });
 
@@ -1834,11 +1843,11 @@ describe("Actor Prefabs", () => {
 
       expect(newState.variables.entities["actor1__L0"]).toBeTruthy();
       expect(newState.variables.entities["actor1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
       expect(newState.variables.entities["prefab1__L0"]).toBeTruthy();
       expect(newState.variables.entities["prefab1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
     });
 
@@ -1896,7 +1905,7 @@ describe("Actor Prefabs", () => {
       expect(newState.variables.entities["actor1__L1"]).toBeUndefined();
       expect(newState.variables.entities["actor1__L2"]).toBeTruthy();
       expect(newState.variables.entities["actor1__L2"]?.name).toBe(
-        "Local Variable 2"
+        "Local Variable 2",
       );
     });
 
@@ -2077,7 +2086,7 @@ describe("Actor Prefabs", () => {
       expect(newPrefabId).toBeTruthy();
       expect(newState.actorPrefabs.entities[newPrefabId]).toBeTruthy();
       expect(
-        newState.actorPrefabs.entities[newPrefabId]?.spriteSheetId
+        newState.actorPrefabs.entities[newPrefabId]?.spriteSheetId,
       ).toEqual("sprite1");
     });
 
@@ -2183,11 +2192,11 @@ describe("Actor Prefabs", () => {
       const newPrefabId = newState.actors.entities["actor1"]?.prefabId;
       expect(newState.variables.entities[`${newPrefabId}__L0`]).toBeTruthy();
       expect(newState.variables.entities[`${newPrefabId}__L0`]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
       expect(newState.variables.entities["actor1__L0"]).toBeTruthy();
       expect(newState.variables.entities["actor1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
     });
   });
@@ -2227,10 +2236,10 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).toHaveProperty("event1");
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
       ).toEqual({
         arg1: "value1",
       });
@@ -2275,7 +2284,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
       ).toEqual({
         arg1: "newValue",
       });
@@ -2320,7 +2329,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
       ).toEqual({
         arg1: "value1",
         arg2: "value2",
@@ -2420,7 +2429,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
-        {}
+        {},
       );
     });
 
@@ -2464,7 +2473,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
-        {}
+        {},
       );
     });
   });
@@ -2502,10 +2511,10 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
     });
 
@@ -2556,10 +2565,10 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
     });
 
@@ -2602,7 +2611,7 @@ describe("Actor Prefabs", () => {
         {
           event1: { id: "event1", args: { arg1: "value1" } },
           event3: { id: "event3", args: { arg3: "value3" } },
-        }
+        },
       );
     });
   });
@@ -2662,7 +2671,7 @@ describe("Actor Prefabs", () => {
         arg4: "value4",
       });
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
-        {}
+        {},
       );
     });
 
@@ -2739,10 +2748,10 @@ describe("Actor Prefabs", () => {
         arg3: "value3",
       });
       expect(
-        newState.scriptEvents.entities["nonexistentEvent"]
+        newState.scriptEvents.entities["nonexistentEvent"],
       ).toBeUndefined();
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
-        {}
+        {},
       );
     });
 
@@ -2786,7 +2795,7 @@ describe("Actor Prefabs", () => {
         arg1: "newValue1",
       });
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
-        {}
+        {},
       );
     });
   });
@@ -2838,10 +2847,10 @@ describe("Actor Prefabs", () => {
         arg3: "value3",
       });
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
     });
 
@@ -2912,10 +2921,10 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.scriptEvents.entities["nonexistentEvent"]
+        newState.scriptEvents.entities["nonexistentEvent"],
       ).toBeUndefined();
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides
+        newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("nonexistentEvent");
     });
 
@@ -2976,7 +2985,7 @@ describe("Actor Prefabs", () => {
       expect(newState.actors.entities["actor1"]?.prefabScriptOverrides).toEqual(
         {
           event2: { id: "event2", args: { arg2: "newValue2" } },
-        }
+        },
       );
     });
   });
@@ -3155,11 +3164,11 @@ describe("Trigger Prefabs", () => {
 
       expect(newState.variables.entities["trigger1__L0"]).toBeTruthy();
       expect(newState.variables.entities["trigger1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
       expect(newState.variables.entities["prefab1__L0"]).toBeTruthy();
       expect(newState.variables.entities["prefab1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
     });
 
@@ -3217,7 +3226,7 @@ describe("Trigger Prefabs", () => {
       expect(newState.variables.entities["trigger1__L1"]).toBeUndefined();
       expect(newState.variables.entities["trigger1__L2"]).toBeTruthy();
       expect(newState.variables.entities["trigger1__L2"]?.name).toBe(
-        "Local Variable 2"
+        "Local Variable 2",
       );
     });
 
@@ -3436,11 +3445,11 @@ describe("Trigger Prefabs", () => {
       const newPrefabId = newState.triggers.entities["trigger1"]?.prefabId;
       expect(newState.variables.entities[`${newPrefabId}__L0`]).toBeTruthy();
       expect(newState.variables.entities[`${newPrefabId}__L0`]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
       expect(newState.variables.entities["trigger1__L0"]).toBeTruthy();
       expect(newState.variables.entities["trigger1__L0"]?.name).toBe(
-        "Local Variable 0"
+        "Local Variable 0",
       );
     });
   });
@@ -3480,11 +3489,11 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toHaveProperty("event1");
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args
+          .args,
       ).toEqual({
         arg1: "value1",
       });
@@ -3530,7 +3539,7 @@ describe("Trigger Prefabs", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args
+          .args,
       ).toEqual({
         arg1: "newValue",
       });
@@ -3576,7 +3585,7 @@ describe("Trigger Prefabs", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args
+          .args,
       ).toEqual({
         arg1: "value1",
         arg2: "value2",
@@ -3676,7 +3685,7 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({});
     });
 
@@ -3720,7 +3729,7 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({});
     });
   });
@@ -3758,10 +3767,10 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
     });
 
@@ -3812,10 +3821,10 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
     });
 
@@ -3855,7 +3864,7 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({
         event1: { id: "event1", args: { arg1: "value1" } },
         event3: { id: "event3", args: { arg3: "value3" } },
@@ -3918,7 +3927,7 @@ describe("Trigger Prefabs", () => {
         arg4: "value4",
       });
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({});
     });
 
@@ -3995,10 +4004,10 @@ describe("Trigger Prefabs", () => {
         arg3: "value3",
       });
       expect(
-        newState.scriptEvents.entities["nonexistentEvent"]
+        newState.scriptEvents.entities["nonexistentEvent"],
       ).toBeUndefined();
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({});
     });
 
@@ -4042,7 +4051,7 @@ describe("Trigger Prefabs", () => {
         arg1: "newValue1",
       });
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({});
     });
   });
@@ -4094,10 +4103,10 @@ describe("Trigger Prefabs", () => {
         arg3: "value3",
       });
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("event1");
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toHaveProperty("event2");
     });
 
@@ -4168,10 +4177,10 @@ describe("Trigger Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.scriptEvents.entities["nonexistentEvent"]
+        newState.scriptEvents.entities["nonexistentEvent"],
       ).toBeUndefined();
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).not.toHaveProperty("nonexistentEvent");
     });
 
@@ -4230,7 +4239,7 @@ describe("Trigger Prefabs", () => {
         arg4: "value4",
       });
       expect(
-        newState.triggers.entities["trigger1"]?.prefabScriptOverrides
+        newState.triggers.entities["trigger1"]?.prefabScriptOverrides,
       ).toEqual({
         event2: { id: "event2", args: { arg2: "newValue2" } },
       });
@@ -4283,16 +4292,16 @@ describe("Custom Events", () => {
 
       expect(newState.customEvents.entities["customEvent1"]).toBeUndefined();
       expect(newState.scriptEvents.entities["scriptEvent1"]?.id).toEqual(
-        "scriptEvent1"
+        "scriptEvent1",
       );
       expect(newState.scriptEvents.entities["scriptEvent2"]?.id).toEqual(
-        "scriptEvent2"
+        "scriptEvent2",
       );
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId,
       ).toBeUndefined();
       expect(
-        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId,
       ).toBeUndefined();
       expect(newState.scriptEvents.entities["scriptEvent3"]?.args).toEqual({});
     });
@@ -4382,10 +4391,10 @@ describe("Custom Events", () => {
 
       expect(newState.customEvents.entities["customEvent1"]).toBeDefined();
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId,
       ).toBe("customEvent1");
       expect(
-        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId,
       ).toBe("customEvent1");
     });
 
@@ -4427,10 +4436,10 @@ describe("Custom Events", () => {
 
       expect(newState.customEvents.entities["customEvent1"]).toBeUndefined();
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.customEventId,
       ).toBeUndefined();
       expect(
-        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId
+        newState.scriptEvents.entities["scriptEvent2"]?.args?.customEventId,
       ).toBe("someOtherCustomEvent");
     });
   });
@@ -4469,10 +4478,10 @@ describe("Script Event Presets", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg,
       ).toBe("newValue");
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.otherArg
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.otherArg,
       ).toBe("toRemain");
     });
 
@@ -4506,7 +4515,7 @@ describe("Script Event Presets", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg,
       ).toBe("initialValue");
     });
 
@@ -4546,7 +4555,7 @@ describe("Script Event Presets", () => {
 
       expect(
         newState.actors.entities["actor1"]?.prefabScriptOverrides.override1.args
-          ?.someArg
+          ?.someArg,
       ).toBe("newValue");
     });
 
@@ -4586,7 +4595,7 @@ describe("Script Event Presets", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides.override1
-          .args?.someArg
+          .args?.someArg,
       ).toBe("newValue");
     });
 
@@ -4621,10 +4630,10 @@ describe("Script Event Presets", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.someArg,
       ).toBe("unchangedValue");
       expect(
-        newState.scriptEvents.entities["scriptEvent1"]?.args?.otherArg
+        newState.scriptEvents.entities["scriptEvent1"]?.args?.otherArg,
       ).toBe("newValue");
     });
 
@@ -4715,7 +4724,7 @@ describe("Metasprites", () => {
         tiles: [],
       });
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual([afterMetaspriteId, newMetaspriteId]);
     });
 
@@ -4746,7 +4755,7 @@ describe("Metasprites", () => {
         tiles: [],
       });
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual(["metasprite_1", newMetaspriteId]);
     });
 
@@ -4827,13 +4836,13 @@ describe("Metasprites", () => {
 
       // Check if new tiles are created
       const newTiles = Object.values(newState.metaspriteTiles.entities).filter(
-        (tile) => tile.id !== "tile_1" && tile.id !== "tile_2"
+        (tile) => tile.id !== "tile_1" && tile.id !== "tile_2",
       );
       expect(newTiles.length).toBe(2);
 
       // Check if frames are updated correctly
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual([
         metaspriteId1,
         metaspriteId2,
@@ -4884,7 +4893,7 @@ describe("Metasprites", () => {
 
       expect(newState.metasprites.entities[metaspriteId]).toBeUndefined();
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual(["metasprite_2"]);
     });
 
@@ -4912,7 +4921,7 @@ describe("Metasprites", () => {
 
       expect(newState.metasprites.entities[metaspriteId].tiles).toEqual([]);
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual([metaspriteId]);
     });
 
@@ -4966,7 +4975,7 @@ describe("Metasprites", () => {
       expect(newState.metasprites.entities["metasprite_1"]).toBeUndefined();
       expect(newState.metasprites.entities["metasprite_2"]).toBeUndefined();
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual(["metasprite_3"]);
     });
 
@@ -5000,7 +5009,7 @@ describe("Metasprites", () => {
       expect(newState.metasprites.entities["metasprite_2"]).toBeUndefined();
       expect(newState.metasprites.entities["metasprite_1"].tiles).toEqual([]);
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames
+        newState.spriteAnimations.entities[spriteAnimationId].frames,
       ).toEqual(["metasprite_1"]);
     });
 

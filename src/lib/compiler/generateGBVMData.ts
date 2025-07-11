@@ -1236,6 +1236,7 @@ export const replaceScriptSymbols = (
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
+  engineConstants: Record<string, number>,
   stateReferences: string[],
 ) => {
   const variables = Object.values(variableAliasLookup).map(
@@ -1254,6 +1255,11 @@ export const compileGameGlobalsInclude = (
         return `${constant.symbol.toLocaleUpperCase()} = ${constant.value}\n`;
       })
       .join("") +
+    Object.entries(engineConstants)
+      .map(([name, value]) => {
+        return `${name} = ${value}\n`;
+      })
+      .join("") +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
@@ -1265,6 +1271,7 @@ export const compileGameGlobalsInclude = (
 export const compileGameGlobalsHeader = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
+  engineConstants: Record<string, number>,
   stateReferences: string[],
 ) => {
   return (
@@ -1282,6 +1289,11 @@ export const compileGameGlobalsHeader = (
         return `#define ${constant.symbol.toLocaleUpperCase()} ${
           constant.value
         }\n`;
+      })
+      .join("") +
+    Object.entries(engineConstants)
+      .map(([name, value]) => {
+        return `#define ${name} ${value}\n`;
       })
       .join("") +
     stateReferences

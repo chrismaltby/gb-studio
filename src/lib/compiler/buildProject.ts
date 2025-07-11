@@ -1,19 +1,15 @@
 import fs from "fs-extra";
 import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import { ProjectResources } from "shared/lib/resources/types";
 import { buildRunner } from "./buildRunner";
+import { EngineSchema } from "lib/project/loadEngineSchema";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
   projectRoot: string;
   tmpPath: string;
-  engineFields: EngineFieldSchema[];
-  sceneTypes: SceneTypeSchema[];
+  engineSchema: EngineSchema;
   outputRoot: string;
   make?: boolean;
   debugEnabled?: boolean;
@@ -30,8 +26,7 @@ const buildProject = async (
     buildType = "rom",
     projectRoot = "/tmp",
     tmpPath = "/tmp",
-    engineFields = [],
-    sceneTypes = [],
+    engineSchema,
     outputRoot = "/tmp/testing",
     debugEnabled = false,
     make = true,
@@ -45,8 +40,7 @@ const buildProject = async (
     project,
     buildType,
     projectRoot,
-    engineFields,
-    sceneTypes,
+    engineSchema,
     tmpPath,
     outputRoot,
     debugEnabled,

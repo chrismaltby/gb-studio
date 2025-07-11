@@ -1,4 +1,7 @@
-import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
+  EngineFieldCType,
+  EngineFieldSchema,
+} from "store/features/engine/engineState";
 import type {
   ActorDirection,
   EngineFieldValue,
@@ -27,6 +30,15 @@ interface InitialState {
   usedSceneTypeIds: string[];
 }
 
+const roundValue = (
+  value: string | number | boolean | undefined,
+): string | number | boolean | undefined => {
+  if (typeof value === "number") {
+    return Math.floor(value);
+  }
+  return value;
+};
+
 export const compileScriptEngineInit = ({
   startX,
   startY,
@@ -43,9 +55,51 @@ export const compileScriptEngineInit = ({
   const usedEngineFields = engineFields.filter(
     (engineField: EngineFieldSchema) =>
       engineField.cType !== "define" &&
+      engineField.key?.length > 0 &&
       (!engineField.sceneType ||
         usedSceneTypeIds.includes(engineField.sceneType)),
   );
+  const engineFieldInitialValues = usedEngineFields.reduce(
+    (memo, engineField) => {
+      if (engineField.cType === "define" || engineField.runtimeOnly) {
+        return memo;
+      }
+      const engineValue = engineFieldValues.find(
+        (v) => v.id === engineField.key,
+      );
+      const value = roundValue(
+        engineValue && engineValue.value !== undefined
+          ? engineValue.value
+          : engineField.defaultValue,
+      );
+      memo.push({
+        cType: engineField.cType,
+        key: engineField.key,
+        value,
+      });
+      return memo;
+    },
+    [] as Array<{
+      cType: EngineFieldCType;
+      key: string;
+      value: string | number | boolean | undefined;
+    }>,
+  );
+  const engineFieldInitRPN =
+    engineFieldInitialValues.length === 0
+      ? ""
+      : "VM_RPN\n" +
+        engineFieldInitialValues
+          .map(({ cType, key, value }) => {
+            if (cType === "WORD" || cType === "UWORD") {
+              return `            .R_INT16 ${value}\n            .R_REF_MEM_SET .MEM_I16, _${key}\n`;
+            } else if (cType === "BYTE" || cType === "UBYTE") {
+              return `            .R_INT8 ${value}\n            .R_REF_MEM_SET .MEM_I8, _${key}\n`;
+            }
+            return "";
+          })
+          .join("") +
+        "            .R_STOP";
 
   return `.include "vm.i"
 .include "macro.i"
@@ -88,20 +142,7 @@ ${usedEngineFields
   .join("\n")}
 
 _script_engine_init::
-${usedEngineFields
-  .map((engineField) => {
-    if (engineField.cType === "define") {
-      return "";
-    }
-    const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
-    const value =
-      engineValue && engineValue.value !== undefined
-        ? engineValue.value
-        : engineField.defaultValue;
-    const gbvmSetConstInstruction = gbvmSetConstForCType(engineField.cType);
-    return `        ${gbvmSetConstInstruction}      _${engineField.key}, ${value}`;
-  })
-  .join("\n")}
+        ${engineFieldInitRPN}
 
         ; return from init routine
         VM_RET_FAR

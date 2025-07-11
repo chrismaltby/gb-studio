@@ -286,9 +286,8 @@ API.events.watch.ui.removed.subscribe(() => {
 
 // Watch Engine Schema
 
-API.events.watch.engineSchema.changed.subscribe((_, fields, sceneTypes) => {
-  store.dispatch(engineActions.setEngineFields(fields));
-  store.dispatch(engineActions.setScenetypes(sceneTypes));
+API.events.watch.engineSchema.changed.subscribe((_, engineSchema) => {
+  store.dispatch(engineActions.setEngineSchema(engineSchema));
 });
 
 // Script Event Defs

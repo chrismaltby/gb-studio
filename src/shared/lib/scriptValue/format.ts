@@ -19,7 +19,7 @@ export const scriptValueToString = (
   if (!value) {
     return "0";
   }
-  if (value.type === "number") {
+  if (value.type === "number" || value.type === "numberSymbol") {
     return String(value.value);
   } else if (value.type === "variable") {
     return options.variableNameForId(value.value);
