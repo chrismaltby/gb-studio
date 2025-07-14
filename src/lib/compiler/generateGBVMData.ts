@@ -211,33 +211,33 @@ export const toASMCollisionGroup = (
   }
 
   if (extras && extras.length > 0) {
-    return (
-      baseGroup +
-      " | " +
-      extras
-        .map((group) => {
-          if (group === "1") {
-            return "COLLISION_GROUP_FLAG_1";
-          }
-          if (group === "2") {
-            return "COLLISION_GROUP_FLAG_2";
-          }
-          if (group === "3") {
-            return "COLLISION_GROUP_FLAG_3";
-          }
-          if (group === "4") {
-            return "COLLISION_GROUP_FLAG_4";
-          }
-          if (group === "solid") {
-            return "COLLISION_GROUP_FLAG_SOLID";
-          }
-          if (group === "platform") {
-            return "COLLISION_GROUP_FLAG_PLATFORM";
-          }
-          return "";
-        })
-        .join(" | ")
-    );
+    const extraFlags = extras
+      .map((group) => {
+        if (group === "1") {
+          return "COLLISION_GROUP_FLAG_1";
+        }
+        if (group === "2") {
+          return "COLLISION_GROUP_FLAG_2";
+        }
+        if (group === "3") {
+          return "COLLISION_GROUP_FLAG_3";
+        }
+        if (group === "4") {
+          return "COLLISION_GROUP_FLAG_4";
+        }
+        if (group === "solid") {
+          return "COLLISION_GROUP_FLAG_SOLID";
+        }
+        if (group === "platform") {
+          return "COLLISION_GROUP_FLAG_PLATFORM";
+        }
+        return "";
+      })
+      .filter((group) => group !== "")
+      .join(" | ");
+    if (extraFlags !== "") {
+      return baseGroup + " | " + extraFlags;
+    }
   }
 
   return baseGroup;
