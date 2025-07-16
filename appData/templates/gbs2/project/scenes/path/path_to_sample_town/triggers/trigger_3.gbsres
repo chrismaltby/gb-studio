@@ -12,30 +12,11 @@
   "prefabScriptOverrides": {},
   "script": [
     {
-      "id": "c698e365-aff2-47be-9e0b-ef1d74eb1751",
-      "command": "EVENT_ACTOR_SET_POSITION",
+      "command": "EVENT_PLATFORMER_STATE_SET",
       "args": {
-        "actorId": "$self$",
-        "x": {
-          "type": "number",
-          "value": 100
-        },
-        "y": {
-          "type": "number",
-          "value": 13
-        }
-      }
-    },
-    {
-      "id": "56f6872d-7a5f-4fe6-a5e7-5d1f8a7823af",
-      "command": "EVENT_CAMERA_SHAKE",
-      "args": {
-        "time": 0.1,
-        "magnitude": {
-          "type": "number",
-          "value": 5
-        }
-      }
+        "state": "blank"
+      },
+      "id": "e4bbea2c-40ac-4234-87bf-00619dca8a67"
     }
   ],
   "leaveScript": []
