@@ -4,87 +4,87 @@
     {
       "id": "0",
       "name": "Quest1",
-      "symbol": ""
+      "symbol": "var_quest1"
     },
     {
       "id": "1",
       "name": "Quest2",
-      "symbol": ""
+      "symbol": "var_quest2"
     },
     {
       "id": "2",
       "name": "Quest3",
-      "symbol": ""
+      "symbol": "var_quest3"
     },
     {
       "id": "3",
       "name": "Quest4",
-      "symbol": ""
+      "symbol": "var_quest4"
     },
     {
       "id": "4",
       "name": "Quest5",
-      "symbol": ""
+      "symbol": "var_quest5"
     },
     {
       "id": "5",
       "name": "Quest6",
-      "symbol": ""
+      "symbol": "var_quest6"
     },
     {
       "id": "6",
       "name": "Quest7",
-      "symbol": ""
+      "symbol": "var_quest7"
     },
     {
       "id": "7",
       "name": "Quest8",
-      "symbol": ""
+      "symbol": "var_quest8"
     },
     {
       "id": "8",
       "name": "Quest9",
-      "symbol": ""
+      "symbol": "var_quest9"
     },
     {
       "id": "9",
       "name": "Quest10",
-      "symbol": ""
+      "symbol": "var_quest10"
     },
     {
       "id": "10",
       "name": "Quest11",
-      "symbol": ""
+      "symbol": "var_quest11"
     },
     {
       "id": "11",
       "name": "Quest12",
-      "symbol": ""
+      "symbol": "var_quest12"
     },
     {
       "id": "12",
       "name": "Turnip Counter",
-      "symbol": ""
+      "symbol": "var_turnip_counter"
     },
     {
       "id": "13",
       "name": "Seen Cat",
-      "symbol": ""
+      "symbol": "var_seen_cat"
     },
     {
       "id": "14",
       "name": "Used Radio",
-      "symbol": ""
+      "symbol": "var_used_radio"
     },
     {
       "id": "15",
       "name": "Seen Duck",
-      "symbol": ""
+      "symbol": "var_seen_duck"
     },
     {
       "id": "16",
       "name": "Pushed Ice Block",
-      "symbol": ""
+      "symbol": "var_pushed_ice_block"
     },
     {
       "id": "17",
@@ -94,32 +94,32 @@
     {
       "id": "871ea302-1cc1-463c-b9d7-530aac38fe81__L0",
       "name": "Spoken to gardener",
-      "symbol": ""
+      "symbol": "var_spoken_to_gardener"
     },
     {
       "id": "dee20f46-fcaa-4473-94b1-9817dbd99fd8__L0",
       "name": "Save Choice",
-      "symbol": ""
+      "symbol": "var_save_choice"
     },
     {
       "id": "4159e95b-34e4-42e8-bf25-67f2078e804f__L0",
       "name": "Defeated",
-      "symbol": ""
+      "symbol": "var_defeated"
     },
     {
       "id": "2f01ca47-9361-4271-b1f2-75d55e85bf1f__L0",
       "name": "Defeated",
-      "symbol": ""
+      "symbol": "var_defeated_0"
     },
     {
       "id": "98159e3a-0bfe-44ec-8312-9dcef04c253f__L0",
       "name": "Defeated",
-      "symbol": ""
+      "symbol": "var_defeated_1"
     },
     {
       "id": "4912bee2-387a-472f-ae4f-6679b6149517__L0",
       "name": "Menu Choice",
-      "symbol": ""
+      "symbol": "var_menu_choice"
     },
     {
       "id": "02504caf-8b1c-42b1-986f-bf5014097aa6__L0",
@@ -149,7 +149,8 @@
     {
       "id": "5fa52cd0-57cd-414c-8b93-5601c6e9636f__L0",
       "name": "Defeated",
-      "symbol": ""
+      "symbol": "var_defeated_2"
     }
-  ]
+  ],
+  "constants": []
 }

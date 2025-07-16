@@ -7,6 +7,8 @@
   "startAnimSpeed": 15,
   "startDirection": "right",
   "showCollisionExtraTiles": false,
+  "showCollisionTileValues": false,
+  "collisionLayerOpacity": 50,
   "sgbEnabled": false,
   "customHead": "",
   "defaultBackgroundPaletteIds": [
@@ -82,8 +84,10 @@
     "Shift"
   ],
   "colorMode": "mono",
+  "colorCorrection": "default",
   "generateDebugFilesEnabled": false,
   "compilerPreset": 3000,
   "scriptEventPresets": {},
-  "scriptEventDefaultPresets": {}
+  "scriptEventDefaultPresets": {},
+  "runSceneSelectionOnly": false
 }
