@@ -150,6 +150,11 @@
       "id": "5fa52cd0-57cd-414c-8b93-5601c6e9636f__L0",
       "name": "Defeated",
       "symbol": "var_defeated_2"
+    },
+    {
+      "id": "18",
+      "name": "Health",
+      "symbol": "var_health"
     }
   ],
   "constants": []
