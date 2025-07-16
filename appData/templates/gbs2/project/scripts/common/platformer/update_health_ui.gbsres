@@ -1,7 +1,7 @@
 {
   "_resourceType": "script",
   "id": "81daf0f4-6d57-4b0a-976d-a2b499989b38",
-  "name": "common/Update Health UI",
+  "name": "common/Platformer/Update Health UI",
   "description": "",
   "variables": {},
   "actors": {
