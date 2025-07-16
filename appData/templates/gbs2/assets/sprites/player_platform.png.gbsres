@@ -751,9 +751,142 @@
           ]
         }
       ]
+    },
+    {
+      "id": "46950905-435c-4d0f-956c-058218a29370",
+      "name": "Hurt",
+      "animations": [
+        {
+          "id": "aa3c867d-18d8-434e-9ce8-93d215d62dce",
+          "frames": [
+            {
+              "id": "ba91ce94-2efd-406d-8264-0db97cf1a983",
+              "tiles": [
+                {
+                  "id": "a0f3d8c1-d239-4d0c-a465-bdff5bc86591",
+                  "x": 0,
+                  "y": 0,
+                  "sliceX": 8,
+                  "sliceY": 96,
+                  "palette": 0,
+                  "flipX": false,
+                  "flipY": false,
+                  "objPalette": "OBP0",
+                  "paletteIndex": 0,
+                  "priority": false
+                },
+                {
+                  "id": "5d2f4374-485e-44f6-ac57-49aacc322ac6",
+                  "x": 8,
+                  "y": 0,
+                  "sliceX": 16,
+                  "sliceY": 96,
+                  "palette": 0,
+                  "flipX": false,
+                  "flipY": false,
+                  "objPalette": "OBP0",
+                  "paletteIndex": 0,
+                  "priority": false
+                },
+                {
+                  "id": "198c6fca-f35c-40cf-901f-f4fcea8685a6",
+                  "x": 0,
+                  "y": 12,
+                  "sliceX": 64,
+                  "sliceY": 120,
+                  "palette": 0,
+                  "flipX": false,
+                  "flipY": false,
+                  "objPalette": "OBP0",
+                  "paletteIndex": 0,
+                  "priority": false
+                },
+                {
+                  "id": "17e025bf-51d4-4c05-8f32-830f04c0f1cd",
+                  "x": 8,
+                  "y": 12,
+                  "sliceX": 72,
+                  "sliceY": 120,
+                  "palette": 0,
+                  "flipX": false,
+                  "flipY": false,
+                  "objPalette": "OBP0",
+                  "paletteIndex": 0,
+                  "priority": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "35d321bc-7527-4701-bed7-8780c0850576",
+          "frames": [
+            {
+              "id": "e786bd00-7448-4bdc-a676-c72574b56a46",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "7444335a-b758-4fca-80f7-d96687a625bc",
+          "frames": [
+            {
+              "id": "2fc6ad8d-1a40-418c-b503-764c113b4e99",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "aaa8e8c0-a2b7-44c6-be87-6496b0993491",
+          "frames": [
+            {
+              "id": "33bb3a3c-99ea-400d-af68-4b70f71c4581",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "2c4e7b4e-95d3-4c14-a777-e90d4f4b8b15",
+          "frames": [
+            {
+              "id": "c1533468-0bf3-47e7-8f7f-d53cdc93c936",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "ca44d023-d335-43dd-873f-888be5834fcf",
+          "frames": [
+            {
+              "id": "e9694624-4948-473b-ac2c-7068f6b1d70a",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "c5d310a3-e969-425f-a2b2-8649af539839",
+          "frames": [
+            {
+              "id": "54c98592-74ce-4381-b414-400432769c73",
+              "tiles": []
+            }
+          ]
+        },
+        {
+          "id": "7c353f61-ed7c-4ea6-9890-93cbebf3e6dc",
+          "frames": [
+            {
+              "id": "4bf29f8a-b280-44d2-827e-b23da3627a30",
+              "tiles": []
+            }
+          ]
+        }
+      ],
+      "animationType": "horizontal",
+      "flipLeft": true
     }
   ],
-  "numTiles": 17,
+  "numTiles": 19,
   "canvasWidth": 32,
   "canvasHeight": 32,
   "boundsX": 0,
@@ -764,6 +897,6 @@
   "filename": "player_platform.png",
   "width": 88,
   "height": 160,
-  "checksum": "eea46c3f4a89b044d31ad1e87b9854a4063aeb72",
+  "checksum": "d2dfa070a04930a12ff78e39011b248fd2e50ee6",
   "numFrames": 5.5
 }

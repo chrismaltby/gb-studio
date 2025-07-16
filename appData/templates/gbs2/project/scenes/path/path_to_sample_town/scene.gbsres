@@ -319,6 +319,31 @@
             "args": {
               "time": {
                 "type": "number",
+                "value": 1
+              },
+              "frames": {
+                "type": "number",
+                "value": 1
+              }
+            },
+            "id": "4aea8142-7b1c-4f09-ac6e-650dcc6f1929"
+          },
+          {
+            "command": "EVENT_ENGINE_FIELD_SET",
+            "args": {
+              "engineFieldKey": "plat_blank_grav",
+              "value": {
+                "type": "number",
+                "value": 1802
+              }
+            },
+            "id": "60b750d5-90b2-47ce-926e-064e65503efb"
+          },
+          {
+            "command": "EVENT_WAIT",
+            "args": {
+              "time": {
+                "type": "number",
                 "value": 3
               },
               "frames": {
@@ -379,6 +404,13 @@
               "$actor[0]$": "8f5f5957-42fe-4d73-9633-15d497f65d3b"
             },
             "id": "cb983f6d-7503-4a34-8256-5b790e6c894e"
+          },
+          {
+            "command": "EVENT_ENGINE_FIELD_SET",
+            "args": {
+              "engineFieldKey": "plat_blank_grav"
+            },
+            "id": "e505f792-2155-4e6e-82ef-b59a03572838"
           }
         ]
       },

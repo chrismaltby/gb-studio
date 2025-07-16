@@ -15,7 +15,15 @@
     },
     {
       "id": "plat_blank_grav",
-      "value": 1802
+      "value": 0
+    },
+    {
+      "id": "PLATFORM_KNOCKBACK_ANIM",
+      "value": "Hurt"
+    },
+    {
+      "id": "PLATFORM_BLANK_ANIM",
+      "value": "Hurt"
     }
   ]
 }
