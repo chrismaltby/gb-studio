@@ -108,6 +108,7 @@ interface StyledScriptEventHeaderProps {
   $nestLevel: number;
   $isConditional?: boolean;
   $isComment?: boolean;
+  $isDisabled?: boolean;
   $isSelected?: boolean;
   $isExecuting?: boolean;
   $altBg?: boolean;
@@ -171,6 +172,16 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
           }
         `
       : ""}
+
+  ${(props) =>
+    props.$isDisabled
+      ? css`
+          &&& {
+            background: ${(props) =>
+              props.theme.colors.scripting.header.disabledBackground};
+          }
+        `
+      : ""}      
 
   ${(props) =>
     props.$isSelected

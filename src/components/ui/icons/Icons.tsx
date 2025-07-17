@@ -38,8 +38,8 @@ export const DotsIcon = () => (
 
 export const CommentIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
-    <path d="M21 0H24L14.5 24H11.5L21 0Z" fill="black" />
-    <path d="M9.5 4.63426e-06H12.5L3 24H0L9.5 4.63426e-06Z" fill="black" />
+    <path d="M21 0H24L14.5 24H11.5L21 0Z" />
+    <path d="M9.5 4.63426e-06H12.5L3 24H0L9.5 4.63426e-06Z" />
   </svg>
 );
 
