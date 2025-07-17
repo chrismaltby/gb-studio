@@ -68,7 +68,7 @@ const fields = [
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
           type: "number",
-          value: 0,
+          value: 20,
         },
       },
       {
@@ -84,7 +84,7 @@ const fields = [
         unitsAllowed: ["tiles", "pixels"],
         defaultValue: {
           type: "number",
-          value: 0,
+          value: 18,
         },
       },
     ],
