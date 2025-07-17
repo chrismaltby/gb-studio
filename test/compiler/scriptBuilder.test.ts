@@ -14,6 +14,42 @@ import {
 } from "../dummydata";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 
+const createTestScriptBuilder = async (
+  sceneOverrides: Record<string, unknown> = {},
+  optionsOverrides: Partial<ScriptBuilderOptions> = {},
+) => {
+  const output: string[] = [];
+  const scriptEventHandlers = await getTestScriptHandlers();
+
+  const defaultScene = {
+    id: "scene1",
+    name: "Scene 1",
+    symbol: "scene_1",
+    width: 20,
+    height: 18,
+    background: dummyPrecompiledBackground,
+    playerSprite: dummyPrecompiledSpriteSheet,
+    sprites: [],
+    parallax: [],
+    actorsExclusiveLookup: {},
+    type: "TOPDOWN",
+    actors: [],
+    triggers: [],
+    projectiles: [],
+    ...sceneOverrides,
+  } as unknown as PrecompiledScene;
+
+  const defaultOptions: Partial<ScriptBuilderOptions> = {
+    scriptEventHandlers,
+    scene: defaultScene,
+    ...optionsOverrides,
+  };
+
+  const sb = new ScriptBuilder(output, defaultOptions as ScriptBuilderOptions);
+
+  return { sb, output };
+};
+
 test("Should be able to set active actor to player", async () => {
   const output: string[] = [];
   const scriptEventHandlers = await getTestScriptHandlers();
@@ -3764,5 +3800,235 @@ describe("actorMoveToScriptValues", () => {
     expect([
       ...sb.toScriptString("MY_SCRIPT", false).matchAll(/\.R_OPERATOR \.SHR/g),
     ]).toHaveLength(0);
+  });
+});
+
+describe("cameraSetBoundsToScriptValues", () => {
+  test("should set camera bounds with simple number values", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "number", value: 2 },
+      { type: "number", value: 3 },
+      { type: "number", value: 25 },
+      { type: "number", value: 20 },
+      "tiles",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(
+      /\.R_INT16\s+16\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+24\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+56\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_max/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+40\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_max/,
+    );
+  });
+
+  test("should set camera bounds with variable values", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "variable", value: "0" },
+      { type: "variable", value: "1" },
+      { type: "variable", value: "2" },
+      { type: "variable", value: "3" },
+      "tiles",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(
+      /\.R_REF\s+VAR_VARIABLE_0[\s\S]*?\.R_INT16\s+3[\s\S]*?\.R_OPERATOR\s+\.SHL[\s\S]*?\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_min/,
+    );
+    expect(script).toMatch(
+      /\.R_REF\s+VAR_VARIABLE_1[\s\S]*?\.R_INT16\s+3[\s\S]*?\.R_OPERATOR\s+\.SHL[\s\S]*?\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_min/,
+    );
+    expect(script).toMatch(
+      /\.R_REF\s+VAR_VARIABLE_2[\s\S]*?\.R_INT16\s+3[\s\S]*?\.R_OPERATOR\s+\.SHL[\s\S]*?\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_max/,
+    );
+    expect(script).toMatch(
+      /\.R_REF\s+VAR_VARIABLE_3[\s\S]*?\.R_INT16\s+3[\s\S]*?\.R_OPERATOR\s+\.SHL[\s\S]*?\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_max/,
+    );
+  });
+
+  test("should set camera bounds with pixel units", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "number", value: 16 },
+      { type: "number", value: 24 },
+      { type: "number", value: 200 },
+      { type: "number", value: 160 },
+      "pixels",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(
+      /\.R_INT16\s+16\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+24\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+56\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_max/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+40\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_max/,
+    );
+  });
+
+  test("should handle complex script values with calculations", async () => {
+    const { sb } = await createTestScriptBuilder({
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
+    });
+
+    sb.cameraSetBoundsToScriptValues(
+      {
+        type: "add",
+        valueA: { type: "number", value: 2 },
+        valueB: { type: "variable", value: "0" },
+      },
+      {
+        type: "sub",
+        valueA: { type: "number", value: 10 },
+        valueB: { type: "number", value: 3 },
+      },
+      {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+      { type: "number", value: 20 },
+      "tiles",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_min/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_min/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_max/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_max/);
+    expect(script).toMatch(
+      /\.R_INT16\s+2[\s\S]*?\.R_REF\s+VAR_VARIABLE_0[\s\S]*?\.R_OPERATOR\s+\.ADD/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+56\s+\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_min/,
+    );
+  });
+
+  test("should combine all calculations into a single RPN call", async () => {
+    const { sb } = await createTestScriptBuilder({
+      actors: [
+        { ...dummyActorNormalized, id: "actor1" },
+        { ...dummyActorNormalized, id: "actor2" },
+      ],
+    });
+
+    sb.cameraSetBoundsToScriptValues(
+      {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "actor1",
+          property: "xpos",
+        },
+        valueB: {
+          type: "property",
+          target: "actor2",
+          property: "ypos",
+        },
+      },
+      {
+        type: "add",
+        valueA: { type: "number", value: 2 },
+        valueB: { type: "expression", value: "$16$ + 5" },
+      },
+      { type: "number", value: 30 },
+      { type: "number", value: 25 },
+      "tiles",
+    );
+
+    expect([
+      ...sb.toScriptString("MY_SCRIPT", false).matchAll(/VM_RPN/g),
+    ]).toHaveLength(1);
+  });
+
+  test("should handle default units parameter", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "number", value: 1 },
+      { type: "number", value: 1 },
+      { type: "number", value: 20 },
+      { type: "number", value: 18 },
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(
+      /\.R_INT16\s+8\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+8\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+8\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_max/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+8\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_max/,
+    );
+  });
+
+  test("should handle zero values", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "number", value: 0 },
+      { type: "number", value: 0 },
+      { type: "number", value: 0 },
+      { type: "number", value: 0 },
+      "tiles",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(
+      /\.R_INT16\s+0\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+0\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_min/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+0\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_x_max/,
+    );
+    expect(script).toMatch(
+      /\.R_INT16\s+0\s+\.R_REF_MEM_SET \.MEM_I16, _scroll_y_max/,
+    );
+  });
+
+  test("should handle expression values", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    sb.cameraSetBoundsToScriptValues(
+      { type: "expression", value: "$16$ + $17$" },
+      { type: "expression", value: "$18$ - 5" },
+      { type: "expression", value: "25 * 2" },
+      { type: "expression", value: "18 + 2" },
+      "tiles",
+    );
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_min/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_min/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_x_max/);
+    expect(script).toMatch(/\.R_REF_MEM_SET\s+\.MEM_I16,\s+_scroll_y_max/);
+    expect(script).toMatch(/\.R_OPERATOR\s+\.ADD/); // For "$16$ + $17$" and "18 + 2"
+    expect(script).toMatch(/\.R_OPERATOR\s+\.SUB/); // For "$18$ - 5"
+    expect(script).toContain(".R_INT16    400"); // Pre-calculated result of 25 * 2
+    expect(script).toContain("VAR_VARIABLE_16"); // From "$16$"
+    expect(script).toContain("VAR_VARIABLE_17"); // From "$17$"
+    expect(script).toContain("VAR_VARIABLE_18"); // From "$18$"
   });
 });

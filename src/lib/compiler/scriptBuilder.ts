@@ -32,7 +32,14 @@ import {
   PrecompiledBackground,
   PrecompiledProjectile,
 } from "./generateGBVMData";
-import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
+import {
+  DMG_PALETTE,
+  LYC_SYNC_VALUE,
+  SCENE_MAX_SIZE_PX,
+  SCREEN_HEIGHT_PX,
+  SCREEN_WIDTH_PX,
+  defaultProjectSettings,
+} from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -76,6 +83,7 @@ import {
   shiftLeftScriptValueConst,
   clampScriptValueConst,
   maskScriptValueConst,
+  subScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -86,6 +94,7 @@ import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
   pxToSubpx,
   pxToSubpxVel,
+  pxShiftForUnits,
   subpxShiftForUnits,
   subpxSnapMaskForUnits,
   tileToSubpx,
@@ -679,6 +688,13 @@ const scriptValueToSubpixels = (
   units: DistanceUnitType,
 ) => {
   return shiftLeftScriptValueConst(value, subpxShiftForUnits(units));
+};
+
+const scriptValueToPixels = (value: ScriptValue, units: DistanceUnitType) => {
+  if (units === "pixels") {
+    return value;
+  }
+  return shiftLeftScriptValueConst(value, pxShiftForUnits(units));
 };
 
 const _snapScriptValueToUnits = (
@@ -1511,6 +1527,11 @@ class ScriptBuilder {
         rpnStackSize++;
         return rpn;
       },
+      memSet: (type: RPNMemType, address: string) => {
+        rpnCmd(".R_REF_MEM_SET", type, `_${address}`);
+        rpnStackSize--;
+        return rpn;
+      },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
         if (!rpnUnaryOperators.includes(op)) {
@@ -1607,7 +1628,7 @@ class ScriptBuilder {
         case "numberSymbol": {
           rpn.int16(rpnOp.value ?? 0);
           break;
-        }     
+        }
         case "constant": {
           rpn.intConstant(rpnOp.value);
           break;
@@ -4723,6 +4744,78 @@ extern void __mute_mask_${symbol};
     }
 
     this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  cameraSetBoundsToScriptValues = (
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    width: ScriptValue,
+    height: ScriptValue,
+    units: DistanceUnitType = "tiles",
+  ) => {
+    this._addComment("Camera Set Bounds");
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToPixels(valueX, units)),
+      "x",
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToPixels(valueY, units)),
+      "y",
+    );
+    const [rpnOpsWidth, fetchOpsWidth] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          addScriptValueToScriptValue(
+            clampScriptValueConst(
+              scriptValueToPixels(width, units),
+              SCREEN_WIDTH_PX,
+              SCENE_MAX_SIZE_PX,
+            ),
+            scriptValueToPixels(valueX, units),
+          ),
+          SCREEN_WIDTH_PX,
+        ),
+      ),
+      "width",
+    );
+    const [rpnOpsHeight, fetchOpsHeight] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          addScriptValueToScriptValue(
+            clampScriptValueConst(
+              scriptValueToPixels(height, units),
+              SCREEN_HEIGHT_PX,
+              SCENE_MAX_SIZE_PX,
+            ),
+            scriptValueToPixels(valueY, units),
+          ),
+          SCREEN_HEIGHT_PX,
+        ),
+      ),
+      "height",
+    );
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+      ...fetchOpsWidth,
+      ...fetchOpsHeight,
+    ]);
+    const rpn = this._rpn();
+    this._addComment(`-- Calculate bounds values`);
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_x_min");
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_y_min");
+    // Width Value
+    this._performValueRPN(rpn, rpnOpsWidth, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_x_max");
+    // Height Value
+    this._performValueRPN(rpn, rpnOpsHeight, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_y_max");
+    rpn.stop();
     this._addNL();
   };
 

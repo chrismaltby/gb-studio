@@ -30,6 +30,8 @@ export type ScriptEventHelperDef =
       type: "camera";
       x: string;
       y: string;
+      width?: string;
+      height?: string;
       units?: string;
     }
   | {

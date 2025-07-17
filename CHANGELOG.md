@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new features to Platformer scene type based on Platformer+ plugin. Functionality like dashing, double jump, coyote time, fall through, wall jumps, knockback are now included in the inbuilt Platformer, each feature is optional and if disabled will not affect your game's performance.
 - Add ability for actors in Platformer scenes to be marked as "Solid" or "Platform" allowing moving platforms. Scene plugins can opt in to this also
 - Add new event "Attach Script To Platformer Event Callback" allowing scripts to be triggered by events occuring within platformer scenes
+- Add support for setting per scene camera bounds, constraining the min/max scrollable area
+- Add a "Set Camera Bounds" event to allow scripts to adjust min/max scroll limits at runtime
 
 ### Changed
 

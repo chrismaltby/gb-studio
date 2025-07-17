@@ -40,6 +40,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
+import SceneScrollBounds from "./SceneScrollBounds";
 
 const TILE_SIZE = 8;
 
@@ -703,6 +704,16 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                 slopePreview={slopePreview}
               />
             )}
+          </SceneOverlay>
+        )}
+
+        {scene.scrollBounds && showLayers && (
+          <SceneOverlay $noPointerEvents>
+            <SceneScrollBounds
+              width={scene.width}
+              height={scene.height}
+              scrollBounds={scene.scrollBounds}
+            />
           </SceneOverlay>
         )}
 

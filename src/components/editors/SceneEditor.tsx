@@ -50,6 +50,7 @@ import {
   BlankIcon,
   CheckIcon,
   SettingsIcon,
+  CameraIcon,
 } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
@@ -60,7 +61,7 @@ import {
   ClipboardTypePaletteIds,
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
-import { SCREEN_WIDTH } from "consts";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
@@ -75,9 +76,13 @@ import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FlexBreak, FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
-import { ColorModeOverrideSetting } from "shared/lib/resources/types";
+import {
+  ColorModeOverrideSetting,
+  SceneBoundsRect,
+} from "shared/lib/resources/types";
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
+import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 
 interface SceneEditorProps {
   id: string;
@@ -320,6 +325,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [onChangeSceneProp],
   );
 
+  const onChangeScrollBounds = useCallback(
+    (value: SceneBoundsRect | undefined) =>
+      onChangeSceneProp("scrollBounds", value),
+    [onChangeSceneProp],
+  );
+
   const onChangePlayerSpriteSheetId = useCallback(
     (e: string) => onChangeSceneProp("playerSpriteSheetId", e),
     [onChangeSceneProp],
@@ -417,6 +428,24 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           parallax: scene?.parallax
             ? undefined
             : parallaxDefaultValues.slice(-2),
+        },
+      }),
+    );
+  };
+
+  const onToggleScrollBounds = () => {
+    dispatch(
+      entitiesActions.editScene({
+        sceneId: id,
+        changes: {
+          scrollBounds: scene?.scrollBounds
+            ? undefined
+            : {
+                x: 0,
+                y: 0,
+                width: scene?.width || SCREEN_WIDTH,
+                height: scene?.height || SCREEN_HEIGHT,
+              },
         },
       }),
     );
@@ -526,6 +555,14 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
   const showParallaxOptions = showParallaxButton && scene.parallax;
   const showCommonTilesetButton = scene.type !== "LOGO";
+  const showScrollBoundsButton =
+    (scene.width && scene.width > SCREEN_WIDTH) ||
+    (scene.height && scene.height > SCREEN_HEIGHT);
+  const showScrollBoundsOptions = showScrollBoundsButton && scene.scrollBounds;
+  const numBackgroundButtons =
+    (showCommonTilesetButton ? 1 : 0) +
+    (showParallaxButton ? 1 : 0) +
+    (showScrollBoundsButton ? 1 : 0);
 
   const scriptButton = (
     <ScriptEditorDropdownButton
@@ -721,14 +758,22 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         is360={scene.type === "LOGO"}
                         includeInfo
                       />
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            numBackgroundButtons > 2
+                              ? "repeat(2, 1fr)"
+                              : undefined,
+                          gap: 4,
+                          marginLeft: 4,
+                        }}
+                      >
                         {showCommonTilesetButton && (
                           <Button
                             style={{
                               padding: "5px 0",
                               minWidth: 28,
-                              marginLeft: 4,
-                              marginBottom: 4,
                             }}
                             variant={
                               commonTilesetOpen ? "primary" : "transparent"
@@ -744,7 +789,6 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             style={{
                               padding: "5px 0",
                               minWidth: 28,
-                              marginLeft: 4,
                             }}
                             variant={
                               scene?.parallax ? "primary" : "transparent"
@@ -753,6 +797,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             title={l10n("FIELD_PARALLAX")}
                           >
                             <ParallaxIcon />
+                          </Button>
+                        )}
+                        {showScrollBoundsButton && (
+                          <Button
+                            style={{
+                              padding: "5px 0",
+                              minWidth: 28,
+                            }}
+                            variant={
+                              scene?.scrollBounds ? "primary" : "transparent"
+                            }
+                            onClick={onToggleScrollBounds}
+                            title={l10n("FIELD_CAMERA_BOUNDS")}
+                          >
+                            <CameraIcon />
                           </Button>
                         )}
                       </div>
@@ -804,6 +863,27 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         value={scene.parallax}
                         sceneHeight={scene.height}
                         onChange={onChangeParallax}
+                      />
+                    </FormField>
+                  </FormRow>
+                </FormContainer>
+              </SidebarColumn>
+            )}
+
+            {showScrollBoundsOptions && scene.scrollBounds && (
+              <SidebarColumn>
+                <FormContainer>
+                  <FormRow>
+                    <FormField
+                      name="scrollBounds"
+                      label={l10n("FIELD_CAMERA_BOUNDS")}
+                    >
+                      <ScrollBoundsInput
+                        name={"scrollBounds"}
+                        sceneWidth={scene.width}
+                        sceneHeight={scene.height}
+                        value={scene.scrollBounds}
+                        onChange={onChangeScrollBounds}
                       />
                     </FormField>
                   </FormRow>

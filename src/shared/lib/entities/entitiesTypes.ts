@@ -2,6 +2,7 @@ import type { EntityState } from "@reduxjs/toolkit";
 import type {
   ColorModeOverrideSetting,
   Constant,
+  SceneBoundsRect,
   ScriptEditorCtxType,
 } from "shared/lib/resources/types";
 
@@ -450,6 +451,7 @@ export type Scene = {
   autoFadeSpeed: number | null;
   autoFadeEventCollapse?: boolean;
   parallax?: SceneParallaxLayer[];
+  scrollBounds?: SceneBoundsRect;
   playerSpriteSheetId?: string;
   actors: Actor[];
   triggers: Trigger[];

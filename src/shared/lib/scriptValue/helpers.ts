@@ -777,6 +777,20 @@ export const addScriptValueConst = (
   };
 };
 
+export const subScriptValueConst = (
+  value: ScriptValue,
+  num: number,
+): ScriptValue => {
+  return {
+    type: "sub",
+    valueA: value,
+    valueB: {
+      type: "number",
+      value: num,
+    },
+  };
+};
+
 export const addScriptValueToScriptValue = (
   valueA: ScriptValue,
   valueB: ScriptValue,

@@ -21,6 +21,15 @@ export const SceneParallaxLayer = Type.Object({
 
 export type SceneParallaxLayer = Static<typeof SceneParallaxLayer>;
 
+export const SceneBoundsRect = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  width: Type.Number(),
+  height: Type.Number(),
+});
+
+export type SceneBoundsRect = Static<typeof SceneBoundsRect>;
+
 export const CollisionGroup = Type.Union(
   [
     Type.Literal(""),
@@ -221,6 +230,12 @@ export const CompressedSceneResource = Type.Object({
   playerHit2Script: Type.Array(ScriptEvent),
   playerHit3Script: Type.Array(ScriptEvent),
   collisions: Type.String(),
+  scrollBounds: Type.Optional(Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    width: Type.Number(),
+    height: Type.Number(),
+  })),
 });
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;

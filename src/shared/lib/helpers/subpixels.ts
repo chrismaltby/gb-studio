@@ -1,8 +1,10 @@
-import { NUM_SUBPIXEL_BITS } from "consts";
+import { NUM_SUBPIXEL_BITS, TILE_SIZE } from "consts";
 import type { DistanceUnitType } from "shared/lib/entities/entitiesTypes";
 
 export const tileToSubpx = (x: number) =>
   Math.floor(x * (1 << (3 + NUM_SUBPIXEL_BITS)));
+
+export const tileToPx = (x: number) => Math.floor(x * TILE_SIZE);
 
 export const pxToSubpx = (x: number) =>
   Math.floor(x * (1 << NUM_SUBPIXEL_BITS));
@@ -14,6 +16,10 @@ export const pxToSubpxVelPrecise = (x: number) =>
 
 export const subpxShiftForUnits = (units: DistanceUnitType) => {
   return units === "tiles" ? NUM_SUBPIXEL_BITS + 3 : NUM_SUBPIXEL_BITS;
+};
+
+export const pxShiftForUnits = (units: DistanceUnitType) => {
+  return units === "tiles" ? 3 : 0;
 };
 
 export const subpxSnapMaskForUnits = (units: DistanceUnitType) => {

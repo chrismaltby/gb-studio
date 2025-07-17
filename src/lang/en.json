@@ -1224,6 +1224,7 @@
   "FIELD_KNOCKBACK_ANIM_STATE_DESC": "The animation state to use when the player is in the knockback state.",
   "FIELD_BLANK_ANIM_STATE": "Blank Animation State",
   "FIELD_BLANK_ANIM_STATE_DESC": "The animation state to use when the player is in the blank state.",
+  "FIELD_CAMERA_BOUNDS": "Camera Bounds",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1640,6 +1641,9 @@
   "EVENT_PLATFORMER_DETACH_PLATFORM_DESC": "Disconnects the player from a plaform or solid actor in Platformer scenes",
   "EVENT_PLATFORMER_SET_STATE": "Set Platformer State",
   "EVENT_PLATFORMER_SET_STATE_DESC": "Sets the current state of a platformer scene.",
+  "EVENT_CAMERA_SET_BOUNDS": "Set Camera Bounds",
+  "EVENT_CAMERA_SET_BOUNDS_DESC": "Set the bounds of the camera, preventing it from moving outside of the specified area.",
+  "EVENT_CAMERA_SET_BOUNDS_LABEL": "Set Camera Bounds To {{x},{y},{width},{height}}",
 
   "// 10": "Menu -----------------------------------------------------",
 

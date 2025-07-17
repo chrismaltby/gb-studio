@@ -819,7 +819,7 @@ const changes: EngineChange[] = [
     description: createDescription("Refactor", [
       "Store position coordinates as unsigned 11.5 fixed point values allowing optimisation of tile coordinate calculations",
       "Update platform scenes to version based on Platformer Plus",
-      "Allow vm_actor_move_to to only check collisions with walls and/or actors"
+      "Allow vm_actor_move_to to only check collisions with walls and/or actors",
     ]),
     modifiedFiles: [
       "include/actor.h",
@@ -851,6 +851,19 @@ const changes: EngineChange[] = [
       "src/states/pointnclick.c",
       "src/states/shmup.c",
       "src/states/topdown.c",
+    ],
+  },
+  {
+    version: "4.2.0-e9",
+    description: createDescription("Updates", [
+      "Add support for setting per scene camera min/max bounds",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/math.h",
+      "include/scroll.h",
+      "src/core/data_manager.c",
+      "src/core/scroll.c",
     ],
   },
 ];
