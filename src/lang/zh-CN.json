@@ -323,7 +323,7 @@
   "FIELD_LOW": "低",
   "FIELD_MEDIUM": "中等",
   "FIELD_HIGH": "高",
-  "FIELD_BOUNCE_NOTE": "仅影响平台场景",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "仅影响平台场景",
   "FIELD_WEAPON_SPRITE": "武器精灵表",
   "FIELD_WORK_IN_PROGRESS": "工作正在进行中",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "替换场景类型的默认值",

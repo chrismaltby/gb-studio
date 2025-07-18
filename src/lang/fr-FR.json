@@ -266,7 +266,7 @@
   "FIELD_LOW": "Faible",
   "FIELD_MEDIUM": "Moyen",
   "FIELD_HIGH": "Élevé",
-  "FIELD_BOUNCE_NOTE": "Affecte uniquement les scènes de Plateforme",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Affecte uniquement les scènes de Plateforme",
   "FIELD_WEAPON_SPRITE": "Feuille de sprite d'arme",
   "FIELD_WORK_IN_PROGRESS": "En cours de construction",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Remplacer la valeur par défaut pour le type de scène",

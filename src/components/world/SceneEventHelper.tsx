@@ -16,6 +16,7 @@ import {
 } from "shared/types";
 import { DialoguePreview } from "components/script/DialoguePreview";
 import { Constant } from "shared/lib/resources/types";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 
 const TILE_SIZE = 8;
 
@@ -244,6 +245,14 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
       : "tiles";
     const x = ensureMaybeNumber(argValue(args[scriptEventDef.helper.x]), 0);
     const y = ensureMaybeNumber(argValue(args[scriptEventDef.helper.y]), 0);
+    const width = ensureNumber(
+      argValue(args[scriptEventDef.helper.width ?? ""]),
+      0,
+    );
+    const height = ensureNumber(
+      argValue(args[scriptEventDef.helper.height ?? ""]),
+      0,
+    );
     if (x === undefined && y === undefined) {
       return <div />;
     }
@@ -253,6 +262,14 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
           style={{
             left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),
+            width: Math.max(
+              width * (units === "pixels" ? 1 : TILE_SIZE),
+              SCREEN_WIDTH * TILE_SIZE,
+            ),
+            height: Math.max(
+              height * (units === "pixels" ? 1 : TILE_SIZE),
+              SCREEN_HEIGHT * TILE_SIZE,
+            ),
           }}
         />
       </EventHelperWrapper>

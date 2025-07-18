@@ -38,7 +38,7 @@ export const LOCALE_SETTING_KEY = "locale";
 export const EMULATOR_MUTED_SETTING_KEY = "emulatorMuted";
 
 // Subpixel bits
-export const NUM_SUBPIXEL_BITS = 4;
+export const NUM_SUBPIXEL_BITS = 5;
 
 // Scene Limits
 export const MAX_ACTORS = 20;
@@ -55,6 +55,11 @@ export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
 export const SCREEN_WIDTH = 20;
 export const SCREEN_HEIGHT = 18;
 export const TILE_SIZE = 8;
+
+export const SCREEN_WIDTH_PX = SCREEN_WIDTH * TILE_SIZE;
+export const SCREEN_HEIGHT_PX = SCREEN_HEIGHT * TILE_SIZE;
+
+export const SCENE_MAX_SIZE_PX = 2040;
 
 // Scripts
 export const MAX_NESTED_SCRIPT_DEPTH = 5;

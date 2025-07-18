@@ -327,7 +327,7 @@
   "FIELD_LOW": "Bajo",
   "FIELD_MEDIUM": "Medio",
   "FIELD_HIGH": "Alto",
-  "FIELD_BOUNCE_NOTE": "Afecta sólo a escenas de plataforma",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Afecta sólo a escenas de plataforma",
   "FIELD_WEAPON_SPRITE": "Hoja de Sprite de Arma",
   "FIELD_WORK_IN_PROGRESS": "Trabajo en progreso",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Reemplazar valor predeterminado por tipo de escena",

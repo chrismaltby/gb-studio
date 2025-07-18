@@ -317,7 +317,7 @@
   "FIELD_LOW": "Низкий",
   "FIELD_MEDIUM": "Средний",
   "FIELD_HIGH": "Высокий",
-  "FIELD_BOUNCE_NOTE": "Влияет только на сцены платформы",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Влияет только на сцены платформы",
   "FIELD_WEAPON_SPRITE": "Список спрайтов оружия",
   "FIELD_WORK_IN_PROGRESS": "Работа продолжается",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Заменить значение по умолчанию для типа сцены",

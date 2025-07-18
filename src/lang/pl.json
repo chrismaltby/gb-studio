@@ -334,7 +334,7 @@
   "FIELD_LOW": "Nisko",
   "FIELD_MEDIUM": "Średnio",
   "FIELD_HIGH": "Wysoko",
-  "FIELD_BOUNCE_NOTE": "Dotyczy tylko scen platformowych",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Dotyczy tylko scen platformowych",
   "FIELD_WEAPON_SPRITE": "Grafika broni",
   "FIELD_WORK_IN_PROGRESS": "Praca w toku",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Zastąp domyślne ustawienia dla rodzaju sceny",

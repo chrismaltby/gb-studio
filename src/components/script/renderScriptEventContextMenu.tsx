@@ -26,7 +26,7 @@ interface ScriptEventContextMenuProps {
   parentType: ScriptEventParentType;
   parentId: string;
   parentKey: string;
-  commented?: boolean;
+  isDisabled?: boolean;
   hasElse?: boolean;
   hasOverride: boolean;
   disabledElse?: boolean;
@@ -50,7 +50,7 @@ const renderScriptEventContextMenu = ({
   parentType,
   parentId,
   parentKey,
-  commented,
+  isDisabled,
   hasElse,
   hasOverride,
   disabledElse,
@@ -145,7 +145,7 @@ const renderScriptEventContextMenu = ({
       }}
     >
       {l10n(
-        commented
+        isDisabled
           ? multiSelection
             ? "MENU_ENABLE_EVENTS"
             : "MENU_ENABLE_EVENT"

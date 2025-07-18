@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH } from "consts";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import type {
   Actor,
   CollisionExtraFlag,
@@ -24,10 +24,14 @@ import type {
   EngineFieldSchema,
   SceneTypeSchema,
 } from "store/features/engine/engineState";
-import { ColorModeSetting, Constant } from "shared/lib/resources/types";
+import {
+  ColorModeSetting,
+  Constant,
+  SceneBoundsRect,
+} from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
 import { GlobalProjectiles } from "./scriptBuilder";
-import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
+import { pxToSubpx, tileToPx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 export interface PrecompiledBackground {
   id: string;
@@ -530,6 +534,24 @@ export const compileParallax = (
   return [parallaxStep(0, 0, 0)];
 };
 
+export const compileScrollBounds = (
+  scrollBounds: SceneBoundsRect | undefined,
+): { left: number; right: number; top: number; bottom: number } | undefined => {
+  if (!scrollBounds) {
+    return undefined;
+  }
+  return {
+    left: tileToPx(scrollBounds.x),
+    top: tileToPx(scrollBounds.y),
+    right: tileToPx(
+      scrollBounds.x + Math.max(0, scrollBounds.width - SCREEN_WIDTH),
+    ),
+    bottom: tileToPx(
+      scrollBounds.y + Math.max(0, scrollBounds.height - SCREEN_HEIGHT),
+    ),
+  };
+};
+
 export const compileScene = (
   scene: PrecompiledScene,
   sceneIndex: number,
@@ -561,6 +583,7 @@ export const compileScene = (
       parallax_rows: compileParallax(
         scene.width > SCREEN_WIDTH ? scene.parallax : undefined,
       ),
+      scroll_bounds: compileScrollBounds(scene.scrollBounds),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       reserve_tiles: scene.actorsExclusiveLookup["player"] ?? 0,

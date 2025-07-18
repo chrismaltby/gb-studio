@@ -929,7 +929,7 @@ test("should precompile to list of required operations", () => {
       },
       {
         type: "number",
-        value: 7,
+        value: 8,
       },
       {
         type: "shr",

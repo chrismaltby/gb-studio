@@ -432,7 +432,7 @@ const struct projectile_def_t test_scene_projectiles[] = {
     {
         // Projectile 0,
         .sprite = TO_FAR_PTR_T(sprite_bullet),
-        .move_speed = 32,
+        .move_speed = 64,
         .life_time = 60,
         .collision_group = COLLISION_GROUP_3,
         .collision_mask = COLLISION_GROUP_1,
@@ -468,7 +468,7 @@ const struct projectile_def_t test_scene_projectiles[] = {
     {
         // Projectile 1,
         .sprite = TO_FAR_PTR_T(sprite_bullet),
-        .move_speed = 32,
+        .move_speed = 64,
         .life_time = 60,
         .collision_group = COLLISION_GROUP_3,
         .collision_mask = COLLISION_GROUP_1,

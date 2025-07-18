@@ -32,7 +32,14 @@ import {
   PrecompiledBackground,
   PrecompiledProjectile,
 } from "./generateGBVMData";
-import { DMG_PALETTE, LYC_SYNC_VALUE, defaultProjectSettings } from "consts";
+import {
+  DMG_PALETTE,
+  LYC_SYNC_VALUE,
+  SCENE_MAX_SIZE_PX,
+  SCREEN_HEIGHT_PX,
+  SCREEN_WIDTH_PX,
+  defaultProjectSettings,
+} from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -76,6 +83,7 @@ import {
   shiftLeftScriptValueConst,
   clampScriptValueConst,
   maskScriptValueConst,
+  subScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -85,6 +93,8 @@ import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
   pxToSubpx,
+  pxToSubpxVel,
+  pxShiftForUnits,
   subpxShiftForUnits,
   subpxSnapMaskForUnits,
   tileToSubpx,
@@ -417,13 +427,19 @@ const toASMDir = (direction: string) => {
 
 const toASMMoveFlags = (
   moveType: string,
-  useCollisions: boolean,
+  useCollisions: boolean | Array<"walls" | "actors">,
   relative?: boolean,
   relativeUnits?: DistanceUnitType,
 ) => {
   return unionFlags(
     ([] as string[]).concat(
-      useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
+      useCollisions === true ? ".ACTOR_ATTR_CHECK_COLL" : [],
+      Array.isArray(useCollisions) && useCollisions.includes("walls")
+        ? ".ACTOR_ATTR_CHECK_COLL_WALLS"
+        : [],
+      Array.isArray(useCollisions) && useCollisions.includes("actors")
+        ? ".ACTOR_ATTR_CHECK_COLL_ACTORS"
+        : [],
       moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : [],
       moveType === "diagonal" ? ".ACTOR_ATTR_DIAGONAL" : [],
       relative && relativeUnits === "pixels"
@@ -672,6 +688,13 @@ const scriptValueToSubpixels = (
   units: DistanceUnitType,
 ) => {
   return shiftLeftScriptValueConst(value, subpxShiftForUnits(units));
+};
+
+const scriptValueToPixels = (value: ScriptValue, units: DistanceUnitType) => {
+  if (units === "pixels") {
+    return value;
+  }
+  return shiftLeftScriptValueConst(value, pxShiftForUnits(units));
 };
 
 const _snapScriptValueToUnits = (
@@ -1504,6 +1527,11 @@ class ScriptBuilder {
         rpnStackSize++;
         return rpn;
       },
+      memSet: (type: RPNMemType, address: string) => {
+        rpnCmd(".R_REF_MEM_SET", type, `_${address}`);
+        rpnStackSize--;
+        return rpn;
+      },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
         if (!rpnUnaryOperators.includes(op)) {
@@ -1600,7 +1628,7 @@ class ScriptBuilder {
         case "numberSymbol": {
           rpn.int16(rpnOp.value ?? 0);
           break;
-        }     
+        }
         case "constant": {
           rpn.intConstant(rpnOp.value);
           break;
@@ -2923,7 +2951,7 @@ extern void __mute_mask_${symbol};
     actorId: string,
     valueX: ScriptValue,
     valueY: ScriptValue,
-    useCollisions: boolean,
+    collideWith: boolean | Array<"walls" | "actors">,
     moveType: ScriptBuilderMoveType,
     units: DistanceUnitType = "tiles",
   ) => {
@@ -2958,11 +2986,10 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.refSet(this._localRef(actorRef, 2));
 
-    rpn.int16(toASMMoveFlags(moveType, useCollisions));
+    rpn.int16(toASMMoveFlags(moveType, collideWith));
     rpn.refSet(this._localRef(actorRef, 3));
 
     rpn.stop();
-
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
@@ -3009,7 +3036,7 @@ extern void __mute_mask_${symbol};
     actorId: string,
     valueX: ScriptValue,
     valueY: ScriptValue,
-    useCollisions: boolean,
+    collideWith: boolean | Array<"walls" | "actors">,
     moveType: ScriptBuilderMoveType,
     units: DistanceUnitType = "tiles",
   ) => {
@@ -3054,11 +3081,10 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOpsY, localsLookup2);
     rpn.refSet(this._localRef(actorRef, 2));
 
-    rpn.int16(toASMMoveFlags(moveType, useCollisions, true, units));
+    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units));
     rpn.refSet(this._localRef(actorRef, 3));
 
     rpn.stop();
-
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
     this._actorMoveTo(actorRef);
@@ -3654,13 +3680,13 @@ extern void __mute_mask_${symbol};
     const { scene } = this.options;
     if (scene.type === "PLATFORM") {
       this._addComment("Player Bounce");
-      let value = pxToSubpx(-0x400);
+      let value = pxToSubpxVel(-0x400);
       if (height === "low") {
-        value = pxToSubpx(-0x200);
+        value = pxToSubpxVel(-0x200);
       } else if (height === "high") {
-        value = pxToSubpx(-0x600);
+        value = pxToSubpxVel(-0x600);
       }
-      this._setConstMemInt16("pl_vel_y", value);
+      this._setConstMemInt16("plat_vel_y", value);
       this._addNL();
     }
   };
@@ -4718,6 +4744,78 @@ extern void __mute_mask_${symbol};
     }
 
     this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  cameraSetBoundsToScriptValues = (
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    width: ScriptValue,
+    height: ScriptValue,
+    units: DistanceUnitType = "tiles",
+  ) => {
+    this._addComment("Camera Set Bounds");
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToPixels(valueX, units)),
+      "x",
+    );
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToPixels(valueY, units)),
+      "y",
+    );
+    const [rpnOpsWidth, fetchOpsWidth] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          addScriptValueToScriptValue(
+            clampScriptValueConst(
+              scriptValueToPixels(width, units),
+              SCREEN_WIDTH_PX,
+              SCENE_MAX_SIZE_PX,
+            ),
+            scriptValueToPixels(valueX, units),
+          ),
+          SCREEN_WIDTH_PX,
+        ),
+      ),
+      "width",
+    );
+    const [rpnOpsHeight, fetchOpsHeight] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          addScriptValueToScriptValue(
+            clampScriptValueConst(
+              scriptValueToPixels(height, units),
+              SCREEN_HEIGHT_PX,
+              SCENE_MAX_SIZE_PX,
+            ),
+            scriptValueToPixels(valueY, units),
+          ),
+          SCREEN_HEIGHT_PX,
+        ),
+      ),
+      "height",
+    );
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+      ...fetchOpsWidth,
+      ...fetchOpsHeight,
+    ]);
+    const rpn = this._rpn();
+    this._addComment(`-- Calculate bounds values`);
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_x_min");
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_y_min");
+    // Width Value
+    this._performValueRPN(rpn, rpnOpsWidth, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_x_max");
+    // Height Value
+    this._performValueRPN(rpn, rpnOpsHeight, localsLookup);
+    rpn.memSet(".MEM_I16", "scroll_y_max");
+    rpn.stop();
     this._addNL();
   };
 

@@ -1,5 +1,6 @@
 import {
   compileGameGlobalsHeader,
+  compileScrollBounds,
   parallaxStep,
   toASMCollisionGroup,
 } from "lib/compiler/generateGBVMData";
@@ -102,5 +103,84 @@ describe("toASMCollisionGroup", () => {
     expect(toASMCollisionGroup("1", ["1", invalidFlag2])).toBe(
       "COLLISION_GROUP_1 | COLLISION_GROUP_FLAG_1",
     );
+  });
+});
+
+describe("compileScrollBounds", () => {
+  test("should convert scroll bounds to pixel coordinates", () => {
+    const scrollBounds = {
+      x: 2,
+      y: 3,
+      width: 25,
+      height: 20,
+    };
+
+    const result = compileScrollBounds(scrollBounds);
+
+    expect(result).toEqual({
+      left: 16,
+      top: 24,
+      right: 56,
+      bottom: 40,
+    });
+  });
+
+  test("should handle minimal scroll bounds", () => {
+    const scrollBounds = {
+      x: 0,
+      y: 0,
+      width: 20,
+      height: 18,
+    };
+
+    const result = compileScrollBounds(scrollBounds);
+
+    expect(result).toEqual({
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+    });
+  });
+
+  test("should handle large scroll bounds", () => {
+    const scrollBounds = {
+      x: 5,
+      y: 10,
+      width: 250,
+      height: 250,
+    };
+
+    const result = compileScrollBounds(scrollBounds);
+
+    expect(result).toEqual({
+      left: 40,
+      top: 80,
+      right: 1880,
+      bottom: 1936,
+    });
+  });
+
+  test("should make sure width/height are greater than screen size", () => {
+    const scrollBounds = {
+      x: 2,
+      y: 2,
+      width: 15,
+      height: 12,
+    };
+
+    const result = compileScrollBounds(scrollBounds);
+
+    expect(result).toEqual({
+      left: 16,
+      top: 16,
+      right: 16,
+      bottom: 16,
+    });
+  });
+
+  test("should return undefined when scrollBounds is undefined", () => {
+    const result = compileScrollBounds(undefined);
+    expect(result).toBeUndefined();
   });
 });

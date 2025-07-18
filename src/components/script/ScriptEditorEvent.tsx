@@ -275,7 +275,9 @@ const ScriptEditorEvent = React.memo(
 
     const command = scriptEvent?.command ?? "";
     const isComment = command === EVENT_COMMENT;
-    const commented = (scriptEvent?.args && scriptEvent?.args.__comment) ?? "";
+    const isDisabled = Boolean(
+      scriptEvent?.args && scriptEvent?.args.__comment,
+    );
     const hasElse =
       (scriptEvent?.children && !!scriptEvent.children.false) ?? false;
     const disabledElse =
@@ -347,7 +349,7 @@ const ScriptEditorEvent = React.memo(
               parentType,
               context,
               breakpointEnabled,
-              commented: !!commented,
+              isDisabled,
               hasElse,
               hasOverride: !!overrides,
               disabledElse: !!disabledElse,
@@ -365,7 +367,7 @@ const ScriptEditorEvent = React.memo(
         breakpointEnabled,
         clipboardFormat,
         command,
-        commented,
+        isDisabled,
         context,
         disabledElse,
         dispatch,
@@ -504,7 +506,8 @@ const ScriptEditorEvent = React.memo(
             <ScriptEventHeader
               ref={headerRef}
               isConditional={isConditional}
-              isComment={Boolean(commented || isComment)}
+              isComment={Boolean(isComment)}
+              isDisabled={Boolean(isDisabled)}
               nestLevel={nestLevel}
               altBg={index % 2 === 0}
               isOpen={isOpen}
@@ -547,7 +550,7 @@ const ScriptEditorEvent = React.memo(
               )}
             </ScriptEventHeader>
           </div>
-          {isOpen && !commented && (
+          {isOpen && !isDisabled && (
             <ScriptEventFormWrapper data-handler-id={handlerId}>
               <ScriptEditorEventHelper event={scriptEvent} />
               {showSymbols && (

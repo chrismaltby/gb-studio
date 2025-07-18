@@ -10,7 +10,7 @@ test("Should move player relatively", () => {
       x: { type: "number", value: 5 },
       y: { type: "number", value: 9 },
       moveType: "horizontal",
-      useCollisions: true,
+      collideWith: ["walls"],
       units: "tiles",
     },
     {
@@ -24,7 +24,7 @@ test("Should move player relatively", () => {
     "player",
     { type: "number", value: 5 },
     { type: "number", value: 9 },
-    true,
+    ["walls"],
     "horizontal",
     "tiles"
   );

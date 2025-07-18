@@ -4,67 +4,68 @@
     {
       "id": "0",
       "name": "Seen Cat",
-      "symbol": ""
+      "symbol": "var_seen_cat"
     },
     {
       "id": "1",
       "name": "Seen duck",
-      "symbol": ""
+      "symbol": "var_seen_duck"
     },
     {
       "id": "2",
       "name": "Used Radio",
-      "symbol": ""
+      "symbol": "var_used_radio"
     },
     {
       "id": "3",
       "name": "Spoke To Space Dog",
-      "symbol": ""
+      "symbol": "var_spoke_to_space_dog"
     },
     {
       "id": "4",
       "name": "Quest1",
-      "symbol": ""
+      "symbol": "var_quest1"
     },
     {
       "id": "5",
       "name": "Quest2",
-      "symbol": ""
+      "symbol": "var_quest2"
     },
     {
       "id": "6",
       "name": "Quest3",
-      "symbol": ""
+      "symbol": "var_quest3"
     },
     {
       "id": "7",
       "name": "Quest4",
-      "symbol": ""
+      "symbol": "var_quest4"
     },
     {
       "id": "8",
       "name": "Quest5",
-      "symbol": ""
+      "symbol": "var_quest5"
     },
     {
       "id": "9",
       "name": "Quest6",
-      "symbol": ""
+      "symbol": "var_quest6"
     },
     {
       "id": "10",
       "name": "NewGame",
-      "symbol": ""
+      "symbol": "var_newgame"
     },
     {
       "id": "11",
       "name": "SaveGame",
-      "symbol": ""
+      "symbol": "var_savegame"
     },
     {
       "id": "12",
       "name": "PushedIceBlock",
-      "symbol": ""
+      "symbol": "var_pushediceblock"
     }
-  ]
+  ],
+  "constants": []
 }

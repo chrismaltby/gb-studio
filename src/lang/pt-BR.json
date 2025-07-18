@@ -252,7 +252,7 @@
   "FIELD_LOW": "Baixo",
   "FIELD_MEDIUM": "Médio",
   "FIELD_HIGH": "Alto",
-  "FIELD_BOUNCE_NOTE": "Afeta apenas as cenas da plataforma",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Afeta apenas as cenas da plataforma",
   "FIELD_WEAPON_SPRITE": "Sprite Sheet De Armas",
   "FIELD_WORK_IN_PROGRESS": "Trabalho em Progresso",
   "FIELD_PERSIST_BETWEEN_SCENES": "Persistir Entre As Cenas",
