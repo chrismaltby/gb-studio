@@ -866,6 +866,20 @@ const changes: EngineChange[] = [
       "src/core/scroll.c",
     ],
   },
+  {
+    version: "4.2.0-e10",
+    description: createDescription("Fixes", [
+      "Fix issue where holding button to fast forward through text would close text box when end reached",
+      "Fix position overflow in large Adventure scenes",
+      "Fix position overflow in large Point and Click scenes",
+    ]),    
+    modifiedFiles: [
+      "include/math.h",
+      "src/core/ui.c",
+      "src/states/adventure.c",
+      "src/states/pointnclick.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
