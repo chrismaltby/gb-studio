@@ -4873,14 +4873,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reforged/maker-appimage@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@reforged/maker-appimage@npm:4.0.2"
+"@reforged/maker-appimage@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@reforged/maker-appimage@npm:4.1.1"
   dependencies:
     "@electron-forge/maker-base": "npm:^6.0.0 || ^7.0.0"
+    "@reforged/maker-types": "npm:^1.0.0"
     "@spacingbat3/lss": "npm:^1.0.0"
     semver: "npm:^7.3.8"
-  checksum: 10c0/10db94de0c021833c7eab53d46ef666c567d9e2a35c90f1bc924edbc6aa7df00f56ed67188f08eae570b428899663259002493844f33f2315f88cbfbfeae5507
+  checksum: 10c0/2b8846afa13da8650bae1ed844d341869d4dac65db53f6904e0ecf22b06b38bb7748f9bec6fb23ea251638cffb5f1dcc7fb30813f8e6380db1f19a8143b605b3
+  languageName: node
+  linkType: hard
+
+"@reforged/maker-types@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@reforged/maker-types@npm:1.0.1"
+  checksum: 10c0/ba7fff5d635802e4171807044d750fbd28724f1569a5b484e66d4fe2bc2dcb9c29a988c1a4fb64e87e041961cd2b84f915b57afafc5cc4c43f440f40ebdb085a
   languageName: node
   linkType: hard
 
@@ -11863,7 +11871,7 @@ __metadata:
     "@octokit/rest": "npm:^16.25.4"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@reduxjs/toolkit": "npm:^2.2.7"
-    "@reforged/maker-appimage": "npm:^4.0.2"
+    "@reforged/maker-appimage": "npm:^4.1.1"
     "@sinclair/typebox": "npm:^0.32.35"
     "@storybook/addon-essentials": "npm:^8.2.9"
     "@storybook/addon-interactions": "npm:^8.2.9"

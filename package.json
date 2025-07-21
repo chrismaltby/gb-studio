@@ -133,7 +133,7 @@
     "@electron/fuses": "^1.7.0",
     "@electron/notarize": "^2.3.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-    "@reforged/maker-appimage": "^4.0.2",
+    "@reforged/maker-appimage": "^4.1.1",
     "@storybook/addon-essentials": "^8.2.9",
     "@storybook/addon-interactions": "^8.2.9",
     "@storybook/addon-links": "^8.2.9",

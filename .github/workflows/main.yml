@@ -8,6 +8,7 @@ on:
       - feat-*
       - beta-*
       - wip-*
+      - fix-*
 
   workflow_dispatch:
 
@@ -37,7 +38,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-') || startsWith(github.ref, 'refs/heads/fix-')
 
     strategy:
       matrix:
