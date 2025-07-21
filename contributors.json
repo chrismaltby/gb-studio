@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5001
+    "contributions": 5009
   },
   {
     "login": "pau-tomas",
@@ -85,7 +85,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 65
+    "contributions": 66
   },
   {
     "login": "marcosecchi",
@@ -132,6 +132,28 @@
     "contributions": 48
   },
   {
+    "login": "tomo666",
+    "id": 3715832,
+    "node_id": "MDQ6VXNlcjM3MTU4MzI=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/3715832?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/tomo666",
+    "html_url": "https://github.com/tomo666",
+    "followers_url": "https://api.github.com/users/tomo666/followers",
+    "following_url": "https://api.github.com/users/tomo666/following{/other_user}",
+    "gists_url": "https://api.github.com/users/tomo666/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/tomo666/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/tomo666/subscriptions",
+    "organizations_url": "https://api.github.com/users/tomo666/orgs",
+    "repos_url": "https://api.github.com/users/tomo666/repos",
+    "events_url": "https://api.github.com/users/tomo666/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/tomo666/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false,
+    "contributions": 45
+  },
+  {
     "login": "thomas-alrek",
     "id": 14291825,
     "node_id": "MDQ6VXNlcjE0MjkxODI1",
@@ -152,28 +174,6 @@
     "user_view_type": "public",
     "site_admin": false,
     "contributions": 44
-  },
-  {
-    "login": "tomo666",
-    "id": 3715832,
-    "node_id": "MDQ6VXNlcjM3MTU4MzI=",
-    "avatar_url": "https://avatars.githubusercontent.com/u/3715832?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/tomo666",
-    "html_url": "https://github.com/tomo666",
-    "followers_url": "https://api.github.com/users/tomo666/followers",
-    "following_url": "https://api.github.com/users/tomo666/following{/other_user}",
-    "gists_url": "https://api.github.com/users/tomo666/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/tomo666/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/tomo666/subscriptions",
-    "organizations_url": "https://api.github.com/users/tomo666/orgs",
-    "repos_url": "https://api.github.com/users/tomo666/repos",
-    "events_url": "https://api.github.com/users/tomo666/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/tomo666/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": false,
-    "contributions": 41
   },
   {
     "login": "patrickmollohan",
