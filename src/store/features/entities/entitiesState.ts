@@ -11,7 +11,6 @@ import l10n from "shared/lib/lang/l10n";
 import {
   DMG_PALETTE,
   COLLISION_ALL,
-  TILE_PROPS,
   DRAG_PLAYER,
   DRAG_DESTINATION,
   DRAG_TRIGGER,
@@ -81,7 +80,6 @@ import {
   removeAssetEntity,
   upsertAssetEntity,
   updateEntitySymbol,
-  isSlope,
   defaultLocalisedSceneName,
   renameAssetEntity,
   defaultLocalisedCustomEventName,
@@ -2948,7 +2946,7 @@ const paintCollision: CaseReducer<
       y: number;
       value: number;
       brush: Brush;
-      isTileProp: boolean;
+      mask: number;
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
@@ -2961,8 +2959,8 @@ const paintCollision: CaseReducer<
     return;
   }
 
-  const isTileProp = action.payload.isTileProp;
   const brush = action.payload.brush;
+  const mask = action.payload.mask;
   const drawSize = brush === "16px" ? 2 : 1;
   const collisionsSize = Math.ceil(background.width * background.height);
   const collisions = scene.collisions.slice(0, collisionsSize);
@@ -2981,20 +2979,8 @@ const paintCollision: CaseReducer<
 
   const setValue = (x: number, y: number, value: number) => {
     const tileIndex = background.width * y + x;
-    let newValue = value;
-    if (isTileProp) {
-      if (value & 0x0f) {
-        // If is prop and one way, overwrite both
-        newValue = value;
-      } else {
-        // If is prop keep previous collision value
-        newValue =
-          (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
-      }
-    } else if (value !== 0 && !isSlope(newValue)) {
-      // If is collision keep prop unless erasing
-      newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
-    }
+    const originalValue = collisions[tileIndex] ?? 0;
+    const newValue = (originalValue & ~mask) | (value & mask);
     collisions[tileIndex] = newValue;
   };
 

@@ -641,7 +641,7 @@ test("Should be able to flood fill collisions", () => {
     y: 0,
     value: 2,
     brush: "fill",
-    isTileProp: false,
+    mask: 0x0F,
     drawLine: false,
     tileLookup: [],
   });
@@ -690,7 +690,7 @@ test("Should be able to paint collisions", () => {
     y: 0,
     value: 2,
     brush: "8px",
-    isTileProp: false,
+    mask: 0x0F,
     drawLine: false,
     tileLookup: [],
   });
@@ -746,7 +746,7 @@ test("Should be able to paint collision line", () => {
     endY: 5,
     value: 2,
     brush: "8px",
-    isTileProp: false,
+    mask: 0x0F,
     drawLine: true,
     tileLookup: [],
   });

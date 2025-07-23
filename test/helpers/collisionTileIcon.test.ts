@@ -10,7 +10,8 @@ describe("isCollisionTileActive", () => {
       color: WHITE,
       flag: 0x1,
     };
-    expect(isCollisionTileActive(1, tileDef)).toBeTrue();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(1, tileDef, tileDefs)).toBeTrue();
   });
 
   test("should not be active when value doesn't match", () => {
@@ -19,7 +20,8 @@ describe("isCollisionTileActive", () => {
       color: WHITE,
       flag: 0x1,
     };
-    expect(isCollisionTileActive(0, tileDef)).toBeFalse();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0, tileDef, tileDefs)).toBeFalse();
   });
 
   test("should be active when masked value matches", () => {
@@ -29,7 +31,8 @@ describe("isCollisionTileActive", () => {
       flag: 0x1,
       mask: 0xf,
     };
-    expect(isCollisionTileActive(0x31, tileDef)).toBeTrue();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0x31, tileDef, tileDefs)).toBeTrue();
   });
 
   test("should not be active when flag is set without mask", () => {
@@ -38,7 +41,8 @@ describe("isCollisionTileActive", () => {
       color: WHITE,
       flag: 0x1,
     };
-    expect(isCollisionTileActive(0x31, tileDef)).toBeFalse();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0x31, tileDef, tileDefs)).toBeFalse();
   });
 
   test("should be active when bit is set for multi selection (shift + selected multiple walls)", () => {
@@ -49,7 +53,8 @@ describe("isCollisionTileActive", () => {
       mask: 0xf,
       multi: true,
     };
-    expect(isCollisionTileActive(0x5, tileDef)).toBeTrue();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0x5, tileDef, tileDefs)).toBeTrue();
   });
 
   test("should not be active when bit is set for without multi select flag", () => {
@@ -60,7 +65,8 @@ describe("isCollisionTileActive", () => {
       mask: 0xf,
       multi: false,
     };
-    expect(isCollisionTileActive(0x5, tileDef)).toBeFalse();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0x5, tileDef, tileDefs)).toBeFalse();
   });
 
   test("should not be active when all bits set in multi selection (shift + selected ALL walls)", () => {
@@ -71,6 +77,48 @@ describe("isCollisionTileActive", () => {
       mask: 0xf,
       multi: true,
     };
-    expect(isCollisionTileActive(0xf, tileDef)).toBeFalse();
+    const tileDefs = [tileDef];
+    expect(isCollisionTileActive(0xf, tileDef, tileDefs)).toBeFalse();
+  });
+
+  test("should not be active if better match found", () => {
+    const tileDef1: CollisionTileDef = {
+      key: "t1",
+      color: WHITE,
+      flag: 0x1,
+      mask: 0x3,
+    };
+    const tileDef2: CollisionTileDef = {
+      key: "t2",
+      color: WHITE,
+      flag: 0x3,
+      mask: 0x3,
+    };
+    const tileDefs = [tileDef1, tileDef2];
+    expect(isCollisionTileActive(0x3, tileDef1, tileDefs)).toBeFalse();
+  });
+
+  test("should be active if exact match found", () => {
+    const tileDef1: CollisionTileDef = {
+      key: "t1",
+      color: WHITE,
+      flag: 0x1,
+      mask: 0x7,
+    };
+    const tileDef2: CollisionTileDef = {
+      key: "t2",
+      color: WHITE,
+      flag: 0x7,
+      mask: 0x7,
+    };
+    const tileDef3: CollisionTileDef = {
+      key: "t3",
+      color: WHITE,
+      flag: 0x3,
+      mask: 0x7,
+    };
+
+    const tileDefs = [tileDef1, tileDef2, tileDef3];
+    expect(isCollisionTileActive(0x7, tileDef2, tileDefs)).toBeTrue();
   });
 });

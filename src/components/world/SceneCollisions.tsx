@@ -96,35 +96,35 @@ const SceneCollisions = ({
       ctx.font = "8px Public Pixel";
       ctx.imageSmoothingEnabled = false;
 
-      const sortedTileDefs = collisionTileDefs.map((t) => t);
-      sortedTileDefs.sort((a, b) => {
-        if (a.mask) {
-          if (b.mask) {
-            const aCount = a.mask.toString(2).split("1").length - 1;
-            const bCount = b.mask.toString(2).split("1").length - 1;
-            if (aCount > bCount) return -1;
-            else if (bCount > aCount) return 1;
-          } else return 1;
-        } else if (b.mask) return -1;
-
-        const aCount = a.flag.toString(2).split("1").length - 1;
-        const bCount = b.flag.toString(2).split("1").length - 1;
-        return bCount - aCount;
-      });
+      const activeCache: Record<string, boolean> = {};
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
-          const tile = collisions[collisionIndex] ?? 0;
+          let tile = collisions[collisionIndex] ?? 0;
           let unknownTile = tile !== 0;
 
-          for (const tileDef of sortedTileDefs) {
-            if (isCollisionTileActive(tile, tileDef)) {
+          for (const tileDef of collisionTileDefs) {
+            const key = `${tile}:${tileDef.flag}:${tileDef.mask}`;
+            let isActive: boolean;
+            if (key in activeCache) {
+              isActive = activeCache[key];
+            } else {
+              isActive = isCollisionTileActive(
+                tile,
+                tileDef,
+                collisionTileDefs,
+              );
+              activeCache[key] = isActive;
+            }
+
+            if (isActive) {
               ctx.fillStyle = tileDef.color;
               drawCollisionTile(tileDef, ctx, xi, yi);
               if (tileDef.icon) {
                 unknownTile = false;
               }
+              tile = tile & ~tileDef.flag; // Clear bits for matched tile
             }
           }
           if (

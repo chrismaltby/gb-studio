@@ -123,6 +123,7 @@ export interface EditorState {
   worldViewHeight: number;
   selectedPalette: number;
   selectedTileType: number;
+  selectedTileMask: number;
   selectedBrush: Brush;
   showLayers: boolean;
   lastScriptTab: string;
@@ -194,6 +195,7 @@ export const initialState: EditorState = {
   worldViewHeight: 0,
   selectedPalette: 0,
   selectedTileType: COLLISION_ALL,
+  selectedTileMask: 0xFF,
   selectedBrush: BRUSH_8PX,
   showLayers: true,
   lastScriptTab: "",
@@ -324,9 +326,10 @@ const editorSlice = createSlice({
 
     setSelectedTileType: (
       state,
-      action: PayloadAction<{ tileType: number }>,
+      action: PayloadAction<{ tileType: number, tileMask: number }>,
     ) => {
       state.selectedTileType = action.payload.tileType;
+      state.selectedTileMask = action.payload.tileMask;
     },
 
     setShowLayers: (state, action: PayloadAction<{ showLayers: boolean }>) => {
