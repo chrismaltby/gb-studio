@@ -60,7 +60,9 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       entitiesActions.removeMetaspriteTiles.match(action) ||
       entitiesActions.removeMetaspriteTilesOutsideCanvas.match(action) ||
       entitiesActions.editSpriteAnimation.match(action) ||
-      entitiesActions.moveSpriteAnimationFrame.match(action)
+      entitiesActions.moveSpriteAnimationFrame.match(action) ||
+      (entitiesActions.editSpriteSheet.match(action) &&
+        action.payload.changes.spriteMode !== undefined)
     ) {
       store.dispatch(
         actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId }),
