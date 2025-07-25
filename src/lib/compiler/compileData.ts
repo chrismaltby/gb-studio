@@ -613,14 +613,14 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteReferences: ReferencedSprite[],
   projectRoot: string,
-  defaultSpriteMode: SpriteModeSetting
+  defaultSpriteMode: SpriteModeSetting,
 ) => {
   const usedTilesets: CompiledTilesetData[] = [];
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
     projectRoot,
-    defaultSpriteMode
+    defaultSpriteMode,
   );
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
@@ -839,6 +839,7 @@ export const precompileScenes = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
+  defaultSpriteMode: SpriteModeSetting,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
   {
@@ -875,6 +876,8 @@ export const precompileScenes = (
         } includes a common tileset that can't be located.`,
       );
     }
+
+    const spriteMode = scene.spriteMode ?? defaultSpriteMode;
 
     const usedSpritesLookup = keyBy(usedSprites, "id");
 
@@ -940,7 +943,9 @@ export const precompileScenes = (
     };
 
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
-      const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
+      const numTiles = (sprite ? sprite.numTiles : 0) || 0;
+      const multiplier = spriteMode === "8x16" ? 2 : 1;
+      const count = numTiles * multiplier;
       if (sprite?.colorMode === "color") {
         return Math.ceil(count / 4) * 2;
       }
@@ -1108,7 +1113,8 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorCorrection = projectData.settings.colorCorrection;
-  const defaultSpriteMode: SpriteModeSetting = projectData.settings.spriteMode ?? "8x16"
+  const defaultSpriteMode: SpriteModeSetting =
+    projectData.settings.spriteMode ?? "8x16";
 
   const usedAssets = determineUsedAssets({
     projectData,
@@ -1158,7 +1164,11 @@ const precompile = async (
     usedTilesets: usedSpriteTilesets,
     statesOrder,
     stateReferences,
-  } = await precompileSprites(usedAssets.referencedSprites, projectRoot, defaultSpriteMode);
+  } = await precompileSprites(
+    usedAssets.referencedSprites,
+    projectRoot,
+    defaultSpriteMode,
+  );
 
   progress(`${l10n("COMPILER_PREPARING_AVATARS")}...`);
   const { usedAvatars } = await precompileAvatars(
@@ -1205,6 +1215,7 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
+    defaultSpriteMode,
     usedBackgrounds,
     usedSprites,
     {

@@ -98,9 +98,12 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const settings = getSettings(state);
 
-      const res = await API.sprite.compileSprite(spriteData, settings.spriteMode);
+      const res = await API.sprite.compileSprite(
+        spriteData,
+        settings.spriteMode,
+      );
       const numTiles =
-        spriteSheet.spriteMode === "8x16"
+        (spriteSheet.spriteMode ?? settings.spriteMode) === "8x16"
           ? res.tiles.length / 2
           : res.tiles.length;
 
