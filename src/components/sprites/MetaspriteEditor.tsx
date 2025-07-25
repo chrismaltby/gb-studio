@@ -38,7 +38,7 @@ interface MetaspriteEditorProps {
 
 export interface MetaspriteDraggableTileProps {
   $selected?: boolean;
-  spriteMode: SpriteModeSetting;
+  $spriteMode: SpriteModeSetting;
 }
 
 interface ScrollWrapperProps {
@@ -90,7 +90,7 @@ const GridWrapper = styled.div`
 const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   position: absolute;
   width: 8px;
-  height: ${(props) => (props.spriteMode === "8x8" ? 8 : 16)}px;
+  height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
 
   &:hover:after {
     content: "";
@@ -100,7 +100,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
     box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
     z-index: 100;
     width: 8px;
-    height: ${(props) => (props.spriteMode === "8x8" ? 8 : 16)}px;
+    height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
   }
 
   ${(props) =>
@@ -114,7 +114,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
             box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5) inset;
             z-index: 10;
             width: 8px;
-            height: ${props.spriteMode === "8x8" ? 8 : 16}px;
+            height: ${props.$spriteMode === "8x8" ? 8 : 16}px;
           }
         `
       : ""}
@@ -832,7 +832,7 @@ const MetaspriteEditor = ({
             {metaspriteTiles.map((metaspriteTile) => (
               <MetaspriteDraggableTile
                 key={metaspriteTile.id}
-                spriteMode={spriteMode}
+                $spriteMode={spriteMode}
                 style={{
                   left: metaspriteTile.x,
                   top: -metaspriteTile.y - (spriteMode === "8x8" ? 8 : 16),
