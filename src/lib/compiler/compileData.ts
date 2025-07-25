@@ -131,6 +131,7 @@ import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
   ProjectResources,
+  SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
@@ -612,12 +613,14 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteReferences: ReferencedSprite[],
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting
 ) => {
   const usedTilesets: CompiledTilesetData[] = [];
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
     projectRoot,
+    defaultSpriteMode
   );
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
@@ -1105,6 +1108,7 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorCorrection = projectData.settings.colorCorrection;
+  const defaultSpriteMode: SpriteModeSetting = projectData.settings.spriteMode ?? "8x16"
 
   const usedAssets = determineUsedAssets({
     projectData,
@@ -1154,7 +1158,7 @@ const precompile = async (
     usedTilesets: usedSpriteTilesets,
     statesOrder,
     stateReferences,
-  } = await precompileSprites(usedAssets.referencedSprites, projectRoot);
+  } = await precompileSprites(usedAssets.referencedSprites, projectRoot, defaultSpriteMode);
 
   progress(`${l10n("COMPILER_PREPARING_AVATARS")}...`);
   const { usedAvatars } = await precompileAvatars(

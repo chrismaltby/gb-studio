@@ -39,6 +39,7 @@ import {
   MusicResourceAsset,
   ProjectResources,
   SoundResourceAsset,
+  SpriteModeSetting,
   SpriteResourceAsset,
   TilesetResourceAsset,
   WriteResourcesPatch,
@@ -329,8 +330,9 @@ const APISetup = {
   sprite: {
     compileSprite: (
       spriteData: SpriteSheetData,
+      defaultSpriteMode: SpriteModeSetting
     ): Promise<PrecompiledSpriteSheetData> =>
-      ipcRenderer.invoke("sprite:compile", spriteData),
+      ipcRenderer.invoke("sprite:compile", spriteData, defaultSpriteMode),
   },
   clipboard: {
     addPasteInPlaceListener: (listener: () => void) =>

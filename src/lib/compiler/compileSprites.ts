@@ -12,7 +12,7 @@ import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
 import { ReferencedSprite } from "./precompile/determineUsedAssets";
-import { ColorModeSetting } from "shared/lib/resources/types";
+import { ColorModeSetting, SpriteModeSetting } from "shared/lib/resources/types";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -119,6 +119,7 @@ export const compileSprite = async (
   spriteSheet: ReferencedSprite,
   cgbOnly: boolean,
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
 
@@ -139,7 +140,7 @@ export const compileSprite = async (
     spriteSheet.canvasWidth,
     spriteSheet.canvasHeight,
     metasprites,
-    spriteSheet.spriteMode ?? "8x16",
+    spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16",
   );
 
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
@@ -264,6 +265,7 @@ export const compileSprite = async (
 const compileSprites = async (
   spriteSheets: ReferencedSprite[],
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
   statesOrder: string[];
@@ -277,6 +279,7 @@ const compileSprites = async (
           spriteSheet,
           spriteSheet.colorMode === "color",
           projectRoot,
+          defaultSpriteMode
         ),
     ),
   );

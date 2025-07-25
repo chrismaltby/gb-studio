@@ -16,6 +16,7 @@ import {
   matchAssetEntity,
 } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
+import { getSettings } from "store/features/settings/settingsState";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -95,7 +96,9 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         spriteStates,
       });
 
-      const res = await API.sprite.compileSprite(spriteData);
+      const settings = getSettings(state);
+
+      const res = await API.sprite.compileSprite(spriteData, settings.spriteMode);
       const numTiles =
         spriteSheet.spriteMode === "8x16"
           ? res.tiles.length / 2
