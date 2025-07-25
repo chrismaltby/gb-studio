@@ -162,6 +162,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
     scene?.colorModeOverride && scene?.colorModeOverride !== "none",
   );
+  const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
+    scene?.spriteMode !== undefined,
+  );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId,
   );
@@ -399,6 +402,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     setColorModeOverrideOpen(true);
   };
 
+  const onOverrideSpriteMode = useCallback(() => {
+    const sceneSpriteMode = defaultSpriteMode === "8x16" ? "8x8" : "8x16";
+    onChangeSpriteMode(sceneSpriteMode);
+    setSpriteModeOverrideOpen(true);
+  }, [defaultSpriteMode, onChangeSpriteMode]);
+
   const onToggleCommonTileset = useCallback(() => {
     if (commonTilesetOpen) {
       onChangeSceneProp("tilesetId", "");
@@ -540,6 +549,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const showColorModeOverride =
     (scene.colorModeOverride && scene.colorModeOverride !== "none") ||
     colorModeOverrideOpen;
+  const showSpriteModeOverride = scene.spriteMode || spriteModeOverrideOpen;
 
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
@@ -661,6 +671,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                 {!showColorModeOverride && colorsEnabled && (
                   <MenuItem onClick={onOverrideColorMode}>
                     {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
+                  </MenuItem>
+                )}
+                {!showSpriteModeOverride && (
+                  <MenuItem onClick={onOverrideSpriteMode}>
+                    {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
                   </MenuItem>
                 )}
                 <MenuDivider />
@@ -1051,19 +1066,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       />
                     </FormField>
                   </FormRow>
-                  <FormRow>
-                    <FormField
-                      name="spriteMode"
-                      label={l10n("SETTINGS_SPRITE_MODE")}
-                    >
-                      <SpriteModeSelect
-                        name={"spriteMode"}
-                        onChange={onChangeSpriteMode}
-                        allowDefault={true}
-                        value={scene.spriteMode}
-                      />
-                    </FormField>
-                  </FormRow>
+                  {showSpriteModeOverride && (
+                    <FormRow>
+                      <FormField
+                        name="spriteMode"
+                        label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                      >
+                        <SpriteModeSelect
+                          name={"spriteMode"}
+                          onChange={onChangeSpriteMode}
+                          allowDefault={true}
+                          value={scene.spriteMode}
+                        />
+                      </FormField>
+                    </FormRow>
+                  )}
                 </SidebarColumn>
               </>
             )}

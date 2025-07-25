@@ -98,10 +98,16 @@ export const SpriteEditor = ({
   const replaceSpriteTileMode = useAppSelector(
     (state) => state.editor.replaceSpriteTileMode,
   );
-
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
   const selectedTileId = selectedTileIds[0];
 
   const [showSymbols, setShowSymbols] = useState(false);
+  const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
+    sprite?.spriteMode !== undefined,
+  );
+  const showSpriteModeOverride = sprite.spriteMode || spriteModeOverrideOpen;
 
   const dispatch = useAppDispatch();
 
@@ -387,6 +393,12 @@ export const SpriteEditor = ({
     );
   }, [dispatch, id]);
 
+  const onOverrideSpriteMode = useCallback(() => {
+    const sceneSpriteMode = defaultSpriteMode === "8x16" ? "8x8" : "8x16";
+    onChangeSpriteMode(sceneSpriteMode);
+    setSpriteModeOverrideOpen(true);
+  }, [defaultSpriteMode, onChangeSpriteMode]);
+
   if (!sprite || !spriteState || !animation) {
     return null;
   }
@@ -423,6 +435,12 @@ export const SpriteEditor = ({
               {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
             </MenuItem>
           )}
+          {!showSpriteModeOverride && (
+            <MenuItem onClick={onOverrideSpriteMode}>
+              {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
+            </MenuItem>
+          )}
+          <MenuDivider />
           {selectedTileIds.length > 0 && (
             <MenuItem onClick={onCopyTiles}>
               {l10n("MENU_SPRITE_TILE_COPY")}
@@ -640,6 +658,22 @@ export const SpriteEditor = ({
                 />
               </FormRow>
 
+              {showSpriteModeOverride && (
+                <FormRow>
+                  <FormField
+                    name="spriteMode"
+                    label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                  >
+                    <SpriteModeSelect
+                      name={"spriteMode"}
+                      onChange={onChangeSpriteMode}
+                      allowDefault={true}
+                      value={sprite.spriteMode}
+                    />
+                  </FormField>
+                </FormRow>
+              )}
+
               <FormDivider />
 
               <div
@@ -690,21 +724,6 @@ export const SpriteEditor = ({
                   />
                 </FormRow>
               </div>
-
-              <FormRow>
-                <FormField
-                  name="spriteMode"
-                  label={l10n("SETTINGS_SPRITE_MODE")}
-                >
-                  <SpriteModeSelect
-                    name={"spriteMode"}
-                    onChange={onChangeSpriteMode}
-                    allowDefault={true}
-                    value={sprite.spriteMode}
-                  />
-                </FormField>
-              </FormRow>
-
               <FormDivider />
               <FormSectionTitle>
                 {l10n("FIELD_ANIMATION_SETTINGS")}
