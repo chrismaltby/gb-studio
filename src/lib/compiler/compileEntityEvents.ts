@@ -8,6 +8,7 @@ import ScriptBuilder, {
 import { PrecompiledScene } from "./generateGBVMData";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -115,10 +116,7 @@ const compileEntityEvents = (
         );
       } else if (command === "INTERNAL_SET_SPRITE_MODE") {
         const args = subInput[i].args;
-        scriptBuilder.appendRaw(`VM_SET_SPRITE_MODE ${
-          args?.mode === "8x8" ? `.MODE_8X8` : `.MODE_8X16`
-        }    
-          `);
+        scriptBuilder.setSpriteMode(args?.mode as SpriteModeSetting);
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(

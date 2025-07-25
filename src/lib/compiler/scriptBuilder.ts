@@ -59,7 +59,7 @@ import { lexText, Token } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
+import type { Constant, ScriptEditorCtxType, SpriteModeSetting } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
@@ -312,6 +312,8 @@ type ASMSFXPriority =
   | ".SFX_PRIORITY_NORMAL"
   | ".SFX_PRIORITY_HIGH";
 
+type ASMSpriteMode = ".MODE_8X8" | ".MODE_8X16";
+
 type ScriptBuilderActorFlags =
   | ".ACTOR_FLAG_PINNED"
   | ".ACTOR_FLAG_HIDDEN"
@@ -476,6 +478,13 @@ const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
     return ".SFX_PRIORITY_HIGH";
   }
   return ".SFX_PRIORITY_NORMAL";
+};
+
+const toASMSpriteMode = (mode: SpriteModeSetting): ASMSpriteMode => {
+  if (mode === "8x8") {
+    return ".MODE_8X8";
+  }
+  return ".MODE_8X16";
 };
 
 const dirToAngle = (direction: string) => {
@@ -1901,6 +1910,10 @@ class ScriptBuilder {
   _spritesShow = () => {
     this._addCmd("VM_SHOW_SPRITES");
   };
+
+  _setSpriteMode = (mode: ASMSpriteMode) => {
+    this._addCmd("VM_SET_SPRITE_MODE", mode);
+  }
 
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
@@ -5472,6 +5485,12 @@ extern void __mute_mask_${symbol};
     this._addComment("Show Sprites");
     this._spritesShow();
   };
+
+  setSpriteMode = (mode: SpriteModeSetting) => {
+    this._addComment(`Set Sprite Mode: ${mode}`);
+    this._setSpriteMode(toASMSpriteMode(mode));
+    this._addNL();
+  }
 
   // --------------------------------------------------------------------------
   // Scenes
