@@ -49,8 +49,8 @@ export const MetaspriteCanvas = memo(
     const tilesLookup = useAppSelector((state) =>
       metaspriteTileSelectors.selectEntities(state),
     );
-    const colorCorrection = useAppSelector(
-      (state) => getSettings(state).colorCorrection,
+    const { colorCorrection, spriteMode: defaultSpriteMode } = useAppSelector(
+      (state) => getSettings(state),
     );
 
     const width = spriteSheet?.canvasWidth || 0;
@@ -123,7 +123,8 @@ export const MetaspriteCanvas = memo(
         palettes: paletteColors,
         previewAsMono,
         colorCorrection,
-        spriteMode: spriteMode ?? spriteSheet.spriteMode ?? "8x16",
+        spriteMode:
+          spriteMode ?? spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16",
       });
     }, [
       canvasRef,
@@ -137,6 +138,7 @@ export const MetaspriteCanvas = memo(
       previewAsMono,
       colorCorrection,
       spriteMode,
+      defaultSpriteMode,
     ]);
 
     return (

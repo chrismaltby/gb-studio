@@ -35,5 +35,5 @@ export const defaultVariableForContext = (
 };
 
 export type SceneCtx = {
-  spriteMode: SpriteModeSetting;
+  spriteMode?: SpriteModeSetting;
 };
