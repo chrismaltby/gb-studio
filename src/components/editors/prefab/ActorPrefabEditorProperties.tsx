@@ -4,6 +4,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorPrefabNormalized,
   CollisionGroup,
+  SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { SidebarColumn } from "ui/sidebars/Sidebar";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
@@ -11,8 +12,9 @@ import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ActorPrefabEditorExtraCollisionFlags } from "./ActorPrefabEditorExtraCollisionFlags";
+import { sceneSelectors } from "store/features/entities/entitiesState";
 
 interface ActorPrefabEditorPropertiesProps {
   prefab: ActorPrefabNormalized;
@@ -23,6 +25,15 @@ export const ActorPrefabEditorProperties: FC<
   ActorPrefabEditorPropertiesProps
 > = ({ prefab, sceneId }) => {
   const dispatch = useAppDispatch();
+
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, sceneId ?? ""),
+  );
+
+  const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
 
   const onChangeActorPrefabProp = useCallback(
     <K extends keyof ActorPrefabNormalized>(
@@ -61,6 +72,16 @@ export const ActorPrefabEditorProperties: FC<
     [onChangeActorPrefabProp],
   );
 
+  const onlyCurrentSpriteMode = useCallback(
+    (spriteSheet: SpriteSheetNormalized) => {
+      if (!sceneId) {
+        return true;
+      }
+      return (spriteSheet.spriteMode ?? defaultSpriteMode) === sceneSpriteMode;
+    },
+    [defaultSpriteMode, sceneSpriteMode, sceneId],
+  );
+
   if (!prefab) {
     return <div />;
   }
@@ -77,6 +98,7 @@ export const ActorPrefabEditorProperties: FC<
                 direction={"down"}
                 frame={0}
                 onChange={onChangeSpriteSheetId}
+                filter={onlyCurrentSpriteMode}
                 includeInfo
               />
             </FormField>

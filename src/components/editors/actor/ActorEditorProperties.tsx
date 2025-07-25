@@ -4,6 +4,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorNormalized,
   CollisionGroup,
+  SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { SidebarColumn } from "ui/sidebars/Sidebar";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
@@ -11,8 +12,9 @@ import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
+import { sceneSelectors } from "store/features/entities/entitiesState";
 
 interface ActorEditorPropertiesProps {
   actor: ActorNormalized;
@@ -24,6 +26,15 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
   sceneId,
 }) => {
   const dispatch = useAppDispatch();
+
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, sceneId ?? ""),
+  );
+
+  const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
 
   const onChangeActorProp = useCallback(
     <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {
@@ -59,6 +70,13 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
     [onChangeActorProp],
   );
 
+  const onlyCurrentSpriteMode = useCallback(
+    (spriteSheet: SpriteSheetNormalized) => {
+      return (spriteSheet.spriteMode ?? defaultSpriteMode) === sceneSpriteMode;
+    },
+    [defaultSpriteMode, sceneSpriteMode],
+  );
+
   if (!actor) {
     return <div />;
   }
@@ -78,6 +96,7 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 value={actor.spriteSheetId}
                 direction={actor.direction}
                 frame={0}
+                filter={onlyCurrentSpriteMode}
                 onChange={onChangeSpriteSheetId}
                 includeInfo
               />

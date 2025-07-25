@@ -46,6 +46,7 @@ import {
   FileSystemNavigatorItem,
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -106,6 +107,10 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
   hover: <ArrowJumpIcon />,
 };
 
+const SpriteModeLabel = styled.span`
+  opacity: 0.5;
+`;
+
 export const NavigatorSprites = ({
   height,
   selectedId,
@@ -136,6 +141,9 @@ export const NavigatorSprites = ({
   );
   const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state),
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const selectedAnimationId =
     useAppSelector((state) => state.editor.selectedAnimationId) || "group";
@@ -398,9 +406,25 @@ export const NavigatorSprites = ({
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
         );
       }
+      const spriteModeLabel =
+        item.asset?.spriteMode !== defaultSpriteMode
+          ? item.asset?.spriteMode
+          : "";
+
+      if (spriteModeLabel) {
+        return (
+          <FlexRow>
+            <FlexGrow style={{ overflow: "hidden", flexShrink: 0 }}>
+              {item.name}
+            </FlexGrow>
+            <SpriteModeLabel>{spriteModeLabel}</SpriteModeLabel>
+          </FlexRow>
+        );
+      }
+
       return item.filename;
     },
-    [toggleFolderOpen],
+    [defaultSpriteMode, toggleFolderOpen],
   );
 
   const showSpritesSearch = spritesSearchEnabled && splitSizes[0] > 60;

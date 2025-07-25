@@ -25,6 +25,7 @@ import {
   SceneNormalized,
   SceneParallaxLayer,
   ScriptEventNormalized,
+  SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
@@ -196,6 +197,8 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
   );
+  const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
+
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
       start: l10n("SIDEBAR_ON_INIT"),
@@ -508,6 +511,13 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       }),
     );
   }, [dispatch, id]);
+
+  const onlyCurrentSpriteMode = useCallback(
+    (spriteSheet: SpriteSheetNormalized) => {
+      return (spriteSheet.spriteMode ?? defaultSpriteMode) === sceneSpriteMode;
+    },
+    [defaultSpriteMode, sceneSpriteMode],
+  );
 
   const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
 
@@ -1033,6 +1043,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         value={scene.playerSpriteSheetId}
                         direction={isStartingScene ? startDirection : "down"}
                         onChange={onChangePlayerSpriteSheetId}
+                        filter={onlyCurrentSpriteMode}
                         includeInfo
                         optional
                         optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
