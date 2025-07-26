@@ -8,13 +8,6 @@
       }
     },
     {
-      "id": "111731287",
-      "type": "user",
-      "attributes": {
-        "full_name": "Diante Clark"
-      }
-    },
-    {
       "id": "89121289",
       "type": "user",
       "attributes": {
@@ -116,6 +109,13 @@
     }
   ],
   "pastPatrons": [
+    {
+      "id": "111731287",
+      "type": "user",
+      "attributes": {
+        "full_name": "Diante Clark"
+      }
+    },
     {
       "attributes": {
         "full_name": "Erik Rogers"
