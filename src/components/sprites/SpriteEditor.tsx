@@ -101,6 +101,7 @@ export const SpriteEditor = ({
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
   );
+  const spriteMode = sprite?.spriteMode || defaultSpriteMode;
   const selectedTileId = selectedTileIds[0];
 
   const [showSymbols, setShowSymbols] = useState(false);
@@ -651,7 +652,7 @@ export const SpriteEditor = ({
                   coordinate="h"
                   value={sprite.canvasHeight}
                   placeholder="16"
-                  min={16}
+                  min={spriteMode === "8x8" ? 8 : 16}
                   max={144}
                   step={8}
                   onChange={onChangeCanvasHeight}
