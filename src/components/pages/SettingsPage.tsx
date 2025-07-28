@@ -265,8 +265,8 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
-              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            <SettingsMenuItem onClick={onMenuItem("settingsSprite")}>
+              {l10n("SETTINGS_SPRITE")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
@@ -302,8 +302,10 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("FIELD_EXPORT_IN_COLOR"),
-            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
-            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            colorMode !== "mono"
+              ? l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")
+              : "",
+            colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
             l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
@@ -551,22 +553,56 @@ const SettingsPage: FC = () => {
         <SearchableCard
           searchTerm={searchTerm}
           searchMatches={[
-            l10n("FIELD_EXPORT_IN_COLOR"),
-            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
-            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            l10n("SETTINGS_SPRITE"),
+            l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            l10n("FIELD_DEFAULT_SPRITE_MODE"),
           ]}
         >
-          <CardAnchor id="settingsSpriteMode" />
-          <CardHeading>
-            <ColorAnimationText>
-              {l10n("SETTINGS_SPRITE_MODE")}
-            </ColorAnimationText>
-          </CardHeading>
+          <CardAnchor id="settingsSprite" />
+          <CardHeading>{l10n("SETTINGS_SPRITE")}</CardHeading>
 
           <SearchableSettingRow
             searchTerm={searchTerm}
             searchMatches={[
-              l10n("SETTINGS_SPRITE_MODE"),
+              l10n("SETTINGS_SPRITE"),
+              l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            ]}
+          >
+            <SettingRowLabel $sectionHeading>
+              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            </SettingRowLabel>
+          </SearchableSettingRow>
+
+          {sceneTypes.map((sceneType) => (
+            <SearchableSettingRow
+              key={sceneType.key}
+              searchTerm={searchTerm}
+              searchMatches={[
+                l10n(sceneType.label as L10NKey),
+                l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+              ]}
+            >
+              <SettingRowLabel $indent={1}>
+                {l10n(sceneType.label as L10NKey)}
+              </SettingRowLabel>
+              <SettingRowInput>
+                <SpriteSheetSelect
+                  name={`defaultPlayerSprite__${sceneType.key}`}
+                  value={defaultPlayerSprites[sceneType.key] || ""}
+                  optional
+                  optionalLabel={l10n("FIELD_NONE")}
+                  onChange={(value) =>
+                    onEditDefaultPlayerSprites(sceneType.key, value)
+                  }
+                />
+              </SettingRowInput>
+            </SearchableSettingRow>
+          ))}
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
               l10n("FIELD_DEFAULT_SPRITE_MODE"),
             ]}
           >
@@ -583,36 +619,6 @@ const SettingsPage: FC = () => {
               />
             </SettingRowInput>
           </SearchableSettingRow>
-        </SearchableCard>
-
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")]}
-        >
-          <CardAnchor id="settingsPlayer" />
-          <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
-          {sceneTypes.map((sceneType) => (
-            <SearchableSettingRow
-              key={sceneType.key}
-              searchTerm={searchTerm}
-              searchMatches={[l10n(sceneType.label as L10NKey)]}
-            >
-              <SettingRowLabel>
-                {l10n(sceneType.label as L10NKey)}
-              </SettingRowLabel>
-              <SettingRowInput>
-                <SpriteSheetSelect
-                  name={`defaultPlayerSprite__${sceneType.key}`}
-                  value={defaultPlayerSprites[sceneType.key] || ""}
-                  optional
-                  optionalLabel={l10n("FIELD_NONE")}
-                  onChange={(value) =>
-                    onEditDefaultPlayerSprites(sceneType.key, value)
-                  }
-                />
-              </SettingRowInput>
-            </SearchableSettingRow>
-          ))}
         </SearchableCard>
 
         <SearchableCard
