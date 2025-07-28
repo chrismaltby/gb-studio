@@ -565,9 +565,14 @@ const SettingsPage: FC = () => {
 
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={[l10n("SETTINGS_SPRITE_MODE")]}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE_MODE"),
+              l10n("FIELD_DEFAULT_SPRITE_MODE"),
+            ]}
           >
-            <SettingRowLabel>{l10n("SETTINGS_SPRITE_MODE")}</SettingRowLabel>
+            <SettingRowLabel>
+              {l10n("FIELD_DEFAULT_SPRITE_MODE")}
+            </SettingRowLabel>
             <SettingRowInput>
               <SpriteModeSelect
                 name="spriteMode"
