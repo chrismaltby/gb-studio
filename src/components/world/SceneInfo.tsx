@@ -135,6 +135,10 @@ const SceneInfo = () => {
         ? scene?.colorModeOverride
         : state.project.present.settings.colorMode) === "color",
   );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const spriteMode = scene?.spriteMode || defaultSpriteMode;
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -422,7 +426,11 @@ const SceneInfo = () => {
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =
     scene.type !== "LOGO"
-      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles, isCGBOnly)
+      ? maxSpriteTilesForBackgroundTilesLength(
+          backgroundNumTiles,
+          isCGBOnly,
+          spriteMode,
+        )
       : MAX_LOGO_SPRITE_TILES;
 
   return (
