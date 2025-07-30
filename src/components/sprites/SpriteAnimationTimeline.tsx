@@ -47,7 +47,7 @@ const SpriteAnimationTimeline = ({
   const dispatch = useAppDispatch();
 
   const animation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, animationId)
+    spriteAnimationSelectors.selectById(state, animationId),
   );
 
   const frames = useMemo(() => animation?.frames || [], [animation?.frames]);
@@ -62,7 +62,7 @@ const SpriteAnimationTimeline = ({
         dispatch(editorActions.setSelectedMetaspriteId(frameId));
       }
     },
-    [dispatch, frames]
+    [dispatch, frames],
   );
 
   const onSetFrameRange = useCallback(
@@ -79,7 +79,7 @@ const SpriteAnimationTimeline = ({
       }
       dispatch(editorActions.addMetaspriteIdsToMultiSelection(addFrames));
     },
-    [dispatch, frames]
+    [dispatch, frames],
   );
 
   const onClearMultiSelect = useCallback(() => {
@@ -92,7 +92,7 @@ const SpriteAnimationTimeline = ({
         spriteSheetId,
         spriteAnimationId: animationId,
         afterMetaspriteId: metaspriteId,
-      })
+      }),
     );
   }, [animationId, dispatch, metaspriteId, spriteSheetId]);
 
@@ -105,7 +105,7 @@ const SpriteAnimationTimeline = ({
           additionalMetaspriteIds.length === 0
             ? [metaspriteId]
             : additionalMetaspriteIds,
-      })
+      }),
     );
   }, [
     dispatch,
@@ -121,14 +121,14 @@ const SpriteAnimationTimeline = ({
         spriteSheetId,
         spriteAnimationId: animationId,
         metaspriteIds: additionalMetaspriteIds,
-      })
+      }),
     );
   }, [dispatch, spriteSheetId, animationId, additionalMetaspriteIds]);
 
   const onMoveFrames = useCallback(
     (fromIndex: number, toIndex: number) => {
       const multiSelectionIndexes = additionalMetaspriteIds.map((id) =>
-        frames.findIndex((i) => i === id)
+        frames.findIndex((i) => i === id),
       );
       if (multiSelectionIndexes.includes(toIndex)) {
         return;
@@ -143,10 +143,10 @@ const SpriteAnimationTimeline = ({
               ? multiSelectionIndexes
               : [fromIndex],
           toIndex,
-        })
+        }),
       );
     },
-    [additionalMetaspriteIds, animationId, dispatch, frames, spriteSheetId]
+    [additionalMetaspriteIds, animationId, dispatch, frames, spriteSheetId],
   );
 
   const handleKeys = useCallback((e: KeyboardEvent) => {

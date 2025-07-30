@@ -108,10 +108,10 @@ const WorldView = () => {
 
   const loaded = useAppSelector((state) => state.document.loaded);
   const scenes = useAppSelector(
-    (state) => sceneSelectors.selectIds(state) as string[]
+    (state) => sceneSelectors.selectIds(state) as string[],
   );
   const scenesLookup = useAppSelector((state) =>
-    sceneSelectors.selectEntities(state)
+    sceneSelectors.selectEntities(state),
   );
   const allSceneIds = useAppSelector(sceneSelectors.selectIds);
 
@@ -120,11 +120,11 @@ const WorldView = () => {
       state.editor.showLayers ||
       (state.editor.tool !== TOOL_COLORS &&
         state.editor.tool !== TOOL_COLLISIONS &&
-        state.editor.tool !== TOOL_ERASER)
+        state.editor.tool !== TOOL_ERASER),
   );
 
   const clipboardVariables = useAppSelector(
-    (state) => state.editor.clipboardVariables
+    (state) => state.editor.clipboardVariables,
   );
   const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);
 
@@ -134,10 +134,10 @@ const WorldView = () => {
   const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
 
   const scrollWidth = useAppSelector((state) =>
-    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxSceneRight(state) + 20)
+    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxSceneRight(state) + 20),
   );
   const scrollHeight = useAppSelector((state) =>
-    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxSceneBottom(state) + 60)
+    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxSceneBottom(state) + 60),
   );
 
   const focus = useAppSelector((state) => state.editor.worldFocus);
@@ -180,7 +180,7 @@ const WorldView = () => {
       e.preventDefault();
       dispatch(clipboardActions.copySelectedEntity());
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onPaste = useCallback(
@@ -196,7 +196,7 @@ const WorldView = () => {
         // Clipboard isn't pastable, just ignore it
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   //#endregion Clipboard handling
@@ -231,7 +231,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, onSelectAllScenes, tool]
+    [dispatch, focus, onSelectAllScenes, tool],
   );
 
   const onKeyUp = useCallback(
@@ -240,7 +240,7 @@ const WorldView = () => {
         setDragMode(false);
       }
     },
-    [dragMode]
+    [dragMode],
   );
 
   //#endregion Keyboard handling
@@ -257,14 +257,14 @@ const WorldView = () => {
             editorActions.zoomIn({
               section: "world",
               delta: absDeltaY * MOUSE_ZOOM_SPEED,
-            })
+            }),
           );
         } else {
           dispatch(
             editorActions.zoomOut({
               section: "world",
               delta: absDeltaY * MOUSE_ZOOM_SPEED,
-            })
+            }),
           );
         }
       } else {
@@ -277,7 +277,7 @@ const WorldView = () => {
         }, 60);
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   //#endregion Zoom handling
@@ -289,7 +289,7 @@ const WorldView = () => {
       throttle((left: number, top: number) => {
         dispatch(editorActions.scrollWorld({ x: left, y: top }));
       }, 10),
-    [dispatch]
+    [dispatch],
   );
 
   const onScroll = useCallback(
@@ -302,10 +302,10 @@ const WorldView = () => {
       ).scrollTop;
       onScrollThrottled(
         scrollState.current.scrollX,
-        scrollState.current.scrollY
+        scrollState.current.scrollY,
       );
     },
-    [onScrollThrottled]
+    [onScrollThrottled],
   );
 
   //#endregion Scroll handling
@@ -329,7 +329,7 @@ const WorldView = () => {
       dragState.current.dragDistanceX -= e.movementX;
       dragState.current.dragDistanceY -= e.movementY;
     },
-    [scrollRef]
+    [scrollRef],
   );
 
   const onEndWorldDrag = useCallback(
@@ -345,7 +345,7 @@ const WorldView = () => {
       window.removeEventListener("mousemove", onWorldDragMove);
       window.removeEventListener("mouseup", onEndWorldDrag);
     },
-    [dispatch, onWorldDragMove]
+    [dispatch, onWorldDragMove],
   );
 
   const startWorldDrag = useCallback(
@@ -355,7 +355,7 @@ const WorldView = () => {
       window.addEventListener("mousemove", onWorldDragMove);
       window.addEventListener("mouseup", onEndWorldDrag);
     },
-    [onEndWorldDrag, onWorldDragMove]
+    [onEndWorldDrag, onWorldDragMove],
   );
 
   const startWorldDragIfAltOrMiddleClick = useCallback(
@@ -367,7 +367,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndWorldDrag);
       }
     },
-    [dragMode, onEndWorldDrag, onWorldDragMove]
+    [dragMode, onEndWorldDrag, onWorldDragMove],
   );
 
   //#endregion World Dragging
@@ -385,7 +385,7 @@ const WorldView = () => {
         entitiesActions.addScene({
           ...hoverState,
           variables: clipboardVariables,
-        })
+        }),
       );
     }
     dispatch(editorActions.setTool({ tool: "select" }));
@@ -403,10 +403,10 @@ const WorldView = () => {
           editorActions.resizeWorldView({
             width: window.innerWidth,
             height: window.innerHeight,
-          })
+          }),
         );
       }, 300),
-    [dispatch]
+    [dispatch],
   );
 
   const onWindowResize = useCallback(() => {
@@ -446,7 +446,7 @@ const WorldView = () => {
         });
       }
     },
-    [tool, zoomRatio]
+    [tool, zoomRatio],
   );
 
   useEffect(() => {
@@ -571,7 +571,7 @@ const WorldView = () => {
         setSelectionEnd(point);
       }
     },
-    [dispatch, scenesLookup, scrollRef, zoomRatio]
+    [dispatch, scenesLookup, scrollRef, zoomRatio],
   );
 
   const onEndMultiSelection = useCallback(
@@ -583,7 +583,7 @@ const WorldView = () => {
       window.removeEventListener("mousemove", onMoveMultiSelection);
       window.removeEventListener("mouseup", onEndMultiSelection);
     },
-    [onMoveMultiSelection]
+    [onMoveMultiSelection],
   );
 
   const onStartMultiSelection = useCallback(
@@ -605,7 +605,7 @@ const WorldView = () => {
         window.addEventListener("mouseup", onEndMultiSelection);
       }
     },
-    [onEndMultiSelection, onMoveMultiSelection, scrollRef, tool, zoomRatio]
+    [onEndMultiSelection, onMoveMultiSelection, scrollRef, tool, zoomRatio],
   );
 
   useEffect(() => {

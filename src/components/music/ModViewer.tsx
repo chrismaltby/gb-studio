@@ -70,7 +70,7 @@ const TrackSettings = styled.div`
 const ModViewer = ({ trackId }: ModViewerProps) => {
   const dispatch = useAppDispatch();
   const track = useAppSelector((state) =>
-    musicSelectors.selectById(state, trackId)
+    musicSelectors.selectById(state, trackId),
   );
   const playing = useAppSelector((state) => state.music.playing);
 
@@ -89,7 +89,7 @@ const ModViewer = ({ trackId }: ModViewerProps) => {
         changes: {
           disableSpeedConversion: !track?.settings.disableSpeedConversion,
         },
-      })
+      }),
     );
   }, [dispatch, track?.settings.disableSpeedConversion, trackId]);
 
@@ -99,7 +99,7 @@ const ModViewer = ({ trackId }: ModViewerProps) => {
         electronActions.openFile({
           filename: assetPath("music", track),
           type: "music",
-        })
+        }),
       );
     }
   }, [dispatch, track]);

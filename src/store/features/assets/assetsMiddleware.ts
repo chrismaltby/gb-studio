@@ -13,11 +13,11 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const background = backgroundSelectors.selectById(
         state,
-        action.payload.backgroundId
+        action.payload.backgroundId,
       );
       const tileset = tilesetSelectors.selectById(
         state,
-        action.payload.tilesetId ?? ""
+        action.payload.tilesetId ?? "",
       );
       const tilesetId = tileset?.id;
 
@@ -38,7 +38,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
               background,
               tileset,
               action.payload.is360,
-              isCGBOnly
+              isCGBOnly,
             )
             .then((info) => {
               store.dispatch(
@@ -50,7 +50,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
                   numTiles: info.numTiles,
                   lookup: info.lookup,
                   isCGBOnly,
-                })
+                }),
               );
             });
         }

@@ -80,11 +80,11 @@ export const InstrumentDutyEditor = ({
   if (!instrument) return <></>;
 
   const selectedDuty = dutyOptions.find(
-    (i) => parseInt(i.value, 10) === instrument.duty_cycle
+    (i) => parseInt(i.value, 10) === instrument.duty_cycle,
   );
 
   const selectedSweepTime = sweepTimeOptions.find(
-    (i) => parseInt(i.value, 10) === instrument.frequency_sweep_time
+    (i) => parseInt(i.value, 10) === instrument.frequency_sweep_time,
   );
 
   const onChangeField =
@@ -96,7 +96,7 @@ export const InstrumentDutyEditor = ({
           changes: {
             [key]: editValue,
           },
-        })
+        }),
       );
     };
 
@@ -111,7 +111,7 @@ export const InstrumentDutyEditor = ({
             changes: {
               [key]: editValue,
             },
-          })
+          }),
         );
       }
     };

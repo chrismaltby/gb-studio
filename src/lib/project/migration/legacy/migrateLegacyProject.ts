@@ -42,7 +42,7 @@ const chain =
 export const migrateLegacyProject = (
   project: ProjectData,
   projectRoot: string,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ): CompressedProjectResources => {
   const migratedProject = migrateProject(project, projectRoot, scriptEventDefs);
 
@@ -55,7 +55,7 @@ export const migrateLegacyProject = (
 
   const encodeScene = (
     scene: Scene,
-    sceneIndex: number
+    sceneIndex: number,
   ): CompressedSceneResourceWithChildren => {
     const encodeSceneResource = encodeResource(SceneResource);
     const encodeActor = encodeResource(ActorResource);
@@ -67,19 +67,19 @@ export const migrateLegacyProject = (
         actors: scene.actors
           .filter(identity)
           .map((actor, actorIndex) =>
-            encodeActor({ ...actor, _index: actorIndex })
+            encodeActor({ ...actor, _index: actorIndex }),
           ),
         triggers: scene.triggers
           .filter(identity)
           .map((trigger, triggerIndex) =>
-            encodeTrigger({ ...trigger, _index: triggerIndex })
+            encodeTrigger({ ...trigger, _index: triggerIndex }),
           ),
-      })
+      }),
     );
   };
 
   const encodeBackground = (
-    background: BackgroundData
+    background: BackgroundData,
   ): CompressedBackgroundResource => {
     const encodeBackground = encodeResource(BackgroundResource);
     return compressBackgroundResource(encodeBackground(background));
@@ -87,7 +87,7 @@ export const migrateLegacyProject = (
 
   const map = <A, B>(
     arr: A[] | undefined,
-    mapFn: (a: A, index: number) => B
+    mapFn: (a: A, index: number) => B,
   ): B[] => {
     if (!arr) {
       return [];
@@ -114,32 +114,32 @@ export const migrateLegacyProject = (
     scripts: map(migratedProject.customEvents, encodeResource(ScriptResource)),
     sprites: map(
       migratedProject.spriteSheets,
-      chain(fixMissingSymbols("sprite"), encodeResource(SpriteResource))
+      chain(fixMissingSymbols("sprite"), encodeResource(SpriteResource)),
     ),
     backgrounds: map(
       migratedProject.backgrounds,
-      chain(fixMissingSymbols("bg"), encodeBackground)
+      chain(fixMissingSymbols("bg"), encodeBackground),
     ),
     emotes: map(
       migratedProject.emotes,
-      chain(fixMissingSymbols("emote"), encodeResource(EmoteResource))
+      chain(fixMissingSymbols("emote"), encodeResource(EmoteResource)),
     ),
     avatars: map(migratedProject.avatars, encodeResource(AvatarResource)),
     tilesets: map(
       migratedProject.tilesets,
-      chain(fixMissingSymbols("tileset"), encodeResource(TilesetResource))
+      chain(fixMissingSymbols("tileset"), encodeResource(TilesetResource)),
     ),
     fonts: map(
       migratedProject.fonts,
-      chain(fixMissingSymbols("font"), encodeResource(FontResource))
+      chain(fixMissingSymbols("font"), encodeResource(FontResource)),
     ),
     sounds: map(
       migratedProject.sounds,
-      chain(fixMissingSymbols("sound"), encodeResource(SoundResource))
+      chain(fixMissingSymbols("sound"), encodeResource(SoundResource)),
     ),
     music: map(
       migratedProject.music,
-      chain(fixMissingSymbols("song"), encodeResource(MusicResource))
+      chain(fixMissingSymbols("song"), encodeResource(MusicResource)),
     ),
     palettes: map(migratedProject.palettes, encodeResource(PaletteResource)),
     variables: encodeResource(VariablesResource)({

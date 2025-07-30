@@ -21,7 +21,7 @@ const useNestedMenu = (
   children: React.ReactNode,
   initiallyOpen: boolean,
   menuDirection: "left" | "right",
-  onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => boolean
+  onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => boolean,
 ) => {
   const isInitialMount = useRef(true);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -47,7 +47,7 @@ const useNestedMenu = (
   const subMenuItemChildren = subMenuChildArray.filter(
     (child: React.ReactNode) => {
       return isValidElement<MenuItemProps>(child) && child.type === MenuItem;
-    }
+    },
   ) as ReactElement[];
 
   const closeMenu = useCallback(() => {
@@ -146,7 +146,7 @@ const useNestedMenu = (
         }, 300);
       }
     },
-    [parentMenuIndex]
+    [parentMenuIndex],
   );
 
   const moveFocus = useCallback((itemIndex: number, subItemIndex: number) => {
@@ -155,7 +155,7 @@ const useNestedMenu = (
     // Find parent menu item to focus
     if (menuRef.current && itemIndex > -1) {
       const el = menuRef.current.querySelector(
-        `[data-index="${itemIndex}"]`
+        `[data-index="${itemIndex}"]`,
       ) as HTMLDivElement;
       if (el) {
         el.focus();
@@ -164,7 +164,7 @@ const useNestedMenu = (
     // Find sub menu item to focus
     if (subMenuRef.current && subItemIndex > -1) {
       const el = subMenuRef.current.querySelector(
-        `[data-index="${subItemIndex}"]`
+        `[data-index="${subItemIndex}"]`,
       ) as HTMLDivElement;
       if (el) {
         el.focus();
@@ -184,7 +184,7 @@ const useNestedMenu = (
       // Ignore keys that we shouldn't handle
       if (
         !["Tab", "Shift", "Enter", "Escape", "ArrowUp", "ArrowDown"].includes(
-          key
+          key,
         )
       ) {
         return;
@@ -262,14 +262,14 @@ const useNestedMenu = (
       onKeyDown,
       parentMenuIndex,
       subMenuItemChildren.length,
-    ]
+    ],
   );
 
   // Inject sub menu props into sub menu components
   const subMenuChildrenWithProps = subMenuChildArray.map((child) => {
     if (
       !isValidElement<MenuItemProps & React.HTMLAttributes<HTMLDivElement>>(
-        child
+        child,
       ) ||
       child.type !== MenuItem
     ) {
@@ -297,7 +297,7 @@ const useNestedMenu = (
       childArray.map((child) => {
         if (
           !isValidElement<MenuItemProps & React.HTMLAttributes<HTMLDivElement>>(
-            child
+            child,
           ) ||
           child.type !== MenuItem
         ) {
@@ -355,7 +355,7 @@ const useNestedMenu = (
       onMenuKeyDown,
       parentMenuIndex,
       subMenuChildrenWithProps,
-    ]
+    ],
   );
 
   // Store menu width for using to offset sub menu to

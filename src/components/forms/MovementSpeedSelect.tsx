@@ -24,8 +24,9 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   noneLabel,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] =
-    useState<MovementSpeedOption | undefined>();
+  const [currentValue, setCurrentValue] = useState<
+    MovementSpeedOption | undefined
+  >();
   const [{ isCustom, autoFocus }, setIsCustom] = useState({
     isCustom: false,
     autoFocus: false,
@@ -41,7 +42,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
       { value: 4, label: `${l10n("FIELD_SPEED")} 4` },
       { value: undefined, label: `${l10n("FIELD_CUSTOM_SPEED")}` },
     ],
-    []
+    [],
   );
 
   const optionsWithNone: MovementSpeedOption[] = useMemo(
@@ -49,12 +50,12 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
       { value: 0, label: noneLabel ?? `${l10n("FIELD_NONE")}` },
       ...options,
     ],
-    [noneLabel, options]
+    [noneLabel, options],
   );
 
   useEffect(() => {
     const current = (allowNone ? optionsWithNone : options).find(
-      (o) => o.value === value
+      (o) => o.value === value,
     );
     setCurrentValue(current);
     if (value === undefined || !current) {
@@ -93,14 +94,14 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
       options={allowNone ? optionsWithNone : options}
       formatOptionLabel={(
         option: MovementSpeedOption,
-        { context }: { context: "menu" | "value" }
+        { context }: { context: "menu" | "value" },
       ) => {
         return (
           <OptionLabelWithInfo
             info={
               context === "menu" && option.value && option.value > 0
                 ? `${String(Math.round(option.value * 100) / 100)} ${l10n(
-                    "FIELD_PIXELS_PER_FRAME_SHORT"
+                    "FIELD_PIXELS_PER_FRAME_SHORT",
                   )}`
                 : ""
             }

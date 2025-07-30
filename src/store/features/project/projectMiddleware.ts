@@ -35,7 +35,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
       assetSelectors: EntitySelectors<T, RootState, string>,
       assetId: string,
       newName: string,
-      getExtension: (asset: T) => string
+      getExtension: (asset: T) => string,
     ) => {
       const state = store.getState();
       const asset = assetSelectors.selectById(state, assetId);
@@ -53,7 +53,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
     const removeAsset = async <T extends Asset>(
       assetType: AssetType,
       assetSelectors: EntitySelectors<T, RootState, string>,
-      assetId: string
+      assetId: string,
     ) => {
       const state = store.getState();
       const asset = assetSelectors.selectById(state, assetId);
@@ -61,7 +61,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         actions.removeAsset({ assetType, asset })(
           store.dispatch,
           store.getState,
-          {}
+          {},
         );
       }
     };
@@ -72,13 +72,13 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         backgroundSelectors,
         action.payload.backgroundId,
         action.payload.newFilename,
-        () => "png"
+        () => "png",
       );
     } else if (actions.removeBackgroundAsset.match(action)) {
       removeAsset(
         "backgrounds",
         backgroundSelectors,
-        action.payload.backgroundId
+        action.payload.backgroundId,
       );
     } else if (actions.renameTilesetAsset.match(action)) {
       renameAsset(
@@ -86,7 +86,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         tilesetSelectors,
         action.payload.tilesetId,
         action.payload.newFilename,
-        () => "png"
+        () => "png",
       );
     } else if (actions.removeTilesetAsset.match(action)) {
       removeAsset("tilesets", tilesetSelectors, action.payload.tilesetId);
@@ -96,13 +96,13 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         spriteSheetSelectors,
         action.payload.spriteSheetId,
         action.payload.newFilename,
-        () => "png"
+        () => "png",
       );
     } else if (actions.removeSpriteAsset.match(action)) {
       removeAsset(
         "sprites",
         spriteSheetSelectors,
-        action.payload.spriteSheetId
+        action.payload.spriteSheetId,
       );
     } else if (actions.renameMusicAsset.match(action)) {
       renameAsset(
@@ -110,7 +110,7 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         musicSelectors,
         action.payload.musicId,
         action.payload.newFilename,
-        (asset) => (asset.type === "uge" ? "uge" : "mod")
+        (asset) => (asset.type === "uge" ? "uge" : "mod"),
       );
     } else if (actions.removeMusicAsset.match(action)) {
       removeAsset("music", musicSelectors, action.payload.musicId);
@@ -124,10 +124,10 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
           asset.type === "fxhammer"
             ? "sav"
             : asset.type === "vgm"
-            ? "vgm"
-            : asset.type === "wav"
-            ? "wav"
-            : assertUnreachable(asset.type)
+              ? "vgm"
+              : asset.type === "wav"
+                ? "wav"
+                : assertUnreachable(asset.type),
       );
     } else if (actions.removeSoundAsset.match(action)) {
       removeAsset("sounds", soundSelectors, action.payload.soundId);

@@ -92,7 +92,7 @@ const compile = (input, helpers) => {
     operation,
     input.comparator || 0,
     truePath,
-    falsePath
+    falsePath,
   );
 };
 

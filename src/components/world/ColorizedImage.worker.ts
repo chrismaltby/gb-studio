@@ -41,7 +41,7 @@ workerCtx.onmessage = async (evt) => {
   const palettes = evt.data.palettes;
   const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
   const palettesRGB = palettes.map((colors: string[]) =>
-    colors.map(colorCorrectionFn)
+    colors.map(colorCorrectionFn),
   );
   const dmgPalette = DMG_PALETTE.colors.map(colorCorrectionFn);
 

@@ -103,7 +103,7 @@ var ModModule = function (fileData) {
   for (var i = 0; i < patternCount; i++) {
     var patternHeader = fileData.subarray(
       1084 + i * patternLength,
-      1084 + i * patternLength + patternLength
+      1084 + i * patternLength + patternLength,
     );
 
     // Create pattern and set number of rows and channels.
@@ -275,9 +275,9 @@ var ModModule = function (fileData) {
       this.instruments[i].samples[0].loadSample(
         fileData.subarray(
           filePos,
-          filePos + this.instruments[i].samples[0].sampleLength
+          filePos + this.instruments[i].samples[0].sampleLength,
         ),
-        this.signedSample
+        this.signedSample,
       );
     }
     //this.instruments[i].samples[0].sample[0] = 0; // Was causing bad sample data, disabled.

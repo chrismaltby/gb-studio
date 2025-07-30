@@ -12,6 +12,6 @@ import { initTheme } from "renderer/lib/theme";
   root.render(
     <React.StrictMode>
       <Preferences />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 })();

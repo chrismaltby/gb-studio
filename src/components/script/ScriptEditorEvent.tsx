@@ -97,10 +97,10 @@ const ScriptEditorEvent = React.memo(
     });
 
     const clipboardFormat = useAppSelector(
-      (state) => state.clipboard.data?.format
+      (state) => state.clipboard.data?.format,
     );
     const scriptEventData = useAppSelector((state) =>
-      scriptEventSelectors.selectById(state, id)
+      scriptEventSelectors.selectById(state, id),
     );
     const scriptEvent: ScriptEventNormalized | undefined = useMemo(
       () =>
@@ -113,21 +113,21 @@ const ScriptEditorEvent = React.memo(
               },
             }
           : undefined,
-      [overrides, scriptEventData]
+      [overrides, scriptEventData],
     );
 
     const scriptEventDefs = useAppSelector((state) =>
-      selectScriptEventDefs(state)
+      selectScriptEventDefs(state),
     );
     const scriptEventSelectionIds = useAppSelector(
-      (state) => state.editor.scriptEventSelectionIds
+      (state) => state.editor.scriptEventSelectionIds,
     );
 
     const breakpointEnabled = useAppSelector(
       (state) =>
         getSettings(state).debuggerBreakpoints.findIndex(
-          (b) => b.scriptEventId === id
-        ) > -1
+          (b) => b.scriptEventId === id,
+        ) > -1,
     );
 
     const onSelect = useCallback(
@@ -139,7 +139,7 @@ const ScriptEditorEvent = React.memo(
               parentId,
               parentKey,
               parentType,
-            })
+            }),
           );
           return true;
         } else if (
@@ -151,7 +151,7 @@ const ScriptEditorEvent = React.memo(
         }
         return false;
       },
-      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds],
     );
 
     const onFetchClipboard = useCallback(
@@ -159,7 +159,7 @@ const ScriptEditorEvent = React.memo(
         onSelect(e.shiftKey);
         dispatch(clipboardActions.fetchClipboard());
       },
-      [dispatch, onSelect]
+      [dispatch, onSelect],
     );
 
     const toggleRename = useCallback(() => {
@@ -204,7 +204,7 @@ const ScriptEditorEvent = React.memo(
             },
             from: item,
             additionalScriptEventIds: scriptEventSelectionIds,
-          })
+          }),
         );
 
         item.parentType = parentType;
@@ -235,7 +235,7 @@ const ScriptEditorEvent = React.memo(
         }
         dispatch(entitiesActions.toggleScriptEventOpen({ scriptEventId: id }));
       },
-      [dispatch, id, onSelect]
+      [dispatch, id, onSelect],
     );
 
     const onRename = useCallback(
@@ -244,17 +244,17 @@ const ScriptEditorEvent = React.memo(
           entitiesActions.editScriptEventLabel({
             scriptEventId: id,
             value: e.currentTarget.value,
-          })
+          }),
         );
       },
-      [dispatch, id]
+      [dispatch, id],
     );
 
     const onRenameFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
         e.currentTarget.select();
       },
-      []
+      [],
     );
 
     const onRenameComplete = useCallback(() => {
@@ -267,7 +267,7 @@ const ScriptEditorEvent = React.memo(
           setRename(false);
         }
       },
-      []
+      [],
     );
 
     drag(dragRef);
@@ -275,7 +275,9 @@ const ScriptEditorEvent = React.memo(
 
     const command = scriptEvent?.command ?? "";
     const isComment = command === EVENT_COMMENT;
-    const commented = (scriptEvent?.args && scriptEvent?.args.__comment) ?? "";
+    const isDisabled = Boolean(
+      scriptEvent?.args && scriptEvent?.args.__comment,
+    );
     const hasElse =
       (scriptEvent?.children && !!scriptEvent.children.false) ?? false;
     const disabledElse =
@@ -303,14 +305,14 @@ const ScriptEditorEvent = React.memo(
           entitiesActions.applyActorPrefabScriptEventOverride({
             actorId: context.instanceId,
             scriptEventId: id,
-          })
+          }),
         );
       } else if (context.entityType === "triggerPrefab" && context.instanceId) {
         dispatch(
           entitiesActions.applyTriggerPrefabScriptEventOverride({
             triggerId: context.instanceId,
             scriptEventId: id,
-          })
+          }),
         );
       }
     }, [context.entityType, context.instanceId, dispatch, id]);
@@ -321,14 +323,14 @@ const ScriptEditorEvent = React.memo(
           entitiesActions.revertActorPrefabScriptEventOverride({
             actorId: context.instanceId,
             scriptEventId: id,
-          })
+          }),
         );
       } else if (context.entityType === "triggerPrefab" && context.instanceId) {
         dispatch(
           entitiesActions.revertTriggerPrefabScriptEventOverride({
             triggerId: context.instanceId,
             scriptEventId: id,
-          })
+          }),
         );
       }
     }, [context.entityType, context.instanceId, dispatch, id]);
@@ -347,7 +349,7 @@ const ScriptEditorEvent = React.memo(
               parentType,
               context,
               breakpointEnabled,
-              commented: !!commented,
+              isDisabled,
               hasElse,
               hasOverride: !!overrides,
               disabledElse: !!disabledElse,
@@ -365,7 +367,7 @@ const ScriptEditorEvent = React.memo(
         breakpointEnabled,
         clipboardFormat,
         command,
-        commented,
+        isDisabled,
         context,
         disabledElse,
         dispatch,
@@ -381,15 +383,14 @@ const ScriptEditorEvent = React.memo(
         scriptEvent,
         scriptEventSelectionIds,
         toggleRename,
-      ]
+      ],
     );
 
-    const [contextMenu, setContextMenu] =
-      useState<{
-        x: number;
-        y: number;
-        menu: JSX.Element[];
-      }>();
+    const [contextMenu, setContextMenu] = useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
 
     const onContextMenu = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -397,7 +398,7 @@ const ScriptEditorEvent = React.memo(
         onFetchClipboard(e);
         setContextMenu({ x: e.pageX, y: e.pageY, menu: contextMenuItems });
       },
-      [contextMenuItems, onFetchClipboard]
+      [contextMenuItems, onFetchClipboard],
     );
 
     const onContextMenuClose = useCallback(() => {
@@ -418,7 +419,7 @@ const ScriptEditorEvent = React.memo(
           />
         );
       },
-      [nestLevel, scriptEvent, id, entityId]
+      [nestLevel, scriptEvent, id, entityId],
     );
 
     const onMouseEnter = useCallback(() => {
@@ -451,12 +452,12 @@ const ScriptEditorEvent = React.memo(
               parentId,
               parentKey,
               parentType,
-            })
+            }),
           );
           return;
         }
       },
-      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds]
+      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds],
     );
 
     useEffect(() => {
@@ -505,7 +506,8 @@ const ScriptEditorEvent = React.memo(
             <ScriptEventHeader
               ref={headerRef}
               isConditional={isConditional}
-              isComment={Boolean(commented || isComment)}
+              isComment={Boolean(isComment)}
+              isDisabled={Boolean(isDisabled)}
               nestLevel={nestLevel}
               altBg={index % 2 === 0}
               isOpen={isOpen}
@@ -548,7 +550,7 @@ const ScriptEditorEvent = React.memo(
               )}
             </ScriptEventHeader>
           </div>
-          {isOpen && !commented && (
+          {isOpen && !isDisabled && (
             <ScriptEventFormWrapper data-handler-id={handlerId}>
               <ScriptEditorEventHelper event={scriptEvent} />
               {showSymbols && (
@@ -580,7 +582,7 @@ const ScriptEditorEvent = React.memo(
         )}
       </ScriptEventWrapper>
     );
-  }
+  },
 );
 
 export default ScriptEditorEvent;

@@ -37,8 +37,11 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       dispatch(consoleActions.startConsole());
 
       const project = denormalizeProject(state.project.present);
-      const engineFields = state.engine.fields;
-      const sceneTypes = state.engine.sceneTypes;
+      const engineSchema = {
+        fields: state.engine.fields,
+        sceneTypes: state.engine.sceneTypes,
+        consts: state.engine.consts,
+      };
       const selectionIds = state.editor.sceneSelectionIds;
 
       try {
@@ -50,7 +53,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
                 ? project.scenes.filter(
                     (scene) =>
                       scene.id === startSceneId ||
-                      selectionIds.includes(scene.id)
+                      selectionIds.includes(scene.id),
                   )
                 : project.scenes,
             settings: {
@@ -62,11 +65,10 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           },
           {
             buildType,
-            engineFields,
+            engineSchema,
             exportBuild,
             debugEnabled,
-            sceneTypes,
-          }
+          },
         );
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
@@ -93,16 +95,13 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       dispatch(consoleActions.startConsole());
 
       const project = denormalizeProject(state.project.present);
-      const engineFields = state.engine.fields;
-      const sceneTypes = state.engine.sceneTypes;
-
+      const engineSchema = {
+        fields: state.engine.fields,
+        sceneTypes: state.engine.sceneTypes,
+        consts: state.engine.consts,
+      };
       try {
-        await API.project.exportProject(
-          project,
-          engineFields,
-          sceneTypes,
-          exportType
-        );
+        await API.project.exportProject(project, engineSchema, exportType);
       } catch (e) {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
         dispatch(navigationActions.setSection("world"));

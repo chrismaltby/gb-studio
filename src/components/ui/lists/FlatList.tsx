@@ -93,7 +93,7 @@ export const FlatList = <T extends FlatListItem>({
 }: FlatListProps<T>) => {
   const typedSetSelectedId = setSelectedId as <T extends FlatListItem>(
     id: string,
-    item: T
+    item: T,
   ) => void | undefined;
   const typedItems = items as T[];
 
@@ -139,7 +139,7 @@ export const FlatList = <T extends FlatListItem>({
         setSelectedId?.(nextItem.id, nextItem);
         setFocus(nextItem.id);
       }
-    }, 150)
+    }, 150),
   );
 
   const throttledPrev = useRef(
@@ -151,7 +151,7 @@ export const FlatList = <T extends FlatListItem>({
         setSelectedId?.(nextItem.id, nextItem);
         setFocus(nextItem.id);
       }
-    }, 150)
+    }, 150),
   );
 
   const handleSearch = (key: string) => {

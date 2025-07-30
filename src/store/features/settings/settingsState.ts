@@ -32,7 +32,7 @@ const settingsSlice = createSlice({
 
     editPlayerStartAt: (
       state,
-      action: PayloadAction<{ sceneId: string; x: number; y: number }>
+      action: PayloadAction<{ sceneId: string; x: number; y: number }>,
     ) => {
       state.startSceneId = action.payload.sceneId;
       state.startX = action.payload.x;
@@ -44,7 +44,7 @@ const settingsSlice = createSlice({
       action: PayloadAction<{
         sceneType: string;
         spriteSheetId: string;
-      }>
+      }>,
     ) => {
       state.defaultPlayerSprites[action.payload.sceneType] =
         action.payload.spriteSheetId;
@@ -57,7 +57,7 @@ const settingsSlice = createSlice({
     toggleFavoriteEvent: (state, action: PayloadAction<string>) => {
       if (state.favoriteEvents.includes(action.payload)) {
         state.favoriteEvents = state.favoriteEvents.filter(
-          (item) => item !== action.payload
+          (item) => item !== action.payload,
         );
       } else {
         state.favoriteEvents.push(action.payload);
@@ -66,7 +66,7 @@ const settingsSlice = createSlice({
 
     toggleBreakpoint: (state, action: PayloadAction<BreakpointData>) => {
       const index = state.debuggerBreakpoints.findIndex(
-        (item) => item.scriptEventId === action.payload.scriptEventId
+        (item) => item.scriptEventId === action.payload.scriptEventId,
       );
       if (index !== -1) {
         state.debuggerBreakpoints.splice(index, 1);
@@ -78,7 +78,7 @@ const settingsSlice = createSlice({
     toggleWatchedVariable: (state, action: PayloadAction<string>) => {
       if (state.debuggerWatchedVariables.includes(action.payload)) {
         state.debuggerWatchedVariables = state.debuggerWatchedVariables.filter(
-          (item) => item !== action.payload
+          (item) => item !== action.payload,
         );
       } else {
         state.debuggerWatchedVariables.push(action.payload);
@@ -88,7 +88,7 @@ const settingsSlice = createSlice({
     toggleDebuggerPaneCollapsed: (state, action: PayloadAction<string>) => {
       if (state.debuggerCollapsedPanes.includes(action.payload)) {
         state.debuggerCollapsedPanes = state.debuggerCollapsedPanes.filter(
-          (item) => item !== action.payload
+          (item) => item !== action.payload,
         );
       } else {
         state.debuggerCollapsedPanes.push(action.payload);
@@ -117,7 +117,7 @@ const settingsSlice = createSlice({
           name: string;
           groups: string[];
           args: ScriptEventArgs;
-        }>
+        }>,
       ) => {
         if (!state.scriptEventPresets[action.payload.id]) {
           state.scriptEventPresets[action.payload.id] = {};
@@ -139,7 +139,7 @@ const settingsSlice = createSlice({
         name: string;
         groups: string[];
         args: ScriptEventArgs;
-      }>
+      }>,
     ) => {
       if (
         !state.scriptEventPresets[action.payload.id] ||
@@ -160,7 +160,7 @@ const settingsSlice = createSlice({
       action: PayloadAction<{
         id: string;
         presetId: string;
-      }>
+      }>,
     ) => {
       if (!state.scriptEventPresets[action.payload.id]) {
         return;
@@ -188,7 +188,7 @@ const settingsSlice = createSlice({
 
     setScriptEventDefaultPreset: (
       state,
-      action: PayloadAction<{ id: string; presetId: string }>
+      action: PayloadAction<{ id: string; presetId: string }>,
     ) => {
       if (action.payload.presetId.length > 0) {
         state.scriptEventDefaultPresets[action.payload.id] =

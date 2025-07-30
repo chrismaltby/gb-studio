@@ -14,7 +14,7 @@ const DebuggerActorLink = ({ id, sceneId }: DebuggerActorLinkProps) => {
   const dispatch = useAppDispatch();
   const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const actorIndex = useAppSelector((state) =>
-    actorSelectors.selectIds(state).indexOf(id)
+    actorSelectors.selectIds(state).indexOf(id),
   );
 
   const onSelect = useCallback(() => {
@@ -22,7 +22,7 @@ const DebuggerActorLink = ({ id, sceneId }: DebuggerActorLinkProps) => {
       editorActions.selectActor({
         sceneId,
         actorId: id,
-      })
+      }),
     );
     dispatch(editorActions.editSearchTerm(""));
     dispatch(editorActions.editSearchTerm(sceneId));

@@ -48,14 +48,14 @@ export const NavigatorSounds = ({
 
   const nestedSoundItems = useMemo(
     () => buildAssetNavigatorItems(allSounds, openFolders, soundsSearchTerm),
-    [allSounds, openFolders, soundsSearchTerm]
+    [allSounds, openFolders, soundsSearchTerm],
   );
 
   const setSelectedId = useCallback(
     (id: string) => {
       dispatch(navigationActions.setNavigationId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const [renameId, setRenameId] = useState("");
@@ -66,7 +66,7 @@ export const NavigatorSounds = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameComplete = useCallback(
@@ -76,12 +76,12 @@ export const NavigatorSounds = ({
           projectActions.renameSoundAsset({
             soundId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -105,7 +105,7 @@ export const NavigatorSounds = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderLabel = useCallback(
@@ -117,7 +117,7 @@ export const NavigatorSounds = ({
       }
       return item.filename;
     },
-    [toggleFolderOpen]
+    [toggleFolderOpen],
   );
 
   const showSoundsSearch = soundsSearchEnabled && height > 60;

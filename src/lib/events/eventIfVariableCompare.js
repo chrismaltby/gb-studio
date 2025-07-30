@@ -89,7 +89,7 @@ const compile = (input, helpers) => {
     operation,
     input.vectorY,
     truePath,
-    falsePath
+    falsePath,
   );
 };
 

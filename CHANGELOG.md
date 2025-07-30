@@ -35,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for font mappings to output multiple character codes for a single input e.g. `"X": [72, 69, 76, 76, 79]`
 - Add ability to click label to the right of ROM usage bar to toggle between showing ROM usage values as byte values rather than rounding to KiB/MiB
 - Generate file `bank_usage.txt` when exporting ROM giving a breakdown of which assets were assigned to each memory bank and how many bytes were used
+- Add support for running GB Studio on Linux ARM64 (including Raspberry Pi)
+- Add "globals.i" file when exporting ROM containing all variable addresses. Allows integration with emulators such as [GodotBoy](https://godotengine.org/asset-library/asset/2920) for handling achievements and other game/rom interactions
+- Add ability to edit scene type (Platformer/TopDown etc.) global settings from Scene sidebar by clicking Cog button rather than needing to go to Settings page.
+- Add option to prevent backtracking in "Camera Move To Lock On Player" event to stop scroll from following player in selected directions
+- Add event "Set Camera Lock To Player", with same functionality as the move to variant but which will be called before automatic screen fade in event
+- Add new sprite animation types "Horizontal" and "Horizontal + Movement" for creating sprites which can only face left or right
+- Add ability for engine plugins to define constants, accessible from GBVM scripts, to reduce need for magic numbers
+- Added new features to Platformer scene type based on Platformer+ plugin. Functionality like dashing, double jump, coyote time, fall through, wall jumps, knockback are now included in the inbuilt Platformer, each feature is optional and if disabled will not affect your game's performance.
+- Add ability for actors in Platformer scenes to be marked as "Solid" or "Platform" allowing moving platforms. Scene plugins can opt in to this also
+- Add new event "Attach Script To Platformer Event Callback" allowing scripts to be triggered by events occuring within platformer scenes
+- Add support for setting per scene camera bounds, constraining the min/max scrollable area
+- Add a "Set Camera Bounds" event to allow scripts to adjust min/max scroll limits at runtime
 
 ### Changed
 
@@ -50,10 +62,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update "Wait" event to support using variable values for wait time [@pau-tomas](https://github.com/pau-tomas))
 - Toggle multi selection of scenes action changed to ctrl/cmd + click to be more consistent with OS level defaults + new sprite editor frame selection
 - Font PNGs that are 128px tall (16 tile rows) now map tiles starting from ASCII code 0 instead of 32, enabling support for drawing control characters (ASCII 0–31). To draw characters with codes less than 32 they must be escaped with `\005` e.g. to draw character code 7 use `\005\007` (note: this is octal so code 19 would be `\005\023`)
+- Optimised code generation when using properties (actor tileX, camera deadzone etc.) in values
+- Optimised Actor Move Relative code generation
+- Updated "Actor Move To" and "Actor Move Relative" to allow specifying if Walls, Actors, or none or both should be used for collisions
+- Change disabled event styling to use a red background, distinguishing them from comment events
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 
 ### Fixed
 
@@ -85,6 +102,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where clicking "Show Navigator" toolbar button would not cause "Show Navigator" option in menu to be checked
 - Fix issue where font mappings were not being displayed in app text previews
 - Fix overflow warning when using "Fixed Position" parallax layers
+- Fix issue where referenced tilesets from event plugins were not always being included in the built project [@Mico27](https://github.com/Mico27)
+- Fix issue where mask values were not being used correctly while painting collisions tiles [@Mico27](https://github.com/Mico27)
 
 ## [4.1.3] - 2024-09-16
 

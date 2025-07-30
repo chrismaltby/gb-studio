@@ -51,25 +51,25 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const [scriptUses, setScriptUses] = useState<ScriptUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
 
   const dispatch = useAppDispatch();
@@ -81,7 +81,7 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
         setScriptUses(e.data.uses);
       }
     },
-    [id]
+    [id],
   );
 
   useEffect(() => {
@@ -124,12 +124,12 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "actor") {
       dispatch(
-        editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
+        editorActions.selectActor({ actorId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "trigger") {
       dispatch(
-        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
+        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "custom") {

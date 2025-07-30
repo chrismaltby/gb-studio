@@ -6,7 +6,7 @@ import { buildResourceExportBuffer } from "./save";
 
 export const buildCompressedProjectResourcesPatch = (
   resources: CompressedProjectResources,
-  checksums: Record<string, string>
+  checksums: Record<string, string>,
 ): WriteResourcesPatch => {
   const writeBuffer = buildResourceExportBuffer(resources);
 

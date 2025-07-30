@@ -26,7 +26,8 @@
           "value": 0
         },
         "moveType": "diagonal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -43,7 +44,8 @@
           "value": 6
         },
         "moveType": "diagonal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -82,7 +84,8 @@
           "value": 6
         },
         "moveType": "diagonal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -99,7 +102,8 @@
           "value": 0
         },
         "moveType": "diagonal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     }
   ]

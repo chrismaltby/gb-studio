@@ -94,7 +94,7 @@ var XmModule = function (fileData) {
           if (pattern.effect[r][c] != Effects.NONE) {
             pattern.effect[r][c] = this.parseEffect(
               pattern.effect[r][c],
-              pattern.effectParam[r][c]
+              pattern.effectParam[r][c],
             );
           }
         }
@@ -145,7 +145,7 @@ var XmModule = function (fileData) {
             Math.min(Helpers.readWord(fileData, offset + 131 + ep * 4) / 64, 1),
             ep == volEnvelopeSustain,
             ep == volEnvelopeLpBegin,
-            ep == volEnvelopeLpEnd
+            ep == volEnvelopeLpEnd,
           );
         }
 
@@ -155,7 +155,7 @@ var XmModule = function (fileData) {
             Math.min(Helpers.readWord(fileData, offset + 179 + ep * 4) / 64, 1),
             ep == panEnvelopeSustain,
             ep == panEnvelopeLpBegin,
-            ep == panEnvelopeLpEnd
+            ep == panEnvelopeLpEnd,
           );
         }
       }
@@ -208,7 +208,7 @@ var XmModule = function (fileData) {
         if (sample.sampleLength > 0) {
           var sampleData = fileData.subarray(
             offset,
-            offset + sample.sampleLength
+            offset + sample.sampleLength,
           );
 
           if (sample.compression === Sample.Compression.DELTA) {

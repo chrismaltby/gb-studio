@@ -11,7 +11,7 @@ type SparseHexPalette = [
   string | undefined,
   string | undefined,
   string | undefined,
-  string | undefined
+  string | undefined,
 ];
 
 type HexPalette = [string, string, string, string];
@@ -32,7 +32,7 @@ export const autoPalette = (
   width: number,
   height: number,
   pixels: Buffer | Uint8ClampedArray,
-  colorCorrection: ColorCorrectionSetting
+  colorCorrection: ColorCorrectionSetting,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -89,7 +89,7 @@ export const autoPalette = (
         tilePaletteMap[ti],
         palettes[tilePaletteMap[ti]],
         recolorCache,
-        indexedImage
+        indexedImage,
       );
     }
   }
@@ -110,7 +110,7 @@ export const autoPaletteUsingTiles = (
   width: number,
   height: number,
   pixels: Buffer | Uint8ClampedArray,
-  tileData: IndexedImage
+  tileData: IndexedImage,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -129,7 +129,7 @@ export const autoPaletteUsingTiles = (
         width,
         txi,
         tyi,
-        tileData
+        tileData,
       );
       const key = JSON.stringify(palette);
       if (paletteCache[key]) {
@@ -168,7 +168,7 @@ const tileToCacheKey = (
   pixels: Buffer | Uint8ClampedArray,
   width: number,
   tileX: number,
-  tileY: number
+  tileY: number,
 ): string => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -194,7 +194,7 @@ const extractTilePalette = (
   width: number,
   tileX: number,
   tileY: number,
-  colorCorrection: ColorCorrectionSetting
+  colorCorrection: ColorCorrectionSetting,
 ): VariableLengthHexPalette => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -229,7 +229,7 @@ const extractTilePaletteWithHint = (
   width: number,
   tileX: number,
   tileY: number,
-  indexedImage: IndexedImage
+  indexedImage: IndexedImage,
 ): SparseHexPalette => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -252,7 +252,7 @@ const extractTilePaletteWithHint = (
         const hex = rgbToColorCorrectedHex(
           pixels[i],
           pixels[i + 1],
-          pixels[i + 2]
+          pixels[i + 2],
         );
         colors[index] = hex;
         seenCount++;
@@ -269,7 +269,7 @@ const extractTilePaletteWithHint = (
  * Sort palette by perceptual lightness
  */
 const sortHexPalette = (
-  input: VariableLengthHexPalette
+  input: VariableLengthHexPalette,
 ): VariableLengthHexPalette => {
   return input
     .map((hex) => ({ hex, lightness: chroma(hex).lab()[0] }))
@@ -289,7 +289,7 @@ const buildIndexedTile = (
   paletteIndex: number,
   palette: VariableLengthHexPalette,
   recolorCache: Record<string, string>,
-  indexedImage: IndexedImage
+  indexedImage: IndexedImage,
 ): void => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -310,7 +310,7 @@ const buildIndexedTile = (
         if (!recolorCache[key]) {
           recolorCache[key] = findClosestHexColor(
             rgbToColorCorrectedHex(pixels[i], pixels[i + 1], pixels[i + 2]),
-            palette
+            palette,
           );
         }
         const color = recolorCache[key];
@@ -340,7 +340,7 @@ const manhattanHexDistance = (color1: string, color2: string): number => {
  */
 const findClosestHexColor = (
   color: string,
-  palette: VariableLengthHexPalette
+  palette: VariableLengthHexPalette,
 ): string => {
   let closestColor = palette[0];
   let minDistance = Infinity;
@@ -422,7 +422,7 @@ const sortLightnessProp = <T extends { lightness: number }>(a: T, b: T) =>
  */
 const canMergeSparsePalette = (
   palette1: SparseHexPalette,
-  palette2: SparseHexPalette
+  palette2: SparseHexPalette,
 ): boolean => {
   // Check every color in both palettes is able to merge
   return palette1.every((color1, index) => {
@@ -442,7 +442,7 @@ const canMergeSparsePalette = (
  */
 const mergeSparsePalette = (
   palette1: SparseHexPalette,
-  palette2: SparseHexPalette
+  palette2: SparseHexPalette,
 ): SparseHexPalette => {
   const merged: SparseHexPalette = [undefined, undefined, undefined, undefined];
   for (let i = 0; i < 4; i++) {
@@ -494,7 +494,7 @@ const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
  * fill them so each contains four values
  */
 const fillHexPalette = (
-  palettes: Array<VariableLengthHexPalette | SparseHexPalette>
+  palettes: Array<VariableLengthHexPalette | SparseHexPalette>,
 ): HexPalette[] => {
   return palettes.map((palette) => {
     return [

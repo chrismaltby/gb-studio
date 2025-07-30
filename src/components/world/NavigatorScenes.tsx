@@ -45,28 +45,28 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
 }) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const sceneId = useAppSelector((state) => state.editor.scene);
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId
+    (state) => state.project.present.settings.startSceneId,
   );
   const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection
+    (state) => state.project.present.settings.startDirection,
   );
   const sceneSelectionIds = useAppSelector(
-    (state) => state.editor.sceneSelectionIds
+    (state) => state.editor.sceneSelectionIds,
   );
   const runSceneSelectionOnly = useAppSelector(
-    (state) => state.project.present.settings.runSceneSelectionOnly
+    (state) => state.project.present.settings.runSceneSelectionOnly,
   );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const [folderId, setFolderId] = useState("");
 
@@ -103,7 +103,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   } = useToggleableList<string>([]);
 
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
 
   const openFolders = useMemo(() => {
@@ -120,9 +120,9 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         actorsLookup,
         triggersLookup,
         openFolders,
-        searchTerm
+        searchTerm,
       ),
-    [scenes, actorsLookup, triggersLookup, openFolders, searchTerm]
+    [scenes, actorsLookup, triggersLookup, openFolders, searchTerm],
   );
 
   useEffect(() => {
@@ -144,13 +144,13 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   const setSelectedId = (id: string, item: SceneNavigatorItem) => {
     if (item.type === "actor") {
       dispatch(
-        editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
+        editorActions.selectActor({ actorId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
       clearFolderSelection();
     } else if (item.type === "trigger") {
       dispatch(
-        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
+        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
       clearFolderSelection();
@@ -175,7 +175,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameSceneComplete = useCallback(
@@ -187,12 +187,12 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameActorComplete = useCallback(
@@ -204,12 +204,12 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameTriggerComplete = useCallback(
@@ -221,12 +221,12 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -281,7 +281,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
       startDirection,
       startSceneId,
       colorsEnabled,
-    ]
+    ],
   );
 
   const renderLabel = useCallback(
@@ -296,7 +296,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
       }
       return item.filename;
     },
-    [startSceneId, toggleFolderOpen]
+    [startSceneId, toggleFolderOpen],
   );
 
   return (

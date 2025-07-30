@@ -1,7 +1,7 @@
 export const areRelativelyEqual = (
   a: number,
   b: number,
-  tolerance: number
+  tolerance: number,
 ): boolean => {
   if (a === b) {
     return true; // Handles the case where both are exactly the same, including 0

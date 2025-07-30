@@ -37,7 +37,7 @@ export const loadLanguage = (locale: string) => {
 
       if (isPlugin) {
         const translation = JSON.parse(
-          fs.readFileSync(`${globalPluginsPath}/${locale}`, "utf-8")
+          fs.readFileSync(`${globalPluginsPath}/${locale}`, "utf-8"),
         ) as L10NLookup;
 
         // If localisation has debug flag set all missing values will
@@ -51,7 +51,7 @@ export const loadLanguage = (locale: string) => {
         return translation;
       } else {
         const translation = JSON.parse(
-          fs.readFileSync(`${localesRoot}/${locale}.json`, "utf-8")
+          fs.readFileSync(`${localesRoot}/${locale}.json`, "utf-8"),
         ) as L10NLookup;
         setL10NData(translation);
         return translation;
@@ -59,7 +59,7 @@ export const loadLanguage = (locale: string) => {
     } catch (e) {
       console.warn("No language pack for user setting, falling back to en");
       console.warn(
-        `Add a language pack by making the file src/lang/${locale}.json`
+        `Add a language pack by making the file src/lang/${locale}.json`,
       );
     }
   }

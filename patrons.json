@@ -1,69 +1,120 @@
 {
   "goldTier": [
     {
+      "id": "483773",
+      "type": "user",
       "attributes": {
         "full_name": "BMo"
-      },
-      "id": "483773",
-      "type": "user"
+      }
     },
     {
-      "attributes": {
-        "full_name": "Incube8 Games"
-      },
-      "id": "108878934",
-      "type": "user"
-    },
-    {
+      "id": "89121289",
+      "type": "user",
       "attributes": {
         "full_name": "Kevin"
-      },
-      "id": "89121289",
-      "type": "user"
+      }
     },
     {
-      "attributes": {
-        "full_name": "Nadim Kobeissi"
-      },
-      "id": "55013050",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Pmoth Demakes"
-      },
-      "id": "104804333",
-      "type": "user"
-    },
-    {
+      "id": "6588868",
+      "type": "user",
       "attributes": {
         "full_name": "Salvatore Tosti"
-      },
-      "id": "6588868",
-      "type": "user"
+      }
+    },
+    {
+      "id": "57539298",
+      "type": "user",
+      "attributes": {
+        "full_name": "Skittles"
+      }
     }
   ],
   "silverTier": [
     {
+      "id": "159009",
+      "type": "user",
       "attributes": {
         "full_name": "Ben Jelter"
-      },
-      "id": "159009",
-      "type": "user"
+      }
     },
     {
+      "id": "45011954",
+      "type": "user",
       "attributes": {
         "full_name": "Chaison Alston"
-      },
-      "id": "45011954",
-      "type": "user"
+      }
     },
     {
+      "id": "20382386",
+      "type": "user",
       "attributes": {
         "full_name": "ChunkySteveo"
-      },
-      "id": "20382386",
-      "type": "user"
+      }
+    },
+    {
+      "id": "45298882",
+      "type": "user",
+      "attributes": {
+        "full_name": "Cosy Bothy Dev"
+      }
+    },
+    {
+      "id": "852350",
+      "type": "user",
+      "attributes": {
+        "full_name": "Dimarelos"
+      }
+    },
+    {
+      "id": "7767557",
+      "type": "user",
+      "attributes": {
+        "full_name": "evan niedojadlo"
+      }
+    },
+    {
+      "id": "93658267",
+      "type": "user",
+      "attributes": {
+        "full_name": "Gumpy Function"
+      }
+    },
+    {
+      "id": "74199063",
+      "type": "user",
+      "attributes": {
+        "full_name": "Johndo"
+      }
+    },
+    {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
+    },
+    {
+      "id": "27034715",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michel Iwaniec"
+      }
+    },
+    {
+      "id": "64844487",
+      "type": "user",
+      "attributes": {
+        "full_name": "MsRiaCayde"
+      }
+    }
+  ],
+  "pastPatrons": [
+    {
+      "id": "111731287",
+      "type": "user",
+      "attributes": {
+        "full_name": "Diante Clark"
+      }
     },
     {
       "attributes": {
@@ -74,9 +125,9 @@
     },
     {
       "attributes": {
-        "full_name": "evan niedojadlo"
+        "full_name": "Goosifer"
       },
-      "id": "7767557",
+      "id": "2840872",
       "type": "user"
     },
     {
@@ -90,65 +141,14 @@
       "attributes": {
         "full_name": "Gumpy Function"
       },
-      "id": "93658267",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Johndo"
-      },
-      "id": "74199063",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
-      },
-      "id": "71689",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Michel Iwaniec"
-      },
-      "id": "27034715",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "mloukhiyye"
-      },
-      "id": "134643376",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "MsRiaCayde"
-      },
-      "id": "64844487",
-      "type": "user"
-    }
-  ],
-  "pastPatrons": [
-    {
-      "attributes": {
-        "full_name": "Diante Clark"
-      },
-      "id": "111731287",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Goosifer"
-      },
-      "id": "2840872",
-      "type": "user"
-    },
-    {
-      "attributes": {
-        "full_name": "Gumpy Function"
-      },
       "id": "128473778",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Incube8 Games"
+      },
+      "id": "108878934",
       "type": "user"
     },
     {
@@ -167,6 +167,27 @@
     },
     {
       "attributes": {
+        "full_name": "Michael Wild"
+      },
+      "id": "101678212",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "mloukhiyye"
+      },
+      "id": "134643376",
+      "type": "user"
+    },
+    {
+      "attributes": {
+        "full_name": "Nadim Kobeissi"
+      },
+      "id": "55013050",
+      "type": "user"
+    },
+    {
+      "attributes": {
         "full_name": "npckc"
       },
       "id": "14825686",
@@ -181,9 +202,9 @@
     },
     {
       "attributes": {
-        "full_name": "Skittle"
+        "full_name": "Rdust"
       },
-      "id": "57539298",
+      "id": "104804333",
       "type": "user"
     },
     {

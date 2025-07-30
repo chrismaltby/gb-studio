@@ -49,6 +49,8 @@ import {
   JigsawIcon,
   BlankIcon,
   CheckIcon,
+  SettingsIcon,
+  CameraIcon,
 } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
@@ -59,7 +61,7 @@ import {
   ClipboardTypePaletteIds,
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
-import { SCREEN_WIDTH } from "consts";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
@@ -71,10 +73,16 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
-import { FlexGrow } from "ui/spacing/Spacing";
+import { FlexBreak, FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
-import { ColorModeOverrideSetting } from "shared/lib/resources/types";
+import {
+  ColorModeOverrideSetting,
+  SceneBoundsRect,
+} from "shared/lib/resources/types";
+import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
+import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 
 interface SceneEditorProps {
   id: string;
@@ -119,7 +127,7 @@ type SecondaryTab = "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
   primaryTab: ScriptTab,
-  secondaryTab: SecondaryTab
+  secondaryTab: SecondaryTab,
 ): SceneScriptKey => {
   if (primaryTab === "start") {
     return "script";
@@ -139,55 +147,56 @@ const getScriptKey = (
 export const SceneEditor = ({ id }: SceneEditorProps) => {
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(id)
+    sceneSelectors.selectIds(state).indexOf(id),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
   );
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
-    scene?.colorModeOverride && scene?.colorModeOverride !== "none"
+    scene?.colorModeOverride && scene?.colorModeOverride !== "none",
   );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
-    !!scene?.tilesetId
+    !!scene?.tilesetId,
   );
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const projectColorMode = useAppSelector(
-    (state) => state.project.present.settings.colorMode
+    (state) => state.project.present.settings.colorMode,
   );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId
+    (state) => state.project.present.settings.startSceneId,
   );
   const startX = useAppSelector(
-    (state) => state.project.present.settings.startX
+    (state) => state.project.present.settings.startX,
   );
   const startY = useAppSelector(
-    (state) => state.project.present.settings.startY
+    (state) => state.project.present.settings.startY,
   );
   const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection
+    (state) => state.project.present.settings.startDirection,
   );
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds || []
+    (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const defaultPlayerSprites = useAppSelector(
-    (state) => state.project.present.settings.defaultPlayerSprites
+    (state) => state.project.present.settings.defaultPlayerSprites,
   );
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
       start: l10n("SIDEBAR_ON_INIT"),
       hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
     }),
-    []
+    [],
   );
 
   const scriptSecondaryTabs: Record<SecondaryTab, string> = useMemo(
@@ -196,17 +205,17 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
       hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
     }),
-    []
+    [],
   );
 
   const tabs = Object.keys(scriptTabs);
   const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
   const lastScriptTab = useAppSelector(
-    (state) => state.editor.lastScriptTabScene
+    (state) => state.editor.lastScriptTabScene,
   );
   const lastScriptTabSecondary = useAppSelector(
-    (state) => state.editor.lastScriptTabSecondary
+    (state) => state.editor.lastScriptTabSecondary,
   );
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
   const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
@@ -214,15 +223,16 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     : secondaryTabs[0];
 
   const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
+    initialTab as keyof ScriptHandlers,
   );
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
   const [showSymbols, setShowSymbols] = useState(false);
+  const groupedEngineFields = useGroupedEngineFields(scene?.type);
 
   const dispatch = useAppDispatch();
 
@@ -238,8 +248,8 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           (s) =>
             s.id !== scene?.id &&
             s.backgroundId === scene?.backgroundId &&
-            s.type === "LOGO"
-        )
+            s.type === "LOGO",
+        ),
   );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
@@ -260,10 +270,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeSettingProp = useCallback(
@@ -271,70 +281,76 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSceneProp("name", e.currentTarget.value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSceneProp("notes", e.currentTarget.value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeType = useCallback(
     (e: string) => onChangeSceneProp("type", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeColorModeOverride = useCallback(
     (e: ColorModeOverrideSetting) => onChangeSceneProp("colorModeOverride", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeBackgroundId = useCallback(
     (e: string) => onChangeSceneProp("backgroundId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeTilesetdId = useCallback(
     (e: string) => onChangeSceneProp("tilesetId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeParallax = useCallback(
     (value: SceneParallaxLayer[] | undefined) =>
       onChangeSceneProp("parallax", value),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
+  );
+
+  const onChangeScrollBounds = useCallback(
+    (value: SceneBoundsRect | undefined) =>
+      onChangeSceneProp("scrollBounds", value),
+    [onChangeSceneProp],
   );
 
   const onChangePlayerSpriteSheetId = useCallback(
     (e: string) => onChangeSceneProp("playerSpriteSheetId", e),
-    [onChangeSceneProp]
+    [onChangeSceneProp],
   );
 
   const onChangeStartX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startX", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startY", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartDirection = useCallback(
     (e: ActorDirection) => onChangeSettingProp("startDirection", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const selectSidebar = () => {
@@ -379,6 +395,14 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     }
   }, [commonTilesetOpen, onChangeSceneProp]);
 
+  const onToggleSettingsOpen = useCallback(() => {
+    if (settingsOpen) {
+      setSettingsOpen(false);
+    } else {
+      setSettingsOpen(true);
+    }
+  }, [settingsOpen]);
+
   const onToggleLockScriptEditor = () => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
   };
@@ -390,10 +414,10 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
           entitiesActions.editBackgroundAutoColor({
             backgroundId: scene.backgroundId,
             autoColor: value,
-          })
+          }),
         );
     },
-    [dispatch, scene?.backgroundId]
+    [dispatch, scene?.backgroundId],
   );
 
   const onToggleParallaxSettings = () => {
@@ -405,7 +429,25 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
             ? undefined
             : parallaxDefaultValues.slice(-2),
         },
-      })
+      }),
+    );
+  };
+
+  const onToggleScrollBounds = () => {
+    dispatch(
+      entitiesActions.editScene({
+        sceneId: id,
+        changes: {
+          scrollBounds: scene?.scrollBounds
+            ? undefined
+            : {
+                x: 0,
+                y: 0,
+                width: scene?.width || SCREEN_WIDTH,
+                height: scene?.height || SCREEN_HEIGHT,
+              },
+        },
+      }),
     );
   };
 
@@ -416,12 +458,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onCopyBackgroundPaletteIds = useCallback(() => {
     if (scene) {
       const paletteIds = Array.from(Array(8).keys()).map(
-        (n) => scene.paletteIds[n] || defaultBackgroundPaletteIds[n] || ""
+        (n) => scene.paletteIds[n] || defaultBackgroundPaletteIds[n] || "",
       );
       dispatch(
         clipboardActions.copyPaletteIds({
           paletteIds,
-        })
+        }),
       );
     }
   }, [dispatch, scene, defaultBackgroundPaletteIds]);
@@ -429,12 +471,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onCopySpritePaletteIds = useCallback(() => {
     if (scene) {
       const paletteIds = Array.from(Array(8).keys()).map(
-        (n) => scene.spritePaletteIds[n] || defaultSpritePaletteIds[n] || ""
+        (n) => scene.spritePaletteIds[n] || defaultSpritePaletteIds[n] || "",
       );
       dispatch(
         clipboardActions.copyPaletteIds({
           paletteIds,
-        })
+        }),
       );
     }
   }, [dispatch, scene, defaultSpritePaletteIds]);
@@ -444,7 +486,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       clipboardActions.pastePaletteIds({
         sceneId: id,
         type: "background",
-      })
+      }),
     );
   }, [dispatch, id]);
 
@@ -453,7 +495,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       clipboardActions.pastePaletteIds({
         sceneId: id,
         type: "sprite",
-      })
+      }),
     );
   }, [dispatch, id]);
 
@@ -467,7 +509,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
       sceneId: id,
       scriptKey,
     }),
-    [id, scriptKey]
+    [id, scriptKey],
   );
 
   if (!scene) {
@@ -513,6 +555,14 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
   const showParallaxOptions = showParallaxButton && scene.parallax;
   const showCommonTilesetButton = scene.type !== "LOGO";
+  const showScrollBoundsButton =
+    (scene.width && scene.width > SCREEN_WIDTH) ||
+    (scene.height && scene.height > SCREEN_HEIGHT);
+  const showScrollBoundsOptions = showScrollBoundsButton && scene.scrollBounds;
+  const numBackgroundButtons =
+    (showCommonTilesetButton ? 1 : 0) +
+    (showParallaxButton ? 1 : 0) +
+    (showScrollBoundsButton ? 1 : 0);
 
   const scriptButton = (
     <ScriptEditorDropdownButton
@@ -658,14 +708,42 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
               <FormContainer>
                 <FormRow>
                   <FormField name="type" label={l10n("FIELD_TYPE")}>
-                    <SceneTypeSelect
-                      name="type"
-                      value={scene.type}
-                      onChange={onChangeType}
-                    />
+                    <div style={{ display: "flex" }}>
+                      <SceneTypeSelect
+                        name="type"
+                        value={scene.type}
+                        onChange={onChangeType}
+                      />
+                      {groupedEngineFields.length > 0 && (
+                        <div
+                          style={{ display: "flex", flexDirection: "column" }}
+                        >
+                          <Button
+                            style={{
+                              padding: "5px 0",
+                              minWidth: 28,
+                              marginLeft: 4,
+                              marginBottom: 4,
+                            }}
+                            variant={settingsOpen ? "primary" : "transparent"}
+                            onClick={onToggleSettingsOpen}
+                            title={l10n("SETTINGS")}
+                          >
+                            <SettingsIcon />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </FormField>
                 </FormRow>
 
+                {settingsOpen && <EngineFieldsEditor sceneType={scene.type} />}
+              </FormContainer>
+            </SidebarColumn>
+            <FlexBreak />
+
+            <SidebarColumn>
+              <FormContainer>
                 <FormRow>
                   <FormField
                     name="backgroundId"
@@ -680,14 +758,22 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         is360={scene.type === "LOGO"}
                         includeInfo
                       />
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            numBackgroundButtons > 2
+                              ? "repeat(2, 1fr)"
+                              : undefined,
+                          gap: 4,
+                          marginLeft: 4,
+                        }}
+                      >
                         {showCommonTilesetButton && (
                           <Button
                             style={{
                               padding: "5px 0",
                               minWidth: 28,
-                              marginLeft: 4,
-                              marginBottom: 4,
                             }}
                             variant={
                               commonTilesetOpen ? "primary" : "transparent"
@@ -703,7 +789,6 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             style={{
                               padding: "5px 0",
                               minWidth: 28,
-                              marginLeft: 4,
                             }}
                             variant={
                               scene?.parallax ? "primary" : "transparent"
@@ -712,6 +797,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             title={l10n("FIELD_PARALLAX")}
                           >
                             <ParallaxIcon />
+                          </Button>
+                        )}
+                        {showScrollBoundsButton && (
+                          <Button
+                            style={{
+                              padding: "5px 0",
+                              minWidth: 28,
+                            }}
+                            variant={
+                              scene?.scrollBounds ? "primary" : "transparent"
+                            }
+                            onClick={onToggleScrollBounds}
+                            title={l10n("FIELD_CAMERA_BOUNDS")}
+                          >
+                            <CameraIcon />
                           </Button>
                         )}
                       </div>
@@ -770,6 +870,27 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
               </SidebarColumn>
             )}
 
+            {showScrollBoundsOptions && scene.scrollBounds && (
+              <SidebarColumn>
+                <FormContainer>
+                  <FormRow>
+                    <FormField
+                      name="scrollBounds"
+                      label={l10n("FIELD_CAMERA_BOUNDS")}
+                    >
+                      <ScrollBoundsInput
+                        name={"scrollBounds"}
+                        sceneWidth={scene.width}
+                        sceneHeight={scene.height}
+                        value={scene.scrollBounds}
+                        onChange={onChangeScrollBounds}
+                      />
+                    </FormField>
+                  </FormRow>
+                </FormContainer>
+              </SidebarColumn>
+            )}
+
             {colorsEnabled && (
               <SidebarColumn>
                 {showColorModeOverride && (
@@ -801,7 +922,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             label={l10n(
                               background?.autoColor
                                 ? "FIELD_AUTOMATIC"
-                                : "FIELD_MANUAL"
+                                : "FIELD_MANUAL",
                             )}
                           >
                             <MenuItem

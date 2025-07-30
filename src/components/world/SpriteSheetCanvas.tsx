@@ -33,11 +33,11 @@ const SpriteSheetCanvas = ({
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
+    spriteSheetSelectors.selectById(state, spriteSheetId),
   );
 
   const state = useAppSelector((state) =>
-    spriteStateSelectors.selectById(state, sprite?.states?.[0] || "")
+    spriteStateSelectors.selectById(state, sprite?.states?.[0] || ""),
   );
 
   const animations = state?.animations || [];
@@ -65,7 +65,7 @@ const SpriteSheetCanvas = ({
   const animationId = animations[animationIndex] || "";
 
   const animation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, animationId)
+    spriteAnimationSelectors.selectById(state, animationId),
   );
   const frames = animation?.frames || [];
   const metaspriteId = frames[frame % frames.length] || "";

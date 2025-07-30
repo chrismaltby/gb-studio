@@ -20,7 +20,10 @@ test("Should be able to set section", () => {
       defaultValue: 1,
     },
   ];
-  const action = actions.setEngineFields(newEngineFields);
+  const action = actions.setEngineSchema({
+    ...initialState,
+    fields: newEngineFields,
+  });
   const newState = reducer(state, action);
   expect(newState.fields).toEqual(newEngineFields);
 });

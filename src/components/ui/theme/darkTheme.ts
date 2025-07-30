@@ -120,6 +120,8 @@ const darkTheme: ThemeInterface = {
         nest3Background: "linear-gradient(0deg, #103713, #215924)",
         nest4Background: "linear-gradient(0deg, #320d5e, #4a136c)",
         commentBackground: "linear-gradient(0deg, #7cb342, #8bc34a)",
+        disabledBackground:
+          "linear-gradient(0deg,rgb(179, 66, 66),rgb(195, 74, 74))",
       },
       branch: {
         nest1Background: "#37474f",

@@ -50,10 +50,10 @@ const ScriptEventFields = ({
   const context = useContext(ScriptEditorContext);
 
   const soundsLookup = useAppSelector((state) =>
-    soundSelectors.selectEntities(state)
+    soundSelectors.selectEntities(state),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, context.sceneId)
+    sceneSelectors.selectById(state, context.sceneId),
   );
 
   const dispatch = useAppDispatch();
@@ -87,7 +87,7 @@ const ScriptEventFields = ({
         if (field.type === "events") {
           const events = renderEvents(
             field.key || "",
-            typeof field.label === "string" ? field.label : ""
+            typeof field.label === "string" ? field.label : "",
           );
           if (field.allowedContexts) {
             if (!field.allowedContexts.includes(context.type)) {
@@ -149,7 +149,7 @@ const ScriptEventFields = ({
                     scriptEventId: scriptEvent.id,
                     key: field.key ?? "",
                     value: !value?.[field.key ?? ""],
-                  })
+                  }),
                 )
               }
               label={field.label}

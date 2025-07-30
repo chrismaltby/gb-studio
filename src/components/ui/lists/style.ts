@@ -64,7 +64,7 @@ export const StyledEntityWarningLabel = styled.span`
 export const StyledEntityLabelColor = styled.div.attrs<StyledEntityLabelColorProps>(
   (props) => ({
     className: `label--${props.$color}`,
-  })
+  }),
 )`
   width: 10px;
   height: 10px;

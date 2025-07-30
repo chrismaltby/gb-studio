@@ -152,7 +152,7 @@ const Wrapper = styled.div<WrapperProps>`
 const highlightWithLineNumbers = (
   input: string,
   currentLineNum: number,
-  language: Grammar
+  language: Grammar,
 ) => {
   const highlighted = highlight(input, language, "gbvm");
   const lines = highlighted.split("\n");
@@ -163,7 +163,7 @@ const highlightWithLineNumbers = (
         (line, i) =>
           `<span class='line-${i + 1}${
             i + 1 === currentLineNum ? " currentLine " : ""
-          }'><span class='editorLineNumber'>${i + 1}</span>${line}</span>`
+          }'><span class='editorLineNumber'>${i + 1}</span>${line}</span>`,
       )
       .join("\n"),
     gutterWidth,
@@ -205,7 +205,7 @@ export const CodeEditor = ({
 const GBVMLabel = ({ line }: { line: string }) => {
   const scriptEventId = String(line.split("$")[2]).replace(/_/g, "-");
   const scriptEvent = useAppSelector((state) =>
-    scriptEventSelectors.selectById(state, scriptEventId)
+    scriptEventSelectors.selectById(state, scriptEventId),
   );
 
   if (scriptEvent) {

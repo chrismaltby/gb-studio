@@ -6,7 +6,7 @@ export type PrecompiledFontData = FontData & CompiledFontData;
 
 const compileFonts = async (
   fonts: FontData[],
-  projectRoot: string
+  projectRoot: string,
 ): Promise<PrecompiledFontData[]> => {
   const compiled: PrecompiledFontData[] = [];
   for (const font of fonts) {

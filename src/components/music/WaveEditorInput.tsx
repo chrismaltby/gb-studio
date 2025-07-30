@@ -152,7 +152,7 @@ export const WaveEditorInput = ({
         onEditWave(Uint8Array.from(wave));
       }
     },
-    [editPosition, onEditWave, wave]
+    [editPosition, onEditWave, wave],
   );
 
   useEffect(() => {
@@ -167,8 +167,8 @@ export const WaveEditorInput = ({
   const onCopy = useCallback(() => {
     dispatch(
       clipboardActions.copyText(
-        wave.map((value) => value.toString(16).toUpperCase()).join("")
-      )
+        wave.map((value) => value.toString(16).toUpperCase()).join(""),
+      ),
     );
   }, [dispatch, wave]);
 

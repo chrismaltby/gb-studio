@@ -9,7 +9,7 @@ interface SortableItemProps<T> {
   orientation: SortableListOrientation;
   renderItem: (
     item: T,
-    { isOver, isDragging }: { isOver: boolean; isDragging: boolean }
+    { isOver, isDragging }: { isOver: boolean; isDragging: boolean },
   ) => JSX.Element;
   onSelect: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   moveItems: (dragIndex: number, hoverIndex: number) => void;

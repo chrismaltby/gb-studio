@@ -13,7 +13,7 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import styled from "styled-components";
 
 const priorities = ["high", "medium", "low"] as const;
-export type Priority = typeof priorities[number];
+export type Priority = (typeof priorities)[number];
 
 interface PrioritySelectProps {
   value?: Priority;
@@ -41,7 +41,7 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
       medium: l10n("FIELD_MEDIUM"),
       high: l10n("FIELD_HIGH"),
     }),
-    []
+    [],
   );
 
   const title = `${l10n("FIELD_PRIORITY")}${value ? ": " : ""}${

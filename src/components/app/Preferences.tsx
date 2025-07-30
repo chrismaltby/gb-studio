@@ -57,16 +57,16 @@ const Preferences = () => {
       { value: 0, label: l10n("FIELD_UI_LINEAR") },
       { value: 1, label: l10n("FIELD_UI_PIANO") },
     ],
-    []
+    [],
   );
 
   const trackerKeyBindingsOptionsInfo: string[] = useMemo(
     () => [l10n("FIELD_UI_LINEAR_INFO"), l10n("FIELD_UI_PIANO_INFO")],
-    []
+    [],
   );
 
   const currentTrackerKeyBindings = trackerKeyBindingsOptions.find(
-    (o) => o.value === trackerKeyBindings
+    (o) => o.value === trackerKeyBindings,
   );
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +188,7 @@ const Preferences = () => {
               }}
               formatOptionLabel={(
                 option: Options,
-                { context }: { context: "menu" | "value" }
+                { context }: { context: "menu" | "value" },
               ) => {
                 return (
                   <OptionLabelWithInfo

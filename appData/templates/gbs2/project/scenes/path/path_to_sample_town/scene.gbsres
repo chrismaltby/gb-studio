@@ -11,6 +11,7 @@
   "height": 18,
   "backgroundId": "b50cefc6-72dc-44c0-947d-f5d4d533a97a",
   "tilesetId": "",
+  "colorModeOverride": "none",
   "paletteIds": [
     "2801a5c2-3b0b-41b9-90c9-ec2af73d825d",
     "474a8d83-8645-4899-b86a-4681b8498709",
@@ -78,6 +79,25 @@
         "musicId": "9aac47ff-51d7-48bf-9f15-1ce01b3872a4",
         "loop": true
       }
+    },
+    {
+      "command": "EVENT_SET_VALUE",
+      "args": {
+        "variable": "18",
+        "value": {
+          "type": "number",
+          "value": 4
+        }
+      },
+      "id": "4eaa1912-e392-41c3-a03c-924218852158"
+    },
+    {
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "81daf0f4-6d57-4b0a-976d-a2b499989b38",
+        "$actor[0]$": "8f5f5957-42fe-4d73-9633-15d497f65d3b"
+      },
+      "id": "65505c8e-562d-45c8-be39-76ae2263456b"
     },
     {
       "id": "8ee11d7f-7d70-47b2-b1a2-9866c27011d2",
@@ -176,6 +196,56 @@
         ],
         "false": []
       }
+    },
+    {
+      "command": "EVENT_SET_PLATFORMER_CALLBACK_SCRIPT",
+      "args": {
+        "event": "knockbackStart",
+        "__scriptTabs": "scriptinput",
+        "__collapse": false
+      },
+      "children": {
+        "script": [
+          {
+            "command": "EVENT_CALL_CUSTOM_EVENT",
+            "args": {
+              "customEventId": "a910691b-cedc-463c-8633-b81c735893f9",
+              "$actor[0]$": "8f5f5957-42fe-4d73-9633-15d497f65d3b"
+            },
+            "id": "e2b8e82d-3a43-42c5-9310-48afb1050c91"
+          }
+        ]
+      },
+      "id": "afe587b3-3b29-4ae2-a159-88c29001ff2d"
+    },
+    {
+      "command": "EVENT_SET_PLATFORMER_CALLBACK_SCRIPT",
+      "args": {
+        "event": "blankStart",
+        "__scriptTabs": "scriptinput",
+        "__collapse": false
+      },
+      "children": {
+        "script": [
+          {
+            "command": "EVENT_CALL_CUSTOM_EVENT",
+            "args": {
+              "customEventId": "1af28223-8723-4e15-9c91-9d8ec3d65d42",
+              "$variable[V0]$": {
+                "type": "number",
+                "value": 50
+              },
+              "$variable[V1]$": {
+                "type": "number",
+                "value": 13
+              },
+              "$actor[0]$": "8f5f5957-42fe-4d73-9633-15d497f65d3b"
+            },
+            "id": "2250ce15-109d-45fd-aa2e-33f0801c7b41"
+          }
+        ]
+      },
+      "id": "3802d008-7046-4942-ad62-2e193179413b"
     }
   ],
   "playerHit1Script": [],

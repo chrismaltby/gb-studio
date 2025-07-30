@@ -49,7 +49,7 @@ const DialogueReviewLine = ({
                         }
                         return value;
                       })
-                    : ""
+                    : "",
                 );
               }}
             />

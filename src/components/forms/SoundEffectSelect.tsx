@@ -66,7 +66,7 @@ export const PlaySoundEffect = ({
         dispatch(soundfxActions.playSoundFx({ effect, effectIndex }));
       }
     },
-    [dispatch, duration, effect, effectIndex, frequency, pitch]
+    [dispatch, duration, effect, effectIndex, frequency, pitch],
   );
 
   if (effect === "none") {
@@ -137,8 +137,8 @@ export const SoundEffectSelect = ({
                 value: track.id,
               })),
           })),
-        ]
-      )
+        ],
+      ),
     );
   }, [allowNone, sounds]);
 
@@ -161,7 +161,7 @@ export const SoundEffectSelect = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

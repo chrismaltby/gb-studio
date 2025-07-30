@@ -40,19 +40,19 @@ const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
     "mbc5";
 
   const batterylessEnabled = useAppSelector(
-    (state) => state.project.present.settings.batterylessEnabled
+    (state) => state.project.present.settings.batterylessEnabled,
   );
 
   const onChangeCartType = useCallback(
     (cartType: CartType) => {
       dispatch(settingsActions.editSettings({ cartType }));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onToggleBatteryless = useCallback(() => {
     dispatch(
-      settingsActions.editSettings({ batterylessEnabled: !batterylessEnabled })
+      settingsActions.editSettings({ batterylessEnabled: !batterylessEnabled }),
     );
   }, [dispatch, batterylessEnabled]);
 
@@ -61,7 +61,7 @@ const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
       settingsActions.editSettings({
         cartType: undefined,
         batterylessEnabled: false,
-      })
+      }),
     );
   }, [dispatch]);
 

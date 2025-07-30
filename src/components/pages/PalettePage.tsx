@@ -78,7 +78,7 @@ const PalettePage = () => {
   const dispatch = useAppDispatch();
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -88,15 +88,15 @@ const PalettePage = () => {
   const [edit, setEdit] = useState(false);
 
   const allPalettes = useAppSelector((state) =>
-    paletteSelectors.selectAll(state)
+    paletteSelectors.selectAll(state),
   );
 
   const allPaletteIds = useAppSelector((state) =>
-    paletteSelectors.selectIds(state)
+    paletteSelectors.selectIds(state),
   );
 
   const palette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, selectedId)
+    paletteSelectors.selectById(state, selectedId),
   );
 
   const lastPaletteId = useRef("");
@@ -108,11 +108,11 @@ const PalettePage = () => {
 
   const viewPaletteId = useMemo(
     () => palette?.id || lastPaletteId.current || allPalettes[0]?.id,
-    [allPalettes, palette]
+    [allPalettes, palette],
   );
 
   const viewPalette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, viewPaletteId)
+    paletteSelectors.selectById(state, viewPaletteId),
   );
 
   const viewPaletteIndex = allPaletteIds.indexOf(viewPaletteId);
@@ -147,7 +147,7 @@ const PalettePage = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number) => {
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);
@@ -167,7 +167,7 @@ const PalettePage = () => {
           changes: {
             name: "Palette",
           },
-        })
+        }),
       );
     }
     setEdit(false);
@@ -189,7 +189,7 @@ const PalettePage = () => {
         changes: {
           name: e.currentTarget.value,
         },
-      })
+      }),
     );
   };
 

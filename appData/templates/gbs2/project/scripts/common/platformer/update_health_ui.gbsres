@@ -1,0 +1,27 @@
+{
+  "_resourceType": "script",
+  "id": "81daf0f4-6d57-4b0a-976d-a2b499989b38",
+  "name": "common/Platformer/Update Health UI",
+  "description": "",
+  "variables": {},
+  "actors": {
+    "0": {
+      "id": "0",
+      "name": "HealthUI"
+    }
+  },
+  "symbol": "script_12",
+  "script": [
+    {
+      "command": "EVENT_ACTOR_SET_FRAME",
+      "args": {
+        "actorId": "0",
+        "frame": {
+          "type": "variable",
+          "value": "18"
+        }
+      },
+      "id": "99285362-09fe-410c-8dab-9a0c13b4ae81"
+    }
+  ]
+}

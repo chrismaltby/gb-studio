@@ -14,7 +14,7 @@ const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
-  filename: string
+  filename: string,
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     createReadStream(filename)
@@ -72,20 +72,20 @@ const loadFontData =
   };
 
 const loadAllFontData = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<FontResourceAsset[]> => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/fonts/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/fonts/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/fonts/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/fonts/**/@(*.png|*.PNG)`,
   );
   const imageData = (
     await Promise.all(
       ([] as Promise<FontResourceAsset | null>[]).concat(
         imagePaths.map(loadFontData(projectRoot)),
-        pluginPaths.map(loadFontData(projectRoot))
-      )
+        pluginPaths.map(loadFontData(projectRoot)),
+      ),
     )
   ).filter((i) => i);
   return imageData as FontResourceAsset[];

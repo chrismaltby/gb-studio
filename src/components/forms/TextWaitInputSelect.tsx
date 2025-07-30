@@ -54,7 +54,7 @@ export const TextWaitInputSelect = ({
       }
       debouncedLeave();
     },
-    [debouncedLeave]
+    [debouncedLeave],
   );
 
   return (

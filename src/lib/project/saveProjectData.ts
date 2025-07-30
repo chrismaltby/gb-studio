@@ -20,7 +20,7 @@ interface SaveProjectDataOptions {
 const saveProjectData = async (
   projectPath: string,
   patch: WriteResourcesPatch,
-  options?: SaveProjectDataOptions
+  options?: SaveProjectDataOptions,
 ) => {
   const writeBuffer = patch.data;
   const metadata = patch.metadata;
@@ -36,21 +36,21 @@ const saveProjectData = async (
   const existingResourcePaths = new Set(
     (
       await globAsync(
-        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres")
+        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres"),
       )
-    ).map((path) => pathToPosix(Path.relative(projectFolder, path)))
+    ).map((path) => pathToPosix(Path.relative(projectFolder, path))),
   );
   const expectedResourcePaths: Set<string> = new Set(patch.paths);
 
   const resourceDirPaths = uniq(
-    writeBuffer.map(({ path }) => Path.dirname(path))
+    writeBuffer.map(({ path }) => Path.dirname(path)),
   );
 
   await promiseLimit(
     CONCURRENT_RESOURCE_SAVE_COUNT,
     resourceDirPaths.map((path) => async () => {
       await ensureDir(Path.join(projectFolder, path));
-    })
+    }),
   );
 
   notifyProgress();
@@ -61,16 +61,16 @@ const saveProjectData = async (
       await writeFileWithBackupAsync(Path.join(projectFolder, path), data);
       completedCount++;
       notifyProgress();
-    })
+    }),
   );
 
   await writeFileWithBackupAsync(
     projectPath,
-    encodeResource("project", metadata)
+    encodeResource("project", metadata),
   );
 
   const resourceDiff = Array.from(existingResourcePaths).filter(
-    (path) => !expectedResourcePaths.has(path)
+    (path) => !expectedResourcePaths.has(path),
   );
 
   // Remove previous project files that are no longer needed

@@ -32,12 +32,12 @@ export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
         label: l10n("FIELD_COLOR_CORRECTION_NONE"),
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {
     const currentColorCorrection = colorCorrectionOptions.find(
-      (e) => e.value === value
+      (e) => e.value === value,
     );
     if (currentColorCorrection) {
       setCurrentValue(currentColorCorrection);
@@ -50,7 +50,7 @@ export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

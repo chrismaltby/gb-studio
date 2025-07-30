@@ -33,7 +33,7 @@ const NUM_FIELDS = ROW_SIZE * 32;
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
-  selectionOrigin: Position | undefined
+  selectionOrigin: Position | undefined,
 ) {
   const selectedTrackerFields = [];
   if (selectionRect) {
@@ -52,7 +52,7 @@ function getSelectedTrackerFields(
     }
   } else if (selectionOrigin) {
     selectedTrackerFields.push(
-      selectionOrigin.y * ROW_SIZE + selectionOrigin.x
+      selectionOrigin.y * ROW_SIZE + selectionOrigin.x,
     );
   }
   return selectedTrackerFields;
@@ -205,22 +205,24 @@ export const InstrumentSubpatternEditor = ({
 }: InstrumentSubpatternEditorProps) => {
   const dispatch = useAppDispatch();
 
-  const [selectionOrigin, setSelectionOrigin] =
-    useState<Position | undefined>();
-  const [selectionRect, setSelectionRect] =
-    useState<SelectionRect | undefined>();
+  const [selectionOrigin, setSelectionOrigin] = useState<
+    Position | undefined
+  >();
+  const [selectionRect, setSelectionRect] = useState<
+    SelectionRect | undefined
+  >();
   const [isSelecting, setIsSelecting] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
 
   const selectedTrackerFields: number[] = useMemo(
     () => getSelectedTrackerFields(selectionRect, selectionOrigin),
-    [selectionOrigin, selectionRect]
+    [selectionOrigin, selectionRect],
   );
 
   const [activeField, setActiveField] = useState<number | undefined>();
 
   const subpatternEditorFocus = useAppSelector(
-    (state) => state.tracker.subpatternEditorFocus
+    (state) => state.tracker.subpatternEditorFocus,
   );
 
   const activeFieldRef = useRef<HTMLSpanElement>(null);
@@ -315,7 +317,7 @@ export const InstrumentSubpatternEditor = ({
           instrumentId: instrumentId,
           instrumentType: instrumentType,
           subpattern: newSubPattern,
-        })
+        }),
       );
     }
   }, [
@@ -346,11 +348,11 @@ export const InstrumentSubpatternEditor = ({
             instrumentId: instrumentId,
             instrumentType: instrumentType,
             subpattern: newSubPattern,
-          })
+          }),
         );
       }
     },
-    [subpattern, activeField, dispatch, instrumentId, instrumentType]
+    [subpattern, activeField, dispatch, instrumentId, instrumentType],
   );
 
   const handleKeyDown = useCallback(
@@ -371,7 +373,7 @@ export const InstrumentSubpatternEditor = ({
               changes: {
                 [type]: value,
               },
-            })
+            }),
           );
         };
 
@@ -401,7 +403,7 @@ export const InstrumentSubpatternEditor = ({
               if (el.innerText !== "...") {
                 newValue = Math.min(
                   10 * parseInt(el.innerText[2], 10) + value,
-                  36
+                  36,
                 );
               }
           }
@@ -417,7 +419,7 @@ export const InstrumentSubpatternEditor = ({
             if (value !== null && el.innerText !== "...") {
               newValue = Math.min(
                 10 * parseInt(el.innerText[2], 10) + value,
-                32
+                32,
               );
             }
             editSubPatternCell("jump")(newValue);
@@ -581,7 +583,7 @@ export const InstrumentSubpatternEditor = ({
       deleteSelectedTrackerFields,
       selectionRect,
       selectionOrigin,
-    ]
+    ],
   );
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
@@ -644,7 +646,7 @@ export const InstrumentSubpatternEditor = ({
         setActiveField(undefined);
       }
     },
-    [selectionOrigin]
+    [selectionOrigin],
   );
 
   const handleMouseUp = useCallback(
@@ -653,7 +655,7 @@ export const InstrumentSubpatternEditor = ({
         setIsMouseDown(false);
       }
     },
-    [isMouseDown]
+    [isMouseDown],
   );
 
   const handleMouseMove = useCallback(
@@ -682,7 +684,7 @@ export const InstrumentSubpatternEditor = ({
         }
       }
     },
-    [isMouseDown, selectionOrigin]
+    [isMouseDown, selectionOrigin],
   );
 
   useEffect(() => {
@@ -734,7 +736,7 @@ export const InstrumentSubpatternEditor = ({
         height: 32,
       });
     },
-    [activeField]
+    [activeField],
   );
 
   useEffect(() => {
@@ -751,7 +753,7 @@ export const InstrumentSubpatternEditor = ({
       }
       dispatch(trackerActions.setSubpatternEditorFocus(true));
     },
-    [activeField, dispatch]
+    [activeField, dispatch],
   );
 
   const onBlur = useCallback(
@@ -759,7 +761,7 @@ export const InstrumentSubpatternEditor = ({
       setActiveField(undefined);
       dispatch(trackerActions.setSubpatternEditorFocus(false));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onCopy = useCallback(() => {
@@ -769,7 +771,7 @@ export const InstrumentSubpatternEditor = ({
     if (subpattern && selectedTrackerFields) {
       const parsedSelectedPattern = parseSubPatternFieldsToClipboard(
         subpattern,
-        selectedTrackerFields
+        selectedTrackerFields,
       );
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
     }
@@ -782,7 +784,7 @@ export const InstrumentSubpatternEditor = ({
     if (subpattern && selectedTrackerFields) {
       const parsedSelectedPattern = parseSubPatternFieldsToClipboard(
         subpattern,
-        selectedTrackerFields
+        selectedTrackerFields,
       );
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
       deleteSelectedTrackerFields();
@@ -801,13 +803,13 @@ export const InstrumentSubpatternEditor = ({
         activeField !== undefined
           ? activeField
           : selectionOrigin
-          ? selectionOrigin.y * ROW_SIZE + selectionOrigin.x
-          : 0;
+            ? selectionOrigin.y * ROW_SIZE + selectionOrigin.x
+            : 0;
       if (activeField === undefined) {
         setActiveField(tempActiveField);
       }
       const newPastedPattern = parseClipboardToSubPattern(
-        await API.clipboard.readText()
+        await API.clipboard.readText(),
       );
       if (newPastedPattern) {
         const startRow = Math.floor(tempActiveField / ROW_SIZE);
@@ -819,7 +821,7 @@ export const InstrumentSubpatternEditor = ({
               newPattern[startRow + i] = mergeWith(
                 newPattern[startRow + i],
                 pastedPatternCellRow[j],
-                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s)
+                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s),
               );
             }
           }
@@ -830,7 +832,7 @@ export const InstrumentSubpatternEditor = ({
             instrumentId: instrumentId,
             instrumentType: instrumentType,
             subpattern: newPattern,
-          })
+          }),
         );
       }
     }
@@ -881,7 +883,7 @@ export const InstrumentSubpatternEditor = ({
         }
       }
     },
-    [dispatch, instrumentId, instrumentType]
+    [dispatch, instrumentId, instrumentType],
   );
 
   const renderSubpattern = [...subpattern].slice(0, 32);

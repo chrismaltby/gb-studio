@@ -9,13 +9,13 @@ interface EngineData {
 }
 
 export const loadEngineFields = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<EngineFieldSchema[]> => {
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
     "engine",
-    "engine.json"
+    "engine.json",
   );
   const pluginsPath = Path.join(projectRoot, "plugins");
 

@@ -15,7 +15,7 @@ const SECTION_TAB_KEY = "__section";
 export const isFieldVisible = (
   field: ScriptEventFieldSchema,
   args: ScriptEventArgs,
-  ignoreConditions?: string[]
+  ignoreConditions?: string[],
 ) => {
   if (!field.conditions) {
     return true;
@@ -47,7 +47,7 @@ export const isFieldVisible = (
 export const getField = (
   cmd: string,
   fieldName: string,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ): ScriptEventFieldSchema | undefined => {
   const event = scriptEventDefs[cmd];
   if (!event) return undefined;
@@ -58,7 +58,7 @@ export const isVariableField = (
   command: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const field = getField(command, fieldName, scriptEventDefs);
   const argValue = args[fieldName];
@@ -73,7 +73,7 @@ export const isActorField = (
   cmd: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   // Custom event calls
   if (fieldName.startsWith("$actor[")) {
@@ -91,7 +91,7 @@ export const isPropertyField = (
   cmd: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   const event = scriptEventDefs[cmd];
   if (!event) return false;
@@ -108,7 +108,7 @@ export const isScriptValueField = (
   cmd: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefs: ScriptEventDefs
+  scriptEventDefs: ScriptEventDefs,
 ) => {
   // Custom event calls
   if (fieldName.startsWith("$variable[")) {

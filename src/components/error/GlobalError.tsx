@@ -107,7 +107,7 @@ const GlobalError = () => {
     const repo = "gb-studio";
     const issueTitle = encodeURIComponent("Bug report: " + message);
     const issueBody = encodeURIComponent(
-      `**Error message**\n\`${message}\`\n\n**Stack trace**\n\`\`\`\n${stackTrace}\n\`\`\`\n\n**Platform**\n- OS: ${API.platform}\n- Version: GB Studio ${VERSION} (${COMMITHASH})\n\n**Additional context**\nAdd any other context about the problem here.\ne.g. What was the last thing you did before the error appeared.\n`
+      `**Error message**\n\`${message}\`\n\n**Stack trace**\n\`\`\`\n${stackTrace}\n\`\`\`\n\n**Platform**\n- OS: ${API.platform}\n- Version: GB Studio ${VERSION} (${COMMITHASH})\n\n**Additional context**\nAdd any other context about the problem here.\ne.g. What was the last thing you did before the error appeared.\n`,
     );
     const labels = encodeURIComponent("bug");
     const issueUrl = `https://github.com/${owner}/${repo}/issues/new?title=${issueTitle}&body=${issueBody}&labels=${labels}`;
@@ -141,7 +141,7 @@ const GlobalError = () => {
           <Button onClick={openHelp}>{l10n("ERROR_WHAT_CAN_I_DO")}</Button>
           <Button onClick={saveProject} disabled={!modified}>
             {l10n(
-              !modified ? "ERROR_NO_UNSAVED_CHANGES" : "ERROR_SAVE_PROJECT"
+              !modified ? "ERROR_NO_UNSAVED_CHANGES" : "ERROR_SAVE_PROJECT",
             )}
           </Button>
           <FlexGrow />

@@ -44,13 +44,13 @@ const defaultSceneTypes = [
 ];
 
 export const loadSceneTypes = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<SceneTypeSchema[]> => {
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
     "engine",
-    "engine.json"
+    "engine.json",
   );
   const pluginsPath = Path.join(projectRoot, "plugins");
 

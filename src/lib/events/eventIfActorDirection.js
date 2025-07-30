@@ -76,7 +76,7 @@ const compile = (input, helpers) => {
     input.actorId,
     input.direction,
     truePath,
-    falsePath
+    falsePath,
   );
 };
 

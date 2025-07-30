@@ -74,13 +74,13 @@ Sample.prototype.loadStereoSample = function (sampleData, signed) {
   this.loadSample(
     sampledata.subarray(0, this.sampleLength * is16Bit ? 2 : 1),
     is16Bit,
-    signed
+    signed,
   );
   var sampleL = this.sample;
   this.loadSample(
     sampledata.subarray(this.sampleLength * is16Bit ? 2 : 1),
     is16Bit,
-    signed
+    signed,
   );
   var sampleR = this.sample;
 

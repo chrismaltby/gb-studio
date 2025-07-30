@@ -45,7 +45,7 @@ export const UnitSelectLabelButton = ({
       "8px": "8px",
       "16px": "16px",
     }),
-    []
+    [],
   );
 
   const unitTypeButtonNames: Record<UnitType, string> = useMemo(
@@ -57,7 +57,7 @@ export const UnitSelectLabelButton = ({
       "8px": "8px",
       "16px": "16px",
     }),
-    []
+    [],
   );
 
   const allValues = allowedValues ? allowedValues : unitTypes;

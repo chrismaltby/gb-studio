@@ -31,7 +31,7 @@ export const FadeSpeedSelect: FC<FadeSpeedSelectProps> = ({
       { value: 5, label: `${l10n("FIELD_SPEED")} 5` },
       { value: 6, label: `${l10n("FIELD_SPEED")} 6 (${l10n("FIELD_SLOWER")})` },
     ],
-    [allowNone]
+    [allowNone],
   );
 
   const currentValue = options.find((o) => o.value === value);

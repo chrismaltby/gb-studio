@@ -24,7 +24,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.spriteSheetId
+        action.payload.spriteSheetId,
       );
 
       if (!spriteSheet) {
@@ -35,8 +35,8 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         store.dispatch(
           actions.detectSpriteComplete(
             // Classic Sprite Format
-            detectClassic(spriteSheet)
-          )
+            detectClassic(spriteSheet),
+          ),
         );
       }
     }
@@ -63,7 +63,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       entitiesActions.moveSpriteAnimationFrame.match(action)
     ) {
       store.dispatch(
-        actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId })
+        actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId }),
       );
     }
 
@@ -73,7 +73,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.spriteSheetId
+        action.payload.spriteSheetId,
       );
 
       if (!spriteSheet) {
@@ -103,7 +103,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
             changes: {
               numTiles,
             },
-          })
+          }),
         );
       }
     }
@@ -120,7 +120,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.data.id
+        action.payload.data.id,
       );
 
       if (spriteSheet) {
@@ -142,18 +142,18 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
           .filter((i) => i);
 
         const hasNoDefinedTiles = spriteFrames.every(
-          (a) => a.tiles.length === 0
+          (a) => a.tiles.length === 0,
         );
 
         // If this is a newly added sprite with no detected animations
         // then try auto detecting the tile data
         if (hasNoDefinedTiles) {
           store.dispatch(
-            actions.detectSprite({ spriteSheetId: spriteSheet.id })
+            actions.detectSprite({ spriteSheetId: spriteSheet.id }),
           );
         }
         store.dispatch(
-          actions.compileSprite({ spriteSheetId: spriteSheet.id })
+          actions.compileSprite({ spriteSheetId: spriteSheet.id }),
         );
       } else {
         // Sprite may have been modified with no .gbsres file created yet, try matching on filename
@@ -162,7 +162,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         const spriteSheet = matchAssetEntity(action.payload.data, allSprites);
         if (spriteSheet) {
           store.dispatch(
-            actions.compileSprite({ spriteSheetId: spriteSheet.id })
+            actions.compileSprite({ spriteSheetId: spriteSheet.id }),
           );
         }
       }

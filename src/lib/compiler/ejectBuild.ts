@@ -14,13 +14,11 @@ import {
 import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 import { ProjectResources } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
+import { EngineSchema } from "lib/project/loadEngineSchema";
 
 const engineIgnore = [
   ".git",
@@ -35,8 +33,7 @@ const engineIgnore = [
 const rmdir = promisify(rimraf);
 
 type EjectOptions = {
-  engineFields: EngineFieldSchema[];
-  sceneTypes: SceneTypeSchema[];
+  engineSchema: EngineSchema;
   projectData: ProjectResources;
   outputRoot: string;
   projectRoot: string;
@@ -50,8 +47,7 @@ type EjectOptions = {
 };
 
 const ejectBuild = async ({
-  engineFields = [],
-  sceneTypes = [],
+  engineSchema,
   projectData,
   outputRoot = "/tmp",
   projectRoot = "/tmp",
@@ -65,6 +61,7 @@ const ejectBuild = async ({
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
   const colorEnabled = settings.colorMode !== "mono";
+  const { fields: engineFields, sceneTypes } = engineSchema;
 
   progress(`${l10n("COMPILER_REMOVING_FOLDER")} ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
@@ -74,7 +71,7 @@ const ejectBuild = async ({
   await copy(defaultEngineRoot, outputRoot, {
     ignore: (path) => {
       return engineIgnore.some((ignoreDir) =>
-        path.startsWith(Path.join(defaultEngineRoot, ignoreDir))
+        path.startsWith(Path.join(defaultEngineRoot, ignoreDir)),
       );
     },
   });
@@ -83,7 +80,7 @@ const ejectBuild = async ({
 
   try {
     progress(
-      l10n("COMPILER_LOOKING_FOR_LOCAL_ENGINE", { path: "assets/engine" })
+      l10n("COMPILER_LOOKING_FOR_LOCAL_ENGINE", { path: "assets/engine" }),
     );
     await copy(localCorePath, outputRoot);
     progress(l10n("COMPILER_COPY_LOCAL_ENGINE"));
@@ -96,7 +93,7 @@ const ejectBuild = async ({
       try {
         const ejectedEngineVersionLegacyPath = `${localCorePath}/engine_version`;
         ejectedEngineVersion = await readEngineVersionLegacy(
-          ejectedEngineVersionLegacyPath
+          ejectedEngineVersionLegacyPath,
         );
       } catch (e2) {
         ejectedEngineVersion = "";
@@ -110,7 +107,7 @@ const ejectBuild = async ({
         `${l10n("WARNING_ENGINE_OUT_OF_DATE", {
           ejectedEngineVersion,
           expectedEngineVersion,
-        })}\n\n${ejectEngineChangelog(ejectedEngineVersion)}`
+        })}\n\n${ejectEngineChangelog(ejectedEngineVersion)}`,
       );
     }
   } catch (e) {
@@ -119,10 +116,10 @@ const ejectBuild = async ({
 
   // Remove unused scene type files
   const usedSceneTypes = sceneTypes.filter((type) =>
-    compiledData.usedSceneTypeIds.includes(type.key)
+    compiledData.usedSceneTypeIds.includes(type.key),
   );
   const unusedSceneTypes = sceneTypes.filter(
-    (type) => !compiledData.usedSceneTypeIds.includes(type.key)
+    (type) => !compiledData.usedSceneTypeIds.includes(type.key),
   );
   const usedFiles = usedSceneTypes
     .map((sceneType) => sceneType.files ?? [])
@@ -149,14 +146,14 @@ const ejectBuild = async ({
   }
 
   progress(
-    l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" })
+    l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" }),
   );
   const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     progress(
       l10n("COMPILER_USING_ENGINE_PLUGIN", {
         path: Path.relative(pluginsPath, enginePluginPath),
-      })
+      }),
     );
     const pluginName = Path.basename(Path.dirname(enginePluginPath));
     try {
@@ -171,7 +168,7 @@ const ejectBuild = async ({
             pluginName,
             pluginEngineVersion,
             expectedEngineVersion,
-          })}`
+          })}`,
         );
       }
     } catch (e) {
@@ -179,7 +176,7 @@ const ejectBuild = async ({
         `${l10n("WARNING_ENGINE_PLUGIN_MISSING_MANIFEST", {
           pluginName,
           expectedEngineVersion,
-        })}`
+        })}`,
       );
     }
     await copy(enginePluginPath, outputRoot);
@@ -189,7 +186,7 @@ const ejectBuild = async ({
   await Promise.all(
     engineFields
       .filter(
-        (engineField) => engineField.cType === "define" && engineField.file
+        (engineField) => engineField.cType === "define" && engineField.file,
       )
       .reduce(
         (memo, engineField) => {
@@ -210,7 +207,7 @@ const ejectBuild = async ({
         [] as {
           file: string;
           fields: EngineFieldSchema[];
-        }[]
+        }[],
       )
       .map(async (engineFile): Promise<void> => {
         const filename = `${outputRoot}/${engineFile.file}`;
@@ -219,7 +216,7 @@ const ejectBuild = async ({
         engineFile.fields.forEach((engineField) => {
           const engineValue =
             projectData.engineFieldValues.engineFieldValues.find(
-              (v) => v.id === engineField.key
+              (v) => v.id === engineField.key,
             );
           const value =
             engineValue && engineValue.value !== undefined
@@ -228,12 +225,12 @@ const ejectBuild = async ({
 
           source = source.replace(
             new RegExp(`#define[ \t]*${engineField.key}[^\n]*`),
-            `#define ${engineField.key} ${value}`
+            `#define ${engineField.key} ${value}`,
           );
         });
 
         await fs.writeFile(filename, source);
-      })
+      }),
   );
 
   await fs.ensureDir(`${outputRoot}/include/data`);
@@ -247,17 +244,17 @@ const ejectBuild = async ({
     if (filename.endsWith(".h") || filename.endsWith(".i")) {
       await fs.writeFile(
         `${outputRoot}/include/data/${filename}`,
-        compiledData.files[filename]
+        compiledData.files[filename],
       );
     } else if (filename.endsWith(".o")) {
       await fs.writeFile(
         `${outputRoot}/obj/${filename}`,
-        compiledData.files[filename]
+        compiledData.files[filename],
       );
     } else {
       await fs.writeFile(
         `${outputRoot}/src/data/${filename}`,
-        compiledData.files[filename]
+        compiledData.files[filename],
       );
     }
   }

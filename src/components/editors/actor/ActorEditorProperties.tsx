@@ -12,13 +12,16 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch } from "store/hooks";
+import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
 
 interface ActorEditorPropertiesProps {
   actor: ActorNormalized;
+  sceneId?: string;
 }
 
 export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
   actor,
+  sceneId,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -30,30 +33,30 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, actor.id]
+    [dispatch, actor.id],
   );
 
   const onChangeSpriteSheetId = useCallback(
     (e: string) => onChangeActorProp("spriteSheetId", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeMoveSpeed = useCallback(
     (e: number) => onChangeActorProp("moveSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeAnimSpeed = useCallback(
     (e: number) => onChangeActorProp("animSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeCollisionGroup = useCallback(
     (e: CollisionGroup) => onChangeActorProp("collisionGroup", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   if (!actor) {
@@ -126,6 +129,7 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 />
               </FormField>
             </FormRow>
+            <ActorEditorExtraCollisionFlags actor={actor} sceneId={sceneId} />
           </FormContainer>
         </SidebarColumn>
       )}

@@ -13,10 +13,6 @@ import type {
   BuildType,
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type {
   Background,
@@ -55,6 +51,7 @@ import type {
 } from "lib/pluginManager/types";
 import type { ThemeInterface } from "ui/theme/ThemeInterface";
 import type { TemplatePlugin } from "lib/templates/templateManager";
+import { EngineSchema } from "lib/project/loadEngineSchema";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -62,10 +59,9 @@ interface L10NLookup {
 
 export type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
-  engineFields: EngineFieldSchema[];
+  engineSchema: EngineSchema;
   exportBuild: boolean;
   debugEnabled?: boolean;
-  sceneTypes: SceneTypeSchema[];
 };
 
 export type RecentProjectData = {
@@ -76,9 +72,9 @@ export type RecentProjectData = {
 
 const createSubscribeAPI = <
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends (event: IpcRendererEvent, ...args: any[]) => void
+  T extends (event: IpcRendererEvent, ...args: any[]) => void,
 >(
-  channel: string
+  channel: string,
 ) => {
   return {
     subscribe: (listener: T) => {
@@ -103,14 +99,14 @@ const createWatchSubscribeAPI = <T>(channel: string) => {
         event: IpcRendererEvent,
         oldFilename: string,
         newFilename: string,
-        plugin: string | undefined
+        plugin: string | undefined,
       ) => void
     >(`${channel}:renamed`),
     removed: createSubscribeAPI<
       (
         event: IpcRendererEvent,
         filename: string,
-        plugin: string | undefined
+        plugin: string | undefined,
       ) => void
     >(`${channel}:removed`),
   };
@@ -141,7 +137,7 @@ const APISetup = {
     getTheme: (): Promise<ThemeInterface> => ipcRenderer.invoke("get-theme"),
     onChange: (callback: (theme: ThemeInterface) => void) =>
       ipcRenderer.on("update-theme", (_, theme: ThemeInterface) =>
-        callback(theme)
+        callback(theme),
       ),
   },
   templates: {
@@ -184,19 +180,19 @@ const APISetup = {
     confirmDeleteCustomEvent: (
       name: string,
       sceneNames: string[],
-      count: number
+      count: number,
     ): Promise<number | false> =>
       ipcRenderer.invoke(
         "dialog:confirm-delete-custom-event",
         name,
         sceneNames,
-        count
+        count,
       ),
     confirmReplaceCustomEvent: (name: string): Promise<number> =>
       ipcRenderer.invoke("dialog:confirm-replace-custom-event", name),
     confirmDeletePrefab: (
       name: string,
-      count: number
+      count: number,
     ): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-delete-prefab", name, count),
     confirmReplacePrefab: (name: string): Promise<number | false> =>
@@ -209,7 +205,7 @@ const APISetup = {
       ipcRenderer.invoke("dialog:confirm-apply-preset"),
     confirmDeleteConstant: (
       name: string,
-      usesNames: string[]
+      usesNames: string[],
     ): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-delete-constant", name, usesNames),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
@@ -237,37 +233,29 @@ const APISetup = {
       ipcRenderer.invoke("project:build", data, options),
     buildCancel: () => ipcRenderer.invoke("project:build-cancel"),
     onBuildLog: (
-      listener: (event: IpcRendererEvent, message: string) => void
+      listener: (event: IpcRendererEvent, message: string) => void,
     ) => ipcRenderer.on("build:log", listener),
     onBuildError: (
-      listener: (event: IpcRendererEvent, message: string) => void
+      listener: (event: IpcRendererEvent, message: string) => void,
     ) => ipcRenderer.on("build:error", listener),
     ejectEngine: () => ipcRenderer.invoke("project:engine-eject"),
     exportProject: (
       data: ProjectResources,
-      engineFields: EngineFieldSchema[],
-      sceneTypes: SceneTypeSchema[],
-      exportType: ProjectExportType
-    ) =>
-      ipcRenderer.invoke(
-        "project:export",
-        data,
-        engineFields,
-        sceneTypes,
-        exportType
-      ),
+      engineSchema: EngineSchema,
+      exportType: ProjectExportType,
+    ) => ipcRenderer.invoke("project:export", data, engineSchema, exportType),
     getBackgroundInfo: (
       background: Background,
       tileset: Tileset | undefined,
       is360: boolean,
-      cgbOnly: boolean
+      cgbOnly: boolean,
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
         "project:get-background-info",
         background,
         tileset,
         is360,
-        cgbOnly
+        cgbOnly,
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
@@ -280,7 +268,7 @@ const APISetup = {
     renameAsset: (
       type: AssetType,
       asset: Asset,
-      filename: string
+      filename: string,
     ): Promise<boolean> =>
       ipcRenderer.invoke("project:rename-asset", type, asset, filename),
     removeAsset: (type: AssetType, asset: Asset): Promise<boolean> =>
@@ -289,26 +277,26 @@ const APISetup = {
   script: {
     getScriptAutoLabel: (
       cmd: string,
-      args: Record<string, unknown>
+      args: Record<string, unknown>,
     ): Promise<string> =>
       ipcRenderer.invoke("script:get-auto-label", cmd, args),
     scriptEventPostUpdateFn: (
       cmd: string,
       fieldKey: string,
       args: Record<string, unknown>,
-      prevArgs: Record<string, unknown>
+      prevArgs: Record<string, unknown>,
     ): Promise<Record<string, unknown>> =>
       ipcRenderer.invoke(
         "script:post-update-fn",
         cmd,
         fieldKey,
         args,
-        prevArgs
+        prevArgs,
       ),
     scriptEventUpdateFn: (
       cmd: string,
       fieldKey: string,
-      value: unknown
+      value: unknown,
     ): Promise<unknown> =>
       ipcRenderer.invoke("script:update-fn", cmd, fieldKey, value),
   },
@@ -340,7 +328,7 @@ const APISetup = {
   },
   sprite: {
     compileSprite: (
-      spriteData: SpriteSheetData
+      spriteData: SpriteSheetData,
     ): Promise<PrecompiledSpriteSheetData> =>
       ipcRenderer.invoke("sprite:compile", spriteData),
   },
@@ -394,7 +382,7 @@ const APISetup = {
     menu: {
       saveProject:
         createSubscribeAPI<(event: IpcRendererEvent) => void>(
-          "menu:save-project"
+          "menu:save-project",
         ),
       saveProjectAs: createSubscribeAPI<
         (event: IpcRendererEvent, filename: string) => void
@@ -405,7 +393,7 @@ const APISetup = {
       undo: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:undo"),
       redo: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:redo"),
       pasteInPlace: createSubscribeAPI<(event: IpcRendererEvent) => void>(
-        "menu:paste-in-place"
+        "menu:paste-in-place",
       ),
       setSection:
         createSubscribeAPI<
@@ -413,7 +401,7 @@ const APISetup = {
         >("menu:section"),
       reloadAssets:
         createSubscribeAPI<(event: IpcRendererEvent) => void>(
-          "menu:reload-assets"
+          "menu:reload-assets",
         ),
       zoom: createSubscribeAPI<
         (event: IpcRendererEvent, zoom: MenuZoomType) => void
@@ -427,14 +415,14 @@ const APISetup = {
         >("menu:build"),
       ejectEngine:
         createSubscribeAPI<(event: IpcRendererEvent) => void>(
-          "menu:eject-engine"
+          "menu:eject-engine",
         ),
       exportProject: createSubscribeAPI<
         (event: IpcRendererEvent, exportType: ProjectExportType) => void
       >("menu:export-project"),
       pluginRun:
         createSubscribeAPI<(event: IpcRendererEvent, pluginId: string) => void>(
-          "menu:plugin-run"
+          "menu:plugin-run",
         ),
     },
     app: {
@@ -451,23 +439,22 @@ const APISetup = {
       data: createSubscribeAPI<
         (event: IpcRendererEvent, data: DebuggerDataPacket) => void
       >("debugger:data"),
-      symbols:
-        createSubscribeAPI<
-          (
-            event: IpcRendererEvent,
-            data: {
-              variableMap: Record<string, VariableMapData>;
-              sceneMap: Record<string, SceneMapData>;
-              gbvmScripts: Record<string, string>;
-            }
-          ) => void
-        >("debugger:symbols"),
+      symbols: createSubscribeAPI<
+        (
+          event: IpcRendererEvent,
+          data: {
+            variableMap: Record<string, VariableMapData>;
+            sceneMap: Record<string, SceneMapData>;
+            gbvmScripts: Record<string, string>;
+          },
+        ) => void
+      >("debugger:symbols"),
       disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
-        "debugger:disconnected"
+        "debugger:disconnected",
       ),
       romusage:
         createSubscribeAPI<(event: IpcRendererEvent, data: UsageData) => void>(
-          "debugger:romusage"
+          "debugger:romusage",
         ),
     },
     project: {
@@ -487,7 +474,7 @@ const APISetup = {
           <K extends keyof SettingsState>(
             event: IpcRendererEvent,
             setting: K,
-            value: SettingsState[K]
+            value: SettingsState[K],
           ) => void
         >("setting:changed"),
     },
@@ -500,7 +487,7 @@ const APISetup = {
       sprite: createWatchSubscribeAPI<SpriteResourceAsset>("watch:sprite"),
       background:
         createWatchSubscribeAPI<CompressedBackgroundResourceAsset>(
-          "watch:background"
+          "watch:background",
         ),
       music: createWatchSubscribeAPI<MusicResourceAsset>("watch:music"),
       sound: createWatchSubscribeAPI<SoundResourceAsset>("watch:sound"),
@@ -511,11 +498,7 @@ const APISetup = {
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<
-          (
-            event: IpcRendererEvent,
-            fields: EngineFieldSchema[],
-            sceneTypes: SceneTypeSchema[]
-          ) => void
+          (event: IpcRendererEvent, engineSchema: EngineSchema) => void
         >("watch:engineSchema:changed"),
       },
       scriptEventDefs: {

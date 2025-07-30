@@ -22,7 +22,7 @@ const sortByName = (a: Entity, b: Entity) => {
 };
 
 export const entityParentFolders = <T extends { name: string }>(
-  entity: T
+  entity: T,
 ): string[] => {
   const parts = entity.name.split(/[/\\]/).slice(0, -1);
   const folders: string[] = [];
@@ -39,7 +39,7 @@ export const buildEntityNavigatorItems = <T extends Entity>(
   openFolders: string[],
   searchTerm: string,
   customSort?: (a: T, b: T) => number,
-  nestOffset = 0
+  nestOffset = 0,
 ): EntityNavigatorItem<T>[] => {
   const result: EntityNavigatorItem<T>[] = [];
   const uniqueFolders = new Set<string>();

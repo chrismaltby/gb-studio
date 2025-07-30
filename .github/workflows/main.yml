@@ -8,6 +8,7 @@ on:
       - feat-*
       - beta-*
       - wip-*
+      - fix-*
 
   workflow_dispatch:
 
@@ -37,7 +38,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-') || startsWith(github.ref, 'refs/heads/fix-')
 
     strategy:
       matrix:
@@ -57,6 +58,9 @@ jobs:
           - name: linux
             label: Linux
             os: ubuntu-latest
+          - name: linux-arm64
+            label: Linux-arm64
+            os: ubuntu-22.04-arm
 
     steps:
       - uses: actions/checkout@v4
@@ -88,10 +92,11 @@ jobs:
           yarn
 
       - name: Update credits
-        if: ${{ vars.FETCH_CREDITS == 'true' }}
+        if: ${{ vars.FETCH_CREDITS == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
         env:
           PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
           PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
+          CREDITS_GITHUB_ACCESS_TOKEN: ${{ secrets.CREDITS_GITHUB_ACCESS_TOKEN }}
         run: |
           npm run fetch-contributors
           npm run fetch-patrons
@@ -137,6 +142,19 @@ jobs:
           mv ./out/make/deb/x64/*.deb ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.deb
           mv ./out/make/rpm/x64/*.rpm ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.rpm
           mv ./out/make/AppImage/x64/*.AppImage ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.AppImage
+
+      - name: Build Linux arm64
+        if: matrix.name == 'linux-arm64'
+        run: |
+          yarn fetch-deps -- --arch=linux-arm64
+          cd buildTools/linux-arm64/mod2gbt
+          sh build_linux.sh
+          cd ../../..          
+          yarn make:linux-arm64
+          mkdir -p ./out/keep
+          mv ./out/make/deb/arm64/*.deb ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_arm64.deb
+          mv ./out/make/rpm/arm64/*.rpm ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_arm64.rpm
+          mv ./out/make/AppImage/arm64/*.AppImage ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_arm64.AppImage
 
       - name: Build Win32
         if: matrix.name == 'win32'

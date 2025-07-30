@@ -54,7 +54,7 @@ const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
 
 const isScriptEventInitializationData = (
-  data: unknown
+  data: unknown,
 ): data is { id: string; values?: Record<string, unknown> } => {
   return (
     !!data &&
@@ -145,7 +145,7 @@ const ScriptEventFormField = memo(
     const [value, setValue] = useState(
       field.multiple
         ? ([] as unknown[]).concat([], args?.[field.key || ""])
-        : args?.[field.key || ""]
+        : args?.[field.key || ""],
     );
 
     const setArgsValues = useCallback(
@@ -156,7 +156,7 @@ const ScriptEventFormField = memo(
               actorId: context.instanceId,
               scriptEventId: scriptEvent.id,
               args: newArgs,
-            })
+            }),
           );
         } else if (
           context.entityType === "triggerPrefab" &&
@@ -167,7 +167,7 @@ const ScriptEventFormField = memo(
               triggerId: context.instanceId,
               scriptEventId: scriptEvent.id,
               args: newArgs,
-            })
+            }),
           );
         } else {
           dispatch(
@@ -176,11 +176,11 @@ const ScriptEventFormField = memo(
               changes: {
                 args: newArgs,
               },
-            })
+            }),
           );
         }
       },
-      [context.entityType, context.instanceId, dispatch, scriptEvent.id]
+      [context.entityType, context.instanceId, dispatch, scriptEvent.id],
     );
 
     const latestArgs = useRef(args);
@@ -199,7 +199,7 @@ const ScriptEventFormField = memo(
               args: {
                 [key]: value,
               },
-            })
+            }),
           );
         } else if (
           context.entityType === "triggerPrefab" &&
@@ -212,7 +212,7 @@ const ScriptEventFormField = memo(
               args: {
                 [key]: value,
               },
-            })
+            }),
           );
         } else {
           dispatch(
@@ -220,7 +220,7 @@ const ScriptEventFormField = memo(
               scriptEventId: scriptEvent.id,
               key,
               value,
-            })
+            }),
           );
         }
         if (scriptEvent.command && field.key && field.hasPostUpdateFn) {
@@ -229,7 +229,7 @@ const ScriptEventFormField = memo(
               scriptEvent.command,
               field.key,
               { ...latestArgs.current, [key]: value },
-              latestArgs.current || {}
+              latestArgs.current || {},
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
@@ -257,7 +257,7 @@ const ScriptEventFormField = memo(
         setValue(value);
         throttledPublishArgValue(key, value);
       },
-      [throttledPublishArgValue]
+      [throttledPublishArgValue],
     );
 
     const onChange = useCallback(
@@ -272,12 +272,12 @@ const ScriptEventFormField = memo(
                 return v;
               }
               return newValue;
-            })
+            }),
           );
         }
         return setArgValue(key, newValue);
       },
-      [field.key, setArgValue, value]
+      [field.key, setArgValue, value],
     );
 
     // Handle value updating from store (only if not currently updating due to user input)
@@ -304,12 +304,12 @@ const ScriptEventFormField = memo(
               [],
               value.slice(0, valueIndex + 1),
               field.defaultValue,
-              value.slice(valueIndex + 1)
-            )
+              value.slice(valueIndex + 1),
+            ),
           );
         }
       },
-      [field.defaultValue, field.key, setArgValue, value]
+      [field.defaultValue, field.key, setArgValue, value],
     );
 
     const onRemoveValue = useCallback(
@@ -318,11 +318,11 @@ const ScriptEventFormField = memo(
         if (Array.isArray(value)) {
           setArgValue(
             key,
-            value.filter((_v, i) => i !== valueIndex)
+            value.filter((_v, i) => i !== valueIndex),
           );
         }
       },
-      [field.key, setArgValue, value]
+      [field.key, setArgValue, value],
     );
 
     const onInsertEventAfter = useCallback(() => {
@@ -342,7 +342,7 @@ const ScriptEventFormField = memo(
               args: eventData.values,
             },
           ],
-        })
+        }),
       );
     }, [
       dispatch,
@@ -357,7 +357,7 @@ const ScriptEventFormField = memo(
     if (typeof label === "string" && label.replace) {
       label = label.replace(
         /\$\$([^$]*)\$\$/g,
-        (_match, key) => (args?.[key] ?? "") as string
+        (_match, key) => (args?.[key] ?? "") as string,
       );
     }
 
@@ -510,7 +510,7 @@ const ScriptEventFormField = memo(
         </FormField>
       </ScriptEventField>
     );
-  }
+  },
 );
 
 export default ScriptEventFormField;

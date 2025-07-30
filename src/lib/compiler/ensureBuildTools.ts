@@ -13,7 +13,7 @@ const ensureBuildTools = async (tmpPath: string) => {
   const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
   const expectedToolsVersion = await fs.readFile(
     expectedBuildToolsVersionPath,
-    "utf8"
+    "utf8",
   );
 
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;

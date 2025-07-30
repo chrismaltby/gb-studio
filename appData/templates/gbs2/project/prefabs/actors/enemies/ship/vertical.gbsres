@@ -1,7 +1,6 @@
 {
   "_resourceType": "actorPrefab",
   "id": "8d9d0f7c-2757-441c-9111-403634dcb6c9",
-  "_index": 1,
   "name": "Enemies/Ship/Vertical",
   "frame": 0,
   "animate": false,
@@ -11,6 +10,7 @@
   "animSpeed": 15,
   "persistent": false,
   "collisionGroup": "1",
+  "collisionExtraFlags": [],
   "script": [
     {
       "id": "133ffbca-60f2-41aa-8089-d8789331dfc0",
@@ -75,7 +75,8 @@
                 "value": -2
               },
               "moveType": "vertical",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -93,7 +94,8 @@
                 "value": 2
               },
               "moveType": "vertical",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -134,7 +136,8 @@
                 "value": 2
               },
               "moveType": "vertical",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -152,7 +155,8 @@
                 "value": -2
               },
               "moveType": "vertical",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           }
@@ -212,7 +216,14 @@
             "id": "05d0c4ff-d963-4bf8-8a7d-3a293c6f3633",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             },
             "children": {}
           },

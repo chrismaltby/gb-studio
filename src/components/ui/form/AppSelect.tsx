@@ -27,7 +27,7 @@ export const AppSelect: FC<AppSelectProps> = ({ value, onChange }) => {
           value,
           label: Path.basename(value),
         }
-      : []
+      : [],
   );
 
   const currentValue =

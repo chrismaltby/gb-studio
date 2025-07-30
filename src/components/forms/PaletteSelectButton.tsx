@@ -82,7 +82,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
 
   const palette =
     useAppSelector((state) =>
-      getLocalisedPaletteById(state, value || optionalDefaultPaletteId || "")
+      getLocalisedPaletteById(state, value || optionalDefaultPaletteId || ""),
     ) || getLocalisedDMGPalette();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);

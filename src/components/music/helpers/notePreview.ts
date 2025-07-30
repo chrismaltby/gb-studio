@@ -35,7 +35,7 @@ export const playNotePreview = (
   type: InstrumentType,
   instrument: DutyInstrument | WaveInstrument | NoiseInstrument,
   square2: boolean,
-  waves: Uint8Array[] = []
+  waves: Uint8Array[] = [],
 ) => {
   console.log(note, instrument, square2);
 
@@ -67,7 +67,7 @@ export const playNotePreview = (
 function previewDutyInstrument(
   note: number,
   instrument: DutyInstrument,
-  square2: boolean
+  square2: boolean,
 ) {
   const noteFreq = note2freq[note];
 
@@ -84,7 +84,7 @@ function previewDutyInstrument(
           instrument.length !== null && instrument.length !== 0
             ? 64 - instrument.length
             : 0,
-          6
+          6,
         ),
       NR12:
         bitpack(instrument.initial_volume, 4) +
@@ -93,7 +93,7 @@ function previewDutyInstrument(
           instrument.volume_sweep_change !== 0
             ? 8 - Math.abs(instrument.volume_sweep_change)
             : 0,
-          3
+          3,
         ),
       NR13: bitpack(noteFreq & 0b11111111, 8),
       NR14:
@@ -124,7 +124,7 @@ function previewDutyInstrument(
           instrument.length !== null && instrument.length !== 0
             ? 64 - instrument.length
             : 0,
-          6
+          6,
         ),
       NR22:
         bitpack(instrument.initial_volume, 4) +
@@ -133,7 +133,7 @@ function previewDutyInstrument(
           instrument.volume_sweep_change !== 0
             ? 8 - Math.abs(instrument.volume_sweep_change)
             : 0,
-          3
+          3,
         ),
       NR23: bitpack(noteFreq & 0b11111111, 8),
       NR24:
@@ -160,7 +160,7 @@ function previewDutyInstrument(
 function previewWaveInstrument(
   note: number,
   instrument: WaveInstrument,
-  waves: Uint8Array[]
+  waves: Uint8Array[],
 ) {
   const noteFreq = note2freq[note];
 
@@ -168,7 +168,7 @@ function previewWaveInstrument(
   for (let idx = 0; idx < 16; idx++) {
     emulator.writeMem(
       AUD3_WAVE_RAM + idx,
-      (wave[idx * 2] << 4) | wave[idx * 2 + 1]
+      (wave[idx * 2] << 4) | wave[idx * 2 + 1],
     );
   }
 
@@ -176,7 +176,7 @@ function previewWaveInstrument(
     NR30: "1" + bitpack(0, 7),
     NR31: bitpack(
       (instrument.length !== null ? 256 - instrument.length : 0) & 0xff,
-      8
+      8,
     ),
     NR32: "00" + bitpack(instrument.volume, 2) + "00000",
     NR33: bitpack(noteFreq & 0b11111111, 8),
@@ -215,12 +215,12 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
         instrument.volume_sweep_change !== 0
           ? 8 - Math.abs(instrument.volume_sweep_change)
           : 0,
-        3
+        3,
       ),
     NR43: bitpack(
       note2noise(note + (instrument.noise_macro ?? [])[0]) +
         (instrument.bit_count === 7 ? 8 : 0),
-      8
+      8,
     ),
     NR44:
       "1" + // Initial
@@ -239,7 +239,7 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
     emulator.writeMem(
       NR43,
       note2noise(note + (instrument.noise_macro ?? [])[noiseStep]) +
-        (instrument.bit_count === 7 ? 8 : 0)
+        (instrument.bit_count === 7 ? 8 : 0),
     );
     noiseStep++;
   }, 1000 / 64);

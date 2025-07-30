@@ -9,7 +9,7 @@ const TMP_EXTENSION = "new";
 
 export const backupFile = (
   path: string,
-  callback: (err?: NodeJS.ErrnoException | null) => void
+  callback: (err?: NodeJS.ErrnoException | null) => void,
 ) => {
   access(path, constants.F_OK, (err) => {
     if (!err) {
@@ -23,7 +23,7 @@ export const writeFileWithBackup = (
   path: string,
   data: string | NodeJS.ArrayBufferView,
   options: WriteFileAndFlushOptions | BufferEncoding,
-  callback: (err?: NodeJS.ErrnoException | unknown | null) => void
+  callback: (err?: NodeJS.ErrnoException | unknown | null) => void,
 ) => {
   return backupFile(path, (backupError) => {
     if (backupError) {
@@ -43,7 +43,7 @@ export const writeFileWithBackup = (
           return callback(e);
         }
         return callback();
-      }
+      },
     );
   });
 };
@@ -51,7 +51,7 @@ export const writeFileWithBackup = (
 export const writeFileWithBackupAsync = (
   path: string,
   data: string | NodeJS.ArrayBufferView,
-  options: WriteFileAndFlushOptions | BufferEncoding = "utf8"
+  options: WriteFileAndFlushOptions | BufferEncoding = "utf8",
 ) => {
   return new Promise<void>((resolve, reject) => {
     writeFileWithBackup(path, data, options, (err) => {

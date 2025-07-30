@@ -82,7 +82,7 @@ const copySelectedEntity =
   () =>
   (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
-    getState: () => RootState
+    getState: () => RootState,
   ) => {
     const state = getState();
     const { scene: sceneId, entityId, type: editorType } = state.editor;
@@ -126,7 +126,7 @@ const pasteClipboardEntityInPlace =
   () =>
   async (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
-    getState: () => RootState
+    getState: () => RootState,
   ) => {
     const clipboard = await pasteAny();
     if (!clipboard) {
@@ -141,7 +141,7 @@ const pasteClipboardEntityInPlace =
           sceneId,
           x: trigger.x,
           y: trigger.y,
-        })
+        }),
       );
     } else if (clipboard.format === ClipboardTypeActors) {
       const actor = clipboard.data.actors[0];
@@ -150,7 +150,7 @@ const pasteClipboardEntityInPlace =
           sceneId,
           x: actor.x,
           y: actor.y,
-        })
+        }),
       );
     } else if (clipboard.format === ClipboardTypeScenes) {
       const scene = clipboard.data.scenes[0];
@@ -158,7 +158,7 @@ const pasteClipboardEntityInPlace =
         pasteSceneAt({
           x: scene.x,
           y: scene.y,
-        })
+        }),
       );
     }
   };

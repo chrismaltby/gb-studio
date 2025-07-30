@@ -334,7 +334,7 @@
   "FIELD_LOW": "Faible",
   "FIELD_MEDIUM": "Moyen",
   "FIELD_HIGH": "Élevé",
-  "FIELD_BOUNCE_NOTE": "Affecte uniquement les scènes de Plateforme",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Affecte uniquement les scènes de Plateforme",
   "FIELD_WEAPON_SPRITE": "Feuille de sprite d’arme",
   "FIELD_WORK_IN_PROGRESS": "En cours de construction",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Remplacer la valeur par défaut pour le type de scène",
@@ -1788,5 +1788,9 @@
   "MESSAGE_WHAT_ABOUT_UGE": "À propos des fichiers .uge ?",
   "MESSAGE_USE_UGE_FILES": "Pour utiliser des fichiers .uge dans votre projet, changez le pilote musical de GBT Player à hUGEDriver dans la vue 'Paramètres’.",
   "MESSAGE_ENABLE_HUGE": "Activer hUGEDriver",
+<<<<<<< .merge_file_N3PNwA
   "MESSAGE_NOT_PREVIEW_SUBPATTERN": "La prévisualisation des instruments et des notes peut ne pas être cohérent lorsque le sous-modèle est activé."
+=======
+  "MESSAGE_NOT_PREVIEW_SUBPATTERN": "La prévisualisation des instruments et des notes peut ne pas être cohérent lorsque le sous-motif est activé."
+>>>>>>> .merge_file_DnOco6
 }

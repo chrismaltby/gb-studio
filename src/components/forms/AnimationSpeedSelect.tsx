@@ -40,7 +40,7 @@ export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
         value,
         label: getAnimLabel(value),
       })),
-    []
+    [],
   );
 
   const currentValue = options.find((o) => o.value === value);
@@ -51,14 +51,14 @@ export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
       options={options}
       formatOptionLabel={(
         option: AnimationSpeedOption,
-        { context }: { context: "menu" | "value" }
+        { context }: { context: "menu" | "value" },
       ) => {
         return (
           <OptionLabelWithInfo
             info={
               context === "menu" && option.value !== 255
                 ? `${String(
-                    Math.round((60 / (option.value + 1)) * 100) / 100
+                    Math.round((60 / (option.value + 1)) * 100) / 100,
                   )} ${l10n("FIELD_FRAMES_PER_SECOND_SHORT")}`
                 : ""
             }

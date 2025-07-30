@@ -116,7 +116,7 @@ workerCtx.onmessage = async (evt) => {
       width,
       height,
       tilesData,
-      tileDataIndexFn
+      tileDataIndexFn,
     );
     paletteData = autoPaletteUsingTiles(width, height, data, indexedImage);
   } else {
@@ -125,7 +125,7 @@ workerCtx.onmessage = async (evt) => {
   }
 
   const palettesRGB = paletteData.palettes.map((colors: string[]) =>
-    colors.map(colorCorrectionFn)
+    colors.map(colorCorrectionFn),
   );
   const dmgPalette = DMG_PALETTE.colors.map(colorCorrectionFn);
 

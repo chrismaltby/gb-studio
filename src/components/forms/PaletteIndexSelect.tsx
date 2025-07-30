@@ -36,16 +36,16 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   const [currentValue, setCurrentValue] = useState<PaletteIndexOption>();
 
   const previewAsSceneId = useAppSelector(
-    (state) => state.editor.previewAsSceneId
+    (state) => state.editor.previewAsSceneId,
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, previewAsSceneId)
+    sceneSelectors.selectById(state, previewAsSceneId),
   );
   const palettesLookup = useAppSelector((state) =>
-    getLocalisedPalettesLookup(state)
+    getLocalisedPalettesLookup(state),
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds
+    (state) => state.project.present.settings.defaultSpritePaletteIds,
   );
   const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
@@ -61,7 +61,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
                 defaultSpritePaletteIds[index]
               : defaultSpritePaletteIds[index]
           ],
-      }))
+      })),
     );
   }, [scene, palettesLookup, defaultSpritePaletteIds]);
 

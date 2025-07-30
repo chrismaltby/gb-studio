@@ -22,7 +22,7 @@ const useSplitPane = ({
   direction: SplitDirection;
 }): [
   (index: number) => (ev: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-  (index: number) => void
+  (index: number) => void,
 ] => {
   const [isResizing, setIsResizing] = useState(false);
   const [resizeIndex, setResizeIndex] = useState(-1);
@@ -62,13 +62,13 @@ const useSplitPane = ({
             resizeBy,
             startAbsSizes.current,
             minSizes,
-            maxTotal
-          )
+            maxTotal,
+          ),
         ),
-        true
+        true,
       );
     },
-    [maxTotal, minSizes, setSizes]
+    [maxTotal, minSizes, setSizes],
   );
 
   const onDragStop = useCallback(() => {
@@ -83,7 +83,7 @@ const useSplitPane = ({
         resizePaneBy(resizeIndex, e.pageX - startOffset.current);
       }
     },
-    [direction, resizeIndex, resizePaneBy]
+    [direction, resizeIndex, resizePaneBy],
   );
 
   const onDragStart =
@@ -100,7 +100,7 @@ const useSplitPane = ({
 
   const resetSizes = (newSizes: number[]) => {
     const numCollapsed = newSizes.filter(
-      (size) => size === collapsedSize
+      (size) => size === collapsedSize,
     ).length;
     if (numCollapsed === newSizes.length) {
       // If all panes collapsed open last pane fully
@@ -111,7 +111,7 @@ const useSplitPane = ({
           }
           return height - (newSizes.length - 1) * collapsedSize;
         }),
-        true
+        true,
       );
     } else {
       setSizes(newSizes, true);
@@ -137,9 +137,7 @@ const useSplitPane = ({
           return size;
         });
         resetSizes(newSizes);
-      } else if (
-        index === 0
-      ) {
+      } else if (index === 0) {
         // Collapse upwards
         const newSizes = sizes.map((size, i) => {
           if (i === index) {
@@ -220,7 +218,7 @@ export const resizeAbsPaneBy = (
   resizeBy: number,
   absStartSizes: number[],
   minSizes: number[],
-  maxTotal: number
+  maxTotal: number,
 ) => {
   const resizeTo = absStartSizes[resizePane] + resizeBy;
   return absStartSizes.map((v, i) => {

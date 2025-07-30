@@ -64,7 +64,7 @@ export const Select: typeof WindowedSelect = styled(WindowedSelect).attrs(
     inputId: props.name,
     menuPlacement: "auto",
     menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-  })
+  }),
 )`
   position: relative;
   width: 100%;
@@ -342,7 +342,7 @@ export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
     inputId: props.name,
     menuPlacement: "auto",
     menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-  })
+  }),
 )`
   .CustomSelect__control {
     height: 28px;

@@ -45,7 +45,7 @@ export const SoundViewer = ({ file }: SoundViewerProps) => {
             soundfxActions.playSoundFx({
               effect: file.id,
               effectIndex: effectIndex,
-            })
+            }),
           );
         }}
       >
@@ -68,8 +68,8 @@ export const SoundViewer = ({ file }: SoundViewerProps) => {
                   setEffectIndex(
                     Math.max(
                       0,
-                      Math.min(file.numEffects - 1, parseInt(e.target.value))
-                    )
+                      Math.min(file.numEffects - 1, parseInt(e.target.value)),
+                    ),
                   );
                 }
               }}

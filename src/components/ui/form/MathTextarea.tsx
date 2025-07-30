@@ -139,10 +139,10 @@ const operatorRegex = new RegExp(
           .replace(/\|/g, "\\|")
           .replace(/\^/g, "\\^")
           .replace(/\*/g, "\\*")
-          .replace(/\+/g, "\\+")
+          .replace(/\+/g, "\\+"),
       )
       .join("|") +
-    ")"
+    ")",
 );
 
 export const MathTextareaWrapper = styled.div`
@@ -263,7 +263,7 @@ const searchVariables =
       .filter(
         (v) =>
           v.code.indexOf(upperSearch) > -1 ||
-          v.name.toUpperCase().indexOf(upperSearch) > -1
+          v.name.toUpperCase().indexOf(upperSearch) > -1,
       )
       .slice(0, 5)
       .map((v) => ({
@@ -335,7 +335,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           console.error(String(e));
         }
       }
-    }, 300)
+    }, 300),
   );
 
   useEffect(() => debouncedEvaluate.current(value), [value]);

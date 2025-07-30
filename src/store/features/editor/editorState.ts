@@ -60,7 +60,7 @@ export const zoomSections = [
   "spriteTiles",
 ] as const;
 
-export type ZoomSection = typeof zoomSections[number];
+export type ZoomSection = (typeof zoomSections)[number];
 
 export interface SpriteTileSelection {
   x: number;
@@ -123,6 +123,7 @@ export interface EditorState {
   worldViewHeight: number;
   selectedPalette: number;
   selectedTileType: number;
+  selectedTileMask: number;
   selectedBrush: Brush;
   showLayers: boolean;
   lastScriptTab: string;
@@ -194,6 +195,7 @@ export const initialState: EditorState = {
   worldViewHeight: 0,
   selectedPalette: 0,
   selectedTileType: COLLISION_ALL,
+  selectedTileMask: 0xFF,
   selectedBrush: BRUSH_8PX,
   showLayers: true,
   lastScriptTab: "",
@@ -242,14 +244,14 @@ const toggleScriptEventSelectedId =
   }) =>
   (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
-    getState: () => RootState
+    getState: () => RootState,
   ) => {
     const state = getState();
     const siblingIds = selectScriptIds(
       state.project.present.entities,
       action.parentType,
       action.parentId,
-      action.parentKey
+      action.parentKey,
     );
     const selectionIds = state.editor.scriptEventSelectionIds.slice();
     const selectionParentId = state.editor.scriptEventSelectionParentId;
@@ -262,7 +264,7 @@ const toggleScriptEventSelectedId =
           actions.setScriptEventSelectedIds({
             scriptEventIds: [action.scriptEventId],
             parentId,
-          })
+          }),
         );
       } else {
         // Same parent id so toggle if event is selected or not
@@ -284,7 +286,7 @@ const toggleScriptEventSelectedId =
           actions.setScriptEventSelectedIds({
             scriptEventIds: sortedIds,
             parentId,
-          })
+          }),
         );
       }
     }
@@ -317,16 +319,17 @@ const editorSlice = createSlice({
 
     setSelectedPalette: (
       state,
-      action: PayloadAction<{ paletteIndex: number }>
+      action: PayloadAction<{ paletteIndex: number }>,
     ) => {
       state.selectedPalette = action.payload.paletteIndex;
     },
 
     setSelectedTileType: (
       state,
-      action: PayloadAction<{ tileType: number }>
+      action: PayloadAction<{ tileType: number, tileMask: number }>,
     ) => {
       state.selectedTileType = action.payload.tileType;
+      state.selectedTileMask = action.payload.tileMask;
     },
 
     setShowLayers: (state, action: PayloadAction<{ showLayers: boolean }>) => {
@@ -340,7 +343,7 @@ const editorSlice = createSlice({
 
     resizeWorldView: (
       state,
-      action: PayloadAction<{ width: number; height: number }>
+      action: PayloadAction<{ width: number; height: number }>,
     ) => {
       state.worldViewWidth = action.payload.width;
       state.worldViewHeight = action.payload.height;
@@ -366,7 +369,7 @@ const editorSlice = createSlice({
 
     sceneHover: (
       state,
-      action: PayloadAction<{ sceneId: string; x: number; y: number }>
+      action: PayloadAction<{ sceneId: string; x: number; y: number }>,
     ) => {
       state.hover = {
         ...state.hover,
@@ -395,7 +398,7 @@ const editorSlice = createSlice({
 
     selectActorPrefab: (
       state,
-      action: PayloadAction<{ actorPrefabId: string }>
+      action: PayloadAction<{ actorPrefabId: string }>,
     ) => {
       state.type = "actorPrefab";
       state.scene = "";
@@ -404,7 +407,7 @@ const editorSlice = createSlice({
 
     selectTriggerPrefab: (
       state,
-      action: PayloadAction<{ triggerPrefabId: string }>
+      action: PayloadAction<{ triggerPrefabId: string }>,
     ) => {
       state.type = "triggerPrefab";
       state.scene = "";
@@ -413,7 +416,7 @@ const editorSlice = createSlice({
 
     selectCustomEvent: (
       state,
-      action: PayloadAction<{ customEventId: string }>
+      action: PayloadAction<{ customEventId: string }>,
     ) => {
       state.type = "customEvent";
       state.scene = "";
@@ -435,7 +438,7 @@ const editorSlice = createSlice({
 
     selectActor: (
       state,
-      action: PayloadAction<{ actorId: string; sceneId: string }>
+      action: PayloadAction<{ actorId: string; sceneId: string }>,
     ) => {
       state.type = "actor";
       state.scene = action.payload.sceneId;
@@ -451,7 +454,7 @@ const editorSlice = createSlice({
 
     selectTrigger: (
       state,
-      action: PayloadAction<{ triggerId: string; sceneId: string }>
+      action: PayloadAction<{ triggerId: string; sceneId: string }>,
     ) => {
       state.type = "trigger";
       state.scene = action.payload.sceneId;
@@ -467,7 +470,7 @@ const editorSlice = createSlice({
 
     dragTriggerStart: (
       state,
-      action: PayloadAction<{ triggerId: string; sceneId: string }>
+      action: PayloadAction<{ triggerId: string; sceneId: string }>,
     ) => {
       state.type = "trigger";
       state.dragging = DRAG_TRIGGER;
@@ -486,7 +489,7 @@ const editorSlice = createSlice({
 
     dragActorStart: (
       state,
-      action: PayloadAction<{ actorId: string; sceneId: string }>
+      action: PayloadAction<{ actorId: string; sceneId: string }>,
     ) => {
       state.type = "actor";
       state.dragging = DRAG_ACTOR;
@@ -510,7 +513,7 @@ const editorSlice = createSlice({
         selectionType: EditorSelectionType;
         entityId: string;
         sceneId: string;
-      }>
+      }>,
     ) => {
       state.eventId = action.payload.eventId;
       state.dragging = DRAG_DESTINATION;
@@ -536,14 +539,14 @@ const editorSlice = createSlice({
 
     zoomIn: (
       state,
-      action: PayloadAction<{ section: ZoomSection; delta?: number }>
+      action: PayloadAction<{ section: ZoomSection; delta?: number }>,
     ) => {
       const calculateZoomIn = (oldZoom: number) => {
         return Math.min(
           800,
           action.payload.delta !== undefined
             ? oldZoom + action.payload.delta
-            : zoomIn(oldZoom)
+            : zoomIn(oldZoom),
         );
       };
       switch (action.payload.section) {
@@ -572,14 +575,14 @@ const editorSlice = createSlice({
 
     zoomOut: (
       state,
-      action: PayloadAction<{ section: ZoomSection; delta?: number }>
+      action: PayloadAction<{ section: ZoomSection; delta?: number }>,
     ) => {
       const calculateZoomOut = (oldZoom: number) => {
         return Math.max(
           25,
           action.payload.delta !== undefined
             ? oldZoom - action.payload.delta
-            : zoomOut(oldZoom)
+            : zoomOut(oldZoom),
         );
       };
       switch (action.payload.section) {
@@ -675,7 +678,7 @@ const editorSlice = createSlice({
 
     setNavigatorSplitSizes: (
       state,
-      action: PayloadAction<{ sizes: number[]; manuallyEdited: boolean }>
+      action: PayloadAction<{ sizes: number[]; manuallyEdited: boolean }>,
     ) => {
       state.navigatorSplitSizes = action.payload.sizes;
       state.navigatorSplitSizesManuallyEdited = action.payload.manuallyEdited;
@@ -702,7 +705,7 @@ const editorSlice = createSlice({
       action: PayloadAction<{
         animationId: string;
         stateId: string;
-      }>
+      }>,
     ) => {
       state.selectedAnimationId = action.payload.animationId;
       state.selectedSpriteStateId = action.payload.stateId;
@@ -731,7 +734,7 @@ const editorSlice = createSlice({
       if (state.selectedAdditionalMetaspriteIds.indexOf(action.payload) > -1) {
         state.selectedAdditionalMetaspriteIds =
           state.selectedAdditionalMetaspriteIds.filter(
-            (id) => id !== action.payload
+            (id) => id !== action.payload,
           );
       } else {
         if (state.selectedAdditionalMetaspriteIds.length === 0) {
@@ -747,7 +750,7 @@ const editorSlice = createSlice({
 
     addMetaspriteIdsToMultiSelection: (
       state,
-      action: PayloadAction<string[]>
+      action: PayloadAction<string[]>,
     ) => {
       for (const frame of action.payload) {
         if (state.selectedAdditionalMetaspriteIds.indexOf(frame) === -1) {
@@ -794,7 +797,7 @@ const editorSlice = createSlice({
         if (state.selectedMetaspriteTileIds.length > 1) {
           state.selectedMetaspriteTileIds =
             state.selectedMetaspriteTileIds.filter(
-              (id) => id !== action.payload
+              (id) => id !== action.payload,
             );
         }
       } else {
@@ -817,7 +820,7 @@ const editorSlice = createSlice({
 
     setSpriteTileSelection: (
       state,
-      action: PayloadAction<SpriteTileSelection>
+      action: PayloadAction<SpriteTileSelection>,
     ) => {
       state.spriteTileSelection = action.payload;
       state.selectedMetaspriteTileIds = [];
@@ -837,7 +840,7 @@ const editorSlice = createSlice({
 
     setParallaxHoverLayer: (
       state,
-      action: PayloadAction<number | undefined>
+      action: PayloadAction<number | undefined>,
     ) => {
       state.parallaxHoverLayer = action.payload;
     },
@@ -854,7 +857,7 @@ const editorSlice = createSlice({
 
     setSelectedInstrument: (
       state,
-      action: PayloadAction<SelectedInstrument>
+      action: PayloadAction<SelectedInstrument>,
     ) => {
       state.selectedInstrument = action.payload;
     },
@@ -872,7 +875,7 @@ const editorSlice = createSlice({
       action: PayloadAction<{
         sceneId: string;
         slopePreview?: SlopePreview;
-      }>
+      }>,
     ) => {
       state.scene = action.payload.sceneId;
       state.slopePreview = action.payload.slopePreview;
@@ -940,7 +943,7 @@ const editorSlice = createSlice({
 
     setScriptEventSelectedIds: (
       state,
-      action: PayloadAction<{ scriptEventIds: string[]; parentId: string }>
+      action: PayloadAction<{ scriptEventIds: string[]; parentId: string }>,
     ) => {
       state.scriptEventSelectionIds = action.payload.scriptEventIds;
       state.scriptEventSelectionParentId = action.payload.parentId;
@@ -1128,7 +1131,7 @@ const editorSlice = createSlice({
           projectActions.reloadAssets.match(action),
         (state) => {
           state.uiVersion = state.uiVersion + 1;
-        }
+        },
       )
       // When painting collisions or tiles select scene being drawn on
       .addMatcher(
@@ -1143,7 +1146,7 @@ const editorSlice = createSlice({
           if (!state.sceneSelectionIds.includes(state.scene)) {
             state.sceneSelectionIds = [action.payload.sceneId];
           }
-        }
+        },
       ),
 });
 
@@ -1173,7 +1176,7 @@ export const getZoomForSection = createSelector(
       return state.zoomImage;
     }
     return 100;
-  }
+  },
 );
 
 export default reducer;

@@ -26,7 +26,7 @@ interface ScriptEventContextMenuProps {
   parentType: ScriptEventParentType;
   parentId: string;
   parentKey: string;
-  commented?: boolean;
+  isDisabled?: boolean;
   hasElse?: boolean;
   hasOverride: boolean;
   disabledElse?: boolean;
@@ -50,7 +50,7 @@ const renderScriptEventContextMenu = ({
   parentType,
   parentId,
   parentKey,
-  commented,
+  isDisabled,
   hasElse,
   hasOverride,
   disabledElse,
@@ -73,7 +73,7 @@ const renderScriptEventContextMenu = ({
                   parentId,
                   parentKey,
                   parentType,
-                })
+                }),
               );
             }}
           >
@@ -110,7 +110,7 @@ const renderScriptEventContextMenu = ({
                   parentId,
                   parentKey,
                   parentType,
-                })
+                }),
               );
             }}
           >
@@ -140,18 +140,18 @@ const renderScriptEventContextMenu = ({
           entitiesActions.toggleScriptEventComment({
             scriptEventId,
             additionalScriptEventIds,
-          })
+          }),
         );
       }}
     >
       {l10n(
-        commented
+        isDisabled
           ? multiSelection
             ? "MENU_ENABLE_EVENTS"
             : "MENU_ENABLE_EVENT"
           : multiSelection
-          ? "MENU_DISABLE_EVENTS"
-          : "MENU_DISABLE_EVENT"
+            ? "MENU_DISABLE_EVENTS"
+            : "MENU_DISABLE_EVENT",
       )}
     </MenuItem>,
 
@@ -161,7 +161,7 @@ const renderScriptEventContextMenu = ({
             key="toggle-else"
             onClick={() => {
               dispatch(
-                entitiesActions.toggleScriptEventDisableElse({ scriptEventId })
+                entitiesActions.toggleScriptEventDisableElse({ scriptEventId }),
               );
             }}
           >
@@ -179,7 +179,7 @@ const renderScriptEventContextMenu = ({
           settingsActions.toggleBreakpoint({
             scriptEventId,
             context,
-          })
+          }),
         );
       }}
     >
@@ -225,7 +225,7 @@ const renderScriptEventContextMenu = ({
             scriptEventIds: multiSelection
               ? additionalScriptEventIds
               : [scriptEventId],
-          })
+          }),
         );
       }}
     >
@@ -241,7 +241,7 @@ const renderScriptEventContextMenu = ({
               dispatch(
                 clipboardActions.pasteScriptEventValues({
                   scriptEventId,
-                })
+                }),
               );
             }}
           >
@@ -257,7 +257,7 @@ const renderScriptEventContextMenu = ({
                   key: parentKey,
                   insertId: scriptEventId,
                   before: true,
-                })
+                }),
               );
             }}
           >
@@ -273,7 +273,7 @@ const renderScriptEventContextMenu = ({
                   key: parentKey,
                   insertId: scriptEventId,
                   before: false,
-                })
+                }),
               );
             }}
           >
@@ -293,7 +293,7 @@ const renderScriptEventContextMenu = ({
                 entityId: parentId,
                 type: parentType,
                 key: parentKey,
-              })
+              }),
             )
           : dispatch(
               entitiesActions.removeScriptEvent({
@@ -301,14 +301,14 @@ const renderScriptEventContextMenu = ({
                 entityId: parentId,
                 type: parentType,
                 key: parentKey,
-              })
+              }),
             )
       }
     >
       {l10n(
         additionalScriptEventIds.length > 1
           ? "MENU_DELETE_EVENTS"
-          : "MENU_DELETE_EVENT"
+          : "MENU_DELETE_EVENT",
       )}
     </MenuItem>,
   ];

@@ -62,7 +62,9 @@ import { ensureMaybeNumber, isStringArray } from "shared/types";
 import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { TilesetSelect } from "components/forms/TilesetSelect";
-import ValueSelect from "components/forms/ValueSelect";
+import ValueSelect, {
+  ValueSelectInputOverrideTypes,
+} from "components/forms/ValueSelect";
 import {
   isConstScriptValue,
   isScriptValue,
@@ -72,6 +74,7 @@ import { FlagSelect } from "components/forms/FlagSelect";
 import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
 import { SingleValue } from "react-select";
 import ConstantValueSelect from "components/forms/ConstantValueSelect";
+import { EngineFieldType } from "store/features/engine/engineState";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -106,6 +109,21 @@ const argValue = (arg: unknown): unknown => {
   return arg;
 };
 
+const asValueSelectFieldType = (
+  fieldType: EngineFieldType,
+  fallbackType: ValueSelectInputOverrideTypes,
+): ValueSelectInputOverrideTypes => {
+  switch (fieldType) {
+    case "number":
+    case "slider":
+    case "checkbox":
+    case "select":
+      return fieldType;
+    default:
+      return fallbackType;
+  }
+};
+
 const ScriptEventFormInput = ({
   id,
   entityId,
@@ -120,10 +138,10 @@ const ScriptEventFormInput = ({
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds || []
+    (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
   const context = useContext(ScriptEditorContext);
@@ -132,28 +150,28 @@ const ScriptEventFormInput = ({
     (e: unknown) => {
       onChange(e, index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeTextInputField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       onChange(e.currentTarget.value, index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeNumberInputField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(castEventToFloat(e, Number(defaultValue) ?? 0), index);
     },
-    [defaultValue, index, onChange]
+    [defaultValue, index, onChange],
   );
 
   const onChangeCheckboxField = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(castEventToBool(e), index);
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeSelectField = useCallback(
@@ -162,7 +180,7 @@ const ScriptEventFormInput = ({
         onChange(e.value, index);
       }
     },
-    [index, onChange]
+    [index, onChange],
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -176,7 +194,7 @@ const ScriptEventFormInput = ({
         type: prevValue?.type ?? field.defaultType,
         value: newValue,
       },
-      index
+      index,
     );
   };
 
@@ -204,11 +222,11 @@ const ScriptEventFormInput = ({
             type: newType,
             value: replaceValue,
           },
-          index
+          index,
         );
       }
     },
-    [context, field.defaultValue, index, onChange, value]
+    [context, field.defaultValue, index, onChange, value],
   );
 
   if (type === "textarea") {
@@ -319,7 +337,7 @@ const ScriptEventFormInput = ({
     }));
     const currentValue =
       options.find((o) =>
-        value ? o.value === value : o.value === defaultValue
+        value ? o.value === value : o.value === defaultValue,
       ) || options[0];
     return (
       <Select
@@ -332,7 +350,7 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "selectbutton") {
     const selectedOption = (field.options || []).find(
-      ([type]) => type === value
+      ([type]) => type === value,
     );
     const selectedLabel = selectedOption ? selectedOption[1] : undefined;
     return (
@@ -411,7 +429,7 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(
           field.placeholder ||
-            (isValueScript && value.type === "number" ? value.value : "")
+            (isValueScript && value.type === "number" ? value.value : ""),
         )}
       />
     );
@@ -431,7 +449,7 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(
           field.placeholder ||
-            (isValueScript && value.type === "number" ? value.value : "")
+            (isValueScript && value.type === "number" ? value.value : ""),
         )}
       />
     );
@@ -545,6 +563,18 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "direction") {
+    if (field.allowMultiple) {
+      return (
+        <OffscreenSkeletonInput>
+          <DirectionPicker
+            id={id}
+            value={value as ActorDirection[]}
+            onChange={onChangeField}
+            allowMultiple
+          />
+        </OffscreenSkeletonInput>
+      );
+    }
     return (
       <OffscreenSkeletonInput>
         <DirectionPicker
@@ -772,6 +802,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
+          showUnitsWarning
         />
       </OffscreenSkeletonInput>
     );
@@ -807,7 +838,7 @@ const ScriptEventFormInput = ({
   } else if (type === "engineFieldValue") {
     const engineField = engineFieldsLookup[args.engineFieldKey as string];
     if (engineField) {
-      const fieldType = engineField.type || "number";
+      const fieldType = asValueSelectFieldType(engineField.type, "number");
       const engineDefaultValue = {
         type: "number",
         value: engineField.defaultValue,
@@ -823,17 +854,17 @@ const ScriptEventFormInput = ({
             isValueScript
               ? value
               : isDefaultScript
-              ? engineDefaultValue
-              : undefined
+                ? engineDefaultValue
+                : undefined
           }
           onChange={onChangeField}
           min={clampToCType(
             setDefault(engineField.min, -Infinity),
-            engineField.cType
+            engineField.cType,
           )}
           max={clampToCType(
             setDefault(engineField.max, Infinity),
-            engineField.cType
+            engineField.cType,
           )}
           step={field.step}
           placeholder={String(engineField.defaultValue ?? 0)}

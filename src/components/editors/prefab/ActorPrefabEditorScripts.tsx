@@ -56,7 +56,7 @@ type HitTab = "hitPlayer" | "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
   primaryTab: DefaultTab | CollisionTab,
-  secondaryTab: HitTab
+  secondaryTab: HitTab,
 ): ActorScriptKey => {
   if (primaryTab === "interact") {
     return "script";
@@ -91,7 +91,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   isInstance,
 }) => {
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const defaultTabs: Record<DefaultTab, string> = useMemo(
@@ -100,7 +100,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
       start: l10n("SIDEBAR_ON_INIT"),
       update: l10n("SIDEBAR_ON_UPDATE"),
     }),
-    []
+    [],
   );
 
   const collisionTabs: Record<CollisionTab, string> = useMemo(
@@ -109,7 +109,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
       start: l10n("SIDEBAR_ON_INIT"),
       update: l10n("SIDEBAR_ON_UPDATE"),
     }),
-    []
+    [],
   );
 
   const hitTabs: Record<HitTab, string> = useMemo(
@@ -119,16 +119,16 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
       hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
       hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
     }),
-    []
+    [],
   );
 
   const tabs = Object.keys(
-    prefab?.collisionGroup ? collisionTabs : defaultTabs
+    prefab?.collisionGroup ? collisionTabs : defaultTabs,
   );
   const secondaryTabs = Object.keys(hitTabs);
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
   const lastScriptTabSecondary = useAppSelector(
-    (state) => state.editor.lastScriptTabSecondary
+    (state) => state.editor.lastScriptTabSecondary,
   );
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
   const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
@@ -136,7 +136,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
     : secondaryTabs[0];
 
   const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
+    initialTab as keyof ScriptHandlers,
   );
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
@@ -146,7 +146,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   // when collision group is modified otherwise use first available tab
   useEffect(() => {
     const tabs = Object.keys(
-      prefab?.collisionGroup ? collisionTabs : defaultTabs
+      prefab?.collisionGroup ? collisionTabs : defaultTabs,
     );
     if (!tabs.includes(scriptMode)) {
       setScriptMode(tabs[0] as keyof ScriptHandlers);
@@ -168,7 +168,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
   const onChangeActorPrefabProp = useCallback(
     <K extends keyof ActorPrefabNormalized>(
       key: K,
-      value: ActorPrefabNormalized[K]
+      value: ActorPrefabNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editActorPrefab({
@@ -176,16 +176,16 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, prefab.id]
+    [dispatch, prefab.id],
   );
 
   const onChangePersistent = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorPrefabProp("persistent", castEventToBool(e)),
-    [onChangeActorPrefabProp]
+    [onChangeActorPrefabProp],
   );
 
   const onToggleLockScriptEditor = () => {
@@ -203,7 +203,7 @@ export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
       scriptKey,
       instanceId: actor?.id,
     }),
-    [actor?.id, prefab.id, sceneId, scriptKey]
+    [actor?.id, prefab.id, sceneId, scriptKey],
   );
 
   if (!prefab) {

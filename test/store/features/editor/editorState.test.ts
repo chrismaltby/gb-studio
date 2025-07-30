@@ -76,7 +76,7 @@ test("Should be able to set selected tile type", () => {
     ...initialState,
     selectedTileType: 0,
   };
-  const action = actions.setSelectedTileType({ tileType: 5 });
+  const action = actions.setSelectedTileType({ tileType: 5, tileMask: 0xff });
   const newState = reducer(state, action);
   expect(newState.selectedTileType).toBe(5);
 });
@@ -460,7 +460,7 @@ test("should remove script event from selection when toggling and value already 
       parentType: "scene",
       parentKey: "script",
       parentId: "s1",
-    })
+    }),
   );
   expect(store.dispatch).toHaveBeenCalledWith({
     payload: { parentId: "scene_s1_script", scriptEventIds: ["b", "d"] },
@@ -496,7 +496,7 @@ test("should add script event to selection when toggling new value, keeping sibl
       parentType: "scene",
       parentKey: "script",
       parentId: "s1",
-    })
+    }),
   );
   expect(store.dispatch).toHaveBeenCalledWith({
     payload: {
@@ -538,7 +538,7 @@ test("should reset selection if selecting from a new parentId", () => {
       parentType: "scene",
       parentKey: "script",
       parentId: "s2",
-    })
+    }),
   );
   expect(store.dispatch).toHaveBeenCalledWith({
     payload: { parentId: "scene_s2_script", scriptEventIds: ["D"] },
@@ -645,7 +645,10 @@ describe("editor reducer", () => {
 
   describe("setSelectedTileType", () => {
     test("should set selectedTileType", () => {
-      const action = actions.setSelectedTileType({ tileType: 1 });
+      const action = actions.setSelectedTileType({
+        tileType: 1,
+        tileMask: 0xff,
+      });
       const newState = reducer(state, action);
       expect(newState.selectedTileType).toBe(1);
     });
@@ -881,7 +884,7 @@ describe("editor reducer", () => {
       const action = actions.resizeWorldSidebar(100);
       const newState = reducer(state, action);
       expect(newState.worldSidebarWidth).toBeGreaterThanOrEqual(
-        MIN_SIDEBAR_WIDTH
+        MIN_SIDEBAR_WIDTH,
       );
     });
   });

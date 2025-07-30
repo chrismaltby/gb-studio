@@ -72,10 +72,10 @@ const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
 
 function useHiglightPalette() {
   const hoverScene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, state.editor.hover.sceneId)
+    sceneSelectors.selectById(state, state.editor.hover.sceneId),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, hoverScene?.backgroundId ?? "")
+    backgroundSelectors.selectById(state, hoverScene?.backgroundId ?? ""),
   );
   const { x, y } = useAppSelector((state) => state.editor.hover);
 
@@ -173,26 +173,26 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const { selectedPalette, selectedTileType, selectedBrush, showLayers } =
     useAppSelector((state) => state.editor);
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
   );
   const selectedTool = useAppSelector((state) => state.editor.tool);
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
   const showCollisionSlopeTiles = useAppSelector(
-    (state) => state.project.present.settings.showCollisionSlopeTiles
+    (state) => state.project.present.settings.showCollisionSlopeTiles,
   );
   const showCollisionExtraTiles = useAppSelector(
-    (state) => state.project.present.settings.showCollisionExtraTiles
+    (state) => state.project.present.settings.showCollisionExtraTiles,
   );
   const showCollisionTileValues = useAppSelector(
-    (state) => state.project.present.settings.showCollisionTileValues
+    (state) => state.project.present.settings.showCollisionTileValues,
   );
   const collisionLayerOpacity = useAppSelector(
-    (state) => state.project.present.settings.collisionLayerOpacity
+    (state) => state.project.present.settings.collisionLayerOpacity,
   );
   const collisionTileDefs = useAppSelector((state) => {
     if (!scene || !scene.type || !state.engine.sceneTypes)
@@ -214,17 +214,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           name: name,
         };
       }),
-    [collisionTileDefs]
+    [collisionTileDefs],
   );
 
   const slopesAvailable = useMemo(
     () => collisionTileDefs.some((tile) => tile.group === "slope"),
-    [collisionTileDefs]
+    [collisionTileDefs],
   );
 
   const spareAvailable = useMemo(
     () => collisionTileDefs.some((tile) => tile.group === "spare"),
-    [collisionTileDefs]
+    [collisionTileDefs],
   );
 
   const setBrush = (brush: Brush) => {
@@ -252,6 +252,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         }
 
         let newValue = selectedTile.flag;
+        const mask = selectedTile.mask ?? 0xff;
 
         if (e.shiftKey) {
           if (selectedTile.multi) {
@@ -276,16 +277,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         dispatch(
           editorActions.setSelectedTileType({
             tileType: newValue,
-          })
+            tileMask: mask,
+          }),
         );
       }
     };
 
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    paletteSelectors.selectEntities(state),
   );
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds,
   );
   const palettes = useMemo(
     () =>
@@ -306,7 +308,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           DMG_PALETTE
         );
       }),
-    [defaultBackgroundPaletteIds, palettesLookup, scene]
+    [defaultBackgroundPaletteIds, palettesLookup, scene],
   );
 
   const [modalColorIndex, setModalColorIndex] = useState<number>(-1);
@@ -340,18 +342,18 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             changes: {
               paletteIds: newIds,
             },
-          })
+          }),
         );
       } else {
         const newIds = cloneDeep(defaultBackgroundPaletteIds);
         newIds[modalColorIndex] = newPalette;
         dispatch(
-          settingsActions.editSettings({ defaultBackgroundPaletteIds: newIds })
+          settingsActions.editSettings({ defaultBackgroundPaletteIds: newIds }),
         );
       }
       closePaletteModal();
     },
-    [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId]
+    [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId],
   );
 
   const onChangeCollisionLayerOpacity = useCallback(
@@ -359,17 +361,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       dispatch(
         settingsActions.editSettings({
           collisionLayerOpacity: opacity,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onResetCollisionLayerOpacity = useCallback(() => {
     dispatch(
       settingsActions.editSettings({
         collisionLayerOpacity: defaultProjectSettings.collisionLayerOpacity,
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -377,7 +379,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     dispatch(
       settingsActions.editSettings({
         showCollisionSlopeTiles: !showCollisionSlopeTiles,
-      })
+      }),
     );
   }, [dispatch, showCollisionSlopeTiles]);
 
@@ -385,7 +387,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     dispatch(
       settingsActions.editSettings({
         showCollisionExtraTiles: !showCollisionExtraTiles,
-      })
+      }),
     );
   }, [dispatch, showCollisionExtraTiles]);
 
@@ -393,7 +395,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     dispatch(
       settingsActions.editSettings({
         showCollisionTileValues: !showCollisionTileValues,
-      })
+      }),
     );
   }, [dispatch, showCollisionTileValues]);
 
@@ -403,7 +405,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         entitiesActions.editBackgroundAutoColor({
           backgroundId: scene.backgroundId,
           autoColor: !background?.autoColor,
-        })
+        }),
       );
   }, [dispatch, scene?.backgroundId, background]);
 
@@ -521,7 +523,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   number: paletteIndex + 1,
                 })} (${paletteIndex + 1}) - ${paletteName(
                   palettes[paletteIndex],
-                  -1
+                  -1,
                 )}`}
               >
                 <PaletteBlock
@@ -570,7 +572,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 .map((tileDef, tileTypeIndex) => {
                   const selected = isCollisionTileActive(
                     selectedTileType,
-                    tileDef
+                    tileDef,
+                    namedCollisionTileDefs,
                   );
                   return (
                     <Fragment key={tileTypeIndex}>
@@ -645,7 +648,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               </label>
               <SliderWrapper
                 title={`${l10n(
-                  "FIELD_LAYER_OPACITY"
+                  "FIELD_LAYER_OPACITY",
                 )} (${collisionLayerOpacity}%)`}
               >
                 <Slider
@@ -717,7 +720,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   setNavigationId(
                     (palettes[modalColorIndex] &&
                       palettes[modalColorIndex]?.id) ??
-                      ""
+                      "",
                   );
                 }}
               >

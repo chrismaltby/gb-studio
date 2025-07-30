@@ -13,7 +13,7 @@ interface L10NInterface {
 }
 
 export const loadL10NPlugin = async (
-  path: string
+  path: string,
 ): Promise<(JSON & { name: string; type: unknown }) | null> => {
   try {
     const l10n = await readJSON(path);
@@ -32,13 +32,16 @@ export class L10nManager {
   pluginL10Ns: Record<string, L10NInterface>;
 
   constructor() {
-    this.systemL10Ns = locales.reduce((memo, locale) => {
-      memo[locale] = {
-        id: locale,
-        name: locale,
-      };
-      return memo;
-    }, {} as Record<string, L10NInterface>);
+    this.systemL10Ns = locales.reduce(
+      (memo, locale) => {
+        memo[locale] = {
+          id: locale,
+          name: locale,
+        };
+        return memo;
+      },
+      {} as Record<string, L10NInterface>,
+    );
     this.pluginL10Ns = {};
   }
 
@@ -46,7 +49,7 @@ export class L10nManager {
     this.pluginL10Ns = {};
     const globalPluginsPath = getGlobalPluginsPath();
     const pluginPaths = await globAsync(
-      join(globalPluginsPath, "**/lang.json")
+      join(globalPluginsPath, "**/lang.json"),
     );
 
     for (const path of pluginPaths) {

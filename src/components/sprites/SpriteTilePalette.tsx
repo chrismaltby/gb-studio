@@ -50,27 +50,27 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const dispatch = useAppDispatch();
   const zoom = useAppSelector((state) => state.editor.zoomSpriteTiles) / 100;
   const selectedTiles = useAppSelector(
-    (state) => state.editor.spriteTileSelection
+    (state) => state.editor.spriteTileSelection,
   );
 
   const setSelectedTiles = useCallback(
     (tiles: SpriteTileSelection) => {
       dispatch(editorActions.setSpriteTileSelection(tiles));
     },
-    [dispatch]
+    [dispatch],
   );
   const [hoverTile, setHoverTile] = useState<Coordinates | undefined>();
   const [isDragging, setIsDragging] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, id)
+    spriteSheetSelectors.selectById(state, id),
   );
   const selectedTileIds = useAppSelector(
-    (state) => state.editor.selectedMetaspriteTileIds
+    (state) => state.editor.selectedMetaspriteTileIds,
   );
   const replaceSpriteTileMode = useAppSelector(
-    (state) => state.editor.replaceSpriteTileMode
+    (state) => state.editor.replaceSpriteTileMode,
   );
   const width = spriteSheet?.width || 0;
   const height = spriteSheet?.height || 0;
@@ -79,20 +79,20 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
     (offsetX: number): number => {
       return Math.min(
         width - 8,
-        Math.max(0, precisionMode ? offsetX - 4 : roundDown8(offsetX))
+        Math.max(0, precisionMode ? offsetX - 4 : roundDown8(offsetX)),
       );
     },
-    [precisionMode, width]
+    [precisionMode, width],
   );
 
   const snapY = useCallback(
     (offsetY: number): number => {
       return Math.min(
         height - 16,
-        Math.max(0, precisionMode ? offsetY - 8 : roundDown8(offsetY))
+        Math.max(0, precisionMode ? offsetY - 8 : roundDown8(offsetY)),
       );
     },
-    [precisionMode, height]
+    [precisionMode, height],
   );
 
   const onReplace = useCallback(
@@ -105,11 +105,11 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
             sliceX,
             sliceY,
           },
-        })
+        }),
       );
       dispatch(editorActions.setReplaceSpriteTileMode(false));
     },
-    [dispatch, id, selectedTileIds]
+    [dispatch, id, selectedTileIds],
   );
 
   const onDragStart = useCallback(
@@ -142,7 +142,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
       snapX,
       snapY,
       zoom,
-    ]
+    ],
   );
 
   const onDrag = useCallback(
@@ -161,14 +161,14 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
       const selectionWidth = Math.ceil(
         Math.max(
           8,
-          offsetX < selectedTiles.x ? 1 : offsetX - selectedTiles.x + 1
-        ) / 8
+          offsetX < selectedTiles.x ? 1 : offsetX - selectedTiles.x + 1,
+        ) / 8,
       );
       const selectionHeight = Math.ceil(
         Math.max(
           8,
-          offsetY < selectedTiles.y ? 2 : offsetY - selectedTiles.y + 1
-        ) / 16
+          offsetY < selectedTiles.y ? 2 : offsetY - selectedTiles.y + 1,
+        ) / 16,
       );
 
       setSelectedTiles({
@@ -178,7 +178,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
         height: precisionMode ? 1 : selectionHeight,
       });
     },
-    [selectedTiles, zoom, setSelectedTiles, snapX, snapY, precisionMode]
+    [selectedTiles, zoom, setSelectedTiles, snapX, snapY, precisionMode],
   );
 
   const onDragEnd = (_e: MouseEvent) => {
@@ -196,7 +196,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
         y: snapY(offsetY),
       });
     },
-    [zoom, snapX, snapY]
+    [zoom, snapX, snapY],
   );
 
   const onMouseOut = useCallback(() => {
@@ -222,7 +222,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
         electronActions.openFile({
           filename: assetPath("sprites", spriteSheet),
           type: "image",
-        })
+        }),
       );
     }
   }, [spriteSheet, dispatch]);

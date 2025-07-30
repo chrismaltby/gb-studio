@@ -25,7 +25,7 @@ const avatarBuildCache: Record<
 const compileAvatars = async (
   avatars: AvatarData[],
   projectRoot: string,
-  { warnings }: CompileAvatarOptions
+  { warnings }: CompileAvatarOptions,
 ) => {
   const avatarData = await promiseLimit(
     10,
@@ -52,7 +52,7 @@ const compileAvatars = async (
         const frames = Math.ceil(size / 64);
         if (Math.ceil(size / 64) !== Math.floor(size / 64)) {
           warnings(
-            `Avatar '${avatar.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
+            `Avatar '${avatar.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`,
           );
         }
 
@@ -63,7 +63,7 @@ const compileAvatars = async (
           frames,
         };
       };
-    })
+    }),
   );
 
   return avatarData;

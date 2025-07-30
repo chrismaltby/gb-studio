@@ -101,7 +101,8 @@ const primaryStyles = css`
     opacity: 0.8;
   }
   &:focus {
-    box-shadow: 0 0 0px 2px #fff,
+    box-shadow:
+      0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
 `;
@@ -344,7 +345,8 @@ const pillButtonPrimaryStyles = css`
     opacity: 0.8;
   }
   &:focus {
-    box-shadow: 0 0 0px 2px #fff,
+    box-shadow:
+      0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
 `;
@@ -362,7 +364,9 @@ const pillButtonBlueStyles = css`
     opacity: 0.8;
   }
   &:focus {
-    box-shadow: 0 0 0px 2px #fff, 0 0 0px 4px #1976d2;
+    box-shadow:
+      0 0 0px 2px #fff,
+      0 0 0px 4px #1976d2;
   }
 `;
 

@@ -72,7 +72,7 @@ export const pluginDescriptionForType = (type: PluginType) => {
 
 export const buildPluginItems = (
   installedPlugins: InstalledPluginData[],
-  repos: PluginRepositoryMetadata[]
+  repos: PluginRepositoryMetadata[],
 ): PluginItem[] => {
   const items: PluginItem[] = [];
   for (const repo of repos) {
@@ -99,7 +99,7 @@ export const filterPluginItems = (
   pluginItems: PluginItem[],
   searchTerm: string,
   typeFilter: OptionalPluginType,
-  repoFilter: string
+  repoFilter: string,
 ): PluginItem[] => {
   return pluginItems
     .filter((item) => {

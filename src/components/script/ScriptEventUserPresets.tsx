@@ -35,7 +35,7 @@ interface UserPresetOption {
 const argsToStore = (
   args: ScriptEventArgs | undefined,
   selectedPresetGroups: string[],
-  scriptEventDef: ScriptEventDef
+  scriptEventDef: ScriptEventDef,
 ) => {
   if (!args || !scriptEventDef.userPresetsGroups) {
     return {};
@@ -45,10 +45,13 @@ const argsToStore = (
     .map((group) => group.fields)
     .flat();
 
-  return keysToStore.reduce((memo, key) => {
-    memo[key] = args[key] ?? scriptEventDef.fieldsLookup[key].defaultValue;
-    return memo;
-  }, {} as Record<string, unknown>);
+  return keysToStore.reduce(
+    (memo, key) => {
+      memo[key] = args[key] ?? scriptEventDef.fieldsLookup[key].defaultValue;
+      return memo;
+    },
+    {} as Record<string, unknown>,
+  );
 };
 
 const ButtonGroup = styled.div`
@@ -74,21 +77,22 @@ export const ScriptEventUserPresets = ({
   const dispatch = useAppDispatch();
 
   const [selectedPresetGroups, setSelectedPresetGroups] = useState<string[]>(
-    []
+    [],
   );
   const [presetName, setPresetName] = useState<string>("");
   const [defaultPresetName, setDefaultPresetName] = useState<string>("");
   const [editMode, setEditMode] = useState<EditMode>("select");
 
   const scriptEventDef = useAppSelector(
-    (state) => state.scriptEventDefs.lookup[scriptEvent.command]
+    (state) => state.scriptEventDefs.lookup[scriptEvent.command],
   );
   const userPresets = useAppSelector(
     (state) =>
-      getSettings(state).scriptEventPresets[scriptEvent.command] ?? empty
+      getSettings(state).scriptEventPresets[scriptEvent.command] ?? empty,
   );
   const userPresetsDefault = useAppSelector(
-    (state) => getSettings(state).scriptEventDefaultPresets[scriptEvent.command]
+    (state) =>
+      getSettings(state).scriptEventDefaultPresets[scriptEvent.command],
   );
 
   const options: UserPresetOption[] = useMemo(
@@ -113,14 +117,14 @@ export const ScriptEventUserPresets = ({
       })),
     ],
 
-    [userPresets, userPresetsDefault]
+    [userPresets, userPresetsDefault],
   );
 
   const value = String(scriptEvent.args?.__presetId ?? "");
 
   const currentValue = useMemo(
     () => options.find((o) => o.value === value) ?? options[0],
-    [options, value]
+    [options, value],
   );
 
   const setPreset = useCallback(
@@ -128,13 +132,13 @@ export const ScriptEventUserPresets = ({
       if (presetId === "create") {
         setEditMode("create");
         setDefaultPresetName(
-          `${l10n("FIELD_PRESET")} ${Object.keys(userPresets).length + 1}`
+          `${l10n("FIELD_PRESET")} ${Object.keys(userPresets).length + 1}`,
         );
         setPresetName("");
         setSelectedPresetGroups(
           scriptEventDef?.userPresetsGroups
             ?.filter((group) => group.selected)
-            .map((group) => group.id) ?? []
+            .map((group) => group.id) ?? [],
         );
       } else {
         const preset = userPresets[presetId];
@@ -145,7 +149,12 @@ export const ScriptEventUserPresets = ({
         });
       }
     },
-    [onChange, scriptEvent.args, scriptEventDef?.userPresetsGroups, userPresets]
+    [
+      onChange,
+      scriptEvent.args,
+      scriptEventDef?.userPresetsGroups,
+      userPresets,
+    ],
   );
 
   const onStartEdit = useCallback(() => {
@@ -154,7 +163,7 @@ export const ScriptEventUserPresets = ({
       setDefaultPresetName(
         `${l10n("FIELD_PRESET")} ${
           Object.keys(userPresets).indexOf(currentValue.value) + 1
-        }`
+        }`,
       );
       setPresetName(currentValue.preset.name);
       setSelectedPresetGroups(currentValue.preset.groups);
@@ -170,7 +179,7 @@ export const ScriptEventUserPresets = ({
       settingsActions.setScriptEventDefaultPreset({
         id: scriptEvent.command,
         presetId: value,
-      })
+      }),
     );
   }, [dispatch, scriptEvent.command, value]);
 
@@ -179,7 +188,7 @@ export const ScriptEventUserPresets = ({
       settingsActions.setScriptEventDefaultPreset({
         id: scriptEvent.command,
         presetId: "",
-      })
+      }),
     );
   }, [dispatch, scriptEvent.command]);
 
@@ -190,7 +199,7 @@ export const ScriptEventUserPresets = ({
     const args = argsToStore(
       scriptEvent.args,
       selectedPresetGroups,
-      scriptEventDef
+      scriptEventDef,
     );
     const name = presetName.trim() || defaultPresetName;
     if (editMode === "edit") {
@@ -201,7 +210,7 @@ export const ScriptEventUserPresets = ({
           name,
           groups: selectedPresetGroups,
           args,
-        })
+        }),
       );
     } else if (editMode === "create") {
       const addAction = settingsActions.addScriptEventPreset({
@@ -235,7 +244,7 @@ export const ScriptEventUserPresets = ({
       settingsActions.removeScriptEventPreset({
         id: scriptEvent.command,
         presetId: value,
-      })
+      }),
     );
   }, [dispatch, scriptEvent.command, value]);
 
@@ -243,17 +252,17 @@ export const ScriptEventUserPresets = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPresetName(e.currentTarget.value);
     },
-    []
+    [],
   );
   const toggleSelectedPresetGroup = useCallback(
     (groupId: string) => {
       setSelectedPresetGroups(
         selectedPresetGroups.includes(groupId)
           ? selectedPresetGroups.filter((s) => s !== groupId)
-          : [...selectedPresetGroups, groupId]
+          : [...selectedPresetGroups, groupId],
       );
     },
-    [selectedPresetGroups]
+    [selectedPresetGroups],
   );
 
   return (

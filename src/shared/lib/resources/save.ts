@@ -61,7 +61,7 @@ const userSettingKeys: (keyof SettingsResource)[] = [
 
 export const encodeResource = <T extends Record<string, unknown>>(
   resourceType: string,
-  data: T
+  data: T,
 ): string => {
   const {
     // Extract id so it can be moved to top of data
@@ -78,28 +78,28 @@ export const encodeResource = <T extends Record<string, unknown>>(
       ...rest,
     },
     null,
-    2
+    2,
   );
 };
 
 export const buildResourceExportBuffer = (
-  projectResources: CompressedProjectResources
+  projectResources: CompressedProjectResources,
 ): WriteFile[] => {
   const variablesResFilename = Path.join(
     projectResourcesFolder,
-    `variables.gbsres`
+    `variables.gbsres`,
   );
   const settingsResFilename = Path.join(
     projectResourcesFolder,
-    `settings.gbsres`
+    `settings.gbsres`,
   );
   const userSettingsResFilename = Path.join(
     projectResourcesFolder,
-    `user_settings.gbsres`
+    `user_settings.gbsres`,
   );
   const engineFieldValuesResFilename = Path.join(
     projectResourcesFolder,
-    `engine_field_values.gbsres`
+    `engine_field_values.gbsres`,
   );
 
   const writeBuffer: WriteFile[] = [];
@@ -117,8 +117,8 @@ export const buildResourceExportBuffer = (
       dirname,
       basename.replace(
         /([0-9]*)(\.[^.]+|)$/,
-        (_, number, ext) => `${number ? parseInt(number) + 1 : `_2`}${ext}`
-      )
+        (_, number, ext) => `${number ? parseInt(number) + 1 : `_2`}${ext}`,
+      ),
     );
     return getUniquePath(newPath);
   };
@@ -126,7 +126,7 @@ export const buildResourceExportBuffer = (
   const writeResource = <T extends Record<string, unknown>>(
     filename: string,
     resourceType: string,
-    resource: T
+    resource: T,
   ) => {
     const data = encodeResource(resourceType, resource);
     writeBuffer.push({
@@ -146,7 +146,7 @@ export const buildResourceExportBuffer = (
       for (const actor of scene.actors) {
         if (actor) {
           const actorFilename = getUniquePath(
-            getActorResourcePath(sceneFolder, actor)
+            getActorResourcePath(sceneFolder, actor),
           );
           writeResource<ActorResource>(actorFilename, "actor", {
             ...actor,
@@ -162,7 +162,7 @@ export const buildResourceExportBuffer = (
       for (const trigger of scene.triggers) {
         if (trigger) {
           const triggerFilename = getUniquePath(
-            getTriggerResourcePath(sceneFolder, trigger)
+            getTriggerResourcePath(sceneFolder, trigger),
           );
           writeResource<TriggerResource>(triggerFilename, "trigger", {
             ...trigger,
@@ -186,7 +186,7 @@ export const buildResourceExportBuffer = (
     writeResource<CompressedBackgroundResource>(
       resFilename,
       "background",
-      background
+      background,
     );
   }
 
@@ -203,23 +203,23 @@ export const buildResourceExportBuffer = (
 
   for (const actorPrefab of projectResources.actorPrefabs) {
     const actorPrefabFilename = getUniquePath(
-      getActorPrefabResourcePath(actorPrefab)
+      getActorPrefabResourcePath(actorPrefab),
     );
     writeResource<ActorPrefabResource>(
       actorPrefabFilename,
       "actorPrefab",
-      actorPrefab
+      actorPrefab,
     );
   }
 
   for (const triggerPrefab of projectResources.triggerPrefabs) {
     const triggerPrefabFilename = getUniquePath(
-      getTriggerPrefabResourcePath(triggerPrefab)
+      getTriggerPrefabResourcePath(triggerPrefab),
     );
     writeResource<TriggerPrefabResource>(
       triggerPrefabFilename,
       "triggerPrefab",
-      triggerPrefab
+      triggerPrefab,
     );
   }
 
@@ -272,12 +272,12 @@ export const buildResourceExportBuffer = (
   const userSettings = userSettingKeys.reduce(
     <T extends keyof SettingsResource>(
       acc: Partial<SettingsResource>,
-      key: T
+      key: T,
     ) => {
       acc[key] = projectResources.settings[key] as SettingsResource[T];
       return acc;
     },
-    {} as Partial<SettingsResource>
+    {} as Partial<SettingsResource>,
   );
 
   writeResource<Partial<SettingsResource>>(settingsResFilename, "settings", {
@@ -288,19 +288,19 @@ export const buildResourceExportBuffer = (
   writeResource<Partial<SettingsResource>>(
     userSettingsResFilename,
     "settings",
-    userSettings
+    userSettings,
   );
 
   writeResource<VariablesResource>(
     variablesResFilename,
     "variables",
-    projectResources.variables
+    projectResources.variables,
   );
 
   writeResource<EngineFieldValuesResource>(
     engineFieldValuesResFilename,
     "engineFieldValues",
-    projectResources.engineFieldValues
+    projectResources.engineFieldValues,
   );
 
   return writeBuffer;

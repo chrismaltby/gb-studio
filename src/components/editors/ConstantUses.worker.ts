@@ -93,7 +93,7 @@ workerCtx.onmessage = async (evt) => {
 
   const isConstantInArg = (
     scriptEvent: ScriptEventNormalized,
-    arg: string
+    arg: string,
   ): boolean => {
     const args = scriptEvent.args;
     if (!args) {
@@ -117,7 +117,7 @@ workerCtx.onmessage = async (evt) => {
         expressionTokens.some(
           (token) =>
             token.type === "CONST" &&
-            token.symbol.replace(/@/g, "") === constantId
+            token.symbol.replace(/@/g, "") === constantId,
         )
       ) {
         return true;
@@ -208,7 +208,7 @@ workerCtx.onmessage = async (evt) => {
           useLookup[trigger.id] = true;
         }
       }
-    }
+    },
   );
 
   Object.values(customEventsLookup).forEach((customEvent, customEventIndex) => {
@@ -244,7 +244,7 @@ workerCtx.onmessage = async (evt) => {
             useLookup[customEvent.id] = true;
           }
         }
-      }
+      },
     );
   });
 

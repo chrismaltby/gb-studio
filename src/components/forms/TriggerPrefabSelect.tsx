@@ -24,7 +24,7 @@ export const TriggerPrefabSelect = ({
   ...selectProps
 }: TriggerPrefabSelectProps) => {
   const triggerPrefabs = useAppSelector((state) =>
-    triggerPrefabSelectors.selectAll(state)
+    triggerPrefabSelectors.selectAll(state),
   );
   const [options, setOptions] = useState<Option[]>([]);
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -42,8 +42,8 @@ export const TriggerPrefabSelect = ({
             label: triggerName(triggerPrefab, triggerPrefabIndex),
             value: triggerPrefab.id,
           }))
-          .sort(sortByLabel)
-      )
+          .sort(sortByLabel),
+      ),
     );
   }, [triggerPrefabs]);
 
@@ -51,7 +51,7 @@ export const TriggerPrefabSelect = ({
     setCurrentValue(
       options.find((option) => {
         return option.value === value;
-      })
+      }),
     );
   }, [options, value]);
 
@@ -61,7 +61,7 @@ export const TriggerPrefabSelect = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

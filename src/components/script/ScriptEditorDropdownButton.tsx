@@ -24,7 +24,7 @@ const ScriptEditorDropdownButton = ({
   const dispatch = useAppDispatch();
 
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
 
   const onFetchClipboard = useCallback(() => {
@@ -35,7 +35,7 @@ const ScriptEditorDropdownButton = ({
     dispatch(
       clipboardActions.copyScriptEvents({
         scriptEventIds: value,
-      })
+      }),
     );
   }, [dispatch, value]);
 
@@ -45,7 +45,7 @@ const ScriptEditorDropdownButton = ({
         entityId,
         type,
         key: scriptKey,
-      })
+      }),
     );
     dispatch(
       clipboardActions.pasteScriptEvents({
@@ -54,7 +54,7 @@ const ScriptEditorDropdownButton = ({
         key: scriptKey,
         insertId: "",
         before: false,
-      })
+      }),
     );
   }, [dispatch, entityId, scriptKey, type]);
 
@@ -67,10 +67,10 @@ const ScriptEditorDropdownButton = ({
           key: scriptKey,
           insertId: before ? value[0] : value[value.length - 1],
           before,
-        })
+        }),
       );
     },
-    [dispatch, entityId, scriptKey, type, value]
+    [dispatch, entityId, scriptKey, type, value],
   );
 
   const onRemoveScript = useCallback(() => {
@@ -79,7 +79,7 @@ const ScriptEditorDropdownButton = ({
         entityId,
         type,
         key: scriptKey,
-      })
+      }),
     );
   }, [dispatch, entityId, scriptKey, type]);
 

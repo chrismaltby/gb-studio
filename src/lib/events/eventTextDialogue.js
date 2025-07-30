@@ -489,7 +489,7 @@ const compile = (input, helpers) => {
     convertSpeed(input.speedOut),
     input.closeWhen ?? "key",
     input.closeButton ?? "a",
-    closeDelayFrames
+    closeDelayFrames,
   );
 };
 

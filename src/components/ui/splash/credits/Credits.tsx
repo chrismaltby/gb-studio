@@ -138,7 +138,7 @@ const CreditsBackground = () => {
             ctx.moveTo(0, height * 0.5 - (height * 0.5) / (-time + i * 0.5));
             ctx.lineTo(
               width,
-              height * 0.5 - (height * 0.5) / (-time + i * 0.5)
+              height * 0.5 - (height * 0.5) / (-time + i * 0.5),
             );
             ctx.stroke();
 
@@ -146,7 +146,7 @@ const CreditsBackground = () => {
             ctx.moveTo(0, height * 0.5 + (height * 0.5) / (-time + i * 0.5));
             ctx.lineTo(
               width,
-              height * 0.5 + (height * 0.5) / (-time + i * 0.5)
+              height * 0.5 + (height * 0.5) / (-time + i * 0.5),
             );
             ctx.stroke();
           }

@@ -38,7 +38,7 @@ const InstrumentEditorWrapper = styled.div`
 const renderInstrumentEditor = (
   type: string,
   instrumentData: Instrument | null,
-  waveForms?: Uint8Array[]
+  waveForms?: Uint8Array[],
 ) => {
   if (type === "duty")
     return (
@@ -80,7 +80,7 @@ const instrumentName = (instrument: Instrument, type: string) => {
 export const SongEditor = () => {
   const dispatch = useAppDispatch();
   const selectedInstrument = useAppSelector(
-    (state) => state.editor.selectedInstrument
+    (state) => state.editor.selectedInstrument,
   );
   useEffect(() => {
     dispatch(trackerActions.setSelectedEffectCell(null));
@@ -97,28 +97,28 @@ export const SongEditor = () => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSongProp("name", e.currentTarget.value),
-    [onChangeSongProp]
+    [onChangeSongProp],
   );
 
   const onChangeArtist = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSongProp("artist", e.currentTarget.value),
-    [onChangeSongProp]
+    [onChangeSongProp],
   );
 
   const onChangeTicksPerRow = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSongProp("ticks_per_row", castEventToInt(e, 0)),
-    [onChangeSongProp]
+    [onChangeSongProp],
   );
 
   const onChangeInstrumentName =
@@ -138,7 +138,7 @@ export const SongEditor = () => {
           changes: {
             name: editValue,
           },
-        })
+        }),
       );
     };
 
@@ -162,12 +162,12 @@ export const SongEditor = () => {
     dispatch(
       trackerDocumentActions.removeSequence({
         sequenceIndex: sequenceId,
-      })
+      }),
     );
   }, [dispatch, sequenceId]);
 
   const selectedEffectCell = useAppSelector(
-    (state) => state.tracker.selectedEffectCell
+    (state) => state.tracker.selectedEffectCell,
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -183,8 +183,8 @@ export const SongEditor = () => {
       ({
         main: l10n("SIDEBAR_INSTRUMENT"),
         subpattern: l10n("SIDEBAR_SUBPATTERN"),
-      } as InstrumentEditorTabs),
-    []
+      }) as InstrumentEditorTabs,
+    [],
   );
 
   if (!song) {
@@ -259,7 +259,7 @@ export const SongEditor = () => {
                 name="instrumentName"
                 placeholder={instrumentName(
                   instrumentData,
-                  selectedInstrument.type
+                  selectedInstrument.type,
                 )}
                 value={instrumentData.name || ""}
                 onChange={onChangeInstrumentName(selectedInstrument.type)}
@@ -292,7 +292,7 @@ export const SongEditor = () => {
                   {renderInstrumentEditor(
                     selectedInstrument.type,
                     instrumentData,
-                    song.waves
+                    song.waves,
                   )}
                 </>
               ) : (

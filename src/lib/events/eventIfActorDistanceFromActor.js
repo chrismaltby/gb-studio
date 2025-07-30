@@ -3,9 +3,9 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
 const subGroups = {
-  "EVENT_GROUP_ACTOR": "EVENT_GROUP_CONTROL_FLOW",
-  "EVENT_GROUP_CONTROL_FLOW": "EVENT_GROUP_ACTOR"
-}
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_ACTOR",
+};
 
 const autoLabel = (fetchArg) => {
   const distance = fetchArg("distance");
@@ -98,9 +98,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const {
-    ifActorDistanceScriptValueFromActor,
-  } = helpers;
+  const { ifActorDistanceScriptValueFromActor } = helpers;
 
   const operationLookup = {
     "==": ".EQ",
@@ -121,7 +119,7 @@ const compile = (input, helpers) => {
     operator,
     input.otherActorId,
     truePath,
-    falsePath
+    falsePath,
   );
 };
 

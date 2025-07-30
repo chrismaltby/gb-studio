@@ -1,0 +1,49 @@
+name: Update Credits
+on:
+  schedule:
+    - cron: "0 2 * * *" # every day at 02:00 UTC
+  workflow_dispatch: # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-patrons:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "21.6.2"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: |
+          yarn
+
+      - name: Update credits
+        env:
+          PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
+          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
+          CREDITS_GITHUB_ACCESS_TOKEN: ${{ secrets.CREDITS_GITHUB_ACCESS_TOKEN }}
+        run: |
+          npm run fetch-contributors
+          npm run fetch-patrons
+
+      - name: Push updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add patrons.json contributors.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update credits"
+            git push
+          else
+            echo "No changes to commit"
+          fi

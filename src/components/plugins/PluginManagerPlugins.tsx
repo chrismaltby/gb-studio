@@ -82,7 +82,7 @@ const PluginsManagerPlugins = ({
       lang: l10n("FIELD_LANGUAGE_PLUGIN"),
       template: l10n("FIELD_TEMPLATE_PLUGIN"),
     }),
-    []
+    [],
   );
 
   const refreshData = useCallback(async (force?: boolean) => {
@@ -99,7 +99,7 @@ const PluginsManagerPlugins = ({
       repos.map((repo) => ({
         value: repo.id,
         label: repo.shortName || repo.name,
-      }))
+      })),
     );
     setLoading(false);
     setPluginItems(items);
@@ -131,7 +131,7 @@ const PluginsManagerPlugins = ({
         value: "",
         label: l10n("FIELD_ALL_REPOSITORIES"),
       },
-    [repoFilter, reposOptions]
+    [repoFilter, reposOptions],
   );
 
   const renderLabel = useCallback(
@@ -152,7 +152,7 @@ const PluginsManagerPlugins = ({
         </StyledPluginItemRow>
       );
     },
-    [typeLabel]
+    [typeLabel],
   );
 
   const height = 200;
@@ -165,10 +165,11 @@ const PluginsManagerPlugins = ({
     selectedPluginItem?.updateAvailable
       ? "FIELD_UPDATE_PLUGIN"
       : selectedPluginItem?.installedVersion
-      ? "FIELD_REINSTALL_PLUGIN"
-      : selectedPluginItem && isGlobalPluginType(selectedPluginItem.plugin.type)
-      ? "FIELD_INSTALL_PLUGIN"
-      : "FIELD_ADD_TO_PROJECT"
+        ? "FIELD_REINSTALL_PLUGIN"
+        : selectedPluginItem &&
+            isGlobalPluginType(selectedPluginItem.plugin.type)
+          ? "FIELD_INSTALL_PLUGIN"
+          : "FIELD_ADD_TO_PROJECT",
   );
 
   useEffect(() => {
@@ -272,7 +273,7 @@ const PluginsManagerPlugins = ({
                   tooltip={l10n(
                     isGlobalPluginType(selectedPluginItem.plugin.type)
                       ? "FIELD_THIS_PACKAGE_IS_INSTALLED_GLOBALLY"
-                      : "FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT"
+                      : "FIELD_THIS_PACKAGE_IS_INSTALLED_FOR_YOUR_PROJECT",
                   )}
                 >
                   <PillButton>
@@ -283,7 +284,7 @@ const PluginsManagerPlugins = ({
                 </TooltipWrapper>
                 <TooltipWrapper
                   tooltip={pluginDescriptionForType(
-                    selectedPluginItem.plugin.type
+                    selectedPluginItem.plugin.type,
                   )}
                 >
                   <PillButton>
@@ -337,7 +338,7 @@ const PluginsManagerPlugins = ({
                     setAction("remove");
                     await API.pluginManager.removePlugin(
                       selectedPluginItem.plugin.id,
-                      selectedPluginItem.plugin.type
+                      selectedPluginItem.plugin.type,
                     );
                     refreshData();
                     setAction("none");
@@ -365,7 +366,7 @@ const PluginsManagerPlugins = ({
                   setAction("install");
                   await API.pluginManager.addPlugin(
                     selectedPluginItem.plugin.id,
-                    selectedPluginItem.repo.id
+                    selectedPluginItem.repo.id,
                   );
                   refreshData();
                   setAction("none");

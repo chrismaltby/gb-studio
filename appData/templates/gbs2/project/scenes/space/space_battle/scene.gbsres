@@ -11,6 +11,7 @@
   "height": 18,
   "backgroundId": "28a8b376-b6c5-4e6d-8d7d-2a409d73cd1b",
   "tilesetId": "",
+  "colorModeOverride": "none",
   "paletteIds": [
     "d73adccf-4071-4012-b0a6-9c3973a2dc0e",
     "325f5712-ff6c-40e7-b105-c6d795846783"
@@ -90,7 +91,8 @@
           "value": 0
         },
         "moveType": "horizontal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {

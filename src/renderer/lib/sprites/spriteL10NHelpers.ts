@@ -46,7 +46,7 @@ export const getAnimationNameForType = (type: AnimationType) => {
 export const getAnimationNameByIndex = (
   type: SpriteAnimationType,
   flipLeft: boolean,
-  animationIndex: number
+  animationIndex: number,
 ) => {
   if (type === "fixed" || type === "fixed_movement") {
     const fixedAnimationNames = [l10n("FIELD_IDLE"), l10n("FIELD_MOVING")];
@@ -65,6 +65,19 @@ export const getAnimationNameByIndex = (
     return filterAnimationsBySpriteType(platformAnimationNames, type, flipLeft)[
       animationIndex
     ];
+  }
+  if (type === "horizontal" || type === "horizontal_movement") {
+    const horizontalAnimationNames = [
+      l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),
+      l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
+      l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),
+      l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
+    ];
+    return filterAnimationsBySpriteType(
+      horizontalAnimationNames,
+      type,
+      flipLeft,
+    )[animationIndex];
   }
   if (type === "multi") {
     const multiAnimationNames = [
@@ -96,7 +109,7 @@ export const getAnimationNameById = (
   type: SpriteAnimationType,
   flipLeft: boolean,
   selectedId: string,
-  animationIds: string[]
+  animationIds: string[],
 ) => {
   const filteredIds =
     filterAnimationsBySpriteType(animationIds, type, flipLeft) || [];

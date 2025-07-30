@@ -40,6 +40,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
+import SceneScrollBounds from "./SceneScrollBounds";
 
 const TILE_SIZE = 8;
 
@@ -76,7 +77,9 @@ const SceneMetadata = styled.div`
   overflow: hidden;
   line-height: 20px;
   font-size: 11px;
-  transition: padding-left 0.1s ease-in-out, padding-right 0.1s ease-in-out;
+  transition:
+    padding-left 0.1s ease-in-out,
+    padding-right 0.1s ease-in-out;
   transition-delay: 0.3s;
 `;
 
@@ -203,36 +206,36 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
 
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
+    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
   );
   const tilesOverride = useAppSelector((state) =>
     background && background.monoOverrideId
       ? backgroundSelectors.selectById(state, background.monoOverrideId ?? "")
-      : undefined
+      : undefined,
   );
 
   const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId
+    (state) => state.project.present.settings.startSceneId,
   );
   const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection
+    (state) => state.project.present.settings.startDirection,
   );
   const { x: hoverX, y: hoverY } = useAppSelector(
-    (state) => state.editor.hover
+    (state) => state.editor.hover,
   );
   const runSceneSelectionOnly = useAppSelector(
-    (state) => state.project.present.settings.runSceneSelectionOnly
+    (state) => state.project.present.settings.runSceneSelectionOnly,
   );
   const selected = useAppSelector((state) => state.editor.scene === id);
   const sceneSelectionIds = useAppSelector(
-    (state) => state.editor.sceneSelectionIds
+    (state) => state.editor.sceneSelectionIds,
   );
   const multiSelected = sceneSelectionIds.includes(id);
 
   const searchTerm = useAppSelector((state) => state.editor.searchTerm);
   const name = useMemo(
     () => (scene ? sceneName(scene, index) : ""),
-    [index, scene]
+    [index, scene],
   );
   const lastNamePart = useMemo(() => name.replace(/.*[/\\]/, ""), [name]);
 
@@ -244,12 +247,12 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     false;
 
   const gbcEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const previewAsMono = useAppSelector(
     (state) =>
       state.project.present.settings.colorMode === "mixed" &&
-      state.project.present.settings.previewAsMono
+      state.project.present.settings.previewAsMono,
   );
 
   const tool = useAppSelector((state) => state.editor.tool);
@@ -264,12 +267,12 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     (state) =>
       (tool !== TOOL_COLORS || showLayers) &&
       (state.project.present.settings.showCollisions ||
-        tool === TOOL_COLLISIONS)
+        tool === TOOL_COLLISIONS),
   );
   const showPriorityMap = useAppSelector(
     (state) =>
       tool === TOOL_COLORS &&
-      state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY
+      state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY,
   );
 
   const zoom = useAppSelector((state) => state.editor.zoom);
@@ -342,23 +345,23 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       ? Math.min(
           Math.max(
             0,
-            scene.x + scene.width * 8 - (viewBoundsX + viewBoundsWidth)
+            scene.x + scene.width * 8 - (viewBoundsX + viewBoundsWidth),
           ),
-          scene.width * 8 - 160
+          scene.width * 8 - 160,
         )
       : 0;
   });
 
   const tileColors = useMemo(
     () => background?.tileColors ?? [],
-    [background?.tileColors]
+    [background?.tileColors],
   );
 
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    paletteSelectors.selectEntities(state),
   );
   const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds ?? []
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds ?? [],
   );
 
   const getPalette = useCallback(
@@ -373,7 +376,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         DMG_PALETTE
       );
     },
-    [defaultBackgroundPaletteIds, palettesLookup, scene?.paletteIds]
+    [defaultBackgroundPaletteIds, palettesLookup, scene?.paletteIds],
   );
 
   const palettes = useMemo(
@@ -390,11 +393,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             getPalette(7),
           ]
         : dmgPalettes,
-    [gbcEnabled, getPalette]
+    [gbcEnabled, getPalette],
   );
 
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds ?? []
+    (state) => state.project.present.settings.defaultSpritePaletteIds ?? [],
   );
 
   const getSpritePalette = useCallback(
@@ -409,7 +412,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         DMG_PALETTE
       );
     },
-    [defaultSpritePaletteIds, palettesLookup, scene?.spritePaletteIds]
+    [defaultSpritePaletteIds, palettesLookup, scene?.spritePaletteIds],
   );
 
   const spritePalettes = useMemo(
@@ -426,13 +429,13 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             getSpritePalette(7),
           ]
         : undefined,
-    [gbcEnabled, getSpritePalette]
+    [gbcEnabled, getSpritePalette],
   );
 
   const slopePreview = useAppSelector((state) => state.editor.slopePreview);
 
   const parallaxHoverLayer = useAppSelector(
-    (state) => state.editor.parallaxHoverLayer
+    (state) => state.editor.parallaxHoverLayer,
   );
 
   const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
@@ -472,10 +475,10 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           x: Math.round(dragState.current.sceneX / TILE_SIZE) * TILE_SIZE,
           y: Math.round(dragState.current.sceneY / TILE_SIZE) * TILE_SIZE,
           additionalSceneIds: currentSceneSelectionIds.current,
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onEndDrag = useCallback(() => {
@@ -504,7 +507,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       window.addEventListener("mousemove", onMoveDrag);
       window.addEventListener("mouseup", onEndDrag);
     },
-    [dispatch, editable, id, onEndDrag, onMoveDrag, scene, zoomRatio]
+    [dispatch, editable, id, onEndDrag, onMoveDrag, scene, zoomRatio],
   );
 
   useEffect(() => {
@@ -533,14 +536,14 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
           dispatch(editorActions.sceneHover({ sceneId: id, x: tX, y: tY }));
           dispatch(
-            entitiesActions.moveSelectedEntity({ sceneId: id, x: tX, y: tY })
+            entitiesActions.moveSelectedEntity({ sceneId: id, x: tX, y: tY }),
           );
         }
         dragState.current.lastTX = tX;
         dragState.current.lastTY = tY;
       }
     },
-    [dispatch, hovered, id, scene, zoomRatio]
+    [dispatch, hovered, id, scene, zoomRatio],
   );
 
   const onMouseLeave = useCallback(() => {
@@ -549,16 +552,15 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         sceneId: "",
         x: dragState.current.lastTX,
         y: dragState.current.lastTY,
-      })
+      }),
     );
   }, [dispatch]);
 
-  const [contextMenu, setContextMenu] =
-    useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    menu: JSX.Element[];
+  }>();
 
   const onContextMenuClose = useCallback(() => {
     setContextMenu(undefined);
@@ -606,7 +608,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       }
       setContextMenu({ x: e.pageX, y: e.pageY, menu });
     },
-    [renderContextMenu, tool]
+    [renderContextMenu, tool],
   );
 
   const onToggleSelection = useCallback(
@@ -617,7 +619,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         dispatch(editorActions.toggleSceneSelectedId(id));
       }
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   if (!scene || !visible) {
@@ -705,6 +707,16 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           </SceneOverlay>
         )}
 
+        {scene.scrollBounds && showLayers && (
+          <SceneOverlay $noPointerEvents>
+            <SceneScrollBounds
+              width={scene.width}
+              height={scene.height}
+              scrollBounds={scene.scrollBounds}
+            />
+          </SceneOverlay>
+        )}
+
         {background && showPriorityMap && (
           <SceneOverlay>
             <ScenePriorityMap
@@ -740,7 +752,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                       boxSizing: "border-box",
                     }}
                   />
-                )
+                ),
             )}
             <div
               style={{
@@ -756,7 +768,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                         memo + layerIndex < layers.length - 1
                           ? layer.height || 1
                           : 0,
-                      0
+                      0,
                     )),
                 boxSizing: "border-box",
               }}

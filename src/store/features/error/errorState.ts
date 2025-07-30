@@ -30,7 +30,7 @@ const errorSlice = createSlice({
         line: number;
         col: number;
         stackTrace: string;
-      }>
+      }>,
     ) => {
       return {
         ...state,

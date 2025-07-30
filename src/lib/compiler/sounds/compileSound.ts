@@ -17,7 +17,7 @@ export interface CompiledSound {
 const compileSoundFiles = async (
   rawData: string,
   muteMask: string,
-  symbol: string
+  symbol: string,
 ): Promise<CompiledSound> => {
   return {
     src: `#pragma bank 255
@@ -50,7 +50,7 @@ const compileSoundFiles = async (
 
 export const compileSound = async (
   sound: SoundData,
-  { projectRoot }: CompileSoundOptions
+  { projectRoot }: CompileSoundOptions,
 ): Promise<CompiledSound> => {
   const assetPath = assetFilename(projectRoot, "sounds", sound);
 
@@ -62,7 +62,7 @@ export const compileSound = async (
     return compileSoundFiles(
       rawData.output,
       `0b${decBin(rawData.channelMuteMask)}`,
-      sound.symbol
+      sound.symbol,
     );
   } else if (sound.type === "fxhammer") {
     return compileFXHammer(assetPath, sound.symbol);

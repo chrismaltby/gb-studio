@@ -1,6 +1,6 @@
 export const maxSpriteTilesForBackgroundTilesLength = (
   backgroundTilesLength: number,
-  isCGBOnly: boolean
+  isCGBOnly: boolean,
 ) => {
   if (isCGBOnly) {
     if (backgroundTilesLength <= 256) {

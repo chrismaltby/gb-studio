@@ -31,12 +31,12 @@ export const PluginTypeSelect = ({
       { value: "template", label: l10n("FIELD_TEMPLATE_PLUGIN") },
       { value: "theme", label: l10n("MENU_THEME") },
     ],
-    []
+    [],
   );
 
   const currentValue = useMemo(
     () => options.find((o) => o.value === value),
-    [options, value]
+    [options, value],
   );
 
   return (

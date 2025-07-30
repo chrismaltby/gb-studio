@@ -33,15 +33,15 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   const [variables, setVariables] = useState<NamedVariable[]>([]);
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state)
+    variableSelectors.selectEntities(state),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, entityId)
+    customEventSelectors.selectById(state, entityId),
   );
 
   useEffect(() => {
     setVariables(
-      namedVariablesByContext(context, variablesLookup, customEvent)
+      namedVariablesByContext(context, variablesLookup, customEvent),
     );
   }, [entityId, variablesLookup, context, customEvent]);
 
