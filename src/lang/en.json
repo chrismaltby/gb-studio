@@ -1825,6 +1825,7 @@
   "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Sprite \"{filename}\" is being used in multiple color modes so may not appear correctly on all devices. When overriding a scene's color mode, do not reuse sprites or backgrounds from scenes without an override. Duplicate the files if necessary",
   "WARNING_FIELD_UNITS_SUBPX": "This field is using sub pixel units. The value here will be {multiplier}x larger than the value displayed in 'Settings'",
   "WARNING_FIELD_UNITS_SUBPX_PRECISE": "This field is using precision sub pixel units. The value here will be {multiplier}x larger than the value displayed in 'Settings'",
+  "WARNING_SPRITE_MODE_MISMATCH": "Sprite {sprite} is being used in a scene {scene} with a different sprite mode ({sceneMode}) than the sprite's mode ({spriteMode}). This will cause the sprite to not display correctly. Either change the scene's sprite mode or use a different sprite.",
 
   "// 12": "Errors -------------------------------------------------------",
 

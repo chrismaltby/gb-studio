@@ -19,6 +19,7 @@ import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
 import { StyledButton } from "ui/buttons/style";
+import { ResourceLinkedText } from "ui/links/ResourceLinkedText";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -94,7 +95,7 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
   const dispatch = useAppDispatch();
   return (
     <LogLine $type={type}>
-      {text}{" "}
+      <ResourceLinkedText text={text} />
       {link && (
         <LogLink
           onClick={() => {

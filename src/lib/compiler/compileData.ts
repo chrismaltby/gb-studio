@@ -135,6 +135,7 @@ import {
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -848,7 +849,7 @@ export const precompileScenes = (
     warnings: (msg: string) => void;
   },
 ) => {
-  const scenesData: PrecompiledScene[] = scenes.map((scene) => {
+  const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
@@ -1036,6 +1037,42 @@ export const precompileScenes = (
       eventSpriteIds,
     );
 
+    const sceneSprites = sceneSpriteIds.reduce((memo, spriteId) => {
+      const sprite = usedSprites.find((s) => s.id === spriteId);
+      if (sprite && memo.indexOf(sprite) === -1) {
+        memo.push(sprite);
+      }
+      return memo;
+    }, [] as PrecompiledSprite[]);
+
+    const mismatchedSprites: PrecompiledSprite[] = [];
+    for (const sprite of sceneSprites) {
+      const mode = sprite.spriteMode ?? defaultSpriteMode;
+      if (mode !== spriteMode) {
+        mismatchedSprites.push(sprite);
+      }
+    }
+    if (mismatchedSprites.length > 0) {
+      const mismatchedMode =
+        mismatchedSprites[0].spriteMode ?? defaultSpriteMode;
+      warnings(
+        l10n("WARNING_SPRITE_MODE_MISMATCH", {
+          scene: createLinkToResource(
+            sceneName(scene, sceneIndex),
+            scene.id,
+            "scene",
+          ),
+          sprite: mismatchedSprites
+            .map((sprite) =>
+              createLinkToResource(sprite.name, sprite.id, "sprite"),
+            )
+            .join(", "),
+          sceneMode: spriteMode,
+          spriteMode: mismatchedMode,
+        }),
+      );
+    }
+
     if (projectiles.length > MAX_PROJECTILES) {
       warnings(
         l10n("WARNING_TOO_MANY_UNIQUE_PROJECTILES", {
@@ -1068,13 +1105,7 @@ export const precompileScenes = (
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
       actors,
-      sprites: sceneSpriteIds.reduce((memo, spriteId) => {
-        const sprite = usedSprites.find((s) => s.id === spriteId);
-        if (sprite && memo.indexOf(sprite) === -1) {
-          memo.push(sprite);
-        }
-        return memo;
-      }, [] as PrecompiledSprite[]),
+      sprites: sceneSprites,
       triggers: scene.triggers.slice(0, MAX_TRIGGERS).filter((trigger) => {
         // Filter out unused triggers which cause slow down
         // When walking over
