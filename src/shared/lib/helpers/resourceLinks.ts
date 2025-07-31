@@ -16,12 +16,13 @@ export const createLinkToResource = (
   type: LinkEntityType,
   sceneId = "",
 ): string => {
-  return `|@@|${label}|@|${id}|@|${type}|@|${sceneId}|@@|`;
+  const escapedLabel = label.replace(/@/g, "@@@");
+  return `|@@|${escapedLabel}|@|${id}|@|${type}|@|${sceneId}|@@|`;
 };
 
 export const parseLinkedText = (text: string): ParsedResourceTextSegment[] => {
   const regex =
-    /\|@@\|(.+?)\|@\|(.+?)\|@\|(scene|actor|trigger|customEvent|sprite)\|@\|\|@@\|/g;
+    /\|@@\|(.+?)\|@\|(.+?)\|@\|(scene|actor|trigger|customEvent|sprite)\|@\|(.*?)\|@@\|/g;
   const segments: ParsedResourceTextSegment[] = [];
 
   let lastIndex = 0;
@@ -35,13 +36,14 @@ export const parseLinkedText = (text: string): ParsedResourceTextSegment[] => {
       });
     }
 
-    const [, linkText, entityId, entityType] = match;
+    const [, linkText, entityId, entityType, sceneId] = match;
 
     segments.push({
       type: "link",
-      linkText,
+      linkText: linkText.replace(/@@@/g, "@"),
       entityId,
       entityType: entityType as LinkEntityType,
+      ...(sceneId && { sceneId }),
     });
 
     lastIndex = regex.lastIndex;

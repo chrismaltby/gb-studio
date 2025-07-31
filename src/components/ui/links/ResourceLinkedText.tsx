@@ -21,15 +21,26 @@ export const ResourceLinkedText = ({ text }: { text: string }) => {
 
   const handleClick = useCallback(
     (segment: Extract<ParsedResourceTextSegment, { type: "link" }>) => {
+      const focusScene = (sceneId: string | undefined) => {
+        if (!sceneId) return;
+        dispatch(navigationActions.setSection("world"));
+        setTimeout(() => {
+          dispatch(editorActions.editSearchTerm(""));
+          dispatch(editorActions.editSearchTerm(sceneId));
+        }, 1);
+      };
+
       switch (segment.entityType) {
         case "scene":
-          dispatch(navigationActions.setSection("world"));
-          setTimeout(() => {
-            dispatch(editorActions.editSearchTerm(""));
-            dispatch(editorActions.editSearchTerm(segment.entityId));
-          }, 1);
+          focusScene(segment.entityId);
+          dispatch(
+            editorActions.selectScene({
+              sceneId: segment.entityId,
+            }),
+          );
           break;
         case "actor":
+          focusScene(segment.sceneId);
           dispatch(
             editorActions.selectActor({
               actorId: segment.entityId,
@@ -38,6 +49,7 @@ export const ResourceLinkedText = ({ text }: { text: string }) => {
           );
           break;
         case "trigger":
+          focusScene(segment.sceneId);
           dispatch(
             editorActions.selectTrigger({
               triggerId: segment.entityId,
