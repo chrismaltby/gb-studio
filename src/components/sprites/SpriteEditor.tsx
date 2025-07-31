@@ -58,6 +58,8 @@ import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SpriteEditorProps {
   id: string;
@@ -96,10 +98,17 @@ export const SpriteEditor = ({
   const replaceSpriteTileMode = useAppSelector(
     (state) => state.editor.replaceSpriteTileMode,
   );
-
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const spriteMode = sprite?.spriteMode || defaultSpriteMode;
   const selectedTileId = selectedTileIds[0];
 
   const [showSymbols, setShowSymbols] = useState(false);
+  const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
+    sprite?.spriteMode !== undefined,
+  );
+  const showSpriteModeOverride = sprite.spriteMode || spriteModeOverrideOpen;
 
   const dispatch = useAppDispatch();
 
@@ -205,6 +214,12 @@ export const SpriteEditor = ({
   const onChangeBoundsHeight = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("boundsHeight", castEventToInt(e, 16)),
+    [onChangeSpriteSheetProp],
+  );
+
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting | undefined) =>
+      onChangeSpriteSheetProp("spriteMode", e),
     [onChangeSpriteSheetProp],
   );
 
@@ -379,12 +394,19 @@ export const SpriteEditor = ({
     );
   }, [dispatch, id]);
 
+  const onOverrideSpriteMode = useCallback(() => {
+    const sceneSpriteMode = defaultSpriteMode === "8x16" ? "8x8" : "8x16";
+    onChangeSpriteMode(sceneSpriteMode);
+    setSpriteModeOverrideOpen(true);
+  }, [defaultSpriteMode, onChangeSpriteMode]);
+
   if (!sprite || !spriteState || !animation) {
     return null;
   }
 
   const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
-  const showAutodetect = isDefaultState && sprite.height === 16;
+  const showAutodetect =
+    sprite.spriteMode !== "8x8" && isDefaultState && sprite.height === 16;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -414,6 +436,12 @@ export const SpriteEditor = ({
               {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
             </MenuItem>
           )}
+          {!showSpriteModeOverride && (
+            <MenuItem onClick={onOverrideSpriteMode}>
+              {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
+            </MenuItem>
+          )}
+          <MenuDivider />
           {selectedTileIds.length > 0 && (
             <MenuItem onClick={onCopyTiles}>
               {l10n("MENU_SPRITE_TILE_COPY")}
@@ -624,12 +652,28 @@ export const SpriteEditor = ({
                   coordinate="h"
                   value={sprite.canvasHeight}
                   placeholder="16"
-                  min={16}
+                  min={spriteMode === "8x8" ? 8 : 16}
                   max={144}
                   step={8}
                   onChange={onChangeCanvasHeight}
                 />
               </FormRow>
+
+              {showSpriteModeOverride && (
+                <FormRow>
+                  <FormField
+                    name="spriteMode"
+                    label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                  >
+                    <SpriteModeSelect
+                      name={"spriteMode"}
+                      onChange={onChangeSpriteMode}
+                      allowDefault={true}
+                      value={sprite.spriteMode}
+                    />
+                  </FormField>
+                </FormRow>
+              )}
 
               <FormDivider />
 
@@ -681,6 +725,7 @@ export const SpriteEditor = ({
                   />
                 </FormRow>
               </div>
+              <FormDivider />
               <FormSectionTitle>
                 {l10n("FIELD_ANIMATION_SETTINGS")}
               </FormSectionTitle>

@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new event "Attach Script To Platformer Event Callback" allowing scripts to be triggered by events occuring within platformer scenes
 - Add support for setting per scene camera bounds, constraining the min/max scrollable area
 - Add a "Set Camera Bounds" event to allow scripts to adjust min/max scroll limits at runtime
+- Add ability to set Sprite Mode, allowing 8x8 tiles to be used (previously only 8x16 were supported). Sprite Mode can be set globally in Settings and overridden per scene or sprite using the sidebar dropdown. Note that all sprites within a scene must use the same mode as the scene itself.
 
 ### Changed
 

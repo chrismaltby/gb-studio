@@ -17,6 +17,7 @@ import {
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SingleValue } from "react-select";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;
@@ -29,8 +30,17 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   optionalLabel?: string;
 }
 
+interface SpriteSheetOption extends Option {
+  spriteMode?: SpriteModeSetting
+}
+
+interface SpriteSheetOptGroup extends OptGroup {
+  options: SpriteSheetOption[];
+}
+
+
 const buildOptions = (
-  memo: OptGroup[],
+  memo: SpriteSheetOptGroup[],
   plugin: string | undefined,
   spriteSheets: SpriteSheetNormalized[],
 ) => {
@@ -40,6 +50,7 @@ const buildOptions = (
       return {
         value: spriteSheet.id,
         label: spriteSheet.name,
+        spriteMode: spriteSheet.spriteMode,
       };
     }),
   });
@@ -57,6 +68,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
 }) => {
   const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state),
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] =
@@ -121,7 +135,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
       value={currentValue}
       options={options}
       onChange={onSelectChange}
-      formatOptionLabel={(option: Option) => {
+      formatOptionLabel={(option: SpriteSheetOption) => {
         return (
           <OptionLabelWithPreview
             preview={
@@ -131,6 +145,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 frame={frame}
               />
             }
+            info={option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""}
           >
             <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>

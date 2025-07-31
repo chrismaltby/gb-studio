@@ -131,9 +131,11 @@ import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
   ProjectResources,
+  SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -612,12 +614,14 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteReferences: ReferencedSprite[],
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting,
 ) => {
   const usedTilesets: CompiledTilesetData[] = [];
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     spriteReferences,
     projectRoot,
+    defaultSpriteMode,
   );
 
   const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
@@ -836,6 +840,7 @@ export const precompileScenes = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
+  defaultSpriteMode: SpriteModeSetting,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
   {
@@ -844,7 +849,7 @@ export const precompileScenes = (
     warnings: (msg: string) => void;
   },
 ) => {
-  const scenesData: PrecompiledScene[] = scenes.map((scene) => {
+  const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
         background.id === scene.backgroundId &&
@@ -872,6 +877,8 @@ export const precompileScenes = (
         } includes a common tileset that can't be located.`,
       );
     }
+
+    const spriteMode = scene.spriteMode ?? defaultSpriteMode;
 
     const usedSpritesLookup = keyBy(usedSprites, "id");
 
@@ -937,7 +944,9 @@ export const precompileScenes = (
     };
 
     const getSpriteTileCount = (sprite: PrecompiledSprite | undefined) => {
-      const count = ((sprite ? sprite.numTiles : 0) || 0) * 2;
+      const numTiles = (sprite ? sprite.numTiles : 0) || 0;
+      const multiplier = spriteMode === "8x16" ? 2 : 1;
+      const count = numTiles * multiplier;
       if (sprite?.colorMode === "color") {
         return Math.ceil(count / 4) * 2;
       }
@@ -1028,6 +1037,42 @@ export const precompileScenes = (
       eventSpriteIds,
     );
 
+    const sceneSprites = sceneSpriteIds.reduce((memo, spriteId) => {
+      const sprite = usedSprites.find((s) => s.id === spriteId);
+      if (sprite && memo.indexOf(sprite) === -1) {
+        memo.push(sprite);
+      }
+      return memo;
+    }, [] as PrecompiledSprite[]);
+
+    const mismatchedSprites: PrecompiledSprite[] = [];
+    for (const sprite of sceneSprites) {
+      const mode = sprite.spriteMode ?? defaultSpriteMode;
+      if (mode !== spriteMode) {
+        mismatchedSprites.push(sprite);
+      }
+    }
+    if (mismatchedSprites.length > 0) {
+      const mismatchedMode =
+        mismatchedSprites[0].spriteMode ?? defaultSpriteMode;
+      warnings(
+        l10n("WARNING_SPRITE_MODE_MISMATCH", {
+          scene: createLinkToResource(
+            sceneName(scene, sceneIndex),
+            scene.id,
+            "scene",
+          ),
+          sprite: mismatchedSprites
+            .map((sprite) =>
+              createLinkToResource(sprite.name, sprite.id, "sprite"),
+            )
+            .join(", "),
+          sceneMode: spriteMode,
+          spriteMode: mismatchedMode,
+        }),
+      );
+    }
+
     if (projectiles.length > MAX_PROJECTILES) {
       warnings(
         l10n("WARNING_TOO_MANY_UNIQUE_PROJECTILES", {
@@ -1060,13 +1105,7 @@ export const precompileScenes = (
       playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
       actors,
-      sprites: sceneSpriteIds.reduce((memo, spriteId) => {
-        const sprite = usedSprites.find((s) => s.id === spriteId);
-        if (sprite && memo.indexOf(sprite) === -1) {
-          memo.push(sprite);
-        }
-        return memo;
-      }, [] as PrecompiledSprite[]),
+      sprites: sceneSprites,
       triggers: scene.triggers.slice(0, MAX_TRIGGERS).filter((trigger) => {
         // Filter out unused triggers which cause slow down
         // When walking over
@@ -1105,6 +1144,8 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.scripts, "id");
   const colorCorrection = projectData.settings.colorCorrection;
+  const defaultSpriteMode: SpriteModeSetting =
+    projectData.settings.spriteMode ?? "8x16";
 
   const usedAssets = determineUsedAssets({
     projectData,
@@ -1154,7 +1195,11 @@ const precompile = async (
     usedTilesets: usedSpriteTilesets,
     statesOrder,
     stateReferences,
-  } = await precompileSprites(usedAssets.referencedSprites, projectRoot);
+  } = await precompileSprites(
+    usedAssets.referencedSprites,
+    projectRoot,
+    defaultSpriteMode,
+  );
 
   progress(`${l10n("COMPILER_PREPARING_AVATARS")}...`);
   const { usedAvatars } = await precompileAvatars(
@@ -1201,6 +1246,7 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
+    defaultSpriteMode,
     usedBackgrounds,
     usedSprites,
     {
@@ -1486,6 +1532,14 @@ const compile = async (
       };
 
       const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
+        scene.script.unshift({
+          id: "",
+          command: "INTERNAL_SET_SPRITE_MODE",
+          args: {
+            mode: scene.spriteMode ?? projectData.settings.spriteMode ?? "8x16",
+          },
+        });
+
         // Merge start scripts for actors with scene start script
         const initScript = ([] as ScriptEvent[]).concat(
           scene.actors

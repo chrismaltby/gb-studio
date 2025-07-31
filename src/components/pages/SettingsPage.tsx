@@ -9,6 +9,7 @@ import {
   ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
+  SpriteModeSetting,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -45,6 +46,7 @@ import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -90,6 +92,7 @@ const SettingsPage: FC = () => {
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
     compilerPreset,
+    spriteMode,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -132,6 +135,11 @@ const SettingsPage: FC = () => {
   const onChangeSGBEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("sgbEnabled", castEventToBool(e)),
+    [onChangeSettingProp],
+  );
+
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting) => onChangeSettingProp("spriteMode", e),
     [onChangeSettingProp],
   );
 
@@ -257,8 +265,8 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
-              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            <SettingsMenuItem onClick={onMenuItem("settingsSprite")}>
+              {l10n("SETTINGS_SPRITE")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
@@ -294,8 +302,10 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("FIELD_EXPORT_IN_COLOR"),
-            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
-            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            colorMode !== "mono"
+              ? l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")
+              : "",
+            colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
             l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
@@ -542,17 +552,37 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")]}
+          searchMatches={[
+            l10n("SETTINGS_SPRITE"),
+            l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            l10n("FIELD_DEFAULT_SPRITE_MODE"),
+          ]}
         >
-          <CardAnchor id="settingsPlayer" />
-          <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
+          <CardAnchor id="settingsSprite" />
+          <CardHeading>{l10n("SETTINGS_SPRITE")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            ]}
+          >
+            <SettingRowLabel $sectionHeading>
+              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            </SettingRowLabel>
+          </SearchableSettingRow>
+
           {sceneTypes.map((sceneType) => (
             <SearchableSettingRow
               key={sceneType.key}
               searchTerm={searchTerm}
-              searchMatches={[l10n(sceneType.label as L10NKey)]}
+              searchMatches={[
+                l10n(sceneType.label as L10NKey),
+                l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+              ]}
             >
-              <SettingRowLabel>
+              <SettingRowLabel $indent={1}>
                 {l10n(sceneType.label as L10NKey)}
               </SettingRowLabel>
               <SettingRowInput>
@@ -568,6 +598,27 @@ const SettingsPage: FC = () => {
               </SettingRowInput>
             </SearchableSettingRow>
           ))}
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("FIELD_DEFAULT_SPRITE_MODE"),
+            ]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_DEFAULT_SPRITE_MODE")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <SpriteModeSelect
+                name="spriteMode"
+                value={spriteMode}
+                onChange={(value) => {
+                  onChangeSpriteMode(value ?? "8x16");
+                }}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
         </SearchableCard>
 
         <SearchableCard

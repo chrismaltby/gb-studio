@@ -356,6 +356,13 @@ export const ObjPalette = Type.Union([
 
 export type ObjPalette = Static<typeof ObjPalette>;
 
+export const SpriteModeSetting = Type.Union([
+  Type.Literal("8x8"),
+  Type.Literal("8x16"),
+]);
+
+export type SpriteModeSetting = Static<typeof SpriteModeSetting>;
+
 export const MetaspriteTile = Type.Object({
   id: Type.String(),
   x: Type.Number(),
@@ -422,6 +429,7 @@ export const SpriteResource = Type.Object({
   boundsHeight: Type.Number(),
   animSpeed: Type.Union([Type.Number(), Type.Null()]),
   states: Type.Array(SpriteState),
+  spriteMode: Type.Optional(SpriteModeSetting),
 });
 
 export type SpriteResource = Static<typeof SpriteResource>;
@@ -731,6 +739,7 @@ export const SettingsResource = Type.Object({
   ),
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
   runSceneSelectionOnly: Type.Boolean(),
+  spriteMode: SpriteModeSetting,
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

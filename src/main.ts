@@ -112,6 +112,7 @@ import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
   MusicResourceAsset,
   ProjectResources,
+  SpriteModeSetting,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
@@ -1794,6 +1795,7 @@ ipcMain.handle(
   async (
     _event,
     spriteData: SpriteSheetData,
+    defaultSpriteMode: SpriteModeSetting
   ): Promise<PrecompiledSpriteSheetData> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = assetFilename(projectRoot, "sprites", spriteData);
@@ -1803,6 +1805,7 @@ ipcMain.handle(
       { ...spriteData, colorMode: "mixed" },
       false,
       projectRoot,
+      defaultSpriteMode
     );
   },
 );

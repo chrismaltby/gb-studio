@@ -4,6 +4,7 @@ import type {
   Constant,
   SceneBoundsRect,
   ScriptEditorCtxType,
+  SpriteModeSetting,
 } from "shared/lib/resources/types";
 
 export type CollisionGroup = "" | "1" | "2" | "3" | "player";
@@ -410,6 +411,7 @@ export type SpriteSheet = {
   boundsHeight: number;
   animSpeed: number | null;
   states: SpriteStateData[];
+  spriteMode?: SpriteModeSetting;
 };
 
 export type SpriteSheetNormalized = Omit<SpriteSheet, "states"> & {
@@ -459,6 +461,7 @@ export type Scene = {
   playerHit1Script: ScriptEvent[];
   playerHit2Script: ScriptEvent[];
   playerHit3Script: ScriptEvent[];
+  spriteMode?: SpriteModeSetting;
 };
 
 export type SceneNormalized = Omit<

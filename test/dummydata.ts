@@ -228,6 +228,7 @@ export const dummySpriteSheet: SpriteSheetNormalized = {
   states: [],
   animSpeed: 4,
   inode: "1",
+  spriteMode: "8x16",
   _v: 0,
 };
 
@@ -258,6 +259,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   animSpeed: 15,
   vramData: [[], []],
   colorMode: "mixed",
+  spriteMode: "8x16",
 };
 
 export const dummyMusic: Music = {
@@ -361,6 +363,7 @@ export const dummyProjectData: ProjectData = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
   },
 };
 
@@ -440,6 +443,7 @@ export const dummySpriteResource: SpriteResource = {
   boundsHeight: 16,
   animSpeed: null,
   states: [],
+  spriteMode: "8x16",
 };
 
 export const dummyPaletteResource: PaletteResource = {
@@ -637,6 +641,7 @@ export const dummySettingsResource: SettingsResource = {
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
+  spriteMode: "8x16",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -749,6 +754,7 @@ export const dummyProjectResources: ProjectResources = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
   },
 };
 

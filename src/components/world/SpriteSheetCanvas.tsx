@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import {
@@ -8,6 +8,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
+import { SceneContext } from "components/script/SceneContext";
 
 interface SpriteSheetCanvasProps {
   spriteSheetId: string;
@@ -70,6 +71,8 @@ const SpriteSheetCanvas = ({
   const frames = animation?.frames || [];
   const metaspriteId = frames[frame % frames.length] || "";
 
+  const context = useContext(SceneContext);
+
   if (!sprite || !state) {
     return <div />;
   }
@@ -91,6 +94,7 @@ const SpriteSheetCanvas = ({
         palettes={palettes}
         flipX={flipX}
         previewAsMono={previewAsMono}
+        spriteMode={context.spriteMode}
       />
     </Wrapper>
   );

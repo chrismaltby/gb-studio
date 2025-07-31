@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -37,6 +38,7 @@ interface MetaspriteEditorProps {
 
 export interface MetaspriteDraggableTileProps {
   $selected?: boolean;
+  $spriteMode: SpriteModeSetting;
 }
 
 interface ScrollWrapperProps {
@@ -88,7 +90,7 @@ const GridWrapper = styled.div`
 const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   position: absolute;
   width: 8px;
-  height: 16px;
+  height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
 
   &:hover:after {
     content: "";
@@ -98,7 +100,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
     box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
     z-index: 100;
     width: 8px;
-    height: 16px;
+    height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
   }
 
   ${(props) =>
@@ -112,7 +114,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
             box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5) inset;
             z-index: 10;
             width: 8px;
-            height: 16px;
+            height: ${props.$spriteMode === "8x8" ? 8 : 16}px;
           }
         `
       : ""}
@@ -214,6 +216,9 @@ const MetaspriteEditor = ({
   const selectedAdditionalMetaspriteIds = useAppSelector(
     (state) => state.editor.selectedAdditionalMetaspriteIds,
   );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
@@ -230,6 +235,7 @@ const MetaspriteEditor = ({
   const boundsHeight = spriteSheet?.boundsHeight || 16;
   const boundsX = spriteSheet?.boundsX || 0;
   const boundsY = spriteSheet?.boundsY || 0;
+  const spriteMode = spriteSheet?.spriteMode ?? defaultSpriteMode;
 
   const setSelectedTileId = useCallback(
     (tileId: string) => {
@@ -324,14 +330,14 @@ const MetaspriteEditor = ({
           ),
           y: Math.floor(
             canvasHeight -
-              16 -
+              (spriteMode === "8x8" ? 8 : 16) -
               ((e.pageY - bounds.top) / bounds.height) * canvasHeight +
-              newTiles.height * 8,
+              newTiles.height * (spriteMode === "8x8" ? 4 : 8),
           ),
         });
       }
     },
-    [newTiles, canvasWidth, canvasHeight],
+    [newTiles, canvasWidth, canvasHeight, spriteMode],
   );
 
   const onCreateTiles = useCallback(
@@ -364,9 +370,9 @@ const MetaspriteEditor = ({
               spriteSheetId,
               metaspriteId,
               x: createOrigin.x + tx * 8,
-              y: createOrigin.y - ty * 16,
+              y: createOrigin.y - ty * (spriteMode === "8x8" ? 8 : 16),
               sliceX: newTiles.x + tx * 8,
-              sliceY: newTiles.y + ty * 16,
+              sliceY: newTiles.y + ty * (spriteMode === "8x8" ? 8 : 16),
               flipX: false,
               flipY: false,
               objPalette: "OBP0",
@@ -396,6 +402,7 @@ const MetaspriteEditor = ({
       newTiles,
       removeMetaspriteTilesOutsideCanvas,
       setSelectedTileIds,
+      spriteMode,
       spriteSheetId,
     ],
   );
@@ -492,15 +499,17 @@ const MetaspriteEditor = ({
         const height = Math.abs(selectionOrigin.y - y2);
 
         const canvasX1 = x / zoom - (canvasWidth / 2 - 8);
-        const canvasY1 = canvasHeight - 16 - y / zoom;
+        const canvasY1 =
+          canvasHeight - (spriteMode === "8x8" ? 8 : 16) - y / zoom;
         const canvasX2 = (x + width) / zoom - (canvasWidth / 2 - 8);
-        const canvasY2 = canvasHeight - 16 - (y + height) / zoom;
+        const canvasY2 =
+          canvasHeight - (spriteMode === "8x8" ? 8 : 16) - (y + height) / zoom;
 
         const intersectingTiles = metaspriteTiles.filter(
           (tile) =>
             tile.x + 8 > canvasX1 &&
             tile.x < canvasX2 &&
-            tile.y - 16 < canvasY1 &&
+            tile.y - (spriteMode === "8x8" ? 8 : 16) < canvasY1 &&
             tile.y > canvasY2,
         );
         const intersectingTileIds = intersectingTiles.map((tile) => tile.id);
@@ -520,6 +529,7 @@ const MetaspriteEditor = ({
       metaspriteTiles,
       selectionOrigin,
       setSelectedTileIds,
+      spriteMode,
       zoom,
     ],
   );
@@ -822,9 +832,10 @@ const MetaspriteEditor = ({
             {metaspriteTiles.map((metaspriteTile) => (
               <MetaspriteDraggableTile
                 key={metaspriteTile.id}
+                $spriteMode={spriteMode}
                 style={{
                   left: metaspriteTile.x,
-                  top: -metaspriteTile.y - 16,
+                  top: -metaspriteTile.y - (spriteMode === "8x8" ? 8 : 16),
                   pointerEvents: newTiles ? "none" : "auto",
                 }}
                 $selected={selectedTileIds.includes(metaspriteTile.id)}
@@ -836,7 +847,7 @@ const MetaspriteEditor = ({
                   offsetX={metaspriteTile.sliceX}
                   offsetY={metaspriteTile.sliceY}
                   width={8}
-                  height={16}
+                  height={spriteMode === "8x8" ? 8 : 16}
                   flipX={metaspriteTile.flipX}
                   flipY={metaspriteTile.flipY}
                   objPalette={metaspriteTile.objPalette}
@@ -848,7 +859,7 @@ const MetaspriteEditor = ({
               <StampTilesWrapper
                 style={{
                   left: createOrigin.x,
-                  top: -createOrigin.y - 16,
+                  top: -createOrigin.y - (spriteMode === "8x8" ? 8 : 16),
                 }}
               >
                 <SpriteSliceCanvas
@@ -856,7 +867,7 @@ const MetaspriteEditor = ({
                   offsetX={newTiles.x}
                   offsetY={newTiles.y}
                   width={newTiles.width * 8}
-                  height={newTiles.height * 16}
+                  height={newTiles.height * (spriteMode === "8x8" ? 8 : 16)}
                   flipX={false}
                   flipY={false}
                   objPalette="OBP0"
