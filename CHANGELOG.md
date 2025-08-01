@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set Sprite Mode, allowing 8x8 tiles to be used (previously only 8x16 were supported). Sprite Mode can be set globally in Settings and overridden per scene or sprite using the sidebar dropdown. Note that all sprites within a scene must use the same mode as the scene itself.
 - Add ability for Engine Fields to be used anywhere that script values are supported
 - Add zoom level 1600 when viewing assets
+- Add "If Engine Field Compare With Value/Variable" events
 
 ### Changed
 
