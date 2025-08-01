@@ -114,7 +114,6 @@ export const SpriteSliceCanvas = ({
       width={width}
       height={height}
       style={{
-        position: "absolute",
         imageRendering: "pixelated",
       }}
     />

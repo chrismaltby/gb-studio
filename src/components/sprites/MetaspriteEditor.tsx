@@ -103,6 +103,10 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
     height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
   }
 
+  canvas {
+    display: block;
+  }
+
   ${(props) =>
     props.$selected
       ? css`
