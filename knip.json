@@ -8,5 +8,6 @@
     "src/lib/events/**/*{js,ts}"
   ],
   "project": ["src/**/*.{js,ts,jsx,tsx}"],
-  "ignoreUnresolved": ["../helpers/l10n"]
+  "ignoreUnresolved": ["../helpers/l10n"],
+  "ignore": ["src/components/ui/hooks/use-trace-update.ts"]
 }
