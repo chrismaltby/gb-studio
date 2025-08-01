@@ -10,10 +10,11 @@ interface MetaspriteGridProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-const generateGridBackground = (zoom: number): string => {
-  const lineColor = "#efefef";
-  const borderColor = "#d4d4d4";
-
+export const generateGridBackground = (
+  zoom: number,
+  lineColor = "#efefef",
+  borderColor = "#d4d4d4",
+): string => {
   if (zoom < 8) {
     return `linear-gradient(to right, ${lineColor} 1px, transparent 1px), 
             linear-gradient(to bottom, ${lineColor} 1px, transparent 1px)`;
