@@ -35,6 +35,7 @@ import {
   NotIcon,
   NumberIcon,
   PlusIcon,
+  SettingsIcon,
   SquareRootIcon,
   TrueIcon,
   VariableIcon,
@@ -69,6 +70,8 @@ import { copy, paste } from "store/features/clipboard/clipboardHelpers";
 import { constantSelectors } from "store/features/entities/entitiesState";
 import { ConstantSelect } from "./ConstantSelect";
 import { SingleValue } from "react-select";
+import EngineFieldSelect from "components/forms/EngineFieldSelect";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;
@@ -94,6 +97,7 @@ const iconLookup: Record<
   indirect: <VariableIcon />,
   constant: <ConstantIcon />,
   expression: <ExpressionIcon />,
+  engineField: <SettingsIcon />,
   property: <ActorIcon />,
   true: <TrueIcon />,
   false: <FalseIcon />,
@@ -139,6 +143,7 @@ const l10nKeyLookup: Record<
   indirect: "FIELD_VARIABLE",
   constant: "FIELD_CONSTANT",
   expression: "FIELD_EXPRESSION",
+  engineField: "FIELD_ENGINE_FIELD",
   property: "FIELD_PROPERTY",
   true: "FIELD_TRUE",
   false: "FIELD_FALSE",
@@ -492,6 +497,13 @@ const ValueSelect = ({
     });
   }, [context.type, editorType, onChange]);
 
+  const setEngineField = useCallback(() => {
+    onChange({
+      type: "engineField",
+      value: "",
+    });
+  }, [onChange]);
+
   const setExpression = useCallback(() => {
     onChange({
       type: "expression",
@@ -567,6 +579,8 @@ const ValueSelect = ({
         setProperty();
       } else if (e.key === "e") {
         setExpression();
+      } else if (e.key === "g") {
+        setEngineField();
       } else if (e.key === "d") {
         setDirection();
       } else if (e.key === "t") {
@@ -616,14 +630,15 @@ const ValueSelect = ({
       return true;
     },
     [
-      setBool,
-      setDirection,
-      setExpression,
       setNumber,
-      setProperty,
-      setValueFunction,
       setVariable,
       setConstant,
+      setProperty,
+      setExpression,
+      setEngineField,
+      setDirection,
+      setBool,
+      setValueFunction,
     ],
   );
 
@@ -774,6 +789,16 @@ const ValueSelect = ({
               <MenuAccelerator accelerator="p" />
             </MenuItem>,
             <MenuItem
+              key="engineField"
+              onClick={setEngineField}
+              icon={
+                value.type === "engineField" ? <CheckIcon /> : <BlankIcon />
+              }
+            >
+              {l10n("FIELD_ENGINE_FIELD")}
+              <MenuAccelerator accelerator="g" />
+            </MenuItem>,
+            <MenuItem
               key="expression"
               onClick={setExpression}
               icon={value.type === "expression" ? <CheckIcon /> : <BlankIcon />}
@@ -829,6 +854,7 @@ const ValueSelect = ({
       onPasteValue,
       setConstant,
       setDirection,
+      setEngineField,
       setExpression,
       setNumber,
       setProperty,
@@ -1196,6 +1222,24 @@ const ValueSelect = ({
           </InputGroup>
         </ValueWrapper>
       );
+    } else if (value.type === "engineField") {
+      return (
+        <ValueWrapper ref={previewRef} $isOver={isOver}>
+          <InputGroup ref={dropRef}>
+            <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+            <EngineFieldSelect
+              name={name}
+              value={value.value}
+              onChange={(newFieldId: string) => {
+                onChange({
+                  type: "engineField",
+                  value: newFieldId,
+                });
+              }}
+            />
+          </InputGroup>
+        </ValueWrapper>
+      );
     } else if (value.type === "true") {
       return (
         <ValueWrapper ref={previewRef} $isOver={isOver}>
@@ -1308,6 +1352,10 @@ const ValueSelect = ({
         );
       }
     }
+    if (value.type === "indirect") {
+      return null;
+    }
+    assertUnreachable(value);
     return null;
   }, [
     dropdownButton,
