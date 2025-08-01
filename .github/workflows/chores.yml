@@ -1,4 +1,4 @@
-name: Update Credits
+name: Run Nightly Chores
 on:
   schedule:
     - cron: "0 2 * * *" # every day at 02:00 UTC
@@ -36,13 +36,29 @@ jobs:
           npm run fetch-contributors
           npm run fetch-patrons
 
-      - name: Push updates
+      - name: Push credits changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add patrons.json contributors.json
           if ! git diff --staged --quiet; then
             git commit -m "chore: update credits"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Run prettier
+        run: |
+          npm run prettier
+
+      - name: Push prettier changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: prettier"
             git push
           else
             echo "No changes to commit"
