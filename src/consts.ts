@@ -434,6 +434,7 @@ export const defaultProjectSettings: Settings = {
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
   spriteMode: "8x16",
+  openBuildFolderOnExport: true,
 };
 
 export const defaultPalettes: Palette[] = [

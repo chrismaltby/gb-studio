@@ -230,12 +230,14 @@ export const CompressedSceneResource = Type.Object({
   playerHit2Script: Type.Array(ScriptEvent),
   playerHit3Script: Type.Array(ScriptEvent),
   collisions: Type.String(),
-  scrollBounds: Type.Optional(Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    width: Type.Number(),
-    height: Type.Number(),
-  })),
+  scrollBounds: Type.Optional(
+    Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+      width: Type.Number(),
+      height: Type.Number(),
+    }),
+  ),
 });
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;
@@ -740,6 +742,7 @@ export const SettingsResource = Type.Object({
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
   runSceneSelectionOnly: Type.Boolean(),
   spriteMode: SpriteModeSetting,
+  openBuildFolderOnExport: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

@@ -1420,7 +1420,9 @@ ipcMain.handle(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`,
         );
-        shell.openPath(Path.join(projectRoot, "build", buildType));
+        if (project.settings.openBuildFolderOnExport) {
+          shell.openPath(Path.join(projectRoot, "build", buildType));
+        }
         buildLog(`-`);
         buildLog(
           `${l10n("COMPILER_BUILD_SUCCESS")} ${
@@ -1795,7 +1797,7 @@ ipcMain.handle(
   async (
     _event,
     spriteData: SpriteSheetData,
-    defaultSpriteMode: SpriteModeSetting
+    defaultSpriteMode: SpriteModeSetting,
   ): Promise<PrecompiledSpriteSheetData> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = assetFilename(projectRoot, "sprites", spriteData);
@@ -1805,7 +1807,7 @@ ipcMain.handle(
       { ...spriteData, colorMode: "mixed" },
       false,
       projectRoot,
-      defaultSpriteMode
+      defaultSpriteMode,
     );
   },
 );

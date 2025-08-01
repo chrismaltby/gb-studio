@@ -148,6 +148,9 @@ const DebuggerBuildLog = () => {
   const generateDebugFilesEnabled = useAppSelector(
     (state) => getSettings(state).generateDebugFilesEnabled,
   );
+  const openBuildFolderOnExport = useAppSelector(
+    (state) => getSettings(state).openBuildFolderOnExport,
+  );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
     breakpoints: { SM: 0, MD: 50, LG: 280 },
@@ -216,6 +219,11 @@ const DebuggerBuildLog = () => {
       ),
     [onChangeSettingProp, generateDebugFilesEnabled],
   );
+  const onToggleOpenBuildFolderOnExport = useCallback(
+    () =>
+      onChangeSettingProp("openBuildFolderOnExport", !openBuildFolderOnExport),
+    [onChangeSettingProp, openBuildFolderOnExport],
+  );
 
   return (
     <Wrapper>
@@ -273,6 +281,13 @@ const DebuggerBuildLog = () => {
           >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
+          <MenuItem
+            onClick={onToggleOpenBuildFolderOnExport}
+            icon={openBuildFolderOnExport ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+          </MenuItem>
+
           <MenuDivider />
           <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
