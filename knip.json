@@ -7,5 +7,6 @@
     "src/lib/forge/hooks/*.{js,ts}",
     "src/lib/events/**/*{js,ts}"
   ],
-  "project": ["src/**/*.{js,ts,jsx,tsx}"]
+  "project": ["src/**/*.{js,ts,jsx,tsx}"],
+  "ignoreUnresolved": ["../helpers/l10n"]
 }
