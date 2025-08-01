@@ -230,12 +230,14 @@ export const CompressedSceneResource = Type.Object({
   playerHit2Script: Type.Array(ScriptEvent),
   playerHit3Script: Type.Array(ScriptEvent),
   collisions: Type.String(),
-  scrollBounds: Type.Optional(Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    width: Type.Number(),
-    height: Type.Number(),
-  })),
+  scrollBounds: Type.Optional(
+    Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+      width: Type.Number(),
+      height: Type.Number(),
+    }),
+  ),
 });
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;

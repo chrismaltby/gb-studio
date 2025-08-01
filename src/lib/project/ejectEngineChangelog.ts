@@ -872,7 +872,7 @@ const changes: EngineChange[] = [
       "Fix issue where holding button to fast forward through text would close text box when end reached",
       "Fix position overflow in large Adventure scenes",
       "Fix position overflow in large Point and Click scenes",
-    ]),    
+    ]),
     modifiedFiles: [
       "include/math.h",
       "src/core/ui.c",

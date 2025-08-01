@@ -31,13 +31,12 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
 }
 
 interface SpriteSheetOption extends Option {
-  spriteMode?: SpriteModeSetting
+  spriteMode?: SpriteModeSetting;
 }
 
 interface SpriteSheetOptGroup extends OptGroup {
   options: SpriteSheetOption[];
 }
-
 
 const buildOptions = (
   memo: SpriteSheetOptGroup[],
@@ -145,7 +144,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 frame={frame}
               />
             }
-            info={option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""}
+            info={
+              option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""
+            }
           >
             <FormatFolderLabel label={option.label} />
           </OptionLabelWithPreview>

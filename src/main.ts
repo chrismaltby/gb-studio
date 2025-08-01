@@ -1795,7 +1795,7 @@ ipcMain.handle(
   async (
     _event,
     spriteData: SpriteSheetData,
-    defaultSpriteMode: SpriteModeSetting
+    defaultSpriteMode: SpriteModeSetting,
   ): Promise<PrecompiledSpriteSheetData> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = assetFilename(projectRoot, "sprites", spriteData);
@@ -1805,7 +1805,7 @@ ipcMain.handle(
       { ...spriteData, colorMode: "mixed" },
       false,
       projectRoot,
-      defaultSpriteMode
+      defaultSpriteMode,
     );
   },
 );
