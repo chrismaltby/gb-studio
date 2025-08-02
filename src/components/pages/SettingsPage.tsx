@@ -91,6 +91,7 @@ const SettingsPage: FC = () => {
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
+    openBuildFolderOnExport,
     compilerPreset,
     spriteMode,
   } = settings;
@@ -168,6 +169,12 @@ const SettingsPage: FC = () => {
   const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
+    [onChangeSettingProp],
+  );
+
+  const onChangeOpenBuildFolderOnExport = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("openBuildFolderOnExport", castEventToBool(e)),
     [onChangeSettingProp],
   );
 
@@ -776,6 +783,23 @@ const SettingsPage: FC = () => {
                 name="generateDebugFilesEnabled"
                 checked={generateDebugFilesEnabled}
                 onChange={onChangeGenerateDebugFilesEnabled}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="openBuildFolderOnExport"
+                name="openBuildFolderOnExport"
+                checked={openBuildFolderOnExport}
+                onChange={onChangeOpenBuildFolderOnExport}
               />
             </SettingRowInput>
           </SearchableSettingRow>
