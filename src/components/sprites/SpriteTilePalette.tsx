@@ -295,7 +295,9 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
             <img
               style={{
                 imageRendering: "pixelated",
-                minWidth: width * zoom,
+                display: "block",
+                width: width * zoom,
+                height: height * zoom,
               }}
               alt={spriteSheet.name}
               src={spriteURL}
@@ -307,13 +309,14 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
                 left: 0,
                 width: width * zoom,
                 height: height * zoom,
-                border: `${1 / zoom}px solid #d4d4d4`,
+                outline: `1px solid #079f1c`,
                 backgroundSize: `${8 * zoom}px ${8 * zoom}px`,
                 backgroundImage: generateGridBackground(
                   zoom,
                   "#32cb46",
                   "#079f1c",
                 ),
+                opacity: 0.5,
               }}
             />
             {hoverTile && !isDragging && (
