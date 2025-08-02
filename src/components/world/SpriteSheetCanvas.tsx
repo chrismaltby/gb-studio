@@ -21,6 +21,7 @@ interface SpriteSheetCanvasProps {
 
 const Wrapper = styled.div`
   position: relative;
+  display: flex;
 `;
 
 const directions: ActorDirection[] = ["right", "left", "up", "down"];
