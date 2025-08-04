@@ -74,6 +74,9 @@ export const optimiseTiles = async (
     spriteDataIndexFn,
   );
 
+  const baseWidth = 16;
+  const originX = spriteWidth < baseWidth ? 0 : spriteWidth / 2 - baseWidth / 2;
+  const originY = spriteHeight - (spriteMode === "8x8" ? 8 : 16);
   for (const myTiles of metasprites) {
     let mask = makeIndexedImage(spriteWidth, spriteHeight);
     for (let ti = myTiles.length - 1; ti >= 0; ti--) {
@@ -95,15 +98,15 @@ export const optimiseTiles = async (
       const visibleTile = removeIndexedImageMask(
         slicedTile,
         mask,
-        spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - (spriteMode === "8x8" ? 8 : 16) - tileDef.y,
+        originX + tileDef.x,
+        originY - tileDef.y,
       );
 
       mask = blitIndexedImageData(
         mask,
         slicedTile,
-        spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - (spriteMode === "8x8" ? 8 : 16) - tileDef.y,
+        originX + tileDef.x,
+        originY - tileDef.y,
       );
 
       tileLookup[tileDef.id] = allTiles.length;
