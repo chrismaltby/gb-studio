@@ -639,6 +639,7 @@ describe("TypeBox Schemas", () => {
       scriptEventDefaultPresets: {},
       runSceneSelectionOnly: false,
       spriteMode: "8x16",
+      openBuildFolderOnExport: true,
     };
     const invalidSettings = {
       _resourceType: "settings",

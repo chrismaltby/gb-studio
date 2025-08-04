@@ -367,6 +367,7 @@ export const dummyProjectData: ProjectData = {
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
     spriteMode: "8x16",
+    openBuildFolderOnExport: true,
   },
 };
 
@@ -645,6 +646,7 @@ export const dummySettingsResource: SettingsResource = {
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
   spriteMode: "8x16",
+  openBuildFolderOnExport: true,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -767,6 +769,7 @@ export const dummyProjectResources: ProjectResources = {
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
     spriteMode: "8x16",
+    openBuildFolderOnExport: true,
   },
 };
 

@@ -742,6 +742,7 @@ export const SettingsResource = Type.Object({
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
   runSceneSelectionOnly: Type.Boolean(),
   spriteMode: SpriteModeSetting,
+  openBuildFolderOnExport: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

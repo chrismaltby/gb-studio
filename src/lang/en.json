@@ -1232,6 +1232,7 @@
   "FIELD_DEFAULT_SPRITE_MODE": "Default Sprite Mode",
   "FIELD_SPRITE_MODE_OVERRIDE": "Sprite Mode Override",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Set Sprite Mode Override",
+  "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Open Build Folder On Export",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

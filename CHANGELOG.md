@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for Engine Fields to be used anywhere that script values are supported
 - Add zoom level 1600 when viewing assets
 - Add "If Engine Field Compare With Value/Variable" events
+- Add setting in Build Options to determine if build folder should be opened after exporting game [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 

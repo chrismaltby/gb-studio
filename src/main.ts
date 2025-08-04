@@ -1420,7 +1420,9 @@ ipcMain.handle(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`,
         );
-        shell.openPath(Path.join(projectRoot, "build", buildType));
+        if (project.settings.openBuildFolderOnExport) {
+          shell.openPath(Path.join(projectRoot, "build", buildType));
+        }
         buildLog(`-`);
         buildLog(
           `${l10n("COMPILER_BUILD_SUCCESS")} ${
