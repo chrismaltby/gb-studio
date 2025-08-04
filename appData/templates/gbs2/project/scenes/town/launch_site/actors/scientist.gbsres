@@ -17,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
   "script": [
     {
@@ -73,7 +74,8 @@
           "value": 12
         },
         "moveType": "vertical",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -91,7 +93,14 @@
       "id": "44e1d263-1858-45b4-abfe-e92e4dc8ad2f",
       "command": "EVENT_WAIT",
       "args": {
-        "time": 2
+        "time": {
+          "type": "number",
+          "value": 2
+        },
+        "frames": {
+          "type": "number",
+          "value": 30
+        }
       }
     },
     {
@@ -108,7 +117,8 @@
           "value": 12
         },
         "moveType": "horizontal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -126,7 +136,14 @@
       "id": "f89fa994-c563-4c6d-a0f8-3d721d4d153b",
       "command": "EVENT_WAIT",
       "args": {
-        "time": 2
+        "time": {
+          "type": "number",
+          "value": 2
+        },
+        "frames": {
+          "type": "number",
+          "value": 30
+        }
       }
     },
     {
@@ -143,7 +160,8 @@
           "value": 10
         },
         "moveType": "horizontal",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     },
     {
@@ -161,7 +179,14 @@
       "id": "9a8b7652-723e-498f-a41b-2a842a86971f",
       "command": "EVENT_WAIT",
       "args": {
-        "time": 4
+        "time": {
+          "type": "number",
+          "value": 4
+        },
+        "frames": {
+          "type": "number",
+          "value": 30
+        }
       }
     },
     {
@@ -178,7 +203,8 @@
           "value": 12
         },
         "moveType": "vertical",
-        "useCollisions": false
+        "useCollisions": false,
+        "collideWith": []
       }
     }
   ],

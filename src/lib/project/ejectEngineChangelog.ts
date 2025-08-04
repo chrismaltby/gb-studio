@@ -814,6 +814,72 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/input.h", "src/core/input.c"],
   },
+  {
+    version: "4.2.0-e8",
+    description: createDescription("Refactor", [
+      "Store position coordinates as unsigned 11.5 fixed point values allowing optimisation of tile coordinate calculations",
+      "Update platform scenes to version based on Platformer Plus",
+      "Allow vm_actor_move_to to only check collisions with walls and/or actors",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/camera.h",
+      "include/collision.h",
+      "include/data_manager.h",
+      "include/gbs_types.h",
+      "include/math.h",
+      "include/projectiles.h",
+      "include/scroll.h",
+      "include/states/platform.h",
+      "include/trigger.h",
+      "include/vm.i",
+      "include/vm_actor.h",
+      "src/core/absolute.c",
+      "src/core/actor.c",
+      "src/core/camera.c",
+      "src/core/collision.c",
+      "src/core/data_manager.c",
+      "src/core/projectiles.c",
+      "src/core/scroll.c",
+      "src/core/trigger.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_camera.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/pointnclick.c",
+      "src/states/shmup.c",
+      "src/states/topdown.c",
+    ],
+  },
+  {
+    version: "4.2.0-e9",
+    description: createDescription("Updates", [
+      "Add support for setting per scene camera min/max bounds",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/math.h",
+      "include/scroll.h",
+      "src/core/data_manager.c",
+      "src/core/scroll.c",
+    ],
+  },
+  {
+    version: "4.2.0-e10",
+    description: createDescription("Fixes", [
+      "Fix issue where holding button to fast forward through text would close text box when end reached",
+      "Fix position overflow in large Adventure scenes",
+      "Fix position overflow in large Point and Click scenes",
+    ]),
+    modifiedFiles: [
+      "include/math.h",
+      "src/core/ui.c",
+      "src/states/adventure.c",
+      "src/states/pointnclick.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
@@ -822,7 +888,7 @@ export const isKnownEngineVersion = (currentVersion: string): boolean => {
 
 const ejectEngineChangelog = (currentVersion: string) => {
   const startIndex = changes.findIndex(
-    (change) => change.version === currentVersion
+    (change) => change.version === currentVersion,
   );
   let changelog = l10n("WARNING_MISSING_UPDATES") + ":\n\n";
   const modifiedFiles = [];

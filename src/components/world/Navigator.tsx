@@ -40,7 +40,7 @@ const Pane = styled.div`
 
 export const Navigator = () => {
   const storedSplitSizes = useAppSelector(
-    (state) => state.editor.navigatorSplitSizes
+    (state) => state.editor.navigatorSplitSizes,
   );
   const dispatch = useAppDispatch();
   const windowSize = useWindowSize();
@@ -48,7 +48,7 @@ export const Navigator = () => {
 
   const updateSplitSizes = (newSizes: number[], manuallyEdited: boolean) => {
     dispatch(
-      editorActions.setNavigatorSplitSizes({ sizes: newSizes, manuallyEdited })
+      editorActions.setNavigatorSplitSizes({ sizes: newSizes, manuallyEdited }),
     );
   };
 
@@ -80,7 +80,7 @@ export const Navigator = () => {
   };
 
   const onAddCustomEvent = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     dispatch(entitiesActions.addCustomEvent());
@@ -90,7 +90,7 @@ export const Navigator = () => {
   };
 
   const onAddActorPrefab = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     dispatch(entitiesActions.addActorPrefab());
@@ -100,7 +100,7 @@ export const Navigator = () => {
   };
 
   const onAddTriggerPrefab = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     dispatch(entitiesActions.addTriggerPrefab());
@@ -110,7 +110,7 @@ export const Navigator = () => {
   };
 
   const onAddConstant = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     dispatch(entitiesActions.addConstant());

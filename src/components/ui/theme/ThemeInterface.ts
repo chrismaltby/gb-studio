@@ -113,6 +113,7 @@ export interface ThemeInterface {
         nest3Background: string;
         nest4Background: string;
         commentBackground: string;
+        disabledBackground: string;
       };
       branch: {
         nest1Background: string;

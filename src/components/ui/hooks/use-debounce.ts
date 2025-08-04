@@ -6,7 +6,7 @@ import debounce from "lodash/debounce";
 
 export const useDebounce = <T extends (...args: Array<any>) => any>(
   cb: T,
-  delay: number
+  delay: number,
 ) => {
   const inputsRef = useRef({ cb, delay });
   const isMounted = useIsMounted();
@@ -22,6 +22,6 @@ export const useDebounce = <T extends (...args: Array<any>) => any>(
         inputsRef.current.cb(...args);
       }
     }, delay),
-    [delay, debounce]
+    [delay, debounce],
   );
 };

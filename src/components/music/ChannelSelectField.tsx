@@ -50,17 +50,17 @@ export const ChannelSelectField = ({
   const dispatch = useAppDispatch();
 
   const selectedChannel = useAppSelector(
-    (state) => state.tracker.selectedChannel
+    (state) => state.tracker.selectedChannel,
   );
   const visibleChannels = useAppSelector(
-    (state) => state.tracker.visibleChannels
+    (state) => state.tracker.visibleChannels,
   );
 
   const setSelectedChannel = useCallback(
     (channel: number) => () => {
       dispatch(trackerActions.setSelectedChannel(channel));
     },
-    [dispatch]
+    [dispatch],
   );
   const toggleVisibleChannel = useCallback(
     (channel: number) => () => {
@@ -73,7 +73,7 @@ export const ChannelSelectField = ({
       }
       dispatch(trackerActions.setVisibleChannels(newVisibleChannels));
     },
-    [dispatch, visibleChannels]
+    [dispatch, visibleChannels],
   );
 
   const setMute = useCallback(() => {

@@ -10,15 +10,9 @@ import loadAllSoundData from "./loadSoundData";
 import loadAllScriptEventHandlers, {
   ScriptEventDef,
 } from "./loadScriptEventHandlers";
-import type {
-  EngineFieldSchema,
-  SceneTypeSchema,
-} from "store/features/engine/engineState";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
-import { loadEngineFields } from "lib/project/engineFields";
-import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadAllTilesetData from "lib/project/loadTilesetData";
 import {
   CompressedBackgroundResource,
@@ -46,12 +40,12 @@ import {
   compress8bitNumberArray,
   decompress8bitNumberString,
 } from "shared/lib/resources/compression";
+import { EngineSchema, loadEngineSchema } from "./loadEngineSchema";
 
 export interface LoadProjectResult {
   resources: CompressedProjectResources;
   scriptEventDefs: Record<string, ScriptEventDef>;
-  engineFields: EngineFieldSchema[];
-  sceneTypes: SceneTypeSchema[];
+  engineSchema: EngineSchema;
   modifiedSpriteIds: string[];
   isMigrated: boolean;
 }
@@ -65,7 +59,7 @@ const toAssetFilename = (elem: Asset) => {
 };
 
 const indexResourceByFilename = <T extends Asset>(
-  arr: T[]
+  arr: T[],
 ): Record<string, T> => keyBy(arr || [], (data) => toAssetFilename(data));
 
 const sortByName = (a: { name: string }, b: { name: string }) => {
@@ -90,14 +84,13 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     ? migrateLegacyProject(
         originalJson as ProjectData,
         projectRoot,
-        scriptEventDefs
+        scriptEventDefs,
       )
     : await loadProjectResources(projectRoot, originalJson);
 
   const resources = await migrateProjectResources(unmigratedResources);
 
-  const engineFields = await loadEngineFields(projectRoot);
-  const sceneTypes = await loadSceneTypes(projectRoot);
+  const engineSchema = await loadEngineSchema(projectRoot);
 
   const { _version: originalVersion, _release: originalRelease } =
     originalJson as ProjectMetadataResource;
@@ -156,11 +149,11 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const mergeAssetsWithResources = <
     R extends Asset & { name: string },
-    A extends Asset
+    A extends Asset,
   >(
     assets: A[],
     resources: R[],
-    mergeFn: (asset: A, resource: R | undefined) => R
+    mergeFn: (asset: A, resource: R | undefined) => R,
   ) => {
     const oldResourceByFilename = indexResourceByFilename(resources || []);
     return assets
@@ -173,11 +166,11 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
 
   const mergeAssetIdsWithResources = <
     A extends Asset & { id: string; name: string },
-    B extends string
+    B extends string,
   >(
     assets: A[],
     resources: Omit<A & { _resourceType: B }, "inode" | "_v" | "plugin">[],
-    resourceType: B
+    resourceType: B,
   ) => {
     return mergeAssetsWithResources(assets, resources, (asset, resource) => {
       return {
@@ -194,11 +187,11 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       symbol: string;
       name: string;
     },
-    B extends string
+    B extends string,
   >(
     assets: A[],
     resources: Omit<A & { _resourceType: B }, "inode" | "_v" | "plugin">[],
-    resourceType: B
+    resourceType: B,
   ) => {
     return mergeAssetsWithResources(assets, resources, (asset, resource) => {
       return {
@@ -227,8 +220,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
             resource.width,
             resource.height,
             asset.width,
-            asset.height
-          )
+            asset.height,
+          ),
         );
       }
 
@@ -291,31 +284,31 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   const emoteResources = mergeAssetIdAndSymbolsWithResources(
     emotes,
     resources.emotes,
-    "emote"
+    "emote",
   );
 
   const avatarResources = mergeAssetIdsWithResources(
     avatars,
     resources.avatars,
-    "avatar"
+    "avatar",
   );
 
   const tilesetResources = mergeAssetIdAndSymbolsWithResources(
     tilesets,
     resources.tilesets,
-    "tileset"
+    "tileset",
   );
 
   const soundResources = mergeAssetIdAndSymbolsWithResources(
     sounds,
     resources.sounds,
-    "sound"
+    "sound",
   );
 
   const fontResources = mergeAssetIdAndSymbolsWithResources(
     fonts,
     resources.fonts,
-    "font"
+    "font",
   );
 
   const musicResources = mergeAssetsWithResources<
@@ -343,7 +336,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
   for (let i = 0; i < defaultPalettes.length; i++) {
     const defaultPalette = defaultPalettes[i];
     const existingPalette = paletteResources.find(
-      (p) => p.id === defaultPalette.id
+      (p) => p.id === defaultPalette.id,
     );
     if (existingPalette) {
       existingPalette.defaultName = defaultPalette.name;
@@ -388,8 +381,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     modifiedSpriteIds,
     isMigrated,
     scriptEventDefs: cloneDictionary(scriptEventDefs),
-    engineFields,
-    sceneTypes,
+    engineSchema,
   };
 };
 

@@ -57,10 +57,10 @@ const SpritesPage = () => {
   const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
-    (state) => state.editor.worldSidebarWidth
+    (state) => state.editor.worldSidebarWidth,
   );
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const tilesZoom = useAppSelector((state) => state.editor.zoomSpriteTiles);
   const windowSize = useWindowSize();
@@ -70,39 +70,39 @@ const SpritesPage = () => {
   const minCenterPaneWidth = 0;
 
   const allSprites = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
   );
   const spritesLookup = useAppSelector((state) =>
-    spriteSheetSelectors.selectEntities(state)
+    spriteSheetSelectors.selectEntities(state),
   );
   const spriteStatesLookup = useAppSelector((state) =>
-    spriteStateSelectors.selectEntities(state)
+    spriteStateSelectors.selectEntities(state),
   );
   const spriteAnimationsLookup = useAppSelector((state) =>
-    spriteAnimationSelectors.selectEntities(state)
+    spriteAnimationSelectors.selectEntities(state),
   );
   const selectedId = useAppSelector(
-    (state) => state.editor.selectedSpriteSheetId
+    (state) => state.editor.selectedSpriteSheetId,
   );
   const navigationStateId = useAppSelector(
-    (state) => state.editor.selectedSpriteStateId
+    (state) => state.editor.selectedSpriteStateId,
   );
   const animationId = useAppSelector(
-    (state) => state.editor.selectedAnimationId
+    (state) => state.editor.selectedAnimationId,
   );
   const metaspriteId = useAppSelector(
-    (state) => state.editor.selectedMetaspriteId
+    (state) => state.editor.selectedMetaspriteId,
   );
   const selectedAdditionalMetaspriteIds = useAppSelector(
-    (state) => state.editor.selectedAdditionalMetaspriteIds
+    (state) => state.editor.selectedAdditionalMetaspriteIds,
   );
   const precisionTileMode = useAppSelector(
-    (state) => state.editor.precisionTileMode
+    (state) => state.editor.precisionTileMode,
   );
   const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
 
   const sprite = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, selectedId)
+    spriteSheetSelectors.selectById(state, selectedId),
   );
 
   const lastSpriteId = useRef("");
@@ -114,7 +114,7 @@ const SpritesPage = () => {
 
   const viewSpriteId = useMemo(
     () => sprite?.id || lastSpriteId.current || allSprites[0]?.id,
-    [allSprites, sprite]
+    [allSprites, sprite],
   );
 
   const selectedSprite = spritesLookup[viewSpriteId];
@@ -133,7 +133,7 @@ const SpritesPage = () => {
     metaspriteId || selectedAnimation?.frames[0] || "";
   const frames = useMemo(
     () => selectedAnimation?.frames || [],
-    [selectedAnimation?.frames]
+    [selectedAnimation?.frames],
   );
   const selectedFrame = frames.indexOf(selectedMetaspriteId);
 
@@ -141,7 +141,7 @@ const SpritesPage = () => {
   useEffect(() => {
     if (selectedFrame === -1 && frames.length > 0) {
       dispatch(
-        editorActions.setSelectedMetaspriteId(frames[frames.length - 1])
+        editorActions.setSelectedMetaspriteId(frames[frames.length - 1]),
       );
     }
   }, [dispatch, frames, selectedFrame]);
@@ -217,21 +217,21 @@ const SpritesPage = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number, rightPaneWidth: number) => {
       dispatch(
-        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth))
+        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth)),
       );
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(
     () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
-    [leftPaneWidth, rightPaneWidth]
+    [leftPaneWidth, rightPaneWidth],
   );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(
       leftPaneWidth,
-      windowWidth - rightPaneWidth - minCenterPaneWidth
+      windowWidth - rightPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== leftPaneWidth) {
       setLeftPaneSize(newWidth);
@@ -241,7 +241,7 @@ const SpritesPage = () => {
   const recalculateRightColumn = () => {
     const newWidth = Math.min(
       rightPaneWidth,
-      windowWidth - leftPaneWidth - minCenterPaneWidth
+      windowWidth - leftPaneWidth - minCenterPaneWidth,
     );
     if (newWidth !== rightPaneWidth) {
       setRightPaneSize(newWidth);
@@ -277,7 +277,7 @@ const SpritesPage = () => {
       e.stopPropagation();
       dispatch(editorActions.setPrecisionTileMode(!precisionTileMode));
     },
-    [dispatch, precisionTileMode]
+    [dispatch, precisionTileMode],
   );
 
   const handleKeys = useCallback((e: KeyboardEvent) => {
@@ -422,7 +422,7 @@ const SpritesPage = () => {
               selectedState.animationType,
               selectedState.flipLeft,
               selectedAnimationId,
-              selectedState.animations
+              selectedState.animations,
             )}`}
         </SplitPaneHeader>
         {animationsOpen && (

@@ -30,7 +30,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         const songsLookup = musicSelectors.selectEntities(state);
         const selectedSong = songsLookup[state.editor.selectedSongId];
         const option = await API.dialog.confirmUnsavedChangesTrackerDialog(
-          selectedSong?.name ?? ""
+          selectedSong?.name ?? "",
         );
         switch (option) {
           case 0: // Save and continue
@@ -66,7 +66,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         electronActions.showErrorBox({
           title: l10n("ERROR_UNABLE_TO_SAVE_MUSIC_FILE"),
           content: l10n("ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC"),
-        })
+        }),
       );
     }
 

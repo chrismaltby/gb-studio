@@ -1,0 +1,98 @@
+{
+  "_resourceType": "script",
+  "id": "a910691b-cedc-463c-8633-b81c735893f9",
+  "name": "common/Platformer/On Knockback",
+  "description": "",
+  "variables": {},
+  "actors": {
+    "0": {
+      "id": "0",
+      "name": "HealthUI"
+    }
+  },
+  "symbol": "script_14",
+  "script": [
+    {
+      "command": "EVENT_SOUND_PLAY_EFFECT",
+      "args": {
+        "type": "ca718340-6862-49ef-b052-0a086eda78f4",
+        "priority": "medium",
+        "pitch": 4,
+        "frequency": 200,
+        "duration": 0.5,
+        "wait": true,
+        "effect": 4
+      },
+      "id": "43488baa-1a7b-420b-a464-cfc1c352ec58"
+    },
+    {
+      "command": "EVENT_DEC_VALUE",
+      "args": {
+        "variable": "18"
+      },
+      "id": "d842c8cb-4786-4090-890b-2dc2766b0da9"
+    },
+    {
+      "command": "EVENT_IF",
+      "args": {
+        "condition": {
+          "type": "lte",
+          "valueA": {
+            "type": "variable",
+            "value": "18"
+          },
+          "valueB": {
+            "type": "number",
+            "value": 0
+          }
+        },
+        "__collapseElse": false
+      },
+      "children": {
+        "true": [
+          {
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "18",
+              "value": {
+                "type": "number",
+                "value": 0
+              }
+            },
+            "id": "71133036-84f7-435a-94e7-7341dd58cb67"
+          },
+          {
+            "command": "EVENT_PLATFORMER_STATE_SET",
+            "args": {
+              "state": "blank"
+            },
+            "id": "44085b50-96be-4366-a03e-ffbd677a3e08"
+          }
+        ],
+        "false": []
+      },
+      "id": "d91a63fb-b9b5-4728-a7ee-26f14ad830e1"
+    },
+    {
+      "command": "EVENT_CALL_CUSTOM_EVENT",
+      "args": {
+        "customEventId": "81daf0f4-6d57-4b0a-976d-a2b499989b38",
+        "$actor[0]$": "0",
+        "__comment": false
+      },
+      "id": "6ec3121c-f851-483b-9b3a-1052307fd643"
+    },
+    {
+      "id": "4b0baf89-9595-4bf7-a7aa-c2b9141064d9",
+      "command": "EVENT_CAMERA_SHAKE",
+      "args": {
+        "time": 0.5,
+        "magnitude": {
+          "type": "number",
+          "value": 5
+        },
+        "__collapse": false
+      }
+    }
+  ]
+}

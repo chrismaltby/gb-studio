@@ -36,7 +36,7 @@ export const CollisionTileIcon = ({ icon, color }: CollisionTileIconProps) => {
 
     const tileIcon = renderCollisionTileIcon(
       icon ?? defaultCollisionTileIcon,
-      color ?? defaultCollisionTileColor
+      color ?? defaultCollisionTileColor,
     );
 
     ctx.drawImage(tileIcon, 0, 0);

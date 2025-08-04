@@ -79,7 +79,7 @@ const CustomControlsPicker = ({ searchTerm }: CustomControlsPickerProps) => {
         label: l10n("FIELD_DIRECTION_RIGHT"),
       },
     ],
-    []
+    [],
   );
 
   const noop = useCallback(() => {}, []);
@@ -97,14 +97,14 @@ const CustomControlsPicker = ({ searchTerm }: CustomControlsPickerProps) => {
         dispatch(
           settingsActions.editSettings({
             [inputKey]: [],
-          })
+          }),
         );
       } else {
         const patch = Object.values(keyMap).reduce((memo, otherInputKey) => {
           if (inputKey !== otherInputKey) {
             // Remove if this key has already been assigned to another input
             const otherValue: readonly string[] = Array.isArray(
-              settings[otherInputKey]
+              settings[otherInputKey],
             )
               ? settings[otherInputKey]
               : defaultValues[otherInputKey];
@@ -142,8 +142,8 @@ const CustomControlsPicker = ({ searchTerm }: CustomControlsPickerProps) => {
             ...memo,
             [key]: undefined,
           };
-        }, {})
-      )
+        }, {}),
+      ),
     );
   }, [dispatch]);
 

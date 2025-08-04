@@ -36,16 +36,16 @@ const Wrapper = styled.div<WrapperProps>`
 const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
   const dispatch = useAppDispatch();
   const trigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, id)
+    triggerSelectors.selectById(state, id),
   );
   const selected = useAppSelector(
     (state) =>
       state.editor.type === "trigger" &&
       state.editor.scene === sceneId &&
-      state.editor.entityId === id
+      state.editor.entityId === id,
   );
   const isDragging = useAppSelector(
-    (state) => selected && state.editor.dragging
+    (state) => selected && state.editor.dragging,
   );
 
   const onMouseUp = useCallback(() => {
@@ -61,7 +61,7 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
         window.addEventListener("mouseup", onMouseUp);
       }
     },
-    [dispatch, editable, id, onMouseUp, sceneId]
+    [dispatch, editable, id, onMouseUp, sceneId],
   );
 
   useEffect(() => {
@@ -73,12 +73,11 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
     };
   }, [onMouseUp, isDragging]);
 
-  const [contextMenu, setContextMenu] =
-    useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    menu: JSX.Element[];
+  }>();
 
   const renderContextMenu = useCallback(() => {
     return renderTriggerContextMenu({
@@ -97,7 +96,7 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
       }
       setContextMenu({ x: e.pageX, y: e.pageY, menu });
     },
-    [renderContextMenu]
+    [renderContextMenu],
   );
 
   const onContextMenuClose = useCallback(() => {

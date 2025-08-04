@@ -9,7 +9,7 @@ export const ActorDirection = Type.Union(
     Type.Literal("left"),
     Type.Literal("right"),
   ],
-  { default: "down" }
+  { default: "down" },
 );
 
 export type ActorDirection = Static<typeof ActorDirection>;
@@ -21,6 +21,15 @@ export const SceneParallaxLayer = Type.Object({
 
 export type SceneParallaxLayer = Static<typeof SceneParallaxLayer>;
 
+export const SceneBoundsRect = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  width: Type.Number(),
+  height: Type.Number(),
+});
+
+export type SceneBoundsRect = Static<typeof SceneBoundsRect>;
+
 export const CollisionGroup = Type.Union(
   [
     Type.Literal(""),
@@ -29,10 +38,24 @@ export const CollisionGroup = Type.Union(
     Type.Literal("3"),
     Type.Literal("player"),
   ],
-  { default: "" }
+  { default: "" },
 );
 
 export type CollisionGroup = Static<typeof CollisionGroup>;
+
+export const CollisionExtraFlag = Type.Union(
+  [
+    Type.Literal("1"),
+    Type.Literal("2"),
+    Type.Literal("3"),
+    Type.Literal("4"),
+    Type.Literal("solid"),
+    Type.Literal("platform"),
+  ],
+  { default: "" },
+);
+
+export type CollisionExtraFlag = Static<typeof CollisionExtraFlag>;
 
 export const ColorModeSetting = Type.Union([
   Type.Literal("mono"),
@@ -79,10 +102,10 @@ const ScriptEvent = Type.Recursive((This) =>
     children: Type.Optional(
       Type.Record(
         Type.String(),
-        Type.Union([Type.Array(This), Type.Undefined()])
-      )
+        Type.Union([Type.Array(This), Type.Undefined()]),
+      ),
     ),
-  })
+  }),
 );
 type ScriptEvent = Static<typeof ScriptEvent>;
 
@@ -112,6 +135,7 @@ export const ActorResource = Type.Object({
   isPinned: Type.Boolean(),
   persistent: Type.Boolean(),
   collisionGroup: CollisionGroup,
+  collisionExtraFlags: Type.Array(CollisionExtraFlag),
   prefabScriptOverrides: Type.Record(Type.String(), ScriptEventArgsOverride),
   script: Type.Array(ScriptEvent),
   startScript: Type.Array(ScriptEvent),
@@ -206,6 +230,14 @@ export const CompressedSceneResource = Type.Object({
   playerHit2Script: Type.Array(ScriptEvent),
   playerHit3Script: Type.Array(ScriptEvent),
   collisions: Type.String(),
+  scrollBounds: Type.Optional(
+    Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+      width: Type.Number(),
+      height: Type.Number(),
+    }),
+  ),
 });
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;
@@ -326,6 +358,13 @@ export const ObjPalette = Type.Union([
 
 export type ObjPalette = Static<typeof ObjPalette>;
 
+export const SpriteModeSetting = Type.Union([
+  Type.Literal("8x8"),
+  Type.Literal("8x16"),
+]);
+
+export type SpriteModeSetting = Static<typeof SpriteModeSetting>;
+
 export const MetaspriteTile = Type.Object({
   id: Type.String(),
   x: Type.Number(),
@@ -350,6 +389,8 @@ export const SpriteAnimationType = Type.Union([
   Type.Literal("fixed_movement"),
   Type.Literal("multi"),
   Type.Literal("multi_movement"),
+  Type.Literal("horizontal"),
+  Type.Literal("horizontal_movement"),
   Type.Literal("platform_player"),
   Type.Literal("cursor"),
 ]);
@@ -390,6 +431,7 @@ export const SpriteResource = Type.Object({
   boundsHeight: Type.Number(),
   animSpeed: Type.Union([Type.Number(), Type.Null()]),
   states: Type.Array(SpriteState),
+  spriteMode: Type.Optional(SpriteModeSetting),
 });
 
 export type SpriteResource = Static<typeof SpriteResource>;
@@ -503,7 +545,7 @@ export const PaletteResource = Type.Object({
   ]),
   defaultName: Type.Optional(Type.String()),
   defaultColors: Type.Optional(
-    Type.Tuple([Type.String(), Type.String(), Type.String(), Type.String()])
+    Type.Tuple([Type.String(), Type.String(), Type.String(), Type.String()]),
   ),
 });
 
@@ -695,10 +737,12 @@ export const SettingsResource = Type.Object({
   compilerPreset: Type.Number({ default: 3000 }),
   scriptEventPresets: Type.Record(
     Type.String(),
-    Type.Record(Type.String(), ScriptEventPreset)
+    Type.Record(Type.String(), ScriptEventPreset),
   ),
   scriptEventDefaultPresets: Type.Record(Type.String(), Type.String()),
   runSceneSelectionOnly: Type.Boolean(),
+  spriteMode: SpriteModeSetting,
+  openBuildFolderOnExport: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
@@ -821,7 +865,7 @@ export type WriteResourcesPatch = {
 };
 
 export const isProjectMetadataResource = (
-  x: unknown
+  x: unknown,
 ): x is ProjectMetadataResource => {
   return (
     x !== null &&

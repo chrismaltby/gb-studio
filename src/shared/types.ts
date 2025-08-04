@@ -53,19 +53,19 @@ export const isMaybeNumber = (value: unknown): value is number | undefined => {
 export const ensureType = <T>(
   value: unknown,
   fallback: T,
-  isType: (value: unknown) => value is T
+  isType: (value: unknown) => value is T,
 ): T => {
   return isType(value) ? value : fallback;
 };
 
 export const ensureTypeGenerator = <T>(
-  isType: (value: unknown) => value is T
+  isType: (value: unknown) => value is T,
 ): ((value: unknown, fallback: T) => T) => {
   return (value: unknown, fallback: T) => (isType(value) ? value : fallback);
 };
 
 export const ensurePromisedTypeGenerator = <T>(
-  isType: (value: unknown) => value is T
+  isType: (value: unknown) => value is T,
 ): ((promise: Promise<unknown>, fallback: T) => Promise<T>) => {
   return async (promise: Promise<unknown>, fallback: T): Promise<T> => {
     try {
@@ -93,7 +93,7 @@ export const omit = <T, O extends keyof T>(
   ...keys: O[]
 ): Omit<T, O> => {
   const ret = {} as {
-    [K in keyof typeof obj]: typeof obj[K];
+    [K in keyof typeof obj]: (typeof obj)[K];
   };
   let key: keyof typeof obj;
   for (key in obj) {

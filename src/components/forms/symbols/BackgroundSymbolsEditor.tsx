@@ -26,7 +26,7 @@ export const BackgroundSymbolsEditor = ({
           entitiesActions.setBackgroundSymbol({
             backgroundId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

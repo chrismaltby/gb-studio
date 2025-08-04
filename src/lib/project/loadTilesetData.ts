@@ -53,17 +53,17 @@ const loadTilesetData =
 
 const loadAllTilesetData = async (projectRoot: string) => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/tilesets/**/@(*.png|*.PNG)`
+    `${projectRoot}/assets/tilesets/**/@(*.png|*.PNG)`,
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/tilesets/**/@(*.png|*.PNG)`
+    `${projectRoot}/plugins/*/**/tilesets/**/@(*.png|*.PNG)`,
   );
   const imageData = (
     await Promise.all(
       ([] as Array<Promise<TilesetResourceAsset | null>>).concat(
         imagePaths.map(loadTilesetData(projectRoot)),
-        pluginPaths.map(loadTilesetData(projectRoot))
-      )
+        pluginPaths.map(loadTilesetData(projectRoot)),
+      ),
     )
   ).filter((i) => i) as TilesetResourceAsset[];
   return imageData;

@@ -21,7 +21,7 @@ export const acceleratorForPlatform = (accelerator: string) => {
 export const StyledMenuAccelerator = styled.div.attrs<StyledMenuAcceleratorProps>(
   (props) => ({
     children: acceleratorForPlatform(props.$accelerator),
-  })
+  }),
 )<StyledMenuAcceleratorProps>`
   flex-grow: 1;
   font-size: 0.8em;

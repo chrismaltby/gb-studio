@@ -339,7 +339,7 @@
   "FIELD_LOW": "Baixo",
   "FIELD_MEDIUM": "Médio",
   "FIELD_HIGH": "Alto",
-  "FIELD_BOUNCE_NOTE": "Afeta apenas cenas de Plataforma",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Afeta apenas cenas de Plataforma",
   "FIELD_WEAPON_SPRITE": "Folha de Sprite de Armas",
   "FIELD_WORK_IN_PROGRESS": "Trabalho em Andamento",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Substituir Padrão para Tipo de Cena",

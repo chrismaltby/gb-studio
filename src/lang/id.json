@@ -323,7 +323,7 @@
   "FIELD_LOW": "Rendah",
   "FIELD_MEDIUM": "Sedang",
   "FIELD_HIGH": "Tinggi",
-  "FIELD_BOUNCE_NOTE": "Hanya mempengaruhi adegan Platform",
+  "FIELD_ONLY_AFFECTS_PLATFORM_SCENES": "Hanya mempengaruhi adegan Platform",
   "FIELD_WEAPON_SPRITE": "Lembar Sprite Senjata",
   "FIELD_WORK_IN_PROGRESS": "Dalam Proses",
   "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Ganti Default untuk Tipe Adegan",
@@ -1305,7 +1305,7 @@
   "MENU_DELETE_SOUND_EFFECT": "Hapus Efek Suara",
   "MENU_DELETE_PALETTE": "Hapus Palet",
   "MENU_SPELLING": "Ejaan dan Grammar",
-  "MENU_CHECK_SPELLING_WHILE_TYPING" : "Periksa Ejaan Saat Mengetik",
+  "MENU_CHECK_SPELLING_WHILE_TYPING": "Periksa Ejaan Saat Mengetik",
 
   "// 11": "Peringatan ---------------------------------------------------",
 

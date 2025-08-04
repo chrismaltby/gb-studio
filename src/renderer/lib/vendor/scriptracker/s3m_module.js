@@ -80,13 +80,13 @@ var S3mModule = function (fileData) {
       // Load mono sample data.
       sample.loadSample(
         fileData.subarray(dataOffset, dataOffset + dataLength),
-        this.signedSample
+        this.signedSample,
       );
     } else {
       // Load stereo sample data.
       sample.loadStereoSample(
         fileData.subarray(dataOffset, dataOffset + dataLength),
-        this.signedSample
+        this.signedSample,
       );
     }
 
@@ -102,7 +102,7 @@ var S3mModule = function (fileData) {
     var patternLength = Helpers.readWord(fileData, patternOffset);
     var patternData = fileData.subarray(
       patternOffset,
-      patternOffset + patternLength
+      patternOffset + patternLength,
     );
 
     var pattern = new Pattern(64, this.channels);
@@ -160,11 +160,11 @@ var S3mModule = function (fileData) {
               pattern.effect[i][channel] = Effects.PORTA_DOWN;
               if (param >= 240) {
                 pattern.effectParam[i][channel] = Math.round(
-                  (param % 16) / 16.0
+                  (param % 16) / 16.0,
                 );
               } else if (param >= 224) {
                 pattern.effectParam[i][channel] = Math.round(
-                  (param % 16) / 4.0
+                  (param % 16) / 4.0,
                 );
               }
               break;
@@ -172,11 +172,11 @@ var S3mModule = function (fileData) {
               pattern.effect[i][channel] = Effects.PORTA_UP;
               if (param >= 240) {
                 pattern.effectParam[i][channel] = Math.round(
-                  (param % 16) / 16.0
+                  (param % 16) / 16.0,
                 );
               } else if (param >= 224) {
                 pattern.effectParam[i][channel] = Math.round(
-                  (param % 16) / 4.0
+                  (param % 16) / 4.0,
                 );
               }
               break;

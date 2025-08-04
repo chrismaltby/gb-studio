@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "type": "emulicious-debugger",
+            "request": "launch",
+            "name": "Launch in Emulicious",
+            "program": "${workspaceFolder}/_gbsbuild/build/rom/game.gb",
+            "port": 58870,
+            "stopOnEntry": true,
+            "additionalSrcFolders": "${workspaceFolder}/_gbsbuild/src",
+        },
+        {
+            "type": "emulicious-debugger",
+            "name": "Attach to Emulicious",
+            "request": "attach",
+            "port": 58870,
+            "additionalSrcFolders": "${workspaceFolder}/_gbsbuild/src"
+        }
+    ]
+}

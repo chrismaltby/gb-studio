@@ -147,7 +147,7 @@ workerCtx.onmessage = async (evt) => {
         });
         useLookup[trigger.id] = true;
       }
-    }
+    },
   );
 
   Object.values(customEventsLookup).forEach((customEvent, customEventIndex) => {
@@ -176,7 +176,7 @@ workerCtx.onmessage = async (evt) => {
           });
           useLookup[customEvent.id] = true;
         }
-      }
+      },
     );
   });
 

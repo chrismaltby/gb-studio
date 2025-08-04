@@ -23,7 +23,7 @@ export const ActorSymbolsEditor = ({ id }: ActorSymbolsEditorProps) => {
           entitiesActions.setActorSymbol({
             actorId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

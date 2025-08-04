@@ -11,7 +11,7 @@ import {
 type CompileDoneCallback = (
   romFile?: Uint8Array,
   startAddress?: number,
-  addressToLineMap?: AddressToLineMap
+  addressToLineMap?: AddressToLineMap,
 ) => void;
 
 type CompileLogCallback = (message: string | null) => void;
@@ -148,7 +148,7 @@ async function runRgbAsm(target: string): Promise<Uint8Array> {
 }
 
 async function runRgbLink(
-  objFiles: Uint8Array[]
+  objFiles: Uint8Array[],
 ): Promise<[Uint8Array, string]> {
   const args = ["-o", "output.gb", "--map", "output.map"].concat(linkOptions);
   objFiles.forEach((_, idx) => {
@@ -269,7 +269,7 @@ function buildDone(romFile: Uint8Array, mapFile: string) {
           `Space left: ${sectionType}[${bankNumber}]: ${space}  (${(
             (space / total) *
             100
-          ).toFixed(1)}%)`
+          ).toFixed(1)}%)`,
         );
       }
     }
@@ -282,7 +282,7 @@ const compiler = {
   compile: (
     options: string[],
     onCompileDone: CompileDoneCallback,
-    onCompileLog?: CompileLogCallback
+    onCompileLog?: CompileLogCallback,
   ) => {
     doneCallback = onCompileDone;
     linkOptions = options ?? [];

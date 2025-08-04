@@ -50,7 +50,7 @@ const Wrapper = styled.div`
 const buildOptions = (
   memo: OptGroup[],
   plugin: string | undefined,
-  tilesets: Tileset[]
+  tilesets: Tileset[],
 ) => {
   memo.push({
     label: plugin ? plugin : "",
@@ -97,8 +97,8 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
           memo,
           plugin,
           filteredTilesets.filter((s) =>
-            plugin ? s.plugin === plugin : !s.plugin
-          )
+            plugin ? s.plugin === plugin : !s.plugin,
+          ),
         );
         return memo;
       },
@@ -111,7 +111,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
               ],
             },
           ] as TilesetOptGroup[])
-        : ([] as TilesetOptGroup[])
+        : ([] as TilesetOptGroup[]),
     );
 
     setOptions(options);

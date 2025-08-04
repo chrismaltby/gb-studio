@@ -3,7 +3,6 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_ENGINE_FIELD_STORE";
 const groups = ["EVENT_GROUP_ENGINE_FIELDS", "EVENT_GROUP_VARIABLES"];
 const subGroups = {
-  EVENT_GROUP_ENGINE_FIELDS: "EVENT_GROUP_VARIABLES",
   EVENT_GROUP_VARIABLES: "EVENT_GROUP_ENGINE_FIELDS",
 };
 
@@ -23,6 +22,7 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_READ_DESC"),
     key: "engineFieldKey",
+    defaultValue: "LAST_ENGINE_FIELD",
   },
   {
     key: "value",

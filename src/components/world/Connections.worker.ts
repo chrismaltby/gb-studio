@@ -74,10 +74,10 @@ const calculateTransitionCoords = ({
   entityId,
 }: CalculateTransitionCoordsProps): SceneTransitionCoords => {
   const scriptEventX = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.x, defaultCoord)
+    ensureScriptValue(scriptEvent.args?.x, defaultCoord),
   );
   const scriptEventY = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.y, defaultCoord)
+    ensureScriptValue(scriptEvent.args?.y, defaultCoord),
   );
 
   const toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
@@ -105,11 +105,11 @@ const getSceneConnections = (
   triggersLookup: Record<string, TriggerNormalized>,
   actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
   triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
-  customEventsLookup: Record<string, CustomEventNormalized>
+  customEventsLookup: Record<string, CustomEventNormalized>,
 ) => {
   const ifMatches = (
     scriptEvent: ScriptEventNormalized,
-    callback: (destScene: SceneNormalized) => void
+    callback: (destScene: SceneNormalized) => void,
   ) => {
     if (scriptEvent.command === EVENT_SWITCH_SCENE) {
       const destId = String(scriptEvent.args?.sceneId || "");
@@ -145,10 +145,10 @@ const getSceneConnections = (
             scene,
             destScene,
             entityId: "",
-          })
+          }),
         );
       });
-    }
+    },
   );
 
   scene.actors.forEach((entityId) => {
@@ -173,10 +173,10 @@ const getSceneConnections = (
                 scene,
                 destScene,
                 entityId: entity.id,
-              })
+              }),
             );
           });
-        }
+        },
       );
     }
   });
@@ -203,10 +203,10 @@ const getSceneConnections = (
                 scene,
                 destScene,
                 entityId: entity.id,
-              })
+              }),
             );
           });
-        }
+        },
       );
     }
   });
@@ -241,8 +241,8 @@ workerCtx.onmessage = async (evt) => {
         triggersLookup,
         actorPrefabsLookup,
         triggerPrefabsLookup,
-        customEventsLookup
-      )
+        customEventsLookup,
+      ),
     )
     .flat();
 
@@ -251,7 +251,7 @@ workerCtx.onmessage = async (evt) => {
   const uniqConnections = uniqBy(
     connections,
     (connection) =>
-      `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`
+      `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`,
   );
 
   workerCtx.postMessage({ connections: uniqConnections });

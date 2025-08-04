@@ -10,12 +10,12 @@ const globAsync = promisify(glob);
 const CONCURRENT_RESOURCE_LOAD_COUNT = 16;
 
 export const loadProjectResourceChecksums = async (
-  projectPath: string
+  projectPath: string,
 ): Promise<Record<string, string>> => {
   const projectRoot = path.dirname(projectPath);
 
   const projectResources = await globAsync(
-    path.join(projectRoot, "**/*.gbsres")
+    path.join(projectRoot, "**/*.gbsres"),
   );
 
   const resources = await promiseLimit(
@@ -26,11 +26,14 @@ export const loadProjectResourceChecksums = async (
         path: pathToPosix(path.relative(projectRoot, projectResourcePath)),
         data: resourceData,
       };
-    })
+    }),
   );
 
-  return resources.reduce((memo, { path, data }) => {
-    memo[path] = data;
-    return memo;
-  }, {} as Record<string, string>);
+  return resources.reduce(
+    (memo, { path, data }) => {
+      memo[path] = data;
+      return memo;
+    },
+    {} as Record<string, string>,
+  );
 };

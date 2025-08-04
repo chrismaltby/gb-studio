@@ -264,7 +264,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPluginId, setSelectedPluginId] = useState(
-    templatePlugins[0]?.id ?? ""
+    templatePlugins[0]?.id ?? "",
   );
   const selectedPlugin =
     templatePlugins.find((template) => template.id === selectedPluginId) ||

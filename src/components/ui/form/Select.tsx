@@ -19,6 +19,7 @@ export interface OptGroup {
 
 interface OptionLabelWithPreviewProps {
   preview: ReactNode;
+  info?: ReactNode;
   children: ReactNode;
 }
 
@@ -64,7 +65,7 @@ export const Select: typeof WindowedSelect = styled(WindowedSelect).attrs(
     inputId: props.name,
     menuPlacement: "auto",
     menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-  })
+  }),
 )`
   position: relative;
   width: 100%;
@@ -209,6 +210,7 @@ const OptionLabelInfo = styled.div`
 
 export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
   preview,
+  info,
   children,
 }) => (
   <OptionLabelWithPreviewWrapper>
@@ -218,6 +220,7 @@ export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
       </OptionLabelPreviewOffset>
     </OptionLabelPreview>
     {children}
+    <OptionLabelInfo>{info}</OptionLabelInfo>
   </OptionLabelWithPreviewWrapper>
 );
 
@@ -342,7 +345,7 @@ export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
     inputId: props.name,
     menuPlacement: "auto",
     menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-  })
+  }),
 )`
   .CustomSelect__control {
     height: 28px;

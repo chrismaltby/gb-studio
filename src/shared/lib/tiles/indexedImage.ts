@@ -26,7 +26,7 @@ export type ImageIndexFunction = (
   r: number,
   g: number,
   b: number,
-  a: number
+  a: number,
 ) => number;
 
 /**
@@ -55,7 +55,7 @@ export const pixelDataToIndexedImage = (
   width: number,
   height: number,
   pixels: Buffer | Uint8ClampedArray,
-  indexFn: ImageIndexFunction
+  indexFn: ImageIndexFunction,
 ): IndexedImage => {
   const output = makeIndexedImage(width, height);
   let ii = 0;
@@ -64,7 +64,7 @@ export const pixelDataToIndexedImage = (
       pixels[i],
       pixels[i + 1],
       pixels[i + 2],
-      pixels[i + 3]
+      pixels[i + 3],
     );
     ii++;
   }
@@ -79,7 +79,7 @@ export const pixelDataToIndexedImage = (
  */
 export const makeIndexedImage = (
   width: number,
-  height: number
+  height: number,
 ): IndexedImage => {
   return {
     width,
@@ -125,7 +125,7 @@ export const sliceIndexedImage = (
   startX: number,
   startY: number,
   width: number,
-  height: number
+  height: number,
 ): IndexedImage => {
   const output = makeIndexedImage(width, height);
   const inWidth = inData.width;
@@ -214,7 +214,7 @@ export const flipIndexedImageY = (inData: IndexedImage): IndexedImage => {
 
 export const trimIndexedImage = (
   inData: IndexedImage,
-  trimValue: number
+  trimValue: number,
 ): SliceDef => {
   const width = inData.width;
   const height = inData.height;
@@ -251,7 +251,7 @@ export const trimIndexedImage = (
 
 export const trimIndexedImageHorizontal = (
   inData: IndexedImage,
-  trimValue: number
+  trimValue: number,
 ): SliceDef => {
   const width = inData.width;
   const height = inData.height;

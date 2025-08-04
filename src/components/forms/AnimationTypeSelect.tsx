@@ -38,6 +38,16 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
         ],
       },
       {
+        label: l10n("FIELD_HORIZONTAL_DIRECTION"),
+        options: [
+          { label: l10n("FIELD_HORIZONTAL_DIRECTION"), value: "horizontal" },
+          {
+            label: l10n("FIELD_HORIZONTAL_DIRECTION_MOVEMENT"),
+            value: "horizontal_movement",
+          },
+        ],
+      },
+      {
         label: l10n("FIELD_MULTI_DIRECTION"),
         options: [
           { label: l10n("FIELD_MULTI_DIRECTION"), value: "multi" },
@@ -58,7 +68,7 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
         options: [{ label: l10n("FIELD_CURSOR"), value: "cursor" }],
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {

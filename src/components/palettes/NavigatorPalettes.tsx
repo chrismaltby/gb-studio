@@ -33,7 +33,7 @@ const collator = new Intl.Collator(undefined, {
 
 const sortByName = (
   a: { id: string; name: string },
-  b: { id: string; name: string }
+  b: { id: string; name: string },
 ) => {
   // Push default palettes to top of list
   const aName = a.id.startsWith("default") ? `_${a.name}` : a.name;
@@ -50,7 +50,7 @@ export const NavigatorPalettes = ({
   selectedId,
 }: NavigatorPalettesProps) => {
   const allPalettes = useAppSelector((state) =>
-    paletteSelectors.selectAll(state)
+    paletteSelectors.selectAll(state),
   );
 
   const {
@@ -73,9 +73,9 @@ export const NavigatorPalettes = ({
         })),
         openFolders,
         palettesSearchTerm,
-        sortByName
+        sortByName,
       ),
-    [allPalettes, openFolders, palettesSearchTerm]
+    [allPalettes, openFolders, palettesSearchTerm],
   );
 
   const dispatch = useAppDispatch();
@@ -84,7 +84,7 @@ export const NavigatorPalettes = ({
     (id: string) => {
       dispatch(navigationActions.setNavigationId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const addNewPalette = useCallback(
@@ -92,7 +92,7 @@ export const NavigatorPalettes = ({
       e.stopPropagation();
       dispatch(entitiesActions.addPalette());
     },
-    [dispatch]
+    [dispatch],
   );
 
   const [renameId, setRenameId] = useState("");
@@ -103,7 +103,7 @@ export const NavigatorPalettes = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenamePaletteComplete = useCallback(
@@ -115,12 +115,12 @@ export const NavigatorPalettes = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -142,7 +142,7 @@ export const NavigatorPalettes = ({
                   dispatch(
                     entitiesActions.removePalette({
                       paletteId: item.id,
-                    })
+                    }),
                   )
                 }
               >
@@ -152,7 +152,7 @@ export const NavigatorPalettes = ({
           : []),
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderLabel = useCallback(
@@ -170,7 +170,7 @@ export const NavigatorPalettes = ({
         </FlexRow>
       );
     },
-    [toggleFolderOpen]
+    [toggleFolderOpen],
   );
 
   const showPalettesSearch = palettesSearchEnabled && height > 60;

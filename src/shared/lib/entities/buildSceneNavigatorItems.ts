@@ -58,7 +58,7 @@ export const sceneParentFolders = (scene: SceneNormalized): string[] => {
 
 export const scenesInFolder = (
   folder: string,
-  scenes: SceneNormalized[]
+  scenes: SceneNormalized[],
 ): SceneNormalized[] => {
   const regex = new RegExp("^" + folder.split(/[/\\]/).join("[/\\\\]"));
   return scenes.filter((scene) => scene.name.match(regex));
@@ -69,7 +69,7 @@ export const buildSceneNavigatorItems = (
   actorsLookup: Record<string, ActorNormalized>,
   triggersLookup: Record<string, TriggerNormalized>,
   openFolders: string[],
-  searchTerm: string
+  searchTerm: string,
 ): SceneNavigatorItem[] => {
   const result: SceneNavigatorItem[] = [];
   const uniqueFolders = new Set<string>();

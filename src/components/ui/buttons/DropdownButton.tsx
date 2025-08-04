@@ -38,7 +38,7 @@ export interface DropdownButtonProps {
   readonly style?: CSSProperties;
   readonly onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => boolean;
   readonly onMouseDown?: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
 }
 
@@ -88,7 +88,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     const subMenuItemChildren = subMenuChildArray.filter(
       (child: React.ReactNode) => {
         return isValidElement<MenuItemProps>(child) && child.type === MenuItem;
-      }
+      },
     ) as ReactElement[];
 
     const closeMenu = useCallback(() => {
@@ -183,7 +183,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           }, 300);
         }
       },
-      [parentMenuIndex]
+      [parentMenuIndex],
     );
 
     const moveFocus = useCallback((itemIndex: number, subItemIndex: number) => {
@@ -192,7 +192,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       // Find parent menu item to focus
       if (menuRef.current && itemIndex > -1) {
         const el = menuRef.current.querySelector(
-          `[data-index="${itemIndex}"]`
+          `[data-index="${itemIndex}"]`,
         ) as HTMLDivElement;
         if (el) {
           el.focus();
@@ -201,7 +201,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       // Find sub menu item to focus
       if (subMenuRef.current && subItemIndex > -1) {
         const el = subMenuRef.current.querySelector(
-          `[data-index="${subItemIndex}"]`
+          `[data-index="${subItemIndex}"]`,
         ) as HTMLDivElement;
         if (el) {
           el.focus();
@@ -221,7 +221,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         // Ignore keys that we shouldn't handle
         if (
           !["Tab", "Shift", "Enter", "Escape", "ArrowUp", "ArrowDown"].includes(
-            key
+            key,
           )
         ) {
           return;
@@ -300,14 +300,14 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         onKeyDown,
         parentMenuIndex,
         subMenuItemChildren.length,
-      ]
+      ],
     );
 
     // Inject sub menu props into sub menu components
     const subMenuChildrenWithProps = subMenuChildArray.map((child) => {
       if (
         !isValidElement<MenuItemProps & React.HTMLAttributes<HTMLDivElement>>(
-          child
+          child,
         ) ||
         child.type !== MenuItem
       ) {
@@ -393,7 +393,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         onMenuKeyDown,
         parentMenuIndex,
         subMenuChildrenWithProps,
-      ]
+      ],
     );
 
     // Handle keyboard events when button has focus
@@ -430,7 +430,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           }
         }
       },
-      [closeMenu, isOpen, moveFocus, onKeyDown]
+      [closeMenu, isOpen, moveFocus, onKeyDown],
     );
 
     // When clicking button toggle open state
@@ -443,7 +443,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
           setParentMenuIndex(-1);
         });
       },
-      [isOpen, setIsOpen]
+      [isOpen, setIsOpen],
     );
 
     // Store menu width for using to offset sub menu to
@@ -557,7 +557,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
         {!openUpwards && menu}
       </StyledDropdownButton>
     );
-  }
+  },
 );
 
 interface InlineDropdownWrapperProps {

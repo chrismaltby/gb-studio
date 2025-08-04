@@ -30,7 +30,7 @@ export const getBuildCommands = async (
     targetPlatform,
     cartType,
     compilerPreset,
-  }: BuildOptions
+  }: BuildOptions,
 ) => {
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -105,13 +105,13 @@ export const getBuildCommands = async (
         "-c",
         "-o",
         Path.relative(buildRoot, objFile),
-        Path.relative(buildRoot, file)
+        Path.relative(buildRoot, file),
       );
 
       output.push({
         label: `${l10n("COMPILER_COMPILING")}: ${Path.relative(
           buildRoot,
-          file
+          file,
         )}`,
         command: CC,
         args: buildArgs,
@@ -135,7 +135,7 @@ export const buildPackFile = async (buildRoot: string) => {
   return output.join("\n");
 };
 
-export const getPackFiles = async (buildRoot: string) => {
+export const buildLinkFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -143,20 +143,6 @@ export const getPackFiles = async (buildRoot: string) => {
     const objFile = `${file
       .replace(/src.*\//, "obj/")
       .replace(/\.[cs]$/, "")}.o`;
-
-    output.push(objFile);
-  }
-  return output;
-};
-
-export const buildLinkFile = async (buildRoot: string, cartSize: number) => {
-  const output = [`-g __start_save=${cartSize - 4}`];
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
-  for (const file of buildFiles) {
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.rel`;
 
     output.push(objFile);
   }
@@ -170,7 +156,7 @@ export const buildPackFlags = (packFilePath: string, batteryless = false) => {
     // Batteryless
     batteryless ? ["-a 4"] : [],
     // Input
-    ["-i", packFilePath]
+    ["-i", packFilePath],
   );
 };
 
@@ -182,8 +168,9 @@ export const buildLinkFlags = (
   sgb = false,
   colorOnly = false,
   musicDriver = "gbtplayer",
+  batteryless = false,
   debug = false,
-  targetPlatform = "gb"
+  targetPlatform = "gb",
 ) => {
   const validName =
     name
@@ -195,9 +182,14 @@ export const buildLinkFlags = (
   return ([] as Array<string>).concat(
     // General
     [
+      // Cart
       `-Wm-yt${cart}`,
+      // Banks
+      "-autobank",
+      "-Wb-ext=.rel",
       "-Wm-yoA",
       "-Wm-ya4",
+      // Symbols
       "-Wl-j",
       "-Wl-m",
       "-Wl-w",
@@ -220,22 +212,32 @@ export const buildLinkFlags = (
       ? // hugetracker
         ["-Wl-lhUGEDriver.lib"]
       : // gbtplayer
-        ["-Wl-lgbt_player.lib"],
+        ["-Wl-lgbt_player.lib", "-Wb-reserve=1:800"],
+    // Batteryless cart
+    batteryless
+      ? [
+          "-Wb-reserve=15:4000",
+          "-Wb-reserve=14:4000",
+          "-Wb-reserve=13:4000",
+          "-Wb-reserve=12:4000",
+          "-Wl-g__start_save=12",
+        ]
+      : ["-Wl-g__start_save=0"],
     // Output
     targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
     targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
-    [`-Wl-f${linkFile}`]
+    [`-Wl-f${linkFile}`],
   );
 };
 
 export const makefileInjectToolsPath = async (
   filename: string,
-  buildToolsPath: string
+  buildToolsPath: string,
 ) => {
   const makefile = await readFile(filename, "utf8");
   const updatedMakefile = makefile.replace(
     /GBSTOOLS_DIR =.*/,
-    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`
+    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`,
   );
   await writeFile(filename, updatedMakefile);
 };
@@ -255,7 +257,7 @@ export const buildMakeDotBuildFile = ({
         sgb ? ["SGB"] : [],
         musicDriver === "huge" ? ["hUGE"] : ["GBT"],
         cartType === "mbc3" ? ["MBC3"] : ["MBC5"],
-        batteryless ? ["batteryless"] : []
+        batteryless ? ["batteryless"] : [],
       )
       .join(" ")
   );

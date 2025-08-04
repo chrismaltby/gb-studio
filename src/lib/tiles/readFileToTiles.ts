@@ -19,7 +19,7 @@ import { tileDataIndexFn } from "shared/lib/tiles/tileData";
  */
 export const readFileToIndexedImage = async (
   filename: string,
-  indexFn: ImageIndexFunction
+  indexFn: ImageIndexFunction,
 ): Promise<IndexedImage> => {
   const fileData = await readFile(filename);
   return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ export const readFileToIndexedImage = async (
         return reject(err);
       }
       resolve(
-        pixelDataToIndexedImage(data.width, data.height, data.data, indexFn)
+        pixelDataToIndexedImage(data.width, data.height, data.data, indexFn),
       );
     });
   });
@@ -40,7 +40,7 @@ export const readFileToIndexedImage = async (
  * @returns Uint8Array of 2bpp tile data
  */
 export const readFileToTilesData = async (
-  filename: string
+  filename: string,
 ): Promise<Uint8Array> => {
   const img = await readFileToIndexedImage(filename, tileDataIndexFn);
   const xTiles = Math.floor(img.width / TILE_SIZE);
@@ -56,8 +56,8 @@ export const readFileToTilesData = async (
           txi * TILE_SIZE,
           tyi * TILE_SIZE,
           TILE_SIZE,
-          TILE_SIZE
-        )
+          TILE_SIZE,
+        ),
       );
       output.set(tileData, index);
       index += tileData.length;
@@ -72,7 +72,7 @@ export const readFileToTilesData = async (
  * @returns Array of Uint8Array of 2bpp tile data
  */
 export const readFileToTilesDataArray = async (
-  filename: string
+  filename: string,
 ): Promise<Uint8Array[]> => {
   const img = await readFileToIndexedImage(filename, tileDataIndexFn);
   const xTiles = Math.floor(img.width / TILE_SIZE);
@@ -86,8 +86,8 @@ export const readFileToTilesDataArray = async (
           txi * TILE_SIZE,
           tyi * TILE_SIZE,
           TILE_SIZE,
-          TILE_SIZE
-        )
+          TILE_SIZE,
+        ),
       );
       output.push(tileData);
     }
@@ -101,7 +101,7 @@ export const readFileToTilesDataArray = async (
  * @returns Array of Uint8Array of 2bpp tile data
  */
 export const indexedImageToTilesDataArray = (
-  img: IndexedImage
+  img: IndexedImage,
 ): Uint8Array[] => {
   const xTiles = Math.floor(img.width / TILE_SIZE);
   const yTiles = Math.floor(img.height / TILE_SIZE);
@@ -114,8 +114,8 @@ export const indexedImageToTilesDataArray = (
           txi * TILE_SIZE,
           tyi * TILE_SIZE,
           TILE_SIZE,
-          TILE_SIZE
-        )
+          TILE_SIZE,
+        ),
       );
       output.push(tileData);
     }

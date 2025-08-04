@@ -20,7 +20,7 @@ export const operatorSymbols = [
   "<<",
   ">>",
 ] as const;
-export type OperatorSymbol = typeof operatorSymbols[number];
+export type OperatorSymbol = (typeof operatorSymbols)[number];
 
 export const functionSymbols = [
   "min",
@@ -30,7 +30,7 @@ export const functionSymbols = [
   "isqrt",
   "rnd",
 ] as const;
-export type FunctionSymbol = typeof functionSymbols[number];
+export type FunctionSymbol = (typeof functionSymbols)[number];
 
 export const functionArgsLen: Record<FunctionSymbol, number> = {
   min: 2,
@@ -103,7 +103,7 @@ export type RPNToken =
 const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
 
 export const isRPNToken = (token: Token): token is RPNToken => {
-  return rpnTokenTypes.includes(token.type as typeof rpnTokenTypes[number]);
+  return rpnTokenTypes.includes(token.type as (typeof rpnTokenTypes)[number]);
 };
 
 const operatorArgsLen: Record<OperatorSymbol, number> = {

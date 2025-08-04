@@ -130,7 +130,7 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
       isActive,
       selectedTrackerFields,
     }: SongRowProps,
-    ref
+    ref,
   ) => {
     return (
       <div>
@@ -200,7 +200,7 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
         })}
       </div>
     );
-  }
+  },
 );
 
 const comparePatternCell = (a: PatternCell, b: PatternCell) => {

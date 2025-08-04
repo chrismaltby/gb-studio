@@ -213,11 +213,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   const prevPaletteIdRef = useRef<string>();
 
   const palette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, paletteId)
+    paletteSelectors.selectById(state, paletteId),
   );
 
   const colorCorrection = useAppSelector(
-    (state) => getSettings(state).colorCorrection
+    (state) => getSettings(state).colorCorrection,
   );
 
   const [selectedColor, setSelectedColor] = useState<ColorIndex>(0);
@@ -231,19 +231,19 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
 
   const getWhiteHex = useCallback(
     () => palette?.colors[0] || DEFAULT_WHITE,
-    [palette?.colors]
+    [palette?.colors],
   );
   const getLightHex = useCallback(
     () => palette?.colors[1] || DEFAULT_LIGHT,
-    [palette?.colors]
+    [palette?.colors],
   );
   const getDarkHex = useCallback(
     () => palette?.colors[2] || DEFAULT_DARK,
-    [palette?.colors]
+    [palette?.colors],
   );
   const getBlackHex = useCallback(
     () => palette?.colors[3] || DEFAULT_BLACK,
-    [palette?.colors]
+    [palette?.colors],
   );
 
   const updateCurrentColor = useCallback(
@@ -255,7 +255,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             changes: {
               colors: [newHex, getLightHex(), getDarkHex(), getBlackHex()],
             },
-          })
+          }),
         );
       } else if (selectedColor === 1) {
         dispatch(
@@ -264,7 +264,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             changes: {
               colors: [getWhiteHex(), newHex, getDarkHex(), getBlackHex()],
             },
-          })
+          }),
         );
       } else if (selectedColor === 2) {
         dispatch(
@@ -273,7 +273,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             changes: {
               colors: [getWhiteHex(), getLightHex(), newHex, getBlackHex()],
             },
-          })
+          }),
         );
       } else if (selectedColor === 3) {
         dispatch(
@@ -282,7 +282,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             changes: {
               colors: [getWhiteHex(), getLightHex(), getDarkHex(), newHex],
             },
-          })
+          }),
         );
       }
     },
@@ -294,7 +294,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       getWhiteHex,
       paletteId,
       selectedColor,
-    ]
+    ],
   );
 
   const updateColorFromRGB = useCallback(
@@ -312,10 +312,10 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorS(Math.floor(hsv.s * 100));
       setColorV(Math.floor(hsv.v * 100));
       setCurrentCustomHex(
-        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase()
+        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase(),
       );
     },
-    [updateCurrentColor, colorCorrection]
+    [updateCurrentColor, colorCorrection],
   );
 
   const updateColorFromHSV = useCallback(
@@ -340,10 +340,10 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorG(g);
       setColorB(b);
       setCurrentCustomHex(
-        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase()
+        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase(),
       );
     },
-    [updateCurrentColor, colorCorrection]
+    [updateCurrentColor, colorCorrection],
   );
 
   const applyHexToState = useCallback((hex: string) => {
@@ -383,7 +383,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       }
       setSelectedColor(colorIndex);
       setCurrentCustomHex(
-        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase()
+        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase(),
       );
       applyHexToState(editHex);
     },
@@ -394,7 +394,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       getLightHex,
       getWhiteHex,
       colorCorrection,
-    ]
+    ],
   );
 
   const onHexChange = useCallback(
@@ -416,7 +416,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         updateCurrentColor(hex);
       }
     },
-    [applyHexToState, updateCurrentColor, colorCorrection]
+    [applyHexToState, updateCurrentColor, colorCorrection],
   );
 
   const onChangeR = useCallback(
@@ -429,7 +429,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorR(value);
       updateColorFromRGB(value, colorG, colorB);
     },
-    [colorB, colorG, updateColorFromRGB]
+    [colorB, colorG, updateColorFromRGB],
   );
 
   const onChangeG = useCallback(
@@ -442,7 +442,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorG(value);
       updateColorFromRGB(colorR, value, colorB);
     },
-    [colorB, colorR, updateColorFromRGB]
+    [colorB, colorR, updateColorFromRGB],
   );
 
   const onChangeB = useCallback(
@@ -455,7 +455,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorB(value);
       updateColorFromRGB(colorR, colorG, value);
     },
-    [colorG, colorR, updateColorFromRGB]
+    [colorG, colorR, updateColorFromRGB],
   );
 
   const onChangeH = useCallback(
@@ -468,7 +468,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorH(value);
       updateColorFromHSV(value, colorS, colorV);
     },
-    [colorS, colorV, updateColorFromHSV]
+    [colorS, colorV, updateColorFromHSV],
   );
 
   const onChangeS = useCallback(
@@ -481,7 +481,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorS(value);
       updateColorFromHSV(colorH, value, colorV);
     },
-    [colorH, colorV, updateColorFromHSV]
+    [colorH, colorV, updateColorFromHSV],
   );
 
   const onChangeV = useCallback(
@@ -494,7 +494,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorV(value);
       updateColorFromHSV(colorH, colorS, value);
     },
-    [colorH, colorS, updateColorFromHSV]
+    [colorH, colorS, updateColorFromHSV],
   );
 
   const onRemove = useCallback(() => {
@@ -516,18 +516,18 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         API.clipboard.writeText(palette.colors[selectedColor]);
       }
     },
-    [palette, selectedColor]
+    [palette, selectedColor],
   );
 
   const initialiseColorValues = useCallback(
     (color: string | undefined, paletteIndex: number) => {
       const editHex = color || defaultColors[paletteIndex];
       setCurrentCustomHex(
-        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase()
+        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase(),
       );
       applyHexToState(editHex);
     },
-    [applyHexToState, colorCorrection]
+    [applyHexToState, colorCorrection],
   );
 
   const onPaste = useCallback(
@@ -548,7 +548,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         // Clipboard isn't pastable, just ignore it
       }
     },
-    [initialiseColorValues, selectedColor, updateCurrentColor]
+    [initialiseColorValues, selectedColor, updateCurrentColor],
   );
 
   const onReset = useCallback(() => {
@@ -557,7 +557,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
     }
     initialiseColorValues(
       palette?.defaultColors?.[selectedColor],
-      selectedColor
+      selectedColor,
     );
     dispatch(
       entitiesActions.editPalette({
@@ -565,7 +565,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         changes: {
           colors: palette.defaultColors,
         },
-      })
+      }),
     );
   }, [dispatch, initialiseColorValues, palette, selectedColor]);
 
@@ -608,7 +608,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             style={{
               background: `#${hex2GBChex(
                 palette.colors[index],
-                colorCorrection
+                colorCorrection,
               )}`,
             }}
           >
@@ -639,7 +639,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               return `#${rgb5BitToGBCHex(
                 Math.round(value * 31),
                 colorG,
-                colorB
+                colorB,
               )}`;
             }}
           />
@@ -665,7 +665,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               return `#${rgb5BitToGBCHex(
                 colorR,
                 Math.round(value * 31),
-                colorB
+                colorB,
               )}`;
             }}
           />
@@ -691,7 +691,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               return `#${rgb5BitToGBCHex(
                 colorR,
                 colorG,
-                Math.round(value * 31)
+                Math.round(value * 31),
               )}`;
             }}
           />

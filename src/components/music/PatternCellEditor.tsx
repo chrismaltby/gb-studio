@@ -282,11 +282,11 @@ export const PatternCellEditor = ({
         ],
       },
     ],
-    []
+    [],
   );
 
   const selectedChannel = useAppSelector(
-    (state) => state.tracker.selectedChannel
+    (state) => state.tracker.selectedChannel,
   );
 
   const [selectedEffectCode, setSelectedEffectCode] =
@@ -295,7 +295,7 @@ export const PatternCellEditor = ({
     let option: EffectCodeOption | null = null;
     effectCodeOptions.find((optGroup) => {
       const foundOption = optGroup.options.find(
-        (opt) => opt.value === pattern[selectedChannel].effectcode
+        (opt) => opt.value === pattern[selectedChannel].effectcode,
       );
       if (foundOption) {
         option = foundOption;
@@ -309,7 +309,7 @@ export const PatternCellEditor = ({
   const renderEffectEditor = (
     note: number | null,
     effectcode: number | null,
-    effectparam: number | null
+    effectparam: number | null,
   ) => {
     const effectparams = {
       x: (effectparam || 0) >> 4,
@@ -423,7 +423,7 @@ export const PatternCellEditor = ({
         );
       case 4: // Vibrato
         const selectedWaveform = waveformOptions.find(
-          (i) => i.value === effectparams["x"]
+          (i) => i.value === effectparams["x"],
         );
 
         return (
@@ -447,7 +447,7 @@ export const PatternCellEditor = ({
                   value={selectedWaveform}
                   options={waveformOptions}
                   onChange={(
-                    e: SingleValue<{ value: number; label: string }>
+                    e: SingleValue<{ value: number; label: string }>,
                   ) => {
                     if (e) {
                       onChangeParamField("x")(e.value || 0);
@@ -471,7 +471,7 @@ export const PatternCellEditor = ({
         );
       case 6: // Call Routine
         const selectedRoutine = routineOptions.find(
-          (i) => i.value === (effectparams["y"] || 0) % 4
+          (i) => i.value === (effectparams["y"] || 0) % 4,
         );
         return (
           <FormRow>
@@ -481,7 +481,7 @@ export const PatternCellEditor = ({
                 value={selectedRoutine}
                 options={routineOptions}
                 onChange={(
-                  e: SingleValue<{ value: number; label: string }>
+                  e: SingleValue<{ value: number; label: string }>,
                 ) => {
                   if (e) {
                     onChangeParamField("y")(e.value || 0);
@@ -511,7 +511,7 @@ export const PatternCellEditor = ({
           param: "x" | "y",
           label: string,
           name: string,
-          value: 0x1 | 0x2 | 0x4 | 0x8
+          value: 0x1 | 0x2 | 0x4 | 0x8,
         ) => {
           return (
             <CheckboxField
@@ -544,13 +544,13 @@ export const PatternCellEditor = ({
                 "y",
                 "Duty 1",
                 "left_panning_field_duty_1",
-                0x1
+                0x1,
               )}
               {renderPanningFieldCheckbox(
                 "x",
                 "Duty 1",
                 "right_panning_field_duty_1",
-                0x1
+                0x1,
               )}
             </FormRow>
             <FormRow>
@@ -558,13 +558,13 @@ export const PatternCellEditor = ({
                 "y",
                 "Duty 2",
                 "left_panning_field_duty_2",
-                0x2
+                0x2,
               )}
               {renderPanningFieldCheckbox(
                 "x",
                 "Duty 2",
                 "right_panning_field_duty_2",
-                0x2
+                0x2,
               )}
             </FormRow>
             <FormRow>
@@ -572,13 +572,13 @@ export const PatternCellEditor = ({
                 "y",
                 "Wave",
                 "left_panning_field_wave",
-                0x4
+                0x4,
               )}
               {renderPanningFieldCheckbox(
                 "x",
                 "Wave",
                 "right_panning_field_wave",
-                0x4
+                0x4,
               )}
             </FormRow>
             <FormRow>
@@ -586,13 +586,13 @@ export const PatternCellEditor = ({
                 "y",
                 "Noise",
                 "left_panning_field_noise",
-                0x8
+                0x8,
               )}
               {renderPanningFieldCheckbox(
                 "x",
                 "Noise",
                 "right_panning_field_noise",
-                0x8
+                0x8,
               )}
             </FormRow>
           </>
@@ -788,7 +788,7 @@ export const PatternCellEditor = ({
           changes: {
             [key]: editValue,
           },
-        })
+        }),
       );
     };
 
@@ -812,7 +812,7 @@ export const PatternCellEditor = ({
           patternId: patternId,
           cell: [id, selectedChannel],
           changes: newChanges,
-        })
+        }),
       );
     };
 
@@ -830,7 +830,7 @@ export const PatternCellEditor = ({
             onChange={onChangeFieldSelect("effectcode")}
             formatOptionLabel={(
               option: EffectCodeOption,
-              { context }: { context: "menu" | "value" }
+              { context }: { context: "menu" | "value" },
             ) => {
               return (
                 <OptionLabelWithInfo

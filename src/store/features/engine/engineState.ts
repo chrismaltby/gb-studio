@@ -1,16 +1,38 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { EngineSchema } from "lib/project/loadEngineSchema";
 import keyBy from "lodash/keyBy";
-import { CollisionTileDef } from "shared/lib/resources/types";
+import { BaseCondition } from "shared/lib/conditionsFilter";
+import {
+  CollisionExtraFlag,
+  CollisionTileDef,
+} from "shared/lib/resources/types";
 import projectActions from "store/features/project/projectActions";
 
-export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
+export type EngineFieldType =
+  | "number"
+  | "slider"
+  | "checkbox"
+  | "select"
+  | "label"
+  | "togglebuttons"
+  | "mask"
+  | "animationstate";
 
 export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
+
+export type EngineFieldUnitsType =
+  | "px"
+  | "subpx"
+  | "subpxVel"
+  | "subpxAcc"
+  | "subpxVelPrecise" // Extra precision - take top 8-bits as per frame movement
+  | "subpxAccPrecise";
 
 export type EngineFieldSchema = {
   key: string;
   sceneType?: string;
   label: string;
+  description?: string;
   group: string;
   type: EngineFieldType;
   cType: EngineFieldCType;
@@ -19,6 +41,19 @@ export type EngineFieldSchema = {
   max?: number;
   options?: [number, string][];
   file?: string;
+  conditions?: BaseCondition[];
+  editUnits?: EngineFieldUnitsType;
+  isHeading?: boolean;
+  indent?: number;
+  runtimeOnly?: boolean;
+};
+
+export type ExtraActorCollisionFlagDef = {
+  key: string;
+  label: string;
+  description?: string;
+  setFlag: CollisionExtraFlag;
+  clearFlags?: CollisionExtraFlag[];
 };
 
 export type SceneTypeSchema = {
@@ -26,6 +61,7 @@ export type SceneTypeSchema = {
   label: string;
   files?: string[];
   collisionTiles?: CollisionTileDef[];
+  extraActorCollisionFlags?: ExtraActorCollisionFlagDef[];
 };
 
 export interface EngineState {
@@ -33,6 +69,8 @@ export interface EngineState {
   fields: EngineFieldSchema[];
   lookup: Record<string, EngineFieldSchema>;
   sceneTypes: SceneTypeSchema[];
+  consts: Record<string, number>;
+  defaultEngineFieldId: string;
 }
 
 export const initialState: EngineState = {
@@ -40,18 +78,27 @@ export const initialState: EngineState = {
   fields: [],
   lookup: {},
   sceneTypes: [],
+  consts: {},
+  defaultEngineFieldId: "",
+};
+
+const getDefaultEngineFieldId = (fields: EngineFieldSchema[]) => {
+  const field = fields.find((f) => f.cType !== "define");
+  return field ? field.key : "";
 };
 
 const engineSlice = createSlice({
   name: "engine",
   initialState,
   reducers: {
-    setEngineFields: (state, action: PayloadAction<EngineFieldSchema[]>) => {
-      state.fields = action.payload;
-      state.lookup = keyBy(action.payload, "key");
-    },
-    setScenetypes: (state, action: PayloadAction<SceneTypeSchema[]>) => {
-      state.sceneTypes = action.payload;
+    setEngineSchema: (state, action: PayloadAction<EngineSchema>) => {
+      state.fields = action.payload.fields;
+      state.lookup = keyBy(action.payload.fields, "key");
+      state.sceneTypes = action.payload.sceneTypes;
+      state.consts = action.payload.consts;
+      state.defaultEngineFieldId = getDefaultEngineFieldId(
+        action.payload.fields,
+      );
     },
   },
   extraReducers: (builder) =>
@@ -60,9 +107,13 @@ const engineSlice = createSlice({
         state.loaded = false;
       })
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
-        state.fields = action.payload.engineFields;
-        state.lookup = keyBy(action.payload.engineFields, "key");
-        state.sceneTypes = action.payload.sceneTypes;
+        state.fields = action.payload.engineSchema.fields;
+        state.lookup = keyBy(action.payload.engineSchema.fields, "key");
+        state.sceneTypes = action.payload.engineSchema.sceneTypes;
+        state.consts = action.payload.engineSchema.consts;
+        state.defaultEngineFieldId = getDefaultEngineFieldId(
+          action.payload.engineSchema.fields,
+        );
         state.loaded = true;
       }),
 });

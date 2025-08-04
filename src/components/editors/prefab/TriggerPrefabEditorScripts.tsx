@@ -46,101 +46,102 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   return "script";
 };
 
-export const TriggerPrefabEditorScripts: FC<TriggerPrefabEditorScriptsProps> =
-  ({ prefab, trigger, sceneId, isInstance }) => {
-    const lockScriptEditor = useAppSelector(
-      (state) => state.editor.lockScriptEditor
-    );
+export const TriggerPrefabEditorScripts: FC<
+  TriggerPrefabEditorScriptsProps
+> = ({ prefab, trigger, sceneId, isInstance }) => {
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor,
+  );
 
-    const scriptTabs: Record<DefaultTab, string> = useMemo(
-      () => ({
-        trigger: l10n("SIDEBAR_ON_ENTER"),
-        leave: l10n("SIDEBAR_ON_LEAVE"),
-      }),
-      []
-    );
+  const scriptTabs: Record<DefaultTab, string> = useMemo(
+    () => ({
+      trigger: l10n("SIDEBAR_ON_ENTER"),
+      leave: l10n("SIDEBAR_ON_LEAVE"),
+    }),
+    [],
+  );
 
-    const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
+  const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
 
-    const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
+  const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
 
-    const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
+  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
 
-    const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-      initialTab as keyof ScriptHandlers
-    );
+  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
+    initialTab as keyof ScriptHandlers,
+  );
 
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-    const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
-      setScriptMode(mode);
-      dispatch(editorActions.setScriptTab(mode));
-    };
-
-    const onToggleLockScriptEditor = () => {
-      dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
-    };
-
-    const scriptKey = getScriptKey(scriptMode);
-
-    const scriptCtx: ScriptEditorCtx = useMemo(
-      () => ({
-        type: "prefab",
-        entityType: "triggerPrefab",
-        entityId: prefab.id,
-        sceneId: sceneId ?? "",
-        scriptKey,
-        instanceId: trigger?.id,
-      }),
-      [prefab.id, sceneId, scriptKey, trigger?.id]
-    );
-
-    if (!prefab) {
-      return <div />;
-    }
-
-    const lockButton = (
-      <Button
-        size="small"
-        variant={lockScriptEditor ? "primary" : "transparent"}
-        onClick={onToggleLockScriptEditor}
-        title={
-          lockScriptEditor
-            ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
-            : l10n("FIELD_LOCK_SCRIPT_EDITOR")
-        }
-      >
-        {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
-      </Button>
-    );
-
-    const scriptButton = (
-      <ScriptEditorDropdownButton
-        value={prefab[scriptKey]}
-        type="triggerPrefab"
-        entityId={prefab.id}
-        scriptKey={scriptKey}
-      />
-    );
-
-    return (
-      <>
-        <StickyTabs top={isInstance ? 38 : undefined}>
-          <TabBar
-            value={scriptMode}
-            values={scriptTabs}
-            onChange={onChangeScriptMode}
-            buttons={
-              <>
-                {lockButton}
-                {scriptButton}
-              </>
-            }
-          />
-        </StickyTabs>
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor value={prefab[scriptKey]} />
-        </ScriptEditorContext.Provider>
-      </>
-    );
+  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
+    setScriptMode(mode);
+    dispatch(editorActions.setScriptTab(mode));
   };
+
+  const onToggleLockScriptEditor = () => {
+    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  };
+
+  const scriptKey = getScriptKey(scriptMode);
+
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "prefab",
+      entityType: "triggerPrefab",
+      entityId: prefab.id,
+      sceneId: sceneId ?? "",
+      scriptKey,
+      instanceId: trigger?.id,
+    }),
+    [prefab.id, sceneId, scriptKey, trigger?.id],
+  );
+
+  if (!prefab) {
+    return <div />;
+  }
+
+  const lockButton = (
+    <Button
+      size="small"
+      variant={lockScriptEditor ? "primary" : "transparent"}
+      onClick={onToggleLockScriptEditor}
+      title={
+        lockScriptEditor
+          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+      }
+    >
+      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+    </Button>
+  );
+
+  const scriptButton = (
+    <ScriptEditorDropdownButton
+      value={prefab[scriptKey]}
+      type="triggerPrefab"
+      entityId={prefab.id}
+      scriptKey={scriptKey}
+    />
+  );
+
+  return (
+    <>
+      <StickyTabs top={isInstance ? 38 : undefined}>
+        <TabBar
+          value={scriptMode}
+          values={scriptTabs}
+          onChange={onChangeScriptMode}
+          buttons={
+            <>
+              {lockButton}
+              {scriptButton}
+            </>
+          }
+        />
+      </StickyTabs>
+      <ScriptEditorContext.Provider value={scriptCtx}>
+        <ScriptEditor value={prefab[scriptKey]} />
+      </ScriptEditorContext.Provider>
+    </>
+  );
+};

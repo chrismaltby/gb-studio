@@ -19,6 +19,7 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_SET_DESC"),
     key: "engineFieldKey",
+    defaultValue: "LAST_ENGINE_FIELD",
     postUpdateFn: (newArgs, prevArgs) => {
       // Reset value if engine field changed
       if (newArgs.engineFieldKey !== prevArgs.engineFieldKey) {

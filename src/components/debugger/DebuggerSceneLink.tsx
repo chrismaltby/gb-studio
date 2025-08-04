@@ -13,7 +13,7 @@ const DebuggerSceneLink = ({ id }: DebuggerSceneLinkProps) => {
   const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(id)
+    sceneSelectors.selectIds(state).indexOf(id),
   );
 
   const onSelect = useCallback(() => {

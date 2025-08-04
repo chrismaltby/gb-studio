@@ -75,36 +75,36 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   const { observe, entry } = useDimensions();
   const { height: winHeight } = useWindowSize();
   const constant = useAppSelector((state) =>
-    constantSelectors.selectById(state, id)
+    constantSelectors.selectById(state, id),
   );
   const constantIndex = useAppSelector((state) =>
-    constantSelectors.selectIds(state).indexOf(id)
+    constantSelectors.selectIds(state).indexOf(id),
   );
   const [name, setName] = useState(constant?.name ?? "");
   const [constantUses, setConstantUses] = useState<ConstantUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
 
   const dispatch = useAppDispatch();
@@ -116,7 +116,7 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
         setConstantUses(e.data.uses);
       }
     },
-    [id]
+    [id],
   );
 
   const usesHeight = useMemo(() => {
@@ -179,13 +179,13 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
       entitiesActions.renameConstant({
         constantId: id,
         name: validName,
-      })
+      }),
     );
   };
 
   const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = clampSigned16Bit(
-      ensureNumber(Number(e.currentTarget.value), 0)
+      ensureNumber(Number(e.currentTarget.value), 0),
     );
     dispatch(
       entitiesActions.editConstant({
@@ -193,7 +193,7 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
         changes: {
           value: newValue,
         },
-      })
+      }),
     );
   };
 
@@ -203,12 +203,12 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "actor") {
       dispatch(
-        editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
+        editorActions.selectActor({ actorId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "trigger") {
       dispatch(
-        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
+        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "custom") {

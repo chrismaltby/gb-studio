@@ -2,7 +2,7 @@ import path from "path";
 
 export const isFilePathWithinFolder = (
   filePath: string,
-  folderPath: string
+  folderPath: string,
 ) => {
   const absoluteParentPath = path.resolve(folderPath);
   const absoluteChildPath = path.resolve(filePath);

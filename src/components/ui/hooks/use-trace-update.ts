@@ -6,17 +6,20 @@ import { useRef, useEffect } from "react";
 
 export const useTraceUpdate = (
   props: Record<string, unknown>,
-  prefix?: string
+  prefix?: string,
 ) => {
   const prev = useRef(props);
 
   useEffect(() => {
-    const changedProps = Object.entries(props).reduce((acc, [key, value]) => {
-      if (prev.current[key] !== value) {
-        acc[key] = [prev.current[key], value];
-      }
-      return acc;
-    }, {} as Record<string, unknown>);
+    const changedProps = Object.entries(props).reduce(
+      (acc, [key, value]) => {
+        if (prev.current[key] !== value) {
+          acc[key] = [prev.current[key], value];
+        }
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    );
 
     if (Object.keys(changedProps).length > 0) {
       console.log((prefix ?? "") + "Changed props:", changedProps);

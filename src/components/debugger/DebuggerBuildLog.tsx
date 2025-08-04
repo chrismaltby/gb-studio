@@ -19,6 +19,7 @@ import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
 import { StyledButton } from "ui/buttons/style";
+import { ResourceLinkedText } from "ui/links/ResourceLinkedText";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -94,7 +95,7 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
   const dispatch = useAppDispatch();
   return (
     <LogLine $type={type}>
-      {text}{" "}
+      <ResourceLinkedText text={text} />
       {link && (
         <LogLink
           onClick={() => {
@@ -102,27 +103,27 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
               dispatch(
                 editorActions.selectCustomEvent({
                   customEventId: link.entityId,
-                })
+                }),
               );
             } else if (link.type === "actor") {
               dispatch(
                 editorActions.selectActor({
                   actorId: link.entityId,
                   sceneId: link.sceneId,
-                })
+                }),
               );
             } else if (link.type === "trigger") {
               dispatch(
                 editorActions.selectTrigger({
                   triggerId: link.entityId,
                   sceneId: link.sceneId,
-                })
+                }),
               );
             } else if (link.type === "scene") {
               dispatch(
                 editorActions.selectScene({
                   sceneId: link.sceneId,
-                })
+                }),
               );
             }
           }}
@@ -142,10 +143,13 @@ const DebuggerBuildLog = () => {
   const warnings = useAppSelector((state) => state.console.warnings);
   const status = useAppSelector((state) => state.console.status);
   const openBuildLogOnWarnings = useAppSelector(
-    (state) => getSettings(state).openBuildLogOnWarnings
+    (state) => getSettings(state).openBuildLogOnWarnings,
   );
   const generateDebugFilesEnabled = useAppSelector(
-    (state) => getSettings(state).generateDebugFilesEnabled
+    (state) => getSettings(state).generateDebugFilesEnabled,
+  );
+  const openBuildFolderOnExport = useAppSelector(
+    (state) => getSettings(state).openBuildFolderOnExport,
   );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
@@ -195,25 +199,30 @@ const DebuggerBuildLog = () => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onToggleOpenBuildLogOnWarnings = useCallback(
     () =>
       onChangeSettingProp("openBuildLogOnWarnings", !openBuildLogOnWarnings),
-    [onChangeSettingProp, openBuildLogOnWarnings]
+    [onChangeSettingProp, openBuildLogOnWarnings],
   );
 
   const onToggleGenerateDebugFilesEnabled = useCallback(
     () =>
       onChangeSettingProp(
         "generateDebugFilesEnabled",
-        !generateDebugFilesEnabled
+        !generateDebugFilesEnabled,
       ),
-    [onChangeSettingProp, generateDebugFilesEnabled]
+    [onChangeSettingProp, generateDebugFilesEnabled],
+  );
+  const onToggleOpenBuildFolderOnExport = useCallback(
+    () =>
+      onChangeSettingProp("openBuildFolderOnExport", !openBuildFolderOnExport),
+    [onChangeSettingProp, openBuildFolderOnExport],
   );
 
   return (
@@ -272,6 +281,13 @@ const DebuggerBuildLog = () => {
           >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
+          <MenuItem
+            onClick={onToggleOpenBuildFolderOnExport}
+            icon={openBuildFolderOnExport ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+          </MenuItem>
+
           <MenuDivider />
           <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}

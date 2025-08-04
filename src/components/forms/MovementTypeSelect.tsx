@@ -43,7 +43,7 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
       vertical: l10n("FIELD_VERTICAL_FIRST"),
       diagonal: l10n("FIELD_DIAGONAL"),
     }),
-    []
+    [],
   );
 
   const title = `${l10n("FIELD_MOVEMENT_TYPE")}${value ? ": " : ""}${

@@ -82,7 +82,8 @@
                       "value": 21
                     },
                     "moveType": "vertical",
-                    "useCollisions": false
+                    "useCollisions": false,
+                    "collideWith": []
                   }
                 },
                 {
@@ -99,7 +100,8 @@
                       "value": 19
                     },
                     "moveType": "vertical",
-                    "useCollisions": false
+                    "useCollisions": false,
+                    "collideWith": []
                   }
                 },
                 {
@@ -117,7 +119,8 @@
                     },
                     "moveType": "horizontal",
                     "useCollisions": false,
-                    "__collapse": false
+                    "__collapse": false,
+                    "collideWith": []
                   }
                 }
               ]

@@ -14,7 +14,7 @@ interface InstrumentVolumeEditorProps {
   volumeSweepChange: number;
   length: number | null;
   onChange: <T extends keyof EditableInstrument>(
-    key: T
+    key: T,
   ) => (editValue: EditableInstrument[T]) => void;
 }
 
@@ -69,7 +69,7 @@ export const InstrumentVolumeEditor = ({
             5 -
             (1 - Math.min(secLength / envLength, 1)) *
               normalisedVolume *
-              drawHeight
+              drawHeight,
         );
         ctx.lineTo(5 + secLength * drawWidth, canvas.height - 5);
       } else if (volumeSweepChange > 0) {
@@ -82,20 +82,20 @@ export const InstrumentVolumeEditor = ({
           (1 - Math.min(secLength / envLength, 1)) *
             normalisedVolume *
             drawHeight +
-            5
+            5,
         );
         ctx.lineTo(
           5 + secLength * drawWidth,
           (1 - Math.min(secLength / envLength, 1)) *
             normalisedVolume *
             drawHeight +
-            5
+            5,
         );
       } else {
         //no fade
         ctx.lineTo(
           5 + secLength * drawWidth,
-          canvas.height - 5 - normalisedVolume * drawHeight
+          canvas.height - 5 - normalisedVolume * drawHeight,
         );
       }
 

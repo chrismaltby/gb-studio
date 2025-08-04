@@ -40,10 +40,10 @@ export const NavigatorBackgrounds = ({
   selectedId,
 }: NavigatorBackgroundsProps) => {
   const allBackgrounds = useAppSelector((state) =>
-    backgroundSelectors.selectAll(state)
+    backgroundSelectors.selectAll(state),
   );
   const allTilesets = useAppSelector((state) =>
-    tilesetSelectors.selectAll(state)
+    tilesetSelectors.selectAll(state),
   );
 
   const {
@@ -68,21 +68,21 @@ export const NavigatorBackgrounds = ({
       buildAssetNavigatorItems(
         allBackgrounds,
         openFolders,
-        backgroundsSearchTerm
+        backgroundsSearchTerm,
       ),
-    [allBackgrounds, backgroundsSearchTerm, openFolders]
+    [allBackgrounds, backgroundsSearchTerm, openFolders],
   );
   const nestedTilesetItems = useMemo(
     () =>
       buildAssetNavigatorItems(allTilesets, openFolders, tilesetsSearchTerm),
-    [allTilesets, openFolders, tilesetsSearchTerm]
+    [allTilesets, openFolders, tilesetsSearchTerm],
   );
 
   const setSelectedId = useCallback(
     (id: string) => {
       dispatch(navigationActions.setNavigationId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const [splitSizes, setSplitSizes] = useState([window.innerHeight / 2, 200]);
@@ -104,7 +104,7 @@ export const NavigatorBackgrounds = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameBackgroundComplete = useCallback(
@@ -114,12 +114,12 @@ export const NavigatorBackgrounds = ({
           projectActions.renameBackgroundAsset({
             backgroundId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameTilesetComplete = useCallback(
@@ -129,12 +129,12 @@ export const NavigatorBackgrounds = ({
           projectActions.renameTilesetAsset({
             tilesetId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -154,7 +154,7 @@ export const NavigatorBackgrounds = ({
             dispatch(
               projectActions.removeTilesetAsset({
                 tilesetId: item.id,
-              })
+              }),
             )
           }
         >
@@ -162,7 +162,7 @@ export const NavigatorBackgrounds = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderContextMenu = useCallback(
@@ -178,7 +178,7 @@ export const NavigatorBackgrounds = ({
             dispatch(
               projectActions.removeBackgroundAsset({
                 backgroundId: item.id,
-              })
+              }),
             )
           }
         >
@@ -186,7 +186,7 @@ export const NavigatorBackgrounds = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderLabel = useCallback(
@@ -198,7 +198,7 @@ export const NavigatorBackgrounds = ({
       }
       return item.filename;
     },
-    [toggleFolderOpen]
+    [toggleFolderOpen],
   );
 
   const showBackgroundsSearch = backgroundsSearchEnabled && splitSizes[0] > 60;

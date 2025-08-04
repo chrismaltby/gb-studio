@@ -19,7 +19,8 @@ const Wrapper = styled.div<WrapperProps>`
     margin: 0 ${3 * props.$size}px ${2 * props.$size}px 10px;
     width: ${props.$cols * props.$size}px;
     height: ${props.$rows * props.$size}px;
-    background-image: linear-gradient(
+    background-image:
+      linear-gradient(
         90deg,
         ${props.theme.colors.tracker.rollCell.border} 1px,
         transparent 1px
@@ -39,7 +40,8 @@ const Wrapper = styled.div<WrapperProps>`
       );
     border-bottom: 1px solid ${props.theme.colors.tracker.rollCell.border};
     border-right: 2px solid ${props.theme.colors.tracker.rollCell.border};
-    background-size: ${props.$size}px ${props.$size}px,
+    background-size:
+      ${props.$size}px ${props.$size}px,
       ${props.$size}px ${props.$size}px,
       ${props.$size * 8}px ${props.$size * 12}px,
       ${props.$size * 8}px ${props.$size * 12}px;

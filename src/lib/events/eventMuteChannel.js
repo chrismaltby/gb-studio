@@ -30,7 +30,7 @@ const compile = (input, helpers) => {
     channels.indexOf(0) > -1,
     channels.indexOf(1) > -1,
     channels.indexOf(2) > -1,
-    channels.indexOf(3) > -1
+    channels.indexOf(3) > -1,
   );
 };
 

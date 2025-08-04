@@ -35,7 +35,7 @@ Envelope.prototype.addPoint = function (
   value,
   markSustainPoint,
   markLoopBegin,
-  markLoopEnd
+  markLoopEnd,
 ) {
   var deltaPos = position - this.lastPosition;
   var deltaVal = (value - this.lastValue) / deltaPos;

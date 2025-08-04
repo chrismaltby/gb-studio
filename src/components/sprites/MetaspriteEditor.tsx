@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -37,6 +38,7 @@ interface MetaspriteEditorProps {
 
 export interface MetaspriteDraggableTileProps {
   $selected?: boolean;
+  $spriteMode: SpriteModeSetting;
 }
 
 interface ScrollWrapperProps {
@@ -88,7 +90,7 @@ const GridWrapper = styled.div`
 const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   position: absolute;
   width: 8px;
-  height: 16px;
+  height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
 
   &:hover:after {
     content: "";
@@ -98,7 +100,11 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
     box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
     z-index: 100;
     width: 8px;
-    height: 16px;
+    height: ${(props) => (props.$spriteMode === "8x8" ? 8 : 16)}px;
+  }
+
+  canvas {
+    display: block;
   }
 
   ${(props) =>
@@ -112,7 +118,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
             box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5) inset;
             z-index: 10;
             width: 8px;
-            height: 16px;
+            height: ${props.$spriteMode === "8x8" ? 8 : 16}px;
           }
         `
       : ""}
@@ -164,16 +170,16 @@ const MetaspriteEditor = ({
   const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
+    spriteSheetSelectors.selectById(state, spriteSheetId),
   );
   const metasprite = useAppSelector((state) =>
-    metaspriteSelectors.selectById(state, metaspriteId)
+    metaspriteSelectors.selectById(state, metaspriteId),
   );
   const metaspriteTileLookup = useAppSelector((state) =>
-    metaspriteTileSelectors.selectEntities(state)
+    metaspriteTileSelectors.selectEntities(state),
   );
   const newTiles = useAppSelector((state) => state.editor.spriteTileSelection);
   const metaspriteTiles = useMemo(
@@ -181,36 +187,41 @@ const MetaspriteEditor = ({
       metasprite?.tiles
         .map((tileId) => metaspriteTileLookup[tileId] as MetaspriteTile)
         .filter((i) => i) || [],
-    [metasprite?.tiles, metaspriteTileLookup]
+    [metasprite?.tiles, metaspriteTileLookup],
   );
   const selectedTileIds = useAppSelector(
-    (state) => state.editor.selectedMetaspriteTileIds
+    (state) => state.editor.selectedMetaspriteTileIds,
   );
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
   const showBoundingBox = useAppSelector(
-    (state) => state.editor.showSpriteBoundingBox
+    (state) => state.editor.showSpriteBoundingBox,
   );
   const spriteAnimation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, animationId)
+    spriteAnimationSelectors.selectById(state, animationId),
   );
-  const [selectionOrigin, setSelectionOrigin] =
-    useState<Position | undefined>();
-  const [selectionRect, setSelectionRect] =
-    useState<SelectionRect | undefined>();
+  const [selectionOrigin, setSelectionOrigin] = useState<
+    Position | undefined
+  >();
+  const [selectionRect, setSelectionRect] = useState<
+    SelectionRect | undefined
+  >();
   const previewAsSceneId = useAppSelector(
-    (state) => state.editor.previewAsSceneId
+    (state) => state.editor.previewAsSceneId,
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, previewAsSceneId)
+    sceneSelectors.selectById(state, previewAsSceneId),
   );
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    paletteSelectors.selectEntities(state),
   );
   const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds
+    (state) => state.project.present.settings.defaultSpritePaletteIds,
   );
   const selectedAdditionalMetaspriteIds = useAppSelector(
-    (state) => state.editor.selectedAdditionalMetaspriteIds
+    (state) => state.editor.selectedAdditionalMetaspriteIds,
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
@@ -228,26 +239,27 @@ const MetaspriteEditor = ({
   const boundsHeight = spriteSheet?.boundsHeight || 16;
   const boundsX = spriteSheet?.boundsX || 0;
   const boundsY = spriteSheet?.boundsY || 0;
+  const spriteMode = spriteSheet?.spriteMode ?? defaultSpriteMode;
 
   const setSelectedTileId = useCallback(
     (tileId: string) => {
       dispatch(editorActions.setSelectedMetaspriteTileId(tileId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setSelectedTileIds = useCallback(
     (tileIds: string[]) => {
       dispatch(editorActions.setSelectedMetaspriteTileIds(tileIds));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const toggleSelectedTileId = useCallback(
     (tileId: string) => {
       dispatch(editorActions.toggleSelectedMetaspriteTileId(tileId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const resetSelectedTileIds = useCallback(() => {
@@ -263,7 +275,7 @@ const MetaspriteEditor = ({
       entitiesActions.flipXMetaspriteTiles({
         spriteSheetId,
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, selectedTileIds, spriteSheetId]);
 
@@ -272,7 +284,7 @@ const MetaspriteEditor = ({
       entitiesActions.flipYMetaspriteTiles({
         spriteSheetId,
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, selectedTileIds, spriteSheetId]);
 
@@ -282,7 +294,7 @@ const MetaspriteEditor = ({
         spriteSheetId,
         metaspriteTileIds: selectedTileIds,
         metaspriteId,
-      })
+      }),
     );
   }, [dispatch, spriteSheetId, selectedTileIds, metaspriteId]);
 
@@ -291,7 +303,7 @@ const MetaspriteEditor = ({
       entitiesActions.removeMetaspriteTilesOutsideCanvas({
         metaspriteId,
         spriteSheetId,
-      })
+      }),
     );
   }, [dispatch, metaspriteId, spriteSheetId]);
 
@@ -303,10 +315,10 @@ const MetaspriteEditor = ({
           metaspriteTileIds: selectedTileIds,
           x: Math.round(x),
           y: Math.round(y),
-        })
+        }),
       );
     },
-    [dispatch, selectedTileIds, spriteSheetId]
+    [dispatch, selectedTileIds, spriteSheetId],
   );
 
   const onMoveCreateCursor = useCallback(
@@ -318,18 +330,18 @@ const MetaspriteEditor = ({
             ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
               canvasWidth / 2 +
               8 -
-              newTiles.width * 4
+              newTiles.width * 4,
           ),
           y: Math.floor(
             canvasHeight -
-              16 -
+              (spriteMode === "8x8" ? 8 : 16) -
               ((e.pageY - bounds.top) / bounds.height) * canvasHeight +
-              newTiles.height * 8
+              newTiles.height * (spriteMode === "8x8" ? 4 : 8),
           ),
         });
       }
     },
-    [newTiles, canvasWidth, canvasHeight]
+    [newTiles, canvasWidth, canvasHeight, spriteMode],
   );
 
   const onCreateTiles = useCallback(
@@ -362,15 +374,15 @@ const MetaspriteEditor = ({
               spriteSheetId,
               metaspriteId,
               x: createOrigin.x + tx * 8,
-              y: createOrigin.y - ty * 16,
+              y: createOrigin.y - ty * (spriteMode === "8x8" ? 8 : 16),
               sliceX: newTiles.x + tx * 8,
-              sliceY: newTiles.y + ty * 16,
+              sliceY: newTiles.y + ty * (spriteMode === "8x8" ? 8 : 16),
               flipX: false,
               flipY: false,
               objPalette: "OBP0",
               paletteIndex: 0,
               priority: false,
-            })
+            }),
           );
         }
       }
@@ -380,7 +392,7 @@ const MetaspriteEditor = ({
       }
 
       const newIds = newActions.map(
-        (action) => action.payload.metaspriteTileId
+        (action) => action.payload.metaspriteTileId,
       );
 
       setSelectedTileIds(newIds);
@@ -394,8 +406,9 @@ const MetaspriteEditor = ({
       newTiles,
       removeMetaspriteTilesOutsideCanvas,
       setSelectedTileIds,
+      spriteMode,
       spriteSheetId,
-    ]
+    ],
   );
 
   const onDragStart =
@@ -444,10 +457,10 @@ const MetaspriteEditor = ({
             x: Math.round(selection.origin.x + (e.pageX - dragOrigin.x) / zoom),
             y: Math.round(selection.origin.y - (e.pageY - dragOrigin.y) / zoom),
           })),
-        })
+        }),
       );
     },
-    [dispatch, dragOrigin.x, dragOrigin.y, spriteSheetId, zoom]
+    [dispatch, dragOrigin.x, dragOrigin.y, spriteSheetId, zoom],
   );
 
   const onDragEnd = useCallback(
@@ -457,7 +470,7 @@ const MetaspriteEditor = ({
         removeMetaspriteTilesOutsideCanvas();
       }
     },
-    [dragOrigin.x, dragOrigin.y, removeMetaspriteTilesOutsideCanvas]
+    [dragOrigin.x, dragOrigin.y, removeMetaspriteTilesOutsideCanvas],
   );
 
   const onSelectStart = useCallback(
@@ -474,7 +487,7 @@ const MetaspriteEditor = ({
         setDraggingSelection(true);
       }
     },
-    [newTiles]
+    [newTiles],
   );
 
   const onDragSelection = useCallback(
@@ -490,16 +503,18 @@ const MetaspriteEditor = ({
         const height = Math.abs(selectionOrigin.y - y2);
 
         const canvasX1 = x / zoom - (canvasWidth / 2 - 8);
-        const canvasY1 = canvasHeight - 16 - y / zoom;
+        const canvasY1 =
+          canvasHeight - (spriteMode === "8x8" ? 8 : 16) - y / zoom;
         const canvasX2 = (x + width) / zoom - (canvasWidth / 2 - 8);
-        const canvasY2 = canvasHeight - 16 - (y + height) / zoom;
+        const canvasY2 =
+          canvasHeight - (spriteMode === "8x8" ? 8 : 16) - (y + height) / zoom;
 
         const intersectingTiles = metaspriteTiles.filter(
           (tile) =>
             tile.x + 8 > canvasX1 &&
             tile.x < canvasX2 &&
-            tile.y - 16 < canvasY1 &&
-            tile.y > canvasY2
+            tile.y - (spriteMode === "8x8" ? 8 : 16) < canvasY1 &&
+            tile.y > canvasY2,
         );
         const intersectingTileIds = intersectingTiles.map((tile) => tile.id);
 
@@ -518,8 +533,9 @@ const MetaspriteEditor = ({
       metaspriteTiles,
       selectionOrigin,
       setSelectedTileIds,
+      spriteMode,
       zoom,
-    ]
+    ],
   );
 
   const onDragSelectionEnd = (_e: MouseEvent) => {
@@ -592,14 +608,14 @@ const MetaspriteEditor = ({
       resetSelectedTileIds,
       resetSpriteTileSelection,
       selectedTileIds.length,
-    ]
+    ],
   );
 
   const onCopyTiles = useCallback(() => {
     dispatch(
       clipboardActions.copyMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
-      })
+      }),
     );
   }, [dispatch, selectedTileIds]);
 
@@ -613,7 +629,7 @@ const MetaspriteEditor = ({
       clipboardActions.copyMetasprites({
         metaspriteIds: selectionIds,
         spriteAnimationId: animationId,
-      })
+      }),
     );
   }, [animationId, dispatch, metaspriteId, selectedAdditionalMetaspriteIds]);
 
@@ -632,7 +648,7 @@ const MetaspriteEditor = ({
         metaspriteId,
         spriteAnimationId: animationId,
         spriteStateId,
-      })
+      }),
     );
   }, [dispatch, spriteSheetId, metaspriteId, animationId, spriteStateId]);
 
@@ -740,15 +756,14 @@ const MetaspriteEditor = ({
           defaultSpritePaletteIds[metaspriteTile.paletteIndex]
       ];
     },
-    [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled]
+    [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled],
   );
 
-  const [contextMenu, setContextMenu] =
-    useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    menu: JSX.Element[];
+  }>();
 
   const renderContextMenu = useCallback(() => {
     return renderMetaspriteTileContextMenu({
@@ -768,7 +783,7 @@ const MetaspriteEditor = ({
       }
       setContextMenu({ x: e.pageX, y: e.pageY, menu });
     },
-    [renderContextMenu]
+    [renderContextMenu],
   );
 
   const onContextMenuClose = useCallback(() => {
@@ -821,9 +836,10 @@ const MetaspriteEditor = ({
             {metaspriteTiles.map((metaspriteTile) => (
               <MetaspriteDraggableTile
                 key={metaspriteTile.id}
+                $spriteMode={spriteMode}
                 style={{
                   left: metaspriteTile.x,
-                  top: -metaspriteTile.y - 16,
+                  top: -metaspriteTile.y - (spriteMode === "8x8" ? 8 : 16),
                   pointerEvents: newTiles ? "none" : "auto",
                 }}
                 $selected={selectedTileIds.includes(metaspriteTile.id)}
@@ -835,7 +851,7 @@ const MetaspriteEditor = ({
                   offsetX={metaspriteTile.sliceX}
                   offsetY={metaspriteTile.sliceY}
                   width={8}
-                  height={16}
+                  height={spriteMode === "8x8" ? 8 : 16}
                   flipX={metaspriteTile.flipX}
                   flipY={metaspriteTile.flipY}
                   objPalette={metaspriteTile.objPalette}
@@ -847,7 +863,7 @@ const MetaspriteEditor = ({
               <StampTilesWrapper
                 style={{
                   left: createOrigin.x,
-                  top: -createOrigin.y - 16,
+                  top: -createOrigin.y - (spriteMode === "8x8" ? 8 : 16),
                 }}
               >
                 <SpriteSliceCanvas
@@ -855,7 +871,7 @@ const MetaspriteEditor = ({
                   offsetX={newTiles.x}
                   offsetY={newTiles.y}
                   width={newTiles.width * 8}
-                  height={newTiles.height * 16}
+                  height={newTiles.height * (spriteMode === "8x8" ? 8 : 16)}
                   flipX={false}
                   flipY={false}
                   objPalette="OBP0"

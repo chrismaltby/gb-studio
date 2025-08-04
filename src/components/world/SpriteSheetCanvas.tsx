@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import {
@@ -8,6 +8,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
+import { SceneContext } from "components/script/SceneContext";
 
 interface SpriteSheetCanvasProps {
   spriteSheetId: string;
@@ -20,6 +21,9 @@ interface SpriteSheetCanvasProps {
 
 const Wrapper = styled.div`
   position: relative;
+  canvas {
+    display: block;
+  }
 `;
 
 const directions: ActorDirection[] = ["right", "left", "up", "down"];
@@ -33,11 +37,11 @@ const SpriteSheetCanvas = ({
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
+    spriteSheetSelectors.selectById(state, spriteSheetId),
   );
 
   const state = useAppSelector((state) =>
-    spriteStateSelectors.selectById(state, sprite?.states?.[0] || "")
+    spriteStateSelectors.selectById(state, sprite?.states?.[0] || ""),
   );
 
   const animations = state?.animations || [];
@@ -65,10 +69,12 @@ const SpriteSheetCanvas = ({
   const animationId = animations[animationIndex] || "";
 
   const animation = useAppSelector((state) =>
-    spriteAnimationSelectors.selectById(state, animationId)
+    spriteAnimationSelectors.selectById(state, animationId),
   );
   const frames = animation?.frames || [];
   const metaspriteId = frames[frame % frames.length] || "";
+
+  const context = useContext(SceneContext);
 
   if (!sprite || !state) {
     return <div />;
@@ -91,6 +97,7 @@ const SpriteSheetCanvas = ({
         palettes={palettes}
         flipX={flipX}
         previewAsMono={previewAsMono}
+        spriteMode={context.spriteMode}
       />
     </Wrapper>
   );

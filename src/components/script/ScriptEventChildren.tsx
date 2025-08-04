@@ -28,7 +28,7 @@ export const ScriptEventChildren = ({
   const eventLabel = useScriptEventTitle(
     scriptEvent?.command ?? "",
     scriptEvent?.args ?? {},
-    isVisible
+    isVisible,
   );
   const title = `${label}${eventLabel && label ? " : " : ""}${eventLabel}`;
   const children = scriptEvent?.children?.[parentKey] || [];

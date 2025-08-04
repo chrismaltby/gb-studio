@@ -147,22 +147,22 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
   const dispatch = useAppDispatch();
 
   const variableDataBySymbol = useAppSelector(
-    (state) => state.debug.variableDataBySymbol
+    (state) => state.debug.variableDataBySymbol,
   );
   const variableSymbols = useAppSelector(
-    (state) => state.debug.variableSymbols
+    (state) => state.debug.variableSymbols,
   );
   const variablesFilter = useAppSelector(
-    (state) => getSettings(state).debuggerVariablesFilter
+    (state) => getSettings(state).debuggerVariablesFilter,
   );
   const variablesData = useAppSelector((state) => state.debug.variablesData);
   const watchedVariableIds = useAppSelector(
-    (state) => getSettings(state).debuggerWatchedVariables
+    (state) => getSettings(state).debuggerWatchedVariables,
   );
   const isCollapsed = useAppSelector(
     (state) =>
       !!collapsible &&
-      getSettings(state).debuggerCollapsedPanes.includes("variables")
+      getSettings(state).debuggerCollapsedPanes.includes("variables"),
   );
   const [varSearchTerm, setVarSearchTerm] = useState("");
 
@@ -170,14 +170,14 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setVarSearchTerm(e.currentTarget.value);
     },
-    []
+    [],
   );
 
   const onSetVariablesFilterAll = useCallback(() => {
     dispatch(
       settingsActions.editSettings({
         debuggerVariablesFilter: "all",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -185,7 +185,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     dispatch(
       settingsActions.editSettings({
         debuggerVariablesFilter: "watched",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -195,7 +195,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
       dispatch(editorActions.editSearchTerm(""));
       dispatch(editorActions.editSearchTerm(sceneId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onSelectActor = useCallback(
@@ -204,7 +204,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
       dispatch(editorActions.editSearchTerm(""));
       dispatch(editorActions.editSearchTerm(sceneId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onSelectTrigger = useCallback(
@@ -213,12 +213,12 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         editorActions.selectTrigger({
           sceneId,
           triggerId,
-        })
+        }),
       );
       dispatch(editorActions.editSearchTerm(""));
       dispatch(editorActions.editSearchTerm(sceneId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onSelectVariable = useCallback(
@@ -227,7 +227,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         dispatch(
           editorActions.selectVariable({
             variableId: variableData.id,
-          })
+          }),
         );
       } else if (variableData.entityType === "scene") {
         onSelectScene(variableData.sceneId);
@@ -237,14 +237,14 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         onSelectTrigger(variableData.entityId, variableData.sceneId);
       }
     },
-    [dispatch, onSelectActor, onSelectScene, onSelectTrigger]
+    [dispatch, onSelectActor, onSelectScene, onSelectTrigger],
   );
 
   const onToggleWatchedVariable = useCallback(
     (variableId: string) => {
       dispatch(settingsActions.toggleWatchedVariable(variableId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onToggleCollapsed = useCallback(() => {

@@ -1,7 +1,6 @@
 {
   "_resourceType": "actorPrefab",
   "id": "495acccb-8e56-43ff-b00e-b28fd5af4831",
-  "_index": 9,
   "name": "Enemies/Ship/Mine Top To Bottom",
   "frame": 0,
   "animate": false,
@@ -11,6 +10,7 @@
   "animSpeed": 15,
   "persistent": false,
   "collisionGroup": "1",
+  "collisionExtraFlags": [],
   "script": [
     {
       "id": "cf03123a-fdfa-486a-a72a-414c2539aced",
@@ -71,7 +71,14 @@
             "id": "95fdc7df-1ceb-41cf-903d-e5fde21a097b",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             },
             "children": {}
           },
@@ -112,7 +119,8 @@
                 "value": 0
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -130,7 +138,8 @@
                 "value": 6
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -171,7 +180,8 @@
                 "value": 6
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           },
@@ -189,7 +199,8 @@
                 "value": 0
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             },
             "children": {}
           }
@@ -257,7 +268,14 @@
             "id": "009834ba-5366-4dd4-b88f-18471f2c5c4f",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             },
             "children": {}
           },

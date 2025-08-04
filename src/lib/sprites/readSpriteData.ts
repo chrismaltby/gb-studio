@@ -19,6 +19,7 @@ import {
   sliceIndexedImage,
 } from "shared/lib/tiles/indexedImage";
 import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 /**
  * Read an image filename into a GB 2bpp data array
@@ -26,7 +27,7 @@ import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
  * @returns Uint8Array of 2bpp tile data
  */
 export const readFileToSpriteTilesData = async (
-  filename: string
+  filename: string,
 ): Promise<Uint8Array> => {
   const img = await readFileToIndexedImage(filename, spriteDataIndexFn);
   const xTiles = Math.floor(img.width / TILE_SIZE);
@@ -42,8 +43,8 @@ export const readFileToSpriteTilesData = async (
           txi * TILE_SIZE,
           tyi * TILE_SIZE,
           TILE_SIZE,
-          TILE_SIZE
-        )
+          TILE_SIZE,
+        ),
       );
       output.set(tileData, index);
       index += tileData.length;
@@ -56,7 +57,8 @@ export const optimiseTiles = async (
   filename: string,
   spriteWidth: number,
   spriteHeight: number,
-  metasprites: MetaspriteTile[][]
+  metasprites: MetaspriteTile[][],
+  spriteMode: SpriteModeSetting,
 ): Promise<{
   tiles: IndexedImage[];
   lookup: Record<string, OptimisedTile | undefined>;
@@ -69,9 +71,12 @@ export const optimiseTiles = async (
   const optimisedLookup2: Record<string, OptimisedTile | undefined> = {};
   const indexedImage = await readFileToIndexedImage(
     filename,
-    spriteDataIndexFn
+    spriteDataIndexFn,
   );
 
+  const baseWidth = 16;
+  const originX = spriteWidth < baseWidth ? 0 : spriteWidth / 2 - baseWidth / 2;
+  const originY = spriteHeight - (spriteMode === "8x8" ? 8 : 16);
   for (const myTiles of metasprites) {
     let mask = makeIndexedImage(spriteWidth, spriteHeight);
     for (let ti = myTiles.length - 1; ti >= 0; ti--) {
@@ -81,7 +86,7 @@ export const optimiseTiles = async (
         tileDef.sliceX,
         tileDef.sliceY,
         8,
-        16
+        spriteMode === "8x8" ? 8 : 16,
       );
       if (tileDef.flipX) {
         slicedTile = flipIndexedImageX(slicedTile);
@@ -93,15 +98,15 @@ export const optimiseTiles = async (
       const visibleTile = removeIndexedImageMask(
         slicedTile,
         mask,
-        spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - 16 - tileDef.y
+        originX + tileDef.x,
+        originY - tileDef.y,
       );
 
       mask = blitIndexedImageData(
         mask,
         slicedTile,
-        spriteWidth / 2 - 8 + tileDef.x,
-        spriteHeight - 16 - tileDef.y
+        originX + tileDef.x,
+        originY - tileDef.y,
       );
 
       tileLookup[tileDef.id] = allTiles.length;
@@ -133,7 +138,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tile);
         optimisedLookup2[id] = {
-          tile: ui * 2,
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: false,
           flipY: false,
         };
@@ -143,7 +148,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFX);
         optimisedLookup2[id] = {
-          tile: ui * 2,
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: true,
           flipY: false,
         };
@@ -153,7 +158,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFY);
         optimisedLookup2[id] = {
-          tile: ui * 2,
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: false,
           flipY: true,
         };
@@ -163,7 +168,7 @@ export const optimiseTiles = async (
         const id = tileIds[i];
         uniqTiles[ui] = mergeIndexedImages(uniqTile, tileFXY);
         optimisedLookup2[id] = {
-          tile: ui * 2,
+          tile: ui * (spriteMode === "8x8" ? 1 : 2),
           flipX: true,
           flipY: true,
         };
@@ -174,7 +179,7 @@ export const optimiseTiles = async (
     if (!found) {
       const id = tileIds[i];
       optimisedLookup2[id] = {
-        tile: uniqTiles.length * 2,
+        tile: uniqTiles.length * (spriteMode === "8x8" ? 1 : 2),
         flipX: false,
         flipY: false,
       };
@@ -184,11 +189,13 @@ export const optimiseTiles = async (
 
   for (const tile of uniqTiles) {
     uniqTileData.push(
-      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 0, 8, 8))
+      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 0, 8, 8)),
     );
-    uniqTileData.push(
-      indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 8, 8, 8))
-    );
+    if (spriteMode !== "8x8") {
+      uniqTileData.push(
+        indexedUnknownToTransparent(sliceIndexedImage(tile, 0, 8, 8, 8)),
+      );
+    }
   }
 
   return {

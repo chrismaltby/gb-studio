@@ -12,7 +12,7 @@ import { lexText } from "shared/lib/compiler/lexText";
 export const getAutoLabel = (
   command: string,
   args: Record<string, unknown>,
-  scriptEventDefs: ScriptEventHandlers
+  scriptEventDefs: ScriptEventHandlers,
 ) => {
   const mapArg = (key: string) => {
     const arg = args[key];
@@ -176,7 +176,7 @@ export const getAutoLabel = (
     } else if (isPropertyField(command, key, args, scriptEventDefs)) {
       const propertyParts = String(value).split(":");
       return `||actor:${propertyParts[0]}||.${propertyNameForId(
-        propertyParts[1]
+        propertyParts[1],
       )}`;
     } else if (fieldType === "matharea") {
       return String(value)
@@ -237,35 +237,35 @@ export const replaceAutoLabelLocalValues = (
     spriteNameForId: (value: unknown) => string;
     emoteNameForId: (value: unknown) => string;
     customEventNameForId: (value: unknown) => string;
-  }
+  },
 ) => {
   return label
     .replace(
       /\|\|actor:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.actorNameForId(id) ?? match
+      (match, id) => lookups.actorNameForId(id) ?? match,
     )
     .replace(
       /\|\|variable:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.variableNameForId(id) ?? match
+      (match, id) => lookups.variableNameForId(id) ?? match,
     )
     .replace(
       /\|\|constant:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.constantNameForId(id) ?? match
+      (match, id) => lookups.constantNameForId(id) ?? match,
     )
     .replace(
       /\|\|scene:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.sceneNameForId(id) ?? match
+      (match, id) => lookups.sceneNameForId(id) ?? match,
     )
     .replace(
       /\|\|sprite:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.spriteNameForId(id) ?? match
+      (match, id) => lookups.spriteNameForId(id) ?? match,
     )
     .replace(
       /\|\|emote:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.emoteNameForId(id) ?? match
+      (match, id) => lookups.emoteNameForId(id) ?? match,
     )
     .replace(
       /\|\|custom-event:([a-zA-Z0-9$-]+)\|\|/g,
-      (match, id) => lookups.customEventNameForId(id) ?? match
+      (match, id) => lookups.customEventNameForId(id) ?? match,
     );
 };

@@ -72,6 +72,19 @@ const fields = [
     alignBottom: true,
     fields: [
       {
+        key: "collideWith",
+        label: l10n("FIELD_COLLIDE_WITH"),
+        description: l10n("FIELD_COLLIDE_WITH_DESC"),
+        type: "togglebuttons",
+        options: [
+          ["walls", `${l10n("FIELD_WALLS")}`, `${l10n("FIELD_WALLS")}`],
+          ["actors", `${l10n("FIELD_ACTORS")}`, `${l10n("FIELD_ACTORS")}`],
+        ],
+        allowNone: true,
+        allowMultiple: true,
+        defaultValue: ["walls"],
+      },
+      {
         key: "moveType",
         label: l10n("FIELD_MOVE_TYPE"),
         description: l10n("FIELD_MOVE_TYPE_DESC"),
@@ -80,15 +93,6 @@ const fields = [
         defaultValue: "horizontal",
         flexBasis: 35,
         flexGrow: 0,
-        alignBottom: true,
-      },
-      {
-        key: "useCollisions",
-        label: l10n("FIELD_USE_COLLISIONS"),
-        description: l10n("FIELD_USE_COLLISIONS_DESC"),
-        width: "50%",
-        type: "checkbox",
-        defaultValue: false,
         alignBottom: true,
       },
     ],
@@ -101,9 +105,9 @@ const compile = (input, helpers) => {
     input.actorId,
     input.x,
     input.y,
-    input.useCollisions,
+    input.collideWith,
     input.moveType,
-    input.units
+    input.units,
   );
 };
 

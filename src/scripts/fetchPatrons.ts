@@ -1,6 +1,8 @@
 import { writeJSON } from "fs-extra";
 import currentPatrons from "../../patrons.json";
 
+console.log("Fetching Patrons");
+
 if (!process.env.PATREON_ACCESS_TOKEN) {
   console.log("Env variable PATREON_ACCESS_TOKEN is not set");
   process.exit();
@@ -18,6 +20,8 @@ const SILVER_TIER_ID = "22845707";
 const GOLD_TIER_ID = "22845730";
 
 const BASE_URL = "https://www.patreon.com/api/oauth2/v2";
+
+const PAGE_SIZE = 100;
 
 interface PatreonMember {
   id: string;
@@ -86,7 +90,7 @@ const fetchPatreonAPI = async (url: string) => {
 const onlyUnique = (
   value: PatreonUser,
   index: number,
-  array: PatreonUser[]
+  array: PatreonUser[],
 ): boolean => array.findIndex((p) => p.id === value.id) === index;
 
 const fetchPatrons = async (): Promise<LatestPatrons> => {
@@ -96,7 +100,11 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
   const goldTierUserIds = new Set<string>();
   const silverTierUserIds = new Set<string>();
 
-  const initialEndpoint = `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members?include=user,currently_entitled_tiers&fields%5Buser%5D=full_name&fields%5Btier%5D=title`;
+  const initialEndpoint =
+    `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members` +
+    `?include=user,currently_entitled_tiers` +
+    `&fields[user]=full_name` +
+    `&page[size]=${PAGE_SIZE}`;
 
   const fetchPage = async (url: string) => {
     console.log("Fetching: " + url);
@@ -104,14 +112,14 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
     res.data.forEach((member) => {
       if (
         member.relationships.currently_entitled_tiers.data.some(
-          (tier) => tier.id === GOLD_TIER_ID
+          (tier) => tier.id === GOLD_TIER_ID,
         )
       ) {
         console.log("GOLD TIER: " + member.relationships.user.data.id);
         goldTierUserIds.add(member.relationships.user.data.id);
       } else if (
         member.relationships.currently_entitled_tiers.data.some(
-          (tier) => tier.id === SILVER_TIER_ID
+          (tier) => tier.id === SILVER_TIER_ID,
         )
       ) {
         console.log("SILVER TIER: " + member.relationships.user.data.id);
@@ -128,8 +136,8 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
     });
 
     if (res.links?.next) {
-      // Wait 3 seconds between API calls to prevent API limits being hit in CI/CD
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Wait 8 seconds between API calls to prevent API limits being hit in CI/CD
+      await new Promise((resolve) => setTimeout(resolve, 500));
       await fetchPage(res.links.next);
     }
   };
@@ -154,7 +162,7 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
 
 const mergePatrons = (
   newPatrons: LatestPatrons,
-  prevPatrons: Patrons
+  prevPatrons: Patrons,
 ): Patrons => {
   const currentAllTierPatronIds = [
     ...newPatrons.goldTier,
@@ -177,11 +185,11 @@ const mergePatrons = (
 const main = async () => {
   const newPatrons = await fetchPatrons();
   const mergedPatrons = mergePatrons(newPatrons, currentPatrons as Patrons);
-  writeJSON("./patrons.json", mergedPatrons, {
+  await writeJSON("./patrons.json", mergedPatrons, {
     spaces: 2,
   });
 };
 
-main();
+main().then(() => console.log("Fetched Patrons!"));
 
 export {};

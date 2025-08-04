@@ -30,7 +30,7 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
       { value: "<=", label: l10n("FIELD_LTE") },
       { value: ">=", label: l10n("FIELD_GTE") },
     ],
-    []
+    [],
   );
 
   const currentValue = options.find((o) => o.value === value);

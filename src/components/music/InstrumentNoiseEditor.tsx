@@ -36,7 +36,7 @@ export const InstrumentNoiseEditor = ({
           changes: {
             [key]: editValue,
           },
-        })
+        }),
       );
     };
 
@@ -51,7 +51,7 @@ export const InstrumentNoiseEditor = ({
         instrumentId: instrument.index,
         instrumentType: "noise",
         subpattern: newSubPattern,
-      })
+      }),
     );
   };
 
@@ -70,7 +70,7 @@ export const InstrumentNoiseEditor = ({
     : instrument.subpattern
         // .slice(0, 6)
         .map((subpatternCell: SubPatternCell) =>
-          subpatternCell && subpatternCell.note ? subpatternCell.note - 36 : 0
+          subpatternCell && subpatternCell.note ? subpatternCell.note - 36 : 0,
         );
 
   return (

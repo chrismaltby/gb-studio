@@ -54,8 +54,8 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
           value: emote.id,
           label: emote.name,
           emote,
-        }))
-      )
+        })),
+      ),
     );
   }, [emotes, optional, optionalDefaultEmoteId, optionalLabel]);
 

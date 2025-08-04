@@ -1,7 +1,6 @@
 {
   "_resourceType": "actorPrefab",
   "id": "8a31cb67-1788-4705-96ad-f0631da09dc7",
-  "_index": 5,
   "name": "Save Point",
   "frame": 0,
   "animate": true,
@@ -11,6 +10,7 @@
   "animSpeed": 31,
   "persistent": false,
   "collisionGroup": "",
+  "collisionExtraFlags": [],
   "script": [
     {
       "id": "adca4661-21cc-49b7-9399-9f0c62609d2e",

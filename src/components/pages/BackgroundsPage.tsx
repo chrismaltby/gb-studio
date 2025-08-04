@@ -24,7 +24,7 @@ const ImagesPage = () => {
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -33,13 +33,13 @@ const ImagesPage = () => {
   const minCenterPaneWidth = 0;
 
   const allBackgrounds = useAppSelector((state) =>
-    backgroundSelectors.selectAll(state)
+    backgroundSelectors.selectAll(state),
   );
 
   const background = useAppSelector(
     (state) =>
       backgroundSelectors.selectById(state, selectedId) ||
-      tilesetSelectors.selectById(state, selectedId)
+      tilesetSelectors.selectById(state, selectedId),
   );
 
   const lastBackgroundId = useRef("");
@@ -51,7 +51,7 @@ const ImagesPage = () => {
 
   const viewBackgroundId = useMemo(
     () => background?.id || lastBackgroundId.current || allBackgrounds[0]?.id,
-    [allBackgrounds, background]
+    [allBackgrounds, background],
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -84,7 +84,7 @@ const ImagesPage = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number) => {
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);

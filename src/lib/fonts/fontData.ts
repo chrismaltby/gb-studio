@@ -38,7 +38,7 @@ const TILE_SIZE = 8;
 const FIRST_CHAR = 32;
 
 export const readFileToFontData = async (
-  filename: string
+  filename: string,
 ): Promise<CompiledFontData> => {
   const name = Path.basename(filename);
   const image = await readFileToIndexedImage(filename, fontDataIndexFn);
@@ -77,7 +77,7 @@ export const readFileToFontData = async (
         tx * TILE_SIZE,
         ty * TILE_SIZE,
         TILE_SIZE,
-        TILE_SIZE
+        TILE_SIZE,
       );
       const trimmedTile = trimIndexedImageHorizontal(tile, Color.Transparent);
 

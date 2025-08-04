@@ -72,13 +72,14 @@ const AddButton = ({
 }: AddButtonProps) => {
   const dispatch = useAppDispatch();
   const [isOpen, setOpen] = useState(false);
-  const [pinDirection, setPinDirection] =
-    useState<"bottom-right" | "top-right">("bottom-right");
+  const [pinDirection, setPinDirection] = useState<
+    "bottom-right" | "top-right"
+  >("bottom-right");
   const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   const scriptEventSelectionIds = useAppSelector(
-    (state) => state.editor.scriptEventSelectionIds
+    (state) => state.editor.scriptEventSelectionIds,
   );
 
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
@@ -109,7 +110,7 @@ const AddButton = ({
           },
           from: item,
           additionalScriptEventIds: scriptEventSelectionIds,
-        })
+        }),
       );
 
       item.parentType = parentType;
@@ -138,7 +139,7 @@ const AddButton = ({
         entityId: parentId,
         type: parentType,
         key: parentKey,
-      })
+      }),
     );
   }, [dispatch, parentId, parentKey, parentType]);
 

@@ -12,6 +12,7 @@ import MetaspriteCanvasWorker, {
 } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -19,6 +20,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  spriteMode?: SpriteModeSetting;
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -30,23 +32,25 @@ export const MetaspriteCanvas = memo(
     flipX = false,
     palettes,
     previewAsMono,
+    spriteMode,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
     const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
-    const [paletteColors, setPaletteColors] =
-      useState<[string, string, string, string][] | null>(null);
+    const [paletteColors, setPaletteColors] = useState<
+      [string, string, string, string][] | null
+    >(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const spriteSheet = useAppSelector((state) =>
-      spriteSheetSelectors.selectById(state, spriteSheetId)
+      spriteSheetSelectors.selectById(state, spriteSheetId),
     );
     const metasprite = useAppSelector((state) =>
-      metaspriteSelectors.selectById(state, metaspriteId)
+      metaspriteSelectors.selectById(state, metaspriteId),
     );
     const tilesLookup = useAppSelector((state) =>
-      metaspriteTileSelectors.selectEntities(state)
+      metaspriteTileSelectors.selectEntities(state),
     );
-    const colorCorrection = useAppSelector(
-      (state) => getSettings(state).colorCorrection
+    const { colorCorrection, spriteMode: defaultSpriteMode } = useAppSelector(
+      (state) => getSettings(state),
     );
 
     const width = spriteSheet?.canvasWidth || 0;
@@ -83,7 +87,7 @@ export const MetaspriteCanvas = memo(
           ctx.drawImage(offscreenCanvas, 0, 0);
         }
       },
-      [height, spriteSheet, width, workerId]
+      [height, spriteSheet, width, workerId],
     );
 
     useEffect(() => {
@@ -119,6 +123,8 @@ export const MetaspriteCanvas = memo(
         palettes: paletteColors,
         previewAsMono,
         colorCorrection,
+        spriteMode:
+          spriteMode ?? spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16",
       });
     }, [
       canvasRef,
@@ -131,6 +137,8 @@ export const MetaspriteCanvas = memo(
       workerId,
       previewAsMono,
       colorCorrection,
+      spriteMode,
+      defaultSpriteMode,
     ]);
 
     return (
@@ -141,5 +149,5 @@ export const MetaspriteCanvas = memo(
         style={{ imageRendering: "pixelated" }}
       />
     );
-  }
+  },
 );

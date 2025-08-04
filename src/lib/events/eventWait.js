@@ -66,7 +66,7 @@ const fields = [
 const compile = (input, helpers) => {
   const { waitScriptValue } = helpers;
   const duration =
-    input.units === "frames" ? input.frames ?? 1 : input.time ?? 0.5;
+    input.units === "frames" ? (input.frames ?? 1) : (input.time ?? 0.5);
   waitScriptValue(duration, input.units ?? "time");
 };
 

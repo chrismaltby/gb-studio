@@ -2,8 +2,7 @@
 const { notarize } = require("@electron/notarize");
 const Path = require("path");
 
-module.exports = (_config, {outputPaths}) => {
-  
+module.exports = (_config, { outputPaths }) => {
   if (process.platform !== "darwin") {
     console.log("Not a Mac; skipping notarization");
     return Promise.resolve();
@@ -13,7 +12,7 @@ module.exports = (_config, {outputPaths}) => {
 
   if (!process.env.APPLE_ID) {
     console.log(
-      "Missing APPLE_ID and APPLE_ID_PASSWORD environment variables required for notorizing."
+      "Missing APPLE_ID and APPLE_ID_PASSWORD environment variables required for notorizing.",
     );
     return Promise.resolve();
   }
@@ -25,7 +24,7 @@ module.exports = (_config, {outputPaths}) => {
     appPath: buildOutput,
     appleId: process.env.APPLE_ID,
     appleIdPassword: process.env.APPLE_ID_PASSWORD,
-    teamId: process.env.APPLE_TEAM_ID
+    teamId: process.env.APPLE_TEAM_ID,
   }).catch((e) => {
     console.error(e);
     throw e;

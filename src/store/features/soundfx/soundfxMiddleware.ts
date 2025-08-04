@@ -70,7 +70,7 @@ const soundfxMiddleware: Middleware<Dispatch, RootState> =
       pause();
       oscillator = playTone(
         action.payload.frequency,
-        action.payload.duration * 1000
+        action.payload.duration * 1000,
       );
     } else if (actions.playSoundFxCrash.match(action)) {
       play("effect_crash.mp3");

@@ -26,7 +26,7 @@ const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
   customEvents: Record<string, CustomEventNormalized>,
-  scriptEventDefs: Record<string, ScriptEventDef>
+  scriptEventDefs: Record<string, ScriptEventDef>,
 ) => {
   const eventCommands =
     (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];
@@ -72,7 +72,7 @@ const getScriptEventFields = (
       eventCommands,
       description,
       usedVariables,
-      usedActors
+      usedActors,
     );
   }
 
@@ -90,10 +90,10 @@ const ScriptEventForm = ({
   renderEvents,
 }: ScriptEventFormProps) => {
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
   const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const command = scriptEvent?.command;
   const value = scriptEvent?.args;
@@ -104,7 +104,7 @@ const ScriptEventForm = ({
         command,
         value || {},
         customEvents,
-        scriptEventDefs
+        scriptEventDefs,
       );
     }
     return [];

@@ -4,6 +4,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorNormalized,
   CollisionGroup,
+  SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { SidebarColumn } from "ui/sidebars/Sidebar";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
@@ -11,16 +12,29 @@ import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
+import { sceneSelectors } from "store/features/entities/entitiesState";
 
 interface ActorEditorPropertiesProps {
   actor: ActorNormalized;
+  sceneId?: string;
 }
 
 export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
   actor,
+  sceneId,
 }) => {
   const dispatch = useAppDispatch();
+
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, sceneId ?? ""),
+  );
+
+  const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
 
   const onChangeActorProp = useCallback(
     <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {
@@ -30,30 +44,37 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, actor.id]
+    [dispatch, actor.id],
   );
 
   const onChangeSpriteSheetId = useCallback(
     (e: string) => onChangeActorProp("spriteSheetId", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeMoveSpeed = useCallback(
     (e: number) => onChangeActorProp("moveSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeAnimSpeed = useCallback(
     (e: number) => onChangeActorProp("animSpeed", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
   );
 
   const onChangeCollisionGroup = useCallback(
     (e: CollisionGroup) => onChangeActorProp("collisionGroup", e),
-    [onChangeActorProp]
+    [onChangeActorProp],
+  );
+
+  const onlyCurrentSpriteMode = useCallback(
+    (spriteSheet: SpriteSheetNormalized) => {
+      return (spriteSheet.spriteMode ?? defaultSpriteMode) === sceneSpriteMode;
+    },
+    [defaultSpriteMode, sceneSpriteMode],
   );
 
   if (!actor) {
@@ -75,6 +96,7 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 value={actor.spriteSheetId}
                 direction={actor.direction}
                 frame={0}
+                filter={onlyCurrentSpriteMode}
                 onChange={onChangeSpriteSheetId}
                 includeInfo
               />
@@ -126,6 +148,7 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 />
               </FormField>
             </FormRow>
+            <ActorEditorExtraCollisionFlags actor={actor} sceneId={sceneId} />
           </FormContainer>
         </SidebarColumn>
       )}

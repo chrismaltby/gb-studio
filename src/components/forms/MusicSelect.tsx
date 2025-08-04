@@ -45,7 +45,7 @@ export const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
         dispatch(musicActions.playMusic({ musicId }));
       }
     },
-    [dispatch, musicId, musicPlaying]
+    [dispatch, musicId, musicPlaying],
   );
 
   return (
@@ -67,7 +67,7 @@ export const MusicSelect = ({
 }: MusicSelectProps) => {
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
   const musicDriver = useAppSelector(
-    (state) => state.project.present.settings.musicDriver
+    (state) => state.project.present.settings.musicDriver,
   );
 
   const [options, setOptions] = useState<OptGroup[]>([]);
@@ -77,7 +77,7 @@ export const MusicSelect = ({
     const driverTracks = tracks.filter(
       (track) =>
         (musicDriver === "huge" && track.type === "uge") ||
-        (musicDriver !== "huge" && track.type !== "uge")
+        (musicDriver !== "huge" && track.type !== "uge"),
     );
     const plugins = uniq(driverTracks.map((s) => s.plugin || "")).sort();
     setOptions(
@@ -89,7 +89,7 @@ export const MusicSelect = ({
             label: track.name,
             value: track.id,
           })),
-      }))
+      })),
     );
   }, [tracks, musicDriver]);
 
@@ -112,7 +112,7 @@ export const MusicSelect = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

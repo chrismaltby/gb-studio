@@ -37,10 +37,10 @@ export const SpriteSliceCanvas = ({
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
+    spriteSheetSelectors.selectById(state, spriteSheetId),
   );
   const colorCorrection = useAppSelector(
-    (state) => getSettings(state).colorCorrection
+    (state) => getSettings(state).colorCorrection,
   );
 
   const onWorkerComplete = useCallback(
@@ -60,7 +60,7 @@ export const SpriteSliceCanvas = ({
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [height, spriteSheet, width, workerId]
+    [height, spriteSheet, width, workerId],
   );
 
   useEffect(() => {
@@ -113,7 +113,9 @@ export const SpriteSliceCanvas = ({
       ref={canvasRef}
       width={width}
       height={height}
-      style={{ imageRendering: "pixelated" }}
+      style={{
+        imageRendering: "pixelated",
+      }}
     />
   );
 };

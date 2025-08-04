@@ -37,10 +37,10 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
   const allActorPrefabs = useAppSelector(actorPrefabSelectors.selectAll);
   const allTriggerPrefabs = useAppSelector(triggerPrefabSelectors.selectAll);
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
 
   const entityId = useAppSelector((state) => state.editor.entityId);
@@ -50,7 +50,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       ? entityId
       : "";
   const actorPrefab = useAppSelector((state) =>
-    actorPrefabSelectors.selectById(state, selectedId)
+    actorPrefabSelectors.selectById(state, selectedId),
   );
   const showUses = useAppSelector((state) => state.editor.showScriptUses);
 
@@ -92,7 +92,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           openFolders,
           searchTerm,
           undefined,
-          1
+          1,
         ),
         {
           id: "triggers",
@@ -108,15 +108,15 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           openFolders,
           searchTerm,
           undefined,
-          1
-        )
+          1,
+        ),
       ),
-    [allActorPrefabs, allTriggerPrefabs, openFolders, searchTerm]
+    [allActorPrefabs, allTriggerPrefabs, openFolders, searchTerm],
   );
 
   const setSelectedId = (
     id: string,
-    item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+    item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>,
   ) => {
     if (
       item.entity &&
@@ -139,7 +139,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
         dispatch(editorActions.setTool({ tool: "select" }));
       }
     },
-    [dispatch, selectedId]
+    [dispatch, selectedId],
   );
 
   const onRenameComplete = useCallback(
@@ -151,7 +151,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       } else if (renameId && triggerPrefabsLookup[renameId]) {
         dispatch(
@@ -160,12 +160,12 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [actorPrefabsLookup, dispatch, renameId, triggerPrefabsLookup]
+    [actorPrefabsLookup, dispatch, renameId, triggerPrefabsLookup],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -176,7 +176,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
     (value: boolean) => {
       dispatch(editorActions.setShowScriptUses(value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setInstantiateActor = useCallback(
@@ -184,7 +184,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       dispatch(editorActions.setTool({ tool: "actors" }));
       dispatch(editorActions.setPrefabId(prefabId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setInstantiateTrigger = useCallback(
@@ -192,12 +192,14 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       dispatch(editorActions.setTool({ tool: "triggers" }));
       dispatch(editorActions.setPrefabId(prefabId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderContextMenu = useCallback(
     (
-      item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+      item: EntityNavigatorItem<
+        ActorPrefabNormalized | TriggerPrefabNormalized
+      >,
     ) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
@@ -241,13 +243,13 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
           onClick={() => {
             if (actorPrefabsLookup[item.id]) {
               dispatch(
-                entitiesActions.removeActorPrefab({ actorPrefabId: item.id })
+                entitiesActions.removeActorPrefab({ actorPrefabId: item.id }),
               );
             } else if (triggerPrefabsLookup[item.id]) {
               dispatch(
                 entitiesActions.removeTriggerPrefab({
                   triggerPrefabId: item.id,
-                })
+                }),
               );
             }
           }}
@@ -267,12 +269,14 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       setShowUses,
       showUses,
       triggerPrefabsLookup,
-    ]
+    ],
   );
 
   const renderLabel = useCallback(
     (
-      item: EntityNavigatorItem<ActorPrefabNormalized | TriggerPrefabNormalized>
+      item: EntityNavigatorItem<
+        ActorPrefabNormalized | TriggerPrefabNormalized
+      >,
     ) => {
       if (item.type === "folder") {
         return (
@@ -319,7 +323,7 @@ export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
       }
       return item.filename;
     },
-    [setInstantiateActor, setInstantiateTrigger, toggleFolderOpen]
+    [setInstantiateActor, setInstantiateTrigger, toggleFolderOpen],
   );
 
   return (

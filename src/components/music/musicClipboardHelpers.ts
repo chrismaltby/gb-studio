@@ -30,7 +30,12 @@ export const subPatternCellFields: SubPatternCellKey[] = [
 
 const patternCelltoString = (
   p: PatternCell,
-  fields: PatternCellKey[] = ["note", "instrument", "effectcode", "effectparam"]
+  fields: PatternCellKey[] = [
+    "note",
+    "instrument",
+    "effectcode",
+    "effectparam",
+  ],
 ) => {
   return `|${fields.includes("note") ? renderNote(p.note) : "   "}${
     fields.includes("instrument") ? renderInstrument(p.instrument) : "  "
@@ -42,7 +47,7 @@ const patternCelltoString = (
 export const parsePatternToClipboard = (
   pattern: PatternCell[][],
   channelId?: number,
-  selectedCells?: number[]
+  selectedCells?: number[],
 ) => {
   let parsed: string[] = [
     "GBStudio hUGETracker Piano format compatible with...",
@@ -56,7 +61,7 @@ export const parsePatternToClipboard = (
         return patternCelltoString(row);
       } else {
         return `${patternCelltoString(p[0])}${patternCelltoString(
-          p[1]
+          p[1],
         )}${patternCelltoString(p[2])}${patternCelltoString(p[3])}`;
       }
     });
@@ -83,7 +88,7 @@ export const parsePatternToClipboard = (
 
 export const parsePatternFieldsToClipboard = (
   pattern: PatternCell[][],
-  selectedFields: number[]
+  selectedFields: number[],
 ) => {
   const parsed: string[] = [
     "GBStudio hUGETracker paste format compatible with...",
@@ -93,7 +98,7 @@ export const parsePatternFieldsToClipboard = (
   const w =
     (selectedFields[selectedFields.length - 1] - selectedFields[0]) % 16;
   const h = Math.floor(
-    (selectedFields[selectedFields.length - 1] - selectedFields[0]) / 16
+    (selectedFields[selectedFields.length - 1] - selectedFields[0]) / 16,
   );
   const firstRow = Math.floor(selectedFields[0] / 16);
   const firstColumn = selectedFields[0] % 16;
@@ -108,7 +113,7 @@ export const parsePatternFieldsToClipboard = (
       const end = w + 1;
       rowStr += `${patternCelltoString(
         pattern[i][j],
-        patternCellFields.slice(Math.max(0, start), start + end)
+        patternCellFields.slice(Math.max(0, start), start + end),
       )}`;
     }
     parsed.push(rowStr);
@@ -170,7 +175,7 @@ export const parseClipboardToPattern = (clipboard: string) => {
 
 const subPatternCelltoString = (
   p: SubPatternCell,
-  fields: SubPatternCellKey[] = ["note", "jump", "effectcode", "effectparam"]
+  fields: SubPatternCellKey[] = ["note", "jump", "effectcode", "effectparam"],
 ) => {
   return `|${fields.includes("note") ? renderNote(p.note) : "   "}${
     fields.includes("jump") ? renderInstrument(p.jump) : "  "
@@ -181,7 +186,7 @@ const subPatternCelltoString = (
 
 export const parseSubPatternFieldsToClipboard = (
   subpattern: SubPatternCell[],
-  selectedFields: number[]
+  selectedFields: number[],
 ) => {
   const parsed: string[] = [
     "GBStudio hUGETracker paste format compatible with...",
@@ -190,7 +195,7 @@ export const parseSubPatternFieldsToClipboard = (
 
   const w = (selectedFields[selectedFields.length - 1] - selectedFields[0]) % 4;
   const h = Math.floor(
-    (selectedFields[selectedFields.length - 1] - selectedFields[0]) / 4
+    (selectedFields[selectedFields.length - 1] - selectedFields[0]) / 4,
   );
   const firstRow = Math.floor(selectedFields[0] / 4);
   const firstColumn = selectedFields[0] % 4;
@@ -205,7 +210,7 @@ export const parseSubPatternFieldsToClipboard = (
       const end = w + 1;
       rowStr += `${subPatternCelltoString(
         subpattern[i],
-        subPatternCellFields.slice(Math.max(0, start), start + end)
+        subPatternCellFields.slice(Math.max(0, start), start + end),
       )}`;
     }
     parsed.push(rowStr);

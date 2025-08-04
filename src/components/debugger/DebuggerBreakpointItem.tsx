@@ -70,10 +70,10 @@ const DebuggerBreakpointItem = ({
   const scriptEventId = breakpoint.scriptEventId;
 
   const scriptEvent = useAppSelector((state) =>
-    scriptEventSelectors.selectById(state, scriptEventId)
+    scriptEventSelectors.selectById(state, scriptEventId),
   );
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
   const command = scriptEvent?.command ?? "";
   const localisedCommand = l10n(command as L10NKey);

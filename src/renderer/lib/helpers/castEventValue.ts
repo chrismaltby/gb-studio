@@ -1,6 +1,6 @@
 export const castEventToInt = (
   event: React.ChangeEvent<HTMLInputElement>,
-  fallbackValue: number
+  fallbackValue: number,
 ): number => {
   const el = event && event.currentTarget;
   let value = parseInt(el.value, 10);
@@ -29,7 +29,7 @@ export const castEventToInt = (
 
 export const castEventToFloat = (
   event: React.ChangeEvent<HTMLInputElement>,
-  fallbackValue: number
+  fallbackValue: number,
 ): number => {
   const el = event && event.currentTarget;
   let value = parseFloat(el.value);
@@ -57,7 +57,7 @@ export const castEventToFloat = (
 };
 
 export const castEventToBool = (
-  event: React.ChangeEvent<HTMLInputElement>
+  event: React.ChangeEvent<HTMLInputElement>,
 ): boolean => {
   const el = event && event.currentTarget;
   if (el && el.type === "checkbox") {

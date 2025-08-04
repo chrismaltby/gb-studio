@@ -85,29 +85,29 @@ export const PropertySelect = ({
   const [currentValue, setCurrentValue] = useState<PropertyOption>();
 
   const sceneType = useAppSelector(
-    (state) => sceneSelectors.selectById(state, context.sceneId)?.type
+    (state) => sceneSelectors.selectById(state, context.sceneId)?.type,
   );
   const scenePlayerSpriteSheetId = useAppSelector(
     (state) =>
-      sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId
+      sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId,
   );
   const defaultPlayerSprites = useAppSelector(
-    (state) => state.project.present.settings.defaultPlayerSprites
+    (state) => state.project.present.settings.defaultPlayerSprites,
   );
   const sceneActorIds = useAppSelector((state) =>
-    getSceneActorIds(state, { id: context.sceneId })
+    getSceneActorIds(state, { id: context.sceneId }),
   );
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, context.entityId)
+    customEventSelectors.selectById(state, context.entityId),
   );
   const actorPrefabsLookup = useAppSelector((state) =>
-    actorPrefabSelectors.selectEntities(state)
+    actorPrefabSelectors.selectEntities(state),
   );
   const actorPrefabIds = useAppSelector((state) =>
-    actorPrefabSelectors.selectIds(state)
+    actorPrefabSelectors.selectIds(state),
   );
 
   const sceneActorId = context.instanceId
@@ -193,7 +193,7 @@ export const PropertySelect = ({
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
                   sceneActor,
-                  sceneActorIndex
+                  sceneActorIndex,
                 )})`,
                 value: "$self$",
                 spriteSheetId: sceneActor.spriteSheetId,
@@ -223,7 +223,7 @@ export const PropertySelect = ({
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
                   selfPrefab,
-                  selfPrefabIndex
+                  selfPrefabIndex,
                 )})`,
                 value: "$self$",
                 spriteSheetId: selfPrefab.spriteSheetId,

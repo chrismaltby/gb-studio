@@ -13,7 +13,7 @@ type WaveFileFmt = {
 
 export const compileWav = async (
   filename: string,
-  fmt: CompileOutputFmt = "c"
+  fmt: CompileOutputFmt = "c",
 ): Promise<string> => {
   const decHex = (v: number, fmt?: CompileOutputFmt) => {
     const prefix = fmt === "asm" ? "$" : "0x";

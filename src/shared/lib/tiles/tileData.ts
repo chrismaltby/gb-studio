@@ -51,7 +51,7 @@ export const tileArrayToTileData = (tiles: Uint8Array[]): Uint8Array => {
 
 export const tilesAndLookupToTilemap = (
   tiles: Uint8Array[],
-  lookup: TileLookup
+  lookup: TileLookup,
 ): number[] => {
   const output = new Array(tiles.length).fill(0);
   const keys = Object.keys(lookup);

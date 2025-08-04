@@ -27,6 +27,6 @@ import "./initProject";
           </AppContainerDnD>
         </ThemeProvider>
       </Provider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 })();

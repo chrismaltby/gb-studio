@@ -40,7 +40,7 @@ export const WorldEditor: FC = () => {
   const metadata = useAppSelector((state) => state.project.present.metadata);
   const settings = useAppSelector((state) => state.project.present.settings);
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, settings.startSceneId)
+    sceneSelectors.selectById(state, settings.startSceneId),
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!metadata.notes);
 
@@ -59,10 +59,10 @@ export const WorldEditor: FC = () => {
       dispatch(
         metadataActions.editMetadata({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeSettingProp = useCallback(
@@ -70,66 +70,66 @@ export const WorldEditor: FC = () => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeMetadataProp("name", e.currentTarget.value),
-    [onChangeMetadataProp]
+    [onChangeMetadataProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeMetadataProp("notes", e.currentTarget.value),
-    [onChangeMetadataProp]
+    [onChangeMetadataProp],
   );
 
   const onChangeAuthor = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeMetadataProp("author", e.currentTarget.value),
-    [onChangeMetadataProp]
+    [onChangeMetadataProp],
   );
 
   const onChangeStartSceneId = useCallback(
     (sceneId: string) => onChangeSettingProp("startSceneId", sceneId),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startX", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("startY", castEventToInt(e, 0)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartDirection = useCallback(
     (e: ActorDirection) => onChangeSettingProp("startDirection", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartMoveSpeed = useCallback(
     (e: number) => onChangeSettingProp("startMoveSpeed", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeStartAnimSpeed = useCallback(
     (e: number | null) => onChangeSettingProp("startAnimSpeed", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeColorsEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("colorMode", castEventToBool(e) ? "mixed" : "mono"),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onOpenSettings = useCallback(() => {

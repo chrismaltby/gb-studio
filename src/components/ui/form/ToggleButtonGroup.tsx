@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 
-export type ToggleButtonGroupOption<T> = {
+type ToggleButtonGroupOption<T> = {
   value: T;
   label: string | React.ReactNode;
   title?: string;
 };
 
-export type ToggleButtonGroupProps<T> = {
+type ToggleButtonGroupProps<T> = {
   name: string;
   options: ToggleButtonGroupOption<T>[];
   autoFocus?: boolean;
@@ -129,7 +129,7 @@ export const ToggleButtonGroup = <T,>({
         props.onChange(value);
       }
     },
-    [props]
+    [props],
   );
 
   const autoFocusIndex = useMemo(() => {
@@ -138,7 +138,7 @@ export const ToggleButtonGroup = <T,>({
     }
     const firstSelectedValue = props.multiple ? props.value[0] : props.value;
     const firstSelectedIndex = options.findIndex(
-      (o) => o.value === firstSelectedValue
+      (o) => o.value === firstSelectedValue,
     );
     return firstSelectedIndex > -1 ? firstSelectedIndex : 0;
   }, [autoFocus, options, props.multiple, props.value]);

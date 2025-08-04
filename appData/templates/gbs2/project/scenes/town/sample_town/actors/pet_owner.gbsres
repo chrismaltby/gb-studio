@@ -17,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
+  "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
   "script": [
     {
@@ -69,7 +70,14 @@
       "id": "df3086d6-d8de-4585-90ec-86e30e1f6bc0",
       "command": "EVENT_WAIT",
       "args": {
-        "time": 1
+        "time": {
+          "type": "number",
+          "value": 1
+        },
+        "frames": {
+          "type": "number",
+          "value": 30
+        }
       }
     },
     {
@@ -92,37 +100,85 @@
         "variable": "T0",
         "choices": 4,
         "__collapseCase0": false,
-        "value0": 1,
+        "value0": {
+          "type": "number",
+          "value": 1
+        },
         "__collapseCase1": false,
-        "value1": 2,
+        "value1": {
+          "type": "number",
+          "value": 2
+        },
         "__collapseCase2": false,
-        "value2": 3,
+        "value2": {
+          "type": "number",
+          "value": 3
+        },
         "__collapseCase3": false,
-        "value3": 4,
+        "value3": {
+          "type": "number",
+          "value": 4
+        },
         "__collapseCase4": false,
-        "value4": 5,
+        "value4": {
+          "type": "number",
+          "value": 5
+        },
         "__collapseCase5": false,
-        "value5": 6,
+        "value5": {
+          "type": "number",
+          "value": 6
+        },
         "__collapseCase6": false,
-        "value6": 7,
+        "value6": {
+          "type": "number",
+          "value": 7
+        },
         "__collapseCase7": false,
-        "value7": 8,
+        "value7": {
+          "type": "number",
+          "value": 8
+        },
         "__collapseCase8": false,
-        "value8": 9,
+        "value8": {
+          "type": "number",
+          "value": 9
+        },
         "__collapseCase9": false,
-        "value9": 10,
+        "value9": {
+          "type": "number",
+          "value": 10
+        },
         "__collapseCase10": false,
-        "value10": 11,
+        "value10": {
+          "type": "number",
+          "value": 11
+        },
         "__collapseCase11": false,
-        "value11": 12,
+        "value11": {
+          "type": "number",
+          "value": 12
+        },
         "__collapseCase12": false,
-        "value12": 13,
+        "value12": {
+          "type": "number",
+          "value": 13
+        },
         "__collapseCase13": false,
-        "value13": 14,
+        "value13": {
+          "type": "number",
+          "value": 14
+        },
         "__collapseCase14": false,
-        "value14": 15,
+        "value14": {
+          "type": "number",
+          "value": 15
+        },
         "__collapseCase15": false,
-        "value15": 16,
+        "value15": {
+          "type": "number",
+          "value": 16
+        },
         "__collapseElse": false
       },
       "children": {
@@ -142,7 +198,11 @@
               },
               "useCollisions": true,
               "verticalFirst": false,
-              "__collapse": false
+              "__collapse": false,
+              "collideWith": [
+                "walls",
+                "actors"
+              ]
             }
           }
         ],
@@ -162,7 +222,11 @@
               },
               "useCollisions": true,
               "verticalFirst": false,
-              "__collapse": false
+              "__collapse": false,
+              "collideWith": [
+                "walls",
+                "actors"
+              ]
             }
           }
         ],
@@ -182,7 +246,11 @@
               },
               "useCollisions": true,
               "verticalFirst": false,
-              "__collapse": false
+              "__collapse": false,
+              "collideWith": [
+                "walls",
+                "actors"
+              ]
             }
           }
         ],
@@ -202,7 +270,11 @@
               },
               "useCollisions": true,
               "verticalFirst": false,
-              "__collapse": false
+              "__collapse": false,
+              "collideWith": [
+                "walls",
+                "actors"
+              ]
             }
           }
         ],
@@ -223,7 +295,14 @@
             "id": "482fc26f-67cd-4e58-a848-a3e50d8122e4",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             }
           }
         ]

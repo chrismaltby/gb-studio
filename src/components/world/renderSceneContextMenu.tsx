@@ -50,12 +50,12 @@ const renderSceneContextMenu = ({
             additionalSceneIds.map((id) => ({
               id,
               changes,
-            }))
+            })),
           )
         : entitiesActions.editScene({
             sceneId,
             changes,
-          })
+          }),
     );
   };
 
@@ -82,7 +82,7 @@ const renderSceneContextMenu = ({
                 }}
               />
             </div>
-          )
+          ),
         )}
       </div>
     </MenuSection>,
@@ -95,7 +95,7 @@ const renderSceneContextMenu = ({
             startSceneId: sceneId,
             startX: hoverX,
             startY: hoverY,
-          })
+          }),
         )
       }
     >
@@ -113,7 +113,7 @@ const renderSceneContextMenu = ({
                 startDirection: direction,
                 startX: hoverX,
                 startY: hoverY,
-              })
+              }),
             );
             onClose?.();
           }}
@@ -133,7 +133,7 @@ const renderSceneContextMenu = ({
                 startSceneId: sceneId,
                 startX: hoverX,
                 startY: hoverY,
-              })
+              }),
             )
           }
         >
@@ -147,7 +147,7 @@ const renderSceneContextMenu = ({
             dispatch(
               settingsActions.editSettings({
                 runSceneSelectionOnly: !runSceneSelectionOnly,
-              })
+              }),
             );
           }}
         >
@@ -217,7 +217,7 @@ const renderSceneContextMenu = ({
       onClick={() =>
         additionalSceneIds.length > 1
           ? dispatch(
-              entitiesActions.removeScenes({ sceneIds: additionalSceneIds })
+              entitiesActions.removeScenes({ sceneIds: additionalSceneIds }),
             )
           : dispatch(entitiesActions.removeScene({ sceneId }))
       }
@@ -225,7 +225,7 @@ const renderSceneContextMenu = ({
       {l10n(
         additionalSceneIds.length > 1
           ? "MENU_DELETE_SCENES"
-          : "MENU_DELETE_SCENE"
+          : "MENU_DELETE_SCENE",
       )}
     </MenuItem>,
   ];

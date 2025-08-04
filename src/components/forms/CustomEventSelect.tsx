@@ -23,7 +23,7 @@ export const CustomEventSelect = ({
   ...selectProps
 }: CustomEventSelectProps) => {
   const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
   const [options, setOptions] = useState<Option[]>([]);
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -35,7 +35,7 @@ export const CustomEventSelect = ({
           label: customEventName(customEvent, customEventIndex),
           value: customEvent.id,
         }))
-        .sort(sortByLabel)
+        .sort(sortByLabel),
     );
   }, [customEvents]);
 
@@ -43,7 +43,7 @@ export const CustomEventSelect = ({
     setCurrentValue(
       options.find((option) => {
         return option.value === value;
-      })
+      }),
     );
   }, [options, value]);
 
@@ -53,7 +53,7 @@ export const CustomEventSelect = ({
         onChange?.(newValue.value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   return (

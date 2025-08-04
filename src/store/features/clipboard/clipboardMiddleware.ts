@@ -76,7 +76,7 @@ import { sortSubsetStringArray } from "shared/lib/helpers/array";
 const generateLocalVariableInsertActions = (
   originalId: string,
   newId: string,
-  variables: Variable[]
+  variables: Variable[],
 ) => {
   const actions: UnknownAction[] = [];
   for (const variable of variables) {
@@ -96,12 +96,12 @@ const generateCustomEventInsertActions = async (
   customEvent: CustomEventNormalized,
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingCustomEvents: CustomEventNormalized[],
-  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>,
 ): Promise<UnknownAction[]> => {
   const actions: UnknownAction[] = [];
 
   const existingEvent = existingCustomEvents.find(
-    (e) => e.id === customEvent.id
+    (e) => e.id === customEvent.id,
   );
   if (
     existingEvent &&
@@ -109,7 +109,7 @@ const generateCustomEventInsertActions = async (
       customEvent,
       scriptEventsLookup,
       existingEvent,
-      existingScriptEventsLookup
+      existingScriptEventsLookup,
     )
   ) {
     return [];
@@ -148,8 +148,8 @@ const generateCustomEventInsertActions = async (
       scriptEventsLookup,
       customEvent.id,
       "customEvent",
-      "script"
-    )
+      "script",
+    ),
   );
 
   return actions;
@@ -161,7 +161,7 @@ const generateActorInsertActions = (
   variables: Variable[],
   sceneId: string,
   x: number,
-  y: number
+  y: number,
 ): UnknownAction[] => {
   const actions: UnknownAction[] = [];
   const addActorAction = entitiesActions.addActor({
@@ -179,16 +179,16 @@ const generateActorInsertActions = (
         scriptEventsLookup,
         addActorAction.payload.actorId,
         "actor",
-        key
-      )
+        key,
+      ),
     );
   });
   actions.push(
     ...generateLocalVariableInsertActions(
       actor.id,
       addActorAction.payload.actorId,
-      variables
-    )
+      variables,
+    ),
   );
   return actions;
 };
@@ -197,7 +197,7 @@ const generateActorPrefabInsertActions = async (
   prefab: ActorPrefabNormalized,
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingActorPrefabs: ActorPrefabNormalized[],
-  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>,
 ): Promise<UnknownAction[]> => {
   const actions: UnknownAction[] = [];
 
@@ -208,7 +208,7 @@ const generateActorPrefabInsertActions = async (
       prefab,
       scriptEventsLookup,
       existingPrefab,
-      existingScriptEventsLookup
+      existingScriptEventsLookup,
     )
   ) {
     return [];
@@ -247,8 +247,8 @@ const generateActorPrefabInsertActions = async (
       scriptEventsLookup,
       prefab.id,
       "actorPrefab",
-      "script"
-    )
+      "script",
+    ),
   );
 
   return actions;
@@ -260,7 +260,7 @@ const generateTriggerInsertActions = (
   variables: Variable[],
   sceneId: string,
   x: number,
-  y: number
+  y: number,
 ): UnknownAction[] => {
   const actions: UnknownAction[] = [];
   const addTriggerAction = entitiesActions.addTrigger({
@@ -280,16 +280,16 @@ const generateTriggerInsertActions = (
         scriptEventsLookup,
         addTriggerAction.payload.triggerId,
         "trigger",
-        key
-      )
+        key,
+      ),
     );
   });
   actions.push(
     ...generateLocalVariableInsertActions(
       trigger.id,
       addTriggerAction.payload.triggerId,
-      variables
-    )
+      variables,
+    ),
   );
   return actions;
 };
@@ -298,7 +298,7 @@ const generateTriggerPrefabInsertActions = async (
   prefab: TriggerPrefabNormalized,
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
   existingTriggerPrefabs: TriggerPrefabNormalized[],
-  existingScriptEventsLookup: Record<string, ScriptEventNormalized>
+  existingScriptEventsLookup: Record<string, ScriptEventNormalized>,
 ): Promise<UnknownAction[]> => {
   const actions: UnknownAction[] = [];
 
@@ -309,7 +309,7 @@ const generateTriggerPrefabInsertActions = async (
       prefab,
       scriptEventsLookup,
       existingPrefab,
-      existingScriptEventsLookup
+      existingScriptEventsLookup,
     )
   ) {
     return [];
@@ -348,8 +348,8 @@ const generateTriggerPrefabInsertActions = async (
       scriptEventsLookup,
       prefab.id,
       "triggerPrefab",
-      "script"
-    )
+      "script",
+    ),
   );
 
   return actions;
@@ -363,7 +363,7 @@ const generateSceneInsertActions = (
   scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
-  y: number
+  y: number,
 ): UnknownAction[] => {
   const actions: UnknownAction[] = [];
   const addSceneAction = entitiesActions.addScene({
@@ -380,16 +380,16 @@ const generateSceneInsertActions = (
         scriptEventsLookup,
         addSceneAction.payload.sceneId,
         "scene",
-        key
-      )
+        key,
+      ),
     );
   });
   actions.push(
     ...generateLocalVariableInsertActions(
       scene.id,
       addSceneAction.payload.sceneId,
-      variables
-    )
+      variables,
+    ),
   );
   for (const actor of actors) {
     actions.push(
@@ -399,8 +399,8 @@ const generateSceneInsertActions = (
         variables,
         addSceneAction.payload.sceneId,
         actor.x,
-        actor.y
-      )
+        actor.y,
+      ),
     );
   }
   for (const trigger of triggers) {
@@ -411,25 +411,28 @@ const generateSceneInsertActions = (
         variables,
         addSceneAction.payload.sceneId,
         trigger.x,
-        trigger.y
-      )
+        trigger.y,
+      ),
     );
   }
 
   actions.push(
-    editorActions.selectScene({ sceneId: addSceneAction.payload.sceneId })
+    editorActions.selectScene({ sceneId: addSceneAction.payload.sceneId }),
   );
 
   const actorMapping: Record<string, string> = actions
     .filter((action) => entitiesActions.addActor.match(action))
-    .reduce((memo, action) => {
-      const oldId: string = action.payload?.defaults?.id ?? "";
-      const newId: string = action.payload?.actorId;
-      if (oldId && newId) {
-        memo[oldId] = newId;
-      }
-      return memo;
-    }, {} as Record<string, string>);
+    .reduce(
+      (memo, action) => {
+        const oldId: string = action.payload?.defaults?.id ?? "";
+        const newId: string = action.payload?.actorId;
+        if (oldId && newId) {
+          memo[oldId] = newId;
+        }
+        return memo;
+      },
+      {} as Record<string, string>,
+    );
 
   const remappedActions = actions.map((action) => {
     if (!entitiesActions.addScriptEvents.match(action)) {
@@ -447,7 +450,7 @@ const generateSceneInsertActions = (
               "actor",
               eventData.args || {},
               actorMapping,
-              scriptEventDefs
+              scriptEventDefs,
             ),
           };
         }),
@@ -482,7 +485,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .filter((animation): animation is SpriteAnimation => !!animation);
 
       const metaspriteIds = flatten(
-        animations.map((animation) => animation.frames)
+        animations.map((animation) => animation.frames),
       );
 
       const metasprites = metaspriteIds
@@ -492,7 +495,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .filter((metasprite): metasprite is Metasprite => !!metasprite);
 
       const metaspriteTileIds = flatten(
-        metasprites.map((metasprite) => metasprite.tiles)
+        metasprites.map((metasprite) => metasprite.tiles),
       );
 
       const metaspriteTiles = metaspriteTileIds
@@ -518,7 +521,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteAnimation = spriteAnimationSelectors.selectById(
         state,
-        action.payload.spriteAnimationId
+        action.payload.spriteAnimationId,
       );
 
       if (!spriteAnimation) {
@@ -527,7 +530,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
       const sortedMetaspriteIds = sortSubsetStringArray(
         action.payload.metaspriteIds,
-        spriteAnimation.frames
+        spriteAnimation.frames,
       );
 
       const metasprites = sortedMetaspriteIds
@@ -537,7 +540,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .filter((metasprite): metasprite is Metasprite => !!metasprite);
 
       const metaspriteTileIds = flatten(
-        metasprites.map((metasprite) => metasprite.tiles)
+        metasprites.map((metasprite) => metasprite.tiles),
       );
 
       const metaspriteTiles = metaspriteTileIds
@@ -596,7 +599,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         {
           includeCommented: true,
         },
-        addEvent
+        addEvent,
       );
       for (const customEvent of customEvents) {
         walkNormalizedCustomEventScripts(
@@ -605,7 +608,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           {
             includeCommented: true,
           },
-          addEvent
+          addEvent,
         );
       }
       copy({
@@ -631,7 +634,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.triggerIds.find((id) =>
-          variable.id.startsWith(id)
+          variable.id.startsWith(id),
         );
       });
 
@@ -659,7 +662,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             scriptEventsLookup,
             {},
             { includeCommented: true },
-            addEvent
+            addEvent,
           );
           const prefab = triggerPrefabsLookup[trigger.prefabId];
           if (prefab && !triggerPrefabsSeen[prefab.id]) {
@@ -670,7 +673,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               scriptEventsLookup,
               {},
               { includeCommented: true },
-              addEvent
+              addEvent,
             );
           }
         }
@@ -680,7 +683,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvent,
           scriptEventsLookup,
           { includeCommented: true },
-          addEvent
+          addEvent,
         );
       }
 
@@ -735,7 +738,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             scriptEventsLookup,
             {},
             { includeCommented: true },
-            addEvent
+            addEvent,
           );
           const prefab = actorPrefabsLookup[actor.prefabId];
           if (prefab && !actorPrefabsSeen[prefab.id]) {
@@ -746,7 +749,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               scriptEventsLookup,
               {},
               { includeCommented: true },
-              addEvent
+              addEvent,
             );
           }
         }
@@ -756,7 +759,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvent,
           scriptEventsLookup,
           { includeCommented: true },
-          addEvent
+          addEvent,
         );
       }
 
@@ -823,7 +826,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 scriptEventsLookup,
                 {},
                 { includeCommented: true },
-                addEvent
+                addEvent,
               );
               const prefab = actorPrefabsLookup[actor.prefabId];
               if (prefab && !actorPrefabsSeen[prefab.id]) {
@@ -834,7 +837,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                   scriptEventsLookup,
                   {},
                   { includeCommented: true },
-                  addEvent
+                  addEvent,
                 );
               }
             }
@@ -848,7 +851,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                 scriptEventsLookup,
                 {},
                 { includeCommented: true },
-                addEvent
+                addEvent,
               );
               const prefab = triggerPrefabsLookup[trigger.prefabId];
               if (prefab && !triggerPrefabsSeen[prefab.id]) {
@@ -859,7 +862,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                   scriptEventsLookup,
                   {},
                   { includeCommented: true },
-                  addEvent
+                  addEvent,
                 );
               }
             }
@@ -868,7 +871,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             scene,
             scriptEventsLookup,
             { includeCommented: true },
-            addEvent
+            addEvent,
           );
         }
       });
@@ -877,7 +880,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           customEvent,
           scriptEventsLookup,
           { includeCommented: true },
-          addEvent
+          addEvent,
         );
       }
 
@@ -919,7 +922,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           action.payload.type,
           action.payload.key,
           action.payload.insertId,
-          action.payload.before
+          action.payload.before,
         );
         for (const action of insertActions) {
           store.dispatch(action);
@@ -929,7 +932,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -960,7 +963,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
                   ...scriptEvent.args,
                 },
               },
-            })
+            }),
           );
         }
       }
@@ -980,7 +983,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             prefab,
             scriptEventsLookup,
             existingTriggerPrefabs,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -995,7 +998,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.variables,
             action.payload.sceneId,
             action.payload.x,
-            action.payload.y
+            action.payload.y,
           );
           batch(() => {
             for (const action of actions) {
@@ -1008,7 +1011,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1032,7 +1035,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             prefab,
             scriptEventsLookup,
             existingActorPrefabs,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1047,7 +1050,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.variables,
             action.payload.sceneId,
             action.payload.x,
-            action.payload.y
+            action.payload.y,
           );
           batch(() => {
             for (const action of actions) {
@@ -1060,7 +1063,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1087,7 +1090,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             prefab,
             scriptEventsLookup,
             existingActorPrefabs,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1101,7 +1104,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             prefab,
             scriptEventsLookup,
             existingTriggerPrefabs,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1119,7 +1122,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             scriptEventDefs,
             clipboard.data.variables,
             action.payload.x,
-            action.payload.y
+            action.payload.y,
           );
           batch(() => {
             for (const action of actions) {
@@ -1133,7 +1136,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
-            existingScriptEventsLookup
+            existingScriptEventsLookup,
           );
           batch(() => {
             for (const action of actions) {
@@ -1162,7 +1165,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
         const spriteState = spriteStateSelectors.selectById(
           state,
-          action.payload.spriteStateId
+          action.payload.spriteStateId,
         );
         if (!spriteState) {
           return;
@@ -1176,7 +1179,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               animationType: data.spriteState.animationType,
               flipLeft: data.spriteState.flipLeft,
             },
-          })
+          }),
         );
 
         // Update sprite animations
@@ -1194,7 +1197,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               changes: {
                 frames: [],
               },
-            })
+            }),
           );
 
           const animMetasprites = data.metasprites.filter((metasprite) => {
@@ -1214,7 +1217,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           }
 
           const newIds = newActions.map(
-            (action) => action.payload.metaspriteId
+            (action) => action.payload.metaspriteId,
           );
 
           const tileIdMetaspriteLookup = animMetasprites.reduce(
@@ -1224,7 +1227,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               }
               return memo;
             },
-            {} as Record<string, string>
+            {} as Record<string, string>,
           );
 
           const newTileActions = data.metaspriteTiles.map((tile) => {
@@ -1271,7 +1274,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             }
             return memo;
           },
-          {} as Record<string, string>
+          {} as Record<string, string>,
         );
 
         const newTileActions = data.metaspriteTiles.map((tile) => {
@@ -1317,7 +1320,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
 
         const newIds = newActions.map(
-          (action) => action.payload.metaspriteTileId
+          (action) => action.payload.metaspriteTileId,
         );
 
         store.dispatch(editorActions.setSelectedMetaspriteTileIds(newIds));
@@ -1345,7 +1348,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               changes: {
                 paletteIds: data.paletteIds,
               },
-            })
+            }),
           );
         } else {
           store.dispatch(
@@ -1354,7 +1357,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               changes: {
                 spritePaletteIds: data.paletteIds,
               },
-            })
+            }),
           );
         }
       }

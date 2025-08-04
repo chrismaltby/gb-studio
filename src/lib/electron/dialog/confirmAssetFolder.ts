@@ -3,7 +3,7 @@ import { AssetFolder } from "lib/project/assets";
 import l10n from "shared/lib/lang/l10n";
 
 const confirmAssetFolder = (
-  folders: AssetFolder[]
+  folders: AssetFolder[],
 ): AssetFolder | undefined => {
   const cancelId = folders.length;
 

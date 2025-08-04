@@ -183,14 +183,14 @@ export const FlagField: FC<FlagFieldFieldProps> = ({
         entitiesActions.renameVariableFlags({
           variableId: `${entityId}__${variableId}`,
           flags: newFlags,
-        })
+        }),
       );
     } else {
       dispatch(
         entitiesActions.renameVariableFlags({
           variableId: variableId || "0",
           flags: newFlags,
-        })
+        }),
       );
     }
     setRenameVisible(false);

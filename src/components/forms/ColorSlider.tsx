@@ -64,7 +64,7 @@ const ColorSlider = ({
         onChange(value);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   const onMouseUp = useCallback(
@@ -72,7 +72,7 @@ const ColorSlider = ({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     },
-    [onMouseMove]
+    [onMouseMove],
   );
 
   const onMouseDown = useCallback(
@@ -87,7 +87,7 @@ const ColorSlider = ({
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("mouseup", onMouseUp);
     },
-    [onChange, onMouseMove, onMouseUp]
+    [onChange, onMouseMove, onMouseUp],
   );
 
   return (
