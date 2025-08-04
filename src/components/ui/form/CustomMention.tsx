@@ -10,7 +10,7 @@ interface CustomMentionProps extends MentionProps {
   onClick?: (
     e: React.MouseEvent<HTMLElement, MouseEvent>,
     id: string,
-    index: number
+    index: number,
   ) => void;
 }
 

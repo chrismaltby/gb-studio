@@ -9,6 +9,7 @@ import {
   ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
+  SpriteModeSetting,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -45,6 +46,7 @@ import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -57,13 +59,13 @@ const SettingsPage: FC = () => {
     (patch: Partial<SettingsState>) => {
       dispatch(settingsActions.editSettings(patch));
     },
-    [dispatch]
+    [dispatch],
   );
   const setSection = useCallback(
     (section: NavigationSection) => {
       dispatch(navigationActions.setSection(section));
     },
-    [dispatch]
+    [dispatch],
   );
   const windowSize = useWindowSize();
   const showMenu = (windowSize.width || 0) >= 750;
@@ -89,7 +91,9 @@ const SettingsPage: FC = () => {
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
+    openBuildFolderOnExport,
     compilerPreset,
+    spriteMode,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -113,59 +117,70 @@ const SettingsPage: FC = () => {
       dispatch(
         settingsActions.editSettings({
           [key]: value,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeColorMode = useCallback(
     (e: ColorModeSetting) => onChangeSettingProp("colorMode", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeColorCorrection = useCallback(
     (e: ColorCorrectionSetting) => onChangeSettingProp("colorCorrection", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeSGBEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("sgbEnabled", castEventToBool(e)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
+  );
+
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting) => onChangeSettingProp("spriteMode", e),
+    [onChangeSettingProp],
   );
 
   const onChangeDefaultFontId = useCallback(
     (e: string) => onChangeSettingProp("defaultFontId", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeMusicDriver = useCallback(
     (e: MusicDriverSetting) => onChangeSettingProp("musicDriver", e),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeCustomHead = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSettingProp("customHead", e.currentTarget.value),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeOpenBuildLogOnWarnings = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("openBuildLogOnWarnings", castEventToBool(e)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
+  );
+
+  const onChangeOpenBuildFolderOnExport = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("openBuildFolderOnExport", castEventToBool(e)),
+    [onChangeSettingProp],
   );
 
   const onChangeCompilerPreset = useCallback(
     (value: number) => onChangeSettingProp("compilerPreset", value),
-    [onChangeSettingProp]
+    [onChangeSettingProp],
   );
 
   const onEditPaletteId = useCallback(
@@ -187,7 +202,7 @@ const SettingsPage: FC = () => {
         ],
       });
     },
-    [defaultBackgroundPaletteIds, editSettings]
+    [defaultBackgroundPaletteIds, editSettings],
   );
 
   const onEditSpritePaletteId = useCallback(
@@ -209,7 +224,7 @@ const SettingsPage: FC = () => {
         ],
       });
     },
-    [defaultSpritePaletteIds, editSettings]
+    [defaultSpritePaletteIds, editSettings],
   );
 
   const onEditDefaultPlayerSprites = useCallback(
@@ -219,10 +234,10 @@ const SettingsPage: FC = () => {
         settingsActions.setSceneTypeDefaultPlayerSprite({
           sceneType,
           spriteSheetId,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const openAsset = useCallback(
@@ -231,10 +246,10 @@ const SettingsPage: FC = () => {
         electronActions.openFile({
           filename: Path.join("assets", path),
           type: "image",
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   return (
@@ -257,8 +272,8 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
-              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            <SettingsMenuItem onClick={onMenuItem("settingsSprite")}>
+              {l10n("SETTINGS_SPRITE")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
@@ -294,8 +309,10 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("FIELD_EXPORT_IN_COLOR"),
-            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
-            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            colorMode !== "mono"
+              ? l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")
+              : "",
+            colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
             l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
@@ -542,17 +559,37 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")]}
+          searchMatches={[
+            l10n("SETTINGS_SPRITE"),
+            l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            l10n("FIELD_DEFAULT_SPRITE_MODE"),
+          ]}
         >
-          <CardAnchor id="settingsPlayer" />
-          <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
+          <CardAnchor id="settingsSprite" />
+          <CardHeading>{l10n("SETTINGS_SPRITE")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            ]}
+          >
+            <SettingRowLabel $sectionHeading>
+              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            </SettingRowLabel>
+          </SearchableSettingRow>
+
           {sceneTypes.map((sceneType) => (
             <SearchableSettingRow
               key={sceneType.key}
               searchTerm={searchTerm}
-              searchMatches={[l10n(sceneType.label as L10NKey)]}
+              searchMatches={[
+                l10n(sceneType.label as L10NKey),
+                l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+              ]}
             >
-              <SettingRowLabel>
+              <SettingRowLabel $indent={1}>
                 {l10n(sceneType.label as L10NKey)}
               </SettingRowLabel>
               <SettingRowInput>
@@ -568,6 +605,27 @@ const SettingsPage: FC = () => {
               </SettingRowInput>
             </SearchableSettingRow>
           ))}
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("FIELD_DEFAULT_SPRITE_MODE"),
+            ]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_DEFAULT_SPRITE_MODE")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <SpriteModeSelect
+                name="spriteMode"
+                value={spriteMode}
+                onChange={(value) => {
+                  onChangeSpriteMode(value ?? "8x16");
+                }}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
         </SearchableCard>
 
         <SearchableCard
@@ -725,6 +783,23 @@ const SettingsPage: FC = () => {
                 name="generateDebugFilesEnabled"
                 checked={generateDebugFilesEnabled}
                 onChange={onChangeGenerateDebugFilesEnabled}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="openBuildFolderOnExport"
+                name="openBuildFolderOnExport"
+                checked={openBuildFolderOnExport}
+                onChange={onChangeOpenBuildFolderOnExport}
               />
             </SettingRowInput>
           </SearchableSettingRow>

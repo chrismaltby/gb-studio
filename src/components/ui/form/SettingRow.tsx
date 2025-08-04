@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { CardHeading } from "ui/cards/Card";
 
 export const SettingRow = styled.div`
@@ -20,7 +20,12 @@ export const SettingRow = styled.div`
   }
 `;
 
-export const SettingRowLabel = styled.label`
+interface SettingRowLabelProps {
+  $sectionHeading?: boolean;
+  $indent?: number;
+}
+
+export const SettingRowLabel = styled.label<SettingRowLabelProps>`
   width: 300px;
   min-height: 28px;
   padding: 5px 0px;
@@ -29,6 +34,18 @@ export const SettingRowLabel = styled.label`
   flex-direction: column;
   justify-content: center;
   font-size: ${(props) => props.theme.typography.fontSize};
+  ${(props) =>
+    props.$sectionHeading
+      ? css`
+          font-weight: bold;
+        `
+      : ""}
+  ${(props) =>
+    props.$indent
+      ? css`
+          padding-left: ${props.$indent * 20}px;
+        `
+      : ""}
 `;
 
 export const SettingRowInput = styled.div`
@@ -37,4 +54,29 @@ export const SettingRowInput = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
+`;
+
+export const SettingRowUnits = styled.label`
+  min-height: 28px;
+  min-width: 30px;
+  padding: 5px 0px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 10px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+`;
+
+export const SettingsSidebarContainer = styled.div`
+  background: ${(props) => props.theme.colors.card.background};
+  color: ${(props) => props.theme.colors.card.text};
+  padding: 0px 10px;
+  border-top: 1px solid ${(props) => props.theme.colors.card.border};
+  width: 100%;
+  box-sizing: border-box;
+
+  ${SettingRow}:last-child {
+    border-bottom: 0;
+  }
 `;

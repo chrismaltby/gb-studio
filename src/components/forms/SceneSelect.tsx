@@ -50,7 +50,7 @@ const sortByLabel = (a: SceneOption, b: SceneOption) => {
 
 const sceneToSceneOption = (
   scene: SceneNormalized,
-  sceneIndex: number
+  sceneIndex: number,
 ): SceneOption => ({
   value: scene.id,
   label: sceneName(scene, sceneIndex),
@@ -66,13 +66,13 @@ export const SceneSelect: FC<SceneSelectProps> = ({
 }) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const backgroundsLookup = useAppSelector((state) =>
-    backgroundSelectors.selectEntities(state)
+    backgroundSelectors.selectEntities(state),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, value || "")
+    sceneSelectors.selectById(state, value || ""),
   );
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId || "")
+    backgroundSelectors.selectById(state, scene?.backgroundId || ""),
   );
   const [options, setOptions] = useState<SceneOption[]>([]);
   const [currentScene, setCurrentScene] = useState<SceneNormalized>();
@@ -94,8 +94,8 @@ export const SceneSelect: FC<SceneSelectProps> = ({
               },
             ] as SceneOption[])
           : ([] as SceneOption[]),
-        scenes.map(sceneToSceneOption).sort(sortByLabel)
-      )
+        scenes.map(sceneToSceneOption).sort(sortByLabel),
+      ),
     );
   }, [scenes, optional, optionalLabel]);
 
@@ -106,7 +106,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   useEffect(() => {
     if (currentScene) {
       setCurrentValue(
-        sceneToSceneOption(currentScene, scenes.indexOf(currentScene))
+        sceneToSceneOption(currentScene, scenes.indexOf(currentScene)),
       );
     }
   }, [currentScene, scenes]);

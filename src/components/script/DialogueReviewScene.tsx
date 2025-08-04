@@ -90,22 +90,22 @@ const DialogueReviewScene = ({
   const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(id)
+    sceneSelectors.selectIds(state).indexOf(id),
   );
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
 
   const dialogueLines = useMemo(() => {
@@ -131,7 +131,7 @@ const DialogueReviewScene = ({
                 overrideActorId: prefab ? actor.id : undefined,
               });
             }
-          }
+          },
         );
     });
     scene.triggers.forEach((triggerId, triggerIndex) => {
@@ -152,7 +152,7 @@ const DialogueReviewScene = ({
                 overrideTriggerId: prefab ? trigger.id : undefined,
               });
             }
-          }
+          },
         );
     });
     walkNormalizedSceneSpecificScripts(
@@ -167,7 +167,7 @@ const DialogueReviewScene = ({
             line: cmd,
           });
         }
-      }
+      },
     );
     return memo;
   }, [
@@ -188,7 +188,7 @@ const DialogueReviewScene = ({
             actorId: dialogueLine.overrideActorId,
             scriptEventId: dialogueLine.line.id,
             args: { text: value },
-          })
+          }),
         );
       } else if (dialogueLine.overrideTriggerId) {
         dispatch(
@@ -196,7 +196,7 @@ const DialogueReviewScene = ({
             triggerId: dialogueLine.overrideTriggerId,
             scriptEventId: dialogueLine.line.id,
             args: { text: value },
-          })
+          }),
         );
       } else {
         dispatch(
@@ -204,7 +204,7 @@ const DialogueReviewScene = ({
             scriptEventId: dialogueLine.line.id,
             key: "text",
             value,
-          })
+          }),
         );
       }
     };

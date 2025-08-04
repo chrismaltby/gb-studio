@@ -75,7 +75,7 @@ export const NoiseMacroEditorForm = ({
             5 + x * (drawWidth / 6),
             5 + drawHeight / 2,
             drawWidth / 6,
-            -y * ratio
+            -y * ratio,
           );
         });
       }

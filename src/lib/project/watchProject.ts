@@ -26,7 +26,7 @@ const watchProject = (
     onRemoveTileset: WatchCallback;
     onChangedEngineSchema: WatchCallback;
     onChangedEventPlugin: WatchCallback;
-  }
+  },
 ) => {
   const projectRoot = Path.dirname(projectPath);
   const spritesRoot = `${projectRoot}/assets/sprites`;
@@ -66,7 +66,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedSprite)
     .on("change", callbacks.onChangedSprite)
@@ -82,7 +82,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedBackground)
     .on("change", callbacks.onChangedBackground)
@@ -118,7 +118,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish: musicAwaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedMusic)
     .on("change", callbacks.onChangedMusic)
@@ -134,7 +134,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedSound)
     .on("change", callbacks.onChangedSound)
@@ -147,7 +147,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedFont)
     .on("change", callbacks.onChangedFont)
@@ -163,7 +163,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedAvatar)
     .on("change", callbacks.onChangedAvatar)
@@ -179,7 +179,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedEmote)
     .on("change", callbacks.onChangedEmote)
@@ -195,7 +195,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", callbacks.onChangedTileset)
     .on("change", callbacks.onChangedTileset)
@@ -230,7 +230,7 @@ const watchProject = (
         ignoreInitial: true,
         persistent: true,
         awaitWriteFinish,
-      }
+      },
     )
     .on("add", (filename) => {
       const subfolder = pluginSubfolder(filename);

@@ -61,27 +61,27 @@ const emptyPalettes: Palette[] = [
 
 const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
   const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, backgroundId)
+    backgroundSelectors.selectById(state, backgroundId),
   );
   const tileset = useAppSelector((state) =>
-    tilesetSelectors.selectById(state, backgroundId)
+    tilesetSelectors.selectById(state, backgroundId),
   );
 
   const zoom = useAppSelector((state) => state.editor.zoomImage) / 100;
   const previewAsSceneId = useAppSelector(
-    (state) => state.editor.previewAsSceneId
+    (state) => state.editor.previewAsSceneId,
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, previewAsSceneId)
+    sceneSelectors.selectById(state, previewAsSceneId),
   );
   const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state)
+    paletteSelectors.selectEntities(state),
   );
   const defaultPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds,
   );
   const gbcEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono"
+    (state) => state.project.present.settings.colorMode !== "mono",
   );
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);
 
@@ -91,7 +91,7 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
         const paletteId =
           scene?.paletteIds?.[paletteIndex] || defaultPaletteIds[paletteIndex];
         return palettesLookup[paletteId] || (DMG_PALETTE as Palette);
-      })
+      }),
     );
   }, [scene, palettesLookup, defaultPaletteIds]);
 

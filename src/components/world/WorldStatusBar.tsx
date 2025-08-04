@@ -59,26 +59,26 @@ const WorldStatusBar = () => {
   const y = useAppSelector((state) => state.editor.hover.y);
 
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
   const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(sceneId)
+    sceneSelectors.selectIds(state).indexOf(sceneId),
   );
   const hoverSceneName = useMemo(() => {
     return scene && sceneName(scene, sceneIndex);
   }, [scene, sceneIndex]);
   const canPreviewAsMono = useAppSelector(
-    (state) => state.project.present.settings.colorMode === "mixed"
+    (state) => state.project.present.settings.colorMode === "mixed",
   );
   const previewAsMono = useAppSelector(
-    (state) => canPreviewAsMono && state.project.present.settings.previewAsMono
+    (state) => canPreviewAsMono && state.project.present.settings.previewAsMono,
   );
 
   const onTogglePreviewAsMono = useCallback(() => {
     dispatch(
       settingsActions.editSettings({
         previewAsMono: !previewAsMono,
-      })
+      }),
     );
   }, [dispatch, previewAsMono]);
 

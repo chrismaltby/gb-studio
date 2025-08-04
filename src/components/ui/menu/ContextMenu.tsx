@@ -14,7 +14,7 @@ export const ContextMenu = ({ x, y, children, onClose }: ContextMenuProps) => {
   const { menuRef, isOpen, childrenWithProps } = useNestedMenu(
     children,
     true,
-    "right"
+    "right",
   );
   const wasOpen = useRef(isOpen);
   useEffect(() => {

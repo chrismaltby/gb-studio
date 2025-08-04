@@ -8,7 +8,7 @@ interface BackgroundWarningsProps {
 
 const BackgroundWarnings = ({ id }: BackgroundWarningsProps) => {
   const backgroundWarningsLookup = useAppSelector(
-    (state) => state.assets.backgrounds
+    (state) => state.assets.backgrounds,
   );
   const savedWarnings = backgroundWarningsLookup[id];
   const warnings = savedWarnings ? savedWarnings.warnings : [];

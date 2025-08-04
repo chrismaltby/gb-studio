@@ -13,10 +13,10 @@ interface DebuggerTriggerLinkProps {
 const DebuggerTriggerLink = ({ id, sceneId }: DebuggerTriggerLinkProps) => {
   const dispatch = useAppDispatch();
   const trigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, id)
+    triggerSelectors.selectById(state, id),
   );
   const triggerIndex = useAppSelector((state) =>
-    triggerSelectors.selectIds(state).indexOf(id)
+    triggerSelectors.selectIds(state).indexOf(id),
   );
 
   const onSelect = useCallback(() => {
@@ -24,7 +24,7 @@ const DebuggerTriggerLink = ({ id, sceneId }: DebuggerTriggerLinkProps) => {
       editorActions.selectTrigger({
         sceneId,
         triggerId: id,
-      })
+      }),
     );
     dispatch(editorActions.editSearchTerm(""));
     dispatch(editorActions.editSearchTerm(sceneId));

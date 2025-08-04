@@ -178,7 +178,7 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
           throw new Error(
             `Unexpected number of args passed to function "${
               stackTail.function
-            }". Found ${numArgs} but expected ${getArgsLen(stackTail.function)}`
+            }". Found ${numArgs} but expected ${getArgsLen(stackTail.function)}`,
           );
         }
         functionStack.pop();

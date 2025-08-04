@@ -54,7 +54,7 @@ const App = () => {
         setDraggingOver(true);
       }
     },
-    [draggingOver]
+    [draggingOver],
   );
 
   const onDragLeave = useCallback((e: DragEvent) => {
@@ -79,7 +79,7 @@ const App = () => {
         dispatch(projectActions.addFileToProject(file.path));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {

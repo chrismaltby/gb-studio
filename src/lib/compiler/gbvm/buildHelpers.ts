@@ -7,7 +7,7 @@ export const anonymizeGBVMScript = (input: string): string => {
   const globalReferencePattern = new RegExp(functionName, "gm");
   const placeholderReferencePattern = new RegExp(
     "__PLACEHOLDER\\|" + functionName + "[^|]*\\|PLACEHOLDER__",
-    "gm"
+    "gm",
   );
 
   return input

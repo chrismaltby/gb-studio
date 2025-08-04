@@ -44,18 +44,18 @@ const UsesCollapsedWrapper = styled.div`
 export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   const actorPrefabIds = useAppSelector(actorPrefabSelectors.selectIds);
   const prefab = useAppSelector((state) =>
-    actorPrefabSelectors.selectById(state, id)
+    actorPrefabSelectors.selectById(state, id),
   );
 
   const index = React.useMemo(
     () => actorPrefabIds.indexOf(id),
-    [actorPrefabIds, id]
+    [actorPrefabIds, id],
   );
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!prefab?.notes);
 
   const lockScriptEditor = useAppSelector(
-    (state) => state.editor.lockScriptEditor
+    (state) => state.editor.lockScriptEditor,
   );
 
   const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
@@ -67,7 +67,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   const onChangeActorPrefabProp = useCallback(
     <K extends keyof ActorPrefabNormalized>(
       key: K,
-      value: ActorPrefabNormalized[K]
+      value: ActorPrefabNormalized[K],
     ) => {
       dispatch(
         entitiesActions.editActorPrefab({
@@ -75,22 +75,22 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
           changes: {
             [key]: value,
           },
-        })
+        }),
       );
     },
-    [dispatch, id]
+    [dispatch, id],
   );
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeActorPrefabProp("name", e.currentTarget.value),
-    [onChangeActorPrefabProp]
+    [onChangeActorPrefabProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorPrefabProp("notes", e.currentTarget.value),
-    [onChangeActorPrefabProp]
+    [onChangeActorPrefabProp],
   );
 
   const selectSidebar = () => {
@@ -115,7 +115,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
     (value: boolean) => {
       dispatch(editorActions.setShowScriptUses(value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (!prefab) {

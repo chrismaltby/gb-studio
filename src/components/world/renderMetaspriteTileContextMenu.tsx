@@ -27,7 +27,7 @@ const renderMetaspriteTileContextMenu = ({
             spriteSheetId,
             metaspriteTileIds: selectedTileIds,
             metaspriteId: metaspriteId,
-          })
+          }),
         )
       }
     >
@@ -41,7 +41,7 @@ const renderMetaspriteTileContextMenu = ({
             spriteSheetId,
             metaspriteTileIds: selectedTileIds,
             metaspriteId: metaspriteId,
-          })
+          }),
         )
       }
     >
@@ -57,7 +57,7 @@ const renderMetaspriteTileContextMenu = ({
           entitiesActions.flipXMetaspriteTiles({
             spriteSheetId,
             metaspriteTileIds: selectedTileIds,
-          })
+          }),
         )
       }
     >
@@ -70,7 +70,7 @@ const renderMetaspriteTileContextMenu = ({
           entitiesActions.flipYMetaspriteTiles({
             spriteSheetId,
             metaspriteTileIds: selectedTileIds,
-          })
+          }),
         )
       }
     >
@@ -85,7 +85,7 @@ const renderMetaspriteTileContextMenu = ({
             spriteSheetId,
             metaspriteTileIds: selectedTileIds,
             metaspriteId,
-          })
+          }),
         )
       }
     >

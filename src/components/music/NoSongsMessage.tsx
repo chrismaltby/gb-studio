@@ -17,7 +17,7 @@ export const NoSongsMessage = ({ type }: NoSongsMessageProps) => {
     (patch: Partial<SettingsState>) => {
       dispatch(settingsActions.editSettings(patch));
     },
-    [dispatch]
+    [dispatch],
   );
 
   return (

@@ -119,6 +119,8 @@ const lightTheme: ThemeInterface = {
         nest3Background: "linear-gradient(0deg, #a5d6a7, #c8e6c9)",
         nest4Background: "linear-gradient(0deg, #b39ddb, #d1c4e9)",
         commentBackground: "linear-gradient(0deg, #c5e1a5, #dcedc8)",
+        disabledBackground:
+          "linear-gradient(0deg,rgb(225, 165, 165),rgb(237, 200, 200))",
       },
       branch: {
         nest1Background: "#e1f5fe",

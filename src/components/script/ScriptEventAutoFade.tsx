@@ -25,10 +25,10 @@ export const ScriptEventAutoFade = () => {
   const sceneId = context.sceneId;
   const headerRef = useRef<HTMLDivElement>(null);
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
   const value =
-    scene?.autoFadeSpeed === null ? null : scene?.autoFadeSpeed ?? 1;
+    scene?.autoFadeSpeed === null ? null : (scene?.autoFadeSpeed ?? 1);
   const autoFadeEventCollapse = scene?.autoFadeEventCollapse;
   const isOpen = !autoFadeEventCollapse;
 
@@ -41,10 +41,10 @@ export const ScriptEventAutoFade = () => {
           changes: {
             autoFadeSpeed: newValue,
           },
-        })
+        }),
       );
     },
-    [dispatch, sceneId]
+    [dispatch, sceneId],
   );
 
   const onDisable = useCallback(() => {
@@ -54,7 +54,7 @@ export const ScriptEventAutoFade = () => {
         changes: {
           autoFadeSpeed: null,
         },
-      })
+      }),
     );
   }, [dispatch, sceneId]);
 
@@ -65,7 +65,7 @@ export const ScriptEventAutoFade = () => {
         changes: {
           autoFadeEventCollapse: !autoFadeEventCollapse,
         },
-      })
+      }),
     );
   }, [autoFadeEventCollapse, dispatch, sceneId]);
 
@@ -123,7 +123,7 @@ export const ScriptEventAutoFadeDisabledWarning = () => {
   const type = useAppSelector((state) => state.editor.type);
   const sceneId = useAppSelector((state) => state.editor.scene);
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId)
+    sceneSelectors.selectById(state, sceneId),
   );
 
   const onEnable = useCallback(() => {
@@ -133,7 +133,7 @@ export const ScriptEventAutoFadeDisabledWarning = () => {
         changes: {
           autoFadeSpeed: 1,
         },
-      })
+      }),
     );
   }, [dispatch, sceneId]);
 

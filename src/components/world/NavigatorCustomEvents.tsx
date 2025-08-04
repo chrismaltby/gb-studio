@@ -27,13 +27,13 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   searchTerm,
 }) => {
   const allCustomEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "customEvent" ? entityId : "";
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, selectedId)
+    customEventSelectors.selectById(state, selectedId),
   );
   const showUses = useAppSelector((state) => state.editor.showScriptUses);
 
@@ -62,9 +62,9 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           name: customEventName(customEvent, index),
         })),
         openFolders,
-        searchTerm
+        searchTerm,
       ),
-    [allCustomEvents, openFolders, searchTerm]
+    [allCustomEvents, openFolders, searchTerm],
   );
 
   const setSelectedId = (id: string) => {
@@ -79,7 +79,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameComplete = useCallback(
@@ -91,12 +91,12 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -107,7 +107,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
     (value: boolean) => {
       dispatch(editorActions.setShowScriptUses(value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderContextMenu = useCallback(
@@ -140,7 +140,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           key="delete"
           onClick={() =>
             dispatch(
-              entitiesActions.removeCustomEvent({ customEventId: item.id })
+              entitiesActions.removeCustomEvent({ customEventId: item.id }),
             )
           }
           icon={<BlankIcon />}
@@ -149,7 +149,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
         </MenuItem>,
       ];
     },
-    [dispatch, setShowUses, showUses]
+    [dispatch, setShowUses, showUses],
   );
 
   const renderLabel = useCallback(
@@ -161,7 +161,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
       }
       return item.filename;
     },
-    [toggleFolderOpen]
+    [toggleFolderOpen],
   );
 
   return (

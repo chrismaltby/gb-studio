@@ -15,7 +15,7 @@ const tokenizer = (input: string): Token[] => {
     input
       .replace(/\s+/g, "")
       .split(
-        /(@[a-f0-9-]{36}@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/
+        /(@[a-f0-9-]{36}@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/,
       )
       .filter(identity)
       .map((token): Token => {

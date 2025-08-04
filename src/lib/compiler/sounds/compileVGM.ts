@@ -24,7 +24,7 @@ interface VGMOptions {
 
 export const compileVGM = async (
   filename: string,
-  fmt: CompileOutputFmt = "c"
+  fmt: CompileOutputFmt = "c",
 ): Promise<CompiledSoundOutput> => {
   const decHex = ((fmt?: CompileOutputFmt) => (v: number) => {
     const prefix = fmt === "asm" ? "$" : "0x";

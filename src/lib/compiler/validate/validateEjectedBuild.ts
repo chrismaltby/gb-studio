@@ -28,13 +28,13 @@ export const validateEjectedBuild = async ({
 
   if (isNaN(vmHeapSize) || isNaN(maxGlobalVars)) {
     warnings(
-      "Unable to read VM_HEAP_SIZE and MAX_GLOBAL_VARS to determine if project contains too many unique variables"
+      "Unable to read VM_HEAP_SIZE and MAX_GLOBAL_VARS to determine if project contains too many unique variables",
     );
   }
 
   if (maxGlobalVars > vmHeapSize) {
     warnings(
-      `Your project contains too many unique variables and will not work as expected. VM_HEAP_SIZE defines the maximum amount of variables allowed ${vmHeapSize} but your project contained ${maxGlobalVars} unique variables.`
+      `Your project contains too many unique variables and will not work as expected. VM_HEAP_SIZE defines the maximum amount of variables allowed ${vmHeapSize} but your project contained ${maxGlobalVars} unique variables.`,
     );
   }
 };

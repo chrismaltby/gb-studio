@@ -29,14 +29,14 @@ const DebuggerState = () => {
 
   const sceneMap = useAppSelector((state) => state.debug.sceneMap);
   const currentSceneSymbol = useAppSelector(
-    (state) => state.debug.currentSceneSymbol
+    (state) => state.debug.currentSceneSymbol,
   );
   const scriptContexts = useAppSelector((state) => state.debug.scriptContexts);
 
   const currentSceneData = sceneMap[currentSceneSymbol] ?? undefined;
 
   const isCollapsed = useAppSelector((state) =>
-    getSettings(state).debuggerCollapsedPanes.includes("state")
+    getSettings(state).debuggerCollapsedPanes.includes("state"),
   );
 
   const onToggleCollapsed = useCallback(() => {

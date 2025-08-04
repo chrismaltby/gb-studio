@@ -17,7 +17,7 @@ import { ConsoleLink } from "./consoleState";
 
 const getLinkToSymbol = (
   symbol: string,
-  state: RootState
+  state: RootState,
 ): ConsoleLink | undefined => {
   const allCustomScripts = customEventSelectors.selectAll(state);
   const allActors = actorSelectors.selectAll(state);
@@ -30,7 +30,7 @@ const getLinkToSymbol = (
     return {
       linkText: customEventName(
         customScript,
-        allCustomScripts.indexOf(customScript)
+        allCustomScripts.indexOf(customScript),
       ),
       type: "customEvent",
       entityId: customScript.id,
@@ -120,7 +120,7 @@ const consoleMiddleware: Middleware<Dispatch, RootState> =
         return;
       } else if (action.payload.text.includes("referenced by module")) {
         const symbol = action.payload.text.match(
-          /referenced by module '([^']*)'/
+          /referenced by module '([^']*)'/,
         )?.[1];
         if (symbol) {
           const state = store.getState();
@@ -155,7 +155,7 @@ const consoleMiddleware: Middleware<Dispatch, RootState> =
         }
       } else if (action.payload.text.includes("removing")) {
         const symbol = action.payload.text.match(
-          /removing .*[\\/]([^\\/]*).o/
+          /removing .*[\\/]([^\\/]*).o/,
         )?.[1];
         if (symbol) {
           const state = store.getState();

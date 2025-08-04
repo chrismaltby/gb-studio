@@ -12,7 +12,7 @@ export enum DeleteScriptConfirmButton {
 const confirmDeleteCustomEvent = (
   name: string,
   sceneNames: string[],
-  count: number
+  count: number,
 ) => {
   const foundReferences =
     sceneNames.length > 0
@@ -34,7 +34,7 @@ const confirmDeleteCustomEvent = (
       count === 1
         ? "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR"
         : "DIALOG_DELETE_CUSTOM_EVENT_USED",
-      { count, sceneNames: foundReferences }
+      { count, sceneNames: foundReferences },
     ),
   });
 };

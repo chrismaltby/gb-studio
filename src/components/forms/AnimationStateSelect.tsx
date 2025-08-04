@@ -24,6 +24,7 @@ interface AnimationStateSelectProps extends SelectCommonProps {
 
 const Wrapper = styled.div`
   position: relative;
+  width: 100%;
 `;
 
 const StateRenameInput = styled(IMEInput)`
@@ -124,7 +125,7 @@ const AnimationStateSelect = ({
 
   const [options, setOptions] = useState<Option[]>([]);
   const spriteStates = useAppSelector((state) =>
-    spriteStateSelectors.selectAll(state)
+    spriteStateSelectors.selectAll(state),
   );
 
   const onRenameStart = () => {
@@ -170,11 +171,11 @@ const AnimationStateSelect = ({
         spriteStates
           .map((state) => state.name)
           .filter((i) => i)
-          .sort(collator.compare)
+          .sort(collator.compare),
       ).map((state) => ({
         value: state,
         label: state,
-      }))
+      })),
     );
 
     setOptions(options);

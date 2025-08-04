@@ -34,11 +34,12 @@ export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
       { value: 7, label: `${l10n("FIELD_SPEED")} ¹⁄₁₂₈` },
       { value: 8, label: `${l10n("FIELD_SPEED")} ¹⁄₂₅₆` },
     ],
-    []
+    [],
   );
 
-  const [currentValue, setCurrentValue] =
-    useState<ParallaxSpeedOption | undefined>();
+  const [currentValue, setCurrentValue] = useState<
+    ParallaxSpeedOption | undefined
+  >();
 
   useEffect(() => {
     const current = options.find((o) => o.value === value);

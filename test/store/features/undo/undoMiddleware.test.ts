@@ -19,13 +19,16 @@ test("Should trigger undo clear history after successful project load", async ()
       resources: { ...dummyCompressedProjectResources },
       path: "project.gbsproj",
       scriptEventDefs: {},
-      engineFields: [],
-      sceneTypes: [],
+      engineSchema: {
+        fields: [],
+        sceneTypes: [],
+        consts: {},
+      },
       modifiedSpriteIds: [],
       isMigrated: false,
     },
     "randomid",
-    "project.gbsproj"
+    "project.gbsproj",
   );
 
   middleware(store)(next)(action);
@@ -45,7 +48,7 @@ test("Should not trigger undo clear history after successful project save", asyn
   const action = projectActions.saveProject.fulfilled(
     undefined,
     "randomid",
-    undefined
+    undefined,
   );
 
   middleware(store)(next)(action);

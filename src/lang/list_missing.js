@@ -56,18 +56,18 @@ Object.keys(translation).forEach((key) => {
 if (removedKeys.length > 0) {
   console.log("Removed keys that were no longer in use");
   console.log(
-    removedKeys.map((key) => `  ${key}: "${translation[key]}"`).join("\n")
+    removedKeys.map((key) => `  ${key}: "${translation[key]}"`).join("\n"),
   );
 }
 
 if (untranslatedKeys.length > 0) {
   console.log("Untranslated keys:");
   console.log(
-    untranslatedKeys.map((key) => `  ${key}: "${en[key]}"`).join("\n")
+    untranslatedKeys.map((key) => `  ${key}: "${en[key]}"`).join("\n"),
   );
 }
 
 fs.writeFileSync(
   `${__dirname}/${locale}.json`,
-  JSON.stringify(newTranslation, null, 2)
+  JSON.stringify(newTranslation, null, 2),
 );

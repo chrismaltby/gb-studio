@@ -192,7 +192,7 @@ const DestinationMarker = ({
             sceneId,
             selectionType,
             entityId,
-          })
+          }),
         );
         window.addEventListener("mouseup", onDragDestinationStop);
       }
@@ -205,7 +205,7 @@ const DestinationMarker = ({
       onDragDestinationStop,
       sceneId,
       selectionType,
-    ]
+    ],
   );
 
   return (
@@ -241,44 +241,44 @@ const Connections = ({
   const dispatch = useAppDispatch();
   const [connections, setConnections] = useState<SceneTransitionCoords[]>([]);
   const showConnections = useAppSelector(
-    (state) => state.project.present.settings.showConnections
+    (state) => state.project.present.settings.showConnections,
   );
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
   const selectedEventId = useAppSelector((state) => state.editor.eventId);
   const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId
+    (state) => state.project.present.settings.startSceneId,
   );
   const startX = useAppSelector(
-    (state) => state.project.present.settings.startX
+    (state) => state.project.present.settings.startX,
   );
   const startY = useAppSelector(
-    (state) => state.project.present.settings.startY
+    (state) => state.project.present.settings.startY,
   );
   const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection
+    (state) => state.project.present.settings.startDirection,
   );
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const scenesLookup = useAppSelector((state) =>
-    sceneSelectors.selectEntities(state)
+    sceneSelectors.selectEntities(state),
   );
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const eventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
 
   const calculate = useCallback(() => {
@@ -331,7 +331,7 @@ const Connections = ({
         calculate();
       }
     },
-    [calculate]
+    [calculate],
   );
 
   useEffect(() => {
@@ -348,7 +348,7 @@ const Connections = ({
 
   const throttledCalculate = useMemo(
     () => throttle(() => currentCalculate.current(), 100),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -369,7 +369,7 @@ const Connections = ({
         window.addEventListener("mouseup", onDragPlayerStop);
       }
     },
-    [dispatch, editable, onDragPlayerStop]
+    [dispatch, editable, onDragPlayerStop],
   );
 
   const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
@@ -390,10 +390,10 @@ const Connections = ({
           const scriptEvent = eventsLookup[connection.eventId];
           if (scriptEvent) {
             const scriptEventX = optimiseScriptValue(
-              ensureScriptValue(scriptEvent.args?.x, defaultCoord)
+              ensureScriptValue(scriptEvent.args?.x, defaultCoord),
             );
             const scriptEventY = optimiseScriptValue(
-              ensureScriptValue(scriptEvent.args?.y, defaultCoord)
+              ensureScriptValue(scriptEvent.args?.y, defaultCoord),
             );
             toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
             toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
@@ -459,7 +459,7 @@ const Connections = ({
           qx,
           qy,
         };
-      })
+      }),
     );
   }, [
     actorsLookup,

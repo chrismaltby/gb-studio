@@ -43,7 +43,7 @@ export const saveSteps = [
   "complete",
 ] as const;
 
-export type SaveStep = typeof saveSteps[number];
+export type SaveStep = (typeof saveSteps)[number];
 
 export const denormalizeProject = (project: {
   entities: EntitiesState;
@@ -73,7 +73,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...background,
           inode: undefined,
           _v: undefined,
-        } as unknown as BackgroundData)
+        }) as unknown as BackgroundData,
     ),
     spriteSheets: data.spriteSheets.map(
       (spriteSheet) =>
@@ -81,7 +81,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...spriteSheet,
           inode: undefined,
           _v: undefined,
-        } as unknown as SpriteSheetData)
+        }) as unknown as SpriteSheetData,
     ),
     music: data.music.map(
       (track) =>
@@ -89,7 +89,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...track,
           inode: undefined,
           _v: undefined,
-        } as unknown as MusicData)
+        }) as unknown as MusicData,
     ),
     sounds: data.sounds.map(
       (sound) =>
@@ -97,7 +97,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...sound,
           inode: undefined,
           _v: undefined,
-        } as unknown as SoundData)
+        }) as unknown as SoundData,
     ),
     fonts: data.fonts.map(
       (font) =>
@@ -106,7 +106,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           mapping: undefined,
           inode: undefined,
           _v: undefined,
-        } as unknown as FontData)
+        }) as unknown as FontData,
     ),
     avatars: data.avatars.map(
       (avatar) =>
@@ -114,7 +114,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...avatar,
           inode: undefined,
           _v: undefined,
-        } as unknown as AvatarData)
+        }) as unknown as AvatarData,
     ),
     emotes: data.emotes.map(
       (emote) =>
@@ -122,7 +122,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...emote,
           inode: undefined,
           _v: undefined,
-        } as unknown as EmoteData)
+        }) as unknown as EmoteData,
     ),
     tilesets: data.tilesets.map(
       (tileset) =>
@@ -130,7 +130,7 @@ export const trimProjectData = (data: ProjectData): ProjectData => {
           ...tileset,
           inode: undefined,
           _v: undefined,
-        } as unknown as TilesetData)
+        }) as unknown as TilesetData,
     ),
   };
 };
@@ -140,7 +140,7 @@ const closeProject = createAction<void>("project/closeProject");
 
 const setSaveStep = createAction<SaveStep>("project/setSaveStep");
 const setSaveWriteProgress = createAction<{ completed: number; total: number }>(
-  "project/setSaveWriteProgress"
+  "project/setSaveWriteProgress",
 );
 
 const loadProject = createAsyncThunk<
@@ -213,7 +213,7 @@ const renameBackgroundAsset = createAction<{
   newFilename: string;
 }>("project/renameBackgroundAsset");
 const removeBackgroundAsset = createAction<{ backgroundId: string }>(
-  "project/removeBackgroundAsset"
+  "project/removeBackgroundAsset",
 );
 
 const renameTilesetAsset = createAction<{
@@ -221,7 +221,7 @@ const renameTilesetAsset = createAction<{
   newFilename: string;
 }>("project/renameTilesetAsset");
 const removeTilesetAsset = createAction<{ tilesetId: string }>(
-  "project/removeTilesetAsset"
+  "project/removeTilesetAsset",
 );
 
 const renameSpriteAsset = createAction<{
@@ -229,21 +229,21 @@ const renameSpriteAsset = createAction<{
   newFilename: string;
 }>("project/renameSpriteAsset");
 const removeSpriteAsset = createAction<{ spriteSheetId: string }>(
-  "project/removeSpriteAsset"
+  "project/removeSpriteAsset",
 );
 
 const renameMusicAsset = createAction<{ musicId: string; newFilename: string }>(
-  "project/renameMusicAsset"
+  "project/renameMusicAsset",
 );
 const removeMusicAsset = createAction<{ musicId: string }>(
-  "project/removeMusicAsset"
+  "project/removeMusicAsset",
 );
 
 const renameSoundAsset = createAction<{ soundId: string; newFilename: string }>(
-  "project/renameSoundAsset"
+  "project/renameSoundAsset",
 );
 const removeSoundAsset = createAction<{ soundId: string }>(
-  "project/removeSoundAsset"
+  "project/removeSoundAsset",
 );
 
 /**************************************************************************
@@ -291,7 +291,7 @@ const saveProject = createAsyncThunk<void>(
       thunkApi.dispatch(setSaveStep("patching"));
       const patch = buildCompressedProjectResourcesPatch(
         data,
-        resourceChecksums
+        resourceChecksums,
       );
 
       thunkApi.dispatch(setSaveStep("writing"));
@@ -305,7 +305,7 @@ const saveProject = createAsyncThunk<void>(
     }
 
     saving = false;
-  }
+  },
 );
 
 const projectActions = {

@@ -77,7 +77,7 @@ const compile = (input, helpers) => {
     input.x,
     input.y,
     input.direction,
-    input.fadeSpeed
+    input.fadeSpeed,
   );
 };
 

@@ -130,14 +130,15 @@ export const ReferencesSelect = ({
   const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState(false);
-  const [pinDirection, setPinDirection] =
-    useState<"bottom-right" | "top-right">("bottom-right");
+  const [pinDirection, setPinDirection] = useState<
+    "bottom-right" | "top-right"
+  >("bottom-right");
 
   const onRemove = useCallback(
     (id: string) => {
       onChange(value.filter((ref) => ref.id !== id));
     },
-    [onChange, value]
+    [onChange, value],
   );
 
   const onOpen = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -158,7 +159,7 @@ export const ReferencesSelect = ({
     (newRef: Reference) => {
       onChange([...value.filter((ref) => ref.id !== newRef.id), newRef]);
     },
-    [onChange, value]
+    [onChange, value],
   );
 
   const backgroundRefs = value.filter((ref) => ref.type === "background");
@@ -191,7 +192,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setBackgroundSymbol({
                     backgroundId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -216,7 +217,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setEmoteSymbol({
                     emoteId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -236,7 +237,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setFontSymbol({
                     fontId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -257,7 +258,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setMusicSymbol({
                     musicId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -277,7 +278,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setSoundSymbol({
                     soundId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRefAndMuteMask}
@@ -297,7 +298,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setSceneSymbol({
                     sceneId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -320,7 +321,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setCustomEventSymbol({
                     customEventId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -342,7 +343,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setSpriteSheetSymbol({
                     spriteSheetId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -363,7 +364,7 @@ export const ReferencesSelect = ({
                   entitiesActions.setTilesetSymbol({
                     tilesetId: ref.id,
                     symbol,
-                  })
+                  }),
                 );
               }}
               copyTransform={addBankRef}
@@ -515,7 +516,7 @@ interface ReferenceProps {
 }
 
 export const AssetReference = <
-  T extends { id: string; symbol?: string; name?: string }
+  T extends { id: string; symbol?: string; name?: string },
 >({
   id,
   selector,
@@ -546,7 +547,7 @@ export const AssetReference = <
     (symbol: string) => {
       dispatch(clipboardActions.copyText(copyTransform(symbol)));
     },
-    [copyTransform, dispatch]
+    [copyTransform, dispatch],
   );
 
   const onStartEdit = useCallback(() => {
@@ -656,7 +657,7 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
   const dispatch = useAppDispatch();
 
   const variable = useAppSelector((state) =>
-    variableSelectors.selectById(state, id)
+    variableSelectors.selectById(state, id),
   );
   const symbol = variable?.symbol?.toUpperCase() ?? `VAR_${id}`;
   const variableName = variable?.name ?? "";
@@ -668,7 +669,7 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
     (symbol: string) => {
       dispatch(clipboardActions.copyText(symbol));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onStartEdit = useCallback(() => {
@@ -691,7 +692,7 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
   const onRenameFinish = useCallback(() => {
     if (customSymbol && (!variable?.symbol || customSymbol !== variableName)) {
       dispatch(
-        entitiesActions.renameVariable({ variableId: id, name: customSymbol })
+        entitiesActions.renameVariable({ variableId: id, name: customSymbol }),
       );
     }
     setRenameVisible(false);
@@ -758,7 +759,7 @@ export const ConstantReference = ({ id, onRemove }: ReferenceProps) => {
   const dispatch = useAppDispatch();
 
   const constant = useAppSelector((state) =>
-    constantSelectors.selectById(state, id)
+    constantSelectors.selectById(state, id),
   );
   const symbol = constant?.symbol?.toUpperCase() ?? `VAR_${id}`;
   const constantName = constant?.name ?? "";
@@ -770,7 +771,7 @@ export const ConstantReference = ({ id, onRemove }: ReferenceProps) => {
     (symbol: string) => {
       dispatch(clipboardActions.copyText(symbol));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onStartEdit = useCallback(() => {
@@ -793,7 +794,7 @@ export const ConstantReference = ({ id, onRemove }: ReferenceProps) => {
   const onRenameFinish = useCallback(() => {
     if (customSymbol && (!constant?.symbol || customSymbol !== constantName)) {
       dispatch(
-        entitiesActions.renameConstant({ constantId: id, name: customSymbol })
+        entitiesActions.renameConstant({ constantId: id, name: customSymbol }),
       );
     }
     setRenameVisible(false);

@@ -38,14 +38,14 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   }, [selected]);
 
   const showNavigator = useAppSelector(
-    (state) => state.project.present.settings.showNavigator
+    (state) => state.project.present.settings.showNavigator,
   );
 
   const setTool = useCallback(
     (tool: Tool) => {
       dispatch(editorActions.setTool({ tool }));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onKeyDown = useCallback(
@@ -74,7 +74,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         setTool("select");
       }
     },
-    [hasFocusForKeyboardShortcuts, setTool]
+    [hasFocusForKeyboardShortcuts, setTool],
   );
 
   useEffect(() => {
@@ -89,21 +89,21 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
       e.stopPropagation();
       setTool("actors");
     },
-    [setTool]
+    [setTool],
   );
   const setToolTriggers = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       e.stopPropagation();
       setTool("triggers");
     },
-    [setTool]
+    [setTool],
   );
   const setToolScene = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       e.stopPropagation();
       setTool("scene");
     },
-    [setTool]
+    [setTool],
   );
   const setToolSelect = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -111,7 +111,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
       e.stopPropagation();
       setTool("select");
     },
-    [setTool]
+    [setTool],
   );
   const setToolEraser = useCallback(() => setTool("eraser"), [setTool]);
   const setToolCollisions = useCallback(() => setTool("collisions"), [setTool]);

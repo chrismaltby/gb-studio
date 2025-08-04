@@ -53,7 +53,7 @@ const compile = (input, helpers) => {
     input.input,
     input.override !== false,
     input.true,
-    event.symbol
+    event.symbol,
   );
 };
 

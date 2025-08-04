@@ -62,7 +62,7 @@ const AppToolbar: FC = () => {
   const saveStep = useAppSelector((state) => state.document.saveStep);
   const saveError = useAppSelector((state) => state.document.saveError);
   const saveWriteProgress = useAppSelector(
-    (state) => state.document.saveWriteProgress
+    (state) => state.document.saveWriteProgress,
   );
 
   const name = useAppSelector((state) => state.project.present.metadata.name);
@@ -92,7 +92,7 @@ const AppToolbar: FC = () => {
       dialogue: l10n("NAV_DIALOGUE_REVIEW"),
       settings: l10n("NAV_SETTINGS"),
     }),
-    []
+    [],
   );
 
   const onRun = useCallback(() => {
@@ -103,14 +103,14 @@ const AppToolbar: FC = () => {
     (buildType: BuildType) => () => {
       dispatch(buildGameActions.buildGame({ buildType, exportBuild: true }));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setSection = useCallback(
     (section: NavigationSection) => () => {
       dispatch(navigationActions.setSection(section));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onZoomIn = useCallback(() => {
@@ -136,7 +136,7 @@ const AppToolbar: FC = () => {
       debounce((searchTerm: string) => {
         dispatch(editorActions.editSearchTerm(searchTerm));
       }, 300),
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeSearchTerm = useCallback(
@@ -144,7 +144,7 @@ const AppToolbar: FC = () => {
       setSearchTerm(e.currentTarget.value);
       onChangeSearchTermDebounced(e.currentTarget.value);
     },
-    [onChangeSearchTermDebounced]
+    [onChangeSearchTermDebounced],
   );
 
   useEffect(() => {

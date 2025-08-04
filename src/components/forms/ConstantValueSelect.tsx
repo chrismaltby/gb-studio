@@ -167,14 +167,14 @@ const ConstantValueSelect = ({
 }: ConstantValueSelectProps) => {
   const dispatch = useAppDispatch();
   const defaultConstant = useAppSelector(
-    (state) => constantSelectors.selectAll(state)[0]
+    (state) => constantSelectors.selectAll(state)[0],
   );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const clipboardFormat = useAppSelector(
-    (state) => state.clipboard.data?.format
+    (state) => state.clipboard.data?.format,
   );
 
   const onCopyValue = useCallback(() => {
@@ -214,7 +214,9 @@ const ConstantValueSelect = ({
 
   const onKeyDown = useCallback(
     (
-      e: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement | HTMLElement>
+      e: React.KeyboardEvent<
+        HTMLButtonElement | HTMLInputElement | HTMLElement
+      >,
     ): boolean => {
       e.persist();
       if (e.metaKey || e.ctrlKey) {
@@ -230,7 +232,7 @@ const ConstantValueSelect = ({
       e.stopPropagation();
       return true;
     },
-    [setNumber, setConstant]
+    [setNumber, setConstant],
   );
 
   const menu = useMemo(
@@ -273,7 +275,7 @@ const ConstantValueSelect = ({
       setConstant,
       setNumber,
       value.type,
-    ]
+    ],
   );
 
   const options = useMemo(
@@ -282,9 +284,9 @@ const ConstantValueSelect = ({
         ([value, label]) => ({
           value,
           label: l10n(label as L10NKey),
-        })
+        }),
       ),
-    [inputOverride]
+    [inputOverride],
   );
 
   const [{ isOver }, drop] = useDrop({
@@ -365,7 +367,7 @@ const ConstantValueSelect = ({
                 value={String(
                   value.value !== undefined && value.value !== null
                     ? value.value
-                    : ""
+                    : "",
                 )}
                 min={innerValue ? undefined : min}
                 max={innerValue ? undefined : max}
@@ -411,7 +413,7 @@ const ConstantValueSelect = ({
                     options.find((o) =>
                       value.value
                         ? o.value === value.value
-                        : o.value === value.value
+                        : o.value === value.value,
                     ) || options[0]
                   }
                   options={options}

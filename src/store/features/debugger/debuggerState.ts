@@ -48,7 +48,7 @@ const debuggerSlice = createSlice({
         variableDataBySymbol: Record<string, VariableMapData>;
         sceneMap: Record<string, SceneMapData>;
         gbvmScripts: Record<string, string>;
-      }>
+      }>,
     ) => {
       state.variableDataBySymbol = action.payload.variableDataBySymbol;
       state.sceneMap = action.payload.sceneMap;
@@ -64,7 +64,7 @@ const debuggerSlice = createSlice({
         scriptContexts: DebuggerScriptContext[];
         currentSceneSymbol: string;
         isPaused: boolean;
-      }>
+      }>,
     ) => {
       if (!state.isPaused && action.payload.isPaused) {
         // Debugger became paused, close build log

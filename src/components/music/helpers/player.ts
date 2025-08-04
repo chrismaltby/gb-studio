@@ -102,7 +102,7 @@ const initPlayer = (onInit: (file: Uint8Array) => void, sfx?: string) => {
         `Is Player Paused: ${isPlayerPaused()}`,
         `Do resume Player: ${emulator.readMem(doResumePlayerAddr)}`,
         `OxFF0F: ${emulator.readMem(0xff0f)}`,
-        `Order Count: ${emulator.readMem(getRamAddress("order_cnt"))}`
+        `Order Count: ${emulator.readMem(getRamAddress("order_cnt"))}`,
       );
     };
     setInterval(updateTracker, 1000 / 64);
@@ -214,7 +214,7 @@ const playSound = () => {
     emulator.readMem(sfxPlaySampleAddr),
     emulator.readMem(sfxPlaySampleAddr + 1),
     sfxPlaySampleAddr,
-    sfxPlayBankAddr
+    sfxPlayBankAddr,
   );
   emulator.writeMem(sfxPlayBankAddr, 1);
 
@@ -334,7 +334,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
   }
 
   const writeSubPatternCell = (cell: SubPatternCell, isLast: boolean) => {
-    const jump = cell.jump !== null && isLast ? 1 : cell.jump ?? 0;
+    const jump = cell.jump !== null && isLast ? 1 : (cell.jump ?? 0);
 
     buf[addr++] = cell.note ?? 90;
     buf[addr++] = (jump << 4) | (cell.effectcode ?? 0);

@@ -58,13 +58,16 @@ test("Should fetch settings from loaded project", () => {
       resources: loadData,
       path: "project.gbsproj",
       scriptEventDefs: {},
-      engineFields: [],
-      sceneTypes: [],
+      engineSchema: {
+        fields: [],
+        sceneTypes: [],
+        consts: {},
+      },
       modifiedSpriteIds: [],
       isMigrated: false,
     },
     "randomid",
-    "project.gbsproj"
+    "project.gbsproj",
   );
   const newState = reducer(state, action);
 
@@ -185,7 +188,7 @@ describe("addScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(newState.scriptEventPresets["EVENT_LAUNCH_PROJECTILE"]).toBe(
-      state.scriptEventPresets["EVENT_LAUNCH_PROJECTILE"]
+      state.scriptEventPresets["EVENT_LAUNCH_PROJECTILE"],
     );
   });
 
@@ -210,10 +213,12 @@ describe("addScriptEventPreset", () => {
     const finalState = reducer(newState, action2);
     expect(action1.payload.presetId).not.toEqual(action2.payload.presetId);
     expect(
-      finalState.scriptEventPresets["EVENT_TEXT"][action1.payload.presetId].args
+      finalState.scriptEventPresets["EVENT_TEXT"][action1.payload.presetId]
+        .args,
     ).toEqual({ text: "First" });
     expect(
-      finalState.scriptEventPresets["EVENT_TEXT"][action2.payload.presetId].args
+      finalState.scriptEventPresets["EVENT_TEXT"][action2.payload.presetId]
+        .args,
     ).toEqual({ text: "Second" });
   });
 });
@@ -264,7 +269,7 @@ describe("editScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(
-      newState.scriptEventPresets["EVENT_TEXT"]["nonExistentPreset"]
+      newState.scriptEventPresets["EVENT_TEXT"]["nonExistentPreset"],
     ).toBeUndefined();
   });
 
@@ -347,7 +352,7 @@ describe("removeScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(
-      newState.scriptEventPresets["EVENT_TEXT"]["preset1"]
+      newState.scriptEventPresets["EVENT_TEXT"]["preset1"],
     ).toBeUndefined();
     expect(newState.scriptEventPresets["EVENT_TEXT"]["preset2"]).toBeTruthy();
   });
@@ -445,7 +450,7 @@ describe("removeScriptEventPreset", () => {
     const newState = reducer(state, action);
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeTruthy();
     expect(Object.keys(newState.scriptEventPresets["EVENT_TEXT"]).length).toBe(
-      1
+      1,
     );
   });
 
@@ -474,7 +479,7 @@ describe("removeScriptEventPreset", () => {
 
     const newState = reducer(state, action);
     expect(
-      newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"]
+      newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"],
     ).toBeUndefined();
     expect(newState.scriptEventDefaultPresets["EVENT_TEXT"]).toBeUndefined();
   });
@@ -577,7 +582,7 @@ describe("removeScriptEventPreset", () => {
 
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeUndefined();
     expect(newState.scriptEventPresets["EVENT_ANOTHER"]["preset2"].id).toBe(
-      "preset2"
+      "preset2",
     );
   });
 });
@@ -625,7 +630,7 @@ describe("setScriptEventDefaultPreset", () => {
     const newState = reducer(state, action);
     expect(newState.scriptEventDefaultPresets["EVENT_TEXT"]).toBe("preset1");
     expect(newState.scriptEventDefaultPresets["EVENT_LAUNCH_PROJECTILE"]).toBe(
-      "presetA"
+      "presetA",
     );
   });
 
@@ -662,10 +667,10 @@ describe("setScriptEventDefaultPreset", () => {
     let newState = reducer(state, action1);
     newState = reducer(newState, action2);
     expect(newState.scriptEventDefaultPresets["EVENT_LAUNCH_PROJECTILE"]).toBe(
-      "presetA"
+      "presetA",
     );
     expect(newState.scriptEventDefaultPresets["EVENT_ANOTHER_TYPE"]).toBe(
-      "presetB"
+      "presetB",
     );
     expect(newState.scriptEventDefaultPresets["EVENT_TEXT"]).toBe("preset1");
   });

@@ -78,7 +78,7 @@ const instrumentToNavigatorItem =
   (
     instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
     instrumentIndex: number,
-    defaultName: string
+    defaultName: string,
   ): InstrumentNavigatorItem => {
     const name = instrument.name
       ? instrument.name
@@ -120,7 +120,7 @@ export const NavigatorSongs = ({
   const [addSongMode, setAddSongMode] = useState(false);
   const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
   const songsLookup = useAppSelector((state) =>
-    musicSelectors.selectEntities(state)
+    musicSelectors.selectEntities(state),
   );
   const navigationId = useAppSelector((state) => state.editor.selectedSongId);
   const selectedSongId = defaultFirst
@@ -143,16 +143,16 @@ export const NavigatorSongs = ({
       buildAssetNavigatorItems(
         allSongs.filter(ugeFilter),
         openFolders,
-        songsSearchTerm
+        songsSearchTerm,
       ),
-    [allSongs, openFolders, songsSearchTerm]
+    [allSongs, openFolders, songsSearchTerm],
   );
 
   const setSelectedSongId = useCallback(
     (id: string) => {
       dispatch(editorActions.setSelectedSongId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const selectedSong = songsLookup[selectedSongId];
@@ -171,7 +171,7 @@ export const NavigatorSongs = ({
 
   const openInstrumentGroup = (id: InstrumentType) => {
     setOpenInstrumentGroupIds((value) =>
-      ([] as InstrumentType[]).concat(value, id)
+      ([] as InstrumentType[]).concat(value, id),
     );
   };
 
@@ -183,7 +183,7 @@ export const NavigatorSongs = ({
     (id: InstrumentType) => {
       return openInstrumentGroupIds.includes(id);
     },
-    [openInstrumentGroupIds]
+    [openInstrumentGroupIds],
   );
 
   const [instrumentItems, setInstrumentItems] = useState<
@@ -205,7 +205,7 @@ export const NavigatorSongs = ({
         isOpen("duty")
           ? (dutyInstruments || [])
               .map((duty, i) =>
-                instrumentToNavigatorItem("duty")(duty, i, "Duty")
+                instrumentToNavigatorItem("duty")(duty, i, "Duty"),
               )
               .sort(sortByIndex)
           : [],
@@ -221,7 +221,7 @@ export const NavigatorSongs = ({
         isOpen("wave")
           ? (waveInstruments || [])
               .map((wave, i) =>
-                instrumentToNavigatorItem("wave")(wave, i, "Wave")
+                instrumentToNavigatorItem("wave")(wave, i, "Wave"),
               )
               .sort(sortByIndex)
           : [],
@@ -237,11 +237,11 @@ export const NavigatorSongs = ({
         isOpen("noise")
           ? (noiseInstruments || [])
               .map((noise, i) =>
-                instrumentToNavigatorItem("noise")(noise, i, "Noise")
+                instrumentToNavigatorItem("noise")(noise, i, "Noise"),
               )
               .sort(sortByIndex)
-          : []
-      )
+          : [],
+      ),
     );
   }, [
     dutyInstruments,
@@ -266,14 +266,14 @@ export const NavigatorSongs = ({
       setSyncInstruments(!syncInstruments);
       API.settings.set("trackerSidebarSyncInstruments", !syncInstruments);
     },
-    [syncInstruments]
+    [syncInstruments],
   );
 
   const selectedInstrument = useAppSelector(
-    (state) => state.editor.selectedInstrument
+    (state) => state.editor.selectedInstrument,
   );
   const selectedChannel = useAppSelector(
-    (state) => state.tracker.selectedChannel
+    (state) => state.tracker.selectedChannel,
   );
   const setSelectedInstrument = useCallback(
     (id: string, item: InstrumentNavigatorItem) => {
@@ -281,7 +281,7 @@ export const NavigatorSongs = ({
         editorActions.setSelectedInstrument({
           id: item.instrumentId,
           type: item.type,
-        })
+        }),
       );
 
       if (!item.isGroup && syncInstruments) {
@@ -305,11 +305,11 @@ export const NavigatorSongs = ({
             newDefaultInstrument,
             newDefaultInstrument,
             newDefaultInstrument,
-          ])
+          ]),
         );
       }
     },
-    [dispatch, selectedChannel, syncInstruments]
+    [dispatch, selectedChannel, syncInstruments],
   );
 
   const [splitSizes, setSplitSizes] = useState([100, 200]);
@@ -330,7 +330,7 @@ export const NavigatorSongs = ({
       e.stopPropagation();
       setAddSongMode(true);
     },
-    []
+    [],
   );
 
   const [renameId, setRenameId] = useState("");
@@ -341,7 +341,7 @@ export const NavigatorSongs = ({
         setRenameId(navigationId);
       }
     },
-    [navigationId]
+    [navigationId],
   );
 
   const onRenameSongComplete = useCallback(
@@ -351,12 +351,12 @@ export const NavigatorSongs = ({
           projectActions.renameMusicAsset({
             musicId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameInstrumentComplete = useCallback(
@@ -366,10 +366,10 @@ export const NavigatorSongs = ({
           item.type === "duty"
             ? trackerDocumentActions.editDutyInstrument
             : item.type === "wave"
-            ? trackerDocumentActions.editWaveInstrument
-            : item.type === "noise"
-            ? trackerDocumentActions.editNoiseInstrument
-            : assertUnreachable(item.type);
+              ? trackerDocumentActions.editWaveInstrument
+              : item.type === "noise"
+                ? trackerDocumentActions.editNoiseInstrument
+                : assertUnreachable(item.type);
 
         const instrumentId = parseInt(item.instrumentId);
 
@@ -379,12 +379,12 @@ export const NavigatorSongs = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -408,7 +408,7 @@ export const NavigatorSongs = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderInstrumentContextMenu = useCallback(
@@ -419,7 +419,7 @@ export const NavigatorSongs = ({
         </MenuItem>,
       ];
     },
-    []
+    [],
   );
 
   const renderLabel = useCallback(
@@ -433,7 +433,7 @@ export const NavigatorSongs = ({
         modified && item.id === selectedSongId ? "*" : ""
       }`;
     },
-    [modified, selectedSongId, toggleFolderOpen]
+    [modified, selectedSongId, toggleFolderOpen],
   );
 
   const renderInstrumentLabel = useCallback((item: InstrumentNavigatorItem) => {
@@ -585,7 +585,7 @@ export const NavigatorSongs = ({
               onKeyDown={(e: KeyboardEvent) => {
                 if (e.key === "Enter") {
                   setRenameId(
-                    `${selectedInstrument.type}_${selectedInstrument.id}`
+                    `${selectedInstrument.type}_${selectedInstrument.id}`,
                   );
                 } else if (e.key === "ArrowRight") {
                   openInstrumentGroup(selectedInstrument.type);

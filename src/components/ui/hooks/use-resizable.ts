@@ -19,7 +19,7 @@ const useResizable = ({
 }): [
   number,
   React.Dispatch<React.SetStateAction<number>>,
-  (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
 ] => {
   const [size, setSize] = useState(initialSize);
   const [isResizing, setIsResizing] = useState(false);
@@ -30,7 +30,7 @@ const useResizable = ({
     (size: number) => {
       return Math.max(minSize, Math.min(maxSize, size));
     },
-    [maxSize, minSize]
+    [maxSize, minSize],
   );
 
   const updateSize = useCallback(
@@ -38,7 +38,7 @@ const useResizable = ({
       onResize?.(clampSize(newSize));
       setSize(newSize);
     },
-    [clampSize, onResize]
+    [clampSize, onResize],
   );
 
   const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -64,7 +64,7 @@ const useResizable = ({
         updateSize(startSize.current + (e.pageY - startOffset.current));
       }
     },
-    [direction, updateSize]
+    [direction, updateSize],
   );
 
   const onDragStop = useCallback(() => {

@@ -229,7 +229,7 @@ const compile = (input, helpers) => {
     input.initialOffset,
     input.destroyOnHit,
     input.collisionGroup,
-    input.collisionMask
+    input.collisionMask,
   );
 };
 

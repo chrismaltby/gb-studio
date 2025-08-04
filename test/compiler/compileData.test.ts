@@ -403,8 +403,11 @@ test("should compile simple project into files object", async () => {
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
     scriptEventHandlers,
-    engineFields: [],
-    sceneTypes: [],
+    engineSchema: {
+      fields: [],
+      sceneTypes: [],
+      consts: {},
+    },
     tmpPath: os.tmpdir(),
     debugEnabled: false,
     progress: (_msg: string) => {},
@@ -443,7 +446,7 @@ test("should precompile image data", async () => {
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(usedBackgrounds).toHaveLength(1);
   expect(backgroundLookup["2b"]).toMatchObject(backgrounds[0]);
@@ -508,9 +511,10 @@ test("should precompile scenes", async () => {
     scenes,
     {},
     defaultPlayerSprites,
+    "8x16",
     usedBackgrounds,
     spriteData,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
 
   expect(sceneData).toHaveLength(scenes.length);
@@ -582,7 +586,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(usedBackgrounds).toHaveLength(2);
   expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
@@ -668,7 +672,7 @@ test("should include tileset for background when also used without common tilese
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(usedBackgrounds).toHaveLength(3);
   expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
@@ -750,7 +754,7 @@ test("should share tilesets if possible when multiple backgrounds include common
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(usedBackgrounds).toHaveLength(2);
   expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
@@ -837,7 +841,7 @@ test("should generate unique tileset for background if used without common tiles
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(usedBackgrounds).toHaveLength(3);
   expect(usedBackgrounds[0].id).toBe(backgrounds[0].id);
@@ -937,7 +941,7 @@ test("should generate unique tileset for background if referenced from script ev
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
 
   // Background was used in a scene without common tileset (in GBVM reference)
@@ -1010,7 +1014,7 @@ test("should generate unique tileset for identical backgrounds if used without c
     [],
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
 
   expect(usedBackgrounds).toHaveLength(2);
@@ -1088,7 +1092,7 @@ test("should allow reusing tileset for identical backgrounds if used with common
     tilesets,
     "default",
     `${__dirname}/_files`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
 
   expect(usedBackgrounds).toHaveLength(2);

@@ -30,7 +30,7 @@ export const ensureGlobalPluginsPath = async () => {
 export const getPluginsInstalledGlobally = async () => {
   const globalPluginsPath = getGlobalPluginsPath();
   const pluginPaths = await globAsync(
-    join(globalPluginsPath, "**/plugin.json")
+    join(globalPluginsPath, "**/plugin.json"),
   );
   const plugins: InstalledPluginData[] = [];
   for (const pluginPath of pluginPaths) {
@@ -56,7 +56,7 @@ export const removeGlobalPlugin = async (pluginId: string) => {
 
   const cancel = confirmDeletePlugin(
     pluginId,
-    relative(globalPluginsPath, outputPath)
+    relative(globalPluginsPath, outputPath),
   );
   if (cancel) {
     return;

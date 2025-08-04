@@ -69,7 +69,7 @@ export const RenameInput = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setName(e.currentTarget.value);
     },
-    []
+    [],
   );
 
   const onRenameKeyDown = useCallback(
@@ -81,7 +81,7 @@ export const RenameInput = ({
         onRenameComplete(name);
       }
     },
-    [name, onRenameCancel, onRenameComplete, value]
+    [name, onRenameCancel, onRenameComplete, value],
   );
 
   const onRenameBlur = useCallback(() => {

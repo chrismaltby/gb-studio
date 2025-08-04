@@ -49,7 +49,7 @@ const DebuggerVRAMPane = () => {
   const dispatch = useAppDispatch();
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
   const isCollapsed = useAppSelector((state) =>
-    getSettings(state).debuggerCollapsedPanes.includes("vram")
+    getSettings(state).debuggerCollapsedPanes.includes("vram"),
   );
   const themeContext = useContext(ThemeContext);
 
@@ -114,7 +114,7 @@ const DebuggerVRAMPane = () => {
           position[0] * tileSize - 1,
           position[1] * tileSize - 1,
           tileSize,
-          tileSize
+          tileSize,
         );
 
         ctx.stroke();

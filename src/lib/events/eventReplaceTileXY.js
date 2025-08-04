@@ -80,7 +80,7 @@ const compile = (input, helpers) => {
     input.y,
     input.tilesetId,
     input.tileIndex,
-    input.tileSize
+    input.tileSize,
   );
 };
 

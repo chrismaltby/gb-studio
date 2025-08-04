@@ -11,31 +11,31 @@ import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 
 export const readFileToPalettes = async (
   filename: string,
-  colorCorrection: ColorCorrectionSetting
+  colorCorrection: ColorCorrectionSetting,
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
   return autoPalette(
     colorPNG.width,
     colorPNG.height,
     colorPNG.data,
-    colorCorrection
+    colorCorrection,
   );
 };
 
 export const readFileToPalettesUsingTiles = async (
   filename: string,
-  tilesFileName: string
+  tilesFileName: string,
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
   const indexedImage = await readFileToIndexedImage(
     tilesFileName,
-    tileDataIndexFn
+    tileDataIndexFn,
   );
   return autoPaletteUsingTiles(
     colorPNG.width,
     colorPNG.height,
     colorPNG.data,
-    indexedImage
+    indexedImage,
   );
 };
 

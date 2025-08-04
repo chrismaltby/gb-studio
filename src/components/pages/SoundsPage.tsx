@@ -20,7 +20,7 @@ const SoundsPage = () => {
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(
-    (state) => state.editor.navigatorSidebarWidth
+    (state) => state.editor.navigatorSidebarWidth,
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -31,7 +31,7 @@ const SoundsPage = () => {
   const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
 
   const sound = useAppSelector((state) =>
-    soundSelectors.selectById(state, selectedId)
+    soundSelectors.selectById(state, selectedId),
   );
 
   const lastSoundId = useRef("");
@@ -43,11 +43,11 @@ const SoundsPage = () => {
 
   const viewSoundId = useMemo(
     () => sound?.id || lastSoundId.current || allSounds[0]?.id,
-    [allSounds, sound]
+    [allSounds, sound],
   );
 
   const viewSound = useAppSelector((state) =>
-    soundSelectors.selectById(state, viewSoundId)
+    soundSelectors.selectById(state, viewSoundId),
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -80,7 +80,7 @@ const SoundsPage = () => {
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number) => {
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
-    }, 100)
+    }, 100),
   );
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);

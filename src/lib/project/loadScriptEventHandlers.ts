@@ -31,6 +31,8 @@ export type ScriptEventHelperDef =
       type: "camera";
       x: string;
       y: string;
+      width?: string;
+      height?: string;
       units?: string;
     }
   | {
@@ -118,14 +120,14 @@ export interface ScriptEventDef {
 export type ScriptEventHandlerFieldSchema = ScriptEventFieldSchema & {
   postUpdateFn?: (
     newArgs: Record<string, unknown>,
-    prevArgs: Record<string, unknown>
+    prevArgs: Record<string, unknown>,
   ) => void | Record<string, unknown>;
 };
 
 export type ScriptEventHandler = ScriptEventDef & {
   autoLabel?: (
     lookup: (key: string) => string,
-    args: Record<string, unknown>
+    args: Record<string, unknown>,
   ) => string;
   compile: (input: unknown, helpers: unknown) => void;
   fields: ScriptEventHandlerFieldSchema[];
@@ -134,8 +136,8 @@ export type ScriptEventHandler = ScriptEventDef & {
 
 export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
 
-const getVm = (jsonFileMap?: {[index: string]:object}) => {
-  const vm_settings = {
+const getVm = (jsonFileMap?: { [index: string]: object }) => {
+  const vmSettings = {
     timeout: 1000,
     console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
     sandbox: {},
@@ -161,19 +163,19 @@ const getVm = (jsonFileMap?: {[index: string]:object}) => {
         "../helpers/trimlines": trimLines,
         "shared/lib/helpers/trimlines": trimLines,
         "shared/lib/scriptValue/helpers": scriptValueHelpers,
-        ...jsonFileMap
+        "shared/lib/scriptValue/types": scriptValueTypes,
+        ...jsonFileMap,
       },
     },
-  }
+  };
 
-  const vm = new NodeVM(vm_settings);
+  const vm = new NodeVM(vmSettings);
   return vm;
-}
-
+};
 
 const loadScriptEventHandler = async (
   path: string,
-  vm: typeof NodeVM
+  vm: typeof NodeVM,
 ): Promise<ScriptEventHandler> => {
   const handlerCode = await readFile(path, "utf8");
 
@@ -184,7 +186,7 @@ const loadScriptEventHandler = async (
     throw new Error(
       `Failed to load script event handler at ${path}: ${
         (error as Error).message
-      }`
+      }`,
     );
   }
 
@@ -227,12 +229,12 @@ const loadScriptEventHandler = async (
       .concat(handler.userPresetsIgnore ?? []);
 
     const missingFields = allFields.filter(
-      (key) => !presetFields.includes(key)
+      (key) => !presetFields.includes(key),
     );
 
     if (missingFields.length > 0) {
       console.error(
-        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`
+        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`,
       );
       console.error("Missing fields: " + missingFields.join(", "));
     }
@@ -245,22 +247,24 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/events/event*.js`
+    `${projectRoot}/plugins/*/**/events/event*.js`,
   );
 
   const pluginDataTablePaths = await globAsync(
-    `${projectRoot}/plugins/**/events/data*.json`
+    `${projectRoot}/plugins/**/events/data*.json`,
   );
 
-  const pluginDataTableFileNameMapping: {[index: string]: object} = {};
-  const pluginRoot = `${projectRoot}/plugins/`
-  for (const dataTable of pluginDataTablePaths){
-    let dataTablePath = dataTable.replace(pluginRoot, '')
-    dataTablePath = dataTablePath.replace(/.*events\//, '')
-    pluginDataTableFileNameMapping[dataTablePath] = (await readJson(dataTable)) as Object;
+  const pluginDataTableFileNameMapping: { [index: string]: object } = {};
+  const pluginRoot = `${projectRoot}/plugins/`;
+  for (const dataTable of pluginDataTablePaths) {
+    let dataTablePath = dataTable.replace(pluginRoot, "");
+    dataTablePath = dataTablePath.replace(/.*events\//, "");
+    pluginDataTableFileNameMapping[dataTablePath] = (await readJson(
+      dataTable,
+    )) as object;
   }
 
-  const coreVm = getVm()
+  const coreVm = getVm();
 
   const eventHandlers: ScriptEventHandlers = {};
   for (const path of corePaths) {
@@ -268,7 +272,7 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
     eventHandlers[handler.id] = handler;
   }
 
-  const pluginVm = getVm(pluginDataTableFileNameMapping)
+  const pluginVm = getVm(pluginDataTableFileNameMapping);
 
   for (const path of pluginPaths) {
     const handler = await loadScriptEventHandler(path, pluginVm);

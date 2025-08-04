@@ -3,7 +3,7 @@ import l10n from "shared/lib/lang/l10n";
 
 const confirmIncompatiblePlugin = (
   version: string,
-  pluginSupportedVersion: string
+  pluginSupportedVersion: string,
 ) => {
   const isPrerelease = version.includes("-alpha") || version.includes("-beta");
 
@@ -21,7 +21,7 @@ const confirmIncompatiblePlugin = (
       {
         version,
         pluginSupportedVersion,
-      }
+      },
     ),
   });
 };

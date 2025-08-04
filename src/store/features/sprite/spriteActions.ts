@@ -8,7 +8,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 
 const detectSprite = createAction<{ spriteSheetId: string }>(
-  "sprite/detect/pending"
+  "sprite/detect/pending",
 );
 const detectSpriteComplete = createAction<{
   spriteSheetId: string;
@@ -25,7 +25,7 @@ const compileSprite = createAction(
   (payload: { spriteSheetId: string }) => ({
     payload,
     meta: { throttle: 2000, key: payload.spriteSheetId },
-  })
+  }),
 );
 
 const spriteActions = {

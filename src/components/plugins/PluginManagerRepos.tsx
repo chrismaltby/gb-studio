@@ -114,7 +114,7 @@ const PluginsManagerRepos = ({ onClose }: PluginsManagerReposProps) => {
         </StyledPluginItemRow>
       );
     },
-    [action, refreshData]
+    [action, refreshData],
   );
 
   const height = listSize.height ?? 200;

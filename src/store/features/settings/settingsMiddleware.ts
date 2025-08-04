@@ -14,7 +14,7 @@ const settingsMiddleware: Middleware<Dispatch, RootState> =
         store.dispatch(
           settingsActions.editSettings({
             previewAsMono: false,
-          })
+          }),
         );
       }
       // When collisions enabled set opacity to a min of 50%
@@ -26,7 +26,7 @@ const settingsMiddleware: Middleware<Dispatch, RootState> =
           store.dispatch(
             settingsActions.editSettings({
               collisionLayerOpacity: defaultOpacity,
-            })
+            }),
           );
         }
       }

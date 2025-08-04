@@ -47,18 +47,17 @@ type CompileImageOptions = {
 export type ImageTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
-  image: BackgroundData
+  image: BackgroundData,
 ) => { tileIndex: number; inVRAM2: boolean };
 
 /**
  * Allocates an image tile for to default DMG location.
  *
  * @param {number} tileIndex - The index of the tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
 export const imageTileAllocationDefault: ImageTileAllocationStrategy = (
-  tileIndex
+  tileIndex,
 ) => {
   return {
     tileIndex,
@@ -70,12 +69,11 @@ export const imageTileAllocationDefault: ImageTileAllocationStrategy = (
  * Allocates an image tile for color-only mode and adjusts the tile index based on VRAM bank allocation.
  *
  * @param {number} tileIndex - The index of the tile to allocate.
- * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
 export const imageTileAllocationColorOnly: ImageTileAllocationStrategy = (
-  tileIndex
-) => {
+  tileIndex: number,
+): { tileIndex: number; inVRAM2: boolean } => {
   // First 128 tiles go into vram bank 1
   if (tileIndex < 128) {
     return {
@@ -106,7 +104,7 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
 const mergeCommonTiles = async (
   tileData: Uint8Array[],
   commonTileset: TilesetData | undefined,
-  projectPath: string
+  projectPath: string,
 ) => {
   if (!commonTileset) {
     return tileData;
@@ -125,14 +123,14 @@ enum ImageColorMode {
 const buildAttr = (
   tileColors: number[],
   autoTileColors: number[],
-  tileMapSize: number
+  tileMapSize: number,
 ) => {
   return padArrayEnd(tileColors || [], tileMapSize, 0).map(
     (manualAttr, index) => {
       return autoTileColors[index] !== undefined
         ? (manualAttr & 0xf8) + (autoTileColors[index] & 0x7)
         : manualAttr;
-    }
+    },
   );
 };
 
@@ -143,7 +141,7 @@ const compileImage = async (
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
   projectPath: string,
-  { warnings }: CompileImageOptions
+  { warnings }: CompileImageOptions,
 ): Promise<PrecompiledBackgroundData> => {
   let autoColorMode = ImageColorMode.MANUAL;
   const cgbOnly = colorMode === "color";
@@ -183,7 +181,7 @@ const compileImage = async (
     // Extract colors from color PNG and tiles from .mono PNG
     const paletteData = await readFileToPalettesUsingTiles(
       filename,
-      tilesFileName
+      tilesFileName,
     );
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
@@ -203,7 +201,7 @@ const compileImage = async (
       `${img.filename}: ${l10n("WARNING_BACKGROUND_TOO_MANY_PALETTES", {
         paletteLength: autoPalettes.length,
         maxPaletteLength: 8,
-      })}`
+      })}`,
     );
   }
 
@@ -225,7 +223,7 @@ const compileImage = async (
   const tileDataWithCommon = await mergeCommonTiles(
     tileData,
     commonTileset,
-    projectPath
+    projectPath,
   );
   const tilesetLookup = toTileLookup(tileDataWithCommon) ?? {};
   const uniqueTiles = Object.values(tilesetLookup);
@@ -237,7 +235,7 @@ const compileImage = async (
     false,
     cgbOnly,
     projectPath,
-    uniqueTiles.length
+    uniqueTiles.length,
   );
   const backgroundWarnings = backgroundInfo.warnings;
   if (backgroundWarnings.length > 0) {
@@ -261,7 +259,7 @@ const compileImage = async (
       const { inVRAM2, tileIndex } = tileAllocationStrategy(
         tile,
         uniqueTiles.length,
-        img
+        img,
       );
       // Reallocate tilemap based on strategy
       if (tileIndex < TILE_FIRST_CHUNK_SIZE) {
@@ -277,7 +275,7 @@ const compileImage = async (
         return attr | FLAG_VRAM_BANK_1;
       }
       return attr;
-    }
+    },
   );
 
   return {
@@ -300,7 +298,7 @@ const compileImages = async (
   commonTilesetsLookup: Record<string, TilesetData[]>,
   colorCorrection: ColorCorrectionSetting,
   projectPath: string,
-  { warnings }: CompileImageOptions
+  { warnings }: CompileImageOptions,
 ): Promise<PrecompiledBackgroundData[]> => {
   return promiseLimit(
     10,
@@ -324,7 +322,7 @@ const compileImages = async (
                     img.colorMode,
                     colorCorrection,
                     projectPath,
-                    { warnings }
+                    { warnings },
                   ),
               ]
             : []),
@@ -338,12 +336,12 @@ const compileImages = async (
                 img.colorMode,
                 colorCorrection,
                 projectPath,
-                { warnings }
+                { warnings },
               );
           }),
         ];
       })
-      .flat()
+      .flat(),
   );
 };
 

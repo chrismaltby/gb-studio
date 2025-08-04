@@ -44,19 +44,19 @@ const Content = styled.div`
 const DialoguePage = () => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
 
   const [openScenes, setOpenScenes] = useState<string[]>([]);
@@ -78,7 +78,7 @@ const DialoguePage = () => {
       a.name.localeCompare(b.name, undefined, {
         numeric: true,
         sensitivity: "base",
-      })
+      }),
     );
 
   const dialogueLines = useMemo(
@@ -100,7 +100,7 @@ const DialoguePage = () => {
                     line: cmd,
                   });
                 }
-              }
+              },
             );
         });
         scene.triggers.forEach((triggerId, triggerIndex) => {
@@ -119,7 +119,7 @@ const DialoguePage = () => {
                     line: cmd,
                   });
                 }
-              }
+              },
             );
         });
         walkNormalizedSceneSpecificScripts(
@@ -134,7 +134,7 @@ const DialoguePage = () => {
                 line: cmd,
               });
             }
-          }
+          },
         );
         return memo;
       }, [] as DialogueLine[]),
@@ -145,7 +145,7 @@ const DialoguePage = () => {
       scriptEventsLookup,
       triggerPrefabsLookup,
       triggersLookup,
-    ]
+    ],
   );
 
   const scriptWords = dialogueLines.reduce((memo, dialogueLine) => {

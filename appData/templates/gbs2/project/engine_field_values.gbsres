@@ -4,6 +4,26 @@
     {
       "id": "fade_style",
       "value": 0
+    },
+    {
+      "id": "FEAT_PLATFORM_COYOTE_TIME",
+      "value": 0
+    },
+    {
+      "id": "FEAT_PLATFORM_DROP_THROUGH",
+      "value": 1
+    },
+    {
+      "id": "plat_blank_grav",
+      "value": 0
+    },
+    {
+      "id": "PLATFORM_KNOCKBACK_ANIM",
+      "value": "Hurt"
+    },
+    {
+      "id": "PLATFORM_BLANK_ANIM",
+      "value": "Hurt"
     }
   ]
 }

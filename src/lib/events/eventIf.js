@@ -171,5 +171,51 @@ module.exports = {
         },
       },
     },
+    {
+      id: "EVENT_IF_ENGINE_FIELD",
+      name: l10n("EVENT_IF_ENGINE_FIELD"),
+      description: l10n("EVENT_IF_ENGINE_FIELD_DESC"),
+      groups: ["EVENT_GROUP_ENGINE_FIELDS", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_ENGINE_FIELDS: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_ENGINE_FIELDS",
+      },
+      values: {
+        condition: {
+          type: "eq",
+          valueA: {
+            type: "engineField",
+            value: "LAST_ENGINE_FIELD",
+          },
+          valueB: {
+            type: "number",
+            value: 0,
+          },
+        },
+      },
+    },
+    {
+      id: "EVENT_IF_ENGINE_FIELD_COMPARE",
+      name: l10n("EVENT_IF_ENGINE_FIELD_COMPARE"),
+      description: l10n("EVENT_IF_ENGINE_FIELD_COMPARE_DESC"),
+      groups: ["EVENT_GROUP_ENGINE_FIELDS", "EVENT_GROUP_CONTROL_FLOW"],
+      subGroups: {
+        EVENT_GROUP_ENGINE_FIELDS: "EVENT_GROUP_CONTROL_FLOW",
+        EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_ENGINE_FIELDS",
+      },
+      values: {
+        condition: {
+          type: "eq",
+          valueA: {
+            type: "engineField",
+            value: "LAST_ENGINE_FIELD",
+          },
+          valueB: {
+            type: "variable",
+            value: "LAST_VARIABLE",
+          },
+        },
+      },
+    },
   ],
 };

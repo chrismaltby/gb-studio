@@ -27,13 +27,13 @@ const ScriptEditor = React.memo(
     const [renderTo, setRenderTo] = useState(0);
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
     const scriptEventsLookup = useAppSelector((state) =>
-      scriptEventSelectors.selectEntities(state)
+      scriptEventSelectors.selectEntities(state),
     );
     const customEventsLookup = useAppSelector((state) =>
-      customEventSelectors.selectEntities(state)
+      customEventSelectors.selectEntities(state),
     );
     const scriptEventDefs = useAppSelector((state) =>
-      selectScriptEventDefs(state)
+      selectScriptEventDefs(state),
     );
     const autoFadeEventId = useMemo(() => {
       return showAutoFadeIndicator
@@ -41,7 +41,7 @@ const ScriptEditor = React.memo(
             value,
             scriptEventsLookup,
             customEventsLookup,
-            scriptEventDefs
+            scriptEventDefs,
           )
         : "";
     }, [
@@ -90,7 +90,7 @@ const ScriptEditor = React.memo(
                   entityId={context.entityId}
                 />
               </React.Fragment>
-            )
+            ),
         )}
         {showAutoFadeIndicator && autoFadeEventId === "" && (
           <ScriptEventAutoFade />
@@ -102,7 +102,7 @@ const ScriptEditor = React.memo(
         />
       </ScriptEditorWrapper>
     );
-  }
+  },
 );
 
 export default ScriptEditor;

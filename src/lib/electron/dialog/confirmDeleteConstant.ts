@@ -20,7 +20,7 @@ const confirmDeleteConstant = (name: string, usesNames: string[]) => {
       usesNames.length === 1
         ? "DIALOG_DELETE_CONSTANT_USED_SINGLAR"
         : "DIALOG_DELETE_CONSTANT_USED",
-      { count: usesNames.length, foundReferences }
+      { count: usesNames.length, foundReferences },
     ),
   });
 };

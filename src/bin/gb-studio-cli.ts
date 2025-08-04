@@ -6,12 +6,11 @@ import { promisify } from "util";
 import { program } from "commander";
 import { binjgbRoot } from "consts";
 import initElectronL10N from "lib/lang/initElectronL10N";
-import { loadEngineFields } from "lib/project/engineFields";
-import { loadSceneTypes } from "lib/project/sceneTypes";
 import loadProject from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import { buildRunner } from "lib/compiler/buildRunner";
 import { BuildType } from "lib/compiler/buildWorker";
+import { loadEngineSchema } from "lib/project/loadEngineSchema";
 
 const rmdir = promisify(rimraf);
 
@@ -32,7 +31,7 @@ const buildTypeForCommand = (command: Command): BuildType => {
 const main = async (
   command: Command,
   projectFile: string,
-  destination: string
+  destination: string,
 ) => {
   initElectronL10N();
 
@@ -42,9 +41,8 @@ const main = async (
   const project = decompressProjectResources(loadedProject.resources);
   const buildType = buildTypeForCommand(command);
 
-  // Load engine fields
-  const engineFields = await loadEngineFields(projectRoot);
-  const sceneTypes = await loadSceneTypes(projectRoot);
+  // Load engine schema
+  const engineSchema = await loadEngineSchema(projectRoot);
 
   // Use OS default tmp
   const tmpPath = os.tmpdir();
@@ -67,8 +65,7 @@ const main = async (
     project,
     buildType,
     projectRoot,
-    engineFields,
-    sceneTypes,
+    engineSchema,
     tmpPath,
     outputRoot,
     debugEnabled: project.settings.debuggerEnabled,

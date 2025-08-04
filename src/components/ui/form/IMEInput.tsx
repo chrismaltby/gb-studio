@@ -26,7 +26,7 @@ export const IMEInput = forwardRef<HTMLInputElement, IMEInputProps>(
           onKeyDown?.(e);
         }
       },
-      [isComposing, onKeyDown]
+      [isComposing, onKeyDown],
     );
 
     return (
@@ -37,7 +37,7 @@ export const IMEInput = forwardRef<HTMLInputElement, IMEInputProps>(
         {...rest}
       />
     );
-  }
+  },
 );
 
 export const IMEUnstyledInput = forwardRef<
@@ -56,7 +56,7 @@ export const IMEUnstyledInput = forwardRef<
         onKeyDown?.(e);
       }
     },
-    [isComposing, onKeyDown]
+    [isComposing, onKeyDown],
   );
 
   return <input ref={inputRef} onKeyDown={onKeyDownInner} {...rest} />;

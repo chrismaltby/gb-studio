@@ -12,7 +12,7 @@ type Emulator = {
     romPtr: number,
     romSize: number,
     sampleRate: number,
-    audioBufferSize: number
+    audioBufferSize: number,
   ) => Emu;
   _emulator_delete: (emu: Emu) => void;
   _emulator_get_ticks_f64: (emu: Emu) => number;
@@ -22,7 +22,7 @@ type Emulator = {
   _set_audio_channel_mute: (
     emu: Emu,
     channel: number,
-    muted: boolean
+    muted: boolean,
   ) => boolean;
   _get_audio_buffer_ptr: (emu: Emu) => number;
   _get_audio_buffer_capacity: (emu: Emu) => number;
@@ -75,7 +75,7 @@ const init = (romData: Uint8Array) => {
     romPtr,
     romSize,
     audioCtx.sampleRate,
-    audioBufferSize
+    audioBufferSize,
   );
   audioCtx.resume();
   audioTime = audioCtx.currentTime;
@@ -154,7 +154,7 @@ function processAudioBuffer() {
   const inputBuffer = new Uint8Array(
     Module.HEAP8.buffer,
     Module._get_audio_buffer_ptr(emu),
-    Module._get_audio_buffer_capacity(emu)
+    Module._get_audio_buffer_capacity(emu),
   );
   const volume = 0.5;
   const buffer = audioCtx.createBuffer(2, audioBufferSize, audioCtx.sampleRate);

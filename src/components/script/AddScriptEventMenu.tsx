@@ -88,6 +88,7 @@ interface InstanciateOptions {
   defaultSpriteId: string;
   defaultEmoteId: string;
   defaultTilesetId: string;
+  defaultEngineFieldId: string;
   defaultArgs?: Record<string, unknown>;
 }
 
@@ -106,14 +107,15 @@ const instanciateScriptEvent = (
     defaultSpriteId,
     defaultEmoteId,
     defaultTilesetId,
+    defaultEngineFieldId,
     defaultArgs,
-  }: InstanciateOptions
+  }: InstanciateOptions,
 ): Omit<ScriptEventNormalized, "id"> => {
   const [command, presetId] = handler.id.split("::");
 
   const flattenFields = (
     fields: ScriptEventFieldSchema[],
-    memo: ScriptEventFieldSchema[] = []
+    memo: ScriptEventFieldSchema[] = [],
   ) => {
     const addFields = (fields: ScriptEventFieldSchema[]) => {
       for (const field of fields) {
@@ -167,6 +169,8 @@ const instanciateScriptEvent = (
           replaceValue = defaultTilesetId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
+        } else if (defaultValue === "LAST_ENGINE_FIELD") {
+          replaceValue = defaultEngineFieldId;
         } else if (field.type === "events") {
           return memo;
         } else if (defaultValue !== undefined) {
@@ -183,6 +187,14 @@ const instanciateScriptEvent = (
                   return {
                     ...node,
                     value: defaultVariableId,
+                  };
+                } else if (
+                  node.type === "engineField" &&
+                  node.value === "LAST_ENGINE_FIELD"
+                ) {
+                  return {
+                    ...node,
+                    value: defaultEngineFieldId,
                   };
                 }
                 return node;
@@ -206,19 +218,22 @@ const instanciateScriptEvent = (
 
         return memo;
       },
-      { ...defaultArgs } as Record<string, unknown>
-    )
+      { ...defaultArgs } as Record<string, unknown>,
+    ),
   );
   const childFields = fields.filter((field) => field.type === "events");
   const children =
     childFields.length > 0
-      ? childFields.reduce((memo, field) => {
-          const key = field.key ?? "";
-          return {
-            ...memo,
-            [key]: [],
-          };
-        }, {} as Record<string, string[]>)
+      ? childFields.reduce(
+          (memo, field) => {
+            const key = field.key ?? "";
+            return {
+              ...memo,
+              [key]: [],
+            };
+          },
+          {} as Record<string, string[]>,
+        )
       : undefined;
   return {
     command,
@@ -267,7 +282,7 @@ const customEventToOption =
   };
 
 const titleForOption = (
-  option: EventOption | EventOptGroup
+  option: EventOption | EventOptGroup,
 ): string | undefined => {
   // If option description is provided with a non-empty
   // string then use that as the title for menu item
@@ -356,7 +371,9 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
     top: 0;
     left: 0;
     right: 0;
-    transition: transform 0.2s linear, opacity 0.2s linear;
+    transition:
+      transform 0.2s linear,
+      opacity 0.2s linear;
   }
   ${SelectMenuTitle}:nth-child(2) {
     position: absolute;
@@ -365,7 +382,9 @@ const SelectMenuHeader = styled.div<SelectMenuHeaderProps>`
     right: 0;
     opacity: 0;
     transform: translateX(80px);
-    transition: transform 0.2s linear, opacity 0.2s linear;
+    transition:
+      transform 0.2s linear,
+      opacity 0.2s linear;
   }
   ${SelectMenuBackButton} {
     transition: opacity 0.2s linear;
@@ -477,7 +496,7 @@ const sortAlphabetically = (a: string, b: string) => {
 
 const sortAlphabeticallyByLabel = (
   a: { label: string },
-  b: { label: string }
+  b: { label: string },
 ) => {
   if (a.label === b.label) {
     return 0;
@@ -491,7 +510,7 @@ const sortAlphabeticallyByLabel = (
 
 const sortAlphabeticallyBySubGroupThenLabel = (
   a: { subGroup?: string; label: string },
-  b: { subGroup?: string; label: string }
+  b: { subGroup?: string; label: string },
 ) => {
   const aSubGroup = a.subGroup ?? "";
   const bSubGroup = b.subGroup ?? "";
@@ -521,17 +540,17 @@ const AddScriptEventMenu = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
-    []
+    [],
   );
   const favoriteEvents = useAppSelector(
-    (state) => state.project.present.settings.favoriteEvents
+    (state) => state.project.present.settings.favoriteEvents,
   );
   const [favoritesCache, setFavoritesCache] = useState<string[]>([]);
   const scriptEventPresets = useAppSelector(
-    (state) => state.project.present.settings.scriptEventPresets
+    (state) => state.project.present.settings.scriptEventPresets,
   );
   const scriptEventDefaultPresets = useAppSelector(
-    (state) => state.project.present.settings.scriptEventDefaultPresets
+    (state) => state.project.present.settings.scriptEventDefaultPresets,
   );
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
@@ -546,23 +565,26 @@ const AddScriptEventMenu = ({
     return ids[ids.length - 1];
   });
   const lastMusicId = useAppSelector(
-    (state) => musicSelectors.selectIds(state)[0]
+    (state) => musicSelectors.selectIds(state)[0],
   );
   const lastSpriteId = useAppSelector(
-    (state) => spriteSheetSelectors.selectIds(state)[0]
+    (state) => spriteSheetSelectors.selectIds(state)[0],
   );
   const lastEmoteId = useAppSelector(
-    (state) => emoteSelectors.selectIds(state)[0]
+    (state) => emoteSelectors.selectIds(state)[0],
   );
   const lastTilesetId = useAppSelector(
-    (state) => tilesetSelectors.selectIds(state)[0]
+    (state) => tilesetSelectors.selectIds(state)[0],
+  );
+  const lastEngineFieldId = useAppSelector(
+    (state) => state.engine.defaultEngineFieldId,
   );
   const context = useContext(ScriptEditorContext);
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefsWithPresets(state)
+    selectScriptEventDefsWithPresets(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectAll(state)
+    customEventSelectors.selectAll(state),
   );
 
   useEffect(() => {
@@ -578,7 +600,7 @@ const AddScriptEventMenu = ({
 
     const allEvents = ([] as EventOption[]).concat(
       eventList.map(eventToOption(favoriteEvents)),
-      customEventsLookup.map(customEventToOption(scriptEventDefs))
+      customEventsLookup.map(customEventToOption(scriptEventDefs)),
     );
 
     fuseRef.current = new Fuse(allEvents, {
@@ -595,25 +617,28 @@ const AddScriptEventMenu = ({
       ],
     });
 
-    const groupedEvents = eventList.reduce((memo, event) => {
-      if (Array.isArray(event.groups)) {
-        event.groups.forEach((group) => {
+    const groupedEvents = eventList.reduce(
+      (memo, event) => {
+        if (Array.isArray(event.groups)) {
+          event.groups.forEach((group) => {
+            if (!memo[group]) {
+              memo[group] = [event];
+            } else {
+              memo[group]?.push(event);
+            }
+          });
+        } else {
+          const group = "EVENT_GROUP_MISC";
           if (!memo[group]) {
             memo[group] = [event];
           } else {
             memo[group]?.push(event);
           }
-        });
-      } else {
-        const group = "EVENT_GROUP_MISC";
-        if (!memo[group]) {
-          memo[group] = [event];
-        } else {
-          memo[group]?.push(event);
         }
-      }
-      return memo;
-    }, {} as Record<string, ScriptEventDef[]>);
+        return memo;
+      },
+      {} as Record<string, ScriptEventDef[]>,
+    );
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 
@@ -656,7 +681,7 @@ const AddScriptEventMenu = ({
             };
           }
           return option;
-        })
+        }),
     );
     setAllOptions(allOptions);
     if (!firstLoad.current) {
@@ -701,7 +726,7 @@ const AddScriptEventMenu = ({
                 },
                 isFavorite: false,
               },
-            ]
+            ],
       );
       setSelectedIndex(0);
       setSelectedCategoryIndex(-1);
@@ -722,7 +747,7 @@ const AddScriptEventMenu = ({
     (index: number) => {
       if (childOptionsRef.current && selectedCategoryIndex > -1) {
         const el = childOptionsRef.current.querySelector(
-          `[data-index="${index}"]`
+          `[data-index="${index}"]`,
         ) as MenuElement;
         if (el) {
           el.focus();
@@ -730,7 +755,7 @@ const AddScriptEventMenu = ({
         }
       } else if (rootOptionsRef.current && selectedCategoryIndex === -1) {
         const el = rootOptionsRef.current.querySelector(
-          `[data-index="${index}"]`
+          `[data-index="${index}"]`,
         ) as MenuElement;
         if (el) {
           el.focus();
@@ -738,7 +763,7 @@ const AddScriptEventMenu = ({
         }
       }
     },
-    [selectedCategoryIndex]
+    [selectedCategoryIndex],
   );
 
   const onAdd = useCallback(
@@ -762,6 +787,7 @@ const AddScriptEventMenu = ({
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
               defaultTilesetId: String(lastTilesetId),
+              defaultEngineFieldId: String(lastEngineFieldId),
               defaultArgs: {
                 ...defaultArgs,
                 ...userDefaults,
@@ -770,7 +796,7 @@ const AddScriptEventMenu = ({
               },
             }),
           ],
-        })
+        }),
       );
       onBlur?.();
     },
@@ -789,8 +815,9 @@ const AddScriptEventMenu = ({
       lastSpriteId,
       lastEmoteId,
       lastTilesetId,
+      lastEngineFieldId,
       onBlur,
-    ]
+    ],
   );
 
   const onSelectOption = useCallback(
@@ -818,14 +845,14 @@ const AddScriptEventMenu = ({
         }
       }
     },
-    [onAdd, options, selectedCategoryIndex]
+    [onAdd, options, selectedCategoryIndex],
   );
 
   const onToggleFavouriteEventId = useCallback(
     (eventId: string) => {
       dispatch(settingsActions.toggleFavoriteEvent(eventId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onToggleFavoriteOption = useCallback(
@@ -847,7 +874,7 @@ const AddScriptEventMenu = ({
         }
       }
     },
-    [onToggleFavouriteEventId, options, selectedCategoryIndex]
+    [onToggleFavouriteEventId, options, selectedCategoryIndex],
   );
 
   const onKeyDown = useCallback(
@@ -891,7 +918,7 @@ const AddScriptEventMenu = ({
       searchTerm.length,
       selectedCategoryIndex,
       selectedIndex,
-    ]
+    ],
   );
 
   const onChangeSearchTerm = useCallback(
@@ -903,12 +930,12 @@ const AddScriptEventMenu = ({
         setSearchTerm(e.currentTarget.value);
       }
     },
-    []
+    [],
   );
 
   const highlightWords = useMemo(
     () => searchTerm.split(" ").filter((i) => i),
-    [searchTerm]
+    [searchTerm],
   );
 
   const menuHeight =
@@ -977,7 +1004,7 @@ const AddScriptEventMenu = ({
                       words={highlightWords}
                     />
                   ) : (
-                    option.displayLabel ?? option.label
+                    (option.displayLabel ?? option.label)
                   )}
 
                   {"options" in option ? (
@@ -1056,7 +1083,7 @@ const AddScriptEventMenu = ({
                       </MenuItemFavorite>
                     </MenuItem>
                   </React.Fragment>
-                )
+                ),
               )}
           </SelectMenuOptions>
         </SelectMenuOptionsWrapper>

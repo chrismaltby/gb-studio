@@ -16,6 +16,7 @@ import {
   matchAssetEntity,
 } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
+import { getSettings } from "store/features/settings/settingsState";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -24,7 +25,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.spriteSheetId
+        action.payload.spriteSheetId,
       );
 
       if (!spriteSheet) {
@@ -35,8 +36,8 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         store.dispatch(
           actions.detectSpriteComplete(
             // Classic Sprite Format
-            detectClassic(spriteSheet)
-          )
+            detectClassic(spriteSheet),
+          ),
         );
       }
     }
@@ -60,10 +61,12 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       entitiesActions.removeMetaspriteTiles.match(action) ||
       entitiesActions.removeMetaspriteTilesOutsideCanvas.match(action) ||
       entitiesActions.editSpriteAnimation.match(action) ||
-      entitiesActions.moveSpriteAnimationFrame.match(action)
+      entitiesActions.moveSpriteAnimationFrame.match(action) ||
+      (entitiesActions.editSpriteSheet.match(action) &&
+        action.payload.changes.spriteMode !== undefined)
     ) {
       store.dispatch(
-        actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId })
+        actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId }),
       );
     }
 
@@ -73,7 +76,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.spriteSheetId
+        action.payload.spriteSheetId,
       );
 
       if (!spriteSheet) {
@@ -93,8 +96,16 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         spriteStates,
       });
 
-      const res = await API.sprite.compileSprite(spriteData);
-      const numTiles = res.tiles.length / 2;
+      const settings = getSettings(state);
+
+      const res = await API.sprite.compileSprite(
+        spriteData,
+        settings.spriteMode,
+      );
+      const numTiles =
+        (spriteSheet.spriteMode ?? settings.spriteMode) === "8x16"
+          ? res.tiles.length / 2
+          : res.tiles.length;
 
       if (numTiles !== spriteSheet.numTiles) {
         store.dispatch(
@@ -103,7 +114,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
             changes: {
               numTiles,
             },
-          })
+          }),
         );
       }
     }
@@ -120,7 +131,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
-        action.payload.data.id
+        action.payload.data.id,
       );
 
       if (spriteSheet) {
@@ -142,18 +153,18 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
           .filter((i) => i);
 
         const hasNoDefinedTiles = spriteFrames.every(
-          (a) => a.tiles.length === 0
+          (a) => a.tiles.length === 0,
         );
 
         // If this is a newly added sprite with no detected animations
         // then try auto detecting the tile data
         if (hasNoDefinedTiles) {
           store.dispatch(
-            actions.detectSprite({ spriteSheetId: spriteSheet.id })
+            actions.detectSprite({ spriteSheetId: spriteSheet.id }),
           );
         }
         store.dispatch(
-          actions.compileSprite({ spriteSheetId: spriteSheet.id })
+          actions.compileSprite({ spriteSheetId: spriteSheet.id }),
         );
       } else {
         // Sprite may have been modified with no .gbsres file created yet, try matching on filename
@@ -162,7 +173,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         const spriteSheet = matchAssetEntity(action.payload.data, allSprites);
         if (spriteSheet) {
           store.dispatch(
-            actions.compileSprite({ spriteSheetId: spriteSheet.id })
+            actions.compileSprite({ spriteSheetId: spriteSheet.id }),
           );
         }
       }

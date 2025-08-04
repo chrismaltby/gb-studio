@@ -1,20 +1,23 @@
+import type { ScriptBuilderFunctionArg } from "lib/compiler/scriptBuilder";
 import { ensureTypeGenerator } from "shared/types";
 
 export const valueAtomTypes = [
   "number",
+  "numberSymbol",
   "direction",
   "variable",
   "indirect",
   "constant",
   "property",
   "expression",
+  "engineField",
   "true",
   "false",
 ] as const;
-export type ValueAtomType = typeof valueAtomTypes[number];
+export type ValueAtomType = (typeof valueAtomTypes)[number];
 
 export const constValueAtomTypes = ["number", "constant"] as const;
-export type ConstValueAtomType = typeof constValueAtomTypes[number];
+export type ConstValueAtomType = (typeof constValueAtomTypes)[number];
 
 export const valueOperatorTypes = [
   "add",
@@ -40,7 +43,7 @@ export const valueOperatorTypes = [
   "bOR",
   "bXOR",
 ] as const;
-export type ValueOperatorType = typeof valueOperatorTypes[number];
+export type ValueOperatorType = (typeof valueOperatorTypes)[number];
 
 export const valueUnaryOperatorTypes = [
   "rnd",
@@ -50,7 +53,7 @@ export const valueUnaryOperatorTypes = [
   // Bitwise
   "bNOT",
 ] as const;
-export type ValueUnaryOperatorType = typeof valueUnaryOperatorTypes[number];
+export type ValueUnaryOperatorType = (typeof valueUnaryOperatorTypes)[number];
 
 export type ValueType =
   | ValueAtomType
@@ -64,7 +67,7 @@ export const isValueOperatorType = (type: unknown): type is ValueOperatorType =>
   valueOperatorTypes.includes(type as ValueOperatorType);
 
 export const isValueUnaryOperatorType = (
-  type: unknown
+  type: unknown,
 ): type is ValueUnaryOperatorType =>
   valueUnaryOperatorTypes.includes(type as ValueUnaryOperatorType);
 
@@ -108,6 +111,10 @@ export type ScriptValueAtom =
       value: number;
     }
   | {
+      type: "numberSymbol";
+      value: string;
+    }
+  | {
       type: "variable";
       value: string;
     }
@@ -130,6 +137,10 @@ export type ScriptValueAtom =
     }
   | {
       type: "expression";
+      value: string;
+    }
+  | {
+      type: "engineField";
       value: string;
     }
   | {
@@ -159,6 +170,27 @@ export type ValueFunctionMenuItem = {
   symbol: string;
 };
 
+type OptimisedScriptValueAtom = Exclude<
+  ScriptValueAtom,
+  { type: "expression" }
+>;
+
+export type OptimisedScriptValue =
+  | RPNOperationWithOptimisedValues
+  | RPNUnaryOperationWithOptimisedValue
+  | OptimisedScriptValueAtom;
+
+type RPNOperationWithOptimisedValues = {
+  type: ValueOperatorType;
+  valueA: OptimisedScriptValue;
+  valueB: OptimisedScriptValue;
+};
+
+type RPNUnaryOperationWithOptimisedValue = {
+  type: ValueUnaryOperatorType;
+  value: OptimisedScriptValue;
+};
+
 const validProperties = [
   "xpos",
   "ypos",
@@ -177,57 +209,57 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
     return false;
   }
   const scriptValue = value as ScriptValue;
+
   // Is a number
-  if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
-    return true;
+  if (scriptValue.type === "number") {
+    return typeof scriptValue.value === "number";
+  }
+  // Is a number symbol
+  if (scriptValue.type === "numberSymbol") {
+    return typeof scriptValue.value === "string";
   }
   // Is bool
   if (scriptValue.type === "true" || scriptValue.type === "false") {
     return true;
   }
-  if (
-    scriptValue.type === "variable" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Variable
+  if (scriptValue.type === "variable") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "constant" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Constant
+  if (scriptValue.type === "constant") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "property" &&
-    typeof scriptValue.target === "string" &&
-    typeof scriptValue.property === "string" &&
-    validProperties.includes(scriptValue.property)
-  ) {
-    return true;
+  // Is Property
+  if (scriptValue.type === "property") {
+    return (
+      typeof scriptValue.target === "string" &&
+      typeof scriptValue.property === "string" &&
+      validProperties.includes(scriptValue.property)
+    );
   }
-  if (
-    scriptValue.type === "expression" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Expression
+  if (scriptValue.type === "expression") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "direction" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Engine Field
+  if (scriptValue.type === "engineField") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    isValueOperation(scriptValue) &&
-    (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
-    (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
-  ) {
-    return true;
+  // Is Direction
+  if (scriptValue.type === "direction") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    isUnaryOperation(scriptValue) &&
-    (isScriptValue(scriptValue.value) || !scriptValue.value)
-  ) {
+  if (isValueOperation(scriptValue)) {
+    return (
+      (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
+      (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
+    );
+  }
+  if (isUnaryOperation(scriptValue)) {
+    return isScriptValue(scriptValue.value) || !scriptValue.value;
+  }
+  if (scriptValue.type === "indirect") {
     return true;
   }
 
@@ -235,7 +267,7 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
 };
 
 export const isConstScriptValue = (
-  value: unknown
+  value: unknown,
 ): value is ConstScriptValue => {
   if (!value || typeof value !== "object") {
     return false;
@@ -261,18 +293,18 @@ export type ScriptValueUnaryOperation = ScriptValue & {
 };
 
 export const isUnaryOperation = (
-  value?: ScriptValue
+  value?: ScriptValue,
 ): value is ScriptValueUnaryOperation => {
   return (
     !!value &&
     valueUnaryOperatorTypes.includes(
-      value.type as unknown as ValueUnaryOperatorType
+      value.type as unknown as ValueUnaryOperatorType,
     )
   );
 };
 
 export const isValueOperation = (
-  value?: ScriptValue
+  value?: ScriptValue,
 ): value is ScriptValueFunction => {
   return (
     !!value &&
@@ -287,7 +319,7 @@ export const isValueAtom = (value?: ScriptValue): value is ScriptValueAtom => {
 };
 
 export const isValueNumber = (
-  value: unknown
+  value: unknown,
 ): value is {
   type: "number";
   value: number;
@@ -307,12 +339,19 @@ export type PrecompiledValueFetch = {
   local: string;
   value:
     | {
-        type: "property";
-        target: string;
-        property: string;
+        type: "actorPosition";
+        target: string | ScriptBuilderFunctionArg;
       }
     | {
-        type: "expression";
+        type: "actorDirection";
+        target: string | ScriptBuilderFunctionArg;
+      }
+    | {
+        type: "actorFrame";
+        target: string | ScriptBuilderFunctionArg;
+      }
+    | {
+        type: "engineField";
         value: string;
       };
 };
@@ -321,6 +360,10 @@ export type PrecompiledValueRPNOperation =
   | {
       type: "number";
       value: number;
+    }
+  | {
+      type: "numberSymbol";
+      value: string;
     }
   | {
       type: "constant";
@@ -340,6 +383,19 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "local";
+      value: string;
+      offset?: number;
+    }
+  | {
+      type: "memI16";
+      value: string;
+    }
+  | {
+      type: "memU8";
+      value: string;
+    }
+  | {
+      type: "memI8";
       value: string;
     }
   | {

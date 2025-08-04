@@ -195,7 +195,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     for (let m = 0; m < 64; m++) {
       if (version < 6) {
         const [note, instrument, effectcode] = new Int32Array(
-          data.slice(offset, offset + 3 * 4)
+          data.slice(offset, offset + 3 * 4),
         );
         offset += 3 * 4;
         const effectparam = readUint8();
@@ -203,7 +203,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
         pattern.push([note, instrument, effectcode, effectparam]);
       } else if (version >= 6) {
         const [note, instrument, _unused, effectcode] = new Int32Array(
-          data.slice(offset, offset + 4 * 4)
+          data.slice(offset, offset + 4 * 4),
         );
         offset += 4 * 4;
         const effectparam = readUint8();
@@ -227,7 +227,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   for (let n = 0; n < 4; n++) {
     const order_count = readUint32(); // The amount of pattern orders stored in the file has an off-by-one.
     orders.push(
-      new Uint32Array(data.slice(offset, offset + 4 * (order_count - 1)))
+      new Uint32Array(data.slice(offset, offset + 4 * (order_count - 1))),
     );
     offset += 4 * order_count;
   }
@@ -346,7 +346,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
           instr.subpattern_enabled = true;
           instr.subpattern = subpatternFromNoiseMacro(
             instr.noise_macro ?? [],
-            song.ticks_per_row
+            song.ticks_per_row,
           );
         }
       }
@@ -389,7 +389,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       if (
         comparePatterns(
           song.patterns[idx],
-          song.patterns[song.patterns.length - 1]
+          song.patterns[song.patterns.length - 1],
         )
       ) {
         song.sequence.push(idx);
@@ -468,7 +468,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
     addUint8(
-      i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0
+      i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0,
     );
 
     addUint32(i.frequency_sweep_time);
@@ -518,7 +518,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
     addUint8(
-      i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0
+      i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0,
     );
 
     addUint32(0);
@@ -638,13 +638,13 @@ export const exportToC = (song: Song, trackName: string): string => {
     }
     return `DN(${note}, ${instrument}, ${decHex(
       (effect_code << 8) | effect_param,
-      3
+      3,
     )})`;
   };
 
   const formatSubpattern = function (
     instr: DutyInstrument | WaveInstrument | NoiseInstrument,
-    type: "duty" | "wave" | "noise"
+    type: "duty" | "wave" | "noise",
   ) {
     if (instr.subpattern_enabled) {
       data += `static const unsigned char ${type}_${instr.index}_subpattern[] = {\n`;
@@ -657,10 +657,10 @@ export const exportToC = (song: Song, trackName: string): string => {
   };
   const formatSubPatternCell = function (
     cell: SubPatternCell,
-    isLast: boolean
+    isLast: boolean,
   ) {
     const note = cell.note ?? "___";
-    const jump = cell.jump !== null && isLast ? 1 : cell.jump ?? 0;
+    const jump = cell.jump !== null && isLast ? 1 : (cell.jump ?? 0);
     let effect_code = 0;
     let effect_param = 0;
     if (cell.effectcode !== null) {
@@ -669,7 +669,7 @@ export const exportToC = (song: Song, trackName: string): string => {
     }
     return `DN(${note}, ${jump}, ${decHex(
       (effect_code << 8) | effect_param,
-      3
+      3,
     )})`;
   };
 
@@ -694,7 +694,7 @@ export const exportToC = (song: Song, trackName: string): string => {
     const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
 
     return `{ ${decHex(sweep)}, ${decHex(len_duty)}, ${decHex(
-      envelope
+      envelope,
     )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
@@ -709,7 +709,7 @@ export const exportToC = (song: Song, trackName: string): string => {
     const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
 
     return `{ ${decHex(length)}, ${decHex(volume)}, ${decHex(
-      waveform
+      waveform,
     )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
@@ -728,13 +728,13 @@ export const exportToC = (song: Song, trackName: string): string => {
     if (instr.bit_count === 7) highmask |= 0x80;
 
     return `{ ${decHex(envelope)}, ${subpatternRef}, ${decHex(
-      highmask
+      highmask,
     )}, 0, 0 }`;
   };
 
   const formatWave = function (wave: Uint8Array) {
     return Array.from(Array(16).keys(), (n) =>
-      decHex((wave[n * 2] << 4) | wave[n * 2 + 1])
+      decHex((wave[n * 2] << 4) | wave[n * 2 + 1]),
     ).join(", ");
   };
 
@@ -829,7 +829,7 @@ const hUGESong_t ${trackName}_Data = {
 
 const subpatternFromNoiseMacro = function (
   noise_macro: number[],
-  ticks_per_row: number
+  ticks_per_row: number,
 ) {
   const subpattern = [...Array(64)].map(() => new SubPatternCell());
   for (let n = 0; n < 6; n++) {

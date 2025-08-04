@@ -3,8 +3,8 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_TEXT_SET_ANIMATION_SPEED";
 const groups = ["EVENT_GROUP_DIALOGUE"];
 const subGroups = {
-  "EVENT_GROUP_DIALOGUE": "EVENT_GROUP_PROPERTIES"
-}
+  EVENT_GROUP_DIALOGUE: "EVENT_GROUP_PROPERTIES",
+};
 
 const fields = [
   {

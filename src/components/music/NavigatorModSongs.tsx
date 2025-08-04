@@ -76,7 +76,7 @@ export const NavigatorModSongs = ({
       allSongs
         .filter(modFilter)
         .map((song, songIndex) => songToNavigatorItem(song, songIndex))
-        .sort(sortByName)
+        .sort(sortByName),
     );
   }, [allSongs]);
 
@@ -96,16 +96,16 @@ export const NavigatorModSongs = ({
       buildAssetNavigatorItems(
         allSongs.filter(modFilter),
         openFolders,
-        songsSearchTerm
+        songsSearchTerm,
       ),
-    [allSongs, openFolders, songsSearchTerm]
+    [allSongs, openFolders, songsSearchTerm],
   );
 
   const setSelectedId = useCallback(
     (id: string) => {
       dispatch(navigationActions.setNavigationId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const [renameId, setRenameId] = useState("");
@@ -116,7 +116,7 @@ export const NavigatorModSongs = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameSongComplete = useCallback(
@@ -126,12 +126,12 @@ export const NavigatorModSongs = ({
           projectActions.renameMusicAsset({
             musicId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -155,7 +155,7 @@ export const NavigatorModSongs = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderLabel = useCallback(
@@ -167,7 +167,7 @@ export const NavigatorModSongs = ({
       }
       return item.filename;
     },
-    [toggleFolderOpen]
+    [toggleFolderOpen],
   );
 
   const showSongsSearch = songsSearchEnabled && height > 60;

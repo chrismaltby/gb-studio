@@ -17,6 +17,7 @@
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "1",
+  "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
   "script": [
     {
@@ -73,7 +74,14 @@
             "id": "52124ce7-7365-49c1-a75b-2a4b3e7a0fd9",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             }
           },
           {
@@ -112,7 +120,8 @@
                 "value": 0
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             }
           },
           {
@@ -129,7 +138,8 @@
                 "value": 6
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             }
           },
           {
@@ -168,7 +178,8 @@
                 "value": 6
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             }
           },
           {
@@ -185,7 +196,8 @@
                 "value": 0
               },
               "moveType": "diagonal",
-              "useCollisions": false
+              "useCollisions": false,
+              "collideWith": []
             }
           }
         ]
@@ -247,7 +259,14 @@
             "id": "9a802e0e-231c-48a7-be66-973556af78b1",
             "command": "EVENT_WAIT",
             "args": {
-              "time": 0.5
+              "time": {
+                "type": "number",
+                "value": 0.5
+              },
+              "frames": {
+                "type": "number",
+                "value": 30
+              }
             }
           },
           {

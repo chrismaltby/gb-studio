@@ -67,32 +67,32 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
   const { observe, height } = useDimensions();
   const variable = useAppSelector((state) =>
-    variableSelectors.selectById(state, id)
+    variableSelectors.selectById(state, id),
   );
   const [variableUses, setVariableUses] = useState<VariableUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state)
+    actorSelectors.selectEntities(state),
   );
   const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state)
+    triggerSelectors.selectEntities(state),
   );
   const scriptEventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state)
+    scriptEventSelectors.selectEntities(state),
   );
   const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state)
+    customEventSelectors.selectEntities(state),
   );
   const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities
+    actorPrefabSelectors.selectEntities,
   );
   const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities
+    triggerPrefabSelectors.selectEntities,
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
   const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state)
+    selectScriptEventDefs(state),
   );
 
   const dispatch = useAppDispatch();
@@ -104,7 +104,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
         setVariableUses(e.data.uses);
       }
     },
-    [id]
+    [id],
   );
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       entitiesActions.renameVariable({
         variableId: id,
         name: editValue,
-      })
+      }),
     );
   };
 
@@ -165,12 +165,12 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "actor") {
       dispatch(
-        editorActions.selectActor({ actorId: id, sceneId: item.sceneId })
+        editorActions.selectActor({ actorId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "trigger") {
       dispatch(
-        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId })
+        editorActions.selectTrigger({ triggerId: id, sceneId: item.sceneId }),
       );
       dispatch(editorActions.setFocusSceneId(item.sceneId));
     } else if (item.type === "custom") {

@@ -54,8 +54,8 @@ export const FontSelect: FC<FontSelectProps> = ({
           value: font.id,
           label: font.name,
           font,
-        }))
-      )
+        })),
+      ),
     );
   }, [fonts, optional, optionalDefaultFontId, optionalLabel]);
 

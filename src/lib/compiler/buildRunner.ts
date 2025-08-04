@@ -54,7 +54,7 @@ export const buildRunner = ({
           reject(code ?? 1);
         }
       });
-    }
+    },
   );
 
   const kill = () => {

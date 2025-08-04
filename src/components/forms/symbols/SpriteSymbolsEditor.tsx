@@ -20,7 +20,7 @@ export const SpriteSymbolsEditor = ({ id }: SpriteSymbolsEditorProps) => {
           entitiesActions.setSpriteSheetSymbol({
             spriteSheetId: id,
             symbol,
-          })
+          }),
         );
       }}
       copyTransform={addBankRef}

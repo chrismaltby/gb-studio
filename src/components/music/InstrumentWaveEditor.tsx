@@ -46,7 +46,7 @@ export const InstrumentWaveEditor = ({
   if (!instrument) return <></>;
 
   const selectedVolume = volumeOptions.find(
-    (i) => parseInt(i.value, 10) === instrument.volume
+    (i) => parseInt(i.value, 10) === instrument.volume,
   );
 
   const onChangeField =
@@ -58,7 +58,7 @@ export const InstrumentWaveEditor = ({
           changes: {
             [key]: editValue,
           },
-        })
+        }),
       );
     };
 
@@ -72,7 +72,7 @@ export const InstrumentWaveEditor = ({
           changes: {
             [key]: editValue,
           },
-        })
+        }),
       );
     };
 

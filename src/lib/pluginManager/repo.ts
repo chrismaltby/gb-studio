@@ -139,7 +139,7 @@ export const getRepoUrlById = (id: string): string | undefined => {
 export const addPluginToProject = async (
   projectPath: string,
   pluginId: string,
-  repoId: string
+  repoId: string,
 ) => {
   try {
     const repoURL = getRepoUrlById(repoId);
@@ -172,7 +172,7 @@ export const addPluginToProject = async (
       if (!projectPath) {
         dialog.showErrorBox(
           l10n("ERROR_NO_PROJECT_IS_OPEN"),
-          l10n("ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN")
+          l10n("ERROR_OPEN_A_PROJECT_TO_ADD_PLUGIN"),
         );
         return;
       }
@@ -188,7 +188,7 @@ export const addPluginToProject = async (
     if (plugin.gbsVersion && !satisfies(releaseVersion, plugin.gbsVersion)) {
       const cancel = confirmIncompatiblePlugin(
         releaseVersion,
-        plugin.gbsVersion
+        plugin.gbsVersion,
       );
       if (cancel) {
         return;
@@ -200,7 +200,7 @@ export const addPluginToProject = async (
     const tmpDir = getTmp();
     const tmpPluginZipPath = join(
       tmpDir,
-      `${checksumString(`${repoId}::${pluginId}`)}.zip`
+      `${checksumString(`${repoId}::${pluginId}`)}.zip`,
     );
 
     const fileStream = createWriteStream(tmpPluginZipPath);
@@ -225,7 +225,7 @@ export const addPluginToProject = async (
 
 export const removePluginFromProject = async (
   projectPath: string,
-  pluginId: string
+  pluginId: string,
 ) => {
   const projectRoot = dirname(projectPath);
   const pluginsPath = join(projectRoot, "plugins");
@@ -234,7 +234,7 @@ export const removePluginFromProject = async (
 
   const cancel = confirmDeletePlugin(
     pluginId,
-    relative(projectRoot, outputPath)
+    relative(projectRoot, outputPath),
   );
   if (cancel) {
     return;

@@ -28,17 +28,18 @@ import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
 export const ScriptEventRenameInput = (
-  props: React.InputHTMLAttributes<HTMLInputElement>
+  props: React.InputHTMLAttributes<HTMLInputElement>,
 ) => <StyledScriptEventRenameInput {...props} />;
 
 export const ScriptEventRenameInputCompleteButton = (
-  props: React.ButtonHTMLAttributes<HTMLButtonElement>
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
 interface ScriptEventHeaderProps {
   nestLevel: number;
   isConditional?: boolean;
   isComment?: boolean;
+  isDisabled?: boolean;
   isSelected?: boolean;
   isExecuting?: boolean;
   isMoveable?: boolean;
@@ -62,6 +63,7 @@ export const ScriptEventHeader = forwardRef<
       isConditional,
       nestLevel,
       isComment,
+      isDisabled,
       isSelected,
       isExecuting,
       isMoveable = true,
@@ -75,7 +77,7 @@ export const ScriptEventHeader = forwardRef<
       onContextMenu,
       children,
     },
-    outerRef
+    outerRef,
   ) => {
     return (
       <StyledScriptEventHeader
@@ -83,6 +85,7 @@ export const ScriptEventHeader = forwardRef<
         $nestLevel={nestLevel}
         $isConditional={isConditional}
         $isComment={isComment}
+        $isDisabled={isDisabled}
         $altBg={altBg}
         $isMoveable={isMoveable}
         $isSelected={isSelected}
@@ -92,7 +95,7 @@ export const ScriptEventHeader = forwardRef<
           onClick={onToggle}
           onContextMenu={onContextMenu}
         >
-          {!isComment ? (
+          {!isComment && !isDisabled ? (
             <StyledScriptEventHeaderCaret $isOpen={isOpen}>
               <ArrowIcon />
             </StyledScriptEventHeaderCaret>
@@ -121,7 +124,7 @@ export const ScriptEventHeader = forwardRef<
         )}
       </StyledScriptEventHeader>
     );
-  }
+  },
 );
 
 interface ScriptEventBranchHeaderProps {

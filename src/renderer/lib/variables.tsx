@@ -45,7 +45,7 @@ export interface VariableGroup {
 export const namedVariablesByContext = (
   context: ScriptEditorCtx,
   variablesLookup: VariablesLookup,
-  customEvent: CustomEventNormalized | undefined
+  customEvent: CustomEventNormalized | undefined,
 ): NamedVariable[] => {
   if (context.type === "script") {
     if (customEvent) {
@@ -61,7 +61,7 @@ export const namedVariablesByContext = (
 
 export const namedCustomEventVariables = (
   customEvent: CustomEventNormalized,
-  variablesLookup: VariablesLookup
+  variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
     customEventVariables.map((variable) => ({
@@ -75,13 +75,13 @@ export const namedCustomEventVariables = (
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
       group: l10n("FIELD_GLOBAL"),
-    }))
+    })),
   );
 };
 
 export const namedEntityVariables = (
   entityId: string,
-  variablesLookup: VariablesLookup
+  variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
     localVariables.map((variable) => ({
@@ -101,12 +101,12 @@ export const namedEntityVariables = (
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
       group: l10n("FIELD_GLOBAL"),
-    }))
+    })),
   );
 };
 
 export const namedGlobalVariables = (
-  variablesLookup: VariablesLookup
+  variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
     allVariables.map((variable) => ({
@@ -114,7 +114,7 @@ export const namedGlobalVariables = (
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
       group: l10n("FIELD_GLOBAL"),
-    }))
+    })),
   );
 };
 

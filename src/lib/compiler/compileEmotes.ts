@@ -25,7 +25,7 @@ const emoteBuildCache: Record<
 const compileEmotes = async (
   emotes: EmoteData[],
   projectRoot: string,
-  { warnings }: CompileEmoteOptions
+  { warnings }: CompileEmoteOptions,
 ): Promise<PrecompiledEmoteData[]> => {
   const emoteData = await promiseLimit(
     10,
@@ -52,7 +52,7 @@ const compileEmotes = async (
         const frames = Math.ceil(size / 64);
         if (Math.ceil(size / 64) !== Math.floor(size / 64)) {
           warnings(
-            `Emote '${emote.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
+            `Emote '${emote.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`,
           );
         }
 
@@ -63,7 +63,7 @@ const compileEmotes = async (
           frames,
         };
       };
-    })
+    }),
   );
 
   return emoteData;

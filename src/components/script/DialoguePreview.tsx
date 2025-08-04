@@ -39,14 +39,14 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
 }) => {
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
   const avatarAsset = useAppSelector((state) =>
-    avatarId ? avatarSelectors.selectById(state, avatarId) : undefined
+    avatarId ? avatarSelectors.selectById(state, avatarId) : undefined,
   );
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const fontsLookup = useAppSelector((state) =>
-    fontSelectors.selectEntities(state)
+    fontSelectors.selectEntities(state),
   );
   const defaultFontId = useAppSelector(
-    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id
+    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id,
   );
 
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();
@@ -72,8 +72,8 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         ([] as string[]).concat(
           defaultFontId,
           (String(text).match(/(!F:[0-9a-f-]+!)/g) || []) // Add fonts referenced in text
-            .map((id) => id.substring(3).replace(/!$/, ""))
-        )
+            .map((id) => id.substring(3).replace(/!$/, "")),
+        ),
       );
       const usedFonts = usedFontIds.map((id) => fontsLookup[id] || fonts[0]);
       const usedFontData = await Promise.all(usedFonts.map(loadFont));
@@ -177,7 +177,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
             textHeight,
             fontsData,
             defaultFontId,
-            fonts[0]?.id
+            fonts[0]?.id,
           );
         } else {
           drawText(
@@ -188,7 +188,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
             textHeight,
             fontsData,
             defaultFontId,
-            fonts[0]?.id
+            fonts[0]?.id,
           );
         }
       }

@@ -21,6 +21,8 @@ const GOLD_TIER_ID = "22845730";
 
 const BASE_URL = "https://www.patreon.com/api/oauth2/v2";
 
+const PAGE_SIZE = 100;
+
 interface PatreonMember {
   id: string;
   relationships: {
@@ -98,7 +100,11 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
   const goldTierUserIds = new Set<string>();
   const silverTierUserIds = new Set<string>();
 
-  const initialEndpoint = `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members?include=user,currently_entitled_tiers&fields%5Buser%5D=full_name&fields%5Btier%5D=title`;
+  const initialEndpoint =
+    `${BASE_URL}/campaigns/${CAMPAIGN_ID}/members` +
+    `?include=user,currently_entitled_tiers` +
+    `&fields[user]=full_name` +
+    `&page[size]=${PAGE_SIZE}`;
 
   const fetchPage = async (url: string) => {
     console.log("Fetching: " + url);
@@ -131,7 +137,7 @@ const fetchPatrons = async (): Promise<LatestPatrons> => {
 
     if (res.links?.next) {
       // Wait 8 seconds between API calls to prevent API limits being hit in CI/CD
-      await new Promise((resolve) => setTimeout(resolve, 8000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       await fetchPage(res.links.next);
     }
   };

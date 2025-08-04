@@ -12,7 +12,7 @@ interface CopyOptions {
 const copyFile = async (
   src: string,
   dest: string,
-  options: CopyOptions = {}
+  options: CopyOptions = {},
 ) => {
   const { overwrite = true, errorOnExist = false, mode, ignore } = options;
   if (ignore?.(src)) {
@@ -51,7 +51,7 @@ const copyFile = async (
 const copyDir = async (
   src: string,
   dest: string,
-  options: CopyOptions = {}
+  options: CopyOptions = {},
 ) => {
   const { ignore } = options;
   if (ignore?.(src)) {

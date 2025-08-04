@@ -17,6 +17,7 @@ import {
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SingleValue } from "react-select";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;
@@ -29,10 +30,18 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   optionalLabel?: string;
 }
 
+interface SpriteSheetOption extends Option {
+  spriteMode?: SpriteModeSetting;
+}
+
+interface SpriteSheetOptGroup extends OptGroup {
+  options: SpriteSheetOption[];
+}
+
 const buildOptions = (
-  memo: OptGroup[],
+  memo: SpriteSheetOptGroup[],
   plugin: string | undefined,
-  spriteSheets: SpriteSheetNormalized[]
+  spriteSheets: SpriteSheetNormalized[],
 ) => {
   memo.push({
     label: plugin ? plugin : "",
@@ -40,6 +49,7 @@ const buildOptions = (
       return {
         value: spriteSheet.id,
         label: spriteSheet.name,
+        spriteMode: spriteSheet.spriteMode,
       };
     }),
   });
@@ -56,7 +66,10 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   ...selectProps
 }) => {
   const spriteSheets = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] =
@@ -66,7 +79,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   useEffect(() => {
     const filteredSpriteSheets = spriteSheets.filter(filter || (() => true));
     const plugins = uniq(
-      filteredSpriteSheets.map((s) => s.plugin || "")
+      filteredSpriteSheets.map((s) => s.plugin || ""),
     ).sort();
     const options = plugins.reduce(
       (memo, plugin) => {
@@ -74,8 +87,8 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
           memo,
           plugin,
           filteredSpriteSheets.filter((s) =>
-            plugin ? s.plugin === plugin : !s.plugin
-          )
+            plugin ? s.plugin === plugin : !s.plugin,
+          ),
         );
         return memo;
       },
@@ -86,7 +99,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
               options: [{ value: "", label: optionalLabel || "None" }],
             },
           ] as OptGroup[])
-        : ([] as OptGroup[])
+        : ([] as OptGroup[]),
     );
 
     setOptions(options);
@@ -121,7 +134,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
       value={currentValue}
       options={options}
       onChange={onSelectChange}
-      formatOptionLabel={(option: Option) => {
+      formatOptionLabel={(option: SpriteSheetOption) => {
         return (
           <OptionLabelWithPreview
             preview={
@@ -130,6 +143,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 direction={direction}
                 frame={frame}
               />
+            }
+            info={
+              option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""
             }
           >
             <FormatFolderLabel label={option.label} />

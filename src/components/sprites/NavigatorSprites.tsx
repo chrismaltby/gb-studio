@@ -46,6 +46,7 @@ import {
   FileSystemNavigatorItem,
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -106,6 +107,10 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
   hover: <ArrowJumpIcon />,
 };
 
+const SpriteModeLabel = styled.span`
+  opacity: 0.5;
+`;
+
 export const NavigatorSprites = ({
   height,
   selectedId,
@@ -126,16 +131,19 @@ export const NavigatorSprites = ({
     AnimationNavigatorItem[]
   >([]);
   const allSprites = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state)
+    spriteSheetSelectors.selectAll(state),
   );
   const spritesLookup = useAppSelector((state) =>
-    spriteSheetSelectors.selectEntities(state)
+    spriteSheetSelectors.selectEntities(state),
   );
   const spriteStatesLookup = useAppSelector((state) =>
-    spriteStateSelectors.selectEntities(state)
+    spriteStateSelectors.selectEntities(state),
   );
   const spriteAnimationsLookup = useAppSelector((state) =>
-    spriteAnimationSelectors.selectEntities(state)
+    spriteAnimationSelectors.selectEntities(state),
+  );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
   );
   const selectedAnimationId =
     useAppSelector((state) => state.editor.selectedAnimationId) || "group";
@@ -163,7 +171,7 @@ export const NavigatorSprites = ({
 
   const nestedSpriteItems = useMemo(
     () => buildAssetNavigatorItems(allSprites, openFolders, spritesSearchTerm),
-    [allSprites, openFolders, spritesSearchTerm]
+    [allSprites, openFolders, spritesSearchTerm],
   );
 
   const dispatch = useAppDispatch();
@@ -200,12 +208,12 @@ export const NavigatorSprites = ({
           filterAnimationsBySpriteType(
             state.animations,
             state.animationType,
-            state.flipLeft
+            state.flipLeft,
           ).forEach((id, index) => {
             const animType = getAnimationTypeByIndex(
               state.animationType,
               state.flipLeft,
-              index
+              index,
             );
             list.push({
               id: `${state.id}_${id}`,
@@ -234,7 +242,7 @@ export const NavigatorSprites = ({
     (id: string) => {
       dispatch(editorActions.setSelectedSpriteSheetId(id));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setSelectAnimationId = useCallback(
@@ -243,10 +251,10 @@ export const NavigatorSprites = ({
         editorActions.setSelectedAnimationId({
           animationId: item.animationId,
           stateId: item.stateId,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const highlightAnimationId =
@@ -265,7 +273,7 @@ export const NavigatorSprites = ({
   useEffect(() => {
     if (spriteAnimations.length > 0) {
       const selected = spriteAnimations.find(
-        (a) => a.id === selectedNavigationId
+        (a) => a.id === selectedNavigationId,
       );
       // If selected sprite animation is hidden
       // reset sub navigation to select root of state
@@ -276,7 +284,7 @@ export const NavigatorSprites = ({
             editorActions.setSelectedAnimationId({
               animationId: "",
               stateId: selectedStateId,
-            })
+            }),
           );
         }
       }
@@ -289,10 +297,10 @@ export const NavigatorSprites = ({
       dispatch(
         entitiesActions.addSpriteState({
           spriteSheetId: viewId,
-        })
+        }),
       );
     },
-    [dispatch, viewId]
+    [dispatch, viewId],
   );
 
   const [renameId, setRenameId] = useState("");
@@ -303,7 +311,7 @@ export const NavigatorSprites = ({
         setRenameId(selectedId);
       }
     },
-    [selectedId]
+    [selectedId],
   );
 
   const onRenameSpriteComplete = useCallback(
@@ -313,12 +321,12 @@ export const NavigatorSprites = ({
           projectActions.renameSpriteAsset({
             spriteSheetId: renameId,
             newFilename: stripInvalidPathCharacters(name),
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameStateComplete = useCallback(
@@ -330,12 +338,12 @@ export const NavigatorSprites = ({
             changes: {
               name,
             },
-          })
+          }),
         );
       }
       setRenameId("");
     },
-    [dispatch, renameId]
+    [dispatch, renameId],
   );
 
   const onRenameCancel = useCallback(() => {
@@ -355,7 +363,7 @@ export const NavigatorSprites = ({
             dispatch(
               projectActions.removeSpriteAsset({
                 spriteSheetId: item.id,
-              })
+              }),
             )
           }
         >
@@ -363,7 +371,7 @@ export const NavigatorSprites = ({
         </MenuItem>,
       ];
     },
-    [dispatch]
+    [dispatch],
   );
 
   const renderStateContextMenu = useCallback(
@@ -380,7 +388,7 @@ export const NavigatorSprites = ({
               entitiesActions.removeSpriteState({
                 spriteSheetId: viewId,
                 spriteStateId: item.id,
-              })
+              }),
             )
           }
         >
@@ -388,7 +396,7 @@ export const NavigatorSprites = ({
         </MenuItem>,
       ];
     },
-    [dispatch, viewId]
+    [dispatch, viewId],
   );
 
   const renderLabel = useCallback(
@@ -398,9 +406,25 @@ export const NavigatorSprites = ({
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
         );
       }
+      const spriteModeLabel =
+        item.asset?.spriteMode !== defaultSpriteMode
+          ? item.asset?.spriteMode
+          : "";
+
+      if (spriteModeLabel) {
+        return (
+          <FlexRow>
+            <FlexGrow style={{ overflow: "hidden", flexShrink: 0 }}>
+              {item.name}
+            </FlexGrow>
+            <SpriteModeLabel>{spriteModeLabel}</SpriteModeLabel>
+          </FlexRow>
+        );
+      }
+
       return item.filename;
     },
-    [toggleFolderOpen]
+    [defaultSpriteMode, toggleFolderOpen],
   );
 
   const showSpritesSearch = spritesSearchEnabled && splitSizes[0] > 60;

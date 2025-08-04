@@ -3,8 +3,8 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_HIDE_SPRITES";
 const groups = ["EVENT_GROUP_ACTOR"];
 const subGroups = {
-  "EVENT_GROUP_ACTOR": "EVENT_GROUP_VISIBILITY"
-}
+  EVENT_GROUP_ACTOR: "EVENT_GROUP_VISIBILITY",
+};
 
 const fields = [
   {

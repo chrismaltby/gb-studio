@@ -19,14 +19,14 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 
 export const customEventVariableName = (
   variable: string,
-  customEvent: CustomEventNormalized
+  customEvent: CustomEventNormalized,
 ): string => {
   const customEventVariable = customEvent.variables[`V${variable}`];
   if (customEventVariable) {
     return customEventVariable.name;
   }
   const letter = String.fromCharCode(
-    "A".charCodeAt(0) + parseInt(variable, 10)
+    "A".charCodeAt(0) + parseInt(variable, 10),
   );
   return `Variable ${letter}`;
 };
@@ -42,7 +42,7 @@ export const customEventVariableCode = (variable: string) => {
 export const localVariableName = (
   variable: string,
   entityId: string,
-  variablesLookup: VariablesLookup
+  variablesLookup: VariablesLookup,
 ) => {
   return (
     variablesLookup[`${entityId}__L${variable}`]?.name || `Local ${variable}`
@@ -71,7 +71,7 @@ export const tempVariableCode = (variable: string) => {
 
 export const globalVariableName = (
   variable: string,
-  variablesLookup: VariablesLookup
+  variablesLookup: VariablesLookup,
 ) => {
   return variablesLookup[variable]?.name || globalVariableDefaultName(variable);
 };

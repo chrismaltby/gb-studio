@@ -6,7 +6,7 @@ const collisonTileCache: Record<string, HTMLCanvasElement> = {};
 
 export const renderCollisionTileIcon = (
   icon: string,
-  color: string
+  color: string,
 ): HTMLCanvasElement => {
   const key = `${color}:${icon}`;
 
@@ -59,11 +59,22 @@ export const renderCollisionTileIcon = (
 
 export const isCollisionTileActive = (
   value: number,
-  tileDef: CollisionTileDef
+  tileDef: CollisionTileDef,
+  tileDefs: CollisionTileDef[],
 ): boolean => {
   const mask = tileDef.mask || 0xff;
   const maskedValue = value & mask;
-  if (tileDef.multi) {
+  const exactMatch = tileDefs.find(
+    (td) => td.flag === (value & (td.mask ?? 0xff)),
+  );
+
+  if (tileDef === exactMatch) {
+    // Exact match found and this is that tile
+    return true;
+  } else if (exactMatch) {
+    // Exact match found but it wasn't this tile
+    return false;
+  } else if (tileDef.multi) {
     return (
       // Full mask not selected
       maskedValue !== mask &&

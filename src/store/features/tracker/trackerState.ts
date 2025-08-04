@@ -83,7 +83,7 @@ const trackerSlice = createSlice({
     },
     setDefaultInstruments: (
       state,
-      _action: PayloadAction<[number, number, number, number]>
+      _action: PayloadAction<[number, number, number, number]>,
     ) => {
       state.defaultInstruments = _action.payload;
     },
@@ -103,7 +103,7 @@ const trackerSlice = createSlice({
     },
     setDefaultStartPlaybackPosition: (
       state,
-      _action: PayloadAction<[number, number]>
+      _action: PayloadAction<[number, number]>,
     ) => {
       state.startPlaybackPosition = _action.payload;
       state.defaultStartPlaybackPosition = _action.payload;

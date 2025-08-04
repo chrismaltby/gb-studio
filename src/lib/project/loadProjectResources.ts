@@ -41,7 +41,7 @@ const CONCURRENT_RESOURCE_LOAD_COUNT = 8;
 
 const sortByIndex = (
   a: { data: { _index: number } },
-  b: { data: { _index: number } }
+  b: { data: { _index: number } },
 ) => {
   if (a.data._index < b.data._index) {
     return -1;
@@ -85,12 +85,12 @@ interface ResourceLookup {
 
 export const loadProjectResources = async (
   projectRoot: string,
-  metadataResource: ProjectMetadataResource
+  metadataResource: ProjectMetadataResource,
 ): Promise<CompressedProjectResources> => {
   const projectResources = naturalSortPaths(
     await globAsync(
-      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres")
-    )
+      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres"),
+    ),
   );
 
   const resources = (
@@ -107,7 +107,7 @@ export const loadProjectResources = async (
           console.error("Failed to load resource: " + projectResourcePath);
           return undefined;
         }
-      })
+      }),
     )
   ).filter(identity) as RawResource[];
 
@@ -134,7 +134,7 @@ export const loadProjectResources = async (
   const cast =
     <T extends TSchema, D extends MinimalResource>(
       schema: T,
-      arr: ResourceWithPath<Static<T>>[]
+      arr: ResourceWithPath<Static<T>>[],
     ) =>
     ({ path, data }: { path: string; data: D }): boolean => {
       if (data._resourceType === schema?.properties?._resourceType?.const) {
@@ -150,7 +150,7 @@ export const loadProjectResources = async (
   const partial =
     <T extends TSchema, D extends MinimalResource>(
       schema: T,
-      arr: ResourceWithPath<Partial<Static<T>>>[]
+      arr: ResourceWithPath<Partial<Static<T>>>[],
     ) =>
     ({ path, data }: { path: string; data: D }): boolean => {
       if (data._resourceType === schema?.properties?._resourceType?.const) {
@@ -221,7 +221,7 @@ export const loadProjectResources = async (
     (row) => {
       const triggerFolderIndex = row.path.lastIndexOf(triggerSubFolder);
       return row.path.substring(0, triggerFolderIndex);
-    }
+    },
   );
 
   const extractData = <T>(value: { data: T }): T => value.data;
@@ -235,7 +235,7 @@ export const loadProjectResources = async (
         ...row.data,
         actors: (actorsBySceneFolderLookup[sceneDir] ?? []).map(extractData),
         triggers: (triggersBySceneFolderLookup[sceneDir] ?? []).map(
-          extractData
+          extractData,
         ),
       };
     });
@@ -263,7 +263,7 @@ export const loadProjectResources = async (
         ...resource.data,
       };
     },
-    { _resourceType: "settings", ...defaultProjectSettings }
+    { _resourceType: "settings", ...defaultProjectSettings },
   );
 
   return {

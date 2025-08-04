@@ -1,4 +1,7 @@
-import type { ScriptEditorCtxType } from "shared/lib/resources/types";
+import type {
+  SpriteModeSetting,
+  ScriptEditorCtxType,
+} from "shared/lib/resources/types";
 
 export type EntityType =
   | "scene"
@@ -19,7 +22,7 @@ export type ScriptEditorCtx = {
 };
 
 export const defaultVariableForContext = (
-  context: ScriptEditorCtxType
+  context: ScriptEditorCtxType,
 ): string => {
   if (context === "script") {
     return "V0";
@@ -29,4 +32,8 @@ export const defaultVariableForContext = (
   } else {
     return "0";
   }
+};
+
+export type SceneCtx = {
+  spriteMode?: SpriteModeSetting;
 };
