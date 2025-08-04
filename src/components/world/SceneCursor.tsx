@@ -685,7 +685,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         for (let xi = x; xi < x + brushSize; xi++) {
           for (let yi = y; yi < y + brushSize; yi++) {
             const collisionIndex = scene.width * yi + xi;
-            const currentTileOverlap = scene.collisions[collisionIndex] & selectedTileMask;
+            const currentTileOverlap =
+              scene.collisions[collisionIndex] & selectedTileMask;
             if (currentTileOverlap === (selectedTileType & selectedTileMask)) {
               data.current.drawTile = 0;
             } else {

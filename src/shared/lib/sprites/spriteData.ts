@@ -93,7 +93,18 @@ export const removeIndexedImageMask = (
     for (let x = 0; x < inWidth; x++) {
       const drawIndex = toIndex(x, y, inData);
       const maskIndex = toIndex(x + offsetX, y + offsetY, maskData);
-      if (maskData.data[maskIndex] !== Color.Transparent) {
+      const maskX = x + offsetX;
+      const maskY = y + offsetY;
+      if (
+        maskX < 0 ||
+        maskY < 0 ||
+        maskX >= maskData.width ||
+        maskY >= maskData.height
+      ) {
+        // Mark tile data outside of canvas bounds as unknown
+        output.data[drawIndex] = Color.Unknown;
+      } else if (maskData.data[maskIndex] !== Color.Transparent) {
+        // Mark occluded tile data as unknown
         output.data[drawIndex] = Color.Unknown;
       }
     }

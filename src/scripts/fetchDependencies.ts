@@ -1,4 +1,4 @@
-import { remove, writeFile } from "fs-extra";
+import { remove, writeFile, ensureDir } from "fs-extra";
 import Path from "path";
 import AdmZip from "adm-zip";
 import spawn from "../../src/lib/helpers/cli/spawn";
@@ -62,27 +62,36 @@ const extractTarGz = async (
   archivePath: string,
   outputDir: string,
 ): Promise<void> => {
+  console.log(`Extract tar to "${outputDir}"`);
   const res = spawn("tar", ["-zxf", archivePath, "-C", outputDir], {}, {});
   await res.completed;
+  console.log("✅ Done");
 };
 
 const extractZip = async (
   archivePath: string,
   outputDir: string,
 ): Promise<void> => {
+  console.log(`Extract zip to "${outputDir}"`);
   const zip = new AdmZip(archivePath);
   await zip.extractAllTo(outputDir, true);
+  console.log("✅ Done");
 };
 
 export const fetchGBDKDependency = async (arch: Arch) => {
+  console.log(`Fetching GBDK for arch=${arch}`);
   const { url, type } = dependencies[arch].gbdk;
+  console.log(`URL=${url}`);
+
   const response = await fetch(url);
   const buffer = await response.arrayBuffer(); // Get a Buffer from the response
   const data = Buffer.from(buffer);
   const tmpPath = Path.join(buildToolsRoot, "tmp.data");
   await writeFile(tmpPath, data);
+  console.log(`Written to "${tmpPath}"`);
 
   const gbdkArchPath = Path.join(buildToolsRoot, arch);
+  await ensureDir(gbdkArchPath);
 
   if (type === "targz") {
     await extractTarGz(tmpPath, gbdkArchPath);
@@ -94,6 +103,7 @@ export const fetchGBDKDependency = async (arch: Arch) => {
 };
 
 const main = async () => {
+  await ensureDir(buildToolsRoot);
   for (const arch of archs) {
     if (fetchAll || arch === fetchArch) {
       await fetchGBDKDependency(arch);
@@ -101,4 +111,6 @@ const main = async () => {
   }
 };
 
-main();
+main().catch((e) => {
+  console.error(`❌ Error: `, e);
+});

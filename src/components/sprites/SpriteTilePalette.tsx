@@ -9,6 +9,9 @@ import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetPath, assetURL } from "shared/lib/helpers/assets";
+import MetaspriteGrid, {
+  generateGridBackground,
+} from "components/sprites/MetaspriteGrid";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -292,7 +295,9 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
             <img
               style={{
                 imageRendering: "pixelated",
-                minWidth: width * zoom,
+                display: "block",
+                width: width * zoom,
+                height: height * zoom,
               }}
               alt={spriteSheet.name}
               src={spriteURL}
@@ -304,24 +309,14 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
                 left: 0,
                 width: width * zoom,
                 height: height * zoom,
-                border: `${1 / zoom}px solid #d4d4d4`,
+                outline: `1px solid #079f1c`,
                 backgroundSize: `${8 * zoom}px ${8 * zoom}px`,
-                backgroundImage:
-                  zoom >= 8
-                    ? `linear-gradient(to right, 
-          #079f1c 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef ${
-            spriteMode === "8x8" ? "8px" : "16px"
-          }, transparent ${
-            spriteMode === "8x8" ? "8px" : "16px"
-          }, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
-          ), linear-gradient(to bottom, 
-          #079f1c 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef ${
-            spriteMode === "8x8" ? "8px" : "16px"
-          }, transparent ${
-            spriteMode === "8x8" ? "8px" : "16px"
-          }, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
-          )`
-                    : "linear-gradient(to right, rgba(0,220,0,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,220,0,0.5) 1px, transparent 1px)",
+                backgroundImage: generateGridBackground(
+                  zoom,
+                  "#32cb46",
+                  "#079f1c",
+                ),
+                opacity: 0.5,
               }}
             />
             {hoverTile && !isDragging && (

@@ -22,6 +22,7 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_READ_DESC"),
     key: "engineFieldKey",
+    defaultValue: "LAST_ENGINE_FIELD",
   },
   {
     key: "value",

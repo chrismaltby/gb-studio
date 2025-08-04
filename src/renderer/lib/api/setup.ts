@@ -330,7 +330,7 @@ const APISetup = {
   sprite: {
     compileSprite: (
       spriteData: SpriteSheetData,
-      defaultSpriteMode: SpriteModeSetting
+      defaultSpriteMode: SpriteModeSetting,
     ): Promise<PrecompiledSpriteSheetData> =>
       ipcRenderer.invoke("sprite:compile", spriteData, defaultSpriteMode),
   },

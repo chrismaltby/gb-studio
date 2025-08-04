@@ -48,6 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for setting per scene camera bounds, constraining the min/max scrollable area
 - Add a "Set Camera Bounds" event to allow scripts to adjust min/max scroll limits at runtime
 - Add ability to set Sprite Mode, allowing 8x8 tiles to be used (previously only 8x16 were supported). Sprite Mode can be set globally in Settings and overridden per scene or sprite using the sidebar dropdown. Note that all sprites within a scene must use the same mode as the scene itself.
+- Add ability for Engine Fields to be used anywhere that script values are supported
+- Add zoom level 1600 when viewing assets
+- Add "If Engine Field Compare With Value/Variable" events
 
 ### Changed
 
@@ -105,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix overflow warning when using "Fixed Position" parallax layers
 - Fix issue where referenced tilesets from event plugins were not always being included in the built project [@Mico27](https://github.com/Mico27)
 - Fix issue where mask values were not being used correctly while painting collisions tiles [@Mico27](https://github.com/Mico27)
+- Fix issue where sprites with a canvas size of 8px wide would have first four pixels set as transparent
 
 ## [4.1.3] - 2024-09-16
 

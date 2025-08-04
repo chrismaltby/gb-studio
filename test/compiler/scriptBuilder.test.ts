@@ -1,3 +1,4 @@
+import { precompileScriptValue } from "shared/lib/scriptValue/helpers";
 import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
@@ -8,6 +9,7 @@ import {
 } from "../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
+  dummyEngineFieldSchema,
   dummyPrecompiledBackground,
   dummyPrecompiledSpriteSheet,
   getDummyCompiledFont,
@@ -4030,5 +4032,237 @@ describe("cameraSetBoundsToScriptValues", () => {
     expect(script).toContain("VAR_VARIABLE_16"); // From "$16$"
     expect(script).toContain("VAR_VARIABLE_17"); // From "$17$"
     expect(script).toContain("VAR_VARIABLE_18"); // From "$18$"
+  });
+});
+
+describe("ScriptValue to RPN", () => {
+  const extractRPN = (script: string): string[] => {
+    return script
+      .replace(/[\S\s]*VM_RPN\n([\S\s]*)\n.*.R_STOP[\S\s]*/g, "$1")
+      .split("\n")
+      .map((l) => l.trim());
+  };
+  test("Should convert number values to RPN calls", async () => {
+    const { sb } = await createTestScriptBuilder();
+    const scriptValue = {
+      type: "number",
+      value: 42,
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([".R_INT16    42"]);
+    expect(fetchOps).toBeEmpty();
+  });
+
+  test("Should convert variables to RPN calls", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          "0": {
+            id: "0",
+            name: "My Var",
+            symbol: "var_myvar",
+          },
+        },
+      },
+    );
+    const scriptValue = {
+      type: "variable",
+      value: "0",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([".R_REF      VAR_MYVAR"]);
+    expect(fetchOps).toBeEmpty();
+  });
+
+  test("Should convert math operations to RPN calls", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          "0": {
+            id: "0",
+            name: "My Var",
+            symbol: "var_myvar",
+          },
+        },
+      },
+    );
+    const scriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 42,
+      },
+      valueB: {
+        type: "variable",
+        value: "0",
+      },
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([
+      ".R_INT16    42",
+      ".R_REF      VAR_MYVAR",
+      ".R_OPERATOR .ADD",
+    ]);
+    expect(fetchOps).toBeEmpty();
+  });
+
+  test("Should fetch player x position", async () => {
+    const { sb } = await createTestScriptBuilder();
+    const scriptValue = {
+      type: "property",
+      target: "player",
+      property: "xpos",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(/VM_ACTOR_GET_POS {8}.LOCAL_TMP0_ACTOR_POS/);
+    expect(extractRPN(script)).toMatchObject([
+      ".R_REF      ^/(.LOCAL_TMP0_ACTOR_POS + 1)/",
+      ".R_INT16    8",
+      ".R_OPERATOR .SHR",
+    ]);
+    expect(fetchOps).toHaveLength(1);
+  });
+
+  test("Should fetch actor y position", async () => {
+    const { sb } = await createTestScriptBuilder({
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
+    });
+    const scriptValue = {
+      type: "property",
+      target: "actor1",
+      property: "ypos",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toMatch(/VM_SET_CONST {12}.LOCAL_TMP0_ACTOR_POS, 1/);
+    expect(script).toMatch(/VM_ACTOR_GET_POS {8}.LOCAL_TMP0_ACTOR_POS/);
+    expect(extractRPN(script)).toMatchObject([
+      ".R_REF      ^/(.LOCAL_TMP0_ACTOR_POS + 2)/",
+      ".R_INT16    8",
+      ".R_OPERATOR .SHR",
+    ]);
+    expect(fetchOps).toHaveLength(1);
+  });
+
+  test("Should fetch WORD engine field", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        engineFields: {
+          myfield: {
+            ...dummyEngineFieldSchema,
+            key: "myfield",
+            cType: "WORD",
+          },
+        },
+      },
+    );
+    const scriptValue = {
+      type: "engineField",
+      value: "myfield",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([
+      ".R_REF_MEM  .MEM_I16, _myfield",
+    ]);
+    expect(fetchOps).toHaveLength(1);
+  });
+
+  test("Should fetch BYTE/UBYTE engine field", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        engineFields: {
+          myfieldu8: {
+            ...dummyEngineFieldSchema,
+            key: "myfieldu8",
+            cType: "UBYTE",
+          },
+          myfieldi8: {
+            ...dummyEngineFieldSchema,
+            key: "myfieldi8",
+            cType: "BYTE",
+          },
+        },
+      },
+    );
+    const scriptValue = {
+      type: "add",
+      valueA: {
+        type: "engineField",
+        value: "myfieldu8",
+      },
+      valueB: {
+        type: "engineField",
+        value: "myfieldi8",
+      },
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([
+      ".R_REF_MEM  .MEM_U8, _myfieldu8",
+      ".R_REF_MEM  .MEM_I8, _myfieldi8",
+      ".R_OPERATOR .ADD",
+    ]);
+    expect(fetchOps).toHaveLength(2);
+  });
+
+  test("Should fallback to 0 for missing engine field", async () => {
+    const { sb } = await createTestScriptBuilder();
+    const scriptValue = {
+      type: "engineField",
+      value: "missingfield",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([".R_INT16    0"]);
+    expect(fetchOps).toHaveLength(1);
   });
 });
