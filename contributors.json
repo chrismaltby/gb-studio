@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5049
+    "contributions": 5061
   },
   {
     "login": "pau-tomas",
@@ -41,7 +41,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 391
+    "contributions": 393
   },
   {
     "login": "RichardULZ",
@@ -129,7 +129,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 46
+    "contributions": 47
   },
   {
     "login": "thomas-alrek",
@@ -346,6 +346,28 @@
     "repos_url": "https://api.github.com/users/juliusl/repos",
     "events_url": "https://api.github.com/users/juliusl/events{/privacy}",
     "received_events_url": "https://api.github.com/users/juliusl/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false,
+    "contributions": 10
+  },
+  {
+    "login": "KosmusSoares",
+    "id": 59371941,
+    "node_id": "MDQ6VXNlcjU5MzcxOTQx",
+    "avatar_url": "https://avatars.githubusercontent.com/u/59371941?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/KosmusSoares",
+    "html_url": "https://github.com/KosmusSoares",
+    "followers_url": "https://api.github.com/users/KosmusSoares/followers",
+    "following_url": "https://api.github.com/users/KosmusSoares/following{/other_user}",
+    "gists_url": "https://api.github.com/users/KosmusSoares/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/KosmusSoares/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/KosmusSoares/subscriptions",
+    "organizations_url": "https://api.github.com/users/KosmusSoares/orgs",
+    "repos_url": "https://api.github.com/users/KosmusSoares/repos",
+    "events_url": "https://api.github.com/users/KosmusSoares/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/KosmusSoares/received_events",
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
