@@ -13,7 +13,7 @@
   "CONSTANT": "Constante",
 
   "// 2": "Navigator ------------------------------------------------",
-  
+
   "NAV_GAME_WORLD": "Área do Jogo",
   "NAV_SPRITES": "Sprites",
   "NAV_BACKGROUNDS": "Imagens de Fundo",
@@ -27,7 +27,7 @@
   "NAV_IMAGES": "Imagens",
 
   "// 3": "Toolbar --------------------------------------------------",
-  
+
   "TOOLBAR_MODIFIED": "Modificado",
   "TOOLBAR_ZOOM_IN": "Ampliar Zoom",
   "TOOLBAR_ZOOM_OUT": "Reduzir Zoom",
@@ -44,7 +44,7 @@
   "TOOLBAR_WRITING_FILES": "Escrevendo no Disco",
 
   "// 4": "Tools ----------------------------------------------------",
-  
+
   "TOOL_SELECT_LABEL": "Selecionar",
   "TOOL_ADD_LABEL": "Adicionar",
   "TOOL_ADD_ACTOR_LABEL": "Adicionar Ator",
@@ -69,7 +69,7 @@
   "TOOL_SLOPE": "Pincel de Rampas",
 
   "// 5": "Editors --------------------------------------------------",
-  
+
   "SIDEBAR_NAVIGATION": "Navegação",
   "SIDEBAR_STARTING_SCENE": "Cena Inicial",
   "SIDEBAR_SCENE_START_SCRIPT": "Script Inicial da Cena",
@@ -102,7 +102,7 @@
   "SIDEBAR_CONSTANT_USES": "Usos da Constante",
 
   "// 6": "Form Fields ----------------------------------------------",
-  
+
   "FIELD_NAME": "Nome",
   "FIELD_DESCRIPTION": "Descrição",
   "FIELD_AUTHOR": "Autor",
@@ -1006,13 +1006,13 @@
   "FIELD_SET_COLOR_MODE_OVERRIDE": "Definir Substituição do Modo de Cor",
 
   "// 7": "Asset Viewer ---------------------------------------------",
-  
+
   "ASSET_SEARCH": "Procurar...",
   "ASSET_EDIT": "Editar",
   "ASSET_ADD": "Adicionar",
 
   "// 8": "Build ----------------------------------------------------",
-  
+
   "BUILD_RUN": "Executar",
   "BUILD_EXPORT_ROM": "Exportar ROM",
   "BUILD_EXPORT_WEB": "Exportar para Web",
@@ -1024,7 +1024,7 @@
   "BUILD_CANCELLED": "Compilação Cancelada",
 
   "// 9": "Scripting Events -----------------------------------------",
-  
+
   "EVENT_GROUP_ACTOR": "Ator",
   "EVENT_GROUP_CAMERA": "Câmera",
   "EVENT_GROUP_CONTROL_FLOW": "Fluxo de Controle",
