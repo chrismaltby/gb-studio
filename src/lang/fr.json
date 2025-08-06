@@ -753,7 +753,7 @@
   "FIELD_BREAKPOINTS": "Points d’arrêt",
   "FIELD_BREAKPOINT": "Point d’arrêt",
   "FIELD_DEBUGGER_NOT_CONNECTED": "Débogueur non connecté",
-  "FIELD_START_DEBUGGER": "Démarrer le débogueur",
+  "FIELD_START_DEBUGGER": "Exécuter le débogueur",
   "FIELD_BUILDING": "Compilation…",
   "FIELD_ALL": "Toutes",
   "FIELD_WATCHED": "Surveillées",
