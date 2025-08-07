@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5061
+    "contributions": 5063
   },
   {
     "login": "pau-tomas",
@@ -85,7 +85,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 68
+    "contributions": 69
   },
   {
     "login": "marcosecchi",
@@ -129,7 +129,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 47
+    "contributions": 49
   },
   {
     "login": "thomas-alrek",
