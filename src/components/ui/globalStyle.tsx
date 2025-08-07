@@ -124,6 +124,10 @@ const GlobalStyle = createGlobalStyle`
     background: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
+  body .CustomSelect__input-container {
+    color: ${(props) => props.theme.colors.input.text};
+  }
+
   .label--red {
     background: #e20e2b;
   }

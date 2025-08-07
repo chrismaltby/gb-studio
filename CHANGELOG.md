@@ -111,6 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where referenced tilesets from event plugins were not always being included in the built project [@Mico27](https://github.com/Mico27)
 - Fix issue where mask values were not being used correctly while painting collisions tiles [@Mico27](https://github.com/Mico27)
 - Fix issue where sprites with a canvas size of 8px wide would have first four pixels set as transparent
+- Fix issue where input text in dropdown search fields was unreadable in dark themes
 
 ## [4.1.3] - 2024-09-16
 
