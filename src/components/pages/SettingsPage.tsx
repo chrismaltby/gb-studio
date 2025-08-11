@@ -92,6 +92,7 @@ const SettingsPage: FC = () => {
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
     openBuildFolderOnExport,
+    showRomUsageAfterBuild,
     compilerPreset,
     spriteMode,
   } = settings;
@@ -175,6 +176,12 @@ const SettingsPage: FC = () => {
   const onChangeOpenBuildFolderOnExport = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("openBuildFolderOnExport", castEventToBool(e)),
+    [onChangeSettingProp],
+  );
+
+  const onChangeShowRomUsageAfterBuild = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("showRomUsageAfterBuild", castEventToBool(e)),
     [onChangeSettingProp],
   );
 
@@ -800,6 +807,23 @@ const SettingsPage: FC = () => {
                 name="openBuildFolderOnExport"
                 checked={openBuildFolderOnExport}
                 onChange={onChangeOpenBuildFolderOnExport}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="showRomUsageAfterBuild"
+                name="showRomUsageAfterBuild"
+                checked={showRomUsageAfterBuild}
+                onChange={onChangeShowRomUsageAfterBuild}
               />
             </SettingRowInput>
           </SearchableSettingRow>

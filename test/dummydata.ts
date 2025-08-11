@@ -368,6 +368,7 @@ export const dummyProjectData: ProjectData = {
     runSceneSelectionOnly: false,
     spriteMode: "8x16",
     openBuildFolderOnExport: true,
+    showRomUsageAfterBuild: false,
   },
 };
 
@@ -647,6 +648,7 @@ export const dummySettingsResource: SettingsResource = {
   runSceneSelectionOnly: false,
   spriteMode: "8x16",
   openBuildFolderOnExport: true,
+  showRomUsageAfterBuild: false,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -770,6 +772,7 @@ export const dummyProjectResources: ProjectResources = {
     runSceneSelectionOnly: false,
     spriteMode: "8x16",
     openBuildFolderOnExport: true,
+    showRomUsageAfterBuild: false,
   },
 };
 
