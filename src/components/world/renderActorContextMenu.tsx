@@ -17,6 +17,7 @@ const renderActorContextMenu = ({
   onRename,
   dispatch,
 }: ActorContextMenuProps) => {
+
   return [
     ...(onRename
       ? [
@@ -26,6 +27,23 @@ const renderActorContextMenu = ({
           <MenuDivider key="div-rename" />,
         ]
       : []),
+	<MenuItem key="move-top" onClick={() =>
+        dispatch(entitiesActions.moveActorIndexTop({ sceneId, actorId }))}>
+      {l10n("FIELD_MOVETOP")}
+    </MenuItem>,
+	<MenuItem key="move-up" onClick={() =>
+        dispatch(entitiesActions.moveActorIndexUp({ sceneId, actorId }))}>
+      {l10n("FIELD_MOVEUP")}
+    </MenuItem>,
+	<MenuItem key="move-down" onClick={() =>
+        dispatch(entitiesActions.moveActorIndexDown({ sceneId, actorId }))}>
+      {l10n("FIELD_MOVEDOWN")}
+    </MenuItem>,
+	<MenuItem key="move-bottom" onClick={() =>
+        dispatch(entitiesActions.moveActorIndexBottom({ sceneId, actorId }))}>
+      {l10n("FIELD_MOVEBOTTOM")}
+    </MenuItem>,
+    <MenuDivider key="div-move" />,
     <MenuItem
       key="delete"
       onClick={() =>
