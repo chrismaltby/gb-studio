@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add zoom level 1600 when viewing assets
 - Add "If Engine Field Compare With Value/Variable" events
 - Add setting in Build Options to determine if build folder should be opened after exporting game [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to reorder actors and triggers within a scene from context menus [@Mico27](https://github.com/Mico27)
 
 ### Changed
 
