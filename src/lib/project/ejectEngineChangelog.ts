@@ -880,6 +880,14 @@ const changes: EngineChange[] = [
       "src/states/pointnclick.c",
     ],
   },
+  {
+    version: "4.2.0-e11",
+    description: createDescription("Updates", [
+      "Fix issue causing scroll bounds to be ignored for scenes with width of 20 or height of 18 tiles",
+      "Add sizes and IDs into the save blob for easier crash analysis",
+    ]),
+    modifiedFiles: ["src/core/data_manager.c", "src/core/load_save.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
