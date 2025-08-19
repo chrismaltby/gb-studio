@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5064
+    "contributions": 5069
   },
   {
     "login": "pau-tomas",
@@ -41,7 +41,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 393
+    "contributions": 394
   },
   {
     "login": "RichardULZ",
@@ -396,6 +396,28 @@
     "contributions": 8
   },
   {
+    "login": "Mico27",
+    "id": 32064874,
+    "node_id": "MDQ6VXNlcjMyMDY0ODc0",
+    "avatar_url": "https://avatars.githubusercontent.com/u/32064874?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Mico27",
+    "html_url": "https://github.com/Mico27",
+    "followers_url": "https://api.github.com/users/Mico27/followers",
+    "following_url": "https://api.github.com/users/Mico27/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Mico27/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Mico27/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Mico27/subscriptions",
+    "organizations_url": "https://api.github.com/users/Mico27/orgs",
+    "repos_url": "https://api.github.com/users/Mico27/repos",
+    "events_url": "https://api.github.com/users/Mico27/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Mico27/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false,
+    "contributions": 7
+  },
+  {
     "login": "WAUthethird",
     "id": 17788745,
     "node_id": "MDQ6VXNlcjE3Nzg4NzQ1",
@@ -434,28 +456,6 @@
     "repos_url": "https://api.github.com/users/wcxu21/repos",
     "events_url": "https://api.github.com/users/wcxu21/events{/privacy}",
     "received_events_url": "https://api.github.com/users/wcxu21/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": false,
-    "contributions": 6
-  },
-  {
-    "login": "Mico27",
-    "id": 32064874,
-    "node_id": "MDQ6VXNlcjMyMDY0ODc0",
-    "avatar_url": "https://avatars.githubusercontent.com/u/32064874?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/Mico27",
-    "html_url": "https://github.com/Mico27",
-    "followers_url": "https://api.github.com/users/Mico27/followers",
-    "following_url": "https://api.github.com/users/Mico27/following{/other_user}",
-    "gists_url": "https://api.github.com/users/Mico27/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/Mico27/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/Mico27/subscriptions",
-    "organizations_url": "https://api.github.com/users/Mico27/orgs",
-    "repos_url": "https://api.github.com/users/Mico27/repos",
-    "events_url": "https://api.github.com/users/Mico27/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/Mico27/received_events",
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
