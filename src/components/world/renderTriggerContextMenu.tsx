@@ -17,7 +17,6 @@ const renderTriggerContextMenu = ({
   onRename,
   dispatch,
 }: TriggerContextMenuProps) => {
-  
   return [
     ...(onRename
       ? [
@@ -27,20 +26,36 @@ const renderTriggerContextMenu = ({
           <MenuDivider key="div-rename" />,
         ]
       : []),
-	<MenuItem key="move-top" onClick={() =>
-        dispatch(entitiesActions.moveTriggerIndexTop({ sceneId, triggerId }))}>
+    <MenuItem
+      key="move-top"
+      onClick={() =>
+        dispatch(entitiesActions.moveTriggerIndexTop({ sceneId, triggerId }))
+      }
+    >
       {l10n("FIELD_MOVE_TOP")}
     </MenuItem>,
-	<MenuItem key="move-up" onClick={() =>
-        dispatch(entitiesActions.moveTriggerIndexUp({ sceneId, triggerId }))}>
+    <MenuItem
+      key="move-up"
+      onClick={() =>
+        dispatch(entitiesActions.moveTriggerIndexUp({ sceneId, triggerId }))
+      }
+    >
       {l10n("FIELD_MOVE_UP")}
     </MenuItem>,
-	<MenuItem key="move-down" onClick={() =>
-        dispatch(entitiesActions.moveTriggerIndexDown({ sceneId, triggerId }))}>
+    <MenuItem
+      key="move-down"
+      onClick={() =>
+        dispatch(entitiesActions.moveTriggerIndexDown({ sceneId, triggerId }))
+      }
+    >
       {l10n("FIELD_MOVE_DOWN")}
     </MenuItem>,
-	<MenuItem key="move-bottom" onClick={() =>
-        dispatch(entitiesActions.moveTriggerIndexBottom({ sceneId, triggerId }))}>
+    <MenuItem
+      key="move-bottom"
+      onClick={() =>
+        dispatch(entitiesActions.moveTriggerIndexBottom({ sceneId, triggerId }))
+      }
+    >
       {l10n("FIELD_MOVE_BOTTOM")}
     </MenuItem>,
     <MenuDivider key="div-move" />,

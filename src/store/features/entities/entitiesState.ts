@@ -1149,10 +1149,9 @@ const editActor: CaseReducer<
   });
 };
 
-
 const moveActorIndexTop: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     actorId: string;
   }>
@@ -1161,20 +1160,20 @@ const moveActorIndexTop: CaseReducer<
   if (!scene) {
     return;
   }
-  const actorId = action.payload.actorId;  
+  const actorId = action.payload.actorId;
   const actors = [...scene.actors];
   const currentIndex = actors.indexOf(actorId);
   const newIndex = 0;
-  if (currentIndex != -1) {    
+  if (currentIndex != -1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
-  }  
+  }
   scene.actors = actors;
 };
 
 const moveActorIndexUp: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     actorId: string;
   }>
@@ -1183,20 +1182,20 @@ const moveActorIndexUp: CaseReducer<
   if (!scene) {
     return;
   }
-  const actorId = action.payload.actorId;  
+  const actorId = action.payload.actorId;
   const actors = [...scene.actors];
   const currentIndex = actors.indexOf(actorId);
   const newIndex = currentIndex - 1;
-  if (currentIndex > 0) {    
+  if (currentIndex > 0) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
-  }  
+  }
   scene.actors = actors;
 };
 
 const moveActorIndexDown: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     actorId: string;
   }>
@@ -1205,20 +1204,20 @@ const moveActorIndexDown: CaseReducer<
   if (!scene) {
     return;
   }
-  const actorId = action.payload.actorId;  
+  const actorId = action.payload.actorId;
   const actors = [...scene.actors];
   const currentIndex = actors.indexOf(actorId);
   const newIndex = currentIndex + 1;
-  if (currentIndex != -1 && currentIndex < (actors.length - 1)) {    
+  if (currentIndex != -1 && currentIndex < actors.length - 1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
-  }  
+  }
   scene.actors = actors;
 };
 
 const moveActorIndexBottom: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     actorId: string;
   }>
@@ -1227,17 +1226,16 @@ const moveActorIndexBottom: CaseReducer<
   if (!scene) {
     return;
   }
-  const actorId = action.payload.actorId;  
+  const actorId = action.payload.actorId;
   const actors = [...scene.actors];
   const newIndex = actors.length - 1;
   const currentIndex = actors.indexOf(actorId);
-  if (currentIndex != -1) {    
+  if (currentIndex != -1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
-  }  
+  }
   scene.actors = actors;
 };
-
 
 const setActorSymbol: CaseReducer<
   EntitiesState,
@@ -1724,7 +1722,7 @@ const editTrigger: CaseReducer<
 
 const moveTriggerIndexTop: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     triggerId: string;
   }>
@@ -1733,20 +1731,20 @@ const moveTriggerIndexTop: CaseReducer<
   if (!scene) {
     return;
   }
-  const triggerId = action.payload.triggerId;  
+  const triggerId = action.payload.triggerId;
   const triggers = [...scene.triggers];
   const currentIndex = triggers.indexOf(triggerId);
   const newIndex = 0;
-  if (currentIndex != -1) {    
+  if (currentIndex != -1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
-  }  
+  }
   scene.triggers = triggers;
 };
 
 const moveTriggerIndexUp: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     triggerId: string;
   }>
@@ -1755,20 +1753,20 @@ const moveTriggerIndexUp: CaseReducer<
   if (!scene) {
     return;
   }
-  const triggerId = action.payload.triggerId;  
+  const triggerId = action.payload.triggerId;
   const triggers = [...scene.triggers];
   const currentIndex = triggers.indexOf(triggerId);
   const newIndex = currentIndex - 1;
-  if (currentIndex > 0) {    
+  if (currentIndex > 0) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
-  }  
+  }
   scene.triggers = triggers;
 };
 
 const moveTriggerIndexDown: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     triggerId: string;
   }>
@@ -1777,20 +1775,20 @@ const moveTriggerIndexDown: CaseReducer<
   if (!scene) {
     return;
   }
-  const triggerId = action.payload.triggerId;  
+  const triggerId = action.payload.triggerId;
   const triggers = [...scene.triggers];
   const currentIndex = triggers.indexOf(triggerId);
   const newIndex = currentIndex + 1;
-  if (currentIndex != -1 && currentIndex < (triggers.length - 1)) {    
+  if (currentIndex != -1 && currentIndex < triggers.length - 1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
-  }  
+  }
   scene.triggers = triggers;
 };
 
 const moveTriggerIndexBottom: CaseReducer<
   EntitiesState,
-  PayloadAction<{ 
+  PayloadAction<{
     sceneId: string;
     triggerId: string;
   }>
@@ -1799,14 +1797,14 @@ const moveTriggerIndexBottom: CaseReducer<
   if (!scene) {
     return;
   }
-  const triggerId = action.payload.triggerId;  
+  const triggerId = action.payload.triggerId;
   const triggers = [...scene.triggers];
   const newIndex = triggers.length - 1;
   const currentIndex = triggers.indexOf(triggerId);
-  if (currentIndex != -1) {    
+  if (currentIndex != -1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
-  }  
+  }
   scene.triggers = triggers;
 };
 
@@ -4472,10 +4470,10 @@ const entitiesSlice = createSlice({
     },
 
     editActor,
-	moveActorIndexTop,
-	moveActorIndexUp,
-	moveActorIndexDown,
-	moveActorIndexBottom,
+    moveActorIndexTop,
+    moveActorIndexUp,
+    moveActorIndexDown,
+    moveActorIndexBottom,
     setActorSymbol,
     unpackActorPrefab,
     convertActorToPrefab,
@@ -4513,10 +4511,10 @@ const entitiesSlice = createSlice({
     },
 
     editTrigger,
-	moveTriggerIndexTop,
-	moveTriggerIndexUp,
-	moveTriggerIndexDown,
-	moveTriggerIndexBottom,
+    moveTriggerIndexTop,
+    moveTriggerIndexUp,
+    moveTriggerIndexDown,
+    moveTriggerIndexBottom,
     setTriggerSymbol,
     unpackTriggerPrefab,
     convertTriggerToPrefab,
