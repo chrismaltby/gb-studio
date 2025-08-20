@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2052250805",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2056250819",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -155,6 +155,10 @@
   "FIELD_MAX_VALUE_RAND_DESC": "Ustalenie wartości maksymalnej zasięgu losowego.",
   "FIELD_CLAMP": "Wartość zasisku 0 - 255",
   "FIELD_RENAME": "Zmień nazwę",
+  "FIELD_MOVE_TOP": "Przenieś na samą górę",
+  "FIELD_MOVE_UP": "Przenieś w górę",
+  "FIELD_MOVE_DOWN": "Przenieś w dół",
+  "FIELD_MOVE_BOTTOM": "Przenieś na sam dół",
   "FIELD_SAVE": "Zapisz",
   "FIELD_VARIABLE_NAME": "Nazwa zmiennej",
   "FIELD_RESET_VARIABLES": "Resetuj WSZYSTKIE zmienne do ''Fałsz''.",
