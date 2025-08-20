@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised Actor Move Relative code generation
 - Updated "Actor Move To" and "Actor Move Relative" to allow specifying if Walls, Actors, or none or both should be used for collisions
 - Change disabled event styling to use a red background, distinguishing them from comment events
+- ROM usage monitor in Build Log is now hidden by default, restore this by checking "Show ROM Usage After Build" in Settings [@pau-tomas](https://github.com/pau-tomas)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
