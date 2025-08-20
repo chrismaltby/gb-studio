@@ -640,6 +640,7 @@ describe("TypeBox Schemas", () => {
       runSceneSelectionOnly: false,
       spriteMode: "8x16",
       openBuildFolderOnExport: true,
+      showRomUsageAfterBuild: false,
     };
     const invalidSettings = {
       _resourceType: "settings",

@@ -151,6 +151,9 @@ const DebuggerBuildLog = () => {
   const openBuildFolderOnExport = useAppSelector(
     (state) => getSettings(state).openBuildFolderOnExport,
   );
+  const showRomUsageAfterBuild = useAppSelector(
+    (state) => getSettings(state).showRomUsageAfterBuild,
+  );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
     breakpoints: { SM: 0, MD: 50, LG: 280 },
@@ -224,6 +227,11 @@ const DebuggerBuildLog = () => {
       onChangeSettingProp("openBuildFolderOnExport", !openBuildFolderOnExport),
     [onChangeSettingProp, openBuildFolderOnExport],
   );
+  const onToggleShowRomUsageAfterBuild = useCallback(
+    () =>
+      onChangeSettingProp("showRomUsageAfterBuild", !showRomUsageAfterBuild),
+    [onChangeSettingProp, showRomUsageAfterBuild],
+  );
 
   return (
     <Wrapper>
@@ -287,6 +295,12 @@ const DebuggerBuildLog = () => {
           >
             {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
           </MenuItem>
+          <MenuItem
+            onClick={onToggleShowRomUsageAfterBuild}
+            icon={showRomUsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
+          </MenuItem>
 
           <MenuDivider />
           <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
@@ -294,10 +308,12 @@ const DebuggerBuildLog = () => {
           </MenuItem>
         </DropdownButton>
         <UsageWrapper ref={observe}>
-          <DebuggerUsageData
-            hideLabels={usageBreakpoint !== "LG"}
-            forceZoom={usageBreakpoint === "SM"}
-          ></DebuggerUsageData>
+          {showRomUsageAfterBuild && (
+            <DebuggerUsageData
+              hideLabels={usageBreakpoint !== "LG"}
+              forceZoom={usageBreakpoint === "SM"}
+            ></DebuggerUsageData>
+          )}
         </UsageWrapper>
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>

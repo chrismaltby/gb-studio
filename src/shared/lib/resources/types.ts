@@ -743,6 +743,7 @@ export const SettingsResource = Type.Object({
   runSceneSelectionOnly: Type.Boolean(),
   spriteMode: SpriteModeSetting,
   openBuildFolderOnExport: Type.Boolean(),
+  showRomUsageAfterBuild: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

@@ -437,6 +437,7 @@ export const defaultProjectSettings: Settings = {
   runSceneSelectionOnly: false,
   spriteMode: "8x16",
   openBuildFolderOnExport: true,
+  showRomUsageAfterBuild: false,
 };
 
 export const defaultPalettes: Palette[] = [
