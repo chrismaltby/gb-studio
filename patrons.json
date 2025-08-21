@@ -8,6 +8,13 @@
       }
     },
     {
+      "id": "7443910",
+      "type": "user",
+      "attributes": {
+        "full_name": "John the Hammer"
+      }
+    },
+    {
       "id": "89121289",
       "type": "user",
       "attributes": {
