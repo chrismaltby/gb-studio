@@ -200,7 +200,7 @@ export const buildLinkFlags = (
       `-Wm-yn"${validName}"`,
     ],
     // Color
-    color ? ["-Wm-yC"] : [],
+    colorOnly ? ["-Wm-yC"] : color ? ["-Wm-yc"] : [],
     // SGB
     sgb ? ["-Wm-ys"] : [],
     // Pocket
