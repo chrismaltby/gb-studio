@@ -105,7 +105,14 @@ const projectMiddleware: Middleware<Dispatch, RootState> =
         action.payload.spriteSheetId,
       );
     } else if (actions.renameMusicAsset.match(action)) {
-      renameAsset(
+      const state = store.getState();
+      if (
+        state.trackerDocument.present.song &&
+        state.trackerDocument.present.modified
+      ) {
+        await API.tracker.saveUGEFile(state.trackerDocument.present.song);
+      }
+      await renameAsset(
         "music",
         musicSelectors,
         action.payload.musicId,
