@@ -1,6 +1,5 @@
 import electron, { BrowserWindow } from "electron";
 import { createPreferences, createSplash } from "../../src/main";
-import { mocked } from "jest-mock";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
 jest.mock("electron");
@@ -9,8 +8,8 @@ jest.mock("lib/helpers/updateChecker");
 jest.mock("lib/project/createProject");
 jest.mock("../../src/menu");
 
-const mockedElectron = mocked(electron);
-const mockedCheckForUpdate = mocked(checkForUpdate);
+const mockedElectron = jest.mocked(electron);
+const mockedCheckForUpdate = jest.mocked(checkForUpdate);
 
 describe("Electron Main Process", () => {
   beforeEach(() => {

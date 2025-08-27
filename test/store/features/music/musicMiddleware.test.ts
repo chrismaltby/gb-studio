@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-import { mocked } from "jest-mock";
 import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import { RootState } from "../../../../src/store/configureStore";
@@ -11,7 +10,7 @@ import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import ScripTracker from "../../../../src/renderer/lib/vendor/scriptracker/scriptracker";
 
 jest.mock("../../../../src/renderer/lib/vendor/scriptracker/scriptracker");
-const mockedScripTracker = mocked(ScripTracker);
+const mockedScripTracker = jest.mocked(ScripTracker);
 
 beforeEach(() => {
   jest.resetModules();
