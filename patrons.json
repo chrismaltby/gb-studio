@@ -27,13 +27,6 @@
       "attributes": {
         "full_name": "Salvatore Tosti"
       }
-    },
-    {
-      "id": "57539298",
-      "type": "user",
-      "attributes": {
-        "full_name": "Skittles"
-      }
     }
   ],
   "silverTier": [
@@ -213,6 +206,13 @@
       },
       "id": "104804333",
       "type": "user"
+    },
+    {
+      "id": "57539298",
+      "type": "user",
+      "attributes": {
+        "full_name": "Skittles"
+      }
     },
     {
       "attributes": {
