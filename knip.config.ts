@@ -31,7 +31,9 @@ const config: KnipConfig = {
     "jest-environment-jsdom",
     "eslint-plugin-jsx-a11y",
     "eslint-plugin-import",
+    "webpack",
   ],
+  ignoreBinaries: ["webpack", "time", "flamebearer"],
   ignoreUnresolved: ["../helpers/l10n"],
 };
 
