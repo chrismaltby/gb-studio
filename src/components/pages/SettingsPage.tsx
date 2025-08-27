@@ -1,7 +1,10 @@
 import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { castEventToBool } from "renderer/lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToString,
+} from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
@@ -40,17 +43,22 @@ import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/layout/FormLayout";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexRow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import { getROMFilename } from "shared/lib/helpers/filePaths";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.project.present.settings);
+  const projectName = useAppSelector(
+    (state) => state.project.present.metadata.name,
+  );
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
@@ -95,9 +103,17 @@ const SettingsPage: FC = () => {
     showRomUsageAfterBuild,
     compilerPreset,
     spriteMode,
+    romFilename,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
+
+  const defaultRomFilename = getROMFilename(
+    "",
+    projectName,
+    colorMode === "color",
+    "rom",
+  );
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.currentTarget.value);
@@ -158,6 +174,15 @@ const SettingsPage: FC = () => {
   const onChangeCustomHead = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeSettingProp("customHead", e.currentTarget.value),
+    [onChangeSettingProp],
+  );
+
+  const onChangeROMFilename = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp(
+        "romFilename",
+        stripInvalidFilenameCharacters(castEventToString(e)),
+      ),
     [onChangeSettingProp],
   );
 
@@ -753,6 +778,7 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("SETTINGS_BUILD"),
+            l10n("FIELD_ROM_FILENAME"),
             l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
             l10n("FIELD_GENERATE_DEBUG_FILES"),
             l10n("FIELD_COMPILER_PRESET"),
@@ -760,6 +786,24 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsBuild" />
           <CardHeading>{l10n("SETTINGS_BUILD")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_ROM_FILENAME")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_ROM_FILENAME")}</SettingRowLabel>
+            <SettingRowInput>
+              <FlexRow>
+                <Input
+                  id="romFilename"
+                  name="romFilename"
+                  onChange={onChangeROMFilename}
+                  value={romFilename}
+                  placeholder={defaultRomFilename}
+                />
+              </FlexRow>
+            </SettingRowInput>
+          </SearchableSettingRow>
+
           <SearchableSettingRow
             searchTerm={searchTerm}
             searchMatches={[l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")]}

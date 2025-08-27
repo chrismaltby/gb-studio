@@ -11,6 +11,7 @@ import { decompressProjectResources } from "shared/lib/resources/compression";
 import { buildRunner } from "lib/compiler/buildRunner";
 import { BuildType } from "lib/compiler/buildWorker";
 import { loadEngineSchema } from "lib/project/loadEngineSchema";
+import { getROMFilename } from "shared/lib/helpers/filePaths";
 
 const rmdir = promisify(rimraf);
 
@@ -61,6 +62,15 @@ const main = async (
     }
   };
 
+  const colorOnly = project.settings.colorMode === "color";
+
+  const romFilename = getROMFilename(
+    project.settings.romFilename,
+    project.metadata.name,
+    colorOnly,
+    buildType,
+  );
+
   const { result } = buildRunner({
     project,
     buildType,
@@ -68,6 +78,7 @@ const main = async (
     engineSchema,
     tmpPath,
     outputRoot,
+    romFilename,
     debugEnabled: project.settings.debuggerEnabled,
     make: command !== "export",
     progress,
@@ -75,9 +86,6 @@ const main = async (
   });
 
   await result;
-
-  const colorOnly = project.settings.colorMode === "color";
-  const gameFile = colorOnly ? "game.gbc" : "game.gb";
 
   if (command === "export") {
     if (program.onlyData) {
@@ -95,15 +103,15 @@ const main = async (
       await copy(tmpBuildDir, destination);
     }
   } else if (command === "make:rom") {
-    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(romTmpPath, destination);
   } else if (command === "make:pocket") {
-    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.pocket");
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(romTmpPath, destination);
   } else if (command === "make:web") {
-    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", gameFile);
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(binjgbRoot, destination);
-    await copy(romTmpPath, `${destination}/rom/${gameFile}`);
+    await copy(romTmpPath, `${destination}/rom/${romFilename}`);
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.metadata.name);
     const author = sanitize(project.metadata.author);
@@ -131,7 +139,7 @@ const main = async (
 
     const scriptJs = (
       await readFile(`${destination}/js/script.js`, "utf8")
-    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`);
+    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${romFilename}"`);
 
     await writeFile(`${destination}/index.html`, html);
     await writeFile(`${destination}/js/script.js`, scriptJs);

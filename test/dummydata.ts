@@ -369,6 +369,7 @@ export const dummyProjectData: ProjectData = {
     spriteMode: "8x16",
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
+    romFilename: "",
   },
 };
 
@@ -649,6 +650,7 @@ export const dummySettingsResource: SettingsResource = {
   spriteMode: "8x16",
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
+  romFilename: "",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -773,6 +775,7 @@ export const dummyProjectResources: ProjectResources = {
     spriteMode: "8x16",
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
+    romFilename: "",
   },
 };
 

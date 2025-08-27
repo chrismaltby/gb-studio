@@ -744,6 +744,7 @@ export const SettingsResource = Type.Object({
   spriteMode: SpriteModeSetting,
   openBuildFolderOnExport: Type.Boolean(),
   showRomUsageAfterBuild: Type.Boolean(),
+  romFilename: Type.String(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
