@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import styled from "styled-components";
 import { StyledMenuItem } from "ui/menu/style";
 
-export interface CheckboxProps {
+interface CheckboxProps {
   readonly id: string;
   readonly name: string;
   readonly checked?: boolean;

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Checkbox } from "./Checkbox";
 import { Label } from "./Label";
 
-export interface CheckboxFieldProps {
+interface CheckboxFieldProps {
   readonly name: string;
   readonly label?: string;
   readonly title?: string;

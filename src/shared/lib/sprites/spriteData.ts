@@ -11,16 +11,16 @@ export type OptimisedTile = {
   flipY: boolean;
 };
 
-export type Position = { x: number; y: number };
+type Position = { x: number; y: number };
 
-export type Bounds = {
+type Bounds = {
   left: number;
   right: number;
   top: number;
   bottom: number;
 };
 
-export type SliceDef = {
+type SliceDef = {
   data: IndexedImage;
   coordinates: {
     x: number;
@@ -30,17 +30,17 @@ export type SliceDef = {
   };
 };
 
-export type TileLocation = {
+type TileLocation = {
   x: number;
   y: number;
   flipX: boolean;
   flipY: boolean;
 };
-export type SpriteTileLocation = TileLocation & {
+type SpriteTileLocation = TileLocation & {
   spriteIndex: number;
 };
 
-export type SpriteCluster = {
+type SpriteCluster = {
   minY: number;
   maxY: number;
   sprites: SliceDef[];
@@ -67,7 +67,7 @@ export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
   }
 };
 
-export const spriteDataWithDividerIndexFn: ImageIndexFunction = (
+const spriteDataWithDividerIndexFn: ImageIndexFunction = (
   r,
   g,
   b,
@@ -223,9 +223,9 @@ export const indexedImageTo2bppSpriteData = (
 
 // ------------
 
-export const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
-export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
-export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
+const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
+const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
+const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
 const bin2 = (value: Color) => value.toString(2).padStart(2, "0");
 const binDec = (binary: string) => parseInt(binary, 2);

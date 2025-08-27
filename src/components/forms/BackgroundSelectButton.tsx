@@ -143,7 +143,7 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
-export const Pill = styled.span`
+const Pill = styled.span`
   position: absolute;
   top: 5px;
   left: 2px;

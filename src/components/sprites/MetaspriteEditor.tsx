@@ -36,7 +36,7 @@ interface MetaspriteEditorProps {
   hidden?: boolean;
 }
 
-export interface MetaspriteDraggableTileProps {
+interface MetaspriteDraggableTileProps {
   $selected?: boolean;
   $spriteMode: SpriteModeSetting;
 }

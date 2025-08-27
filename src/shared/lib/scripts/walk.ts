@@ -71,7 +71,7 @@ export const mapScript = (
   });
 };
 
-export const mapPrefabOverrides = (
+const mapPrefabOverrides = (
   overrides: Record<string, ScriptEventArgsOverride>,
   prefabEventsLookup: Record<string, ScriptEvent>,
   callback: (e: ScriptEvent) => ScriptEvent,
@@ -155,7 +155,7 @@ export const mapUncommentedScript = (
  * @param callback - A mapping function that is applied to each ScriptEvent.
  * @returns A new denormalized scene with updated scripts.
  */
-export const mapSceneScript = <
+const mapSceneScript = <
   T extends Scene | SceneResource | CompressedSceneResourceWithChildren,
 >(
   scene: T,
@@ -258,7 +258,7 @@ export const mapTriggersScript = <T extends Trigger | TriggerPrefab>(
   });
 };
 
-export const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
+const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
   customScript: T,
   callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
@@ -403,7 +403,7 @@ export const walkScript = (
  * @param scene - A denormalized scene to walk
  * @param callback - A callback function that is applied to each script event and all children
  */
-export const walkSceneSpecificScripts = (
+const walkSceneSpecificScripts = (
   scene: Scene,
   options: WalkOptions,
   callback: (e: ScriptEvent) => void,
@@ -514,7 +514,7 @@ type WalkNormalizedOptions =
       };
     };
 
-export const replaceCustomEventArgs = <
+const replaceCustomEventArgs = <
   T extends {
     args?: Record<string, unknown>;
   },

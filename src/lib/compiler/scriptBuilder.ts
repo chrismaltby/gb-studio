@@ -372,7 +372,7 @@ const getPalette = (
   );
 };
 
-export const getVariableId = (
+const getVariableId = (
   variable: string,
   entity?: ScriptBuilderEntity,
 ) => {

@@ -3,7 +3,7 @@ import projectActions, {
   SaveStep,
 } from "store/features/project/projectActions";
 
-export interface DocumentState {
+interface DocumentState {
   modified: boolean;
   loaded: boolean;
   saving: boolean;

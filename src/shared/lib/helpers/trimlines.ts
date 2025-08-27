@@ -4,26 +4,26 @@ const LINE_MIN = 2;
 const CHARS_PER_LINE = 18;
 const CHARS_MAX_TOTAL = 18 + 18 + 16;
 
-export const varRegex = new RegExp("\\$[VLT]?[0-9]+\\$", "g");
-export const varCharRegex = new RegExp("#[VLT]?[0-9]+#", "g");
-export const commandRegex = new RegExp("\\!S[0-5]\\!", "g");
-export const newlineRegex = new RegExp("\n", "g");
+const varRegex = new RegExp("\\$[VLT]?[0-9]+\\$", "g");
+const varCharRegex = new RegExp("#[VLT]?[0-9]+#", "g");
+const commandRegex = new RegExp("\\!S[0-5]\\!", "g");
+const newlineRegex = new RegExp("\n", "g");
 
-export const dummyText = (text: string) => {
+const dummyText = (text: string) => {
   return text
     .replace(varRegex, "$$$$$")
     .replace(varCharRegex, "#")
     .replace(commandRegex, "");
 };
 
-export const lineLength = (line: string) => {
+const lineLength = (line: string) => {
   return line
     .replace(varRegex, "255")
     .replace(varCharRegex, "C")
     .replace(commandRegex, "").length;
 };
 
-export const totalLength = (line: string) => {
+const totalLength = (line: string) => {
   return line
     .replace(newlineRegex, "")
     .replace(varRegex, "255")

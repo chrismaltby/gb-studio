@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import { Card } from "./Card";
 
-export interface SettingsSectionProps {
+interface SettingsSectionProps {
   searchTerm?: string;
   searchMatches?: string[];
   children?: ReactNode;

@@ -6,7 +6,7 @@ import {
 } from "ui/buttons/style";
 import { MinusIcon, PlusIcon } from "ui/icons/Icons";
 
-export interface ZoomButtonProps {
+interface ZoomButtonProps {
   readonly zoom: number;
   readonly size?: "small" | "medium";
   readonly variant?: "normal" | "transparent";

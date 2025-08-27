@@ -30,7 +30,7 @@ export const getInstrumentListByType = (song: Song, type: InstrumentType) => {
   }
 };
 
-export const noteName = [
+const noteName = [
   "C-",
   "C#",
   "D-",

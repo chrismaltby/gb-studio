@@ -73,7 +73,7 @@ export const decompress8bitNumberString = (str: string): number[] => {
   return arr;
 };
 
-export const decompressSceneResource = (
+const decompressSceneResource = (
   scene: CompressedSceneResourceWithChildren,
 ): SceneResource => {
   return {
@@ -82,7 +82,7 @@ export const decompressSceneResource = (
   };
 };
 
-export const decompressBackgroundResource = (
+const decompressBackgroundResource = (
   background: CompressedBackgroundResource,
 ): BackgroundResource => {
   return {

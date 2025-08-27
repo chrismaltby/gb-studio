@@ -7,7 +7,7 @@ import React, {
 import { StyledInput } from "ui/form/style";
 import { useIMEIsComposing } from "ui/hooks/use-ime-is-composing";
 
-export interface IMEInputProps
+interface IMEInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   readonly displaySize?: "small" | "medium" | "large";
 }

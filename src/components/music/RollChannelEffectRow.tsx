@@ -73,7 +73,7 @@ const Note = styled.div<NoteProps>`
   background-color: ${(props) => props.theme.colors.button.activeBackground};
 `;
 
-export const RollChannelEffectRowFwd = ({
+const RollChannelEffectRowFwd = ({
   patternId,
   channelId,
   renderPattern,

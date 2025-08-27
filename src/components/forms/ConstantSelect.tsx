@@ -24,7 +24,7 @@ interface ConstantSelectProps extends SelectCommonProps {
   onChange: (newValue: string) => void;
 }
 
-export const ConstantSelectWrapper = styled.div`
+const ConstantSelectWrapper = styled.div`
   position: relative;
   width: 100%;
   min-width: 78px;

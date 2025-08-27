@@ -121,7 +121,7 @@ export const getBuildCommands = async (
   return output;
 };
 
-export const buildPackFile = async (buildRoot: string) => {
+const buildPackFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -149,7 +149,7 @@ export const buildLinkFile = async (buildRoot: string) => {
   return output.join("\n");
 };
 
-export const buildPackFlags = (packFilePath: string, batteryless = false) => {
+const buildPackFlags = (packFilePath: string, batteryless = false) => {
   return ([] as Array<string | number>).concat(
     // General
     ["-b", 5, "-f", 255, "-e", "rel", "-c"],

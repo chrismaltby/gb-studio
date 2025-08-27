@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { SpriteModeSetting } from "store/features/settings/settingsState";
-import { OptionLabelWithInfo, Select, SelectCommonProps } from "ui/form/Select";
+import { Select, SelectCommonProps } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
-import { useAppSelector } from "store/hooks";
 
 interface SpriteModeSelectProps extends SelectCommonProps {
   name: string;
@@ -12,7 +11,7 @@ interface SpriteModeSelectProps extends SelectCommonProps {
   onChange?: (newId: SpriteModeSetting | undefined) => void;
 }
 
-export interface SpriteModeOption {
+interface SpriteModeOption {
   value: SpriteModeSetting | undefined;
   label: string;
 }

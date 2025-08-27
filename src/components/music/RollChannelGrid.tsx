@@ -48,7 +48,7 @@ const Wrapper = styled.div<WrapperProps>`
   `}
 `;
 
-export const RollChannelGridFwd = ({ cellSize }: RollChannelGridProps) => {
+const RollChannelGridFwd = ({ cellSize }: RollChannelGridProps) => {
   return <Wrapper $rows={12 * 6} $cols={64} $size={cellSize}></Wrapper>;
 };
 

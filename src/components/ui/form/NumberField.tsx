@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { NumberInput } from "./NumberInput";
 import { Label } from "./Label";
 
-export interface NumberFieldProps
+interface NumberFieldProps
   extends React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement

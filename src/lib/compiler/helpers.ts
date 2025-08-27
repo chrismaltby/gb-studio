@@ -1,4 +1,4 @@
-export type DirectionGBVMValue =
+type DirectionGBVMValue =
   | "DIR_DOWN"
   | "DIR_LEFT"
   | "DIR_RIGHT"
@@ -46,5 +46,5 @@ export const inputDec = (input: string | string[]) => {
 export const dirEnum = (dir: unknown): DirectionGBVMValue =>
   DIR_ENUM_LOOKUP[dir as string] || "DIR_DOWN";
 
-export const textSpeedDec = (speed: number): number =>
+const textSpeedDec = (speed: number): number =>
   TEXT_SPEED_LOOKUP[speed] !== undefined ? TEXT_SPEED_LOOKUP[speed] : 0x1;

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
 
-export const Tooltip = styled.div`
+const Tooltip = styled.div`
   color: #000;
   background-color: #fff;
   border-radius: 4px;

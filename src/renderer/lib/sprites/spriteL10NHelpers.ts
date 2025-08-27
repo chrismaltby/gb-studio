@@ -43,7 +43,7 @@ export const getAnimationNameForType = (type: AnimationType) => {
   return animationNameLookup[type];
 };
 
-export const getAnimationNameByIndex = (
+const getAnimationNameByIndex = (
   type: SpriteAnimationType,
   flipLeft: boolean,
   animationIndex: number,

@@ -8,7 +8,7 @@ import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 import isEqual from "lodash/isEqual";
 import SparkMD5 from "spark-md5";
 
-export const isEmptyScript = (script: ScriptEvent[]) => {
+const isEmptyScript = (script: ScriptEvent[]) => {
   if (script.length === 0) {
     return true;
   }

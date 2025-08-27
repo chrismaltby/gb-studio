@@ -25,4 +25,4 @@ export const FloatingPanel = ({
 
 export const FloatingPanelDivider = () => <StyledFloatingPanelDivider />;
 
-export const FloatingPanelBreak = () => <StyledFloatingPanelBreak />;
+const FloatingPanelBreak = () => <StyledFloatingPanelBreak />;

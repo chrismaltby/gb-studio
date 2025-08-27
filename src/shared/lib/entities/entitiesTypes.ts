@@ -138,7 +138,7 @@ export type ActorNormalized = Omit<
   hit3Script: string[];
 };
 
-export type ActorFieldsOmittedFromPrefab =
+type ActorFieldsOmittedFromPrefab =
   | "prefabId"
   | "x"
   | "y"
@@ -177,7 +177,7 @@ export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
   leaveScript: string[];
 };
 
-export type TriggerFieldsOmittedFromPrefab =
+type TriggerFieldsOmittedFromPrefab =
   | "prefabId"
   | "x"
   | "y"
@@ -366,7 +366,7 @@ export type Metasprite = {
   tiles: string[];
 };
 
-export type MetaspriteData = Omit<Metasprite, "tiles"> & {
+type MetaspriteData = Omit<Metasprite, "tiles"> & {
   tiles: MetaspriteTile[];
 };
 
@@ -378,7 +378,7 @@ export type SpriteState = {
   animations: string[];
 };
 
-export type SpriteStateData = Omit<SpriteState, "animations"> & {
+type SpriteStateData = Omit<SpriteState, "animations"> & {
   animations: SpriteAnimationData[];
 };
 
@@ -524,7 +524,7 @@ export interface EntitiesState {
   engineFieldValues: EntityState<EngineFieldValue, string>;
 }
 
-export interface ScriptEventFieldCondition {
+interface ScriptEventFieldCondition {
   key: string;
   ne?: unknown;
   eq?: unknown;
@@ -538,9 +538,9 @@ export interface ScriptEventFieldCondition {
   parallaxEnabled?: boolean;
 }
 
-export const distanceUnitTypes = ["tiles", "pixels"] as const;
-export const timeUnitTypes = ["time", "frames"] as const;
-export const gridUnitTypes = ["8px", "16px"] as const;
+const distanceUnitTypes = ["tiles", "pixels"] as const;
+const timeUnitTypes = ["time", "frames"] as const;
+const gridUnitTypes = ["8px", "16px"] as const;
 export const unitTypes = [
   ...distanceUnitTypes,
   ...timeUnitTypes,
@@ -607,4 +607,4 @@ export interface ScriptEventFieldSchema {
   filters?: Record<string, unknown>;
 }
 
-export type EntityKey = keyof EntitiesState;
+type EntityKey = keyof EntitiesState;

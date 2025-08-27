@@ -185,9 +185,9 @@ const isProjectileData = (value: unknown): value is ProjectileData => {
   return !!value && typeof value === "object";
 };
 
-export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
-export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
-export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
+const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
+const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
+const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
 const ensureProjectAsset = async (
   relativePath: string,
@@ -372,7 +372,7 @@ export const precompileBackgrounds = async (
   };
 };
 
-export const precompilePalettes = async (
+const precompilePalettes = async (
   scenes: Scene[],
   settings: SettingsState,
   palettes: Palette[],
@@ -587,7 +587,7 @@ export const precompilePalettes = async (
   };
 };
 
-export const precompileUIImages = async (
+const precompileUIImages = async (
   projectRoot: string,
   tmpPath: string,
   {
@@ -611,7 +611,7 @@ export const precompileUIImages = async (
   return { frameTiles, cursorTiles };
 };
 
-export const precompileSprites = async (
+const precompileSprites = async (
   spriteReferences: ReferencedSprite[],
   projectRoot: string,
   defaultSpriteMode: SpriteModeSetting,
@@ -662,7 +662,7 @@ export const precompileSprites = async (
   };
 };
 
-export const precompileAvatars = async (
+const precompileAvatars = async (
   avatars: AvatarData[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
@@ -707,7 +707,7 @@ export const precompileAvatars = async (
   };
 };
 
-export const precompileEmotes = async (
+const precompileEmotes = async (
   referencedEmotes: ReferencedEmote[],
   projectRoot: string,
   {
@@ -724,7 +724,7 @@ export const precompileEmotes = async (
   };
 };
 
-export const precompileTilesets = async (
+const precompileTilesets = async (
   referencedTilesets: ReferencedTileset[],
   projectRoot: string,
   {
@@ -741,7 +741,7 @@ export const precompileTilesets = async (
   };
 };
 
-export const precompileMusic = (
+const precompileMusic = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   music: MusicData[],
@@ -807,7 +807,7 @@ export const precompileMusic = (
   return { usedMusic };
 };
 
-export const precompileFonts = async (
+const precompileFonts = async (
   usedFonts: FontData[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,

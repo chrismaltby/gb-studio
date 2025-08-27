@@ -1,7 +1,7 @@
 import React from "react";
 import { StyledInput } from "ui/form/style";
 
-export interface InputProps
+interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   readonly displaySize?: "small" | "medium" | "large";
 }

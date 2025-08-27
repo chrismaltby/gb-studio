@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 // extends React.InputHTMLAttributes<HTMLInputElement>
 
-export interface StyledInputProps {
+interface StyledInputProps {
   readonly $displaySize?: "small" | "medium" | "large";
 }
 
@@ -47,7 +47,7 @@ const largeStyles = css`
 
 // #region Textarea
 
-export interface StyledTextareaProps {
+interface StyledTextareaProps {
   readonly $displaySize?: "small" | "medium" | "large";
 }
 

@@ -2,7 +2,7 @@ import React, { FC, useContext } from "react";
 import styled, { css, ThemeContext } from "styled-components";
 import { Range, getTrackBackground } from "react-range";
 
-export interface SliderProps {
+interface SliderProps {
   value: number;
   min: number;
   max: number;
@@ -11,7 +11,7 @@ export interface SliderProps {
   onChange?: (value: number) => void;
 }
 
-export const SliderWrapper = styled.div`
+const SliderWrapper = styled.div`
   width: calc(100% - 20px);
   position: relative;
 `;

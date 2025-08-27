@@ -1,7 +1,7 @@
 import path from "path";
 import l10n from "shared/lib/lang/l10n";
 
-export const isAssetWithinProject = (
+const isAssetWithinProject = (
   assetPath: string,
   projectRoot: string,
 ) => {

@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 // #region Button
 
-export interface StyledButtonProps {
+interface StyledButtonProps {
   readonly $size?: "small" | "medium" | "large";
   readonly $variant?:
     | "normal"
@@ -311,7 +311,7 @@ export const StyledZoomButton = styled.div`
 
 // #region PillButton
 
-export interface StyledPillButtonProps {
+interface StyledPillButtonProps {
   readonly $variant?: "normal" | "primary" | "blue";
 }
 

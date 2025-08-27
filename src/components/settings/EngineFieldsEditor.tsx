@@ -34,19 +34,19 @@ import AnimationStateSelect from "components/forms/AnimationStateSelect";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
-export interface EngineFieldsEditorProps {
+interface EngineFieldsEditorProps {
   searchTerm?: string;
   sceneType?: string;
 }
 
-export interface EngineFieldRowProps {
+interface EngineFieldRowProps {
   field: EngineFieldSchema;
   values: Record<string, EngineFieldValue>;
   defaultValues: Record<string, number | string | boolean | undefined>;
   searchTerm?: string;
 }
 
-export interface EngineFieldInputProps {
+interface EngineFieldInputProps {
   field: EngineFieldSchema;
   value: EngineFieldValue["value"];
   onChange: (newValue: EngineFieldValue["value"]) => void;
@@ -136,7 +136,7 @@ const fromFieldUnits = (
   return Math.floor(value);
 };
 
-export const EngineFieldUnits = ({ field }: { field: EngineFieldSchema }) => {
+const EngineFieldUnits = ({ field }: { field: EngineFieldSchema }) => {
   if (!field.editUnits) {
     return <SettingRowUnits />;
   }
@@ -154,7 +154,7 @@ export const EngineFieldUnits = ({ field }: { field: EngineFieldSchema }) => {
   );
 };
 
-export const EngineFieldInput: FC<EngineFieldInputProps> = ({
+const EngineFieldInput: FC<EngineFieldInputProps> = ({
   field,
   value,
   onChange,

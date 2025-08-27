@@ -38,7 +38,7 @@ interface PlaySoundEffectProps extends SelectCommonProps {
   effectIndex?: number;
 }
 
-export const PlaySoundEffect = ({
+const PlaySoundEffect = ({
   effect,
   pitch = 4,
   frequency = 200,

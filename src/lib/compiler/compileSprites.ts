@@ -24,7 +24,7 @@ const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
 const S_VRAM2 = 0x8;
 
-export type SpriteTileAllocationStrategy = (
+type SpriteTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
   sprite: SpriteSheetData,
@@ -58,7 +58,7 @@ interface SpriteTileData {
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
+const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
   tileIndex,
 ) => {
   return {
@@ -74,7 +74,7 @@ export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
+const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
   tileIndex,
   numTiles,
 ) => {
@@ -93,7 +93,7 @@ export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
+const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
   return {
     tileIndex,
     inVRAM2: true,

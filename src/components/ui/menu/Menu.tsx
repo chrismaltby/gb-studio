@@ -42,7 +42,7 @@ export const MenuItem = ({
   </StyledMenuItem>
 );
 
-export interface MenuItemIconProps {
+interface MenuItemIconProps {
   readonly children?: ReactNode;
 }
 
@@ -68,7 +68,7 @@ export const MenuSection = styled.div`
 
 export const MenuDivider = () => <StyledMenuDivider />;
 
-export interface MenuAcceleratorProps {
+interface MenuAcceleratorProps {
   accelerator: string;
 }
 

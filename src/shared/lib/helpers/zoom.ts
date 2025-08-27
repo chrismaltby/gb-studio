@@ -1,4 +1,4 @@
-export const zoomLevels = [25, 50, 100, 200, 400, 800, 1600];
+const zoomLevels = [25, 50, 100, 200, 400, 800, 1600];
 
 export const zoomIn = (currentZoom: number) => {
   for (let i = 0; i < zoomLevels.length; i++) {

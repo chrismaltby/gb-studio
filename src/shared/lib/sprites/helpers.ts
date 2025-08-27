@@ -142,7 +142,7 @@ export const filterAnimationsBySpriteType = <T>(
   return animationIds;
 };
 
-export const animationIndexBySpriteType = (
+const animationIndexBySpriteType = (
   animationIndex: number,
   type: SpriteAnimationType,
   flipLeft: boolean,
@@ -171,7 +171,7 @@ export const animationIndexBySpriteType = (
   return animationIndex;
 };
 
-export const animationFlipBySpriteType = (
+const animationFlipBySpriteType = (
   animationIndex: number,
   type: SpriteAnimationType,
   flipLeft: boolean,

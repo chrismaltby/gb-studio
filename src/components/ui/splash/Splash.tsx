@@ -18,7 +18,7 @@ import pluginPreview from "assets/templatePreview/plugin.png";
 declare const VERSION: string;
 declare const COMMITHASH: string;
 
-export interface SplashWindowProps {
+interface SplashWindowProps {
   focus: boolean;
   children: React.ReactNode;
 }
@@ -103,7 +103,7 @@ export const SplashEasterEggButton = styled.button`
   }
 `;
 
-export const SplashAppTitleWrapper = styled.div`
+const SplashAppTitleWrapper = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
   font-size: 11px;
   text-align: center;
@@ -148,7 +148,7 @@ export const SplashOpenButton = styled(Button).attrs(() => ({
   -webkit-app-region: no-drag;
 `;
 
-export interface Template {
+interface Template {
   id: string;
   name: string;
   preview: string;
@@ -156,7 +156,7 @@ export interface Template {
   description: string;
 }
 
-export interface SplashTemplateSelectProps {
+interface SplashTemplateSelectProps {
   templates: Template[];
   templatePlugins: TemplatePlugin[];
   name: string;
@@ -164,11 +164,11 @@ export interface SplashTemplateSelectProps {
   onChange: (newValue: string) => void;
 }
 
-export const SplashTemplateSelectWrapper = styled.div`
+const SplashTemplateSelectWrapper = styled.div`
   width: 100%;
 `;
 
-export const SplashTemplateSelectOptions = styled.div`
+const SplashTemplateSelectOptions = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -179,11 +179,11 @@ export const SplashTemplateSelectOptions = styled.div`
   }
 `;
 
-export const SplashTemplateButtonWrapper = styled.div`
+const SplashTemplateButtonWrapper = styled.div`
   position: relative;
 `;
 
-export const SplashTemplateButton = styled.input.attrs({
+const SplashTemplateButton = styled.input.attrs({
   type: "radio",
 })`
   width: 80px;
@@ -197,7 +197,7 @@ export const SplashTemplateButton = styled.input.attrs({
   }
 `;
 
-export const SplashTemplateLabel = styled.label`
+const SplashTemplateLabel = styled.label`
   position: absolute;
   top: 0;
   left: 0;
@@ -221,13 +221,13 @@ export const SplashTemplateLabel = styled.label`
   }
 `;
 
-export const SplashTemplateName = styled.div`
+const SplashTemplateName = styled.div`
   font-size: 11px;
   font-weight: bold;
   margin-bottom: 5px;
 `;
 
-export const SplashTemplateDescription = styled.div`
+const SplashTemplateDescription = styled.div`
   font-size: 11px;
 `;
 
@@ -236,7 +236,7 @@ interface SplashTemplateVideoProps {
   playing: boolean;
 }
 
-export const SplashTemplateVideo: FC<SplashTemplateVideoProps> = ({
+const SplashTemplateVideo: FC<SplashTemplateVideoProps> = ({
   src,
   playing,
 }) => {
@@ -406,7 +406,7 @@ export const SplashProjectClearButton = styled.div`
   padding: 30px;
 `;
 
-export interface SplashProjectProps {
+interface SplashProjectProps {
   project: {
     name: string;
     dir: string;
@@ -415,7 +415,7 @@ export interface SplashProjectProps {
   onRemove: () => void;
 }
 
-export const SplashProjectRemoveButton = styled.div`
+const SplashProjectRemoveButton = styled.div`
   position: absolute;
   top: 5px;
   right: 5px;
@@ -446,7 +446,7 @@ export const SplashProjectRemoveButton = styled.div`
   }
 `;
 
-export const SplashProjectWrapper = styled.button`
+const SplashProjectWrapper = styled.button`
   position: relative;
   display: flex;
   text-align: left;
@@ -488,14 +488,14 @@ export const SplashProjectWrapper = styled.button`
   }
 `;
 
-export const SplashProjectDetails = styled.span`
+const SplashProjectDetails = styled.span`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 `;
 
-export const SplashProjectName = styled.span`
+const SplashProjectName = styled.span`
   display: block;
   font-size: 16px;
   font-weight: bold;
@@ -505,7 +505,7 @@ export const SplashProjectName = styled.span`
   text-overflow: ellipsis;
 `;
 
-export const SplashProjectPath = styled.span`
+const SplashProjectPath = styled.span`
   display: block;
   font-size: 11px;
   opacity: 0.8;

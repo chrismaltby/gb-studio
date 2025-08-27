@@ -5,7 +5,7 @@ import React, { FC, ReactNode } from "react";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
-export { components } from "react-select";
+;
 
 export interface Option {
   value: string;

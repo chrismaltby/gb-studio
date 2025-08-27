@@ -11,7 +11,7 @@ const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
 const ZERO_CHAR = 16;
 
-export const isTransparent = (r: number, g: number, b: number): boolean => {
+const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
     (r === 255 && b === 255 && g === 0) || (g === 255 && r === 0 && b === 0)
   );

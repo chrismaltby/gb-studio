@@ -694,7 +694,7 @@ const migrateFrom200r1To200r2Events = (data: ProjectData): ProjectData => {
  * a single input at once. This migration updates existing
  * EVENT_SET_INPUT_SCRIPT events to use array values
  */
-export const migrateFrom200r2To200r3Event = (
+const migrateFrom200r2To200r3Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -729,7 +729,7 @@ const migrateFrom200r2To200r3Events = (data: ProjectData): ProjectData => {
  * Version 2.0.0 r3 used a separate event for handling updating the
  * fade style, this has now been merged into EVENT_ENGINE_FIELD_SET
  */
-export const migrateFrom200r3To200r4Event = (
+const migrateFrom200r3To200r4Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -773,7 +773,7 @@ type ProjectDataV200r3 = ProjectData & {
  * Version 2.0.0 r3 stored the default fade style in settings, this
  * has now been moved to an engine field value
  */
-export const migrateFrom200r3To200r4EngineFieldValues = (
+const migrateFrom200r3To200r4EngineFieldValues = (
   data: ProjectDataV200r3,
 ): ProjectData => {
   return {
@@ -792,7 +792,7 @@ export const migrateFrom200r3To200r4EngineFieldValues = (
  * Version 2.0.0 r4 used string values for animSpeed and moveSpeed,
  * animSpeed is now number|null and moveSpeed is number
  */
-export const migrateFrom200r4To200r5Event = (
+const migrateFrom200r4To200r5Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -966,7 +966,7 @@ const migrateAnimSpeedr6r7 = (original: unknown) => {
  * rather than arbitrary speed values for anim/move speeds.
  * Save event also now includes an OnSave script.
  */
-export const migrateFrom200r6To200r7Event = (
+const migrateFrom200r6To200r7Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1257,7 +1257,7 @@ export const migrateFrom200r9To200r10Triggers = (
 
 /* Version 2.0.0 r11 adds additional parameters to EVENT_LAUNCH_PROJECTILE
  */
-export const migrateFrom200r10To200r11Event = (
+const migrateFrom200r10To200r11Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1312,7 +1312,7 @@ const migrateFrom200r10To200r11Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r12 adds variable support for camera events + ability to lock per axis
  */
-export const migrateFrom200r11To200r12Event = (
+const migrateFrom200r11To200r12Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1360,7 +1360,7 @@ const migrateFrom200r11To200r12Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r13 adds multiple save slots for save/load events
  */
-export const migrateFrom200r12To200r13Event = (
+const migrateFrom200r12To200r13Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1398,7 +1398,7 @@ const migrateFrom200r12To200r13Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r14 deprecates weapon attack event, replacing with launch projectile
  */
-export const migrateFrom200r13To200r14Event = (
+const migrateFrom200r13To200r14Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1438,7 +1438,7 @@ const migrateFrom200r13To200r14Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r15 migrates old emote events to new emotes format (and creates default emote pngs if missing)
  */
-export const migrateFrom200r14To200r15Event =
+const migrateFrom200r14To200r15Event =
   (emotesData: EmoteData[]) =>
   (event: ScriptEvent): ScriptEvent => {
     const migrateMeta = generateMigrateMeta(event);
@@ -1512,7 +1512,7 @@ const migrateFrom200r14Tor15Emotes = (
 
 /* Version 2.0.0 r16 migrates old avatar events to new avatars format (and copies sprites to correct folder)
  */
-export const migrateFrom200r15To200r16Event =
+const migrateFrom200r15To200r16Event =
   (avatarsIdLookup: Record<string, string>) =>
   (event: ScriptEvent): ScriptEvent => {
     const migrateMeta = generateMigrateMeta(event);
@@ -1649,7 +1649,7 @@ const migrateFrom200r16Tor17Fonts = (
 
 /* Version 3.0.0 r2 migrates old hide/show events to deactivate/activate to better match previous functionality
  */
-export const migrateFrom300r1To300r2Event = (
+const migrateFrom300r1To300r2Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1884,7 +1884,7 @@ const migrateFrom310r1To310r2Events = (data: ProjectData): ProjectData => {
 
 /* Version 3.1.0 r3 updates For Loops to include comparison and operation selectors
  */
-export const migrateFrom310r2To310r3Event = (
+const migrateFrom310r2To310r3Event = (
   event: ScriptEvent,
 ): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);

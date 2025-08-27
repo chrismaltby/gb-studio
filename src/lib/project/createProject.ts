@@ -43,4 +43,4 @@ const createProject = async (options: CreateProjectInput) => {
 
 export default createProject;
 
-export { ERR_PROJECT_EXISTS };
+;

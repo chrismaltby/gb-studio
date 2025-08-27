@@ -4957,7 +4957,7 @@ export const generateScriptEventInsertActions = (
  * Helpers
  */
 
-export const duplicateScript = (
+const duplicateScript = (
   state: EntitiesState,
   scriptEventIds: string[],
   overrides?: Record<string, ScriptEventArgsOverride>,

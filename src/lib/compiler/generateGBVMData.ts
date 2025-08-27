@@ -84,12 +84,12 @@ export type PrecompiledTilesetData = TilesetData & {
   height: number;
 };
 
-export interface PrecompiledTileData {
+interface PrecompiledTileData {
   symbol: string;
   data: number[] | Uint8Array;
 }
 
-export interface PrecompiledTilemapData {
+interface PrecompiledTilemapData {
   symbol: string;
   data: number[] | Uint8Array;
   is360: boolean;
@@ -141,28 +141,28 @@ export type PrecompiledFontData = {
   symbol: string;
 } & CompiledFontData;
 
-export const BACKGROUND_TYPE = "const struct background_t";
-export const SPRITESHEET_TYPE = "const struct spritesheet_t";
-export const TILESET_TYPE = "const struct tileset_t";
-export const TRIGGER_TYPE = "const struct trigger_t";
-export const ACTOR_TYPE = "const struct actor_t";
-export const SCENE_TYPE = "const struct scene_t";
-export const PROJECTILE_TYPE = "const struct projectile_def_t";
-export const PALETTE_TYPE = "const struct palette_t";
-export const DATA_TYPE = "const unsigned char";
-export const FARPTR_TYPE = "const far_ptr_t";
-export const FONT_FLAG_FONT_RECODE = "FONT_RECODE";
-export const FONT_FLAG_FONT_RECODE_SIZE_7BIT = "FONT_RECODE_SIZE_7BIT";
-export const FONT_FLAG_FONT_VWF = "FONT_VWF";
-export const FONT_FLAG_FONT_VWF_1BIT = "FONT_VWF_1BIT";
+const BACKGROUND_TYPE = "const struct background_t";
+const SPRITESHEET_TYPE = "const struct spritesheet_t";
+const TILESET_TYPE = "const struct tileset_t";
+const TRIGGER_TYPE = "const struct trigger_t";
+const ACTOR_TYPE = "const struct actor_t";
+const SCENE_TYPE = "const struct scene_t";
+const PROJECTILE_TYPE = "const struct projectile_def_t";
+const PALETTE_TYPE = "const struct palette_t";
+const DATA_TYPE = "const unsigned char";
+const FARPTR_TYPE = "const far_ptr_t";
+const FONT_FLAG_FONT_RECODE = "FONT_RECODE";
+const FONT_FLAG_FONT_RECODE_SIZE_7BIT = "FONT_RECODE_SIZE_7BIT";
+const FONT_FLAG_FONT_VWF = "FONT_VWF";
+const FONT_FLAG_FONT_VWF_1BIT = "FONT_VWF_1BIT";
 
 const INDENT_SPACES = 4;
 
-export function filterNull<T>(ts: (T | null)[]): T[] {
+function filterNull<T>(ts: (T | null)[]): T[] {
   return ts.filter((t: T | null): t is T => !!t);
 }
 
-export const chunk = <T>(arr: T[], len?: number): T[][] => {
+const chunk = <T>(arr: T[], len?: number): T[][] => {
   if (!len) {
     return [arr];
   }
@@ -177,23 +177,23 @@ export const chunk = <T>(arr: T[], len?: number): T[][] => {
   return chunks;
 };
 
-export const toHex = (n: number) =>
+const toHex = (n: number) =>
   "0x" + n.toString(16).toUpperCase().padStart(2, "0");
 
 export const sceneName = (scene: Entity, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
 
-export const actorName = (actor: Entity, actorIndex: number) =>
+const actorName = (actor: Entity, actorIndex: number) =>
   actor.name || `Actor ${actorIndex + 1}`;
 
-export const triggerName = (trigger: Entity, triggerIndex: number) =>
+const triggerName = (trigger: Entity, triggerIndex: number) =>
   trigger.name || `Trigger ${triggerIndex + 1}`;
 
-export const toFarPtr = (ref: string): string => {
+const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
-export const enginePxToSubPx = (px?: number): string =>
+const enginePxToSubPx = (px?: number): string =>
   `PX_TO_SUBPX(${px || 0})`;
 
 export const toASMCollisionGroup = (
@@ -247,7 +247,7 @@ export const toASMCollisionGroup = (
   return baseGroup;
 };
 
-export const toASMCollisionMask = (mask: string[]) => {
+const toASMCollisionMask = (mask: string[]) => {
   const flags = mask
     .map((group: string) => {
       if (group === "player") {
@@ -270,14 +270,14 @@ export const toASMCollisionMask = (mask: string[]) => {
   return flags.length > 0 ? flags.join(" | ") : 0;
 };
 
-export const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
+const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
-export const maybeScriptDependency = (
+const maybeScriptDependency = (
   scriptSymbol: string | null | undefined,
 ) => (scriptSymbol ? scriptSymbol : []);
 
-export const toASMTriggerScriptFlags = (trigger: Trigger) => {
+const toASMTriggerScriptFlags = (trigger: Trigger) => {
   const flags = [];
 
   if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");
@@ -286,7 +286,7 @@ export const toASMTriggerScriptFlags = (trigger: Trigger) => {
   return flags.length > 0 ? flags.join(" | ") : 0;
 };
 
-export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
+const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
 #define ${key}_H
 
 ${contents}
@@ -329,25 +329,25 @@ ${bankRefExtern(symbol)}
 extern ${type} ${symbol}[];`,
   );
 
-export const sceneActorsSymbol = (sceneSymbol: string): string =>
+const sceneActorsSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_actors`;
 
-export const sceneTriggersSymbol = (sceneSymbol: string): string =>
+const sceneTriggersSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_triggers`;
 
-export const sceneSpritesSymbol = (sceneSymbol: string): string =>
+const sceneSpritesSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_sprites`;
 
-export const sceneProjectilesSymbol = (sceneSymbol: string): string =>
+const sceneProjectilesSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_projectiles`;
 
-export const sceneCollisionsSymbol = (sceneSymbol: string): string =>
+const sceneCollisionsSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_collisions`;
 
-export const scriptSymbol = (sceneIndex: number): string =>
+const scriptSymbol = (sceneIndex: number): string =>
   `script_${sceneIndex}`;
 
-export const toStructData = <T extends Record<string, unknown>>(
+const toStructData = <T extends Record<string, unknown>>(
   object: T,
   indent = 0,
   perLine = 16,
@@ -402,7 +402,7 @@ ${" ".repeat(indent)}}`;
     .join(",\n");
 };
 
-export const toStructDataFile = <T extends Record<string, unknown>>(
+const toStructDataFile = <T extends Record<string, unknown>>(
   type: string,
   symbol: string,
   comment: string,
@@ -427,7 +427,7 @@ ${toStructData(object, INDENT_SPACES)}
 };
 `;
 
-export const toStructArrayDataFile = <T extends Record<string, unknown>>(
+const toStructArrayDataFile = <T extends Record<string, unknown>>(
   type: string,
   symbol: string,
   comment: string,
@@ -458,7 +458,7 @@ ${" ".repeat(INDENT_SPACES)}}`,
 };
 `;
 
-export const toArrayDataFile = (
+const toArrayDataFile = (
   type: string,
   symbol: string,
   comment: string,
@@ -486,7 +486,7 @@ ${chunk(array, perLine)
 };
 `;
 
-export const dataArrayToC = (name: string, data: [number]): string => {
+const dataArrayToC = (name: string, data: [number]): string => {
   return `#pragma bank 255
 ${bankRef(name)}
 
@@ -503,7 +503,7 @@ export const parallaxStep = (
   return `PARALLAX_STEP(${startRow}, ${endRow}, ${wrapSigned8Bit(speed)})`;
 };
 
-export const compileParallax = (
+const compileParallax = (
   parallax: SceneParallaxLayer[] | undefined,
 ): string[] | undefined => {
   if (parallax) {
@@ -649,7 +649,7 @@ export const compileSceneHeader = (
     `// Scene: ${sceneName(scene, sceneIndex)}`,
   );
 
-export const compileBounds = ({
+const compileBounds = ({
   boundsX,
   boundsY,
   boundsWidth,
@@ -1117,7 +1117,7 @@ export const compileTilemapAttrHeader = (tilemapAttr: PrecompiledTileData) =>
     `// Tilemap Attr ${tilemapAttr.symbol}`,
   );
 
-export const compileColor = (hex: string): string => {
+const compileColor = (hex: string): string => {
   const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
   const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
   const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));

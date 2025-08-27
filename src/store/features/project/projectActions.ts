@@ -33,7 +33,7 @@ export type ProjectData = ProjectEntitiesData & {
   settings: SettingsState;
 };
 
-export const saveSteps = [
+const saveSteps = [
   "saving",
   "normalizing",
   "compressing",
@@ -64,7 +64,7 @@ export const denormalizeProject = (project: {
   };
 };
 
-export const trimProjectData = (data: ProjectData): ProjectData => {
+const trimProjectData = (data: ProjectData): ProjectData => {
   return {
     ...data,
     backgrounds: data.backgrounds.map(

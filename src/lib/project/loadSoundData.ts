@@ -13,7 +13,7 @@ const statAsync = promisify(stat);
 
 type SoundAssetType = "wav" | "vgm" | "fxhammer";
 
-export const toVGMType = (filename: string): SoundAssetType => {
+const toVGMType = (filename: string): SoundAssetType => {
   const lowerFilename = filename.toLowerCase();
   if (lowerFilename.endsWith(".wav")) {
     return "wav";

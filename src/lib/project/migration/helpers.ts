@@ -39,7 +39,7 @@ export const applyProjectResourcesMigration = (
   };
 };
 
-export const buildPrefabEventsLookup = (
+const buildPrefabEventsLookup = (
   resources: CompressedProjectResources,
 ): Record<string, ScriptEvent> => {
   const prefabEventsLookup: Record<string, ScriptEvent> = {};

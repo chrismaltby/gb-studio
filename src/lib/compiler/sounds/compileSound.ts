@@ -5,7 +5,7 @@ import { compileVGM } from "./compileVGM";
 import { compileWav } from "./compileWav";
 import { assetFilename } from "shared/lib/helpers/assets";
 
-export interface CompileSoundOptions {
+interface CompileSoundOptions {
   projectRoot: string;
 }
 

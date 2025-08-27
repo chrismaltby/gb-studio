@@ -50,4 +50,3 @@ window.addEventListener("unhandledrejection", (error) => {
   return false;
 });
 
-export default window;

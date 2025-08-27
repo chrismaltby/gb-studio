@@ -28,7 +28,7 @@ export const checksumString = (string: string): string => {
   return hash.digest("hex");
 };
 
-export const mergeChecksums = (checksums: string[]): string => {
+const mergeChecksums = (checksums: string[]): string => {
   const hash = crypto.createHash("sha1");
 
   for (let i = 0; i < checksums.length; i++) {

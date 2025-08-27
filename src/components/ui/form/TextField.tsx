@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FormField } from "./layout/FormLayout";
 import { Input } from "./Input";
 
-export interface TextFieldProps {
+interface TextFieldProps {
   readonly name: string;
   readonly label?: string;
   readonly info?: string;

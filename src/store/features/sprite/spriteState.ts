@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export interface SpriteState {
+interface SpriteState {
   detecting: boolean;
 }
 
@@ -14,6 +14,6 @@ const spriteSlice = createSlice({
   reducers: {},
 });
 
-export const { actions, reducer } = spriteSlice;
+export const {  reducer } = spriteSlice;
 
 export default reducer;

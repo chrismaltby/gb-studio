@@ -85,7 +85,7 @@ export const FormField: FC<FormFieldProps> = ({
   </StyledFormField>
 );
 
-export interface FormSectionTitleProps {
+interface FormSectionTitleProps {
   readonly noTopBorder?: boolean;
   readonly noMarginBottom?: boolean;
   children: ReactNode;
@@ -103,7 +103,7 @@ export const FormSectionTitle = ({
   />
 );
 
-export interface ToggleableFormFieldProps {
+interface ToggleableFormFieldProps {
   readonly enabled: boolean;
   readonly disabledLabel: string | React.ReactNode;
 }

@@ -15,7 +15,7 @@ interface ColorModeOverrideSelectProps extends SelectCommonProps {
   onChange?: (newId: ColorModeOverrideSetting) => void;
 }
 
-export interface ColorModeOverrideOption {
+interface ColorModeOverrideOption {
   value: ColorModeOverrideSetting;
   label: string;
 }

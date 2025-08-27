@@ -10,7 +10,7 @@ import { Portal } from "./Portal";
 
 type PinDirection = "top-left" | "bottom-left" | "top-right" | "bottom-right";
 
-export type PositionedPortalProps = {
+type PositionedPortalProps = {
   children: ReactNode;
   x: number;
   y: number;

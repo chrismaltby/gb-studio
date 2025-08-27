@@ -14,7 +14,7 @@ const clamp31 = (value: number) => {
   return clamp(value, 0, 31);
 };
 
-export const hex2rgb = (hex: string) => {
+const hex2rgb = (hex: string) => {
   const r = Math.floor(hexStringToDecimal(hex.substring(0, 2)));
   const g = Math.floor(hexStringToDecimal(hex.substring(2, 4)));
   const b = Math.floor(hexStringToDecimal(hex.substring(4)));
@@ -77,7 +77,7 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
+const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
   if (g < 65) {
     return 3;
   }

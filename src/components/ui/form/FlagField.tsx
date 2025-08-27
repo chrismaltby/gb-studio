@@ -9,7 +9,7 @@ import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { variableSelectors } from "store/features/entities/entitiesState";
 
-export interface FlagFieldFieldProps {
+interface FlagFieldFieldProps {
   readonly name: string;
   readonly bit: string;
   readonly variableId: string;

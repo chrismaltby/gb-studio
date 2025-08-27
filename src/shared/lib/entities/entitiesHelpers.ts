@@ -74,7 +74,7 @@ import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
 import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
 
-export interface NormalizedEntities {
+interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
   actors: Record<EntityId, ActorNormalized>;
   triggers: Record<EntityId, TriggerNormalized>;
@@ -100,7 +100,7 @@ export interface NormalizedEntities {
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
-export interface NormalizedResult {
+interface NormalizedResult {
   scenes: EntityId[];
   actors: EntityId[];
   triggers: EntityId[];
@@ -122,14 +122,14 @@ export interface NormalizedResult {
   engineFieldValues: EntityId[];
 }
 
-export type NormalizedData = NormalizedSchema<
+type NormalizedData = NormalizedSchema<
   NormalizedEntities,
   NormalizedResult
 >;
 
 type NamedEntity = { name: string };
 
-export interface DenormalizedEntities {
+interface DenormalizedEntities {
   actors: Actor[];
   avatars: Avatar[];
   backgrounds: Background[];
@@ -434,7 +434,7 @@ export const normalizeSprite = (
   return normalize(sprite, spriteSheetsSchema);
 };
 
-export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
+const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
 };
 
@@ -447,7 +447,7 @@ export const sortByFilename = (a: Asset, b: Asset) => {
   return collator.compare(a.filename, b.filename);
 };
 
-export const swapArrayElement = <T>(x: number, y: number, [...xs]: T[]): T[] =>
+const swapArrayElement = <T>(x: number, y: number, [...xs]: T[]): T[] =>
   xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
 
 export const isUnionValue = (input: unknown): input is UnionValue => {
@@ -484,7 +484,7 @@ export const isUnionPropertyValue = (
   return true;
 };
 
-export const isUnionNumberValue = (
+const isUnionNumberValue = (
   input: unknown,
 ): input is UnionNumberValue => {
   if (!isUnionValue(input)) {
@@ -496,7 +496,7 @@ export const isUnionNumberValue = (
   return true;
 };
 
-export const isUnionDirectionValue = (
+const isUnionDirectionValue = (
   input: unknown,
 ): input is UnionDirectionValue => {
   if (!isUnionValue(input)) {
@@ -699,9 +699,9 @@ export const paletteName = (palette: Palette, paletteIndex: number) => {
   return palette.name || defaultLocalisedPaletteName(paletteIndex);
 };
 
-export const defaultLocalisedActorName = (actorIndex: number) =>
+const defaultLocalisedActorName = (actorIndex: number) =>
   `${l10n("ACTOR")} ${actorIndex + 1}`;
-export const defaultLocalisedTriggerName = (triggerIndex: number) =>
+const defaultLocalisedTriggerName = (triggerIndex: number) =>
   `${l10n("TRIGGER")} ${triggerIndex + 1}`;
 export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
@@ -709,7 +709,7 @@ export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
 export const defaultLocalisedConstantName = (constantIndex: number) =>
   `${l10n("CONSTANT")} ${constantIndex + 1}`;
-export const defaultLocalisedPaletteName = (paletteIndex: number) =>
+const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 
 const extractEntitySymbols = (
@@ -800,7 +800,7 @@ export const matchAssetEntity = <
   return existingEntities.find(matchAsset(entity));
 };
 
-export const mergeAssetEntity = <T extends Asset & { inode: string }>(
+const mergeAssetEntity = <T extends Asset & { inode: string }>(
   entities: EntityState<T, string>,
   entity: T,
   keepProps: (keyof T)[],
@@ -828,7 +828,7 @@ export const mergeAssetEntity = <T extends Asset & { inode: string }>(
   return entity;
 };
 
-export const storeRemovedAssetInInodeCache = <
+const storeRemovedAssetInInodeCache = <
   T extends Asset & { inode: string },
 >(
   filename: string,
@@ -958,7 +958,7 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
   });
 };
 
-export const isSlope = (value: number) => {
+const isSlope = (value: number) => {
   return COLLISION_SLOPE_VALUES.includes(value);
 };
 
@@ -1108,11 +1108,11 @@ export const updateAllCustomEventsArgs = (
   }
 };
 
-export const validScriptEvent = (scriptEvent: ScriptEvent): boolean => {
+const validScriptEvent = (scriptEvent: ScriptEvent): boolean => {
   return !!(scriptEvent && scriptEvent.id);
 };
 
-export const sceneFixNulls = (scene: Scene): Scene => {
+const sceneFixNulls = (scene: Scene): Scene => {
   const newScene = { ...scene };
   walkSceneScriptsKeys((key) => {
     newScene[key] = filterEvents(newScene[key], validScriptEvent);
@@ -1120,7 +1120,7 @@ export const sceneFixNulls = (scene: Scene): Scene => {
   return newScene;
 };
 
-export const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
+const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
   const newActor = { ...actor };
   walkActorScriptsKeys((key) => {
     newActor[key] = filterEvents(newActor[key], validScriptEvent);
@@ -1128,7 +1128,7 @@ export const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
   return newActor;
 };
 
-export const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
+const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
   trigger: T,
 ): T => {
   const newTrigger = { ...trigger };
@@ -1138,6 +1138,6 @@ export const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
   return newTrigger;
 };
 
-export const scriptFixNulls = (script: CustomEvent): CustomEvent => {
+const scriptFixNulls = (script: CustomEvent): CustomEvent => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
