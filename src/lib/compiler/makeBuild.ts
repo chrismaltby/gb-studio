@@ -19,6 +19,7 @@ const psTreeAsync = promisify(psTree);
 
 type MakeOptions = {
   buildRoot: string;
+  romFilename: string;
   tmpPath: string;
   data: ProjectResources;
   buildType: "rom" | "web" | "pocket";
@@ -34,6 +35,7 @@ let cancelling = false;
 const makeBuild = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
+  romFilename,
   data,
   debug = false,
   buildType = "rom",
@@ -167,6 +169,7 @@ const makeBuild = async ({
       : `../_gbstools/gbdk/bin/lcc`;
   const linkArgs = buildLinkFlags(
     linkFilePath,
+    romFilename,
     data.metadata.name || "GBStudio",
     settings.cartType,
     colorEnabled,

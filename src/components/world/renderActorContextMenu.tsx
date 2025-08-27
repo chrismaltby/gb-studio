@@ -27,6 +27,39 @@ const renderActorContextMenu = ({
         ]
       : []),
     <MenuItem
+      key="move-top"
+      onClick={() =>
+        dispatch(entitiesActions.moveActorIndexTop({ sceneId, actorId }))
+      }
+    >
+      {l10n("FIELD_MOVE_TOP")}
+    </MenuItem>,
+    <MenuItem
+      key="move-up"
+      onClick={() =>
+        dispatch(entitiesActions.moveActorIndexUp({ sceneId, actorId }))
+      }
+    >
+      {l10n("FIELD_MOVE_UP")}
+    </MenuItem>,
+    <MenuItem
+      key="move-down"
+      onClick={() =>
+        dispatch(entitiesActions.moveActorIndexDown({ sceneId, actorId }))
+      }
+    >
+      {l10n("FIELD_MOVE_DOWN")}
+    </MenuItem>,
+    <MenuItem
+      key="move-bottom"
+      onClick={() =>
+        dispatch(entitiesActions.moveActorIndexBottom({ sceneId, actorId }))
+      }
+    >
+      {l10n("FIELD_MOVE_BOTTOM")}
+    </MenuItem>,
+    <MenuDivider key="div-move" />,
+    <MenuItem
       key="delete"
       onClick={() =>
         dispatch(entitiesActions.removeActor({ sceneId, actorId }))

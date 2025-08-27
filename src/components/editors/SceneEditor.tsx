@@ -25,6 +25,7 @@ import {
   SceneNormalized,
   SceneParallaxLayer,
   ScriptEventNormalized,
+  SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
@@ -83,6 +84,8 @@ import {
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import { SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SceneEditorProps {
   id: string;
@@ -159,6 +162,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
     scene?.colorModeOverride && scene?.colorModeOverride !== "none",
   );
+  const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
+    scene?.spriteMode !== undefined,
+  );
   const [commonTilesetOpen, setCommonTilesetOpen] = useState<boolean>(
     !!scene?.tilesetId,
   );
@@ -191,6 +197,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const defaultPlayerSprites = useAppSelector(
     (state) => state.project.present.settings.defaultPlayerSprites,
   );
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
+  const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
+
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
       start: l10n("SIDEBAR_ON_INIT"),
@@ -353,6 +364,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [onChangeSettingProp],
   );
 
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting | undefined) => onChangeSceneProp("spriteMode", e),
+    [onChangeSceneProp],
+  );
+
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
   };
@@ -385,6 +401,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     }
     setColorModeOverrideOpen(true);
   };
+
+  const onOverrideSpriteMode = useCallback(() => {
+    const sceneSpriteMode = defaultSpriteMode === "8x16" ? "8x8" : "8x16";
+    onChangeSpriteMode(sceneSpriteMode);
+    setSpriteModeOverrideOpen(true);
+  }, [defaultSpriteMode, onChangeSpriteMode]);
 
   const onToggleCommonTileset = useCallback(() => {
     if (commonTilesetOpen) {
@@ -499,6 +521,13 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     );
   }, [dispatch, id]);
 
+  const onlyCurrentSpriteMode = useCallback(
+    (spriteSheet: SpriteSheetNormalized) => {
+      return (spriteSheet.spriteMode ?? defaultSpriteMode) === sceneSpriteMode;
+    },
+    [defaultSpriteMode, sceneSpriteMode],
+  );
+
   const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
 
   const scriptCtx: ScriptEditorCtx = useMemo(
@@ -520,6 +549,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const showColorModeOverride =
     (scene.colorModeOverride && scene.colorModeOverride !== "none") ||
     colorModeOverrideOpen;
+  const showSpriteModeOverride = scene.spriteMode || spriteModeOverrideOpen;
 
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
@@ -641,6 +671,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                 {!showColorModeOverride && colorsEnabled && (
                   <MenuItem onClick={onOverrideColorMode}>
                     {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
+                  </MenuItem>
+                )}
+                {!showSpriteModeOverride && (
+                  <MenuItem onClick={onOverrideSpriteMode}>
+                    {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
                   </MenuItem>
                 )}
                 <MenuDivider />
@@ -1011,25 +1046,43 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
               </SidebarColumn>
             )}
             {scene.type !== "LOGO" && (
-              <SidebarColumn>
-                <FormRow>
-                  <FormField
-                    name="playerSpriteSheetId"
-                    label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-                  >
-                    <SpriteSheetSelectButton
+              <>
+                <SidebarColumn>
+                  <FormRow>
+                    <FormField
                       name="playerSpriteSheetId"
-                      value={scene.playerSpriteSheetId}
-                      direction={isStartingScene ? startDirection : "down"}
-                      onChange={onChangePlayerSpriteSheetId}
-                      includeInfo
-                      optional
-                      optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
-                      optionalValue={defaultPlayerSprites[scene.type]}
-                    />
-                  </FormField>
-                </FormRow>
-              </SidebarColumn>
+                      label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
+                    >
+                      <SpriteSheetSelectButton
+                        name="playerSpriteSheetId"
+                        value={scene.playerSpriteSheetId}
+                        direction={isStartingScene ? startDirection : "down"}
+                        onChange={onChangePlayerSpriteSheetId}
+                        filter={onlyCurrentSpriteMode}
+                        includeInfo
+                        optional
+                        optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                        optionalValue={defaultPlayerSprites[scene.type]}
+                      />
+                    </FormField>
+                  </FormRow>
+                  {showSpriteModeOverride && (
+                    <FormRow>
+                      <FormField
+                        name="spriteMode"
+                        label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                      >
+                        <SpriteModeSelect
+                          name={"spriteMode"}
+                          onChange={onChangeSpriteMode}
+                          allowDefault={true}
+                          value={scene.spriteMode}
+                        />
+                      </FormField>
+                    </FormRow>
+                  )}
+                </SidebarColumn>
+              </>
             )}
             {isStartingScene && (
               <SidebarColumn>

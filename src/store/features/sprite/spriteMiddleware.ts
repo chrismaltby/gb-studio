@@ -16,6 +16,7 @@ import {
   matchAssetEntity,
 } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
+import { getSettings } from "store/features/settings/settingsState";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -60,7 +61,9 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       entitiesActions.removeMetaspriteTiles.match(action) ||
       entitiesActions.removeMetaspriteTilesOutsideCanvas.match(action) ||
       entitiesActions.editSpriteAnimation.match(action) ||
-      entitiesActions.moveSpriteAnimationFrame.match(action)
+      entitiesActions.moveSpriteAnimationFrame.match(action) ||
+      (entitiesActions.editSpriteSheet.match(action) &&
+        action.payload.changes.spriteMode !== undefined)
     ) {
       store.dispatch(
         actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId }),
@@ -93,8 +96,16 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         spriteStates,
       });
 
-      const res = await API.sprite.compileSprite(spriteData);
-      const numTiles = res.tiles.length / 2;
+      const settings = getSettings(state);
+
+      const res = await API.sprite.compileSprite(
+        spriteData,
+        settings.spriteMode,
+      );
+      const numTiles =
+        (spriteSheet.spriteMode ?? settings.spriteMode) === "8x16"
+          ? res.tiles.length / 2
+          : res.tiles.length;
 
       if (numTiles !== spriteSheet.numTiles) {
         store.dispatch(

@@ -829,10 +829,10 @@ describe("editor reducer", () => {
     });
 
     test("should not exceed maximum zoom", () => {
-      state.zoom = 800;
+      state.zoom = 1600;
       const action = actions.zoomIn({ section: "world" });
       const newState = reducer(state, action);
-      expect(newState.zoom).toBe(800);
+      expect(newState.zoom).toBe(1600);
     });
 
     test("should increase zoom by delta if provided", () => {

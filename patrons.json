@@ -8,6 +8,13 @@
       }
     },
     {
+      "id": "7443910",
+      "type": "user",
+      "attributes": {
+        "full_name": "John the Hammer"
+      }
+    },
+    {
       "id": "89121289",
       "type": "user",
       "attributes": {
@@ -19,13 +26,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Salvatore Tosti"
-      }
-    },
-    {
-      "id": "57539298",
-      "type": "user",
-      "attributes": {
-        "full_name": "Skittles"
       }
     }
   ],
@@ -56,13 +56,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Cosy Bothy Dev"
-      }
-    },
-    {
-      "id": "852350",
-      "type": "user",
-      "attributes": {
-        "full_name": "Dimarelos"
       }
     },
     {
@@ -114,6 +107,13 @@
       "type": "user",
       "attributes": {
         "full_name": "Diante Clark"
+      }
+    },
+    {
+      "id": "852350",
+      "type": "user",
+      "attributes": {
+        "full_name": "Dimarelos"
       }
     },
     {
@@ -206,6 +206,13 @@
       },
       "id": "104804333",
       "type": "user"
+    },
+    {
+      "id": "57539298",
+      "type": "user",
+      "attributes": {
+        "full_name": "Skittles"
+      }
     },
     {
       "attributes": {

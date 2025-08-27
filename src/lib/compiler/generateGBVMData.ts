@@ -536,9 +536,16 @@ export const compileParallax = (
 
 export const compileScrollBounds = (
   scrollBounds: SceneBoundsRect | undefined,
+  sceneWidth: number,
+  sceneHeight: number,
 ): { left: number; right: number; top: number; bottom: number } | undefined => {
   if (!scrollBounds) {
-    return undefined;
+    return {
+      left: 0,
+      top: 0,
+      right: tileToPx(sceneWidth - SCREEN_WIDTH),
+      bottom: tileToPx(sceneHeight - SCREEN_HEIGHT),
+    };
   }
   return {
     left: tileToPx(scrollBounds.x),
@@ -583,7 +590,11 @@ export const compileScene = (
       parallax_rows: compileParallax(
         scene.width > SCREEN_WIDTH ? scene.parallax : undefined,
       ),
-      scroll_bounds: compileScrollBounds(scene.scrollBounds),
+      scroll_bounds: compileScrollBounds(
+        scene.scrollBounds,
+        scene.width,
+        scene.height,
+      ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       reserve_tiles: scene.actorsExclusiveLookup["player"] ?? 0,

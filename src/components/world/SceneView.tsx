@@ -41,6 +41,7 @@ import AutoColorizedImage from "components/world/AutoColorizedImage";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
+import { SceneContext } from "components/script/SceneContext";
 
 const TILE_SIZE = 8;
 
@@ -204,7 +205,9 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
-
+  const defaultSpriteMode = useAppSelector(
+    (state) => state.project.present.settings.spriteMode,
+  );
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
   );
@@ -791,16 +794,20 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
               editable={editable}
             />
           ))}
-        {showEntities &&
-          scene.actors.map((actorId) => (
-            <WorldActor
-              key={actorId}
-              id={actorId}
-              sceneId={id}
-              palettes={spritePalettes}
-              editable={editable}
-            />
-          ))}
+        <SceneContext.Provider
+          value={{ spriteMode: scene.spriteMode ?? defaultSpriteMode }}
+        >
+          {showEntities &&
+            scene.actors.map((actorId) => (
+              <WorldActor
+                key={actorId}
+                id={actorId}
+                sceneId={id}
+                palettes={spritePalettes}
+                editable={editable}
+              />
+            ))}
+        </SceneContext.Provider>
         {selected && (
           <SceneOverlay $noPointerEvents>
             <SceneEventHelper scene={scene} />

@@ -10,6 +10,7 @@ export const valueAtomTypes = [
   "constant",
   "property",
   "expression",
+  "engineField",
   "true",
   "false",
 ] as const;
@@ -112,7 +113,7 @@ export type ScriptValueAtom =
   | {
       type: "numberSymbol";
       value: string;
-    }    
+    }
   | {
       type: "variable";
       value: string;
@@ -136,6 +137,10 @@ export type ScriptValueAtom =
     }
   | {
       type: "expression";
+      value: string;
+    }
+  | {
+      type: "engineField";
       value: string;
     }
   | {
@@ -204,61 +209,57 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
     return false;
   }
   const scriptValue = value as ScriptValue;
+
   // Is a number
-  if (scriptValue.type === "number" && typeof scriptValue.value === "number") {
-    return true;
+  if (scriptValue.type === "number") {
+    return typeof scriptValue.value === "number";
   }
   // Is a number symbol
-  if (scriptValue.type === "numberSymbol" && typeof scriptValue.value === "string") {
-    return true;
-  }  
+  if (scriptValue.type === "numberSymbol") {
+    return typeof scriptValue.value === "string";
+  }
   // Is bool
   if (scriptValue.type === "true" || scriptValue.type === "false") {
     return true;
   }
-  if (
-    scriptValue.type === "variable" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Variable
+  if (scriptValue.type === "variable") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "constant" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Constant
+  if (scriptValue.type === "constant") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "property" &&
-    typeof scriptValue.target === "string" &&
-    typeof scriptValue.property === "string" &&
-    validProperties.includes(scriptValue.property)
-  ) {
-    return true;
+  // Is Property
+  if (scriptValue.type === "property") {
+    return (
+      typeof scriptValue.target === "string" &&
+      typeof scriptValue.property === "string" &&
+      validProperties.includes(scriptValue.property)
+    );
   }
-  if (
-    scriptValue.type === "expression" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Expression
+  if (scriptValue.type === "expression") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    scriptValue.type === "direction" &&
-    typeof scriptValue.value === "string"
-  ) {
-    return true;
+  // Is Engine Field
+  if (scriptValue.type === "engineField") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    isValueOperation(scriptValue) &&
-    (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
-    (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
-  ) {
-    return true;
+  // Is Direction
+  if (scriptValue.type === "direction") {
+    return typeof scriptValue.value === "string";
   }
-  if (
-    isUnaryOperation(scriptValue) &&
-    (isScriptValue(scriptValue.value) || !scriptValue.value)
-  ) {
+  if (isValueOperation(scriptValue)) {
+    return (
+      (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
+      (isScriptValue(scriptValue.valueB) || !scriptValue.valueB)
+    );
+  }
+  if (isUnaryOperation(scriptValue)) {
+    return isScriptValue(scriptValue.value) || !scriptValue.value;
+  }
+  if (scriptValue.type === "indirect") {
     return true;
   }
 
@@ -348,6 +349,10 @@ export type PrecompiledValueFetch = {
     | {
         type: "actorFrame";
         target: string | ScriptBuilderFunctionArg;
+      }
+    | {
+        type: "engineField";
+        value: string;
       };
 };
 
@@ -359,7 +364,7 @@ export type PrecompiledValueRPNOperation =
   | {
       type: "numberSymbol";
       value: string;
-    }    
+    }
   | {
       type: "constant";
       value: string;

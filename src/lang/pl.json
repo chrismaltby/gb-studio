@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2038250719",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2057250821",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -96,7 +96,7 @@
   "SIDEBAR_CONSTANTS": "Stałe",
   "SIDEBAR_ADD_CONSTANT": "Dodaj stałą",
   "SIDEBAR_CONSTANT_USES": "Użycie stałej",
-  
+
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
   "FIELD_DESCRIPTION": "Opis",
@@ -155,6 +155,10 @@
   "FIELD_MAX_VALUE_RAND_DESC": "Ustalenie wartości maksymalnej zasięgu losowego.",
   "FIELD_CLAMP": "Wartość zasisku 0 - 255",
   "FIELD_RENAME": "Zmień nazwę",
+  "FIELD_MOVE_TOP": "Przenieś na samą górę",
+  "FIELD_MOVE_UP": "Przenieś w górę",
+  "FIELD_MOVE_DOWN": "Przenieś w dół",
+  "FIELD_MOVE_BOTTOM": "Przenieś na sam dół",
   "FIELD_SAVE": "Zapisz",
   "FIELD_VARIABLE_NAME": "Nazwa zmiennej",
   "FIELD_RESET_VARIABLES": "Resetuj WSZYSTKIE zmienne do ''Fałsz''.",
@@ -372,7 +376,7 @@
   "FIELD_WALK_VEL": "Prędkość chodzenia",
   "FIELD_WALK_VEL_DESC": "Maksymalna prędkość podczas chodzenia.",
   "FIELD_RUN_VEL": "Prędkość biegu",
-  "FIELD_RUN_VEL_DESC": "Maksymalna prędkość podczas biegu.", 
+  "FIELD_RUN_VEL_DESC": "Maksymalna prędkość podczas biegu.",
   "FIELD_WALK_ACC": "Przyspieszenie chodzenia",
   "FIELD_WALK_ACC_DESC": "Szybkość przyspieszania podczas chodzenia.",
   "FIELD_RUN_ACC": "Przyspieszenie biegu",
@@ -1225,7 +1229,16 @@
   "FIELD_BLANK_ANIM_STATE": "Animacja stanu pustego",
   "FIELD_BLANK_ANIM_STATE_DESC": "Stan animacji używany w czasie gdy gracz jest w stanie pustym.",
   "FIELD_CAMERA_BOUNDS": "Granice kamery",
-  
+  "FIELD_SPRITE_MODE_8x8": "Tafle 8x8",
+  "FIELD_SPRITE_MODE_8x16": "Tafle 8x16",
+  "FIELD_SPRITE_MODE_8x8_INFO": "8x8",
+  "FIELD_SPRITE_MODE_8x16_INFO": "8x16",
+  "FIELD_DEFAULT_SPRITE_MODE": "Domyślny tryb grafiki",
+  "FIELD_SPRITE_MODE_OVERRIDE": "Nadpisanie trybu grafiki",
+  "FIELD_SET_SPRITE_MODE_OVERRIDE": "Ustaw nadpisanie trybu grafiki",
+  "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Otwórz folder kompilacji po eksporcie",
+  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Wyświetl zużycie ROM po kompilacji",
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1274,6 +1287,10 @@
   "EVENT_IF_VALUE_DESC": "Warunkowe uruchomienie części skryptu na podstawie wartości zmiennej w porównaniu z wartością.",
   "EVENT_IF_VALUE_COMPARE": "Warunek: zmienna porównuje się do zmiennej",
   "EVENT_IF_VALUE_COMPARE_DESC": "Warunkowe uruchomienie części skryptu na podstawie wartości zmiennej w porównaniu z inną zmienną.",
+  "EVENT_IF_ENGINE_FIELD": "Warunek: pole silnika porównane do wartości",
+  "EVENT_IF_ENGINE_FIELD_DESC": "Warunkowe uruchomienie części skryptu na podstawie wartości pola silnika w porównaniu z inną wartością.",
+  "EVENT_IF_ENGINE_FIELD_COMPARE": "Warunek: pole silnika porównane do zmiennej",
+  "EVENT_IF_ENGINE_FIELD_COMPARE_DESC": "Warunkowe uruchomienie części skryptu na podstawie wartości pola silnika w porównaniu z wartością innej zmiennej.",
   "EVENT_IF_INPUT": "Warunek: naciśnięty przycisk joypada",
   "EVENT_IF_INPUT_DESC": "Warunkowe uruchomienie części skryptu, jeśli określony przycisk joypada jest aktualnie naciśnięty. Polecenie nie czeka na dane wejściowe użytkownika i zostanie wykonane tylko raz, jeśli chcesz uruchomić skrypt za każdym razem, gdy zostanie naciśnięty przycisk, użyj polecenia 'Przypisz skrypt'.",
   "EVENT_IF_ACTOR_AT_POSITION": "Warunek: położenie aktora (współrzędne)",
@@ -1316,9 +1333,9 @@
   "EVENT_RESET_VARIABLES_DESC": "Polecenie resetuje wszystkie zmienne użyte w projekcie, przywracając im wartość 'fałsz'.",
   "EVENT_LOOP": "Pętla",
   "EVENT_LOOP_DESC": "Uruchomienie części skryptu w nieskończącej się pętli. Pamiętaj, aby dodać polecenie wyrywające z pętli, w przeciwnym razie gracz utknie w tym momencie. Można użyć polecenia 'zatrzymaj skrypt' lub 'zmień scenę', aby zatrzymać pętlę.",
-  "EVENT_LOOP_FOR": "Pętla przez",
+  "EVENT_LOOP_FOR": "Pętla od - do",
   "EVENT_LOOP_FOR_DESC": "Uruchomienie części skryptu w pętli, podczas gdy zmienna licznika jest w określonym zakresie. W każdej pętli zmienna licznika jest modyfikowana przed następnym wykonaniem.",
-  "EVENT_LOOP_WHILE": "Pętla gdy",
+  "EVENT_LOOP_WHILE": "Pętla dopóki",
   "EVENT_LOOP_WHILE_DESC": "Uruchomienie części skryptu w pętli, podczas gdy wyrażenie jest prawdą...",
   "EVENT_GROUP": "Grupowanie poleceń",
   "EVENT_GROUP_DESC": "Polecenie pozwala na grupowanie części skryptu w celach organizacyjnych.",
@@ -1335,7 +1352,7 @@
   "EVENT_CAMERA_LOCK": "Kamera: powrót do gracza",
   "EVENT_CAMERA_LOCK_DESC": "Polecenie przywraca kamerę do pierwotnych ustawień, gdzie gracz jest w centrum, kamera jest też zablokowana podczas ruchu gracza. Opcjonalnie umożliwia blokowanie podążania za graczem tylko w osi poziomej lub pionowej.",
   "EVENT_CAMERA_SET_LOCK": "Kamera: ustaw na graczu",
-  "EVENT_CAMERA_SET_LOCK_DESC": "Ustawia kamerę tak, aby śledziła gracza i była zablokowana na jego pozycji. Opcjonalnie umożliwia podążanie za graczem tylko w osi poziomej lub pionowej.", 
+  "EVENT_CAMERA_SET_LOCK_DESC": "Ustawia kamerę tak, aby śledziła gracza i była zablokowana na jego pozycji. Opcjonalnie umożliwia podążanie za graczem tylko w osi poziomej lub pionowej.",
   "EVENT_FADE_IN": "Ekran: wyczyszczenie",
   "EVENT_FADE_IN_DESC": "Polecenie przejścia, pozbędzie się czarnego pustego ekranu.",
   "EVENT_FADE_OUT": "Ekran: pojawienie",
@@ -1644,7 +1661,7 @@
   "EVENT_CAMERA_SET_BOUNDS": "Ustaw ograniczenia kamery",
   "EVENT_CAMERA_SET_BOUNDS_DESC": "Ustawia granice dla kamery, uniemożliwiając jej wychodzenie poza określony obszar.",
   "EVENT_CAMERA_SET_BOUNDS_LABEL": "Ustaw ograniczenia kamery: {{x},{y},{width},{height}}",
-  
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
@@ -1785,7 +1802,7 @@
   "MENU_PROJECT_PLUGINS": "Wtyczki projektowe",
   "MENU_PLAY_WINDOW": "Okno gry",
   "MENU_MUTE_AUDIO": "Wycisz audio",
-  
+
   "// 11": "Warnings -----------------------------------------------------",
 
   "WARNING_BACKGROUND_TOO_SMALL": "Tło jest za małe, minimalne wymiary dla tła to: 160px x 144px",
@@ -1818,7 +1835,8 @@
   "WARNING_SPRITE_IN_MULTIPLE_COLOR_MODES": "Sprite \"{filename}\" jest używany w kilku trybach kolorów, więc może nie być wyświetlany poprawnie na wszystkich urządzeniach. Podczas nadpisywania trybu kolorów sceny, nie używaj ponownie grafik (spritów lub tła) ze scen bez nadpisania. W razie potrzeby duplikuj pliki.",
   "WARNING_FIELD_UNITS_SUBPX": "To pole używa jednostek subpikselowych. Wartość będzie {multiplier} razy większa niż ta wyświetlana w  'Ustawieniach'",
   "WARNING_FIELD_UNITS_SUBPX_PRECISE": "To pole używa precyzyjnych jednostek subpikslewowych. Wartość będzie {multiplier} razy większa niż ta wyświetlana w 'Ustawieniach'",
-  
+  "WARNING_SPRITE_MODE_MISMATCH": "Grafika {sprite} jest używana w scenie {scene} z innym trybem grafiki ({sceneMode}) niż jej własny tryb ({spriteMode}). Może to powodować błędne wyświetlanie. Zmień tryb grafiki sceny lub użyj innej grafiki.",
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
@@ -1841,7 +1859,7 @@
   "ERROR_PLUGIN_NOT_FOUND": "Nie znaleziono wtyczki",
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Nie można usunąć wtyczki",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Nie można zainstalować wtyczki",
-  
+
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nowy",
@@ -1864,7 +1882,7 @@
   "SPLASH_NO_RECENT_PROJECTS": "Ostatnio nie otwarto żadnych projektów.",
   "SPLASH_CREDITS": "Credits",
   "SPLASH_CONTRIBUTORS": "Kontrybutorzy",
-  
+
   "// 14": "Dialogue Review ------------------------------------------------",
 
   "DIALOGUE_REVIEW": "Przegląd dialogu",
@@ -1947,8 +1965,8 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "Ta wtyczka może być niekompatybilna z Twoją wersją GB Studio.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji {version}.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji przedpremierowej {version}.",
-  
- "// 16": "Settings ----------------------------------------------------",
+
+  "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
   "SETTINGS_SCENES": ": ilość scen",
@@ -1968,6 +1986,7 @@
   "SETTINGS_MUSIC_DRIVER": "Sterownik muzyczny",
   "SETTINGS_COLOR": "Opcje koloru",
   "SETTINGS_BUILD": "Opcje kompilacji",
+  "SETTINGS_SPRITE": "Opcje grafiki",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 
@@ -2022,7 +2041,7 @@
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Lokalny silnik nie znaleziony, używanie domyślnego silnika",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Wyszukiwanie wtyczek silnika w {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Używanie wtyczki silnika: {path}",
-  
+
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",

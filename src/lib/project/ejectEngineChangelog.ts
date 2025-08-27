@@ -872,13 +872,21 @@ const changes: EngineChange[] = [
       "Fix issue where holding button to fast forward through text would close text box when end reached",
       "Fix position overflow in large Adventure scenes",
       "Fix position overflow in large Point and Click scenes",
-    ]),    
+    ]),
     modifiedFiles: [
       "include/math.h",
       "src/core/ui.c",
       "src/states/adventure.c",
       "src/states/pointnclick.c",
     ],
+  },
+  {
+    version: "4.2.0-e11",
+    description: createDescription("Updates", [
+      "Fix issue causing scroll bounds to be ignored for scenes with width of 20 or height of 18 tiles",
+      "Add sizes and IDs into the save blob for easier crash analysis",
+    ]),
+    modifiedFiles: ["src/core/data_manager.c", "src/core/load_save.c"],
   },
 ];
 

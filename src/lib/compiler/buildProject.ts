@@ -10,6 +10,7 @@ type BuildOptions = {
   projectRoot: string;
   tmpPath: string;
   engineSchema: EngineSchema;
+  romFilename: string;
   outputRoot: string;
   make?: boolean;
   debugEnabled?: boolean;
@@ -28,6 +29,7 @@ const buildProject = async (
     tmpPath = "/tmp",
     engineSchema,
     outputRoot = "/tmp/testing",
+    romFilename,
     debugEnabled = false,
     make = true,
     progress = (_msg: string) => {},
@@ -43,6 +45,7 @@ const buildProject = async (
     engineSchema,
     tmpPath,
     outputRoot,
+    romFilename,
     debugEnabled,
     make,
     progress,
@@ -57,14 +60,12 @@ const buildProject = async (
   }
 
   if (buildType === "web") {
-    const colorOnly = project.settings.colorMode === "color";
     const colorCorrection =
       project.settings.colorCorrection === "default" ? 2 : 0;
-    const gameFile = colorOnly ? "game.gbc" : "game.gb";
     await copy(binjgbRoot, `${outputRoot}/build/web`);
     await copy(
-      `${outputRoot}/build/rom/${gameFile}`,
-      `${outputRoot}/build/web/rom/${gameFile}`,
+      `${outputRoot}/build/rom/${romFilename}`,
+      `${outputRoot}/build/web/rom/${romFilename}`,
     );
     const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(project.metadata.name);
@@ -96,7 +97,7 @@ const buildProject = async (
     const scriptJs = (
       await fs.readFile(`${outputRoot}/build/web/js/script.js`, "utf8")
     )
-      .replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${gameFile}"`)
+      .replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${romFilename}"`)
       .replace(
         /CGB_COLOR_CURVE = [0-9]+/g,
         `CGB_COLOR_CURVE = ${colorCorrection}`,
@@ -107,8 +108,8 @@ const buildProject = async (
   } else if (buildType === "pocket") {
     await fs.mkdir(`${outputRoot}/build/pocket`);
     await copy(
-      `${outputRoot}/build/rom/game.pocket`,
-      `${outputRoot}/build/pocket/game.pocket`,
+      `${outputRoot}/build/rom/${romFilename}`,
+      `${outputRoot}/build/pocket/${romFilename}`,
     );
   }
   return compiledData;

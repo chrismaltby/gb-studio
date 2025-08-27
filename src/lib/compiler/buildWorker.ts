@@ -17,6 +17,7 @@ export type BuildWorkerData = {
   tmpPath: string;
   engineSchema: EngineSchema;
   outputRoot: string;
+  romFilename: string;
   make: boolean;
   debugEnabled?: boolean;
   l10nData: L10NLookup;
@@ -51,6 +52,7 @@ const buildProject = async ({
   engineSchema,
   tmpPath,
   outputRoot,
+  romFilename,
   buildType,
   make,
   debugEnabled,
@@ -92,6 +94,7 @@ const buildProject = async ({
   if (make) {
     await makeBuild({
       buildRoot: outputRoot,
+      romFilename,
       tmpPath,
       buildType,
       data: project,

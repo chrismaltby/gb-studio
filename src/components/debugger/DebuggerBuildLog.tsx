@@ -19,6 +19,7 @@ import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
 import { StyledButton } from "ui/buttons/style";
+import { ResourceLinkedText } from "ui/links/ResourceLinkedText";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -94,7 +95,7 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
   const dispatch = useAppDispatch();
   return (
     <LogLine $type={type}>
-      {text}{" "}
+      <ResourceLinkedText text={text} />
       {link && (
         <LogLink
           onClick={() => {
@@ -146,6 +147,12 @@ const DebuggerBuildLog = () => {
   );
   const generateDebugFilesEnabled = useAppSelector(
     (state) => getSettings(state).generateDebugFilesEnabled,
+  );
+  const openBuildFolderOnExport = useAppSelector(
+    (state) => getSettings(state).openBuildFolderOnExport,
+  );
+  const showRomUsageAfterBuild = useAppSelector(
+    (state) => getSettings(state).showRomUsageAfterBuild,
   );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
@@ -215,6 +222,16 @@ const DebuggerBuildLog = () => {
       ),
     [onChangeSettingProp, generateDebugFilesEnabled],
   );
+  const onToggleOpenBuildFolderOnExport = useCallback(
+    () =>
+      onChangeSettingProp("openBuildFolderOnExport", !openBuildFolderOnExport),
+    [onChangeSettingProp, openBuildFolderOnExport],
+  );
+  const onToggleShowRomUsageAfterBuild = useCallback(
+    () =>
+      onChangeSettingProp("showRomUsageAfterBuild", !showRomUsageAfterBuild),
+    [onChangeSettingProp, showRomUsageAfterBuild],
+  );
 
   return (
     <Wrapper>
@@ -272,16 +289,31 @@ const DebuggerBuildLog = () => {
           >
             {l10n("FIELD_GENERATE_DEBUG_FILES")}
           </MenuItem>
+          <MenuItem
+            onClick={onToggleOpenBuildFolderOnExport}
+            icon={openBuildFolderOnExport ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+          </MenuItem>
+          <MenuItem
+            onClick={onToggleShowRomUsageAfterBuild}
+            icon={showRomUsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
+          </MenuItem>
+
           <MenuDivider />
           <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
             {l10n("BUILD_EMPTY_BUILD_CACHE")}
           </MenuItem>
         </DropdownButton>
         <UsageWrapper ref={observe}>
-          <DebuggerUsageData
-            hideLabels={usageBreakpoint !== "LG"}
-            forceZoom={usageBreakpoint === "SM"}
-          ></DebuggerUsageData>
+          {showRomUsageAfterBuild && (
+            <DebuggerUsageData
+              hideLabels={usageBreakpoint !== "LG"}
+              forceZoom={usageBreakpoint === "SM"}
+            ></DebuggerUsageData>
+          )}
         </UsageWrapper>
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>

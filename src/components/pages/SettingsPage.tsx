@@ -1,7 +1,10 @@
 import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { castEventToBool } from "renderer/lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToString,
+} from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
@@ -9,6 +12,7 @@ import {
   ColorModeSetting,
   MusicDriverSetting,
   SettingsState,
+  SpriteModeSetting,
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -39,16 +43,22 @@ import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/layout/FormLayout";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexRow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
+import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
+import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import { getROMFilename } from "shared/lib/helpers/filePaths";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.project.present.settings);
+  const projectName = useAppSelector(
+    (state) => state.project.present.metadata.name,
+  );
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
@@ -89,10 +99,21 @@ const SettingsPage: FC = () => {
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
+    openBuildFolderOnExport,
+    showRomUsageAfterBuild,
     compilerPreset,
+    spriteMode,
+    romFilename,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
+
+  const defaultRomFilename = getROMFilename(
+    "",
+    projectName,
+    colorMode === "color",
+    "rom",
+  );
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.currentTarget.value);
@@ -135,6 +156,11 @@ const SettingsPage: FC = () => {
     [onChangeSettingProp],
   );
 
+  const onChangeSpriteMode = useCallback(
+    (e: SpriteModeSetting) => onChangeSettingProp("spriteMode", e),
+    [onChangeSettingProp],
+  );
+
   const onChangeDefaultFontId = useCallback(
     (e: string) => onChangeSettingProp("defaultFontId", e),
     [onChangeSettingProp],
@@ -151,6 +177,15 @@ const SettingsPage: FC = () => {
     [onChangeSettingProp],
   );
 
+  const onChangeROMFilename = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp(
+        "romFilename",
+        stripInvalidFilenameCharacters(castEventToString(e)),
+      ),
+    [onChangeSettingProp],
+  );
+
   const onChangeOpenBuildLogOnWarnings = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("openBuildLogOnWarnings", castEventToBool(e)),
@@ -160,6 +195,18 @@ const SettingsPage: FC = () => {
   const onChangeGenerateDebugFilesEnabled = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
+    [onChangeSettingProp],
+  );
+
+  const onChangeOpenBuildFolderOnExport = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("openBuildFolderOnExport", castEventToBool(e)),
+    [onChangeSettingProp],
+  );
+
+  const onChangeShowRomUsageAfterBuild = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("showRomUsageAfterBuild", castEventToBool(e)),
     [onChangeSettingProp],
   );
 
@@ -257,8 +304,8 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
-              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            <SettingsMenuItem onClick={onMenuItem("settingsSprite")}>
+              {l10n("SETTINGS_SPRITE")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
@@ -294,8 +341,10 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("FIELD_EXPORT_IN_COLOR"),
-            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
-            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
+            colorMode !== "mono"
+              ? l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")
+              : "",
+            colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
             l10n("FIELD_COLOR_CORRECTION"),
           ]}
         >
@@ -542,17 +591,37 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")]}
+          searchMatches={[
+            l10n("SETTINGS_SPRITE"),
+            l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            l10n("FIELD_DEFAULT_SPRITE_MODE"),
+          ]}
         >
-          <CardAnchor id="settingsPlayer" />
-          <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
+          <CardAnchor id="settingsSprite" />
+          <CardHeading>{l10n("SETTINGS_SPRITE")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+            ]}
+          >
+            <SettingRowLabel $sectionHeading>
+              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            </SettingRowLabel>
+          </SearchableSettingRow>
+
           {sceneTypes.map((sceneType) => (
             <SearchableSettingRow
               key={sceneType.key}
               searchTerm={searchTerm}
-              searchMatches={[l10n(sceneType.label as L10NKey)]}
+              searchMatches={[
+                l10n(sceneType.label as L10NKey),
+                l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
+              ]}
             >
-              <SettingRowLabel>
+              <SettingRowLabel $indent={1}>
                 {l10n(sceneType.label as L10NKey)}
               </SettingRowLabel>
               <SettingRowInput>
@@ -568,6 +637,27 @@ const SettingsPage: FC = () => {
               </SettingRowInput>
             </SearchableSettingRow>
           ))}
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[
+              l10n("SETTINGS_SPRITE"),
+              l10n("FIELD_DEFAULT_SPRITE_MODE"),
+            ]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_DEFAULT_SPRITE_MODE")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <SpriteModeSelect
+                name="spriteMode"
+                value={spriteMode}
+                onChange={(value) => {
+                  onChangeSpriteMode(value ?? "8x16");
+                }}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
         </SearchableCard>
 
         <SearchableCard
@@ -688,6 +778,7 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("SETTINGS_BUILD"),
+            l10n("FIELD_ROM_FILENAME"),
             l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
             l10n("FIELD_GENERATE_DEBUG_FILES"),
             l10n("FIELD_COMPILER_PRESET"),
@@ -695,6 +786,24 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsBuild" />
           <CardHeading>{l10n("SETTINGS_BUILD")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_ROM_FILENAME")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_ROM_FILENAME")}</SettingRowLabel>
+            <SettingRowInput>
+              <FlexRow>
+                <Input
+                  id="romFilename"
+                  name="romFilename"
+                  onChange={onChangeROMFilename}
+                  value={romFilename}
+                  placeholder={defaultRomFilename}
+                />
+              </FlexRow>
+            </SettingRowInput>
+          </SearchableSettingRow>
+
           <SearchableSettingRow
             searchTerm={searchTerm}
             searchMatches={[l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")]}
@@ -725,6 +834,40 @@ const SettingsPage: FC = () => {
                 name="generateDebugFilesEnabled"
                 checked={generateDebugFilesEnabled}
                 onChange={onChangeGenerateDebugFilesEnabled}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="openBuildFolderOnExport"
+                name="openBuildFolderOnExport"
+                checked={openBuildFolderOnExport}
+                onChange={onChangeOpenBuildFolderOnExport}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="showRomUsageAfterBuild"
+                name="showRomUsageAfterBuild"
+                checked={showRomUsageAfterBuild}
+                onChange={onChangeShowRomUsageAfterBuild}
               />
             </SettingRowInput>
           </SearchableSettingRow>

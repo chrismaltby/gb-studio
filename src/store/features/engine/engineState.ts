@@ -70,6 +70,7 @@ export interface EngineState {
   lookup: Record<string, EngineFieldSchema>;
   sceneTypes: SceneTypeSchema[];
   consts: Record<string, number>;
+  defaultEngineFieldId: string;
 }
 
 export const initialState: EngineState = {
@@ -78,6 +79,12 @@ export const initialState: EngineState = {
   lookup: {},
   sceneTypes: [],
   consts: {},
+  defaultEngineFieldId: "",
+};
+
+const getDefaultEngineFieldId = (fields: EngineFieldSchema[]) => {
+  const field = fields.find((f) => f.cType !== "define");
+  return field ? field.key : "";
 };
 
 const engineSlice = createSlice({
@@ -89,6 +96,9 @@ const engineSlice = createSlice({
       state.lookup = keyBy(action.payload.fields, "key");
       state.sceneTypes = action.payload.sceneTypes;
       state.consts = action.payload.consts;
+      state.defaultEngineFieldId = getDefaultEngineFieldId(
+        action.payload.fields,
+      );
     },
   },
   extraReducers: (builder) =>
@@ -101,6 +111,9 @@ const engineSlice = createSlice({
         state.lookup = keyBy(action.payload.engineSchema.fields, "key");
         state.sceneTypes = action.payload.engineSchema.sceneTypes;
         state.consts = action.payload.engineSchema.consts;
+        state.defaultEngineFieldId = getDefaultEngineFieldId(
+          action.payload.engineSchema.fields,
+        );
         state.loaded = true;
       }),
 });

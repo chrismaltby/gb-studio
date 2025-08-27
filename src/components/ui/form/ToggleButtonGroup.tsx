@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 
-export type ToggleButtonGroupOption<T> = {
+type ToggleButtonGroupOption<T> = {
   value: T;
   label: string | React.ReactNode;
   title?: string;
 };
 
-export type ToggleButtonGroupProps<T> = {
+type ToggleButtonGroupProps<T> = {
   name: string;
   options: ToggleButtonGroupOption<T>[];
   autoFocus?: boolean;

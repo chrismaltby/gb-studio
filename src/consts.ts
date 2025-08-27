@@ -139,6 +139,8 @@ export const LYC_SYNC_VALUE = 150;
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
 
+export const MAX_ZOOM_LEVEL = 1600;
+
 // Music Editor
 export const TRACKER_UNDO = "TRACKER_UNDO";
 export const TRACKER_REDO = "TRACKER_REDO";
@@ -433,6 +435,10 @@ export const defaultProjectSettings: Settings = {
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
+  spriteMode: "8x16",
+  openBuildFolderOnExport: true,
+  showRomUsageAfterBuild: false,
+  romFilename: "",
 };
 
 export const defaultPalettes: Palette[] = [

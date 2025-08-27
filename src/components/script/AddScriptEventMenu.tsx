@@ -88,6 +88,7 @@ interface InstanciateOptions {
   defaultSpriteId: string;
   defaultEmoteId: string;
   defaultTilesetId: string;
+  defaultEngineFieldId: string;
   defaultArgs?: Record<string, unknown>;
 }
 
@@ -106,6 +107,7 @@ const instanciateScriptEvent = (
     defaultSpriteId,
     defaultEmoteId,
     defaultTilesetId,
+    defaultEngineFieldId,
     defaultArgs,
   }: InstanciateOptions,
 ): Omit<ScriptEventNormalized, "id"> => {
@@ -167,6 +169,8 @@ const instanciateScriptEvent = (
           replaceValue = defaultTilesetId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
+        } else if (defaultValue === "LAST_ENGINE_FIELD") {
+          replaceValue = defaultEngineFieldId;
         } else if (field.type === "events") {
           return memo;
         } else if (defaultValue !== undefined) {
@@ -183,6 +187,14 @@ const instanciateScriptEvent = (
                   return {
                     ...node,
                     value: defaultVariableId,
+                  };
+                } else if (
+                  node.type === "engineField" &&
+                  node.value === "LAST_ENGINE_FIELD"
+                ) {
+                  return {
+                    ...node,
+                    value: defaultEngineFieldId,
                   };
                 }
                 return node;
@@ -564,6 +576,9 @@ const AddScriptEventMenu = ({
   const lastTilesetId = useAppSelector(
     (state) => tilesetSelectors.selectIds(state)[0],
   );
+  const lastEngineFieldId = useAppSelector(
+    (state) => state.engine.defaultEngineFieldId,
+  );
   const context = useContext(ScriptEditorContext);
   const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefsWithPresets(state),
@@ -802,6 +817,7 @@ const AddScriptEventMenu = ({
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
               defaultTilesetId: String(lastTilesetId),
+              defaultEngineFieldId: String(lastEngineFieldId),
               defaultArgs: {
                 ...defaultArgs,
                 ...userDefaults,
@@ -829,6 +845,7 @@ const AddScriptEventMenu = ({
       lastSpriteId,
       lastEmoteId,
       lastTilesetId,
+      lastEngineFieldId,
       onBlur,
     ],
   );

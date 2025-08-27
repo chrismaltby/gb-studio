@@ -162,6 +162,7 @@ export const buildPackFlags = (packFilePath: string, batteryless = false) => {
 
 export const buildLinkFlags = (
   linkFile: string,
+  romFilename: string,
   name = "GBSTUDIO",
   cartType: string,
   color = false,
@@ -178,7 +179,6 @@ export const buildLinkFlags = (
       .replace(/[^A-Z]*/g, "")
       .substring(0, 15) || "GBSTUDIO";
   const cart = cartType === "mbc3" ? "0x10" : "0x1E";
-  const gameFile = colorOnly ? "game.gbc" : "game.gb";
   return ([] as Array<string>).concat(
     // General
     [
@@ -200,7 +200,7 @@ export const buildLinkFlags = (
       `-Wm-yn"${validName}"`,
     ],
     // Color
-    color ? ["-Wm-yC"] : [],
+    colorOnly ? ["-Wm-yC"] : color ? ["-Wm-yc"] : [],
     // SGB
     sgb ? ["-Wm-ys"] : [],
     // Pocket
@@ -224,8 +224,7 @@ export const buildLinkFlags = (
         ]
       : ["-Wl-g__start_save=0"],
     // Output
-    targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
-    targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
+    ["-o", `"build/rom/${romFilename}"`],
     [`-Wl-f${linkFile}`],
   );
 };
