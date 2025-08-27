@@ -28,16 +28,6 @@ export const toTileLookup = (tiles: Uint8Array[]): TileLookup => {
   return output;
 };
 
-const mergeTileLookups = (tileLookups: TileLookup[]): TileLookup => {
-  const output: TileLookup = {};
-  for (const lookup of tileLookups) {
-    for (const key in lookup) {
-      output[key] = lookup[key];
-    }
-  }
-  return output;
-};
-
 export const tileArrayToTileData = (tiles: Uint8Array[]): Uint8Array => {
   const size = tiles.reduce((memo, tile) => memo + tile.length, 0);
   const output = new Uint8Array(size);

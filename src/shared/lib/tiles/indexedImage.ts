@@ -212,7 +212,7 @@ export const flipIndexedImageY = (inData: IndexedImage): IndexedImage => {
   return output;
 };
 
-const trimIndexedImage = (
+export const trimIndexedImage = (
   inData: IndexedImage,
   trimValue: number,
 ): SliceDef => {

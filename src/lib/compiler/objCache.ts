@@ -15,8 +15,6 @@ interface ParsedInclude {
 type IncludesLookup = Record<string, ParsedInclude>;
 type GameGlobalsLookup = Record<string, string>;
 
-const objCache = {};
-
 const GAME_GLOBALS_FILE = "data/game_globals.i";
 
 const referencedFiles = (string: string): string[] => {

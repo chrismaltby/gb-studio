@@ -13,7 +13,6 @@ import {
 } from "./generateGBVMData";
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
-import { gbvmSetConstForCType } from "shared/lib/engineFields/engineFieldToCType";
 import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 interface InitialState {

@@ -11,11 +11,6 @@ interface SliderProps {
   onChange?: (value: number) => void;
 }
 
-const SliderWrapper = styled.div`
-  width: calc(100% - 20px);
-  position: relative;
-`;
-
 const RangeInner = styled.div`
   display: flex;
   width: 100%;

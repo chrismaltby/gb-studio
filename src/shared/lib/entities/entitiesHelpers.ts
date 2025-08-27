@@ -20,8 +20,6 @@ import {
   Variable,
   EngineFieldValue,
   UnionValue,
-  UnionDirectionValue,
-  UnionNumberValue,
   UnionPropertyValue,
   UnionVariableValue,
   SpriteState,
@@ -46,8 +44,6 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
-import parseAssetPath from "shared/lib/assets/parseAssetPath";
-import { COLLISION_SLOPE_VALUES } from "consts";
 import { Asset, assetNameFromFilename } from "shared/lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
 import isEqual from "lodash/isEqual";
@@ -122,10 +118,7 @@ interface NormalizedResult {
   engineFieldValues: EntityId[];
 }
 
-type NormalizedData = NormalizedSchema<
-  NormalizedEntities,
-  NormalizedResult
->;
+type NormalizedData = NormalizedSchema<NormalizedEntities, NormalizedResult>;
 
 type NamedEntity = { name: string };
 
@@ -447,9 +440,6 @@ export const sortByFilename = (a: Asset, b: Asset) => {
   return collator.compare(a.filename, b.filename);
 };
 
-const swapArrayElement = <T>(x: number, y: number, [...xs]: T[]): T[] =>
-  xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
-
 export const isUnionValue = (input: unknown): input is UnionValue => {
   if (typeof input !== "object") {
     return false;
@@ -479,30 +469,6 @@ export const isUnionPropertyValue = (
     return false;
   }
   if (input.type !== "property") {
-    return false;
-  }
-  return true;
-};
-
-const isUnionNumberValue = (
-  input: unknown,
-): input is UnionNumberValue => {
-  if (!isUnionValue(input)) {
-    return false;
-  }
-  if (input.type !== "number") {
-    return false;
-  }
-  return true;
-};
-
-const isUnionDirectionValue = (
-  input: unknown,
-): input is UnionDirectionValue => {
-  if (!isUnionValue(input)) {
-    return false;
-  }
-  if (input.type !== "direction") {
     return false;
   }
   return true;
@@ -828,35 +794,6 @@ const mergeAssetEntity = <T extends Asset & { inode: string }>(
   return entity;
 };
 
-const storeRemovedAssetInInodeCache = <
-  T extends Asset & { inode: string },
->(
-  filename: string,
-  projectRoot: string,
-  assetFolder: string,
-  entities: EntityState<T, string>,
-): Asset => {
-  const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
-
-  const existingEntities = entities.ids.map(
-    (id) => entities.entities[id],
-  ) as T[];
-
-  const asset = {
-    filename: file,
-    plugin,
-  };
-
-  const existingAsset = existingEntities.find(matchAsset(asset));
-
-  if (existingAsset) {
-    // Store deleted asset in inode cache incase it was just being renamed
-    inodeToAssetCache[existingAsset.inode] = existingAsset;
-  }
-
-  return asset;
-};
-
 /**
  * Upsert entity, preferring some props from existing entity where available
  * @param entities entity state
@@ -956,10 +893,6 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
     id,
     changes,
   });
-};
-
-const isSlope = (value: number) => {
-  return COLLISION_SLOPE_VALUES.includes(value);
 };
 
 export const updateCustomEventArgs = (
@@ -1128,9 +1061,7 @@ const actorFixNulls = <T extends Actor | ActorPrefab>(actor: T): T => {
   return newActor;
 };
 
-const triggerFixNulls = <T extends Trigger | TriggerPrefab>(
-  trigger: T,
-): T => {
+const triggerFixNulls = <T extends Trigger | TriggerPrefab>(trigger: T): T => {
   const newTrigger = { ...trigger };
   walkTriggerScriptsKeys((key) => {
     newTrigger[key] = filterEvents(newTrigger[key], validScriptEvent);

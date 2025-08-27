@@ -1,8 +1,4 @@
-type DirectionGBVMValue =
-  | "DIR_DOWN"
-  | "DIR_LEFT"
-  | "DIR_RIGHT"
-  | "DIR_UP";
+type DirectionGBVMValue = "DIR_DOWN" | "DIR_LEFT" | "DIR_RIGHT" | "DIR_UP";
 
 const DIR_ENUM_LOOKUP: Record<string, DirectionGBVMValue> = {
   down: "DIR_DOWN",
@@ -10,8 +6,6 @@ const DIR_ENUM_LOOKUP: Record<string, DirectionGBVMValue> = {
   right: "DIR_RIGHT",
   up: "DIR_UP",
 } as const;
-
-const TEXT_SPEED_LOOKUP = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f] as const;
 
 const KEY_BITS: Record<string, number> = {
   left: 0x02,
@@ -45,6 +39,3 @@ export const inputDec = (input: string | string[]) => {
 
 export const dirEnum = (dir: unknown): DirectionGBVMValue =>
   DIR_ENUM_LOOKUP[dir as string] || "DIR_DOWN";
-
-const textSpeedDec = (speed: number): number =>
-  TEXT_SPEED_LOOKUP[speed] !== undefined ? TEXT_SPEED_LOOKUP[speed] : 0x1;

@@ -33,12 +33,6 @@ export const SettingsSearchWrapper = styled.div`
   padding: 5px;
 `;
 
-const SettingsSearch = styled.input`
-  padding: 5px;
-  width: 100%;
-  border-radius: 4px;
-`;
-
 export const SettingsMenuItem = styled.a`
   display: block;
   margin: 0;

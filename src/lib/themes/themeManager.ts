@@ -25,12 +25,6 @@ const windowsThemes: Record<ThemeId, ThemeInterface> = {
   dark: darkThemeWin,
 };
 
-interface ThemePlugin {
-  id: string;
-  name: string;
-  theme: JSON;
-}
-
 const loadThemePlugin = async (
   path: string,
 ): Promise<(JSON & { name: string; type: unknown }) | null> => {

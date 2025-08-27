@@ -121,20 +121,6 @@ export const getBuildCommands = async (
   return output;
 };
 
-const buildPackFile = async (buildRoot: string) => {
-  const output = [];
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
-  for (const file of buildFiles) {
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.o`;
-
-    output.push(objFile);
-  }
-  return output.join("\n");
-};
-
 export const buildLinkFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -147,17 +133,6 @@ export const buildLinkFile = async (buildRoot: string) => {
     output.push(objFile);
   }
   return output.join("\n");
-};
-
-const buildPackFlags = (packFilePath: string, batteryless = false) => {
-  return ([] as Array<string | number>).concat(
-    // General
-    ["-b", 5, "-f", 255, "-e", "rel", "-c"],
-    // Batteryless
-    batteryless ? ["-a 4"] : [],
-    // Input
-    ["-i", packFilePath],
-  );
 };
 
 export const buildLinkFlags = (

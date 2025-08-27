@@ -93,6 +93,7 @@ const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
   return {
     tileIndex,

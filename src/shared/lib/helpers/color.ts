@@ -14,7 +14,7 @@ const clamp31 = (value: number) => {
   return clamp(value, 0, 31);
 };
 
-const hex2rgb = (hex: string) => {
+export const hex2rgb = (hex: string) => {
   const r = Math.floor(hexStringToDecimal(hex.substring(0, 2)));
   const g = Math.floor(hexStringToDecimal(hex.substring(2, 4)));
   const b = Math.floor(hexStringToDecimal(hex.substring(4)));

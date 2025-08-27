@@ -7,25 +7,9 @@ const CHARS_MAX_TOTAL = 18 + 18 + 16;
 const varRegex = new RegExp("\\$[VLT]?[0-9]+\\$", "g");
 const varCharRegex = new RegExp("#[VLT]?[0-9]+#", "g");
 const commandRegex = new RegExp("\\!S[0-5]\\!", "g");
-const newlineRegex = new RegExp("\n", "g");
-
-const dummyText = (text: string) => {
-  return text
-    .replace(varRegex, "$$$$$")
-    .replace(varCharRegex, "#")
-    .replace(commandRegex, "");
-};
 
 const lineLength = (line: string) => {
   return line
-    .replace(varRegex, "255")
-    .replace(varCharRegex, "C")
-    .replace(commandRegex, "").length;
-};
-
-const totalLength = (line: string) => {
-  return line
-    .replace(newlineRegex, "")
     .replace(varRegex, "255")
     .replace(varCharRegex, "C")
     .replace(commandRegex, "").length;

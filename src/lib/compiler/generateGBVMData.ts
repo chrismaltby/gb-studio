@@ -193,8 +193,7 @@ const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
-const enginePxToSubPx = (px?: number): string =>
-  `PX_TO_SUBPX(${px || 0})`;
+const enginePxToSubPx = (px?: number): string => `PX_TO_SUBPX(${px || 0})`;
 
 export const toASMCollisionGroup = (
   group: string,
@@ -273,9 +272,8 @@ const toASMCollisionMask = (mask: string[]) => {
 const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
-const maybeScriptDependency = (
-  scriptSymbol: string | null | undefined,
-) => (scriptSymbol ? scriptSymbol : []);
+const maybeScriptDependency = (scriptSymbol: string | null | undefined) =>
+  scriptSymbol ? scriptSymbol : [];
 
 const toASMTriggerScriptFlags = (trigger: Trigger) => {
   const flags = [];
@@ -343,9 +341,6 @@ const sceneProjectilesSymbol = (sceneSymbol: string): string =>
 
 const sceneCollisionsSymbol = (sceneSymbol: string): string =>
   `${sceneSymbol}_collisions`;
-
-const scriptSymbol = (sceneIndex: number): string =>
-  `script_${sceneIndex}`;
 
 const toStructData = <T extends Record<string, unknown>>(
   object: T,
@@ -485,15 +480,6 @@ ${chunk(array, perLine)
   .join(",\n")}
 };
 `;
-
-const dataArrayToC = (name: string, data: [number]): string => {
-  return `#pragma bank 255
-${bankRef(name)}
-
-const unsigned char ${name}[] = {
-${data}
-};`;
-};
 
 export const parallaxStep = (
   startRow: number,

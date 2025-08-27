@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import {
   StyledFloatingPanel,
-  StyledFloatingPanelBreak,
   StyledFloatingPanelDivider,
 } from "ui/panels/style";
 
@@ -24,5 +23,3 @@ export const FloatingPanel = ({
 );
 
 export const FloatingPanelDivider = () => <StyledFloatingPanelDivider />;
-
-const FloatingPanelBreak = () => <StyledFloatingPanelBreak />;

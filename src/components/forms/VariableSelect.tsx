@@ -128,13 +128,6 @@ const VariableRenameCompleteButton = styled.button`
   }
 `;
 
-const VariableToken = styled.span`
-  background: ${(props) => props.theme.colors.token.variable};
-  box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.variable};
-  border-radius: 5px;
-  color: ${(props) => props.theme.colors.input.background};
-`;
-
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
   onChange,

@@ -606,5 +606,3 @@ export interface ScriptEventFieldSchema {
   labelVariant?: string;
   filters?: Record<string, unknown>;
 }
-
-type EntityKey = keyof EntitiesState;

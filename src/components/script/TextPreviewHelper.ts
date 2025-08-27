@@ -1,9 +1,5 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
-import {
-  encodeString,
-  FontData,
-  lexTextWithMapping,
-} from "shared/lib/helpers/fonts";
+import { FontData, lexTextWithMapping } from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
 

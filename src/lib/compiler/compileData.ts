@@ -185,10 +185,6 @@ const isProjectileData = (value: unknown): value is ProjectileData => {
   return !!value && typeof value === "object";
 };
 
-const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
-const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
-const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
-
 const ensureProjectAsset = async (
   relativePath: string,
   {
