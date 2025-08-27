@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised Actor Move Relative code generation
 - Updated "Actor Move To" and "Actor Move Relative" to allow specifying if Walls, Actors, or none or both should be used for collisions
 - Change disabled event styling to use a red background, distinguishing them from comment events
+- Category group name now included when searching for script events [@Pomdap](https://github.com/Pomdap)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
