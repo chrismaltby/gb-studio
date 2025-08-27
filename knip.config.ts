@@ -25,6 +25,12 @@ const config: KnipConfig = {
     ".*-loader",
     "@electron-forge/maker-.*",
     "@electron-forge/plugin-.*",
+    "@types/webpack-env",
+    "babel-eslint",
+    "eslint-plugin-react",
+    "jest-environment-jsdom",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-import",
   ],
   ignoreUnresolved: ["../helpers/l10n"],
 };
