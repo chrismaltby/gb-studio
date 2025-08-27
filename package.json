@@ -21,7 +21,7 @@
     "make:all": "cross-env NODE_ENV=production run-s make:mac make:mac:intel make:win make:win32 make:linux make:linux-arm64",
     "publish": "electron-forge publish",
     "lint": "eslint --cache --color src",
-    "prettier": "prettier --write src",
+    "prettier": "prettier --write src test",
     "test": "jest --maxWorkers=2",
     "coverage": "jest --coverage --runInBand || true",
     "missing-translations": "node src/lang/list_missing.js",
