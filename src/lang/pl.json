@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2057250821",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2058250827",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1238,6 +1238,7 @@
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Ustaw nadpisanie trybu grafiki",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Otwórz folder kompilacji po eksporcie",
   "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Wyświetl zużycie ROM po kompilacji",
+  "FIELD_ROM_FILENAME": "Nazwa pliku ROM",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
