@@ -106,6 +106,7 @@
     "semver": "7",
     "spark-md5": "^3.0.2",
     "styled-components": "^6.1.13",
+    "substyle": "9.3.0",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
     "vm2": "3.9.19",
