@@ -1164,7 +1164,7 @@ const moveActorIndexTop: CaseReducer<
   const actors = [...scene.actors];
   const currentIndex = actors.indexOf(actorId);
   const newIndex = 0;
-  if (currentIndex != -1) {
+  if (currentIndex !== -1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
   }
@@ -1208,7 +1208,7 @@ const moveActorIndexDown: CaseReducer<
   const actors = [...scene.actors];
   const currentIndex = actors.indexOf(actorId);
   const newIndex = currentIndex + 1;
-  if (currentIndex != -1 && currentIndex < actors.length - 1) {
+  if (currentIndex !== -1 && currentIndex < actors.length - 1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
   }
@@ -1230,7 +1230,7 @@ const moveActorIndexBottom: CaseReducer<
   const actors = [...scene.actors];
   const newIndex = actors.length - 1;
   const currentIndex = actors.indexOf(actorId);
-  if (currentIndex != -1) {
+  if (currentIndex !== -1) {
     actors.splice(currentIndex, 1);
     actors.splice(newIndex, 0, actorId);
   }
@@ -1735,7 +1735,7 @@ const moveTriggerIndexTop: CaseReducer<
   const triggers = [...scene.triggers];
   const currentIndex = triggers.indexOf(triggerId);
   const newIndex = 0;
-  if (currentIndex != -1) {
+  if (currentIndex !== -1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
   }
@@ -1779,7 +1779,7 @@ const moveTriggerIndexDown: CaseReducer<
   const triggers = [...scene.triggers];
   const currentIndex = triggers.indexOf(triggerId);
   const newIndex = currentIndex + 1;
-  if (currentIndex != -1 && currentIndex < triggers.length - 1) {
+  if (currentIndex !== -1 && currentIndex < triggers.length - 1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
   }
@@ -1801,7 +1801,7 @@ const moveTriggerIndexBottom: CaseReducer<
   const triggers = [...scene.triggers];
   const newIndex = triggers.length - 1;
   const currentIndex = triggers.indexOf(triggerId);
-  if (currentIndex != -1) {
+  if (currentIndex !== -1) {
     triggers.splice(currentIndex, 1);
     triggers.splice(newIndex, 0, triggerId);
   }
