@@ -694,9 +694,7 @@ const migrateFrom200r1To200r2Events = (data: ProjectData): ProjectData => {
  * a single input at once. This migration updates existing
  * EVENT_SET_INPUT_SCRIPT events to use array values
  */
-const migrateFrom200r2To200r3Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r2To200r3Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_SET_INPUT_SCRIPT") {
     return migrateMeta({
@@ -729,9 +727,7 @@ const migrateFrom200r2To200r3Events = (data: ProjectData): ProjectData => {
  * Version 2.0.0 r3 used a separate event for handling updating the
  * fade style, this has now been merged into EVENT_ENGINE_FIELD_SET
  */
-const migrateFrom200r3To200r4Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r3To200r4Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_FADE_SETTINGS") {
     return migrateMeta({
@@ -792,9 +788,7 @@ const migrateFrom200r3To200r4EngineFieldValues = (
  * Version 2.0.0 r4 used string values for animSpeed and moveSpeed,
  * animSpeed is now number|null and moveSpeed is number
  */
-const migrateFrom200r4To200r5Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r4To200r5Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_ACTOR_SET_ANIMATION_SPEED") {
     let speed = event.args.speed;
@@ -966,9 +960,7 @@ const migrateAnimSpeedr6r7 = (original: unknown) => {
  * rather than arbitrary speed values for anim/move speeds.
  * Save event also now includes an OnSave script.
  */
-const migrateFrom200r6To200r7Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r6To200r7Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (event.args && event.command === "EVENT_ACTOR_SET_ANIMATION_SPEED") {
@@ -1257,9 +1249,7 @@ export const migrateFrom200r9To200r10Triggers = (
 
 /* Version 2.0.0 r11 adds additional parameters to EVENT_LAUNCH_PROJECTILE
  */
-const migrateFrom200r10To200r11Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r10To200r11Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
@@ -1312,9 +1302,7 @@ const migrateFrom200r10To200r11Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r12 adds variable support for camera events + ability to lock per axis
  */
-const migrateFrom200r11To200r12Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r11To200r12Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (event.args && event.command === "EVENT_CAMERA_MOVE_TO") {
@@ -1360,9 +1348,7 @@ const migrateFrom200r11To200r12Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r13 adds multiple save slots for save/load events
  */
-const migrateFrom200r12To200r13Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r12To200r13Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (
@@ -1398,9 +1384,7 @@ const migrateFrom200r12To200r13Events = (data: ProjectData): ProjectData => {
 
 /* Version 2.0.0 r14 deprecates weapon attack event, replacing with launch projectile
  */
-const migrateFrom200r13To200r14Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom200r13To200r14Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (event.args && event.command === "EVENT_WEAPON_ATTACK") {
@@ -1649,9 +1633,7 @@ const migrateFrom200r16Tor17Fonts = (
 
 /* Version 3.0.0 r2 migrates old hide/show events to deactivate/activate to better match previous functionality
  */
-const migrateFrom300r1To300r2Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom300r1To300r2Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_ACTOR_HIDE") {
     return migrateMeta({
@@ -1884,9 +1866,7 @@ const migrateFrom310r1To310r2Events = (data: ProjectData): ProjectData => {
 
 /* Version 3.1.0 r3 updates For Loops to include comparison and operation selectors
  */
-const migrateFrom310r2To310r3Event = (
-  event: ScriptEvent,
-): ScriptEvent => {
+const migrateFrom310r2To310r3Event = (event: ScriptEvent): ScriptEvent => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_LOOP_FOR") {
     return migrateMeta({

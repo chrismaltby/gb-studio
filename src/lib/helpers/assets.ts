@@ -1,10 +1,7 @@
 import path from "path";
 import l10n from "shared/lib/lang/l10n";
 
-const isAssetWithinProject = (
-  assetPath: string,
-  projectRoot: string,
-) => {
+const isAssetWithinProject = (assetPath: string, projectRoot: string) => {
   const absoluteParentPath = path.resolve(projectRoot);
   const absoluteChildPath = path.resolve(assetPath);
 

@@ -49,4 +49,3 @@ window.addEventListener("unhandledrejection", (error) => {
       </div>`;
   return false;
 });
-
