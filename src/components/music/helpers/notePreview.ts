@@ -204,6 +204,7 @@ function previewWaveInstrument(
 }
 
 function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
+
   const regs = {
     NR41:
       "00" +
@@ -218,7 +219,7 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
         3,
       ),
     NR43: bitpack(
-      note2noise(note + (instrument.noise_macro ?? [])[0]) +
+      note2noise(note + ((instrument.noise_macro && instrument.noise_macro[0]) ?? 0)) +
         (instrument.bit_count === 7 ? 8 : 0),
       8,
     ),
@@ -238,7 +239,7 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
     console.log("noise macro step = " + noiseStep);
     emulator.writeMem(
       NR43,
-      note2noise(note + (instrument.noise_macro ?? [])[noiseStep]) +
+      note2noise(note + ((instrument.noise_macro && instrument.noise_macro[0]) ?? 0)) +
         (instrument.bit_count === 7 ? 8 : 0),
     );
     noiseStep++;
@@ -278,3 +279,4 @@ const note2noise = (note: number) => {
   const pitch = 64 > note ? 63 - note : 192 + note;
   return pitch > 7 ? (((pitch - 4) >> 2) << 4) + (pitch & 3) + 4 : pitch;
 };
+
