@@ -73,13 +73,6 @@
       }
     },
     {
-      "id": "74199063",
-      "type": "user",
-      "attributes": {
-        "full_name": "Johndo"
-      }
-    },
-    {
       "id": "71689",
       "type": "user",
       "attributes": {
@@ -150,6 +143,13 @@
       },
       "id": "108878934",
       "type": "user"
+    },
+    {
+      "id": "74199063",
+      "type": "user",
+      "attributes": {
+        "full_name": "Johndo"
+      }
     },
     {
       "attributes": {
