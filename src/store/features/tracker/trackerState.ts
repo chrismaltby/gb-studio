@@ -128,6 +128,6 @@ const trackerSlice = createSlice({
     }),
 });
 
-export const { actions, reducer } = trackerSlice;
+export const { actions } = trackerSlice;
 
-export default reducer;
+export default trackerSlice.reducer;

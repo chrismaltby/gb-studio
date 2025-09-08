@@ -22,6 +22,6 @@ const clipboardSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = clipboardSlice;
+export const { actions } = clipboardSlice;
 
-export default reducer;
+export default clipboardSlice.reducer;

@@ -209,6 +209,6 @@ const settingsSlice = createSlice({
 
 export const getSettings = (state: RootState) => state.project.present.settings;
 
-export const { actions, reducer } = settingsSlice;
+export const { actions } = settingsSlice;
 
-export default reducer;
+export default settingsSlice.reducer;
