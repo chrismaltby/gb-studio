@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import editorActions from "store/features/editor/editorActions";
 
 export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
-export interface TrackerState {
+interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
   playing: boolean;

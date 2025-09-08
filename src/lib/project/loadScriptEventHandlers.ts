@@ -16,7 +16,7 @@ const globAsync = promisify(glob);
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
-export type ScriptEventHelperDef =
+type ScriptEventHelperDef =
   | {
       type: "position";
       x: string;
@@ -80,7 +80,7 @@ export type ScriptEventHelperDef =
       location: string;
     };
 
-export type ScriptEventPresetValue = {
+type ScriptEventPresetValue = {
   id: string;
   name: string;
   description?: string;
@@ -89,7 +89,7 @@ export type ScriptEventPresetValue = {
   values: Record<string, unknown>;
 };
 
-export type UserPresetsGroup = {
+type UserPresetsGroup = {
   id: string;
   label: string;
   fields: string[];
@@ -116,14 +116,14 @@ export interface ScriptEventDef {
   fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
 
-export type ScriptEventHandlerFieldSchema = ScriptEventFieldSchema & {
+type ScriptEventHandlerFieldSchema = ScriptEventFieldSchema & {
   postUpdateFn?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>,
   ) => void | Record<string, unknown>;
 };
 
-export type ScriptEventHandler = ScriptEventDef & {
+type ScriptEventHandler = ScriptEventDef & {
   autoLabel?: (
     lookup: (key: string) => string,
     args: Record<string, unknown>,

@@ -372,10 +372,7 @@ const getPalette = (
   );
 };
 
-export const getVariableId = (
-  variable: string,
-  entity?: ScriptBuilderEntity,
-) => {
+const getVariableId = (variable: string, entity?: ScriptBuilderEntity) => {
   if (isVariableLocal(variable)) {
     if (entity) {
       return `${entity.id}__${variable}`;

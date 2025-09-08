@@ -10,7 +10,7 @@ interface ColorCorrectionSelectProps extends SelectCommonProps {
   onChange?: (newId: ColorCorrectionSetting) => void;
 }
 
-export interface ColorCorrectionOption {
+interface ColorCorrectionOption {
   value: ColorCorrectionSetting;
   label: string;
 }

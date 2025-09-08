@@ -20,7 +20,7 @@ import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 import { MusicResourceAsset } from "shared/lib/resources/types";
 
-export interface TrackerDocumentState {
+interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
   error?: string;
   song?: Song;

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Alert } from "ui/alerts/Alert";
 import { SingleValue } from "react-select";
 
-export interface CartSettingsEditorProps {
+interface CartSettingsEditorProps {
   searchTerm?: string;
 }
 

@@ -438,6 +438,7 @@ export const defaultProjectSettings: Settings = {
   spriteMode: "8x16",
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
+  romFilename: "",
 };
 
 export const defaultPalettes: Palette[] = [

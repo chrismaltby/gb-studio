@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export interface StyledFixedSpacerProps {
+interface StyledFixedSpacerProps {
   $width?: number;
   $height?: number;
 }

@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   width: 100%;
 `;
 
-export const Container = styled.div`
+const Container = styled.div`
   width: 100%;
   max-width: 1000px;
   padding: 20px;

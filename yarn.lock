@@ -8936,13 +8936,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confusing-browser-globals@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "confusing-browser-globals@npm:1.0.9"
-  checksum: 10c0/80a4a1ff64132a6923b3de5228b7da3096951a20b8a856601f6622bd85a15abbe80997962b6f1ab395f80261ef8eb5b46eace1a8c403462b0369b4c82ad9ad13
-  languageName: node
-  linkType: hard
-
 "connect-history-api-fallback@npm:^2.0.0":
   version: 2.0.0
   resolution: "connect-history-api-fallback@npm:2.0.0"
@@ -10520,37 +10513,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-airbnb-base@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "eslint-config-airbnb-base@npm:14.1.0"
-  dependencies:
-    confusing-browser-globals: "npm:^1.0.9"
-    object.assign: "npm:^4.1.0"
-    object.entries: "npm:^1.1.1"
-  peerDependencies:
-    eslint: ^5.16.0 || ^6.8.0
-    eslint-plugin-import: ^2.20.1
-  checksum: 10c0/5838e01f9097cf3e8605887cf3bab228b033fa761883d45254cf96ba1b004be48d2b3c737c1ee3ec52fbe3a42613abb74685c7d729d3edf855af12b56aeb1edd
-  languageName: node
-  linkType: hard
-
-"eslint-config-airbnb@npm:^18.1.0":
-  version: 18.1.0
-  resolution: "eslint-config-airbnb@npm:18.1.0"
-  dependencies:
-    eslint-config-airbnb-base: "npm:^14.1.0"
-    object.assign: "npm:^4.1.0"
-    object.entries: "npm:^1.1.1"
-  peerDependencies:
-    eslint: ^5.16.0 || ^6.8.0
-    eslint-plugin-import: ^2.20.1
-    eslint-plugin-jsx-a11y: ^6.2.3
-    eslint-plugin-react: ^7.19.0
-    eslint-plugin-react-hooks: ^2.5.0 || ^1.7.0
-  checksum: 10c0/30556a99a745ead79c2697c4be7048d27bd0f4f341590d5c0c8b183bbb353c457907db365b9b29cdd806bd0b37d96d5fbbb313902447380b624a0d3b2e9b49d2
-  languageName: node
-  linkType: hard
-
 "eslint-config-prettier@npm:^6.11.0":
   version: 6.11.0
   resolution: "eslint-config-prettier@npm:6.11.0"
@@ -10639,17 +10601,6 @@ __metadata:
   peerDependencies:
     eslint: ">=4.0.0"
   checksum: 10c0/17ca0fb51fa5e4a7fe1f68887d647abf36e98afa17a930527d3f41298f688d0724824ef84581f5bd1835ea482f54fce4f1ba6e9d947a4fda027f3453a5c3e950
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-flowtype@npm:^4.7.0":
-  version: 4.7.0
-  resolution: "eslint-plugin-flowtype@npm:4.7.0"
-  dependencies:
-    lodash: "npm:^4.17.15"
-  peerDependencies:
-    eslint: ">=6.1.0"
-  checksum: 10c0/1f6b1c4d63a1f28562178fea5dc29311c41439472bcdf4be892ed6cc362cad0725e5ef0fd0efed80c515b869066a56c9b38927fe2435ddabf486753aaea22353
   languageName: node
   linkType: hard
 
@@ -11967,11 +11918,9 @@ __metadata:
     electron-squirrel-startup: "npm:^1.0.0"
     electron-window-state: "npm:^5.0.3"
     eslint: "npm:^8.56.0"
-    eslint-config-airbnb: "npm:^18.1.0"
     eslint-config-prettier: "npm:^6.11.0"
     eslint-config-react-app: "npm:^7.0.1"
     eslint-plugin-babel: "npm:^5.3.0"
-    eslint-plugin-flowtype: "npm:^4.7.0"
     eslint-plugin-import: "npm:^2.20.0"
     eslint-plugin-jsx-a11y: "npm:^6.2.3"
     eslint-plugin-react: "npm:^7.20.0"
@@ -12028,6 +11977,7 @@ __metadata:
     storybook: "npm:^8.2.9"
     style-loader: "npm:^3.0.0"
     styled-components: "npm:^6.1.13"
+    substyle: "npm:9.3.0"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.1.3"
     ts-loader: "npm:^9.2.2"
@@ -19264,7 +19214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"substyle@npm:^9.1.0":
+"substyle@npm:9.3.0, substyle@npm:^9.1.0":
   version: 9.3.0
   resolution: "substyle@npm:9.3.0"
   dependencies:

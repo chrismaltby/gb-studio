@@ -148,6 +148,7 @@ import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 import { L10nManager } from "lib/lang/l10nManager";
 import { TemplateManager } from "lib/templates/templateManager";
 import { EngineSchema, loadEngineSchema } from "lib/project/loadEngineSchema";
+import { getROMFilename, getROMFileStem } from "shared/lib/helpers/filePaths";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1389,7 +1390,6 @@ ipcMain.handle(
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
     const colorOnly = project.settings.colorMode === "color";
-    const gameFile = colorOnly ? "game.gbc" : "game.gb";
     const progress = (message: string) => {
       if (
         message !== "'" &&
@@ -1403,12 +1403,22 @@ ipcMain.handle(
         buildErr(message);
       }
     };
-
+    const romStem = getROMFileStem(
+      project.settings.romFilename,
+      project.metadata.name,
+    );
+    const romFilename = getROMFilename(
+      project.settings.romFilename,
+      project.metadata.name,
+      colorOnly,
+      buildType,
+    );
     try {
       const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
         outputRoot,
+        romFilename,
         tmpPath: getTmp(),
         debugEnabled: debuggerEnabled,
         progress,
@@ -1430,19 +1440,16 @@ ipcMain.handle(
               ? `${l10n("COMPILER_SITE_READY_AT")} ${Path.normalize(
                   `${projectRoot}/build/web/index.html`,
                 )}`
-              : buildType === "pocket"
-                ? `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
-                    `${projectRoot}/build/pocket/game.pocket`,
-                  )}`
-                : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
-                    `${projectRoot}/build/rom/${gameFile}`,
-                  )}`
+              : `${l10n("COMPILER_ROM_READY_AT")} ${Path.normalize(
+                  `${projectRoot}/build/rom/${romFilename}`,
+                )}`
           }`,
         );
       }
 
       const usageData = await romUsage({
         buildRoot: outputRoot,
+        romStem,
         tmpPath: getTmp(),
         progress,
         warnings,
@@ -1458,8 +1465,10 @@ ipcMain.handle(
           )}...`,
         );
         if (debuggerEnabled) {
-          const { memoryMap, globalVariables } =
-            await readDebuggerSymbols(outputRoot);
+          const { memoryMap, globalVariables } = await readDebuggerSymbols(
+            outputRoot,
+            romStem,
+          );
           debuggerInitData = {
             memoryMap,
             globalVariables,
@@ -1567,9 +1576,18 @@ ipcMain.handle(
         buildErr(message);
       };
 
+      const colorOnly = project.settings.colorMode === "color";
+
+      const romFilename = getROMFilename(
+        project.settings.romFilename,
+        project.metadata.name,
+        colorOnly,
+        "rom",
+      );
       await buildProject(project, {
         projectRoot,
         outputRoot,
+        romFilename,
         tmpPath: getTmp(),
         buildType: "rom",
         engineSchema,

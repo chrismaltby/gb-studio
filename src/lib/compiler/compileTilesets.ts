@@ -9,7 +9,7 @@ type CompileTilesetOptions = {
   warnings: (msg: string) => void;
 };
 
-export type PrecompiledTilesetData = TilesetData & {
+type PrecompiledTilesetData = TilesetData & {
   id: string;
   data: Uint8Array;
 };

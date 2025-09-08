@@ -79,7 +79,7 @@ export const SpriteEditor = ({
   );
   const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id),
-  );
+  ) as SpriteSheetNormalized | undefined;
   const spriteState = useAppSelector((state) =>
     spriteStateSelectors.selectById(state, spriteStateId),
   );
@@ -108,7 +108,7 @@ export const SpriteEditor = ({
   const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
     sprite?.spriteMode !== undefined,
   );
-  const showSpriteModeOverride = sprite.spriteMode || spriteModeOverrideOpen;
+  const showSpriteModeOverride = sprite?.spriteMode || spriteModeOverrideOpen;
 
   const dispatch = useAppDispatch();
 

@@ -27,7 +27,7 @@ const Wrapper = styled.div<WrapperProps>`
   `}
 `;
 
-export const RollChannelSelectionAreaFwd = React.forwardRef<
+const RollChannelSelectionAreaFwd = React.forwardRef<
   HTMLDivElement,
   RollChannelSelectionAreaProps
 >(({ cellSize, selectionRect }: RollChannelSelectionAreaProps, ref) => {

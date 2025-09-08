@@ -2,14 +2,6 @@ import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import {
   EntitiesState,
   ProjectEntitiesData,
-  BackgroundData,
-  SpriteSheetData,
-  MusicData,
-  FontData,
-  AvatarData,
-  EmoteData,
-  SoundData,
-  TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import { SettingsState } from "store/features/settings/settingsState";
@@ -33,7 +25,7 @@ export type ProjectData = ProjectEntitiesData & {
   settings: SettingsState;
 };
 
-export const saveSteps = [
+const saveSteps = [
   "saving",
   "normalizing",
   "compressing",
@@ -61,77 +53,6 @@ export const denormalizeProject = (project: {
       _resourceType: "project",
       ...project.metadata,
     },
-  };
-};
-
-export const trimProjectData = (data: ProjectData): ProjectData => {
-  return {
-    ...data,
-    backgrounds: data.backgrounds.map(
-      (background) =>
-        ({
-          ...background,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as BackgroundData,
-    ),
-    spriteSheets: data.spriteSheets.map(
-      (spriteSheet) =>
-        ({
-          ...spriteSheet,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as SpriteSheetData,
-    ),
-    music: data.music.map(
-      (track) =>
-        ({
-          ...track,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as MusicData,
-    ),
-    sounds: data.sounds.map(
-      (sound) =>
-        ({
-          ...sound,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as SoundData,
-    ),
-    fonts: data.fonts.map(
-      (font) =>
-        ({
-          ...font,
-          mapping: undefined,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as FontData,
-    ),
-    avatars: data.avatars.map(
-      (avatar) =>
-        ({
-          ...avatar,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as AvatarData,
-    ),
-    emotes: data.emotes.map(
-      (emote) =>
-        ({
-          ...emote,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as EmoteData,
-    ),
-    tilesets: data.tilesets.map(
-      (tileset) =>
-        ({
-          ...tileset,
-          inode: undefined,
-          _v: undefined,
-        }) as unknown as TilesetData,
-    ),
   };
 };
 

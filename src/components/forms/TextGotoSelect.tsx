@@ -6,7 +6,7 @@ import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { NumberInput } from "ui/form/NumberInput";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 
-export interface TextGotoValue {
+interface TextGotoValue {
   offsetX: number;
   offsetY: number;
   relative: boolean;

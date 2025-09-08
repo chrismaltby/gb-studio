@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { StyledButton } from "ui/buttons/style";
 
-export interface StyledToolbarProps {
+interface StyledToolbarProps {
   readonly $focus?: boolean;
 }
 

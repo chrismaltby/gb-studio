@@ -15,7 +15,7 @@ export type PinDirection =
   | "top-right"
   | "bottom-right";
 
-export type RelativePortalProps = {
+type RelativePortalProps = {
   children: ReactNode;
   offsetX?: number;
   offsetY?: number;

@@ -34,7 +34,7 @@ const ContentSize = styled.div`
   opacity: 0;
 `;
 
-export const Textarea = styled.textarea`
+const Textarea = styled.textarea`
   position: absolute;
   top: 0;
   left: 0;

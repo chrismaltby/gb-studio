@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 // #region SplashWindow
 
-export interface StyledSplashWindowProps {
+interface StyledSplashWindowProps {
   $focus: boolean;
 }
 

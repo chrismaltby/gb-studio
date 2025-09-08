@@ -123,7 +123,7 @@ export const readFileToFontData = async (
   };
 };
 
-export const fontDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
+const fontDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
   if (g > 249 || (r > 249 && b > 249)) {
     return Color.Transparent;
   }
@@ -139,7 +139,7 @@ export const fontDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
   return Color.White;
 };
 
-export const charLookupToTileData = (lookup: CharLookup): Uint8Array => {
+const charLookupToTileData = (lookup: CharLookup): Uint8Array => {
   const chars = Object.values(lookup);
   const charsData = chars.map((char) => indexedImageTo2bppTileData(char.data));
   const size = charsData.reduce((memo, char) => memo + char.length, 0);

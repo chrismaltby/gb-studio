@@ -186,6 +186,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
           .then((button) => {
             const cancelButton: DeleteScriptConfirmButton.cancel = 2;
             const deleteReferencesButton: DeleteScriptConfirmButton.deleteReferences = 1;
+            const deleteButton: DeleteScriptConfirmButton.delete = 0;
+
             if (button === cancelButton) {
               return;
             }
@@ -198,7 +200,9 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
                 },
               });
             }
-            return next(action);
+            if (button === deleteButton) {
+              return next(action);
+            }
           });
         return;
       }

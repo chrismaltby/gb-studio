@@ -1,7 +1,10 @@
 import { readFile } from "fs-extra";
 
-export const readDebuggerSymbols = async (outputRoot: string) => {
-  const noi = await readFile(`${outputRoot}/build/rom/game.noi`, "utf8");
+export const readDebuggerSymbols = async (
+  outputRoot: string,
+  romStem: string,
+) => {
+  const noi = await readFile(`${outputRoot}/build/rom/${romStem}.noi`, "utf8");
 
   const memoryMap: Record<string, number> = Object.fromEntries(
     noi

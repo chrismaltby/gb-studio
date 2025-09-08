@@ -7,7 +7,7 @@ import {
 const BACKUP_EXTENSION = "bak";
 const TMP_EXTENSION = "new";
 
-export const backupFile = (
+const backupFile = (
   path: string,
   callback: (err?: NodeJS.ErrnoException | null) => void,
 ) => {

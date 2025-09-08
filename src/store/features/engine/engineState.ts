@@ -20,7 +20,7 @@ export type EngineFieldType =
 
 export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
 
-export type EngineFieldUnitsType =
+type EngineFieldUnitsType =
   | "px"
   | "subpx"
   | "subpxVel"

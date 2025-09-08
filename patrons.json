@@ -27,13 +27,6 @@
       "attributes": {
         "full_name": "Salvatore Tosti"
       }
-    },
-    {
-      "id": "57539298",
-      "type": "user",
-      "attributes": {
-        "full_name": "Skittles"
-      }
     }
   ],
   "silverTier": [
@@ -77,13 +70,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Gumpy Function"
-      }
-    },
-    {
-      "id": "74199063",
-      "type": "user",
-      "attributes": {
-        "full_name": "Johndo"
       }
     },
     {
@@ -159,6 +145,13 @@
       "type": "user"
     },
     {
+      "id": "74199063",
+      "type": "user",
+      "attributes": {
+        "full_name": "Johndo"
+      }
+    },
+    {
       "attributes": {
         "full_name": "Justin Kocian"
       },
@@ -213,6 +206,13 @@
       },
       "id": "104804333",
       "type": "user"
+    },
+    {
+      "id": "57539298",
+      "type": "user",
+      "attributes": {
+        "full_name": "Skittles"
+      }
     },
     {
       "attributes": {

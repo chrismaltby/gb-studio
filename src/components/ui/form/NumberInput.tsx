@@ -4,7 +4,7 @@ import { UnitType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { StyledInput } from "./style";
 
-export interface NumberInputProps
+interface NumberInputProps
   extends React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement

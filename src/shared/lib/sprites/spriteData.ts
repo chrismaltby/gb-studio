@@ -11,41 +11,6 @@ export type OptimisedTile = {
   flipY: boolean;
 };
 
-export type Position = { x: number; y: number };
-
-export type Bounds = {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-};
-
-export type SliceDef = {
-  data: IndexedImage;
-  coordinates: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-};
-
-export type TileLocation = {
-  x: number;
-  y: number;
-  flipX: boolean;
-  flipY: boolean;
-};
-export type SpriteTileLocation = TileLocation & {
-  spriteIndex: number;
-};
-
-export type SpriteCluster = {
-  minY: number;
-  maxY: number;
-  sprites: SliceDef[];
-};
-
 enum Color {
   Transparent = 0,
   Light = 1,
@@ -65,18 +30,6 @@ export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
   } else {
     return Color.Dark;
   }
-};
-
-export const spriteDataWithDividerIndexFn: ImageIndexFunction = (
-  r,
-  g,
-  b,
-  a,
-) => {
-  if (b >= 200 && g < 20) {
-    return Color.Divider;
-  }
-  return spriteDataIndexFn(r, g, b, a);
 };
 
 export const removeIndexedImageMask = (
@@ -223,9 +176,7 @@ export const indexedImageTo2bppSpriteData = (
 
 // ------------
 
-export const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
-export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
-export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
+const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
 const bin2 = (value: Color) => value.toString(2).padStart(2, "0");
 const binDec = (binary: string) => parseInt(binary, 2);

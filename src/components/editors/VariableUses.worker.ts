@@ -1,4 +1,3 @@
-import { lexText } from "shared/lib/compiler/lexText";
 import {
   actorName,
   customEventName,
@@ -16,7 +15,6 @@ import {
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
-import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,

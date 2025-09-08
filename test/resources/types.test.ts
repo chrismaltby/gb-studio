@@ -641,6 +641,7 @@ describe("TypeBox Schemas", () => {
       spriteMode: "8x16",
       openBuildFolderOnExport: true,
       showRomUsageAfterBuild: false,
+      romFilename: "",
     };
     const invalidSettings = {
       _resourceType: "settings",

@@ -1,4 +1,3 @@
-import { mocked } from "jest-mock";
 import middleware from "../../../../src/store/features/assets/assetsMiddleware";
 import actions from "../../../../src/store/features/assets/assetsActions";
 import { RootState } from "../../../../src/store/configureStore";
@@ -10,7 +9,7 @@ const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 jest.mock("../../../__mocks__/apiMock");
 
-const mockedAPI = mocked(API);
+const mockedAPI = jest.mocked(API);
 const mockedGetBackgroundInfo = mockedAPI.project.getBackgroundInfo;
 
 test("Should trigger call to check background assets", async () => {

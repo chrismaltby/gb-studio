@@ -77,7 +77,7 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
+const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
   if (g < 65) {
     return 3;
   }

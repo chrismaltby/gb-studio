@@ -44,7 +44,7 @@ type CompileImageOptions = {
   warnings: (msg: string) => void;
 };
 
-export type ImageTileAllocationStrategy = (
+type ImageTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
   image: BackgroundData,

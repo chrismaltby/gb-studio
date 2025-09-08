@@ -13,7 +13,7 @@ export interface TemplatePlugin {
   description: string;
 }
 
-export const loadPlugin = async (
+const loadPlugin = async (
   path: string,
 ): Promise<
   (JSON & { name: string; _resourceType: unknown; description?: string }) | null

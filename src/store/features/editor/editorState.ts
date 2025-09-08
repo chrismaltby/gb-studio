@@ -72,7 +72,7 @@ export interface SpriteTileSelection {
 
 export type InstrumentType = "duty" | "wave" | "noise";
 
-export interface SelectedInstrument {
+interface SelectedInstrument {
   id: string;
   type: InstrumentType;
 }

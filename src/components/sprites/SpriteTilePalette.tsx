@@ -9,9 +9,7 @@ import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetPath, assetURL } from "shared/lib/helpers/assets";
-import MetaspriteGrid, {
-  generateGridBackground,
-} from "components/sprites/MetaspriteGrid";
+import { generateGridBackground } from "components/sprites/MetaspriteGrid";
 
 const PillWrapper = styled.div`
   position: absolute;

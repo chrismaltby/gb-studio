@@ -2,7 +2,7 @@ import React, { ReactElement, useRef } from "react";
 import styled from "styled-components";
 import useOnScreen from "ui/hooks/use-on-screen";
 
-export const SkeletonInput = styled.div`
+const SkeletonInput = styled.div`
   background: ${(props) => props.theme.colors.input.background};
   border: 1px solid ${(props) => props.theme.colors.input.border};
   font-size: ${(props) => props.theme.typography.fontSize};

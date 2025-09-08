@@ -18,14 +18,25 @@ const config: KnipConfig = {
     "src/stories/**/*{js,ts,mdx}",
   ],
   project: ["src/**/*.{js,ts,jsx,tsx}"],
-  ignore: ["src/components/ui/hooks/use-trace-update.ts"],
+  ignore: [
+    "src/components/ui/hooks/use-trace-update.ts",
+    "src/components/ui/icons/Icons.tsx",
+  ],
   ignoreDependencies: [
     "@vercel/webpack-asset-relocator-loader",
     "vm2",
     ".*-loader",
     "@electron-forge/maker-.*",
     "@electron-forge/plugin-.*",
+    "@types/webpack-env",
+    "babel-eslint",
+    "eslint-plugin-react",
+    "jest-environment-jsdom",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-import",
+    "webpack",
   ],
+  ignoreBinaries: ["webpack", "time", "flamebearer"],
   ignoreUnresolved: ["../helpers/l10n"],
 };
 

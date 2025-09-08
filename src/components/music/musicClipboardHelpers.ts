@@ -10,16 +10,16 @@ import {
 
 export const NO_CHANGE_ON_PASTE = -9;
 
-export type PatternCellKey = keyof PatternCell;
-export const patternCellFields: PatternCellKey[] = [
+type PatternCellKey = keyof PatternCell;
+const patternCellFields: PatternCellKey[] = [
   "note",
   "instrument",
   "effectcode",
   "effectparam",
 ];
 
-export type SubPatternCellKey = keyof SubPatternCell;
-export const subPatternCellFields: SubPatternCellKey[] = [
+type SubPatternCellKey = keyof SubPatternCell;
+const subPatternCellFields: SubPatternCellKey[] = [
   "note",
   "jump",
   "effectcode",

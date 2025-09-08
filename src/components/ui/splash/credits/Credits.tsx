@@ -56,7 +56,7 @@ export const CreditsSubHeading = ({ children }: CreditsSubHeadingProps) => {
   return <StyledCreditsSubHeading children={children} />;
 };
 
-export interface CreditsPersonProps {
+interface CreditsPersonProps {
   children?: ReactNode;
   gold?: boolean;
   onClick?: () => void;
@@ -72,7 +72,7 @@ export const CreditsPerson = ({
   </StyledCreditsPerson>
 );
 
-export interface CreditsGridProps {
+interface CreditsGridProps {
   children?: ReactNode;
 }
 

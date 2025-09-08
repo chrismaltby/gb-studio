@@ -7,6 +7,7 @@ import { envWith } from "lib/helpers/cli/env";
 
 type RomUsageOptions = {
   buildRoot: string;
+  romStem: string;
   tmpPath: string;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
@@ -33,6 +34,7 @@ export type UsageData = {
 const romUsage = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
+  romStem = "game",
   warnings = (_msg) => {},
   progress = (_msg) => {},
 }: RomUsageOptions) => {
@@ -59,7 +61,12 @@ const romUsage = async ({
     process.platform === "win32"
       ? `"${buildToolsPath}\\gbdk\\bin\\romusage.exe"`
       : "romusage";
-  const romusageArgs = [`${buildRoot}/build/rom/game.map`, `-g`, `-sH`, `-sJ`];
+  const romusageArgs = [
+    `"${buildRoot}/build/rom/${romStem}.map"`,
+    `-g`,
+    `-sH`,
+    `-sJ`,
+  ];
 
   let output = "";
   progress(`${l10n("COMPILER_ROMUSAGE")}...`);

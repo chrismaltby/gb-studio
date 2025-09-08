@@ -113,7 +113,7 @@ const silverContributors = [...contributorsExternal]
     return 0;
   });
 
-export const Splash = () => {
+const Splash = () => {
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState("gbs2");
   const [section, setSection] = useState<SplashTabSection>();

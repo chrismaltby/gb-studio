@@ -1,6 +1,6 @@
 import { delimiter, join } from "path";
 
-export const getDefaultEnv = (): string => {
+const getDefaultEnv = (): string => {
   const env = { ...process.env };
   return mergeEnv([
     process.platform === "win32"
@@ -10,7 +10,7 @@ export const getDefaultEnv = (): string => {
   ]);
 };
 
-export const mergeEnv = (paths: Array<string | undefined>): string => {
+const mergeEnv = (paths: Array<string | undefined>): string => {
   return paths.filter((i) => i).join(delimiter);
 };
 

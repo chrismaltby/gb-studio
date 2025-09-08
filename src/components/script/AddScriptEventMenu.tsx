@@ -704,30 +704,64 @@ const AddScriptEventMenu = ({
             return memo && (labelIndex > -1 || groupIndex > -1);
           }, true);
         });
-      setOptions(
-        searchOptions.length > 0
-          ? searchOptions
-          : [
-              {
-                value: "fallback_option_0",
-                label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
-                event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
-                defaultArgs: {
-                  text: [searchTerm],
-                },
-                isFavorite: false,
-              },
-              {
-                value: "fallback_option_1",
-                label: `${l10n(EVENT_COMMENT)} "${searchTerm}"`,
-                event: scriptEventDefs[EVENT_COMMENT] as ScriptEventDef,
-                defaultArgs: {
-                  text: [searchTerm],
-                },
-                isFavorite: false,
-              },
-            ],
-      );
+
+      if (searchOptions.length > 0) {
+        const groupedResults = searchOptions.reduce(
+          (groups, option) => {
+            const groupName = option.group || l10n("EVENT_GROUP_MISC");
+            if (!groups[groupName]) {
+              groups[groupName] = [];
+            }
+            groups[groupName].push(option);
+            return groups;
+          },
+          {} as Record<string, EventOption[]>,
+        );
+
+        const formattedSearchOptions: (EventOptGroup | EventOption)[] = [];
+        const sortedGroupNames =
+          Object.keys(groupedResults).sort(sortAlphabetically);
+
+        sortedGroupNames.forEach((groupName) => {
+          const groupOptions = groupedResults[groupName];
+          if (groupOptions && groupOptions.length > 0) {
+            groupOptions.sort(sortAlphabeticallyByLabel);
+            groupOptions.forEach((option, index) => {
+              if (index === 0) {
+                formattedSearchOptions.push({
+                  ...option,
+                  groupLabel: groupName,
+                });
+              } else {
+                formattedSearchOptions.push(option);
+              }
+            });
+          }
+        });
+
+        setOptions(formattedSearchOptions);
+      } else {
+        setOptions([
+          {
+            value: "fallback_option_0",
+            label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
+            event: scriptEventDefs[EVENT_TEXT] as ScriptEventDef,
+            defaultArgs: {
+              text: [searchTerm],
+            },
+            isFavorite: false,
+          },
+          {
+            value: "fallback_option_1",
+            label: `${l10n(EVENT_COMMENT)} "${searchTerm}"`,
+            event: scriptEventDefs[EVENT_COMMENT] as ScriptEventDef,
+            defaultArgs: {
+              text: [searchTerm],
+            },
+            isFavorite: false,
+          },
+        ]);
+      }
       setSelectedIndex(0);
       setSelectedCategoryIndex(-1);
     } else {

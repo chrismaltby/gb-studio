@@ -72,7 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised Actor Move Relative code generation
 - Updated "Actor Move To" and "Actor Move Relative" to allow specifying if Walls, Actors, or none or both should be used for collisions
 - Change disabled event styling to use a red background, distinguishing them from comment events
+- Category group name now included when searching for script events [@Pomdap](https://github.com/Pomdap)
 - ROM usage monitor in Build Log is now hidden by default, restore this by checking "Show ROM Usage After Build" in Settings [@pau-tomas](https://github.com/pau-tomas)
+- ROM filename is now based on your project's name instead of always being `game.gb`. You can also override the filename in Settings / ROM Filename
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
@@ -116,6 +118,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where input text in dropdown search fields was unreadable in dark themes
 - Fix issue causing scroll bounds to be ignored for scenes with width of 20 or height of 18 tiles [@pau-tomas](https://github.com/pau-tomas)
 - Fix noise preview in the music editor so it now matches the sound during playback [@eduardoProggt](https://github.com/eduardoProggt)
+- Fix ROM color compatibility flag when making Mono + Color compatible games [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where deleting a sprite could cause the application to crash
+- Fix issue where renaming current file in music editor would cause unsaved changes to be lost
 
 ## [4.1.3] - 2024-09-16
 

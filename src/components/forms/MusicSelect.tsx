@@ -26,7 +26,7 @@ interface PlayPauseTrackProps extends SelectCommonProps {
   musicId: string;
 }
 
-export const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
+const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
   const dispatch = useAppDispatch();
   const musicPlaying = useAppSelector((state) => state.music.playing);
 

@@ -1238,6 +1238,7 @@
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Set Sprite Mode Override",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Open Build Folder On Export",
   "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Show ROM Usage After Build",
+  "FIELD_ROM_FILENAME": "ROM Filename",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

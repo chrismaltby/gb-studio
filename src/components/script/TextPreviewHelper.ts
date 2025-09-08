@@ -1,9 +1,5 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
-import {
-  encodeString,
-  FontData,
-  lexTextWithMapping,
-} from "shared/lib/helpers/fonts";
+import { FontData, lexTextWithMapping } from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
 
@@ -11,7 +7,7 @@ const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
 const ZERO_CHAR = 16;
 
-export const isTransparent = (r: number, g: number, b: number): boolean => {
+const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
     (r === 255 && b === 255 && g === 0) || (g === 255 && r === 0 && b === 0)
   );

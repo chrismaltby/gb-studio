@@ -13,7 +13,7 @@ interface CardWrapperProps {
   $isDragging?: boolean;
 }
 
-export const CardWrapper = styled.div<CardWrapperProps>`
+const CardWrapper = styled.div<CardWrapperProps>`
   width: 50px;
   height: 50px;
   background-color: #ffffff;

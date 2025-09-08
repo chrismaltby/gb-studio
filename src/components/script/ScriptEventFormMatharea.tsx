@@ -20,7 +20,7 @@ interface ScriptEventFormMathAreaProps {
   onChange: (newValue: string) => void;
 }
 
-export const namedConstants = (constants: Constant[]): NamedConstant[] => {
+const namedConstants = (constants: Constant[]): NamedConstant[] => {
   return constants.map((constant, constantIndex) => ({
     id: constant.id,
     name: constantName(constant, constantIndex),

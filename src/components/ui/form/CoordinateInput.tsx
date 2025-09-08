@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { StyledInput as StyledInputDefault } from "./style";
 
-export interface CoordinateInputProps {
+interface CoordinateInputProps {
   coordinate: "x" | "y" | "w" | "h";
   name: string;
   value?: number;
