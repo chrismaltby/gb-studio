@@ -66,7 +66,7 @@ import type {
 } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
-import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { VariableMapData } from "lib/compiler/compileData";
 import {
   ConstScriptValue,

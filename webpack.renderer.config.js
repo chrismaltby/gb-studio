@@ -130,6 +130,9 @@ module.exports = {
         "contributors-external.json"
       ),
       "patrons.json": Path.join(__dirname, "patrons.json"),
+      "#my-quickjs-variant": require.resolve(
+        "@jitl/quickjs-singlefile-browser-release-sync",
+      ),
     },
     fallback: {
       path: require.resolve("path-browserify"),

@@ -24,7 +24,6 @@ const config: KnipConfig = {
   ],
   ignoreDependencies: [
     "@vercel/webpack-asset-relocator-loader",
-    "vm2",
     ".*-loader",
     "@electron-forge/maker-.*",
     "@electron-forge/plugin-.*",

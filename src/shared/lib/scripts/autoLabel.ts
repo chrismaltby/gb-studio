@@ -4,7 +4,7 @@ import {
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import l10n from "shared/lib/lang/l10n";
-import type { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import { lexText } from "shared/lib/compiler/lexText";
