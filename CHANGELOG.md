@@ -117,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where sprites with a canvas size of 8px wide would have first four pixels set as transparent
 - Fix issue where input text in dropdown search fields was unreadable in dark themes
 - Fix issue causing scroll bounds to be ignored for scenes with width of 20 or height of 18 tiles [@pau-tomas](https://github.com/pau-tomas)
+- Fix noise preview in the music editor so it now matches the sound during playback [@eduardoProggt](https://github.com/eduardoProggt)
 - Fix ROM color compatibility flag when making Mono + Color compatible games [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where deleting a sprite could cause the application to crash
 - Fix issue where renaming current file in music editor would cause unsaved changes to be lost
