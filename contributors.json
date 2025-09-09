@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5097
+    "contributions": 5102
   },
   {
     "login": "pau-tomas",
@@ -1248,6 +1248,28 @@
     "repos_url": "https://api.github.com/users/gmarty/repos",
     "events_url": "https://api.github.com/users/gmarty/events{/privacy}",
     "received_events_url": "https://api.github.com/users/gmarty/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false,
+    "contributions": 1
+  },
+  {
+    "login": "eduardoProggt",
+    "id": 57016910,
+    "node_id": "MDQ6VXNlcjU3MDE2OTEw",
+    "avatar_url": "https://avatars.githubusercontent.com/u/57016910?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/eduardoProggt",
+    "html_url": "https://github.com/eduardoProggt",
+    "followers_url": "https://api.github.com/users/eduardoProggt/followers",
+    "following_url": "https://api.github.com/users/eduardoProggt/following{/other_user}",
+    "gists_url": "https://api.github.com/users/eduardoProggt/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/eduardoProggt/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/eduardoProggt/subscriptions",
+    "organizations_url": "https://api.github.com/users/eduardoProggt/orgs",
+    "repos_url": "https://api.github.com/users/eduardoProggt/repos",
+    "events_url": "https://api.github.com/users/eduardoProggt/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/eduardoProggt/received_events",
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
