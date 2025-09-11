@@ -4880,8 +4880,6 @@ const entitiesSlice = createSlice({
       .addCase(addNewSongFile.fulfilled, loadMusic),
 });
 
-export const { reducer } = entitiesSlice;
-
 export const actions = {
   ...entitiesSlice.actions,
   moveSelectedEntity,
@@ -5199,4 +5197,4 @@ export const getMaxSceneBottom = createSelector(
 export const getSceneActorIds = (state: RootState, { id }: { id: string }) =>
   sceneSelectors.selectById(state, id)?.actors;
 
-export default reducer;
+export default entitiesSlice.reducer;

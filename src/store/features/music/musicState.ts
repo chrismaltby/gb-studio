@@ -21,6 +21,6 @@ const musicSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = musicSlice;
+export const { actions } = musicSlice;
 
-export default reducer;
+export default musicSlice.reducer;

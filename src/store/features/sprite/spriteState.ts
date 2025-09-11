@@ -14,6 +14,4 @@ const spriteSlice = createSlice({
   reducers: {},
 });
 
-export const { reducer } = spriteSlice;
-
-export default reducer;
+export default spriteSlice.reducer;

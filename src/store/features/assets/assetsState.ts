@@ -62,6 +62,6 @@ const assetsSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = assetsSlice;
+export const { actions } = assetsSlice;
 
-export default reducer;
+export default assetsSlice.reducer;

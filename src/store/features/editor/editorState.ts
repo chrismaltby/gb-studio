@@ -1151,8 +1151,6 @@ const editorSlice = createSlice({
       ),
 });
 
-export const { reducer } = editorSlice;
-
 export const actions = {
   ...editorSlice.actions,
   toggleScriptEventSelectedId,
@@ -1180,4 +1178,4 @@ export const getZoomForSection = createSelector(
   },
 );
 
-export default reducer;
+export default editorSlice.reducer;

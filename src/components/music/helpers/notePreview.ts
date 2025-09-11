@@ -217,11 +217,7 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
           : 0,
         3,
       ),
-    NR43: bitpack(
-      note2noise(note + (instrument.noise_macro ?? [])[0]) +
-        (instrument.bit_count === 7 ? 8 : 0),
-      8,
-    ),
+    NR43: bitpack(note2noise(note) + (instrument.bit_count === 7 ? 8 : 0), 8),
     NR44:
       "1" + // Initial
       (instrument.length !== null ? 1 : 0) +
@@ -238,8 +234,7 @@ function previewNoiseInstrument(note: number, instrument: NoiseInstrument) {
     console.log("noise macro step = " + noiseStep);
     emulator.writeMem(
       NR43,
-      note2noise(note + (instrument.noise_macro ?? [])[noiseStep]) +
-        (instrument.bit_count === 7 ? 8 : 0),
+      note2noise(note) + (instrument.bit_count === 7 ? 8 : 0),
     );
     noiseStep++;
   }, 1000 / 64);
