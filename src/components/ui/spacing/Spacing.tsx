@@ -10,7 +10,7 @@ export const FlexGrow = (props: React.HTMLAttributes<HTMLDivElement>) => (
   <StyledFlexGrow {...props} />
 );
 
-export interface FixedSpacerProps {
+interface FixedSpacerProps {
   width?: number;
   height?: number;
 }
@@ -21,7 +21,7 @@ export const FixedSpacer = ({ width, height }: FixedSpacerProps) => (
 
 export const FlexBreak = () => <StyledFlexBreak />;
 
-export interface FlexRowProps {
+interface FlexRowProps {
   children: ReactNode;
 }
 

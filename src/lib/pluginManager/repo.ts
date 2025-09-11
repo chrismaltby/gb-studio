@@ -29,7 +29,7 @@ const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
-export const corePluginRepository: PluginRepositoryEntry = {
+const corePluginRepository: PluginRepositoryEntry = {
   id: "core",
   name: "GB Studio",
   url: OFFICIAL_REPO_URL,
@@ -44,7 +44,7 @@ const cache: {
 };
 const oneHour = 60 * 60 * 1000;
 
-export const getUserReposList = (): PluginRepositoryEntry[] => {
+const getUserReposList = (): PluginRepositoryEntry[] => {
   const userRepositories: PluginRepositoryEntry[] = [];
   const storedUserRepositories: unknown = settings.get("plugins:repositories");
   if (Array.isArray(storedUserRepositories)) {

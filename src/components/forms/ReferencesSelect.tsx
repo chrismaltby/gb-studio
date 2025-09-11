@@ -120,7 +120,7 @@ const ExtraReferences = styled.div`
 `;
 
 export const addBankRef = (symbol: string) => `___bank${symbol}, ${symbol}`;
-export const addBankRefAndMuteMask = (symbol: string) =>
+const addBankRefAndMuteMask = (symbol: string) =>
   `___bank${symbol}, ${symbol}, ___mute_mask${symbol}`;
 
 export const ReferencesSelect = ({

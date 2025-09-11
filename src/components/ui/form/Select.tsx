@@ -5,7 +5,6 @@ import React, { FC, ReactNode } from "react";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
-export { components } from "react-select";
 
 export interface Option {
   value: string;
@@ -19,6 +18,7 @@ export interface OptGroup {
 
 interface OptionLabelWithPreviewProps {
   preview: ReactNode;
+  info?: ReactNode;
   children: ReactNode;
 }
 
@@ -209,6 +209,7 @@ const OptionLabelInfo = styled.div`
 
 export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
   preview,
+  info,
   children,
 }) => (
   <OptionLabelWithPreviewWrapper>
@@ -218,6 +219,7 @@ export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
       </OptionLabelPreviewOffset>
     </OptionLabelPreview>
     {children}
+    <OptionLabelInfo>{info}</OptionLabelInfo>
   </OptionLabelWithPreviewWrapper>
 );
 

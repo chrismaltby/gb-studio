@@ -15,7 +15,7 @@ interface ColorModeSelectProps extends SelectCommonProps {
   onChange?: (newId: ColorModeSetting) => void;
 }
 
-export interface ColorModeOption {
+interface ColorModeOption {
   value: ColorModeSetting;
   label: string;
 }

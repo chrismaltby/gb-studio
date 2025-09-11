@@ -14,7 +14,7 @@ export type AssetFolder =
   | "sprites"
   | "sounds";
 
-export const sizeOfAsync = promisify(sizeOf);
+const sizeOfAsync = promisify(sizeOf);
 
 export const potentialAssetFolders = async (
   filename: string,

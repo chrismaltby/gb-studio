@@ -65,3 +65,13 @@ export const castEventToBool = (
   }
   return false;
 };
+
+export const castEventToString = (
+  event: React.ChangeEvent<HTMLInputElement>,
+): string => {
+  const el = event && event.currentTarget;
+  if (el && typeof el.value === "string") {
+    return el.value;
+  }
+  return "";
+};

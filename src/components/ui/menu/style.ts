@@ -1,11 +1,11 @@
 import API from "renderer/lib/api";
 import styled, { css } from "styled-components";
 
-export interface StyledMenuAcceleratorProps {
+interface StyledMenuAcceleratorProps {
   $accelerator: string;
 }
 
-export const acceleratorForPlatform = (accelerator: string) => {
+const acceleratorForPlatform = (accelerator: string) => {
   if (API.platform === "darwin") {
     return accelerator
       .replace(/CommandOrControl\+/g, "⌘")
@@ -68,7 +68,7 @@ export const StyledMenu = styled.div`
 
 // #region MenuItem
 
-export interface StyledMenuItemProps {
+interface StyledMenuItemProps {
   readonly $selected?: boolean;
 }
 

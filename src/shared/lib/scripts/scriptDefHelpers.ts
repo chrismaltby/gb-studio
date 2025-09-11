@@ -44,7 +44,7 @@ export const isFieldVisible = (
   }, true);
 };
 
-export const getField = (
+const getField = (
   cmd: string,
   fieldName: string,
   scriptEventDefs: ScriptEventDefs,

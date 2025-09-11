@@ -697,6 +697,19 @@ export const precompileOptimisedScriptValue = (
     rpnOperations.push({ type: "number", value: 0 });
   } else if (input.type === "numberSymbol") {
     rpnOperations.push({ type: "numberSymbol", value: input.value });
+  } else if (input.type === "engineField") {
+    const localName = `local_${localsLabel}${fetchOperations.length}`;
+    fetchOperations.push({
+      local: localName,
+      value: {
+        type: "engineField",
+        value: input.value,
+      },
+    });
+    rpnOperations.push({
+      type: "local",
+      value: localName,
+    });
   } else {
     rpnOperations.push(input);
   }
@@ -707,16 +720,21 @@ export const sortFetchOperations = (
   input: PrecompiledValueFetch[],
 ): PrecompiledValueFetch[] => {
   return [...input].sort((a, b) => {
-    const aSymbol =
-      typeof a.value.target === "string"
-        ? a.value.target
-        : a.value.target.symbol;
-    const bSymbol =
-      typeof b.value.target === "string"
-        ? b.value.target
-        : b.value.target.symbol;
-    const aKey = `${aSymbol}::${a.value.type}`;
-    const bKey = `${bSymbol}::${b.value.type}`;
+    const toKey = (value: PrecompiledValueFetch): string => {
+      if ("target" in value.value) {
+        const symbol =
+          typeof value.value.target === "string"
+            ? value.value.target
+            : value.value.target.symbol;
+        return `${symbol}::${value.value.type}`;
+      } else if (value.value.type === "engineField") {
+        return `engineField::${value.value.value}`;
+      }
+      assertUnreachable(value.value);
+      return "";
+    };
+    const aKey = toKey(a);
+    const bKey = toKey(b);
     return aKey.localeCompare(bKey);
   });
 };

@@ -26,7 +26,7 @@ import {
   StyledInlineDropdownWrapper,
 } from "./style";
 
-export interface DropdownButtonProps {
+interface DropdownButtonProps {
   readonly label?: ReactNode;
   readonly title?: string;
   readonly children?: ReactNode;

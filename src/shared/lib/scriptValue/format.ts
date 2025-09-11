@@ -39,6 +39,8 @@ export const scriptValueToString = (
       .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
         return `||constant:${match}||`;
       });
+  } else if (value.type === "engineField") {
+    return value.value || "0";
   } else if (value.type === "true") {
     return "true";
   } else if (value.type === "false") {

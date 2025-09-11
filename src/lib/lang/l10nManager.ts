@@ -12,7 +12,7 @@ interface L10NInterface {
   name: string;
 }
 
-export const loadL10NPlugin = async (
+const loadL10NPlugin = async (
   path: string,
 ): Promise<(JSON & { name: string; type: unknown }) | null> => {
   try {

@@ -6,14 +6,14 @@ import semverGt from "semver/functions/gt";
 import l10n from "shared/lib/lang/l10n";
 import { LATEST_PROJECT_VERSION } from "./migration/migrateProjectResources";
 
-export const needsUpdate = (currentVersion: string) => {
+const needsUpdate = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(LATEST_PROJECT_VERSION, currentVersion);
   }
   return false;
 };
 
-export const fromFuture = (currentVersion: string) => {
+const fromFuture = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(currentVersion, LATEST_PROJECT_VERSION);
   }

@@ -4,13 +4,12 @@ import actions from "../../../../src/store/features/clipboard/clipboardActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyActorNormalized } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import { mocked } from "jest-mock";
 import { ClipboardTypeActors } from "../../../../src/store/features/clipboard/clipboardTypes";
 import API from "../../../__mocks__/apiMock";
 
 jest.mock("../../../__mocks__/apiMock");
 
-const mockedAPI = mocked(API);
+const mockedAPI = jest.mocked(API);
 const mockedClipboard = mockedAPI.clipboard;
 
 test("Should be able to copy actor to clipboard", async () => {

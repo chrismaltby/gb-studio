@@ -42,7 +42,7 @@ const Note = styled.div<NoteProps>`
   line-height: 1.1em;
 `;
 
-export const RollChannelFwd = ({
+const RollChannelFwd = ({
   channelId,
   active,
   renderPattern,

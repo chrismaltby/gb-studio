@@ -17,7 +17,7 @@ const cache = {
   },
 };
 
-export const getLatestVersion = async () => {
+const getLatestVersion = async () => {
   const now = new Date().getTime();
   if (cache.latest.timestamp > now) {
     return cache.latest.value;
@@ -38,11 +38,11 @@ export const getLatestVersion = async () => {
   return VERSION;
 };
 
-export const getCurrentVersion = () => {
+const getCurrentVersion = () => {
   return VERSION; /* Comes from webpack.plugins.js */
 };
 
-export const needsUpdate = (latestVersion: string) => {
+const needsUpdate = (latestVersion: string) => {
   try {
     const currentVersion = getCurrentVersion();
     if (semverValid(currentVersion) && semverValid(latestVersion)) {

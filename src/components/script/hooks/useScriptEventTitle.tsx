@@ -239,6 +239,7 @@ export const useScriptEventTitle = (
     isVisible,
     constantsLookup,
     constants,
+    entityId,
   ]);
 
   return String(labelName || autoName || eventName);

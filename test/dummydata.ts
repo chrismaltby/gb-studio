@@ -28,7 +28,10 @@ import { initialState as initialNavigationState } from "../src/store/features/na
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
 import { initialState as initialAssetsState } from "../src/store/features/assets/assetsState";
-import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
+import {
+  EngineFieldSchema,
+  initialState as initialEngineState,
+} from "../src/store/features/engine/engineState";
 import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
 import { initialState as initialScriptEventDefsState } from "../src/store/features/scriptEventDefs/scriptEventDefsState";
@@ -228,6 +231,7 @@ export const dummySpriteSheet: SpriteSheetNormalized = {
   states: [],
   animSpeed: 4,
   inode: "1",
+  spriteMode: "8x16",
   _v: 0,
 };
 
@@ -258,6 +262,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   animSpeed: 15,
   vramData: [[], []],
   colorMode: "mixed",
+  spriteMode: "8x16",
 };
 
 export const dummyMusic: Music = {
@@ -361,6 +366,10 @@ export const dummyProjectData: ProjectData = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
+    openBuildFolderOnExport: true,
+    showRomUsageAfterBuild: false,
+    romFilename: "",
   },
 };
 
@@ -440,6 +449,7 @@ export const dummySpriteResource: SpriteResource = {
   boundsHeight: 16,
   animSpeed: null,
   states: [],
+  spriteMode: "8x16",
 };
 
 export const dummyPaletteResource: PaletteResource = {
@@ -637,6 +647,10 @@ export const dummySettingsResource: SettingsResource = {
   scriptEventPresets: {},
   scriptEventDefaultPresets: {},
   runSceneSelectionOnly: false,
+  spriteMode: "8x16",
+  openBuildFolderOnExport: true,
+  showRomUsageAfterBuild: false,
+  romFilename: "",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -654,6 +668,15 @@ export const dummyVariable: Variable = {
 export const dummyEngineFieldValuesResource: EngineFieldValuesResource = {
   _resourceType: "engineFieldValues",
   engineFieldValues: [{ id: "field1", value: "someValue" }],
+};
+
+export const dummyEngineFieldSchema: EngineFieldSchema = {
+  key: "engineField1",
+  cType: "BYTE",
+  label: "Engine Field",
+  group: "Engine Fields",
+  type: "number",
+  defaultValue: 0,
 };
 
 export const dummyProjectResources: ProjectResources = {
@@ -749,6 +772,10 @@ export const dummyProjectResources: ProjectResources = {
     scriptEventPresets: {},
     scriptEventDefaultPresets: {},
     runSceneSelectionOnly: false,
+    spriteMode: "8x16",
+    openBuildFolderOnExport: true,
+    showRomUsageAfterBuild: false,
+    romFilename: "",
   },
 };
 

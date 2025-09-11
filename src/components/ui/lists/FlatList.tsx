@@ -12,7 +12,7 @@ import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
 import { getEventNodeName } from "renderer/lib/helpers/dom";
 
-export interface FlatListItem {
+interface FlatListItem {
   id: string;
   name: string;
 }
@@ -33,7 +33,7 @@ interface RowProps<T extends FlatListItem> {
   };
 }
 
-export interface FlatListProps<T extends FlatListItem> {
+interface FlatListProps<T extends FlatListItem> {
   readonly height: number;
   readonly items: T[];
   readonly selectedId?: string;

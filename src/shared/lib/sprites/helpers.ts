@@ -76,6 +76,7 @@ export const getAnimationTypeByIndex = (
   ];
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const ANIM_IDLE_RIGHT = 0;
 const ANIM_IDLE_LEFT = 1;
 const ANIM_IDLE_UP = 2;
@@ -84,6 +85,7 @@ const ANIM_MOVE_RIGHT = 4;
 const ANIM_MOVE_LEFT = 5;
 const ANIM_MOVE_UP = 6;
 const ANIM_MOVE_DOWN = 7;
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const fixedIndexes = [0];
 const fixedMovementIndexes = [0, 4];
@@ -140,64 +142,6 @@ export const filterAnimationsBySpriteType = <T>(
     return flipIndexes.map((i) => animationIds[i]);
   }
   return animationIds;
-};
-
-export const animationIndexBySpriteType = (
-  animationIndex: number,
-  type: SpriteAnimationType,
-  flipLeft: boolean,
-): number => {
-  if (type === "fixed") {
-    return fixedIndexes[animationIndex % fixedIndexes.length];
-  }
-  if (type === "fixed_movement") {
-    return fixedMovementIndexes[animationIndex % fixedMovementIndexes.length];
-  }
-  if (type === "multi" && !flipLeft) {
-    return multiIndexes[animationIndex % multiIndexes.length];
-  }
-  if (type === "multi" && flipLeft) {
-    return multiFlipIndexes[animationIndex % multiFlipIndexes.length];
-  }
-  if (type === "platform_player" && !flipLeft) {
-    return platformIndexes[animationIndex % platformIndexes.length];
-  }
-  if (type === "platform_player" && flipLeft) {
-    return platformFlipIndexes[animationIndex % platformFlipIndexes.length];
-  }
-  if (flipLeft) {
-    return flipIndexes[animationIndex % flipIndexes.length];
-  }
-  return animationIndex;
-};
-
-export const animationFlipBySpriteType = (
-  animationIndex: number,
-  type: SpriteAnimationType,
-  flipLeft: boolean,
-): boolean => {
-  if (type === "fixed") {
-    return false;
-  }
-  if (type === "fixed_movement") {
-    return false;
-  }
-  if (type === "multi" && !flipLeft) {
-    return false;
-  }
-  if (type === "multi" && flipLeft) {
-    return animationIndex === 1;
-  }
-  if (type === "platform_player" && !flipLeft) {
-    return false;
-  }
-  if (type === "platform_player" && flipLeft) {
-    return animationIndex === 1 || animationIndex === 5 || animationIndex === 3;
-  }
-  if (flipLeft) {
-    return animationIndex === 1 || animationIndex === 5;
-  }
-  return false;
 };
 
 export const animationMapBySpriteType = <T, U>(

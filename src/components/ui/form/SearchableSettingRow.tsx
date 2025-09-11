@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import { SettingRow } from "./SettingRow";
 
-export interface SearchableSettingRowProps {
+interface SearchableSettingRowProps {
   searchTerm?: string;
   searchMatches?: string[];
   children?: ReactNode;

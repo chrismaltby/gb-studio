@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ClipboardType } from "./clipboardTypes";
 
-export interface ClipboardState {
+interface ClipboardState {
   data?: ClipboardType;
 }
 

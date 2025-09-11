@@ -3,11 +3,7 @@ import { Button } from "ui/buttons/Button";
 import { FlexGrow } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
-import type {
-  PluginMetadata,
-  PluginRepositoryEntry,
-  PluginRepositoryMetadata,
-} from "lib/pluginManager/types";
+import type { PluginRepositoryEntry } from "lib/pluginManager/types";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { Input } from "ui/form/Input";
@@ -28,15 +24,6 @@ import { TextField } from "ui/form/TextField";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import { CloseIcon } from "ui/icons/Icons";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
-
-export type RepoItem = {
-  id: string;
-  name: string;
-  plugin: PluginMetadata;
-  repo: PluginRepositoryMetadata;
-  installedVersion?: string;
-  updateAvailable: boolean;
-};
 
 const protectedIds = ["core"];
 

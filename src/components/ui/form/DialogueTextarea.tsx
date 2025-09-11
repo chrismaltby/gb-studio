@@ -223,7 +223,7 @@ const createMaskFromInput = (input: string[]): number => {
   }, 0);
 };
 
-export interface DialogueTextareaProps {
+interface DialogueTextareaProps {
   id?: string;
   value: string;
   placeholder?: string;

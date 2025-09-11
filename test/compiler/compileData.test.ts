@@ -511,6 +511,7 @@ test("should precompile scenes", async () => {
     scenes,
     {},
     defaultPlayerSprites,
+    "8x16",
     usedBackgrounds,
     spriteData,
     { warnings: () => {} },

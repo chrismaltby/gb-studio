@@ -7,13 +7,13 @@ import { ScriptEventArgs } from "shared/lib/resources/types";
 import uuid from "uuid";
 
 export type ColorModeSetting = "mono" | "mixed" | "color";
-export type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";
 export type CartType = "mbc5" | "mbc3";
 export type BreakpointData = {
   scriptEventId: string;
   context: ScriptEditorCtx;
 };
+export type SpriteModeSetting = "8x8" | "8x16";
 
 export type SettingsState = typeof defaultProjectSettings;
 

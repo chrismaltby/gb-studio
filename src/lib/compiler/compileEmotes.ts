@@ -8,7 +8,7 @@ type CompileEmoteOptions = {
   warnings: (msg: string) => void;
 };
 
-export type PrecompiledEmoteData = EmoteData & {
+type PrecompiledEmoteData = EmoteData & {
   data: Uint8Array;
   size: number;
   frames: number;

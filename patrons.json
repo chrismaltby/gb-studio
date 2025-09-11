@@ -8,6 +8,13 @@
       }
     },
     {
+      "id": "7443910",
+      "type": "user",
+      "attributes": {
+        "full_name": "John the Hammer"
+      }
+    },
+    {
       "id": "89121289",
       "type": "user",
       "attributes": {
@@ -19,13 +26,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Salvatore Tosti"
-      }
-    },
-    {
-      "id": "57539298",
-      "type": "user",
-      "attributes": {
-        "full_name": "Skittles"
       }
     }
   ],
@@ -59,13 +59,6 @@
       }
     },
     {
-      "id": "852350",
-      "type": "user",
-      "attributes": {
-        "full_name": "Dimarelos"
-      }
-    },
-    {
       "id": "7767557",
       "type": "user",
       "attributes": {
@@ -77,20 +70,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Gumpy Function"
-      }
-    },
-    {
-      "id": "74199063",
-      "type": "user",
-      "attributes": {
-        "full_name": "Johndo"
-      }
-    },
-    {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
       }
     },
     {
@@ -114,6 +93,13 @@
       "type": "user",
       "attributes": {
         "full_name": "Diante Clark"
+      }
+    },
+    {
+      "id": "852350",
+      "type": "user",
+      "attributes": {
+        "full_name": "Dimarelos"
       }
     },
     {
@@ -152,6 +138,13 @@
       "type": "user"
     },
     {
+      "id": "74199063",
+      "type": "user",
+      "attributes": {
+        "full_name": "Johndo"
+      }
+    },
+    {
       "attributes": {
         "full_name": "Justin Kocian"
       },
@@ -164,6 +157,13 @@
       },
       "id": "3319189",
       "type": "user"
+    },
+    {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
     },
     {
       "attributes": {
@@ -206,6 +206,13 @@
       },
       "id": "104804333",
       "type": "user"
+    },
+    {
+      "id": "57539298",
+      "type": "user",
+      "attributes": {
+        "full_name": "Skittles"
+      }
     },
     {
       "attributes": {

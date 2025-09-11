@@ -53,7 +53,7 @@ const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
-export const PropertySelectWrapper = styled.div`
+const PropertySelectWrapper = styled.div`
   position: relative;
   width: 100%;
   min-width: 78px;

@@ -12,7 +12,10 @@ import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
 import { ReferencedSprite } from "./precompile/determineUsedAssets";
-import { ColorModeSetting } from "shared/lib/resources/types";
+import {
+  ColorModeSetting,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -21,7 +24,7 @@ const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
 const S_VRAM2 = 0x8;
 
-export type SpriteTileAllocationStrategy = (
+type SpriteTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
   sprite: SpriteSheetData,
@@ -55,7 +58,7 @@ interface SpriteTileData {
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
+const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
   tileIndex,
 ) => {
   return {
@@ -71,7 +74,7 @@ export const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
+const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
   tileIndex,
   numTiles,
 ) => {
@@ -90,7 +93,8 @@ export const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
  * @param {number} numTiles - The total number of tiles available for allocation.
  * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
  */
-export const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const spriteTileAllocationVRAM2Only = (tileIndex: number) => {
   return {
     tileIndex,
     inVRAM2: true,
@@ -119,8 +123,12 @@ export const compileSprite = async (
   spriteSheet: ReferencedSprite,
   cgbOnly: boolean,
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting,
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
+
+  const spriteMode: SpriteModeSetting =
+    spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16";
 
   const tileAllocationStrategy = cgbOnly
     ? spriteTileAllocationColorOnly
@@ -139,6 +147,7 @@ export const compileSprite = async (
     spriteSheet.canvasWidth,
     spriteSheet.canvasHeight,
     metasprites,
+    spriteMode,
   );
 
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
@@ -154,7 +163,7 @@ export const compileSprite = async (
             }
             return animation.frames.map((frame) => {
               let currentX = 0;
-              let currentY = 0;
+              let currentY = spriteMode === "8x16" ? 0 : -8;
               return [...frame.tiles]
                 .reverse()
                 .map((tile) => {
@@ -263,6 +272,7 @@ export const compileSprite = async (
 const compileSprites = async (
   spriteSheets: ReferencedSprite[],
   projectRoot: string,
+  defaultSpriteMode: SpriteModeSetting,
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
   statesOrder: string[];
@@ -276,6 +286,7 @@ const compileSprites = async (
           spriteSheet,
           spriteSheet.colorMode === "color",
           projectRoot,
+          defaultSpriteMode,
         ),
     ),
   );

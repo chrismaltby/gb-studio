@@ -10,6 +10,25 @@ interface MetaspriteGridProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
+export const generateGridBackground = (
+  zoom: number,
+  lineColor = "#efefef",
+  borderColor = "#d4d4d4",
+): string => {
+  if (zoom < 8) {
+    return `linear-gradient(to right, ${lineColor} 1px, transparent 1px), 
+            linear-gradient(to bottom, ${lineColor} 1px, transparent 1px)`;
+  }
+
+  const pixelLines = Array.from({ length: 8 }, (_, i) => {
+    const start = i * zoom;
+    return `${lineColor} ${start + 0}px, transparent ${start + 0}px, transparent ${start + zoom - 1}px`;
+  }).join(", ");
+
+  return `linear-gradient(to right, ${borderColor} 1px, ${pixelLines}), 
+          linear-gradient(to bottom, ${borderColor} 1px, ${pixelLines})`;
+};
+
 const MetaspriteGrid = ({
   width,
   height,
@@ -53,16 +72,7 @@ const MetaspriteGrid = ({
           border: `${1 / zoom}px solid #d4d4d4`,
           backgroundSize: `${gridSize * zoom}px ${gridSize * zoom}px`,
           backgroundPositionX: offsetGridX,
-          backgroundImage:
-            (showGrid &&
-              (zoom >= 8
-                ? `linear-gradient(to right, 
-          #d4d4d4 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef 16px, transparent 16px, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
-          ), linear-gradient(to bottom, 
-          #d4d4d4 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef 16px, transparent 16px, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
-          )`
-                : "linear-gradient(to right, #efefef 1px, transparent 1px), linear-gradient(to bottom, #efefef 1px, transparent 1px)")) ||
-            "none",
+          backgroundImage: showGrid ? generateGridBackground(zoom) : "none",
         }}
       />
       <div

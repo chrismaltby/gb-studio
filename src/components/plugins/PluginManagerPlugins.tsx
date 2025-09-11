@@ -45,7 +45,7 @@ import { PillButton } from "ui/buttons/PillButton";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { OFFICIAL_REPO_GITHUB_SUBMIT } from "consts";
 
-export type PluginItem = {
+type PluginItem = {
   id: string;
   name: string;
   plugin: PluginMetadata;

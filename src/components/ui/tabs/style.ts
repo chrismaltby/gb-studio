@@ -1,10 +1,6 @@
 import styled, { css } from "styled-components";
 
-export type TabBarVariant =
-  | "normal"
-  | "secondary"
-  | "eventSection"
-  | "scriptEvent";
+type TabBarVariant = "normal" | "secondary" | "eventSection" | "scriptEvent";
 
 interface StyledTabBarProps {
   $variant?: TabBarVariant;

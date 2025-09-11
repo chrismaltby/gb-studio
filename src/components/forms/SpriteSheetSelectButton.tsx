@@ -3,7 +3,10 @@ import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorDirection,
+  SpriteSheetNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import {
   FormatFolderLabel,
   SelectMenu,
@@ -21,6 +24,7 @@ interface SpriteSheetSelectProps {
   includeInfo?: boolean;
   frame?: number;
   onChange?: (newId: string) => void;
+  filter?: (spriteSheet: SpriteSheetNormalized) => boolean;
   optional?: boolean;
   optionalLabel?: string;
   optionalValue?: string;
@@ -145,6 +149,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   direction,
   frame,
   onChange,
+  filter,
   includeInfo,
   optional,
   optionalLabel,
@@ -276,6 +281,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 frame={frame}
                 direction={direction}
                 onChange={onSelectChange}
+                filter={filter}
                 onBlur={closeMenu}
                 optional={optional}
                 optionalLabel={optionalLabel}

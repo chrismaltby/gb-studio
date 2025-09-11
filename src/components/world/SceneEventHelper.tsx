@@ -75,7 +75,7 @@ const OverlayPos = styled.div`
   background: blue;
 `;
 
-export const scanlineAnim = keyframes`
+const scanlineAnim = keyframes`
   0% {
       left: 0;
       opacity: 0;

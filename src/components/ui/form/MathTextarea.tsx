@@ -145,7 +145,7 @@ const operatorRegex = new RegExp(
     ")",
 );
 
-export const MathTextareaWrapper = styled.div`
+const MathTextareaWrapper = styled.div`
   position: relative;
   z-index: 0;
   display: inline-block;
@@ -277,7 +277,7 @@ export type NamedConstant = {
   name: string;
 };
 
-export interface MathTextareaProps {
+interface MathTextareaProps {
   id?: string;
   value: string;
   entityId: string;

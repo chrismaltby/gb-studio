@@ -14,7 +14,7 @@ interface AnimationSpeedOption {
   label: string;
 }
 
-export const getAnimLabel = (speed: number): string => {
+const getAnimLabel = (speed: number): string => {
   const animLabelLookup: Record<number, string> = {
     255: `${l10n("FIELD_NONE")}`,
     127: `${l10n("FIELD_SPEED")} 1`,

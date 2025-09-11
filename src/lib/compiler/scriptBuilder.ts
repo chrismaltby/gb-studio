@@ -59,7 +59,11 @@ import { lexText, Token } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
-import type { Constant, ScriptEditorCtxType } from "shared/lib/resources/types";
+import type {
+  Constant,
+  ScriptEditorCtxType,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
@@ -312,6 +316,8 @@ type ASMSFXPriority =
   | ".SFX_PRIORITY_NORMAL"
   | ".SFX_PRIORITY_HIGH";
 
+type ASMSpriteMode = ".MODE_8X8" | ".MODE_8X16";
+
 type ScriptBuilderActorFlags =
   | ".ACTOR_FLAG_PINNED"
   | ".ACTOR_FLAG_HIDDEN"
@@ -366,10 +372,7 @@ const getPalette = (
   );
 };
 
-export const getVariableId = (
-  variable: string,
-  entity?: ScriptBuilderEntity,
-) => {
+const getVariableId = (variable: string, entity?: ScriptBuilderEntity) => {
   if (isVariableLocal(variable)) {
     if (entity) {
       return `${entity.id}__${variable}`;
@@ -476,6 +479,13 @@ const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
     return ".SFX_PRIORITY_HIGH";
   }
   return ".SFX_PRIORITY_NORMAL";
+};
+
+const toASMSpriteMode = (mode: SpriteModeSetting): ASMSpriteMode => {
+  if (mode === "8x8") {
+    return ".MODE_8X8";
+  }
+  return ".MODE_8X16";
 };
 
 const dirToAngle = (direction: string) => {
@@ -1554,8 +1564,11 @@ class ScriptBuilder {
 
   _performFetchOperations = (
     fetchOps: PrecompiledValueFetch[],
-  ): Record<string, string> => {
-    const localsLookup: Record<string, string> = {};
+  ): Record<string, string | PrecompiledValueRPNOperation[]> => {
+    const localsLookup: Record<
+      string,
+      string | PrecompiledValueRPNOperation[]
+    > = {};
     const sortedFetchOps = sortFetchOperations(fetchOps);
 
     let currentTarget = "-1";
@@ -1564,54 +1577,81 @@ class ScriptBuilder {
     let prevLocalVar = "";
 
     for (const fetchOp of sortedFetchOps) {
-      const targetValue = fetchOp.value.target || "player";
-      const targetSymbol =
-        typeof targetValue === "string" ? targetValue : targetValue.symbol;
       const property = fetchOp.value.type;
-      let localVar = "";
-
       if (
-        targetSymbol === currentTarget &&
-        property === currentProperty &&
-        prevLocalVar !== ""
+        property === "actorPosition" ||
+        property === "actorDirection" ||
+        property === "actorFrame"
       ) {
-        // If requested prop was fetched previously, reuse local var, don't fetch again
-        localsLookup[fetchOp.local] = prevLocalVar;
-        continue;
+        const targetValue = fetchOp.value.target || "player";
+        const targetSymbol =
+          typeof targetValue === "string" ? targetValue : targetValue.symbol;
+        let localVar = "";
+
+        if (
+          targetSymbol === currentTarget &&
+          property === currentProperty &&
+          prevLocalVar !== ""
+        ) {
+          // If requested prop was fetched previously, reuse local var, don't fetch again
+          localsLookup[fetchOp.local] = prevLocalVar;
+          continue;
+        }
+
+        this._addComment(`-- Fetch ${targetSymbol} ${property}`);
+
+        switch (property) {
+          case "actorPosition": {
+            localVar = this._declareLocal("actor_pos", 4, true);
+            this.setActorId(localVar, targetValue);
+            this._actorGetPosition(localVar);
+            break;
+          }
+          case "actorDirection": {
+            localVar = this._declareLocal("actor_dir", 1, true);
+            const actorRef = this._declareLocal("actor", 4);
+            this.setActorId(actorRef, targetValue);
+            this._actorGetDirection(actorRef, localVar);
+            break;
+          }
+          case "actorFrame": {
+            localVar = this._declareLocal("actor_frame", 2, true);
+            this.setActorId(localVar, targetValue);
+            this._actorGetAnimFrame(localVar);
+            break;
+          }
+          default: {
+            assertUnreachable(fetchOp.value);
+          }
+        }
+        currentTarget = targetSymbol;
+        currentProperty = property;
+        prevLocalVar = localVar;
+        localsLookup[fetchOp.local] = localVar;
+      } else if (property === "engineField") {
+        const key = fetchOp.value.value || "";
+        const { engineFields } = this.options;
+        const engineField = engineFields[key];
+        if (engineField !== undefined && engineField.key) {
+          const cType = engineField.cType;
+          const memType = is16BitCType(cType)
+            ? "memI16"
+            : cType === "BYTE"
+              ? "memI8"
+              : "memU8";
+          localsLookup[fetchOp.local] = [
+            {
+              type: memType,
+              value: engineField.key,
+            },
+          ];
+        } else {
+          // Engine field not found so fallback to 0
+          localsLookup[fetchOp.local] = [{ type: "number", value: 0 }];
+        }
+      } else {
+        assertUnreachable(fetchOp.value);
       }
-
-      this._addComment(`-- Fetch ${targetSymbol} ${property}`);
-
-      switch (property) {
-        case "actorPosition": {
-          localVar = this._declareLocal("actor_pos", 4, true);
-          this.setActorId(localVar, targetValue);
-          this._actorGetPosition(localVar);
-          break;
-        }
-        case "actorDirection": {
-          localVar = this._declareLocal("actor_dir", 1, true);
-          const actorRef = this._declareLocal("actor", 4);
-          this.setActorId(actorRef, targetValue);
-          this._actorGetDirection(actorRef, localVar);
-          break;
-        }
-        case "actorFrame": {
-          localVar = this._declareLocal("actor_frame", 2, true);
-          this.setActorId(localVar, targetValue);
-          this._actorGetAnimFrame(localVar);
-          break;
-        }
-
-        default: {
-          assertUnreachable(fetchOp.value);
-        }
-      }
-
-      currentTarget = targetSymbol;
-      currentProperty = property;
-      prevLocalVar = localVar;
-      localsLookup[fetchOp.local] = localVar;
     }
 
     return localsLookup;
@@ -1620,7 +1660,7 @@ class ScriptBuilder {
   _performValueRPN = (
     rpn: RPNHandler,
     rpnOps: PrecompiledValueRPNOperation[],
-    localsLookup: Record<string, string>,
+    localsLookup: Record<string, string | PrecompiledValueRPNOperation[]>,
   ) => {
     for (const rpnOp of rpnOps) {
       switch (rpnOp.type) {
@@ -1638,8 +1678,15 @@ class ScriptBuilder {
           break;
         }
         case "local": {
-          this._markLocalUse(localsLookup[rpnOp.value]);
-          rpn.ref(this._localRef(localsLookup[rpnOp.value], rpnOp.offset ?? 0));
+          const local = localsLookup[rpnOp.value];
+          if (typeof local === "string") {
+            // Fetch value is stored in a local var
+            this._markLocalUse(local);
+            rpn.ref(this._localRef(local, rpnOp.offset ?? 0));
+          } else {
+            // Fetch can be executed directly with RPN
+            this._performValueRPN(rpn, local, localsLookup);
+          }
           break;
         }
         case "indirect": {
@@ -1900,6 +1947,10 @@ class ScriptBuilder {
 
   _spritesShow = () => {
     this._addCmd("VM_SHOW_SPRITES");
+  };
+
+  _setSpriteMode = (mode: ASMSpriteMode) => {
+    this._addCmd("VM_SET_SPRITE_MODE", mode);
   };
 
   _loadText = (numInputs: number) => {
@@ -5471,6 +5522,12 @@ extern void __mute_mask_${symbol};
   spritesShow = () => {
     this._addComment("Show Sprites");
     this._spritesShow();
+  };
+
+  setSpriteMode = (mode: SpriteModeSetting) => {
+    this._addComment(`Set Sprite Mode: ${mode}`);
+    this._setSpriteMode(toASMSpriteMode(mode));
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------

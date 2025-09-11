@@ -3,14 +3,6 @@ import type {
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 
-const arrayNStrings = (n: number) =>
-  Array.from(Array(n).keys()).map((n) => String(n));
-
-export const allVariables = arrayNStrings(512);
-export const localVariables = arrayNStrings(6);
-export const tempVariables = arrayNStrings(2);
-export const customEventVariables = arrayNStrings(10);
-
 type VariablesLookup = { [name: string]: Variable | undefined };
 
 /******************************************************************************

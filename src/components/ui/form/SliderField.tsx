@@ -5,7 +5,7 @@ import { Label } from "./Label";
 import { StyledInput } from "./style";
 import { NumberInput } from "./NumberInput";
 
-export interface SliderFieldProps {
+interface SliderFieldProps {
   name: string;
   label?: string;
   value?: number;

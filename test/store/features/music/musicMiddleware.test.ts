@@ -2,30 +2,26 @@
  * @jest-environment jsdom
  */
 
-import { mocked } from "jest-mock";
 import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground, dummyMusic } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import ScripTracker from "../../../../src/renderer/lib/vendor/scriptracker/scriptracker";
-
+import middleware, {
+  initMusic,
+} from "../../../../src/store/features/music/musicMiddleware";
 jest.mock("../../../../src/renderer/lib/vendor/scriptracker/scriptracker");
-const mockedScripTracker = mocked(ScripTracker);
+const mockedScripTracker = jest.mocked(ScripTracker);
 
 beforeEach(() => {
   jest.resetModules();
 });
 
 test("Should trigger call to play music", async () => {
-  const musicModule = await import(
-    "../../../../src/store/features/music/musicMiddleware"
-  );
-  const middleware = musicModule.default;
-
   mockedScripTracker.mockClear();
 
-  const modPlayer = musicModule.initMusic();
+  const modPlayer = initMusic();
 
   const loadSpy = jest.spyOn(modPlayer, "loadModule");
 
@@ -73,19 +69,14 @@ test("Should trigger call to play music", async () => {
 
   expect(loadSpy).toBeCalledWith(
     "gbs://project/assets/music/track1.mod",
-    false
+    false,
   );
 });
 
 test("Should trigger a call to pause music", async () => {
-  const musicModule = await import(
-    "../../../../src/store/features/music/musicMiddleware"
-  );
-  const middleware = musicModule.default;
-
   mockedScripTracker.mockClear();
 
-  const modPlayer = musicModule.initMusic();
+  const modPlayer = initMusic();
 
   Object.defineProperty(modPlayer, "isPlaying", {
     get: jest.fn(() => true),
@@ -130,11 +121,6 @@ test("Should trigger a call to pause music", async () => {
 });
 
 test("Should pause music when switching section", async () => {
-  const musicModule = await import(
-    "../../../../src/store/features/music/musicMiddleware"
-  );
-  const middleware = musicModule.default;
-
   const store = {
     getState: () => ({
       editor: {

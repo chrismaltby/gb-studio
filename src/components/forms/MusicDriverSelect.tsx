@@ -15,7 +15,7 @@ interface MusicDriverSelectProps extends SelectCommonProps {
   onChange?: (newId: MusicDriverSetting) => void;
 }
 
-export interface MusicDriverOption {
+interface MusicDriverOption {
   value: MusicDriverSetting;
   label: string;
 }

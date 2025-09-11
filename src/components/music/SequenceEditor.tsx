@@ -64,7 +64,7 @@ const AddSequenceButton = styled.button`
   }
 `;
 
-export const SequenceEditorFwd = ({
+const SequenceEditorFwd = ({
   sequence,
   patterns,
   playingSequence,

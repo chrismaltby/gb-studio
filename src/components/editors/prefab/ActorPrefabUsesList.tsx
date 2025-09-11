@@ -37,7 +37,7 @@ const UseMessage = styled.div`
   font-size: 11px;
 `;
 
-export type ActorPrefabUse = {
+type ActorPrefabUse = {
   id: string;
   name: string;
 } & (

@@ -32,7 +32,7 @@ export type ImageIndexFunction = (
 /**
  * A wrapper for a slice of an image giving the sliced data and coordinates where the slice was taken
  */
-export type SliceDef = {
+type SliceDef = {
   data: IndexedImage;
   coordinates: {
     x: number;

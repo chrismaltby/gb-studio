@@ -3,7 +3,7 @@ import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import { RootState } from "store/configureStore";
 import projectActions from "store/features/project/projectActions";
 
-export interface ScriptEventsState {
+interface ScriptEventsState {
   lookup: ScriptEventDefs;
   lookupWithPresets: ScriptEventDefs;
   loaded: boolean;

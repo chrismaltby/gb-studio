@@ -4,7 +4,7 @@ import { useAppSelector } from "store/hooks";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 
-export type EngineFieldGroup = {
+type EngineFieldGroup = {
   name: string;
   sceneType?: string;
   searchMatches: string[];

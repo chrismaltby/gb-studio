@@ -180,7 +180,7 @@ export const StyledFormLink = styled.div`
 
 // #region FormSectionTitle
 
-export interface StyledFormSectionTitleProps {
+interface StyledFormSectionTitleProps {
   readonly $noTopBorder?: boolean;
   readonly $noMarginBottom?: boolean;
 }

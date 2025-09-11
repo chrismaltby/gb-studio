@@ -121,20 +121,6 @@ export const getBuildCommands = async (
   return output;
 };
 
-export const buildPackFile = async (buildRoot: string) => {
-  const output = [];
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
-  for (const file of buildFiles) {
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.o`;
-
-    output.push(objFile);
-  }
-  return output.join("\n");
-};
-
 export const buildLinkFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -149,19 +135,9 @@ export const buildLinkFile = async (buildRoot: string) => {
   return output.join("\n");
 };
 
-export const buildPackFlags = (packFilePath: string, batteryless = false) => {
-  return ([] as Array<string | number>).concat(
-    // General
-    ["-b", 5, "-f", 255, "-e", "rel", "-c"],
-    // Batteryless
-    batteryless ? ["-a 4"] : [],
-    // Input
-    ["-i", packFilePath],
-  );
-};
-
 export const buildLinkFlags = (
   linkFile: string,
+  romFilename: string,
   name = "GBSTUDIO",
   cartType: string,
   color = false,
@@ -178,7 +154,6 @@ export const buildLinkFlags = (
       .replace(/[^A-Z]*/g, "")
       .substring(0, 15) || "GBSTUDIO";
   const cart = cartType === "mbc3" ? "0x10" : "0x1E";
-  const gameFile = colorOnly ? "game.gbc" : "game.gb";
   return ([] as Array<string>).concat(
     // General
     [
@@ -200,7 +175,7 @@ export const buildLinkFlags = (
       `-Wm-yn"${validName}"`,
     ],
     // Color
-    color ? ["-Wm-yC"] : [],
+    colorOnly ? ["-Wm-yC"] : color ? ["-Wm-yc"] : [],
     // SGB
     sgb ? ["-Wm-ys"] : [],
     // Pocket
@@ -224,8 +199,7 @@ export const buildLinkFlags = (
         ]
       : ["-Wl-g__start_save=0"],
     // Output
-    targetPlatform === "gb" ? ["-o", `build/rom/${gameFile}`] : [],
-    targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
+    ["-o", `"build/rom/${romFilename}"`],
     [`-Wl-f${linkFile}`],
   );
 };

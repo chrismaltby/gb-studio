@@ -20,9 +20,9 @@ const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
 
 export const allVariables = arrayNStrings(512);
-export const localVariables = arrayNStrings(6);
-export const tempVariables = arrayNStrings(2);
-export const customEventVariables = arrayNStrings(10);
+const localVariables = arrayNStrings(6);
+const tempVariables = arrayNStrings(2);
+const customEventVariables = arrayNStrings(10);
 
 type VariablesLookup = { [name: string]: Variable | undefined };
 
@@ -33,7 +33,7 @@ export interface NamedVariable {
   group: string; // Group name that variable belongs to
 }
 
-export interface VariableGroup {
+interface VariableGroup {
   name: string; // The group name
   variables: NamedVariable[]; // Variables in the group
 }
@@ -79,7 +79,7 @@ export const namedCustomEventVariables = (
   );
 };
 
-export const namedEntityVariables = (
+const namedEntityVariables = (
   entityId: string,
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
@@ -105,7 +105,7 @@ export const namedEntityVariables = (
   );
 };
 
-export const namedGlobalVariables = (
+const namedGlobalVariables = (
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(

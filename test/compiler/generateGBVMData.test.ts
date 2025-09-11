@@ -1,3 +1,4 @@
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import {
   compileGameGlobalsHeader,
   compileScrollBounds,
@@ -115,7 +116,7 @@ describe("compileScrollBounds", () => {
       height: 20,
     };
 
-    const result = compileScrollBounds(scrollBounds);
+    const result = compileScrollBounds(scrollBounds, 20, 30);
 
     expect(result).toEqual({
       left: 16,
@@ -133,7 +134,7 @@ describe("compileScrollBounds", () => {
       height: 18,
     };
 
-    const result = compileScrollBounds(scrollBounds);
+    const result = compileScrollBounds(scrollBounds, 20, 30);
 
     expect(result).toEqual({
       left: 0,
@@ -151,7 +152,7 @@ describe("compileScrollBounds", () => {
       height: 250,
     };
 
-    const result = compileScrollBounds(scrollBounds);
+    const result = compileScrollBounds(scrollBounds, 20, 30);
 
     expect(result).toEqual({
       left: 40,
@@ -169,7 +170,7 @@ describe("compileScrollBounds", () => {
       height: 12,
     };
 
-    const result = compileScrollBounds(scrollBounds);
+    const result = compileScrollBounds(scrollBounds, 20, 30);
 
     expect(result).toEqual({
       left: 16,
@@ -179,8 +180,13 @@ describe("compileScrollBounds", () => {
     });
   });
 
-  test("should return undefined when scrollBounds is undefined", () => {
-    const result = compileScrollBounds(undefined);
-    expect(result).toBeUndefined();
+  test("should return the given screen size when scrollBounds is undefined", () => {
+    const result = compileScrollBounds(undefined, 20, 30);
+    expect(result).toEqual({
+      left: 0,
+      top: 0,
+      right: (20 - SCREEN_WIDTH) * 8,
+      bottom: (30 - SCREEN_HEIGHT) * 8,
+    });
   });
 });
