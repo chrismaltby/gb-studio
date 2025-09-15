@@ -118,6 +118,6 @@ const engineSlice = createSlice({
       }),
 });
 
-export const { actions, reducer } = engineSlice;
+export const { actions } = engineSlice;
 
-export default reducer;
+export default engineSlice.reducer;

@@ -68,6 +68,6 @@ export const selectScriptEventDefs = (state: RootState) =>
 export const selectScriptEventDefsWithPresets = (state: RootState) =>
   state.scriptEventDefs.lookupWithPresets;
 
-export const { actions, reducer } = scriptEventDefsSlice;
+export const { actions } = scriptEventDefsSlice;
 
-export default reducer;
+export default scriptEventDefsSlice.reducer;

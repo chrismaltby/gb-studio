@@ -40,6 +40,6 @@ const navigationSlice = createSlice({
       }),
 });
 
-export const { reducer, actions } = navigationSlice;
+export const { actions } = navigationSlice;
 
-export default reducer;
+export default navigationSlice.reducer;

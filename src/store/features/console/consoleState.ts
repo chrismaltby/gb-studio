@@ -93,6 +93,6 @@ const consoleSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = consoleSlice;
+export const { actions } = consoleSlice;
 
-export default reducer;
+export default consoleSlice.reducer;

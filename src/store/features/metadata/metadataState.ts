@@ -46,6 +46,6 @@ const metadataSlice = createSlice({
 
 export const getMetadata = (state: RootState) => state.project.present.metadata;
 
-export const { actions, reducer } = metadataSlice;
+export const { actions } = metadataSlice;
 
-export default reducer;
+export default metadataSlice.reducer;

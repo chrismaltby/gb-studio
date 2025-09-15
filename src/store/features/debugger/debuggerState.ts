@@ -89,6 +89,6 @@ const debuggerSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = debuggerSlice;
+export const { actions } = debuggerSlice;
 
-export default reducer;
+export default debuggerSlice.reducer;
