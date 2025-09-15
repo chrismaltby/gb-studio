@@ -1143,7 +1143,7 @@
   "FIELD_PLATFORM_LADDERS_HOP_DESC": "Fait effectuer un petit saut au joueur en haut d’une échelle si le bouton Haut est encore maintenu. Permet de grimper sur les plateformes au-dessus des échelles.",
   "FIELD_STATE": "État",
   "FIELD_ON_STATE": "À l’exécution",
-  "FIELD_STATE_CHANGE": "Au changement d'état",
+  "FIELD_STATE_CHANGE": "Au changement d’état",
   "FIELD_FALL_STATE": "En chute",
   "FIELD_GROUND_STATE": "Au sol",
   "FIELD_JUMP_STATE": "En saut",
@@ -1236,7 +1236,7 @@
   "FIELD_DEFAULT_SPRITE_MODE": "Mode de sprite par défaut",
   "FIELD_SPRITE_MODE_OVERRIDE": "Forcer le mode de sprite",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Définir le mode de sprite forcé",
-  "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Ouvrir le dossier de compilation à l'export",
+  "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Ouvrir le dossier de compilation à l’export",
   "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Afficher l’utilisation de la ROM après compilation",
   "FIELD_ROM_FILENAME": "Nom de la ROM",
 
