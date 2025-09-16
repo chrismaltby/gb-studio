@@ -1294,7 +1294,7 @@
   "EVENT_IF_ENGINE_FIELD_COMPARE_DESC": "Exécute conditionnellement une partie du script en fonction du résultat de la comparaison entre un paramètre moteur et une valeur.",
   "EVENT_IF_INPUT": "Si le bouton est pressé",
   "EVENT_IF_INPUT_DESC": "Exécute conditionnellement une partie du script si le bouton de la manette spécifié est actuellement pressé. Ne se met pas en attente de l’entrée de l’utilisateur et ne s’exécute qu’une seule fois. Pour exécuter un script chaque fois qu’un bouton est pressé, utilisez 'Attacher un script aux boutons'.",
-  "EVENT_IF_ACTOR_AT_POSITION": "Si l'acteur est à la position",
+  "EVENT_IF_ACTOR_AT_POSITION": "Si l’acteur est à la position",
   "EVENT_IF_ACTOR_AT_POSITION_DESC": "Exécute conditionnellement une partie du script si un acteur se trouve à une position spécifiée.",
   "EVENT_IF_ACTOR_DIRECTION": "Si l’acteur est orienté vers une direction",
   "EVENT_IF_ACTOR_DIRECTION_DESC": "Exécute conditionnellement une partie du script si un acteur est orienté vers une direction spécifiée.",
