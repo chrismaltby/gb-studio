@@ -1627,7 +1627,7 @@
   "EVENT_TEXT_DRAW": "Afficher un texte",
   "EVENT_TEXT_DRAW_LABEL": "Afficher un texte \"{text}\"",
   "EVENT_TEXT_DRAW_DESC": "Affiche un texte à une position donnée, soit sur l’arrière-plan de la scène, soit sur l’overlay.",
-  "EVENT_MUTE_CHANNEL": "Désactiver des canaux audio",
+  "EVENT_MUTE_CHANNEL": "Rendre muet des canaux audio",
   "EVENT_MUTE_CHANNEL_DESC": "Définit quels canaux audio sont actifs et lesquels sont muets.",
   "EVENT_SET_DIALOGUE_FRAME": "Définir le visuel du cadre des boîtes de dialogue",
   "EVENT_SET_DIALOGUE_FRAME_DESC": "Remplace l’image du cadre des boîtes de dialogue par un jeu de tuiles personnalisé.",
