@@ -903,7 +903,7 @@
   "FIELD_LEFT": "Gauche",
   "FIELD_RIGHT": "Droite",
   "FIELD_CLEAR_PREVIOUS": "Effacer le précédent",
-  "FIELD_CLEAR_PREVIOUS_DESC": "Efface le contenu qui était affiché précédemment dans l’overlay. // TODO : Check overlay",
+  "FIELD_CLEAR_PREVIOUS_DESC": "Efface le contenu qui était affiché précédemment dans l’overlay.",
   "FIELD_SHOW_FRAME": "Afficher le cadre",
   "FIELD_SHOW_FRAME_DESC": "Dessine un cadre autour des bords de la fenêtre de dialogue.",
   "FIELD_CLOSE_WHEN": "Fermer quand…",
