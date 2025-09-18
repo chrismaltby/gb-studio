@@ -1860,8 +1860,8 @@
   "ERROR_PLUGIN_NOT_FOUND": "Extension introuvable",
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Impossible de supprimer l’extension",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Impossible d’installer l’extension",
+  "ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN": "Tentative d’accès à '{file}'. Ce fichier n’appartient pas à l’extension qui tente d’y accéder. Les extensions ne peuvent accéder qu’aux fichiers situés dans le dossier 'plugins/<PLUGIN_NAME>/events/'.",
 
-  "ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN": "Attempt to access \"{file}\". This file does not belong to the plugin which is trying to access it. Plugins can only access files in the `plugins/<PLUGIN_NAME>/events/` folder.",
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nouveau",
