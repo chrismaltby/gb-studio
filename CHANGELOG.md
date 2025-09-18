@@ -123,6 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix ROM color compatibility flag when making Mono + Color compatible games [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where deleting a sprite could cause the application to crash
 - Fix issue where renaming current file in music editor would cause unsaved changes to be lost
+- Fix issue where tile priority could not be erased after assigning a color palette to a tile
 
 ## [4.1.3] - 2024-09-16
 

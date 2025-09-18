@@ -185,6 +185,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     isDrawingSlope: boolean;
     slopeDirectionHorizontal: "left" | "right";
     slopeDirectionVertical: "left" | "right";
+    isTileProp: boolean;
   }>({
     startX: 0,
     startY: 0,
@@ -196,6 +197,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     isDrawingSlope: false,
     slopeDirectionHorizontal: "left",
     slopeDirectionVertical: "left",
+    isTileProp: false,
   });
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, hoverSceneId),
@@ -460,7 +462,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             paletteIndex: data.current.drawTile,
-            isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+            isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
           }),
@@ -487,7 +489,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             endX: x1,
             endY: y1,
             paletteIndex: data.current.drawTile,
-            isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+            isTileProp: data.current.isTileProp,
             drawLine: true,
             tileLookup,
           }),
@@ -796,6 +798,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       }
 
       data.current.drawTile = 0;
+      data.current.isTileProp = !!(selectedPalette & TILE_COLOR_PROPS);
 
       // If any tile under brush is currently not filled then
       // paint tileColors rather than remove them
@@ -806,7 +809,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         if (currentProp !== tileProp) {
           data.current.drawTile = tileProp;
         } else {
-          data.current.drawTile = hoverPalette & TILE_COLOR_PALETTE;
+          data.current.drawTile = 0;
         }
       } else {
         data.current.drawTile = selectedPalette;
@@ -821,7 +824,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             x,
             y,
             paletteIndex: data.current.drawTile,
-            isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+            isTileProp: data.current.isTileProp,
             tileLookup,
           }),
         );
@@ -836,7 +839,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               paletteIndex: data.current.drawTile,
-              isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+              isTileProp: data.current.isTileProp,
             }),
           );
         } else {
@@ -859,7 +862,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               endY: y,
               paletteIndex: data.current.drawTile,
               drawLine: true,
-              isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+              isTileProp: data.current.isTileProp,
               tileLookup,
             }),
           );
@@ -876,7 +879,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
               x,
               y,
               paletteIndex: data.current.drawTile,
-              isTileProp: (data.current.drawTile & TILE_COLOR_PROPS) !== 0,
+              isTileProp: data.current.isTileProp,
               tileLookup,
             }),
           );
