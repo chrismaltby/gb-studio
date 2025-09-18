@@ -4480,6 +4480,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jitl/quickjs-ffi-types@npm:0.31.0":
+  version: 0.31.0
+  resolution: "@jitl/quickjs-ffi-types@npm:0.31.0"
+  checksum: 10c0/0684b2ea64c0975778ea4836f80fd527ea643b668bbe66c6a3caf2aecf2c4a332afcf27e7f8dbe187b848b056a48b8f26d4e3ae32964a4856c05808a00a27fb5
+  languageName: node
+  linkType: hard
+
+"@jitl/quickjs-singlefile-browser-release-sync@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@jitl/quickjs-singlefile-browser-release-sync@npm:0.31.0"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "npm:0.31.0"
+  checksum: 10c0/8f8fc648ba78c5771989873a43b49b0bf9eea114ae6d639bd29ba69be2fbdd2e9bf70b6b5d53fe3d86de3fa48813272c325c3c8f004d49c9c5aa90e9ab449141
+  languageName: node
+  linkType: hard
+
+"@jitl/quickjs-singlefile-cjs-debug-sync@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@jitl/quickjs-singlefile-cjs-debug-sync@npm:0.31.0"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "npm:0.31.0"
+  checksum: 10c0/fb4db2b19d3376622b9b925d420f492228e983c94bac1338d9c235397e8375d798faf9872e89cd7e6dfdcf812b4526d846ba5fa0a1a527adcf492da5a79e1580
+  languageName: node
+  linkType: hard
+
+"@jitl/quickjs-singlefile-cjs-release-sync@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@jitl/quickjs-singlefile-cjs-release-sync@npm:0.31.0"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "npm:0.31.0"
+  checksum: 10c0/28dee50630a685b3ac8d0705fe8f5d9aa0ca5b19e66829e5733af23c9e2d0a6874b3b36da6b5e1b92f737ea9f441917df5e3bd3bf65bebb34a2686ec7268406a
+  languageName: node
+  linkType: hard
+
 "@jridgewell/gen-mapping@npm:^0.3.0, @jridgewell/gen-mapping@npm:^0.3.2":
   version: 0.3.3
   resolution: "@jridgewell/gen-mapping@npm:0.3.3"
@@ -7223,7 +7257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-walk@npm:^8.0.0, acorn-walk@npm:^8.0.2, acorn-walk@npm:^8.1.1, acorn-walk@npm:^8.2.0":
+"acorn-walk@npm:^8.0.0, acorn-walk@npm:^8.0.2, acorn-walk@npm:^8.1.1":
   version: 8.3.2
   resolution: "acorn-walk@npm:8.3.2"
   checksum: 10c0/7e2a8dad5480df7f872569b9dccff2f3da7e65f5353686b1d6032ab9f4ddf6e3a2cb83a9b52cf50b1497fd522154dda92f0abf7153290cc79cd14721ff121e52
@@ -7239,7 +7273,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.0.4, acorn@npm:^8.1.0, acorn@npm:^8.4.1, acorn@npm:^8.7.0, acorn@npm:^8.7.1, acorn@npm:^8.8.1, acorn@npm:^8.8.2, acorn@npm:^8.9.0":
+"acorn@npm:^8.0.4, acorn@npm:^8.1.0, acorn@npm:^8.4.1, acorn@npm:^8.7.1, acorn@npm:^8.8.1, acorn@npm:^8.8.2, acorn@npm:^8.9.0":
   version: 8.11.3
   resolution: "acorn@npm:8.11.3"
   bin:
@@ -11863,6 +11897,9 @@ __metadata:
     "@electron-forge/plugin-webpack": "npm:^7.3.0"
     "@electron/fuses": "npm:^1.7.0"
     "@electron/notarize": "npm:^2.3.0"
+    "@jitl/quickjs-singlefile-browser-release-sync": "npm:^0.31.0"
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "npm:^0.31.0"
+    "@jitl/quickjs-singlefile-cjs-release-sync": "npm:^0.31.0"
     "@octokit/rest": "npm:^16.25.4"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@reduxjs/toolkit": "npm:^2.2.7"
@@ -11950,6 +11987,7 @@ __metadata:
     prismjs: "npm:^1.27.0"
     prop-types: "npm:^15.7.2"
     ps-tree: "npm:^1.2.0"
+    quickjs-emscripten-core: "npm:^0.31.0"
     raw-loader: "npm:^4.0.2"
     react: "npm:^18.3.1"
     react-cool-dimensions: "npm:^3.0.1"
@@ -11985,7 +12023,6 @@ __metadata:
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:^5.6.3"
     uuid: "npm:^3.3.2"
-    vm2: "npm:3.9.19"
     wavefile: "npm:^11.0.0"
     webpack-bundle-analyzer: "npm:^4.4.2"
     webpack-cli: "npm:^4.7.0"
@@ -17135,6 +17172,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"quickjs-emscripten-core@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "quickjs-emscripten-core@npm:0.31.0"
+  dependencies:
+    "@jitl/quickjs-ffi-types": "npm:0.31.0"
+  checksum: 10c0/f212754ada4bbcf0bbf43f7128c7ba1890a1071bb2e633767cc1dc5d25035ab88a4010d0db071dbd4a41c254bba57cbb8b1407b99bbe98419e706a3b1192ce48
+  languageName: node
+  linkType: hard
+
 "randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
@@ -20357,18 +20403,6 @@ __metadata:
   version: 1.1.2
   resolution: "vary@npm:1.1.2"
   checksum: 10c0/f15d588d79f3675135ba783c91a4083dcd290a2a5be9fcb6514220a1634e23df116847b1cc51f66bfb0644cf9353b2abb7815ae499bab06e46dd33c1a6bf1f4f
-  languageName: node
-  linkType: hard
-
-"vm2@npm:3.9.19":
-  version: 3.9.19
-  resolution: "vm2@npm:3.9.19"
-  dependencies:
-    acorn: "npm:^8.7.0"
-    acorn-walk: "npm:^8.2.0"
-  bin:
-    vm2: bin/vm2
-  checksum: 10c0/16e8e6bb389ae88b8ffbc439e8d7c09db3b98f7f738440af5b78080d6cb35db66b41b0ad055cc59bcc45cb8e270ed850667207348e90760b430403741f72337a
   languageName: node
   linkType: hard
 

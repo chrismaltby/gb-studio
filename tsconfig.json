@@ -27,7 +27,10 @@
       "wasm/*": ["../appData/wasm/*" ],
       "contributors.json": ["../contributors.json"],
       "contributors-external.json": ["../contributors-external.json"],
-      "patrons.json": ["../patrons.json"]
+      "patrons.json": ["../patrons.json"],
+      "#my-quickjs-variant": [
+        "../node_modules/@jitl/quickjs-singlefile-cjs-release-sync"
+      ]      
     }
   },
   "include": ["src", "test"]

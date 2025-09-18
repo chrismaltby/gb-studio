@@ -16,6 +16,10 @@ export const anonymizeGBVMScript = (input: string): string => {
     .replace(placeholderReferencePattern, "SCRIPT"); // Strip recursive placeholders
 };
 
+export const stripCommentsFromGBVMScript = (input: string): string => {
+  return input.replace(/[\s]*;.*/g, "");
+};
+
 export const gbvmScriptChecksum = (input: string): string => {
   return SparkMD5.hash(anonymizeGBVMScript(input));
 };

@@ -49,6 +49,9 @@
   },
   "dependencies": {
     "3x3-equation-solver": "^1.2.18",
+    "@jitl/quickjs-singlefile-browser-release-sync": "^0.31.0",
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "^0.31.0",
+    "@jitl/quickjs-singlefile-cjs-release-sync": "^0.31.0",
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^2.2.7",
     "@sinclair/typebox": "^0.32.35",
@@ -82,6 +85,7 @@
     "prismjs": "^1.27.0",
     "prop-types": "^15.7.2",
     "ps-tree": "^1.2.0",
+    "quickjs-emscripten-core": "^0.31.0",
     "raw-loader": "^4.0.2",
     "react": "^18.3.1",
     "react-cool-dimensions": "^3.0.1",
@@ -108,7 +112,6 @@
     "substyle": "9.3.0",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
-    "vm2": "3.9.19",
     "wavefile": "^11.0.0"
   },
   "devDependencies": {
