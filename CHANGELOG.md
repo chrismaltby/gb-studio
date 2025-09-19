@@ -124,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where deleting a sprite could cause the application to crash
 - Fix issue where renaming current file in music editor would cause unsaved changes to be lost
 - Fix issue where tile priority could not be erased after assigning a color palette to a tile
+- Fix issue in topdown scene type where player speed set to non-whole numbers would often cause player to clip through collisions
 
 ## [4.1.3] - 2024-09-16
 
