@@ -14,7 +14,7 @@ import type {
 } from "shared/lib/entities/entitiesTypes";
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
-import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
 import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";

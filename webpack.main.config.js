@@ -29,11 +29,6 @@ const mainPlugins = [
     patterns: [
       { from: "node_modules/about-window", to: "node_modules/about-window" },
       {
-        from: "node_modules/vm2",
-        to: "node_modules/vm2",
-        info: { minimized: true },
-      },
-      {
         from: "node_modules/acorn",
         to: "node_modules/acorn",
       },
@@ -79,10 +74,12 @@ module.exports = {
       shared: srcPath("shared"),
       consts: srcPath("consts.ts"),
       "patrons.json": Path.join(__dirname, "patrons.json"),
+      "#my-quickjs-variant": require.resolve(
+        "@jitl/quickjs-singlefile-cjs-release-sync",
+      ),
     },
   },
   externals: {
-    vm2: "vm2",
     "about-window": "about-window",
     acorn: "acorn",
     "acorn-walk": "acorn-walk",

@@ -14,7 +14,7 @@ import { Select } from "ui/form/Select";
 import { FormField } from "ui/form/layout/FormLayout";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { TextField } from "ui/form/TextField";
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import styled from "styled-components";
 import { Label } from "ui/form/Label";
 import { FlexGrow } from "ui/spacing/Spacing";

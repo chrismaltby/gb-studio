@@ -8,7 +8,7 @@ import {
   ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventFormProps {

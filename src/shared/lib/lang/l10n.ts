@@ -20,6 +20,12 @@ export const setL10NData = (data: L10NLookup) => {
   hasInit = true;
 };
 
+export const clearL10NData = () => {
+  for (const key in l10nStrings) {
+    delete l10nStrings[key];
+  }
+};
+
 export const getL10NData = () => {
   return l10nStrings;
 };

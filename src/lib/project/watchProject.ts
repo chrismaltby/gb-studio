@@ -212,7 +212,7 @@ const watchProject = (
     .on("unlink", callbacks.onChangedEngineSchema);
 
   const pluginEventsWatcher = chokidar
-    .watch(`${pluginsRoot}/**/events/event*.js`, {
+    .watch(`${pluginsRoot}/**/events/**`, {
       ignoreInitial: true,
       persistent: true,
     })

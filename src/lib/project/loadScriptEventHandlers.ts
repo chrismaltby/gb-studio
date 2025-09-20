@@ -1,254 +1,126 @@
 import glob from "glob";
 import { promisify } from "util";
 import { eventsRoot } from "consts";
-import * as l10n from "shared/lib/lang/l10n";
-import * as eventHelpers from "lib/events/helpers";
-import * as eventSystemHelpers from "lib/helpers/eventSystem";
-import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
-import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import { readFile } from "fs-extra";
-import trimLines from "shared/lib/helpers/trimlines";
-import * as scriptValueHelpers from "shared/lib/scriptValue/helpers";
-import * as scriptValueTypes from "shared/lib/scriptValue/types";
+import {
+  FileReaderFn,
+  ScriptEventHandlerWithCleanup,
+} from "lib/scriptEventsHandlers/handlerTypes";
+import { readFile, readFileSync } from "fs-extra";
+import { loadScriptEventHandlerFromUntrustedString } from "lib/scriptEventsHandlers/untrustedHandler";
+import { loadScriptEventHandlerFromTrustedString } from "lib/scriptEventsHandlers/trustedHandler";
+import { dirname, join } from "path";
+import { isAssetWithinProject } from "lib/helpers/assets";
+import l10n from "shared/lib/lang/l10n";
 
 const globAsync = promisify(glob);
 
-const VM2 = __non_webpack_require__("vm2");
-const NodeVM = VM2.NodeVM;
+const eventHandlers: Record<string, ScriptEventHandlerWithCleanup> = {};
 
-type ScriptEventHelperDef =
-  | {
-      type: "position";
-      x: string;
-      y: string;
-      units?: string;
-      tileSize?: string;
-      tileWidth?: number;
-      tileHeight?: number;
-    }
-  | {
-      type: "camera";
-      x: string;
-      y: string;
-      width?: string;
-      height?: string;
-      units?: string;
-    }
-  | {
-      type: "overlay";
-      x: string;
-      y: string;
-      color?: string;
-      units?: string;
-    }
-  | {
-      type: "scanline";
-      y: string;
-      units?: string;
-    }
-  | {
-      type: "distance";
-      actorId: string;
-      distance: string;
-      operator: string;
-    }
-  | {
-      type: "bounds";
-      actorId: string;
-      x: string;
-      y: string;
-      width: string;
-      height: string;
-    }
-  | {
-      type: "text";
-      text: string;
-      avatarId: string;
-      minHeight: string;
-      maxHeight: string;
-      showFrame: string;
-      clearPrevious: string;
-      textX: string;
-      textY: string;
-      textHeight: string;
-    }
-  | {
-      type: "textdraw";
-      text: string;
-      x: string;
-      y: string;
-      location: string;
-    };
+const fileCache = new Map<string, string | Buffer>();
 
-type ScriptEventPresetValue = {
-  id: string;
-  name: string;
-  description?: string;
-  groups?: string[] | string;
-  subGroups?: Record<string, string>;
-  values: Record<string, unknown>;
-};
-
-type UserPresetsGroup = {
-  id: string;
-  label: string;
-  fields: string[];
-  selected?: boolean;
-};
-
-export interface ScriptEventDef {
-  id: string;
-  fields: ScriptEventFieldSchema[];
-  name?: string;
-  description?: string;
-  groups?: string[] | string;
-  subGroups?: Record<string, string>;
-  deprecated?: boolean;
-  isConditional?: boolean;
-  editableSymbol?: boolean;
-  allowChildrenBeforeInitFade?: boolean;
-  waitUntilAfterInitFade?: boolean;
-  hasAutoLabel: boolean;
-  helper?: ScriptEventHelperDef;
-  presets?: ScriptEventPresetValue[];
-  userPresetsGroups?: UserPresetsGroup[];
-  userPresetsIgnore?: string[];
-  fieldsLookup: Record<string, ScriptEventFieldSchema>;
-}
-
-type ScriptEventHandlerFieldSchema = ScriptEventFieldSchema & {
-  postUpdateFn?: (
-    newArgs: Record<string, unknown>,
-    prevArgs: Record<string, unknown>,
-  ) => void | Record<string, unknown>;
-};
-
-type ScriptEventHandler = ScriptEventDef & {
-  autoLabel?: (
-    lookup: (key: string) => string,
-    args: Record<string, unknown>,
-  ) => string;
-  compile: (input: unknown, helpers: unknown) => void;
-  fields: ScriptEventHandlerFieldSchema[];
-  fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
-};
-
-export type ScriptEventHandlers = Record<string, ScriptEventHandler>;
-
-const vm = new NodeVM({
-  timeout: 1000,
-  console: process.env.NODE_ENV !== "development" ? "off" : "inherit",
-  sandbox: {},
-  compiler: (code: string) => {
-    // Convert es6 style modules to commonjs
-    let moduleCode = code;
-    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
-    if (moduleCode.indexOf("module.exports") === -1) {
-      const moduleExports =
-        code
-          .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
-          ?.map((c) => c.replace(/.* /, "")) ?? [];
-      moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
-    }
-    return moduleCode;
-  },
-  require: {
-    mock: {
-      "./helpers": eventHelpers,
-      "../helpers/l10n": l10n,
-      "../helpers/eventSystem": eventSystemHelpers,
-      "../compiler/compileEntityEvents": compileEntityEvents,
-      "../helpers/trimlines": trimLines,
-      "shared/lib/helpers/trimlines": trimLines,
-      "shared/lib/scriptValue/helpers": scriptValueHelpers,
-      "shared/lib/scriptValue/types": scriptValueTypes,
-    },
-  },
-});
-
-const loadScriptEventHandler = async (
+const loadUntrustedScriptEventHandler = async (
   path: string,
-): Promise<ScriptEventHandler> => {
+  fileReader: FileReaderFn,
+): Promise<ScriptEventHandlerWithCleanup> => {
   const handlerCode = await readFile(path, "utf8");
+  return loadScriptEventHandlerFromUntrustedString(
+    handlerCode,
+    path,
+    fileReader,
+  );
+};
 
-  let handler: ScriptEventHandler;
-  try {
-    handler = vm.run(handlerCode) as ScriptEventHandler;
-  } catch (error) {
+const loadTrustedScriptEventHandler = async (
+  path: string,
+  fileReader: FileReaderFn,
+): Promise<ScriptEventHandlerWithCleanup> => {
+  const handlerCode = await readFile(path, "utf8");
+  return loadScriptEventHandlerFromTrustedString(handlerCode, path, fileReader);
+};
+
+const cleanupScriptEventHandlers = () => {
+  for (const key in eventHandlers) {
+    const handler = eventHandlers[key];
+    if (handler) {
+      handler.cleanup();
+      delete eventHandlers[key];
+    }
+  }
+};
+
+const cleanupFileCache = () => {
+  fileCache.clear();
+};
+
+const cacheKey = (absPath: string, enc?: BufferEncoding) =>
+  `${absPath}::${enc ?? "<binary>"}`;
+
+const createFileReaderForHandler = (pluginPath: string): FileReaderFn => {
+  const dirPath = dirname(pluginPath);
+
+  function readPluginFile(filePath: string, encoding: "utf8"): string;
+  function readPluginFile(
+    filePath: string,
+    encoding?: BufferEncoding,
+  ): string | Buffer;
+
+  function readPluginFile(filePath: string, encoding?: BufferEncoding) {
+    const absPath = join(dirPath, filePath);
+    guardFileWithinPlugin(absPath, dirPath);
+
+    const key = cacheKey(absPath, encoding);
+    const cached = fileCache.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const value = readFileSync(absPath, encoding);
+    fileCache.set(key, value);
+    return value;
+  }
+
+  return readPluginFile;
+};
+
+export const guardFileWithinPlugin = (
+  assetPath: string,
+  projectRoot: string,
+) => {
+  if (!isAssetWithinProject(assetPath, projectRoot)) {
     throw new Error(
-      `Failed to load script event handler at ${path}: ${
-        (error as Error).message
-      }`,
+      l10n("ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN", { file: assetPath }),
     );
   }
-
-  if (!handler.id) {
-    throw new Error(`Event handler ${path} is missing id`);
-  }
-  handler.isConditional =
-    handler.fields && !!handler.fields.find((f) => f.type === "events");
-  handler.hasAutoLabel = !!handler.autoLabel;
-  handler.fieldsLookup = {};
-
-  // Add flags for existence of field callsbacks
-  // Needed so renderer knows if API call to main process is needed
-  for (const field of handler.fields) {
-    field.hasPostUpdateFn = !!field.postUpdateFn;
-  }
-
-  // Build flat lookup table of field keys to field
-  // To prevent needing to recursively loop through
-  // nested fields at editor runtime
-  const buildFieldsLookup = (fields: ScriptEventFieldSchema[]): void => {
-    for (const field of fields) {
-      if (field.type === "group" && field.fields) {
-        buildFieldsLookup(field.fields);
-      } else if (field.key) {
-        handler.fieldsLookup[field.key] = field;
-      }
-    }
-  };
-  buildFieldsLookup(handler.fields);
-
-  if (handler.userPresetsGroups) {
-    // If an script event supports user presets
-    // validate that all fields have been accounted for
-    const allFields = Object.keys(handler.fieldsLookup);
-
-    const presetFields = handler.userPresetsGroups
-      .map((group) => group.fields)
-      .flat()
-      .concat(handler.userPresetsIgnore ?? []);
-
-    const missingFields = allFields.filter(
-      (key) => !presetFields.includes(key),
-    );
-
-    if (missingFields.length > 0) {
-      console.error(
-        `${handler.id} defined userPresetsGroups but did not include some fields in either userPresetsGroups or userPresetsIgnore`,
-      );
-      console.error("Missing fields: " + missingFields.join(", "));
-    }
-  }
-
-  return handler;
 };
 
 const loadAllScriptEventHandlers = async (projectRoot: string) => {
+  cleanupScriptEventHandlers();
+  cleanupFileCache();
+
+  const forceUntrusted = process.env.FORCE_QUICKJS_PLUGINS === "true";
+
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
     `${projectRoot}/plugins/*/**/events/event*.js`,
   );
 
-  const eventHandlers: ScriptEventHandlers = {};
+  const trustedHandler = forceUntrusted
+    ? loadUntrustedScriptEventHandler
+    : loadTrustedScriptEventHandler;
+
   for (const path of corePaths) {
-    const handler = await loadScriptEventHandler(path);
+    const handler = await trustedHandler(
+      path,
+      createFileReaderForHandler(path),
+    );
     eventHandlers[handler.id] = handler;
   }
   for (const path of pluginPaths) {
-    const handler = await loadScriptEventHandler(path);
+    const handler = await loadUntrustedScriptEventHandler(
+      path,
+      createFileReaderForHandler(path),
+    );
     eventHandlers[handler.id] = handler;
   }
 

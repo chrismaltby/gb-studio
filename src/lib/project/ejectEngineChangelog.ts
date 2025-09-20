@@ -888,6 +888,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/data_manager.c", "src/core/load_save.c"],
   },
+  {
+    version: "4.2.0-e12",
+    description: createDescription("Fixes", [
+      "Fix issue in topdown scene type where player speed set to non-whole numbers would often cause player to clip through collisions",
+    ]),
+    modifiedFiles: ["src/states/topdown.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

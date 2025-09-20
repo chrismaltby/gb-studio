@@ -36,7 +36,7 @@ import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";

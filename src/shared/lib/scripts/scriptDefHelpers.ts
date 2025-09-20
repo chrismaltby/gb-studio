@@ -1,4 +1,4 @@
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import type {
   ScriptEventArgs,
   ScriptEventFieldSchema,

@@ -38,7 +38,7 @@ module.exports = {
   },
   plugins: [].concat(
     plugins,
-    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
+    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),
   ),
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
@@ -50,6 +50,9 @@ module.exports = {
       ui: srcPath("components/ui"),
       shared: srcPath("shared"),
       consts: srcPath("consts.ts"),
+      "#my-quickjs-variant": require.resolve(
+        "@jitl/quickjs-singlefile-cjs-release-sync",
+      ),
     },
   },
 };
