@@ -1844,6 +1844,7 @@
   "ERROR_PLUGIN_NOT_FOUND": "プラグインが見つかりません",
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "プラグインの削除に失敗しました",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "プラグインのインストールに失敗しました",
+  "ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN": "「{file}」へのアクセスを試行しました。このファイルはアクセス元のプラグインに属していません。プラグインは「plugins/<プラグイン名>/events/」フォルダ内のファイルにしかアクセスできません。",
   "// 13": "Splash -------------------------------------------------------",
   "SPLASH_NEW": "新規",
   "SPLASH_OPEN": "開く",
