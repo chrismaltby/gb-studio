@@ -176,8 +176,8 @@ const ActorView = memo(
           onMouseDown={onMouseDown}
           onContextMenu={onContextMenu}
           style={{
-            left: actor.x * TILE_SIZE,
-            top: actor.y * TILE_SIZE,
+            left: actor.x * ((actor.coordinateType == "pixels") ? 1: TILE_SIZE),
+            top: actor.y * ((actor.coordinateType == "pixels") ? 1: TILE_SIZE),
           }}
         >
           {showSprite && (

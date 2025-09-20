@@ -98,6 +98,7 @@ export type Actor = {
   name: string;
   symbol: string;
   notes?: string;
+  coordinateType: string;
   x: number;
   y: number;
   prefabId: string;
@@ -140,6 +141,7 @@ export type ActorNormalized = Omit<
 
 type ActorFieldsOmittedFromPrefab =
   | "prefabId"
+  | "coordinateType"
   | "x"
   | "y"
   | "direction"

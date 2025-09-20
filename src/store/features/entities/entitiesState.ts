@@ -28,6 +28,7 @@ import {
   COLLISION_RIGHT,
   COLLISION_LEFT,
   EVENT_CALL_CUSTOM_EVENT,
+  TILE_SIZE,
 } from "consts";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
@@ -199,6 +200,10 @@ const moveSelectedEntity =
   ) => {
     const state = getState();
     const { dragging, scene, eventId, entityId } = state.editor;
+    if (dragging !== DRAG_ACTOR){
+      x = Math.floor(x / TILE_SIZE);
+      y = Math.floor(y / TILE_SIZE);
+    }
     if (dragging === DRAG_PLAYER) {
       dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
     } else if (dragging === DRAG_DESTINATION) {
@@ -1118,6 +1123,7 @@ const addActor: CaseReducer<
     hit2Script: [],
     hit3Script: [],
     id: action.payload.actorId,
+    coordinateType: "tiles",
     x: clamp(action.payload.x, 0, scene.width - 2),
     y: clamp(action.payload.y, 0, scene.height - 1),
   };
@@ -1292,12 +1298,12 @@ const moveActor: CaseReducer<
       },
     });
   }
-
+  const actor = localActorSelectById(state, action.payload.actorId);
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: {
-      x: clamp(action.payload.x, 0, newScene.width - 2),
-      y: clamp(action.payload.y, 0, newScene.height - 1),
+      x: ((actor.coordinateType == "pixels")? action.payload.x: Math.floor(action.payload.x / TILE_SIZE)),
+      y: ((actor.coordinateType == "pixels")? action.payload.y: Math.floor(action.payload.y / TILE_SIZE)),
     },
   });
 };
@@ -1388,6 +1394,7 @@ const convertActorToPrefab: CaseReducer<
       "symbol",
       "prefabId",
       "notes",
+      "coordinateType",
       "x",
       "y",
       "direction",

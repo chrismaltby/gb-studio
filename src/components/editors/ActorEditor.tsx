@@ -19,6 +19,8 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
   ActorDirection,
   ActorNormalized,
+  UnitType,
+  unitTypes,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
@@ -43,6 +45,8 @@ import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
+import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
+
 
 interface ActorEditorProps {
   id: string;
@@ -99,6 +103,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorProp("notes", e.currentTarget.value),
+    [onChangeActorProp],
+  );
+  
+  const onChangeCoordinateType = useCallback(
+    (e: UnitType) =>
+      onChangeActorProp("coordinateType", e as string),
     [onChangeActorProp],
   );
 
@@ -261,42 +271,59 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             <SidebarColumn>
               <FormContainer>
                 <FormRow>
-                  <CoordinateInput
-                    name="x"
-                    coordinate="x"
-                    value={actor.x}
-                    placeholder="0"
-                    min={0}
-                    max={scene.width - 2}
-                    onChange={onChangeX}
-                  />
-                  <CoordinateInput
-                    name="y"
-                    coordinate="y"
-                    value={actor.y}
-                    placeholder="0"
-                    min={0}
-                    max={scene.height - 1}
-                    onChange={onChangeY}
-                  />
-                  <DropdownButton
-                    menuDirection="right"
-                    label={<PinIcon />}
-                    showArrow={false}
-                    variant={actor.isPinned ? "primary" : "normal"}
-                    style={{
-                      padding: "5px 0",
-                      minWidth: 28,
-                    }}
-                  >
-                    <MenuItem
-                      onClick={onToggleField("isPinned")}
-                      icon={actor.isPinned ? <CheckIcon /> : undefined}
-                    >
-                      {l10n("FIELD_PIN_TO_SCREEN")}
-                    </MenuItem>
-                  </DropdownButton>
+                  <FormField
+                  name="coordinates"
+                  label={
+                    <>
+                    {l10n("FIELD_POSITION")}
+                    <UnitSelectLabelButton
+                      value={(actor.coordinateType || "tiles") as UnitType}
+                      allowedValues={["tiles", "pixels"]}
+                      onChange={onChangeCoordinateType}
+                    />
+                    </>
+                  }
+                  >	
+                    <FormRow>	
+                      <CoordinateInput
+                        name="x"
+                        coordinate="x"
+                        value={actor.x}
+                        placeholder="0"
+                        min={0}
+                        max={scene.width - 2}
+                        onChange={onChangeX}
+                      />
+                      <CoordinateInput
+                        name="y"
+                        coordinate="y"
+                        value={actor.y}
+                        placeholder="0"
+                        min={0}
+                        max={scene.height - 1}
+                        onChange={onChangeY}
+                      />
+                      <DropdownButton
+                        menuDirection="right"
+                        label={<PinIcon />}
+                        showArrow={false}
+                        variant={actor.isPinned ? "primary" : "normal"}
+                        style={{
+                          padding: "5px 0",
+                          minWidth: 28,
+                        }}
+                      >
+                        <MenuItem
+                          onClick={onToggleField("isPinned")}
+                          icon={actor.isPinned ? <CheckIcon /> : undefined}
+                        >
+                          {l10n("FIELD_PIN_TO_SCREEN")}
+                        </MenuItem>
+                      </DropdownButton>
+                    </FormRow>
+                  </FormField>				  
                 </FormRow>
+                
                 <FormRow>
                   <FormField
                     name="actorDirection"

@@ -528,22 +528,24 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       const pos = getDOMElementCoords(e.currentTarget);
       const x = e.pageX - pos.left;
       const y = e.pageY - pos.top;
-      const tX = Math.floor(x / (8 * zoomRatio));
-      const tY = Math.floor(y / (8 * zoomRatio));
+      const pX = Math.floor(x / zoomRatio);
+      const pY = Math.floor(y / zoomRatio);
+	  const tX = Math.floor(pX / TILE_SIZE);
+      const tY = Math.floor(pY / TILE_SIZE);
 
       if (
-        tX !== dragState.current.lastTX ||
-        tY !== dragState.current.lastTY ||
+        pX !== dragState.current.lastTX ||
+        pY !== dragState.current.lastTY ||
         !hovered
       ) {
         if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
           dispatch(editorActions.sceneHover({ sceneId: id, x: tX, y: tY }));
           dispatch(
-            entitiesActions.moveSelectedEntity({ sceneId: id, x: tX, y: tY }),
+            entitiesActions.moveSelectedEntity({ sceneId: id, x: pX, y: pY }),
           );
         }
-        dragState.current.lastTX = tX;
-        dragState.current.lastTY = tY;
+        dragState.current.lastTX = pX;
+        dragState.current.lastTY = pY;
       }
     },
     [dispatch, hovered, id, scene, zoomRatio],
