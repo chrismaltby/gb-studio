@@ -430,6 +430,7 @@
   "FIELD_HORIZONTAL_DIRECTION_MOVEMENT": "Horizontal Directions + Movement",
   "FIELD_PLATFORMER_PLAYER": "Platformer Player",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "Flip 'Right' To Create 'Left' Facing Frames",
+  "FIELD_CANVAS_ORIGIN": "Canvas Origin",
   "FIELD_CANVAS_SIZE": "Canvas Size",
   "FIELD_COLLISION_BOUNDING_BOX": "Collision Bounding Box",
   "FIELD_AUTODETECT_ANIMATIONS": "Auto Detect Animations",

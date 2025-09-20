@@ -180,6 +180,18 @@ export const SpriteEditor = ({
       onChangeSpriteSheetProp("name", e.currentTarget.value),
     [onChangeSpriteSheetProp],
   );
+  
+  const onChangeCanvasOriginX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("canvasOriginX", castEventToInt(e, Math.max(0, (sprite?.canvasWidth || 16) / 2 - 8))),
+    [onChangeSpriteSheetProp],
+  );
+
+  const onChangeCanvasOriginY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp("canvasOriginY", castEventToInt(e, Math.max(0, (sprite?.canvasHeight || 16) - 8))),
+    [onChangeSpriteSheetProp],
+  );
 
   const onChangeCanvasWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -632,7 +644,31 @@ export const SpriteEditor = ({
                   <FormDivider />
                 </>
               )}
-
+			  <FormRow>
+                <Label>{l10n("FIELD_CANVAS_ORIGIN")}</Label>
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="canvasOriginX"
+                  coordinate="x"
+                  value={sprite.canvasOriginX}
+                  placeholder={Math.max(0, sprite.canvasWidth / 2 - 8).toString()}
+                  min={0}
+                  max={sprite.canvasWidth}
+                  step={1}
+                  onChange={onChangeCanvasOriginX}
+                />
+                <CoordinateInput
+                  name="canvasOriginY"
+                  coordinate="y"
+                  value={sprite.canvasOriginY}
+                  placeholder={Math.max(0, sprite.canvasHeight - 8).toString()}
+                  min={0}
+                  max={sprite.canvasHeight}
+                  step={1}
+                  onChange={onChangeCanvasOriginY}
+                />
+              </FormRow>
               <FormRow>
                 <Label>{l10n("FIELD_CANVAS_SIZE")}</Label>
               </FormRow>

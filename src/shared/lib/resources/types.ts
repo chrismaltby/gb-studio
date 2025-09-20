@@ -423,6 +423,8 @@ export const SpriteResource = Type.Object({
   checksum: Type.String(),
   width: Type.Number(),
   height: Type.Number(),
+  canvasOriginX: Type.Number(),
+  canvasOriginY: Type.Number(),
   canvasWidth: Type.Number(),
   canvasHeight: Type.Number(),
   boundsX: Type.Number(),

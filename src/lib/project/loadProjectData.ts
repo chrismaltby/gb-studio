@@ -255,6 +255,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       width: asset.width,
       height: asset.height,
       name: resource?.name ?? asset.name,
+	  canvasOriginX: resource?.canvasOriginX || (((resource?.canvasWidth || 32) / 2) - 8),
+      canvasOriginY: resource?.canvasOriginY || ((resource?.canvasHeight || 32) - 8),
       canvasWidth: resource?.canvasWidth || 32,
       canvasHeight: resource?.canvasHeight || 32,
       states: (resource?.states || asset.states).map((oldState) => {
