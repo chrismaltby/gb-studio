@@ -30,7 +30,7 @@ import {
 
 export const QuickJS = newQuickJSWASMModuleFromVariant(quickJSVariant);
 
-const TIMEOUT_MS = 1000;
+const TIMEOUT_MS = 60000;
 
 /**
  * Proxy factory for creating lazy proxies in the VM
