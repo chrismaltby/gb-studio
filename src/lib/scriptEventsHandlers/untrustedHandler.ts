@@ -318,22 +318,28 @@ class PersistentVM {
     this.vm.setProp(this.vm.global, "console", consoleObj);
 
     const logFn = this.vm.newFunction("log", (...args) => {
-      const jsArgs = args.map((arg) => this.vm.dump(arg));
-      console.log(...jsArgs);
+      if (process.env.NODE_ENV !== "production") {
+        const jsArgs = args.map((arg) => this.vm.dump(arg));
+        console.log(...jsArgs);
+      }
       return this.vm.undefined;
     });
     this.vm.setProp(consoleObj, "log", logFn);
 
     const warnFn = this.vm.newFunction("warn", (...args) => {
-      const jsArgs = args.map((arg) => this.vm.dump(arg));
-      console.warn(...jsArgs);
+      if (process.env.NODE_ENV !== "production") {
+        const jsArgs = args.map((arg) => this.vm.dump(arg));
+        console.warn(...jsArgs);
+      }
       return this.vm.undefined;
     });
     this.vm.setProp(consoleObj, "warn", warnFn);
 
     const errorFn = this.vm.newFunction("error", (...args) => {
-      const jsArgs = args.map((arg) => this.vm.dump(arg));
-      console.error(...jsArgs);
+      if (process.env.NODE_ENV !== "production") {
+        const jsArgs = args.map((arg) => this.vm.dump(arg));
+        console.error(...jsArgs);
+      }
       return this.vm.undefined;
     });
     this.vm.setProp(consoleObj, "error", errorFn);
