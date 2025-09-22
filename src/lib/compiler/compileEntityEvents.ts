@@ -12,6 +12,7 @@ import { SpriteModeSetting } from "shared/lib/resources/types";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
+const COMPILE_TIMEOUT = 1000;
 
 type ScriptLocation = {
   actor?: string | undefined;
@@ -137,6 +138,7 @@ export const compileEventsWithScriptBuilder = (
       scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
 
       try {
+        const startTime = Date.now();
         scriptEventHandlers[command]?.compile(
           { ...subInput[i].args, ...subInput[i].children },
           {
@@ -147,6 +149,14 @@ export const compileEventsWithScriptBuilder = (
             event: subInput[i],
           },
         );
+        const timeTaken = Date.now() - startTime;
+        if (timeTaken > COMPILE_TIMEOUT) {
+          warnings(
+            `Plugin "${command}" took ${timeTaken}ms (recommended <${COMPILE_TIMEOUT}ms). ${JSON.stringify(
+              location,
+            )}`,
+          );
+        }
       } catch (e) {
         console.error(e);
         throw new Error(
