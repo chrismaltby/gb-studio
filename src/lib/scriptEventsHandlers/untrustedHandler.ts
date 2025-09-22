@@ -657,6 +657,11 @@ class PersistentVM {
       if (result.error) {
         const error = this.vm.dump(result.error);
         result.error.dispose();
+        if ("message" in error && typeof error.message === "string") {
+          if (error.message === "interrupted") {
+            error.message = `Plugin ${functionName}() timed out after ${TIMEOUT_MS}ms`;
+          }
+        }
         throw new Error(
           `Module function call failed: ${JSON.stringify(error)}`,
         );
