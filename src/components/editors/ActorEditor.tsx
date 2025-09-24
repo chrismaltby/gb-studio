@@ -46,6 +46,7 @@ import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 import { CoordinateType } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
+import { Label } from "ui/form/Label";
 
 interface ActorEditorProps {
   id: string;
@@ -269,65 +270,59 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             <SidebarColumn>
               <FormContainer>
                 <FormRow>
-                  <FormField
-                    name="coordinates"
-                    label={
-                      <>
-                        {l10n("FIELD_POSITION")}
-                        <UnitSelectLabelButton
-                          value={actor.coordinateType}
-                          allowedValues={["tiles", "pixels"]}
-                          onChange={onChangeCoordinateType}
-                        />
-                      </>
+                  <Label htmlFor="x">
+                    {l10n("FIELD_POSITION")}
+                    <UnitSelectLabelButton
+                      value={actor.coordinateType}
+                      allowedValues={["tiles", "pixels"]}
+                      onChange={onChangeCoordinateType}
+                    />
+                  </Label>
+                </FormRow>
+                <FormRow>
+                  <CoordinateInput
+                    name="x"
+                    coordinate="x"
+                    value={actor.x}
+                    placeholder="0"
+                    min={0}
+                    max={
+                      (actor.coordinateType === "tiles"
+                        ? scene.width
+                        : scene.width * TILE_SIZE) - 1
                     }
+                    onChange={onChangeX}
+                  />
+                  <CoordinateInput
+                    name="y"
+                    coordinate="y"
+                    value={actor.y}
+                    placeholder="0"
+                    min={0}
+                    max={
+                      (actor.coordinateType === "tiles"
+                        ? scene.height
+                        : scene.height * TILE_SIZE) - 1
+                    }
+                    onChange={onChangeY}
+                  />
+                  <DropdownButton
+                    menuDirection="right"
+                    label={<PinIcon />}
+                    showArrow={false}
+                    variant={actor.isPinned ? "primary" : "normal"}
+                    style={{
+                      padding: "5px 0",
+                      minWidth: 28,
+                    }}
                   >
-                    <FormRow>
-                      <CoordinateInput
-                        name="x"
-                        coordinate="x"
-                        value={actor.x}
-                        placeholder="0"
-                        min={0}
-                        max={
-                          (actor.coordinateType === "tiles"
-                            ? scene.width
-                            : scene.width * TILE_SIZE) - 1
-                        }
-                        onChange={onChangeX}
-                      />
-                      <CoordinateInput
-                        name="y"
-                        coordinate="y"
-                        value={actor.y}
-                        placeholder="0"
-                        min={0}
-                        max={
-                          (actor.coordinateType === "tiles"
-                            ? scene.height
-                            : scene.height * TILE_SIZE) - 1
-                        }
-                        onChange={onChangeY}
-                      />
-                      <DropdownButton
-                        menuDirection="right"
-                        label={<PinIcon />}
-                        showArrow={false}
-                        variant={actor.isPinned ? "primary" : "normal"}
-                        style={{
-                          padding: "5px 0",
-                          minWidth: 28,
-                        }}
-                      >
-                        <MenuItem
-                          onClick={onToggleField("isPinned")}
-                          icon={actor.isPinned ? <CheckIcon /> : undefined}
-                        >
-                          {l10n("FIELD_PIN_TO_SCREEN")}
-                        </MenuItem>
-                      </DropdownButton>
-                    </FormRow>
-                  </FormField>
+                    <MenuItem
+                      onClick={onToggleField("isPinned")}
+                      icon={actor.isPinned ? <CheckIcon /> : undefined}
+                    >
+                      {l10n("FIELD_PIN_TO_SCREEN")}
+                    </MenuItem>
+                  </DropdownButton>
                 </FormRow>
 
                 <FormRow>
