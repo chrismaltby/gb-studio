@@ -144,16 +144,19 @@ export const compileSprite = async (
 
   const { tiles, lookup } = await optimiseTiles(
     filename,
-	spriteSheet.canvasOriginX,
+    spriteSheet.canvasOriginX,
     spriteSheet.canvasOriginY,
     spriteSheet.canvasWidth,
     spriteSheet.canvasHeight,
     metasprites,
     spriteMode,
   );
-  
-  const fixedXOffset = spriteSheet.canvasOriginX - (spriteSheet.canvasWidth / 2 - 8);
-  const fixedYOffset = spriteSheet.canvasOriginY - (spriteSheet.canvasHeight - (spriteMode === "8x16" ? 8 : 0));
+
+  const fixedXOffset =
+    spriteSheet.canvasOriginX - (spriteSheet.canvasWidth / 2 - 8);
+  const fixedYOffset =
+    spriteSheet.canvasOriginY -
+    (spriteSheet.canvasHeight - (spriteMode === "8x16" ? 8 : 0));
 
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
     .map((state) =>

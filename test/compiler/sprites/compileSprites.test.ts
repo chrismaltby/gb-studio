@@ -61,8 +61,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		8,
+        0,
+        8,
         16,
         16,
         [
@@ -122,8 +122,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		8,
+        0,
+        8,
         16,
         16,
         [
@@ -229,8 +229,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		8,
+        0,
+        8,
         16,
         16,
         [
@@ -336,8 +336,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		8,
-		24,
+        8,
+        24,
         32,
         32,
         [
@@ -473,8 +473,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		8,
+        0,
+        8,
         16,
         16,
         [
@@ -553,8 +553,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		8,
-		24,
+        8,
+        24,
         32,
         32,
         [
@@ -631,8 +631,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		8,
+        0,
+        8,
         8,
         16,
         [
@@ -693,8 +693,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		8,
-		24,
+        8,
+        24,
         32,
         32,
         [
@@ -782,8 +782,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		0,
+        0,
+        0,
         8,
         8,
         [
@@ -830,8 +830,8 @@ describe("Optimise Tiles", () => {
 
       const result = await optimiseTiles(
         filename,
-		0,
-		0,
+        0,
+        0,
         8,
         8,
         [

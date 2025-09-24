@@ -233,9 +233,11 @@ const MetaspriteEditor = ({
   const currentIndex = frames.indexOf(metaspriteId);
   const prevMetaspriteId =
     frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
-  
-  const canvasOriginX = spriteSheet?.canvasOriginX || (((spriteSheet?.canvasWidth || 16) / 2) - 8);
-  const canvasOriginY = spriteSheet?.canvasOriginY || ((spriteSheet?.canvasHeight || 16) - 8);
+
+  const canvasOriginX =
+    spriteSheet?.canvasOriginX || (spriteSheet?.canvasWidth || 16) / 2 - 8;
+  const canvasOriginY =
+    spriteSheet?.canvasOriginY || (spriteSheet?.canvasHeight || 16) - 8;
   const canvasWidth = spriteSheet?.canvasWidth || 16;
   const canvasHeight = spriteSheet?.canvasHeight || 16;
   const boundsWidth = spriteSheet?.boundsWidth || 16;
@@ -813,7 +815,7 @@ const MetaspriteEditor = ({
           onMouseLeave={onLeaveEditor}
         >
           <MetaspriteGrid
-		    originX={canvasOriginX}
+            originX={canvasOriginX}
             originY={canvasOriginY}
             width={canvasWidth}
             height={canvasHeight}

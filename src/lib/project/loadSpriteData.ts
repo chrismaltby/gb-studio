@@ -55,7 +55,7 @@ const loadSpriteData =
           },
         ],
         numTiles: 0,
-		canvasOriginX: 8,
+        canvasOriginX: 8,
         canvasOriginY: 24,
         canvasWidth: 32,
         canvasHeight: 32,

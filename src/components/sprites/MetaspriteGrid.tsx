@@ -54,7 +54,6 @@ const MetaspriteGrid = ({
         background: "#fff",
       }}
     >
-      
       <div
         style={{
           pointerEvents: "none",
@@ -91,19 +90,19 @@ const MetaspriteGrid = ({
       >
         {children}
       </div>
-	  {
-		(showGrid) && <div
-           style={{
-             pointerEvents: "none",
-             position: "absolute",
-             top: (originY - 1) * zoom,
-             left: (originX - 1) * zoom,
-             width: 2 * zoom,
-             height: 2 * zoom,
-             background: "rgba(255, 0, 0, 0.6)",
-           }}
+      {showGrid && (
+        <div
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            top: (originY - 1) * zoom,
+            left: (originX - 1) * zoom,
+            width: 2 * zoom,
+            height: 2 * zoom,
+            background: "rgba(255, 0, 0, 0.6)",
+          }}
         />
-	  }	  
+      )}
     </div>
   );
 };
