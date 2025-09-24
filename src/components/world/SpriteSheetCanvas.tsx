@@ -85,8 +85,9 @@ const SpriteSheetCanvas = ({
       style={
         offsetPosition
           ? {
-              top: -sprite.canvasOriginY,
-              left: -sprite.canvasOriginX,
+              top: -sprite.canvasHeight + 8 - sprite.canvasOriginY,
+              left:
+                Math.min(0, 8 - sprite.canvasWidth / 2) - sprite.canvasOriginX,
             }
           : undefined
       }

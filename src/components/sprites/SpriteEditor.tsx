@@ -183,19 +183,13 @@ export const SpriteEditor = ({
 
   const onChangeCanvasOriginX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSpriteSheetProp(
-        "canvasOriginX",
-        castEventToInt(e, Math.max(0, (sprite?.canvasWidth || 16) / 2 - 8)),
-      ),
+      onChangeSpriteSheetProp("canvasOriginX", castEventToInt(e, 0)),
     [onChangeSpriteSheetProp],
   );
 
   const onChangeCanvasOriginY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSpriteSheetProp(
-        "canvasOriginY",
-        castEventToInt(e, Math.max(0, (sprite?.canvasHeight || 16) - 8)),
-      ),
+      onChangeSpriteSheetProp("canvasOriginY", castEventToInt(e, 0)),
     [onChangeSpriteSheetProp],
   );
 
@@ -662,8 +656,8 @@ export const SpriteEditor = ({
                     0,
                     sprite.canvasWidth / 2 - 8,
                   ).toString()}
-                  min={0}
-                  max={sprite.canvasWidth}
+                  // min={0}
+                  // max={sprite.canvasWidth}
                   step={1}
                   onChange={onChangeCanvasOriginX}
                 />
@@ -672,8 +666,8 @@ export const SpriteEditor = ({
                   coordinate="y"
                   value={sprite.canvasOriginY}
                   placeholder={Math.max(0, sprite.canvasHeight - 8).toString()}
-                  min={0}
-                  max={sprite.canvasHeight}
+                  // min={0}
+                  // max={sprite.canvasHeight}
                   step={1}
                   onChange={onChangeCanvasOriginY}
                 />
@@ -703,7 +697,6 @@ export const SpriteEditor = ({
                   onChange={onChangeCanvasHeight}
                 />
               </FormRow>
-
               {showSpriteModeOverride && (
                 <FormRow>
                   <FormField
