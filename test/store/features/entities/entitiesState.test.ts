@@ -25,7 +25,7 @@ import {
   dummyCustomEventNormalized,
   dummyMusicResource,
 } from "../../../dummydata";
-import { DMG_PALETTE } from "../../../../src/consts";
+import { DMG_PALETTE, TILE_SIZE } from "../../../../src/consts";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 import {
   CompressedBackgroundResourceAsset,
@@ -935,7 +935,51 @@ test("Should be able to move an actor with a scene", () => {
     },
   };
 
-  const action = actions.moveActor({
+  const action = actions.moveActorToPx({
+    actorId: "actor1",
+    sceneId: "scene1",
+    newSceneId: "scene1",
+    x: 1 * TILE_SIZE,
+    y: 3 * TILE_SIZE,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.actors).toEqual(["actor1"]);
+  expect(newState.actors.entities["actor1"]?.x).toBe(1);
+  expect(newState.actors.entities["actor1"]?.y).toBe(3);
+});
+
+test("Should be able to move an actor with pixel units", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: ["actor1"],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActorNormalized,
+          id: "actor1",
+          x: 5,
+          y: 2,
+          coordinateType: "pixels",
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.moveActorToPx({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene1",
@@ -986,12 +1030,12 @@ test("Should be able to move an actor between scenes", () => {
     },
   };
 
-  const action = actions.moveActor({
+  const action = actions.moveActorToPx({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene2",
-    x: 4,
-    y: 1,
+    x: 4 * TILE_SIZE,
+    y: 1 * TILE_SIZE,
   });
 
   const newState = reducer(state, action);

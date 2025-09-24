@@ -125,7 +125,7 @@ import type {
 } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
-import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import {

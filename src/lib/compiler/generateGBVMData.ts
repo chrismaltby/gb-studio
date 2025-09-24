@@ -680,11 +680,13 @@ export const compileSceneActors = (
         const sprite =
           sprites.find((s) => s.id === actor.spriteSheetId) || sprites[0];
         if (!sprite) return null;
+        const toSubPx =
+          actor.coordinateType === "pixels" ? pxToSubpx : tileToSubpx;
         return {
           __comment: actorName(actor, actorIndex),
           pos: {
-            x: tileToSubpx(actor.x),
-            y: tileToSubpx(actor.y),
+            x: toSubPx(actor.x),
+            y: toSubPx(actor.y),
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),

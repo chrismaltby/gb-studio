@@ -7,9 +7,8 @@ import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
 import loadAllSoundData from "./loadSoundData";
-import loadAllScriptEventHandlers, {
-  ScriptEventDef,
-} from "./loadScriptEventHandlers";
+import loadAllScriptEventHandlers from "./loadScriptEventHandlers";
+import { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";

@@ -1,5 +1,5 @@
 import { EVENT_FADE_IN } from "consts";
-import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import type {
   CustomEvent,
   ScriptEventNormalized,

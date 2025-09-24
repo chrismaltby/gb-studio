@@ -28,6 +28,7 @@ import {
   COLLISION_RIGHT,
   COLLISION_LEFT,
   EVENT_CALL_CUSTOM_EVENT,
+  TILE_SIZE,
 } from "consts";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
@@ -191,7 +192,9 @@ export const initialState: EntitiesState = {
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
-const moveSelectedEntity =
+const pxToTiles = (x: number) => Math.floor(x / TILE_SIZE);
+
+const moveSelectedEntityToPx =
   ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
   (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
@@ -200,19 +203,25 @@ const moveSelectedEntity =
     const state = getState();
     const { dragging, scene, eventId, entityId } = state.editor;
     if (dragging === DRAG_PLAYER) {
-      dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
+      dispatch(
+        settingsActions.editPlayerStartAt({
+          sceneId,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
+        }),
+      );
     } else if (dragging === DRAG_DESTINATION) {
       dispatch(
         actions.editScriptEventDestination({
           scriptEventId: eventId,
           destSceneId: sceneId,
-          x,
-          y,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
         }),
       );
     } else if (dragging === DRAG_ACTOR) {
       dispatch(
-        actions.moveActor({
+        actions.moveActorToPx({
           actorId: entityId,
           sceneId: scene,
           newSceneId: sceneId,
@@ -226,8 +235,8 @@ const moveSelectedEntity =
           sceneId: scene,
           triggerId: entityId,
           newSceneId: sceneId,
-          x,
-          y,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
         }),
       );
     }
@@ -1120,6 +1129,7 @@ const addActor: CaseReducer<
     hit2Script: [],
     hit3Script: [],
     id: action.payload.actorId,
+    coordinateType: "tiles",
     x: clamp(action.payload.x, 0, scene.width - 2),
     y: clamp(action.payload.y, 0, scene.height - 1),
   };
@@ -1143,6 +1153,19 @@ const editActor: CaseReducer<
   // If prefab changes reset overrides
   if (patch.prefabId && actor.prefabId !== patch.prefabId) {
     patch.prefabScriptOverrides = {};
+  }
+
+  // If coordinate type changes, convert x/y to new type
+  if (patch.coordinateType && actor.coordinateType !== patch.coordinateType) {
+    if (patch.coordinateType === "pixels") {
+      // Tiles -> Pixels
+      patch.x = actor.x * TILE_SIZE;
+      patch.y = actor.y * TILE_SIZE;
+    } else {
+      // Pixels -> Tiles
+      patch.x = Math.floor(actor.x / TILE_SIZE);
+      patch.y = Math.floor(actor.y / TILE_SIZE);
+    }
   }
 
   actorsAdapter.updateOne(state.actors, {
@@ -1252,7 +1275,7 @@ const setActorSymbol: CaseReducer<
   );
 };
 
-const moveActor: CaseReducer<
+const moveActorToPx: CaseReducer<
   EntitiesState,
   PayloadAction<{
     actorId: string;
@@ -1294,12 +1317,19 @@ const moveActor: CaseReducer<
       },
     });
   }
+  const actor = localActorSelectById(state, action.payload.actorId);
+
+  if (!actor) {
+    return;
+  }
+
+  const UNIT_SIZE = actor.coordinateType === "pixels" ? 1 : TILE_SIZE;
 
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: {
-      x: clamp(action.payload.x, 0, newScene.width - 2),
-      y: clamp(action.payload.y, 0, newScene.height - 1),
+      x: Math.floor(action.payload.x / UNIT_SIZE),
+      y: Math.floor(action.payload.y / UNIT_SIZE),
     },
   });
 };
@@ -1390,6 +1420,7 @@ const convertActorToPrefab: CaseReducer<
       "symbol",
       "prefabId",
       "notes",
+      "coordinateType",
       "x",
       "y",
       "direction",
@@ -3393,7 +3424,10 @@ const paintColor: CaseReducer<
 
   const getValue = (x: number, y: number) => {
     const tileColorIndex = background.width * y + x;
-    return tileColors[tileColorIndex];
+    if (isTileProp) {
+      return tileColors[tileColorIndex] & TILE_COLOR_PROPS;
+    }
+    return tileColors[tileColorIndex] & TILE_COLOR_PALETTE;
   };
 
   const setValue = (x: number, y: number, value: number) => {
@@ -3404,7 +3438,7 @@ const paintColor: CaseReducer<
       newValue =
         (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
         (value & TILE_COLOR_PROPS);
-    } else if (value !== 0) {
+    } else {
       // If is color keep prop unless erasing
       newValue =
         (value & TILE_COLOR_PALETTE) +
@@ -4486,7 +4520,7 @@ const entitiesSlice = createSlice({
     applyActorPrefabScriptEventOverride,
     removeActor,
     removeActorAt,
-    moveActor,
+    moveActorToPx,
 
     /**************************************************************************
      * Triggers
@@ -4884,7 +4918,7 @@ const entitiesSlice = createSlice({
 
 export const actions = {
   ...entitiesSlice.actions,
-  moveSelectedEntity,
+  moveSelectedEntityToPx,
   removeSelectedEntity,
 };
 

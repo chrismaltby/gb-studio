@@ -6,12 +6,19 @@ import ScriptBuilder, {
   ScriptOutput,
 } from "./scriptBuilder";
 import { PrecompiledScene } from "./generateGBVMData";
-import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
 import { SpriteModeSetting } from "shared/lib/resources/types";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
+const COMPILE_TIMEOUT = 1000;
+
+type ScriptLocation = {
+  actor?: string | undefined;
+  scriptType: "scene" | "actor" | "trigger" | "customEvent";
+  scene: string;
+};
 
 type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
   scriptEventHandlers: ScriptEventHandlers;
@@ -48,7 +55,7 @@ const compileEntityEvents = (
     isFunction,
   } = options;
 
-  const location = {
+  const location: ScriptLocation = {
     ...(scene && {
       scene: scene.name || `Scene ${sceneIndex + 1}`,
     }),
@@ -63,77 +70,19 @@ const compileEntityEvents = (
     }),
   };
 
-  const compileEventsWithScriptBuilder = (
-    scriptBuilder: ScriptBuilder,
-    subInput: ScriptEvent[] = [],
-  ) => {
-    const scriptEventHandlers = options.scriptEventHandlers;
-
-    for (let i = 0; i < subInput.length; i++) {
-      const command = subInput[i].command;
-      if (subInput[i].args?.__comment) {
-        // Skip commented events
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-      if (scriptEventHandlers[command]) {
-        scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
-
-        try {
-          scriptEventHandlers[command]?.compile(
-            { ...subInput[i].args, ...subInput[i].children },
-            {
-              LATEST_PROJECT_VERSION: LATEST_PROJECT_VERSION,
-              ...options,
-              ...scriptBuilder,
-              scriptSymbolName,
-              event: subInput[i],
-            },
-          );
-        } catch (e) {
-          console.error(e);
-          throw new Error(
-            `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
-              location,
-            )}`,
-          );
-        }
-        if (scriptEventHandlers[command]?.isConditional) {
-          scriptBuilder.addDebugEndSymbol(scriptSymbolName, subInput[i].id);
-        }
-      } else if (command === "INTERNAL_SET_CONTEXT") {
-        const args = subInput[i].args ?? {};
-        scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;
-        scriptBuilder.options.entityType =
-          args.entityType as ScriptBuilderEntityType;
-        scriptBuilder.options.entityScriptKey = String(args.scriptKey);
-      } else if (command === "INTERNAL_IF_PARAM") {
-        const args = subInput[i].args;
-        scriptBuilder.ifParamValue(
-          args?.parameter as number,
-          args?.value as number,
-          subInput[i]?.children?.true,
-        );
-      } else if (command === "INTERNAL_SET_SPRITE_MODE") {
-        const args = subInput[i].args;
-        scriptBuilder.setSpriteMode(args?.mode as SpriteModeSetting);
-      } else if (command !== "EVENT_END") {
-        warnings(
-          `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
-            location,
-          )}`,
-        );
-      }
-    }
-  };
-
   const helpers = {
     ...options,
+    scriptSymbolName,
     compileEvents: (
       scriptBuilder: ScriptBuilder,
       childInput: ScriptEvent[],
     ) => {
-      compileEventsWithScriptBuilder(scriptBuilder, childInput);
+      compileEventsWithScriptBuilder(
+        scriptBuilder,
+        childInput,
+        location,
+        warnings,
+      );
     },
   };
 
@@ -145,7 +94,7 @@ const compileEntityEvents = (
     scriptBuilder._label(loopId);
   }
 
-  compileEventsWithScriptBuilder(scriptBuilder, input);
+  compileEventsWithScriptBuilder(scriptBuilder, input, location, warnings);
 
   try {
     if (!branch) {
@@ -167,6 +116,81 @@ const compileEntityEvents = (
     throw new Error(
       `Compiling failed with error "${e}". ${JSON.stringify(location)}`,
     );
+  }
+};
+
+export const compileEventsWithScriptBuilder = (
+  scriptBuilder: ScriptBuilder,
+  subInput: ScriptEvent[] = [],
+  location: ScriptLocation,
+  warnings: (msg: string) => void,
+) => {
+  const { scriptEventHandlers, scriptSymbolName } = scriptBuilder.options;
+
+  for (let i = 0; i < subInput.length; i++) {
+    const command = subInput[i].command;
+    if (subInput[i].args?.__comment) {
+      // Skip commented events
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    if (scriptEventHandlers[command]) {
+      scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
+
+      try {
+        const startTime = Date.now();
+        scriptEventHandlers[command]?.compile(
+          { ...subInput[i].args, ...subInput[i].children },
+          {
+            LATEST_PROJECT_VERSION: LATEST_PROJECT_VERSION,
+            ...scriptBuilder.options,
+            ...scriptBuilder,
+            scriptSymbolName,
+            event: subInput[i],
+          },
+        );
+        const timeTaken = Date.now() - startTime;
+        if (timeTaken > COMPILE_TIMEOUT) {
+          warnings(
+            `Plugin "${command}" took ${timeTaken}ms (recommended <${COMPILE_TIMEOUT}ms). ${JSON.stringify(
+              location,
+            )}`,
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        throw new Error(
+          `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
+            location,
+          )}`,
+        );
+      }
+      if (scriptEventHandlers[command]?.isConditional) {
+        scriptBuilder.addDebugEndSymbol(scriptSymbolName, subInput[i].id);
+      }
+    } else if (command === "INTERNAL_SET_CONTEXT") {
+      const args = subInput[i].args ?? {};
+      scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;
+      scriptBuilder.options.entityType =
+        args.entityType as ScriptBuilderEntityType;
+      scriptBuilder.options.entityScriptKey = String(args.scriptKey);
+    } else if (command === "INTERNAL_IF_PARAM") {
+      const args = subInput[i].args;
+      scriptBuilder.ifParamValue(
+        args?.parameter as number,
+        args?.value as number,
+        subInput[i]?.children?.true,
+      );
+    } else if (command === "INTERNAL_SET_SPRITE_MODE") {
+      const args = subInput[i].args;
+      scriptBuilder.setSpriteMode(args?.mode as SpriteModeSetting);
+    } else if (command !== "EVENT_END") {
+      warnings(
+        `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
+          location,
+        )}`,
+      );
+    }
   }
 };
 

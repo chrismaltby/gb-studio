@@ -95,9 +95,7 @@ import { loadEmoteData } from "lib/project/loadEmoteData";
 import { loadTilesetData } from "lib/project/loadTilesetData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
-import loadAllScriptEventHandlers, {
-  ScriptEventHandlers,
-} from "lib/project/loadScriptEventHandlers";
+import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
 import { cloneDictionary } from "lib/helpers/clone";
 import { readDebuggerSymbols } from "lib/debugger/readDebuggerSymbols";
 import {
@@ -149,6 +147,7 @@ import { L10nManager } from "lib/lang/l10nManager";
 import { TemplateManager } from "lib/templates/templateManager";
 import { EngineSchema, loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename, getROMFileStem } from "shared/lib/helpers/filePaths";
+import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
