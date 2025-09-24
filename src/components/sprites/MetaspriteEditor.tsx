@@ -234,10 +234,8 @@ const MetaspriteEditor = ({
   const prevMetaspriteId =
     frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
 
-  const canvasOriginX =
-    spriteSheet?.canvasOriginX || (spriteSheet?.canvasWidth || 16) / 2 - 8;
-  const canvasOriginY =
-    spriteSheet?.canvasOriginY || (spriteSheet?.canvasHeight || 16) - 8;
+  const canvasOriginX = spriteSheet?.canvasOriginX || 0;
+  const canvasOriginY = spriteSheet?.canvasOriginY || 0;
   const canvasWidth = spriteSheet?.canvasWidth || 16;
   const canvasHeight = spriteSheet?.canvasHeight || 16;
   const boundsWidth = spriteSheet?.boundsWidth || 16;

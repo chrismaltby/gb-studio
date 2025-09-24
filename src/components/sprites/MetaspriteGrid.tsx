@@ -95,8 +95,8 @@ const MetaspriteGrid = ({
           style={{
             pointerEvents: "none",
             position: "absolute",
-            top: (originY - 1) * zoom,
-            left: (originX - 1) * zoom,
+            left: (Math.max(0, width / 2 - 8) + originX - 1) * zoom,
+            bottom: (8 - originY - 1) * zoom,
             width: 2 * zoom,
             height: 2 * zoom,
             background: "rgba(255, 0, 0, 0.6)",
