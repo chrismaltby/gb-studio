@@ -16,53 +16,53 @@ test("should wrap words over limit onto new line", () => {
 test("should wrap words over multiple line limits onto multiple new lines", () => {
   expect(trimlines("0123456789012345 6789 432 343 4 2")).toBe(
     "0123456789012345\n6789 432 343 4 2",
-    18
+    18,
   );
   expect(
-    trimlines("0123456789012345 6789 0123456789012345 0123456789012345")
+    trimlines("0123456789012345 6789 0123456789012345 0123456789012345"),
   ).toBe("0123456789012345\n6789\n0123456789012345\n0123456789012345", 18);
 });
 
 test("should trim full string to 52 characters", () => {
   expect(
-    trimlines("012345678901234567\n012345678901234567\n012345678901234567")
+    trimlines("012345678901234567\n012345678901234567\n012345678901234567"),
   ).toBe("012345678901234567\n012345678901234567\n0123456789012345", 18);
 });
 
 test("should keep cropped word on last line", () => {
   expect(
     trimlines(
-      "012345678901234567\n012345678901234567\n0123456789\n01 2345678901234567"
-    )
+      "012345678901234567\n012345678901234567\n0123456789\n01 2345678901234567",
+    ),
   ).toBe("012345678901234567\n012345678901234567\n0123456789\n01 234", 18);
 });
 
 test("should allow 52 characters to be distributed any way across the three lines", () => {
   // 18 / 18 / 16
   expect(
-    trimlines("012345678901234567\n012345678901234567\n0123456789012345")
+    trimlines("012345678901234567\n012345678901234567\n0123456789012345"),
   ).toBe("012345678901234567\n012345678901234567\n0123456789012345", 18);
 
   // 16 / 18 / 18
   expect(
-    trimlines("0123456789012345\n012345678901234567\n012345678901234567")
+    trimlines("0123456789012345\n012345678901234567\n012345678901234567"),
   ).toBe("0123456789012345\n012345678901234567\n012345678901234567", 18);
 
   // 17/ 17 / 18
   expect(
-    trimlines("01234567890123456\n01234567890123456\n012345678901234567")
+    trimlines("01234567890123456\n01234567890123456\n012345678901234567"),
   ).toBe("01234567890123456\n01234567890123456\n012345678901234567", 18);
 });
 
 test("should allow 52 characters to be distributed any way across the four lines", () => {
   // 18 / 18 / 10 / 6
   expect(
-    trimlines("012345678901234567\n012345678901234567\n0123456789\n012345")
+    trimlines("012345678901234567\n012345678901234567\n0123456789\n012345"),
   ).toBe("012345678901234567\n012345678901234567\n0123456789\n012345");
 
   // 2 / 14 / 18 / 18
   expect(
-    trimlines("01\n01234567890123\n012345678901234567\n012345678901234567")
+    trimlines("01\n01234567890123\n012345678901234567\n012345678901234567"),
   ).toBe("01\n01234567890123\n012345678901234567\n012345678901234567");
 });
 
@@ -71,7 +71,7 @@ test("should not include command codes in character limits", () => {
   expect(trimlines("!S0!Hello\nWorld", 5)).toBe("!S0!Hello\nWorld");
   expect(trimlines("!S0!HelloTa\nWorld", 5)).toBe("!S0!Hello\nWorld");
   expect(trimlines("!S0!!S0!!S0!!S0!!S0!!S0!!S0!HelloTa\nWorld", 5)).toBe(
-    "!S0!!S0!!S0!!S0!!S0!!S0!!S0!Hello\nWorld"
+    "!S0!!S0!!S0!!S0!!S0!!S0!!S0!Hello\nWorld",
   );
   expect(trimlines("Hello!S5!\nWorld", 5)).toBe("Hello!S5!\nWorld");
 });
@@ -99,11 +99,11 @@ test("should treat variable characters as length=1 in total limits", () => {
   expect(trimlines("#L0#HelloWorld", 5, 1)).toBe("#L0#Hell");
   expect(
     trimlines(
-      "01234567890123456#L0#\n01234567890123456#L0#\n012345678901234#L0#67"
-    )
+      "01234567890123456#L0#\n01234567890123456#L0#\n012345678901234#L0#67",
+    ),
   ).toBe(
     "01234567890123456#L0#\n01234567890123456#L0#\n012345678901234#L0#",
-    18
+    18,
   );
 });
 

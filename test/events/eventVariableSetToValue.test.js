@@ -12,7 +12,7 @@ test("Should set variable to a value", () => {
     },
     {
       variableSetToScriptValue: mockVariableSetToValue,
-    }
+    },
   );
   expect(mockVariableSetToValue).toBeCalledWith("2", {
     type: "number",

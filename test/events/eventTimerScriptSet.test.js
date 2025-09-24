@@ -14,13 +14,13 @@ test("Should be able to set a timer script", () => {
       event: {
         symbol: "subscript_symbol",
       },
-    }
+    },
   );
   expect(mockTimerScriptSet).toBeCalledWith(
     300,
     timeoutScript,
     "subscript_symbol",
-    undefined
+    undefined,
   );
 });
 
@@ -39,12 +39,12 @@ test("Should be able to set a numbered timer script", () => {
       event: {
         symbol: "subscript_symbol",
       },
-    }
+    },
   );
   expect(mockTimerScriptSet).toBeCalledWith(
     300,
     timeoutScript,
     "subscript_symbol",
-    2
+    2,
   );
 });

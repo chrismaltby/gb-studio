@@ -11,7 +11,7 @@ test("Should be able to fade in", () => {
     {
       fadeIn: mockFadeIn,
       nextFrameAwait: mockNextFrameAwait,
-    }
+    },
   );
   expect(mockNextFrameAwait).toBeCalled();
   expect(mockFadeIn).toBeCalledWith(2);

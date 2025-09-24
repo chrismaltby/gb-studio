@@ -16,7 +16,7 @@ export const create = (initialState: RootState) => {
   const invoke = (
     action:
       | Action
-      | ((dispatch: AppDispatch, getState: () => RootState) => void)
+      | ((dispatch: AppDispatch, getState: () => RootState) => void),
   ) => thunkMiddleware(store)(next)(action);
 
   return { store, next, invoke };
@@ -28,7 +28,7 @@ const thunkMiddleware =
   (
     action:
       | Action
-      | ((dispatch: AppDispatch, getState: () => RootState) => void)
+      | ((dispatch: AppDispatch, getState: () => RootState) => void),
   ) => {
     if (typeof action === "function") {
       return action(dispatch, getState);

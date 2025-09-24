@@ -39,7 +39,7 @@ test("Should be able to set background warnings", () => {
     numTiles: 10,
   });
   expect(newState.backgrounds["bg1"]?.timestamp).toBeGreaterThan(
-    Date.now() - 1000
+    Date.now() - 1000,
   );
 });
 
@@ -75,6 +75,6 @@ test("Should replace existing warnings", () => {
     numTiles: 15,
   });
   expect(newState.backgrounds["bg1"]?.timestamp).toBeGreaterThan(
-    Date.now() - 1000
+    Date.now() - 1000,
   );
 });

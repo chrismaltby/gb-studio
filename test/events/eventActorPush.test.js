@@ -6,16 +6,16 @@ test("Should be able to push actor", () => {
 
   compile(
     {
-      continue: false
+      continue: false,
     },
     {
       entityType: "actor",
       entity: {
-        id: "abc"
+        id: "abc",
       },
       actorSetActive: mockactorSetActive,
-      actorPush: mockActorPush
-    }
+      actorPush: mockActorPush,
+    },
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorPush).toBeCalledWith(false);
@@ -27,16 +27,16 @@ test("Should not be able to push trigger", () => {
 
   compile(
     {
-      continue: false
+      continue: false,
     },
     {
       entityType: "trigger",
       entity: {
-        id: "abc"
+        id: "abc",
       },
       actorSetActive: mockactorSetActive,
-      actorPush: mockActorPush
-    }
+      actorPush: mockActorPush,
+    },
   );
   expect(mockactorSetActive).not.toBeCalled();
   expect(mockActorPush).not.toBeCalled();

@@ -39,7 +39,7 @@ test("Should use default variable name with not renamed", () => {
   render(
     <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
     store,
-    {}
+    {},
   );
   expect(screen.getByText("$Variable 0")).toBeInTheDocument();
 });
@@ -94,7 +94,7 @@ test("Should use default custom event variable name with not renamed", () => {
       />
     </ScriptEditorContext.Provider>,
     store,
-    {}
+    {},
   );
   expect(screen.getByText("$Variable A")).toBeInTheDocument();
 });
@@ -134,7 +134,7 @@ test("Should use renamed variable", () => {
   render(
     <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
     store,
-    {}
+    {},
   );
   expect(screen.getByText("$My Variable Name")).toBeInTheDocument();
 });
@@ -194,7 +194,7 @@ test("Should use renamed variable for custom event", () => {
       />
     </ScriptEditorContext.Provider>,
     store,
-    {}
+    {},
   );
   expect(screen.getByText("$My Custom Event Variable")).toBeInTheDocument();
 });
@@ -241,13 +241,13 @@ test("Should be able to rename variable", async () => {
       allowRename
     />,
     store,
-    {}
+    {},
   );
 
   fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
-    "textbox"
+    "textbox",
   ) as HTMLInputElement;
 
   expect(renameInput).toHaveValue("My Initial Variable Name");
@@ -307,13 +307,13 @@ test("Should cancel rename when Escape is pressed", async () => {
       allowRename
     />,
     store,
-    {}
+    {},
   );
 
   fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
-    "textbox"
+    "textbox",
   ) as HTMLInputElement;
 
   fireEvent.change(renameInput, {
@@ -369,13 +369,13 @@ test("Should complete rename when Escape is pressed", async () => {
       allowRename
     />,
     store,
-    {}
+    {},
   );
 
   fireEvent.click(screen.getByTitle("FIELD_RENAME"));
 
   const renameInput: HTMLInputElement = screen.getByRole(
-    "textbox"
+    "textbox",
   ) as HTMLInputElement;
 
   fireEvent.change(renameInput, {

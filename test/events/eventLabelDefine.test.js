@@ -6,8 +6,8 @@ test("Should be able to define an event label", () => {
   compile(
     { label: "my_label" },
     {
-      labelDefine: mockLabelDefine
-    }
+      labelDefine: mockLabelDefine,
+    },
   );
 
   expect(mockLabelDefine).toBeCalledWith("my_label");

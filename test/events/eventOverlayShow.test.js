@@ -7,11 +7,11 @@ test("Should set show overlay at position", () => {
     {
       color: "white",
       x: 5,
-      y: 9
+      y: 9,
     },
     {
-      overlayShow: mockOverlayShow
-    }
+      overlayShow: mockOverlayShow,
+    },
   );
   expect(mockOverlayShow).toBeCalledWith("white", 5, 9);
 });

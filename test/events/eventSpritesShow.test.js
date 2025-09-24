@@ -6,8 +6,8 @@ test("Should be able to show sprites", () => {
   compile(
     {},
     {
-      spritesShow: mockSpritesShow
-    }
+      spritesShow: mockSpritesShow,
+    },
   );
   expect(mockSpritesShow).toBeCalled();
 });

@@ -16,7 +16,7 @@ test("Should set player position to variables", () => {
       variables: ["0", "1"],
       actorSetActive: mockactorSetActive,
       actorGetPosition: mockActorGetPosition,
-    }
+    },
   );
   expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorGetPosition).toBeCalledWith("0", "1", "tiles");

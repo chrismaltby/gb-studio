@@ -13,11 +13,11 @@ test("Should set the flags on the variable", () => {
       flag5: false,
       flag6: false,
       flag7: false,
-      flag8: true
+      flag8: true,
     },
     {
       variableClearFlags: mockVariableClearFlags,
-    }
+    },
   );
 
   expect(mockVariableClearFlags).toBeCalledWith("2", 129);

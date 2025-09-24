@@ -8,11 +8,11 @@ test("Should be able to conditionally execute if input is pressed", () => {
     {
       input: ["a", "b"],
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
-      ifInput: mockIfInput
-    }
+      ifInput: mockIfInput,
+    },
   );
   expect(mockIfInput).toBeCalledWith(["a", "b"], truePath, falsePath);
 });

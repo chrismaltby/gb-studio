@@ -8,7 +8,7 @@ test("Should be able to set player sprite sheet", () => {
     },
     {
       playerSetSprite: mockPlayerSetSprite,
-    }
+    },
   );
   expect(mockPlayerSetSprite).toBeCalledWith("abc");
 });

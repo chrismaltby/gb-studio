@@ -350,7 +350,7 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
       {
         id: "FEAT_PLATFORM_DROP_THROUGH",
         value: 0,
-      }
+      },
     ]);
   });
 
@@ -376,7 +376,7 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
       {
         id: "FEAT_PLATFORM_DROP_THROUGH",
         value: 0,
-      }
+      },
     ]);
   });
 });

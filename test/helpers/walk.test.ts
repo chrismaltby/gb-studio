@@ -154,7 +154,7 @@ test("shouldn't recursively walk through the same custom script multiple times",
         maxDepth: 5,
       },
     },
-    myFn
+    myFn,
   );
   expect(output).toEqual(["0", "1", "2"]);
 });
@@ -221,7 +221,7 @@ test("shouldn't recursively walk through the same normalized custom script multi
         maxDepth: 5,
       },
     },
-    myFn
+    myFn,
   );
   expect(output).toEqual(["0", "1", "2"]);
 });
@@ -278,7 +278,7 @@ test("should walk through commented normalized events if requested", () => {
     {
       includeCommented: true,
     },
-    myFn
+    myFn,
   );
   expect(output).toEqual(["0", "1", "2"]);
 });
@@ -321,7 +321,7 @@ test("should visit normalized custom script multiple times when called at same l
         maxDepth: 5,
       },
     },
-    myFn
+    myFn,
   );
   expect(output).toEqual(["0", "1", "2", "1"]);
 });
@@ -363,7 +363,7 @@ test("should visit custom script multiple times when called at same level", () =
         maxDepth: 5,
       },
     },
-    myFn
+    myFn,
   );
   expect(output).toEqual(["0", "1", "2", "1"]);
 });
@@ -393,7 +393,7 @@ describe("walkNormalizedActorScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1"]);
@@ -432,7 +432,7 @@ describe("walkNormalizedActorScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1"]);
@@ -477,7 +477,7 @@ describe("walkNormalizedActorScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual([
@@ -518,7 +518,7 @@ describe("walkNormalizedActorScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["1"]); // missing_script is not found in lookup so it should be skipped
@@ -545,7 +545,7 @@ describe("walkNormalizedActorScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(myFn.mock.calls.length).toBe(0);
@@ -576,7 +576,7 @@ describe("walkNormalizedTriggerScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1"]);
@@ -614,7 +614,7 @@ describe("walkNormalizedTriggerScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1"]);
@@ -658,7 +658,7 @@ describe("walkNormalizedTriggerScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual([
@@ -698,7 +698,7 @@ describe("walkNormalizedTriggerScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["1"]); // missing_script is not found in lookup so it should be skipped
@@ -724,7 +724,7 @@ describe("walkNormalizedTriggerScripts", () => {
       eventsLookup,
       prefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(myFn.mock.calls.length).toBe(0);
@@ -783,7 +783,7 @@ describe("walkNormalizedSceneSpecificScripts", () => {
       scene,
       eventsLookup,
       { filter: (e) => e.id !== "2" },
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1", "3"]);
@@ -906,7 +906,7 @@ describe("walkNormalizedScenesScripts", () => {
       actorPrefabsLookup,
       triggerPrefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(output).toEqual(["0", "1", "2", "3", "4", "5", "6"]);
@@ -956,7 +956,7 @@ describe("walkNormalizedScenesScripts", () => {
         if (actor) {
           output.push(actor.id);
         }
-      }
+      },
     );
 
     expect(output).toEqual(["0", "1", "actor1"]);
@@ -1005,7 +1005,7 @@ describe("walkNormalizedScenesScripts", () => {
         if (trigger) {
           output.push(trigger.id);
         }
-      }
+      },
     );
 
     expect(output).toEqual(["0", "1", "trigger1"]);
@@ -1081,7 +1081,7 @@ describe("walkNormalizedScenesScripts", () => {
         if (trigger) {
           output.push(trigger.id);
         }
-      }
+      },
     );
 
     expect(output).toEqual(["0", "1", "actor1", "2", "trigger1"]);
@@ -1115,7 +1115,7 @@ describe("walkNormalizedScenesScripts", () => {
       actorPrefabsLookup,
       triggerPrefabsLookup,
       undefined,
-      myFn
+      myFn,
     );
 
     expect(myFn.mock.calls.length).toBe(0);

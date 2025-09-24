@@ -12,7 +12,7 @@ test("Should be able to save data", () => {
     },
     {
       dataSave: mockDataSave,
-    }
+    },
   );
   expect(mockDataSave).toBeCalledWith(1, truePath, loadPath);
 });

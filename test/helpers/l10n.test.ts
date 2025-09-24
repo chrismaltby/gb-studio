@@ -8,7 +8,7 @@ jest.mock("../../src/consts");
 
 test("should replace params in l10n string", () => {
   expect(replaceParams("Hello {place}!", { place: "World" })).toBe(
-    "Hello World!"
+    "Hello World!",
   );
 });
 
@@ -18,13 +18,13 @@ test("should replace params in l10n string when param value is falsy", () => {
 
 test("should replace multiple repeating params in l10n string", () => {
   expect(
-    replaceParams("Hello {place}! Around the {place}.", { place: "World" })
+    replaceParams("Hello {place}! Around the {place}.", { place: "World" }),
   ).toBe("Hello World! Around the World.");
 });
 
 test("should not allow spaces around param definition in l10n string", () => {
   expect(replaceParams("Hello { place } again!", { place: "World" })).toBe(
-    "Hello { place } again!"
+    "Hello { place } again!",
   );
 });
 

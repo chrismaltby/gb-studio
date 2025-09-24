@@ -36,14 +36,14 @@ describe("Electron Main Process", () => {
 
     mockedElectron.BrowserWindow.mockImplementationOnce(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      () => mockBrowserWindow as any
+      () => mockBrowserWindow as any,
     );
 
     await createSplash();
 
     expect(BrowserWindow).toHaveBeenCalledTimes(1);
     expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
-      `SPLASH_WINDOW_WEBPACK_ENTRY?tab=`
+      `SPLASH_WINDOW_WEBPACK_ENTRY?tab=`,
     );
   });
 
@@ -60,14 +60,14 @@ describe("Electron Main Process", () => {
 
     mockedElectron.BrowserWindow.mockImplementationOnce(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      () => mockBrowserWindow as any
+      () => mockBrowserWindow as any,
     );
 
     await createSplash("recent");
 
     expect(BrowserWindow).toHaveBeenCalledTimes(1);
     expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
-      `SPLASH_WINDOW_WEBPACK_ENTRY?tab=recent`
+      `SPLASH_WINDOW_WEBPACK_ENTRY?tab=recent`,
     );
   });
 
@@ -86,7 +86,7 @@ describe("Electron Main Process", () => {
 
     mockedElectron.BrowserWindow.mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      () => mockBrowserWindow as any
+      () => mockBrowserWindow as any,
     );
 
     await createSplash();
@@ -95,7 +95,7 @@ describe("Electron Main Process", () => {
     expect(mockBrowserWindow.webContents.on).toHaveBeenCalledTimes(2);
     expect(mockBrowserWindow.webContents.on).toHaveBeenCalledWith(
       "did-finish-load",
-      expect.any(Function)
+      expect.any(Function),
     );
 
     jest.runAllTimers();
@@ -116,14 +116,14 @@ describe("Electron Main Process", () => {
 
     mockedElectron.BrowserWindow.mockImplementationOnce(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      () => mockBrowserWindow as any
+      () => mockBrowserWindow as any,
     );
 
     await createPreferences();
 
     expect(BrowserWindow).toHaveBeenCalledTimes(1);
     expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
-      `PREFERENCES_WINDOW_WEBPACK_ENTRY`
+      `PREFERENCES_WINDOW_WEBPACK_ENTRY`,
     );
   });
 });

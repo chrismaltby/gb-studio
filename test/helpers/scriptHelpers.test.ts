@@ -8,7 +8,7 @@ describe("isNormalizedScriptEqual", () => {
     const scriptB: string[] = [];
     const lookupB: Record<string, ScriptEventNormalized> = {};
     expect(isNormalizedScriptEqual(scriptA, lookupA, scriptB, lookupB)).toEqual(
-      true
+      true,
     );
   });
 
@@ -34,7 +34,7 @@ describe("isNormalizedScriptEqual", () => {
       },
     };
     expect(isNormalizedScriptEqual(scriptA, lookupA, scriptB, lookupB)).toEqual(
-      true
+      true,
     );
   });
 
@@ -60,7 +60,7 @@ describe("isNormalizedScriptEqual", () => {
       },
     };
     expect(isNormalizedScriptEqual(scriptA, lookupA, scriptB, lookupB)).toEqual(
-      true
+      true,
     );
   });
 
@@ -86,7 +86,7 @@ describe("isNormalizedScriptEqual", () => {
       },
     };
     expect(isNormalizedScriptEqual(scriptA, lookupA, scriptB, lookupB)).toEqual(
-      false
+      false,
     );
   });
 
@@ -114,7 +114,7 @@ describe("isNormalizedScriptEqual", () => {
       },
     };
     expect(isNormalizedScriptEqual(scriptA, lookupA, scriptB, lookupB)).toEqual(
-      true
+      true,
     );
   });
 });

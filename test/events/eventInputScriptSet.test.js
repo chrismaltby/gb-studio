@@ -15,12 +15,12 @@ test("Should be able to set an input script", () => {
       event: {
         symbol: "subscript_symbol",
       },
-    }
+    },
   );
   expect(mockInputScriptSet).toBeCalledWith(
     ["a", "b"],
     true,
     truePath,
-    "subscript_symbol"
+    "subscript_symbol",
   );
 });

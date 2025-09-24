@@ -14,13 +14,13 @@ test("Should be able to conditionally execute if variable matches another variab
     },
     {
       ifVariableCompare: mockIfVariableCompare,
-    }
+    },
   );
   expect(mockIfVariableCompare).toBeCalledWith(
     "0",
     ".EQ",
     "1",
     truePath,
-    falsePath
+    falsePath,
   );
 });

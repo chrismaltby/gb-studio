@@ -7,13 +7,13 @@ test("Should be able to set the actor movement speed", () => {
   compile(
     {
       actorId: "player",
-      speed: 3
+      speed: 3,
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetMovementSpeed: mockActorSetMovementSpeed
-    }
+      actorSetMovementSpeed: mockActorSetMovementSpeed,
+    },
   );
   expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorSetMovementSpeed).toBeCalledWith(3);

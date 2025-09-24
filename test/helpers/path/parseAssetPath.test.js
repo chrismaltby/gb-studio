@@ -15,7 +15,7 @@ test("Should parse posix asset paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe(undefined);
@@ -38,7 +38,7 @@ test("Should parse win32 asset paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe(undefined);
@@ -61,7 +61,7 @@ test("Should parse posix plugin paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe("myplugin");
@@ -84,7 +84,7 @@ test("Should parse win32 plugin paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe("myplugin");
@@ -107,7 +107,7 @@ test("Should parse posix nested plugin paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe("core/myplugin");
@@ -130,12 +130,12 @@ test("Should parse win32 nested plugin paths", async () => {
   const { relativePath, plugin, file } = parseAssetPath(
     filename,
     projectRoot,
-    assetFolder
+    assetFolder,
   );
 
   expect(plugin).toBe("core/myplugin");
   expect(relativePath).toBe(
-    "plugins\\core\\myplugin\\backgrounds\\testing.png"
+    "plugins\\core\\myplugin\\backgrounds\\testing.png",
   );
   expect(file).toBe("testing.png");
 

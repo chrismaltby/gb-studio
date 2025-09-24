@@ -15,7 +15,7 @@ test("Should generate scene init fade in before a waitUntilAfterInitFade event",
       },
     ],
     {},
-    scriptEventHandlers
+    scriptEventHandlers,
   );
   expect(output).toEqual("event1");
 });
@@ -41,7 +41,7 @@ test("Should not generate scene init fade in until reached waitUntilAfterInitFad
       },
     ],
     {},
-    scriptEventHandlers
+    scriptEventHandlers,
   );
 
   expect(output).toEqual("event2");
@@ -60,7 +60,7 @@ test("Should generate scene init fade in at end of script when required", async 
       },
     ],
     {},
-    scriptEventHandlers
+    scriptEventHandlers,
   );
 
   expect(output).toEqual("");
@@ -79,7 +79,7 @@ test("Should not generate scene init fade in if manual fade is provided", async 
       },
     ],
     {},
-    scriptEventHandlers
+    scriptEventHandlers,
   );
 
   expect(output).toEqual("MANUAL");
@@ -120,7 +120,7 @@ test("Should generate scene init fade in before a conditional that contains wait
       },
     ],
     {},
-    scriptEventHandlers
+    scriptEventHandlers,
   );
 
   expect(output).toEqual("event1");
