@@ -81,6 +81,7 @@ describe("TypeBox Schemas", () => {
       id: "actor1",
       symbol: "symbol",
       name: "Actor 1",
+      coordinateType: "tiles",
       x: 10,
       y: 20,
       frame: 0,

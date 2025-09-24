@@ -1,6 +1,6 @@
 import l10n from "shared/lib/lang/l10n";
 import React, { useMemo } from "react";
-import { UnitType, unitTypes } from "shared/lib/entities/entitiesTypes";
+import { UnitType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -8,10 +8,10 @@ import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 import { MenuItem } from "ui/menu/Menu";
 import { StyledButton } from "ui/buttons/style";
 
-interface UnitSelectLabelButtonProps {
-  value?: UnitType;
-  allowedValues?: UnitType[];
-  onChange?: (newValue: UnitType) => void;
+interface UnitSelectLabelButtonProps<T extends UnitType = UnitType> {
+  value?: T;
+  allowedValues?: readonly T[];
+  onChange?: (newValue: T) => void;
 }
 
 const Units = styled.div`
@@ -31,11 +31,11 @@ const Units = styled.div`
   }
 `;
 
-export const UnitSelectLabelButton = ({
+export const UnitSelectLabelButton = <T extends UnitType>({
   value,
   allowedValues,
   onChange,
-}: UnitSelectLabelButtonProps) => {
+}: UnitSelectLabelButtonProps<T>) => {
   const unitTypeNames: Record<UnitType, string> = useMemo(
     () => ({
       tiles: l10n("FIELD_TILES"),
@@ -60,7 +60,6 @@ export const UnitSelectLabelButton = ({
     [],
   );
 
-  const allValues = allowedValues ? allowedValues : unitTypes;
   const currentValue = value && unitTypeButtonNames[value];
   return (
     <Units>
@@ -72,7 +71,7 @@ export const UnitSelectLabelButton = ({
           variant="transparent"
           type="button"
         >
-          {allValues.map((item) => (
+          {allowedValues.map((item) => (
             <MenuItem
               key={item}
               onClick={() => onChange?.(item)}

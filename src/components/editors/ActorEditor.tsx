@@ -43,6 +43,10 @@ import { ActorEditorProperties } from "./actor/ActorEditorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
+import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
+import { CoordinateType } from "shared/lib/resources/types";
+import { TILE_SIZE } from "consts";
+import { Label } from "ui/form/Label";
 
 interface ActorEditorProps {
   id: string;
@@ -99,6 +103,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
       onChangeActorProp("notes", e.currentTarget.value),
+    [onChangeActorProp],
+  );
+
+  const onChangeCoordinateType = useCallback(
+    (e: CoordinateType) => onChangeActorProp("coordinateType", e),
     [onChangeActorProp],
   );
 
@@ -261,13 +270,27 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             <SidebarColumn>
               <FormContainer>
                 <FormRow>
+                  <Label htmlFor="x">
+                    {l10n("FIELD_POSITION")}
+                    <UnitSelectLabelButton
+                      value={actor.coordinateType}
+                      allowedValues={["tiles", "pixels"]}
+                      onChange={onChangeCoordinateType}
+                    />
+                  </Label>
+                </FormRow>
+                <FormRow>
                   <CoordinateInput
                     name="x"
                     coordinate="x"
                     value={actor.x}
                     placeholder="0"
                     min={0}
-                    max={scene.width - 2}
+                    max={
+                      (actor.coordinateType === "tiles"
+                        ? scene.width
+                        : scene.width * TILE_SIZE) - 1
+                    }
                     onChange={onChangeX}
                   />
                   <CoordinateInput
@@ -276,7 +299,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     value={actor.y}
                     placeholder="0"
                     min={0}
-                    max={scene.height - 1}
+                    max={
+                      (actor.coordinateType === "tiles"
+                        ? scene.height
+                        : scene.height * TILE_SIZE) - 1
+                    }
                     onChange={onChangeY}
                   />
                   <DropdownButton
@@ -297,6 +324,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     </MenuItem>
                   </DropdownButton>
                 </FormRow>
+
                 <FormRow>
                   <FormField
                     name="actorDirection"
