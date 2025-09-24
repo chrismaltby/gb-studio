@@ -1153,6 +1153,19 @@ const editActor: CaseReducer<
     patch.prefabScriptOverrides = {};
   }
 
+  // If coordinate type changes, convert x/y to new type
+  if (patch.coordinateType && actor.coordinateType !== patch.coordinateType) {
+    if (patch.coordinateType === "pixels") {
+      // Tiles -> Pixels
+      patch.x = actor.x * TILE_SIZE;
+      patch.y = actor.y * TILE_SIZE;
+    } else {
+      // Pixels -> Tiles
+      patch.x = Math.floor(actor.x / TILE_SIZE);
+      patch.y = Math.floor(actor.y / TILE_SIZE);
+    }
+  }
+
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: patch,
