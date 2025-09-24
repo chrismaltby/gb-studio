@@ -55,8 +55,6 @@ export const readFileToSpriteTilesData = async (
 
 export const optimiseTiles = async (
   filename: string,
-  spriteOriginX: number,
-  spriteOriginY: number,
   spriteWidth: number,
   spriteHeight: number,
   metasprites: MetaspriteTile[][],

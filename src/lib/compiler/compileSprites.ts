@@ -144,8 +144,6 @@ export const compileSprite = async (
 
   const { tiles, lookup } = await optimiseTiles(
     filename,
-    spriteSheet.canvasOriginX,
-    spriteSheet.canvasOriginY,
     spriteSheet.canvasWidth,
     spriteSheet.canvasHeight,
     metasprites,
