@@ -192,7 +192,9 @@ export const initialState: EntitiesState = {
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
-const moveSelectedEntity =
+const pxToTiles = (x: number) => Math.floor(x / TILE_SIZE);
+
+const moveSelectedEntityToPx =
   ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
   (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
@@ -200,24 +202,26 @@ const moveSelectedEntity =
   ) => {
     const state = getState();
     const { dragging, scene, eventId, entityId } = state.editor;
-    if (dragging !== DRAG_ACTOR){
-      x = Math.floor(x / TILE_SIZE);
-      y = Math.floor(y / TILE_SIZE);
-    }
     if (dragging === DRAG_PLAYER) {
-      dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
+      dispatch(
+        settingsActions.editPlayerStartAt({
+          sceneId,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
+        }),
+      );
     } else if (dragging === DRAG_DESTINATION) {
       dispatch(
         actions.editScriptEventDestination({
           scriptEventId: eventId,
           destSceneId: sceneId,
-          x,
-          y,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
         }),
       );
     } else if (dragging === DRAG_ACTOR) {
       dispatch(
-        actions.moveActor({
+        actions.moveActorToPx({
           actorId: entityId,
           sceneId: scene,
           newSceneId: sceneId,
@@ -231,8 +235,8 @@ const moveSelectedEntity =
           sceneId: scene,
           triggerId: entityId,
           newSceneId: sceneId,
-          x,
-          y,
+          x: pxToTiles(x),
+          y: pxToTiles(y),
         }),
       );
     }
@@ -1256,7 +1260,7 @@ const setActorSymbol: CaseReducer<
   );
 };
 
-const moveActor: CaseReducer<
+const moveActorToPx: CaseReducer<
   EntitiesState,
   PayloadAction<{
     actorId: string;
@@ -1299,11 +1303,18 @@ const moveActor: CaseReducer<
     });
   }
   const actor = localActorSelectById(state, action.payload.actorId);
+
+  if (!actor) {
+    return;
+  }
+
+  const UNIT_SIZE = actor.coordinateType === "pixels" ? 1 : TILE_SIZE;
+
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: {
-      x: ((actor.coordinateType == "pixels")? action.payload.x: Math.floor(action.payload.x / TILE_SIZE)),
-      y: ((actor.coordinateType == "pixels")? action.payload.y: Math.floor(action.payload.y / TILE_SIZE)),
+      x: Math.floor(action.payload.x / UNIT_SIZE),
+      y: Math.floor(action.payload.y / UNIT_SIZE),
     },
   });
 };
@@ -4494,7 +4505,7 @@ const entitiesSlice = createSlice({
     applyActorPrefabScriptEventOverride,
     removeActor,
     removeActorAt,
-    moveActor,
+    moveActorToPx,
 
     /**************************************************************************
      * Triggers
@@ -4892,7 +4903,7 @@ const entitiesSlice = createSlice({
 
 export const actions = {
   ...entitiesSlice.actions,
-  moveSelectedEntity,
+  moveSelectedEntityToPx,
   removeSelectedEntity,
 };
 

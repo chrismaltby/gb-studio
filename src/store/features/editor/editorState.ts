@@ -1039,7 +1039,7 @@ const editorSlice = createSlice({
         state.scene = "";
         state.entityId = action.payload.constantId;
       })
-      .addCase(entitiesActions.moveActor, (state, action) => {
+      .addCase(entitiesActions.moveActorToPx, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;

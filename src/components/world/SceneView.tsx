@@ -530,7 +530,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       const y = e.pageY - pos.top;
       const pX = Math.floor(x / zoomRatio);
       const pY = Math.floor(y / zoomRatio);
-	  const tX = Math.floor(pX / TILE_SIZE);
+      const tX = Math.floor(pX / TILE_SIZE);
       const tY = Math.floor(pY / TILE_SIZE);
 
       if (
@@ -541,7 +541,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
           dispatch(editorActions.sceneHover({ sceneId: id, x: tX, y: tY }));
           dispatch(
-            entitiesActions.moveSelectedEntity({ sceneId: id, x: pX, y: pY }),
+            entitiesActions.moveSelectedEntityToPx({
+              sceneId: id,
+              x: pX,
+              y: pY,
+            }),
           );
         }
         dragState.current.lastTX = pX;

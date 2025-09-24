@@ -935,7 +935,7 @@ test("Should be able to move an actor with a scene", () => {
     },
   };
 
-  const action = actions.moveActor({
+  const action = actions.moveActorToPx({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene1",
@@ -986,7 +986,7 @@ test("Should be able to move an actor between scenes", () => {
     },
   };
 
-  const action = actions.moveActor({
+  const action = actions.moveActorToPx({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene2",
