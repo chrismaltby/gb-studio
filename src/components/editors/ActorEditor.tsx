@@ -19,8 +19,6 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
   ActorDirection,
   ActorNormalized,
-  UnitType,
-  unitTypes,
 } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
@@ -46,7 +44,8 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
-
+import { CoordinateType } from "shared/lib/resources/types";
+import { TILE_SIZE } from "consts";
 
 interface ActorEditorProps {
   id: string;
@@ -105,10 +104,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
       onChangeActorProp("notes", e.currentTarget.value),
     [onChangeActorProp],
   );
-  
+
   const onChangeCoordinateType = useCallback(
-    (e: UnitType) =>
-      onChangeActorProp("coordinateType", e as string),
+    (e: CoordinateType) => onChangeActorProp("coordinateType", e),
     [onChangeActorProp],
   );
 
@@ -272,26 +270,30 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               <FormContainer>
                 <FormRow>
                   <FormField
-                  name="coordinates"
-                  label={
-                    <>
-                    {l10n("FIELD_POSITION")}
-                    <UnitSelectLabelButton
-                      value={(actor.coordinateType || "tiles") as UnitType}
-                      allowedValues={["tiles", "pixels"]}
-                      onChange={onChangeCoordinateType}
-                    />
-                    </>
-                  }
-                  >	
-                    <FormRow>	
+                    name="coordinates"
+                    label={
+                      <>
+                        {l10n("FIELD_POSITION")}
+                        <UnitSelectLabelButton
+                          value={actor.coordinateType}
+                          allowedValues={["tiles", "pixels"]}
+                          onChange={onChangeCoordinateType}
+                        />
+                      </>
+                    }
+                  >
+                    <FormRow>
                       <CoordinateInput
                         name="x"
                         coordinate="x"
                         value={actor.x}
                         placeholder="0"
                         min={0}
-                        max={scene.width - 2}
+                        max={
+                          (actor.coordinateType === "tiles"
+                            ? scene.width
+                            : scene.width * TILE_SIZE) - 1
+                        }
                         onChange={onChangeX}
                       />
                       <CoordinateInput
@@ -300,7 +302,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                         value={actor.y}
                         placeholder="0"
                         min={0}
-                        max={scene.height - 1}
+                        max={
+                          (actor.coordinateType === "tiles"
+                            ? scene.height
+                            : scene.height * TILE_SIZE) - 1
+                        }
                         onChange={onChangeY}
                       />
                       <DropdownButton
@@ -321,9 +327,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                         </MenuItem>
                       </DropdownButton>
                     </FormRow>
-                  </FormField>				  
+                  </FormField>
                 </FormRow>
-                
+
                 <FormRow>
                   <FormField
                     name="actorDirection"

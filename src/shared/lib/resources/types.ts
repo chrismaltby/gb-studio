@@ -14,6 +14,13 @@ export const ActorDirection = Type.Union(
 
 export type ActorDirection = Static<typeof ActorDirection>;
 
+export const CoordinateType = Type.Union(
+  [Type.Literal("tiles"), Type.Literal("pixels")],
+  { default: "tiles" },
+);
+
+export type CoordinateType = Static<typeof CoordinateType>;
+
 export const SceneParallaxLayer = Type.Object({
   height: Type.Number(),
   speed: Type.Number(),
@@ -123,7 +130,7 @@ export const ActorResource = Type.Object({
   symbol: Type.String(),
   prefabId: Type.String(),
   name: Type.String(),
-  coordinateType: Type.String(),
+  coordinateType: CoordinateType,
   x: Type.Number(),
   y: Type.Number(),
   frame: Type.Number(),

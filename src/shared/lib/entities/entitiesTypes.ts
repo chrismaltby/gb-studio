@@ -2,6 +2,7 @@ import type { EntityState } from "@reduxjs/toolkit";
 import type {
   ColorModeOverrideSetting,
   Constant,
+  CoordinateType,
   SceneBoundsRect,
   ScriptEditorCtxType,
   SpriteModeSetting,
@@ -98,7 +99,7 @@ export type Actor = {
   name: string;
   symbol: string;
   notes?: string;
-  coordinateType: string;
+  coordinateType: CoordinateType;
   x: number;
   y: number;
   prefabId: string;
