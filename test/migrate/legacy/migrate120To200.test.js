@@ -25,7 +25,7 @@ test("should migrate collisions from 1.2.0 to 2.0.0", () => {
 
   // Now storing 1 tile per byte rather than 1 tile per bit, array will be 8 times bigger
   expect(newProject.scenes[0].collisions.length).toEqual(
-    oldProject.scenes[0].collisions.length * 8
+    oldProject.scenes[0].collisions.length * 8,
   );
 
   expect(newProject).toEqual({

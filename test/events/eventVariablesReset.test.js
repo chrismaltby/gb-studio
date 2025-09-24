@@ -6,8 +6,8 @@ test("Should be able to reset variables", () => {
   compile(
     {},
     {
-      variablesReset: mockVariablesReset
-    }
+      variablesReset: mockVariablesReset,
+    },
   );
   expect(mockVariablesReset).toBeCalled();
 });

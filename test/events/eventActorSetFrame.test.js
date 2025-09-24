@@ -16,7 +16,7 @@ test("Should set player frame", () => {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
       actorSetFrameToScriptValue: mockActorSetFrame,
-    }
+    },
   );
   expect(mockactorSetActive).not.toBeCalled();
   expect(mockActorSetFrame).toBeCalledWith("player", {

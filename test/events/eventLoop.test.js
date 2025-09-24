@@ -16,7 +16,7 @@ test("Should be able to loop events", () => {
       compileEvents: mockCompileEvents,
       getNextLabel: mockGetNextLabel,
       event: mockEvent,
-    }
+    },
   );
 
   expect(mockGetNextLabel).toBeCalled();

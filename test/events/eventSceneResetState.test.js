@@ -6,8 +6,8 @@ test("Should be able to reset the scene stack", () => {
   compile(
     {},
     {
-      sceneResetState: mockSceneResetState
-    }
+      sceneResetState: mockSceneResetState,
+    },
   );
   expect(mockSceneResetState).toBeCalled();
 });

@@ -19,27 +19,27 @@ test("should expose API to React application", () => {
   expect(contextBridge.exposeInMainWorld).toHaveBeenNthCalledWith(
     1,
     "API",
-    APISetup
+    APISetup,
   );
   expect(contextBridge.exposeInMainWorld).toHaveBeenNthCalledWith(
     2,
     "API",
-    APISetup
+    APISetup,
   );
 
   expect(contextBridge.exposeInMainWorld).toHaveBeenNthCalledWith(
     3,
     "API",
-    APISetup
+    APISetup,
   );
   expect(contextBridge.exposeInMainWorld).toHaveBeenNthCalledWith(
     4,
     "API",
-    APISetup
+    APISetup,
   );
   expect(contextBridge.exposeInMainWorld).toHaveBeenNthCalledWith(
     5,
     "API",
-    APISetup
+    APISetup,
   );
 });

@@ -5,11 +5,11 @@ test("Should set variable to true", () => {
 
   compile(
     {
-      variable: "5"
+      variable: "5",
     },
     {
-      variableSetToFalse: mockVariableSetToFalse
-    }
+      variableSetToFalse: mockVariableSetToFalse,
+    },
   );
   expect(mockVariableSetToFalse).toBeCalledWith("5");
 });

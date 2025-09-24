@@ -22,7 +22,7 @@ const AllTheProviders = ({ children, store }: ProvidersProps) => {
 const customRender = (
   ui: ReactElement,
   store?: AppStore,
-  options?: Omit<RenderOptions, "wrapper">
+  options?: Omit<RenderOptions, "wrapper">,
 ) =>
   render(ui, {
     wrapper: ({ children }) => (

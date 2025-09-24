@@ -7,8 +7,8 @@ test("Should be able to conditionally execute if variable is true", () => {
   compile(
     { variable: "0", true: truePath, false: falsePath },
     {
-      ifVariableTrue: mockIfVariableTrue
-    }
+      ifVariableTrue: mockIfVariableTrue,
+    },
   );
   expect(mockIfVariableTrue).toBeCalledWith("0", truePath, falsePath);
 });

@@ -18,12 +18,12 @@ test("Should be able to move camera position", () => {
     },
     {
       cameraMoveToScriptValues: mockCameraMoveToScriptValues,
-    }
+    },
   );
   expect(mockCameraMoveToScriptValues).toBeCalledWith(
     { type: "number", value: 5 },
     { type: "number", value: 9 },
     1,
-    "tiles"
+    "tiles",
   );
 });

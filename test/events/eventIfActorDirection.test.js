@@ -15,13 +15,13 @@ test("Should be able to conditionally execute if actor is facing a direction", (
     {
       actorSetActive: mockactorSetActive,
       ifActorDirectionScriptValue: mockIfActorDirection,
-    }
+    },
   );
   expect(mockactorSetActive).not.toBeCalled();
   expect(mockIfActorDirection).toBeCalledWith(
     "player",
     { type: "direction", value: "right" },
     truePath,
-    falsePath
+    falsePath,
   );
 });

@@ -6,8 +6,8 @@ test("Should be able to push the scene to a stack", () => {
   compile(
     {},
     {
-      scenePushState: mockScenePushState
-    }
+      scenePushState: mockScenePushState,
+    },
   );
   expect(mockScenePushState).toBeCalled();
 });

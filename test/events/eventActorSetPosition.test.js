@@ -21,13 +21,13 @@ test("Should set player position", () => {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
       actorSetPositionToScriptValues: mockActorSetPosition,
-    }
+    },
   );
   expect(mockactorSetActive).not.toBeCalled();
   expect(mockActorSetPosition).toBeCalledWith(
     "player",
     { type: "number", value: 5 },
     { type: "number", value: 9 },
-    "tiles"
+    "tiles",
   );
 });

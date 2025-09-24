@@ -42,7 +42,7 @@ test("should be able to add a script event to an empty scene init script", () =>
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(state.scenes.entities["scene1"]?.script.length).toBe(0);
   expect(newState.scenes.entities["scene1"]?.script.length).toBe(1);
@@ -131,7 +131,7 @@ test("should be able to add a script event to a scene init script before an exis
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(newState.scenes.entities["scene1"]?.script?.[1]).toBe("script1");
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
@@ -183,7 +183,7 @@ test("should be able to add a script event to a scene init script after an exist
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe("script1");
   expect(newState.scenes.entities["scene1"]?.script?.[1]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
   expect(newState.scenes.entities["scene1"]?.script.length).toBe(2);
@@ -239,18 +239,20 @@ test("should be able to add multiple script events to a scene init script", () =
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(newState.scenes.entities["scene1"]?.script?.[1]).toBe(
-    action.payload.scriptEventIds[1]
+    action.payload.scriptEventIds[1],
   );
   expect(newState.scenes.entities["scene1"]?.script?.[2]).toBe("script1");
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args?.text
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args
+      ?.text,
   ).toBe("Hello World");
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args?.text
+    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args
+      ?.text,
   ).toBe("Goodbye World");
 
   expect(newState.scenes.entities["scene1"]?.script.length).toBe(3);
@@ -307,17 +309,19 @@ test("should be able to add multiple script events to a scene init script after 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe("script1");
   expect(newState.scenes.entities["scene1"]?.script?.[1]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(newState.scenes.entities["scene1"]?.script?.[2]).toBe(
-    action.payload.scriptEventIds[1]
+    action.payload.scriptEventIds[1],
   );
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args?.text
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args
+      ?.text,
   ).toBe("Hello World");
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args?.text
+    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args
+      ?.text,
   ).toBe("Goodbye World");
   expect(newState.scenes.entities["scene1"]?.script.length).toBe(3);
 });
@@ -367,13 +371,13 @@ test("should be able to add a script event as child of conditional event true pa
 
   const newState = reducer(state, action);
   expect(newState.scriptEvents.entities["script1"]?.children?.true?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(state.scriptEvents.entities["script1"]?.children?.true?.length).toBe(
-    0
+    0,
   );
   expect(
-    newState.scriptEvents.entities["script1"]?.children?.true?.length
+    newState.scriptEvents.entities["script1"]?.children?.true?.length,
   ).toBe(1);
 });
 
@@ -422,16 +426,16 @@ test("should be able to add a script event as child of conditional event false p
 
   const newState = reducer(state, action);
   expect(newState.scriptEvents.entities["script1"]?.children?.false?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(state.scriptEvents.entities["script1"]?.children?.false?.length).toBe(
-    0
+    0,
   );
   expect(
-    newState.scriptEvents.entities["script1"]?.children?.false?.length
+    newState.scriptEvents.entities["script1"]?.children?.false?.length,
   ).toBe(1);
   expect(
-    newState.scriptEvents.entities["script1"]?.children?.true?.length
+    newState.scriptEvents.entities["script1"]?.children?.true?.length,
   ).toBe(0);
 });
 
@@ -473,15 +477,15 @@ test("should remove child ids provided in scriptEvent creation data", () => {
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.script?.[0]).toBe(
-    action.payload.scriptEventIds[0]
+    action.payload.scriptEventIds[0],
   );
   expect(
     newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.children
-      ?.true?.length
+      ?.true?.length,
   ).toBe(0);
   expect(
     newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.children
-      ?.false?.length
+      ?.false?.length,
   ).toBe(0);
 });
 

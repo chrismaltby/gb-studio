@@ -53,8 +53,8 @@ test("Should be able to extract named variables from custom event", () => {
           },
         },
       },
-      {}
-    ).slice(0, 10)
+      {},
+    ).slice(0, 10),
   ).toEqual([
     {
       id: "V0",

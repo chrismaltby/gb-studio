@@ -6,12 +6,12 @@ test("Should be able to pop a scene from the stack", () => {
 
   compile(
     {
-      fadeSpeed: 2
+      fadeSpeed: 2,
     },
     {
       scenePopState: mockScenePopState,
-      scriptEnd: mockScriptEnd
-    }
+      scriptEnd: mockScriptEnd,
+    },
   );
   expect(mockScenePopState).toBeCalledWith(2);
   expect(mockScriptEnd).toHaveBeenCalledAfter(mockScenePopState);

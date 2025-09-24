@@ -6,12 +6,12 @@ test("Should be able to invoke actor script", () => {
 
   compile(
     {
-      actorId: "abc"
+      actorId: "abc",
     },
     {
       actorSetActive: mockactorSetActive,
-      actorInvoke: mockActorInvoke
-    }
+      actorInvoke: mockActorInvoke,
+    },
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorInvoke).toBeCalled();

@@ -6,14 +6,14 @@ test("Should be able to display a multiple choice option", () => {
     {
       variable: "5",
       trueText: "Hello",
-      falseText: "Goodbye"
+      falseText: "Goodbye",
     },
     {
-      textChoice: mockTextChoice
-    }
+      textChoice: mockTextChoice,
+    },
   );
   expect(mockTextChoice).toBeCalledWith("5", {
     trueText: "Hello",
-    falseText: "Goodbye"
+    falseText: "Goodbye",
   });
 });

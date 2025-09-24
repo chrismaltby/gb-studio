@@ -128,11 +128,11 @@ _scene_1_init::
   it("should give equal output for functionally identical scripts", async () => {
     const input1 = await readFile(
       path.resolve(__dirname, "_files/data/script_input_953.s"),
-      "utf8"
+      "utf8",
     );
     const input2 = await readFile(
       path.resolve(__dirname, "_files/data/script_input_954.s"),
-      "utf8"
+      "utf8",
     );
 
     const output1 = anonymizeGBVMScript(input1);
@@ -143,11 +143,11 @@ _scene_1_init::
   it("should give equal output for functionally more identical scripts", async () => {
     const input1 = await readFile(
       path.resolve(__dirname, "_files/data/script_timer_40.s"),
-      "utf8"
+      "utf8",
     );
     const input2 = await readFile(
       path.resolve(__dirname, "_files/data/script_timer_54.s"),
-      "utf8"
+      "utf8",
     );
 
     const output1 = anonymizeGBVMScript(input1);

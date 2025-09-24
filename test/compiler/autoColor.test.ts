@@ -8,7 +8,7 @@ test("Should reduce the palettes to a maximum of 8", async () => {
   const paletteData = await readFileToPalettes(filename, "default");
   writeIndexedImagePNG(
     `${__dirname}/_tmp/color_town_tiles.png`,
-    paletteData.indexedImage
+    paletteData.indexedImage,
   );
 });
 
@@ -17,13 +17,13 @@ test("Should reduce the palettes to a maximum of 8", async () => {
   const paletteData = await readFileToPalettes(filename, "default");
   writeIndexedImagePNG(
     `${__dirname}/_tmp/parallax_color_tiles.png`,
-    paletteData.indexedImage
+    paletteData.indexedImage,
   );
 });
 
 const writeIndexedImagePNG = async (
   filename: string,
-  img: IndexedImage
+  img: IndexedImage,
 ): Promise<void> => {
   const png = new PNG({
     width: img.width,

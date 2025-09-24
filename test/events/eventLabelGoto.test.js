@@ -6,8 +6,8 @@ test("Should be able to jump to an event label", () => {
   compile(
     { label: "my_label" },
     {
-      labelGoto: mockLabelGoto
-    }
+      labelGoto: mockLabelGoto,
+    },
   );
 
   expect(mockLabelGoto).toBeCalledWith("my_label");

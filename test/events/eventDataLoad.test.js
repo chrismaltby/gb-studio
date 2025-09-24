@@ -7,8 +7,8 @@ test("Should be able to load data", () => {
       saveSlot: 1,
     },
     {
-      dataLoad: mockDataLoad
-    }
+      dataLoad: mockDataLoad,
+    },
   );
   expect(mockDataLoad).toBeCalledWith(1);
 });

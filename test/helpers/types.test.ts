@@ -191,18 +191,21 @@ describe("ensureTypeGenerator", () => {
 describe("ensurePromisedTypeGenerator", () => {
   test("should create a function that ensures type from promises", async () => {
     const ensurePromisedStringValue = ensurePromisedTypeGenerator(isString);
-    
-    await expect(ensurePromisedStringValue(Promise.resolve("hello"), "fallback"))
-      .resolves.toBe("hello");
-    await expect(ensurePromisedStringValue(Promise.resolve(123), "fallback"))
-      .resolves.toBe("fallback");
+
+    await expect(
+      ensurePromisedStringValue(Promise.resolve("hello"), "fallback"),
+    ).resolves.toBe("hello");
+    await expect(
+      ensurePromisedStringValue(Promise.resolve(123), "fallback"),
+    ).resolves.toBe("fallback");
   });
 
   test("should return fallback on promise rejection", async () => {
     const ensurePromisedStringValue = ensurePromisedTypeGenerator(isString);
-    
-    await expect(ensurePromisedStringValue(Promise.reject(new Error("test")), "fallback"))
-      .resolves.toBe("fallback");
+
+    await expect(
+      ensurePromisedStringValue(Promise.reject(new Error("test")), "fallback"),
+    ).resolves.toBe("fallback");
   });
 });
 
@@ -221,14 +224,17 @@ describe("ensureString", () => {
 
 describe("ensureStringArray", () => {
   test("should return string array if input is string array", () => {
-    expect(ensureStringArray(["hello", "world"], ["fallback"]))
-      .toEqual(["hello", "world"]);
+    expect(ensureStringArray(["hello", "world"], ["fallback"])).toEqual([
+      "hello",
+      "world",
+    ]);
     expect(ensureStringArray([], ["fallback"])).toEqual([]);
   });
 
   test("should return fallback if input is not string array", () => {
-    expect(ensureStringArray(["hello", 123], ["fallback"]))
-      .toEqual(["fallback"]);
+    expect(ensureStringArray(["hello", 123], ["fallback"])).toEqual([
+      "fallback",
+    ]);
     expect(ensureStringArray("hello", ["fallback"])).toEqual(["fallback"]);
     expect(ensureStringArray(null, ["fallback"])).toEqual(["fallback"]);
   });
@@ -264,35 +270,41 @@ describe("ensureBoolean", () => {
 
 describe("ensurePromisedString", () => {
   test("should return string from resolved promise", async () => {
-    await expect(ensurePromisedString(Promise.resolve("hello"), "fallback"))
-      .resolves.toBe("hello");
+    await expect(
+      ensurePromisedString(Promise.resolve("hello"), "fallback"),
+    ).resolves.toBe("hello");
   });
 
   test("should return fallback for non-string resolved value", async () => {
-    await expect(ensurePromisedString(Promise.resolve(123), "fallback"))
-      .resolves.toBe("fallback");
+    await expect(
+      ensurePromisedString(Promise.resolve(123), "fallback"),
+    ).resolves.toBe("fallback");
   });
 
   test("should return fallback for rejected promise", async () => {
-    await expect(ensurePromisedString(Promise.reject(new Error("test")), "fallback"))
-      .resolves.toBe("fallback");
+    await expect(
+      ensurePromisedString(Promise.reject(new Error("test")), "fallback"),
+    ).resolves.toBe("fallback");
   });
 });
 
 describe("ensurePromisedNumber", () => {
   test("should return number from resolved promise", async () => {
-    await expect(ensurePromisedNumber(Promise.resolve(123), 0))
-      .resolves.toBe(123);
+    await expect(ensurePromisedNumber(Promise.resolve(123), 0)).resolves.toBe(
+      123,
+    );
   });
 
   test("should return fallback for non-number resolved value", async () => {
-    await expect(ensurePromisedNumber(Promise.resolve("hello"), 0))
-      .resolves.toBe(0);
+    await expect(
+      ensurePromisedNumber(Promise.resolve("hello"), 0),
+    ).resolves.toBe(0);
   });
 
   test("should return fallback for rejected promise", async () => {
-    await expect(ensurePromisedNumber(Promise.reject(new Error("test")), 0))
-      .resolves.toBe(0);
+    await expect(
+      ensurePromisedNumber(Promise.reject(new Error("test")), 0),
+    ).resolves.toBe(0);
   });
 });
 
@@ -351,17 +363,17 @@ describe("omit", () => {
   });
 
   test("should work with different value types", () => {
-    const obj = { 
-      str: "hello", 
-      num: 123, 
-      bool: true, 
-      arr: [1, 2, 3], 
-      obj: { nested: true } 
+    const obj = {
+      str: "hello",
+      num: 123,
+      bool: true,
+      arr: [1, 2, 3],
+      obj: { nested: true },
     };
     expect(omit(obj, "num", "bool")).toEqual({
       str: "hello",
       arr: [1, 2, 3],
-      obj: { nested: true }
+      obj: { nested: true },
     });
   });
 });

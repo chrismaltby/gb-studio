@@ -27,7 +27,7 @@ test("Should be able to conditionally execute if variable contains a flag", () =
       variablesMod: mockVariablesMod,
       temporaryEntityVariable,
       ifVariableBitwiseValue: mockIfVariableBitwiseValue,
-    }
+    },
   );
 
   expect(mockIfVariableBitwiseValue).toBeCalledWith(
@@ -35,6 +35,6 @@ test("Should be able to conditionally execute if variable contains a flag", () =
     ".B_AND",
     32,
     truePath,
-    falsePath
+    falsePath,
   );
 });

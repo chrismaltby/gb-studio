@@ -12,7 +12,7 @@ test("Should not change the path and root if saving existing project", () => {
   const action = actions.saveProject.fulfilled(
     undefined,
     "randomid",
-    undefined
+    undefined,
   );
   const newState = reducer(state, action);
   expect(newState.saving).toBe(false);

@@ -5,7 +5,7 @@ const fetch = jest.fn(() =>
     ok: true,
     status: 200,
     statusText: "OK",
-  })
+  }),
 );
 
 module.exports = fetch;

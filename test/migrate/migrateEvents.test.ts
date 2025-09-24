@@ -25,7 +25,7 @@ describe("migrateEvents", () => {
     const project = migrateActorsTestProject;
     const migrated = await migrateEvents(project, testEventMigration);
     expect(migrated.scenes[0].actors[0].script[0].args?.value).toEqual(
-      "REPLACE"
+      "REPLACE",
     );
   });
 
@@ -36,7 +36,7 @@ describe("migrateEvents", () => {
     expect(
       migrated.scenes[0].actors[0].prefabScriptOverrides[
         migrated.actorPrefabs[0].script[0].id
-      ].args?.value
+      ].args?.value,
     ).toEqual("REPLACE");
   });
 
@@ -47,15 +47,15 @@ describe("migrateEvents", () => {
     expect(
       migrated.scenes[0].actors[0].prefabScriptOverrides[
         migrated.actorPrefabs[0].script[0].id
-      ].args?.value
+      ].args?.value,
     ).toBeUndefined();
     expect(
       migrated.scenes[0].actors[0].prefabScriptOverrides[
         migrated.actorPrefabs[0].script[0].id
-      ].args?.value3
+      ].args?.value3,
     ).toEqual("BAR");
     expect(
-      migrated.scenes[0].actors[0].prefabScriptOverrides["event2"].args?.value
+      migrated.scenes[0].actors[0].prefabScriptOverrides["event2"].args?.value,
     ).toEqual("FIND");
   });
 
@@ -66,7 +66,7 @@ describe("migrateEvents", () => {
     expect(
       migrated.scenes[0].triggers[0].prefabScriptOverrides[
         migrated.triggerPrefabs[0].script[0].id
-      ].args?.value
+      ].args?.value,
     ).toEqual("REPLACE");
   });
 
@@ -77,10 +77,11 @@ describe("migrateEvents", () => {
     expect(
       migrated.scenes[0].triggers[0].prefabScriptOverrides[
         migrated.triggerPrefabs[0].script[0].id
-      ].args?.value
+      ].args?.value,
     ).toBeUndefined();
     expect(
-      migrated.scenes[0].triggers[0].prefabScriptOverrides["event2"].args?.value
+      migrated.scenes[0].triggers[0].prefabScriptOverrides["event2"].args
+        ?.value,
     ).toEqual("FIND");
   });
 });

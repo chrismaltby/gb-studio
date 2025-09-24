@@ -102,7 +102,7 @@ describe("wrapSigned8Bit", () => {
     expect(wrapSigned8Bit(-130)).toBe(126);
     expect(wrapSigned8Bit(-386)).toBe(126);
   });
-})
+});
 
 describe("SIGNED_16BIT_MAX", () => {
   test("should be 32767", () => {
@@ -324,9 +324,9 @@ describe("fromSigned8Bit", () => {
 
   test("should handle values with upper bits set", () => {
     expect(fromSigned8Bit(0x80)).toBe(-128);
-    expect(fromSigned8Bit(0xFF)).toBe(-1);
+    expect(fromSigned8Bit(0xff)).toBe(-1);
     expect(fromSigned8Bit(0x180)).toBe(-128); // Upper bits masked off
-    expect(fromSigned8Bit(0x1FF)).toBe(-1);   // Upper bits masked off
+    expect(fromSigned8Bit(0x1ff)).toBe(-1); // Upper bits masked off
   });
 });
 
@@ -363,7 +363,7 @@ describe("convertHexTo15BitDec", () => {
   });
 
   test("should convert white color correctly", () => {
-    expect(convertHexTo15BitDec("FFFFFF")).toBe(0x7FFF); // 0x7FFF
+    expect(convertHexTo15BitDec("FFFFFF")).toBe(0x7fff); // 0x7FFF
   });
 
   test("should convert red color correctly", () => {
@@ -371,11 +371,11 @@ describe("convertHexTo15BitDec", () => {
   });
 
   test("should convert green color correctly", () => {
-    expect(convertHexTo15BitDec("00FF00")).toBe(0x7E0); // Blue=1, Green=31, Red=0
+    expect(convertHexTo15BitDec("00FF00")).toBe(0x7e0); // Blue=1, Green=31, Red=0
   });
 
   test("should convert blue color correctly", () => {
-    expect(convertHexTo15BitDec("0000FF")).toBe(0x7C00); // Blue=32, Green=0, Red=0 but actually blue=31+1=32 so it's 32<<10=32768 but max is 31 so it should be 31<<10+1=31745
+    expect(convertHexTo15BitDec("0000FF")).toBe(0x7c00); // Blue=32, Green=0, Red=0 but actually blue=31+1=32 so it's 32<<10=32768 but max is 31 so it should be 31<<10+1=31745
   });
 
   test("should handle mixed colors", () => {

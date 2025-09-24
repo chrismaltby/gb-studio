@@ -5,11 +5,11 @@ test("Should be able to fade out", () => {
 
   compile(
     {
-      speed: 2
+      speed: 2,
     },
     {
-      fadeOut: mockFadeOut
-    }
+      fadeOut: mockFadeOut,
+    },
   );
   expect(mockFadeOut).toBeCalledWith(2);
 });

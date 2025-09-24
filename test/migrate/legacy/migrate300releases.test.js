@@ -251,7 +251,7 @@ test("should migrate custom script events to prefix values with V", async () => 
   };
   const scriptEventHandlers = await getTestScriptHandlers();
   expect(
-    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers),
   ).toEqual({
     command: "EVENT_INC_VALUE",
     args: {
@@ -275,7 +275,7 @@ test("should migrate custom script events to prefix values with V when using uni
   };
   const scriptEventHandlers = await getTestScriptHandlers();
   expect(
-    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers),
   ).toEqual({
     command: "EVENT_ACTOR_SET_DIRECTION",
     args: {
@@ -342,7 +342,7 @@ test("should not migrate custom script calls to include missing values if custom
   };
   const customEvents = [];
   expect(migrateFrom300r3To310r1Event(oldEvent, customEvents)).toEqual(
-    oldEvent
+    oldEvent,
   );
 });
 

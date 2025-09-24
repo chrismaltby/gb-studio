@@ -16,7 +16,7 @@ test("Should set player collision box", () => {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
       actorSetBounds: mockActorSetBounds,
-    }
+    },
   );
   expect(mockactorSetActive).toHaveBeenCalledWith("player");
   expect(mockActorSetBounds).toHaveBeenCalledWith(8, 31, -8, 23);

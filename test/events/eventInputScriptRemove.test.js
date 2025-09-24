@@ -4,11 +4,11 @@ test("Should be able to remove an input script", () => {
   const mockInputScriptRemove = jest.fn();
   compile(
     {
-      input: ["a", "b"]
+      input: ["a", "b"],
     },
     {
-      inputScriptRemove: mockInputScriptRemove
-    }
+      inputScriptRemove: mockInputScriptRemove,
+    },
   );
   expect(mockInputScriptRemove).toBeCalledWith(["a", "b"]);
 });
