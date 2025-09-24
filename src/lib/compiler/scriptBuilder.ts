@@ -1866,7 +1866,14 @@ class ScriptBuilder {
     top: number,
     bottom: number,
   ) => {
-    this._addCmd("VM_ACTOR_SET_BOUNDS", addr, left, right, top, bottom);
+    this._addCmd(
+      "VM_ACTOR_SET_BOUNDS",
+      addr,
+      pxToSubpx(left),
+      pxToSubpx(right),
+      pxToSubpx(top),
+      pxToSubpx(bottom),
+    );
   };
 
   _actorSetAnimTick = (addr: string, tick: number) => {
