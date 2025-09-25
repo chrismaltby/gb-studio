@@ -19,7 +19,7 @@ test("should compile images", async () => {
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(360);
   expect(res[0].vramData[0].length).toEqual(114 * BYTES_PER_TILE);
@@ -38,7 +38,7 @@ test("should compile split large images into two tilesets for CGB mode", async (
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(3136);
   expect(res[0].vramData[0].length).toEqual(192 * BYTES_PER_TILE);
@@ -57,7 +57,7 @@ test("should compile large images into one overflowing bank when not in color on
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(3136);
   expect(res[0].vramData[0].length).toEqual(384 * BYTES_PER_TILE);
@@ -76,7 +76,7 @@ test("should split tiles into two banks when in color only mode, filling first 1
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(1440);
   expect(res[0].vramData[0].length).toEqual(128 * BYTES_PER_TILE);
@@ -137,7 +137,7 @@ test("should handle overflow correctly for DMG mode", async () => {
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(360);
   expect(res[0].vramData[0].length).toEqual(194 * BYTES_PER_TILE);
@@ -163,7 +163,7 @@ test("should handle overflow correctly for color only mode", async () => {
     {},
     "default",
     `${__dirname}/_files/`,
-    { warnings: () => {} }
+    { warnings: () => {} },
   );
   expect(res[0].tilemap.length).toEqual(640);
   expect(res[0].vramData[0].length).toEqual(193 * BYTES_PER_TILE);

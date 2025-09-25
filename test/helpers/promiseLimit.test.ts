@@ -77,7 +77,7 @@ describe("promiseLimit", () => {
     ];
     const result = await promiseLimit<string | number[] | { key: string }>(
       2,
-      promises
+      promises,
     );
     expect(result).toEqual(["a", { key: "value" }, [1, 2, 3]]);
   });

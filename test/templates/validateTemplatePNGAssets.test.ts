@@ -51,7 +51,7 @@ test.each(templatePNGAssets)(
   "Template asset is indexed PNG : $filePath",
   ({ png }) => {
     expect(png.palette).toBeTruthy();
-  }
+  },
 );
 
 test.each(templatePNGAssets)(
@@ -67,7 +67,7 @@ test.each(templatePNGAssets)(
       maxColors = 5;
     }
     expect(palette.size).toBeLessThanOrEqual(maxColors);
-  }
+  },
 );
 
 test.each(templatePNGAssets)(
@@ -86,10 +86,10 @@ test.each(templatePNGAssets)(
       return;
     }
     const extraColors = [...palette].filter(
-      (item) => !validColors.includes(item)
+      (item) => !validColors.includes(item),
     );
     expect(extraColors).toEqual([]);
-  }
+  },
 );
 
 test.each(templatePNGAssets)(
@@ -117,5 +117,5 @@ test.each(templatePNGAssets)(
       "";
     expect(Array.isArray(pngPalette));
     expect(indexPalette).toEqual(validPalette);
-  }
+  },
 );

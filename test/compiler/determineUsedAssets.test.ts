@@ -156,9 +156,9 @@ test("should include fonts referenced in dialogue", async () => {
   });
   expect(usedAssets.referencedFonts).toHaveLength(2);
   expect(usedAssets.referencedFonts[0].id).toBe(
-    "3060ae1a-dde6-47f7-af40-5a28bba5a649"
+    "3060ae1a-dde6-47f7-af40-5a28bba5a649",
   );
   expect(usedAssets.referencedFonts[1].id).toBe(
-    "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47"
+    "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
   );
 });

@@ -7,11 +7,11 @@ test("Should set move overlay to position", () => {
     {
       x: 5,
       y: 9,
-      speed: 2
+      speed: 2,
     },
     {
-      overlayMoveTo: mockOverlayMoveTo
-    }
+      overlayMoveTo: mockOverlayMoveTo,
+    },
   );
   expect(mockOverlayMoveTo).toBeCalledWith(5, 9, 2);
 });

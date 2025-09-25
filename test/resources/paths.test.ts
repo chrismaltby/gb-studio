@@ -35,7 +35,7 @@ describe("paths", () => {
       _resourceType: "background",
     } as BackgroundResource;
     expect(getResourceAssetPath(resource)).toEqual(
-      "backgrounds/background1.gbsres"
+      "backgrounds/background1.gbsres",
     );
   });
 
@@ -52,7 +52,7 @@ describe("paths", () => {
 
   test("getSceneResourcePath should return correct resource path", () => {
     expect(getSceneResourcePath("project/scenes/scene1")).toEqual(
-      "project/scenes/scene1/scene.gbsres"
+      "project/scenes/scene1/scene.gbsres",
     );
   });
 
@@ -64,7 +64,7 @@ describe("paths", () => {
     } as ActorResource;
     const sceneFolder = "project/scenes/scene1";
     expect(getActorResourcePath(sceneFolder, actor)).toEqual(
-      "project/scenes/scene1/actors/actor1.gbsres"
+      "project/scenes/scene1/actors/actor1.gbsres",
     );
   });
 
@@ -77,7 +77,7 @@ describe("paths", () => {
     const sceneFolder = "project/scenes/scene1";
     const getActorPath = curryActorResourcePath(sceneFolder);
     expect(getActorPath(actor)).toEqual(
-      "project/scenes/scene1/actors/actor1.gbsres"
+      "project/scenes/scene1/actors/actor1.gbsres",
     );
   });
 
@@ -89,7 +89,7 @@ describe("paths", () => {
     } as TriggerResource;
     const sceneFolder = "project/scenes/scene1";
     expect(getTriggerResourcePath(sceneFolder, trigger)).toEqual(
-      "project/scenes/scene1/triggers/trigger1.gbsres"
+      "project/scenes/scene1/triggers/trigger1.gbsres",
     );
   });
 
@@ -102,7 +102,7 @@ describe("paths", () => {
     const sceneFolder = "project/scenes/scene1";
     const getTriggerPath = curryTriggerResourcePath(sceneFolder);
     expect(getTriggerPath(trigger)).toEqual(
-      "project/scenes/scene1/triggers/trigger1.gbsres"
+      "project/scenes/scene1/triggers/trigger1.gbsres",
     );
   });
 
@@ -128,7 +128,7 @@ describe("paths", () => {
       _resourceType: "palette",
     } as PaletteResource;
     expect(getPaletteResourcePath(palette)).toEqual(
-      "project/palettes/palette1.gbsres"
+      "project/palettes/palette1.gbsres",
     );
   });
 
@@ -139,7 +139,7 @@ describe("paths", () => {
       _resourceType: "script",
     } as ScriptResource;
     expect(getScriptResourcePath(script)).toEqual(
-      "project/scripts/script1.gbsres"
+      "project/scripts/script1.gbsres",
     );
   });
 
@@ -151,7 +151,7 @@ describe("paths", () => {
     } as ActorPrefabResource;
 
     expect(getActorPrefabResourcePath(actorPrefab)).toEqual(
-      "project/prefabs/actors/actorprefab1.gbsres"
+      "project/prefabs/actors/actorprefab1.gbsres",
     );
   });
 
@@ -163,7 +163,7 @@ describe("paths", () => {
     } as TriggerPrefabResource;
 
     expect(getTriggerPrefabResourcePath(triggerPrefab)).toEqual(
-      "project/prefabs/triggers/triggerprefab1.gbsres"
+      "project/prefabs/triggers/triggerprefab1.gbsres",
     );
   });
 });

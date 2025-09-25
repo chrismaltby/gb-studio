@@ -67,8 +67,8 @@ test("Should be able to copy actor to clipboard", async () => {
         scriptEvents: [],
         actorPrefabs: [],
       }),
-      "utf8"
-    )
+      "utf8",
+    ),
   );
 });
 
@@ -142,7 +142,7 @@ test("Should include referenced variables when copying actor", async () => {
         scriptEvents: [],
         actorPrefabs: [],
       }),
-      "utf8"
-    )
+      "utf8",
+    ),
   );
 });

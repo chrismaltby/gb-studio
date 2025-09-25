@@ -17,7 +17,7 @@ test("Should move player relatively", () => {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
       actorMoveRelativeByScriptValues: mockActorMoveRelative,
-    }
+    },
   );
   expect(mockactorSetActive).not.toBeCalled();
   expect(mockActorMoveRelative).toBeCalledWith(
@@ -26,6 +26,6 @@ test("Should move player relatively", () => {
     { type: "number", value: 9 },
     ["walls"],
     "horizontal",
-    "tiles"
+    "tiles",
   );
 });

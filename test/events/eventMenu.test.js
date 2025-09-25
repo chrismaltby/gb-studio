@@ -10,18 +10,18 @@ test("Should be able to display a text menu that cancel on last option", () => {
       option1: "Item1",
       option2: "Item2",
       cancelOnB: false,
-      layout: "menu"
+      layout: "menu",
     },
     {
-      textMenu: mockTextMenu
-    }
+      textMenu: mockTextMenu,
+    },
   );
   expect(mockTextMenu).toBeCalledWith(
-    "5", 
+    "5",
     ["Item1", "Item2"],
     "menu",
     true,
-    false
+    false,
   );
 });
 
@@ -35,18 +35,18 @@ test("Should be able to display a text menu that cancel on b", () => {
       option1: "Item1",
       option2: "Item2",
       cancelOnB: true,
-      layout: "menu"
+      layout: "menu",
     },
     {
-      textMenu: mockTextMenu
-    }
+      textMenu: mockTextMenu,
+    },
   );
   expect(mockTextMenu).toBeCalledWith(
-    "5", 
+    "5",
     ["Item1", "Item2"],
     "menu",
     false,
-    true
+    true,
   );
 });
 
@@ -60,18 +60,18 @@ test("Should be able to display a text menu with dialogue layout that cancel on 
       option1: "Item1",
       option2: "Item2",
       cancelOnB: false,
-      layout: "dialogue"
+      layout: "dialogue",
     },
     {
-      textMenu: mockTextMenu
-    }
+      textMenu: mockTextMenu,
+    },
   );
   expect(mockTextMenu).toBeCalledWith(
-    "5", 
+    "5",
     ["Item1", "Item2"],
     "dialogue",
     true,
-    false
+    false,
   );
 });
 
@@ -85,17 +85,17 @@ test("Should be able to display a text menu with dialogue layout that cancel on 
       option1: "Item1",
       option2: "Item2",
       cancelOnB: true,
-      layout: "dialogue"
+      layout: "dialogue",
     },
     {
-      textMenu: mockTextMenu
-    }
+      textMenu: mockTextMenu,
+    },
   );
   expect(mockTextMenu).toBeCalledWith(
-    "5", 
+    "5",
     ["Item1", "Item2"],
     "dialogue",
     false,
-    true
+    true,
   );
 });

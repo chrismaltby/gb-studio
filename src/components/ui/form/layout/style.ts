@@ -75,6 +75,10 @@ export const StyledFormRow = styled.div`
     margin-bottom: 10px;
   }
 
+  & > label {
+    margin-bottom: 5px;
+  }
+
   & > *:last-child {
     margin-right: 0px;
   }

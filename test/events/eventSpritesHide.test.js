@@ -6,8 +6,8 @@ test("Should be able to hide sprites", () => {
   compile(
     {},
     {
-      spritesHide: mockSpritesHide
-    }
+      spritesHide: mockSpritesHide,
+    },
   );
   expect(mockSpritesHide).toBeCalled();
 });

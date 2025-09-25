@@ -65,7 +65,7 @@ describe("saveProjectData", () => {
     // );
 
     expect(ensureDir).toHaveBeenCalledWith(
-      Path.join(mockProjectFolder, "project/scene1__0")
+      Path.join(mockProjectFolder, "project/scene1__0"),
     );
     // expect(ensureDir).toHaveBeenCalledWith(
     //   Path.join(mockProjectFolder, "project")
@@ -73,19 +73,19 @@ describe("saveProjectData", () => {
 
     expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
       Path.join(mockProjectFolder, "project/scene1__0/scene.gbsres"),
-      "{}"
+      "{}",
     );
     expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
       Path.join(mockProjectFolder, "project/actor1__0.gbsres"),
-      "{}"
+      "{}",
     );
     expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
       mockProjectPath,
-      expect.any(String)
+      expect.any(String),
     );
 
     expect(remove).toHaveBeenCalledWith(
-      Path.join(mockProjectFolder, "project/oldfile.gbsres")
+      Path.join(mockProjectFolder, "project/oldfile.gbsres"),
     );
   });
 
@@ -110,7 +110,7 @@ describe("saveProjectData", () => {
     expect(ensureDir).not.toHaveBeenCalled();
     expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
       mockProjectPath,
-      expect.any(String)
+      expect.any(String),
     );
     expect(remove).not.toHaveBeenCalled();
   });
@@ -125,7 +125,7 @@ describe("saveProjectData", () => {
     });
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
-      "Failed to create directory"
+      "Failed to create directory",
     );
 
     expect(ensureDir).toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe("saveProjectData", () => {
     });
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
-      "Failed to write file"
+      "Failed to write file",
     );
 
     expect(writeFileWithBackupAsync).toHaveBeenCalled();
@@ -156,13 +156,13 @@ describe("saveProjectData", () => {
           "project/scene1__0/scene.gbsres",
           "project/actor1__0.gbsres",
           "project/oldfile.gbsres",
-        ].map((path) => Path.join(mockProjectFolder, path))
+        ].map((path) => Path.join(mockProjectFolder, path)),
       );
     });
     (remove as jest.Mock).mockRejectedValueOnce(mockError);
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
-      "Failed to remove file"
+      "Failed to remove file",
     );
 
     expect(remove).toHaveBeenCalled();
@@ -199,7 +199,7 @@ describe("saveProjectData", () => {
     expect(ensureDir).not.toHaveBeenCalled();
     expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
       mockProjectPath,
-      expect.any(String)
+      expect.any(String),
     );
     expect(remove).not.toHaveBeenCalled();
   });

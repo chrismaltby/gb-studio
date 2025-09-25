@@ -10,8 +10,8 @@ test("Should be able to save data", () => {
       variableSource: 14,
     },
     {
-      dataPeek: mockDataPeek
-    }
+      dataPeek: mockDataPeek,
+    },
   );
   expect(mockDataPeek).toBeCalledWith(1, 14, 12);
 });

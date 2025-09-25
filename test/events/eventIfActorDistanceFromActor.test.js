@@ -25,7 +25,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
       ifActorDistanceScriptValueFromActor: mockIfActorDistanceFromActor,
       variableFromUnion: mockVariableFromUnion,
       temporaryEntityVariable: mockTemporaryEntityVariable,
-    }
+    },
   );
   expect(mockIfActorDistanceFromActor).toBeCalledWith(
     "actor1",
@@ -33,7 +33,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
     ".LTE",
     "actor2",
     truePath,
-    falsePath
+    falsePath,
   );
   expect(mockActorSetActive).not.toBeCalled();
   expect(mockVariableFromUnion).not.toBeCalled();
@@ -58,7 +58,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
       ifActorDistanceScriptValueFromActor: mockIfActorDistanceVariableFromActor,
       variableFromUnion: mockVariableFromUnion,
       temporaryEntityVariable: mockTemporaryEntityVariable,
-    }
+    },
   );
 
   expect(mockIfActorDistanceVariableFromActor).toBeCalledWith(
@@ -67,7 +67,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
     ".EQ",
     "actor2",
     truePath,
-    falsePath
+    falsePath,
   );
   expect(mockActorSetActive).not.toBeCalled();
   expect(mockVariableFromUnion).not.toBeCalled();

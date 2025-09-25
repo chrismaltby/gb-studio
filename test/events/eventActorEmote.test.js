@@ -7,12 +7,12 @@ test("Should be able to display actor emote", () => {
   compile(
     {
       actorId: "abc",
-      emoteId: 2
+      emoteId: 2,
     },
     {
       actorSetActive: mockactorSetActive,
-      actorEmote: mockActorEmote
-    }
+      actorEmote: mockActorEmote,
+    },
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorEmote).toBeCalledWith(2);

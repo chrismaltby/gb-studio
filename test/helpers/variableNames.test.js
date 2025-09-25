@@ -23,7 +23,7 @@ test("Should get variable name for global when provided", () => {
         id: "50",
         name: "My Variable Name",
       },
-    })
+    }),
   ).toBe("My Variable Name");
 });
 
@@ -34,7 +34,7 @@ test("Should get default variable name for global when no custom name provided",
         id: "50",
         name: "My Variable Name",
       },
-    })
+    }),
   ).toBe("Variable 51");
 });
 
@@ -61,7 +61,7 @@ test("Should get variable name for local when provided", () => {
         id: "entity1__L5",
         name: "My Variable Name",
       },
-    })
+    }),
   ).toBe("My Variable Name");
 });
 
@@ -72,7 +72,7 @@ test("Should get default variable name for local when no custom name provided", 
         id: "entity1__L5",
         name: "My Variable Name",
       },
-    })
+    }),
   ).toBe("Local 6");
 });
 
@@ -90,7 +90,7 @@ test("Should get variable name for custom event when provided", () => {
           name: "My Variable Name",
         },
       },
-    })
+    }),
   ).toBe("My Variable Name");
 });
 
@@ -102,6 +102,6 @@ test("Should get default variable name for custom event when no custom name prov
           name: "My Variable Name",
         },
       },
-    })
+    }),
   ).toBe("Variable F");
 });

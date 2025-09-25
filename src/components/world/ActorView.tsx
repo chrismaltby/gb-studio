@@ -167,6 +167,8 @@ const ActorView = memo(
       return <></>;
     }
 
+    const UNIT_SIZE = actor.coordinateType === "pixels" ? 1 : TILE_SIZE;
+
     return (
       <>
         {selected && actor.isPinned && <PinScreenPreview />}
@@ -176,8 +178,8 @@ const ActorView = memo(
           onMouseDown={onMouseDown}
           onContextMenu={onContextMenu}
           style={{
-            left: actor.x * TILE_SIZE,
-            top: actor.y * TILE_SIZE,
+            left: actor.x * UNIT_SIZE,
+            top: actor.y * UNIT_SIZE,
           }}
         >
           {showSprite && (

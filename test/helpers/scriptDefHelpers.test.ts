@@ -19,7 +19,7 @@ test('should identify fields with type "actor" as actor fields', () => {
           },
         },
       },
-    } as unknown as ScriptEventDefs)
+    } as unknown as ScriptEventDefs),
   ).toEqual(true);
 });
 
@@ -35,6 +35,6 @@ test('should not identify fields without type "actor" as actor fields', () => {
           },
         },
       },
-    } as unknown as ScriptEventDefs)
+    } as unknown as ScriptEventDefs),
   ).toEqual(false);
 });

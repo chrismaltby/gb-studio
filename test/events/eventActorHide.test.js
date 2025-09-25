@@ -9,7 +9,7 @@ test("Should be able to hide actor", () => {
     },
     {
       actorHide: mockActorHide,
-    }
+    },
   );
   expect(mockActorHide).toBeCalledWith("abc");
 });

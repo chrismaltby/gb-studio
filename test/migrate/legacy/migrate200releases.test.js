@@ -806,7 +806,7 @@ describe("migrateFrom200r9To200r10Triggers", () => {
     expect(output.scenes).toHaveLength(1);
     expect(output.scenes[0].triggers).toHaveLength(1);
     expect(output.scenes[0].triggers[0].script).toEqual(
-      input.scenes[0].triggers[0].script
+      input.scenes[0].triggers[0].script,
     );
     expect(output.scenes[0].triggers[0].leaveScript).toBeDefined();
     expect(output.scenes[0].triggers[0].leaveScript).toHaveLength(0);
@@ -844,7 +844,7 @@ describe("migrateFrom200r9To200r10Triggers", () => {
     expect(output.scenes[0].triggers[0].leaveScript).toBeDefined();
     expect(output.scenes[0].triggers[0].leaveScript).toHaveLength(1);
     expect(output.scenes[0].triggers[0].leaveScript).toEqual(
-      input.scenes[0].triggers[0].leaveScript
+      input.scenes[0].triggers[0].leaveScript,
     );
   });
 });

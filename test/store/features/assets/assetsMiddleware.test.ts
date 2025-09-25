@@ -72,7 +72,7 @@ test("Should trigger call to check background assets", async () => {
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
-    })
+    }),
   );
 });
 
@@ -207,6 +207,6 @@ test("Should trigger call to check background assets if cache has expired", asyn
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
-    })
+    }),
   );
 });

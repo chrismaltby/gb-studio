@@ -7,7 +7,7 @@ test("Should remove text sound if not set", () => {
     {},
     {
       textRemoveSound: mockTextRemoveSound,
-    }
+    },
   );
   expect(mockTextRemoveSound).toHaveBeenCalled();
 });
@@ -21,7 +21,7 @@ test("Should remove text sound if set to none", () => {
     },
     {
       textRemoveSound: mockTextRemoveSound,
-    }
+    },
   );
   expect(mockTextRemoveSound).toHaveBeenCalled();
 });
@@ -36,7 +36,7 @@ test("Should be able to set text sound to beep with pitch 7 (really value 2 sinc
     },
     {
       textSetSoundBeep: mockTextSetSoundBeep,
-    }
+    },
   );
   expect(mockTextSetSoundBeep).toHaveBeenCalledWith(2, 30);
 });
@@ -50,7 +50,7 @@ test("Should be able to set text sound to crash", () => {
     },
     {
       textSetSoundCrash: mockTextSetSoundCrash,
-    }
+    },
   );
   expect(mockTextSetSoundCrash).toHaveBeenCalledWith(30);
 });
@@ -64,7 +64,7 @@ test("Should set text sound to tone at 200hz for 0.5 seconds if tone not set", (
     },
     {
       textSetSoundTone: mockTextSetSoundTone,
-    }
+    },
   );
   expect(mockTextSetSoundTone).toHaveBeenCalledWith(1393, 30);
 });
@@ -80,7 +80,7 @@ test("Should be able to set text sound to tone 1024hz for 1 second", () => {
     },
     {
       textSetSoundTone: mockTextSetSoundTone,
-    }
+    },
   );
   expect(mockTextSetSoundTone).toHaveBeenCalledWith(1920, 60);
 });

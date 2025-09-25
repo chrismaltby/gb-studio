@@ -13,7 +13,7 @@ test("Should be able to shake camera for a second", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShake,
-    }
+    },
   );
   expect(mockCameraShake).toBeCalledWith(true, true, 60, {
     type: "number",
@@ -32,7 +32,7 @@ test("Should shake camera for half a second if time not set", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShake,
-    }
+    },
   );
   expect(mockCameraShake).toBeCalledWith(true, false, 30, {
     type: "number",
@@ -52,7 +52,7 @@ test("Should shake camera horizontally if directions not set", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShake,
-    }
+    },
   );
   expect(mockCameraShake).toBeCalledWith(true, false, 60, {
     type: "number",
@@ -73,7 +73,7 @@ test("Should shake camera horizontally if direction set to horizontal", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShake,
-    }
+    },
   );
   expect(mockCameraShake).toBeCalledWith(true, false, 60, {
     type: "number",
@@ -94,7 +94,7 @@ test("Should shake camera vertically if direction set to vertical", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShake,
-    }
+    },
   );
   expect(mockCameraShake).toBeCalledWith(false, true, 60, {
     type: "number",
@@ -116,7 +116,7 @@ test("Should be able to set shake camera magnitude from a variable", () => {
     },
     {
       cameraShakeScriptValue: mockCameraShakeVariables,
-    }
+    },
   );
   expect(mockCameraShakeVariables).toBeCalledWith(true, true, 90, {
     type: "variable",

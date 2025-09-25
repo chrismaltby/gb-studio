@@ -57,7 +57,7 @@ describe("patch.ts", () => {
 
       const patch = buildCompressedProjectResourcesPatch(
         dummyCompressedProjectResources,
-        mockChecksums
+        mockChecksums,
       );
       expect(patch).toEqual(expectedPatch);
     });

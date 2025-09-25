@@ -14,13 +14,13 @@ test("Should be able to conditionally execute if variable matches a value", () =
     },
     {
       ifVariableValue: mockIfVariableValue,
-    }
+    },
   );
   expect(mockIfVariableValue).toBeCalledWith(
     "0",
     ".EQ",
     5,
     truePath,
-    falsePath
+    falsePath,
   );
 });

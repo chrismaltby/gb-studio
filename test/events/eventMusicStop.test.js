@@ -6,8 +6,8 @@ test("Should be able to stop music", () => {
   compile(
     {},
     {
-      musicStop: mockMusicStop
-    }
+      musicStop: mockMusicStop,
+    },
   );
   expect(mockMusicStop).toBeCalledWith();
 });
