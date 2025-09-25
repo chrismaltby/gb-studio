@@ -60,7 +60,7 @@ const loadSpriteData =
         canvasWidth: 32,
         canvasHeight: 32,
         boundsX: 0,
-        boundsY: 0,
+        boundsY: -8,
         boundsWidth: 16,
         boundsHeight: 16,
         animSpeed: 15,

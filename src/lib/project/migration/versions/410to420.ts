@@ -1,3 +1,4 @@
+import { TILE_SIZE } from "consts";
 import {
   ScriptEventMigrationFn,
   ProjectResourcesMigration,
@@ -5,6 +6,7 @@ import {
   ProjectResourcesMigrationFn,
   pipeMigrationFns,
 } from "lib/project/migration/helpers";
+import { ensureNumber } from "shared/types";
 
 export const migrateFrom410r1To420r1Event: ScriptEventMigrationFn = (
   scriptEvent,
@@ -134,5 +136,49 @@ export const migrate420r2To420r3: ProjectResourcesMigration = {
   migrationFn: pipeMigrationFns([
     createScriptEventsMigrator(migrateFrom420r2To420r3Event),
     migrateFrom420r2To420r3EngineFields,
+  ]),
+};
+
+export const migrateFrom420r3To420r4Sprites: ProjectResourcesMigrationFn = (
+  resources,
+) => {
+  return {
+    ...resources,
+    sprites: resources.sprites.map((sprite) => {
+      const currentBoundsY = sprite.boundsY || 0;
+      const currentBoundsHeight = sprite.boundsHeight || 16;
+      return {
+        ...sprite,
+        boundsY: TILE_SIZE - currentBoundsY - currentBoundsHeight,
+      };
+    }),
+  };
+};
+
+export const migrateFrom420r3To420r4Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.args &&
+    scriptEvent.command === "EVENT_ACTOR_SET_COLLISION_BOX"
+  ) {
+    const args: Record<string, unknown> = { ...scriptEvent.args };
+    const currentBoundsY = ensureNumber(args["y"], 0);
+    const currentBoundsHeight = ensureNumber(args["height"], 16);
+    args["y"] = TILE_SIZE - currentBoundsY - currentBoundsHeight;
+    return {
+      ...scriptEvent,
+      args,
+    };
+  }
+  return scriptEvent;
+};
+
+export const migrate420r3To420r4: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "3" },
+  to: { version: "4.2.0", release: "4" },
+  migrationFn: pipeMigrationFns([
+    migrateFrom420r3To420r4Sprites,
+    createScriptEventsMigrator(migrateFrom420r3To420r4Event),
   ]),
 };

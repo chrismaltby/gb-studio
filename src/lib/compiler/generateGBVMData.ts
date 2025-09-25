@@ -640,8 +640,6 @@ const compileBounds = ({
   boundsY,
   boundsWidth,
   boundsHeight,
-  canvasOriginX,
-  canvasOriginY,
 }: {
   boundsX?: number;
   boundsY?: number;
@@ -655,8 +653,8 @@ const compileBounds = ({
   right: string;
   top: string;
 } => {
-  const bX = (boundsX || 0) - canvasOriginX;
-  const bY = (boundsY || 0) - canvasOriginY;
+  const bX = boundsX || 0;
+  const bY = boundsY || 0;
   const bW = boundsWidth || 16;
   const bH = boundsHeight || 16;
   return {
