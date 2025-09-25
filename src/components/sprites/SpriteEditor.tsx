@@ -667,31 +667,6 @@ export const SpriteEditor = ({
                 </>
               )}
               <FormRow>
-                <Label>{l10n("FIELD_CANVAS_ORIGIN")}</Label>
-              </FormRow>
-              <FormRow>
-                <CoordinateInput
-                  name="canvasOriginX"
-                  coordinate="x"
-                  value={sprite.canvasOriginX + canvasDefaultOriginX}
-                  placeholder="0"
-                  // min={0}
-                  // max={sprite.canvasWidth}
-                  step={1}
-                  onChange={onChangeCanvasOriginX}
-                />
-                <CoordinateInput
-                  name="canvasOriginY"
-                  coordinate="y"
-                  value={sprite.canvasOriginY + canvasDefaultOriginY}
-                  placeholder="0"
-                  // min={0}
-                  // max={sprite.canvasHeight}
-                  step={1}
-                  onChange={onChangeCanvasOriginY}
-                />
-              </FormRow>
-              <FormRow>
                 <Label>{l10n("FIELD_CANVAS_SIZE")}</Label>
               </FormRow>
               <FormRow>
@@ -714,6 +689,31 @@ export const SpriteEditor = ({
                   max={144}
                   step={8}
                   onChange={onChangeCanvasHeight}
+                />
+              </FormRow>
+              <FormRow>
+                <Label>{l10n("FIELD_CANVAS_ORIGIN")}</Label>
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="canvasOriginX"
+                  coordinate="x"
+                  value={sprite.canvasOriginX + canvasDefaultOriginX}
+                  placeholder="0"
+                  min={0}
+                  max={sprite.canvasWidth}
+                  step={1}
+                  onChange={onChangeCanvasOriginX}
+                />
+                <CoordinateInput
+                  name="canvasOriginY"
+                  coordinate="y"
+                  value={sprite.canvasOriginY + canvasDefaultOriginY}
+                  placeholder="0"
+                  min={0}
+                  max={sprite.canvasHeight}
+                  step={1}
+                  onChange={onChangeCanvasOriginY}
                 />
               </FormRow>
               {showSpriteModeOverride && (
