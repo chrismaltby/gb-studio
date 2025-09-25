@@ -535,7 +535,13 @@ export const SpriteEditor = ({
                   <CoordinateInput
                     name="y"
                     coordinate="y"
-                    value={sprite.canvasOriginY - metaspriteTile.y + TILE_SIZE}
+                    value={
+                      -(
+                        sprite.canvasOriginY +
+                        metaspriteTile.y +
+                        (spriteMode === "8x16" ? TILE_SIZE : 0)
+                      )
+                    }
                     placeholder="0"
                     min={-96}
                     max={96}

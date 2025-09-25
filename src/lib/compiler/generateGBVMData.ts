@@ -656,14 +656,14 @@ const compileBounds = ({
   top: string;
 } => {
   const bX = (boundsX || 0) - canvasOriginX;
-  const bY = (boundsY || 0) + canvasOriginY;
+  const bY = (boundsY || 0) - canvasOriginY;
   const bW = boundsWidth || 16;
   const bH = boundsHeight || 16;
   return {
     left: enginePxToSubPx(bX),
-    bottom: enginePxToSubPx(7 - bY),
+    bottom: enginePxToSubPx(bY + bH - 1),
     right: enginePxToSubPx(bX + bW - 1),
-    top: enginePxToSubPx(8 - (bY + bH)),
+    top: enginePxToSubPx(bY),
   };
 };
 

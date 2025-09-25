@@ -27,6 +27,7 @@ import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import { SpriteModeSetting } from "shared/lib/resources/types";
+import { TILE_SIZE } from "consts";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -193,9 +194,9 @@ const MetaspriteEditor = ({
     (state) => state.editor.selectedMetaspriteTileIds,
   );
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
-  const showBoundingBox = useAppSelector(
-    (state) => state.editor.showSpriteBoundingBox,
-  );
+  const showBoundingBox =
+    useAppSelector((state) => state.editor.showSpriteBoundingBox) || true;
+
   const spriteAnimation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId),
   );
@@ -886,8 +887,8 @@ const MetaspriteEditor = ({
             {showBoundingBox && (
               <SpriteBoundingBox
                 style={{
-                  left: boundsX,
-                  top: -boundsY - boundsHeight,
+                  left: boundsX + spriteSheet.canvasOriginX,
+                  top: boundsY + spriteSheet.canvasOriginY - TILE_SIZE,
                   width: boundsWidth,
                   height: boundsHeight,
                 }}
