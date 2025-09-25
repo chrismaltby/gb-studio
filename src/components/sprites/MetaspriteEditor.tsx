@@ -194,9 +194,9 @@ const MetaspriteEditor = ({
     (state) => state.editor.selectedMetaspriteTileIds,
   );
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
-  const showBoundingBox =
-    useAppSelector((state) => state.editor.showSpriteBoundingBox) || true;
-
+  const showBoundingBox = useAppSelector(
+    (state) => state.editor.showSpriteBoundingBox,
+  );
   const spriteAnimation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId),
   );
