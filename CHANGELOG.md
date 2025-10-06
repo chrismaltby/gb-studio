@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
+- Updated French localisation. [@Pomdap](https://github.com/Pomdap)
 - Updated Brazilian Portuguese localisation. [@KosmusSoares](https://github.com/KosmusSoares)
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Changed plugin code evaluation from using [vm2](https://github.com/patriksimek/vm2) (which has been discontinued) to using [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
