@@ -4,13 +4,21 @@ import {
   migrateFrom420r1To420r2Event,
   migrateFrom420r2To420r3EngineFields,
   migrateFrom420r2To420r3Event,
+  migrateFrom420r3To420r4Event,
+  migrateFrom420r3To420r4Sprites,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
-import { CompressedProjectResources } from "shared/lib/resources/types";
-import { dummyCompressedProjectResources } from "../../dummydata";
+import {
+  CompressedProjectResources,
+  SpriteResource,
+} from "shared/lib/resources/types";
+import {
+  dummyCompressedProjectResources,
+  dummySpriteResource,
+} from "../../dummydata";
 
 describe("migrateFrom410r1To420r1Event", () => {
   test("Should convert EVENT_SWITCH values to const values", () => {
@@ -378,5 +386,101 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
         value: 0,
       },
     ]);
+  });
+});
+
+describe("migrateFrom420r3To420r4Sprites", () => {
+  test("should migrate sprite bounds when bounds at previous origin", () => {
+    const oldSprite: SpriteResource = {
+      ...dummySpriteResource,
+      boundsX: 0,
+      boundsY: 0,
+      boundsWidth: 16,
+      boundsHeight: 16,
+    };
+
+    const oldProject: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      sprites: [oldSprite],
+    };
+
+    expect(migrateFrom420r3To420r4Sprites(oldProject).sprites[0]).toMatchObject(
+      {
+        ...oldSprite,
+        boundsY: -8,
+      },
+    );
+  });
+
+  test("should migrate sprite bounds when bounds offset from previous origin", () => {
+    const oldSprite: SpriteResource = {
+      ...dummySpriteResource,
+      boundsX: 8,
+      boundsY: 8,
+      boundsWidth: 8,
+      boundsHeight: 24,
+    };
+
+    const oldProject: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      sprites: [oldSprite],
+    };
+
+    expect(migrateFrom420r3To420r4Sprites(oldProject).sprites[0]).toMatchObject(
+      {
+        ...oldSprite,
+        boundsY: -24,
+      },
+    );
+  });
+});
+
+describe("migrateFrom420r3To420r4Event", () => {
+  test("should migrate EVENT_ACTOR_SET_COLLISION_BOX event when bounds at previous origin", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 0,
+        y: 0,
+        width: 16,
+        height: 16,
+      },
+    };
+    expect(migrateFrom420r3To420r4Event(oldEvent)).toMatchObject({
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 0,
+        y: -8,
+        width: 16,
+        height: 16,
+      },
+    });
+  });
+
+  test("should migrate EVENT_ACTOR_SET_COLLISION_BOX event when bounds offset from previous origin", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 8,
+        y: 8,
+        width: 8,
+        height: 24,
+      },
+    };
+    expect(migrateFrom420r3To420r4Event(oldEvent)).toMatchObject({
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 8,
+        y: -24,
+        width: 8,
+        height: 24,
+      },
+    });
   });
 });

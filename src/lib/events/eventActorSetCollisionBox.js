@@ -45,7 +45,7 @@ const fields = [
         type: "number",
         min: -96,
         max: 96,
-        defaultValue: 0,
+        defaultValue: -8,
         width: "50%",
       },
     ],
