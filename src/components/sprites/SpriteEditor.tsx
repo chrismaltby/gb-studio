@@ -60,6 +60,7 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import { SpriteModeSetting } from "shared/lib/resources/types";
+import { TILE_SIZE } from "consts";
 
 interface SpriteEditorProps {
   id: string;
@@ -181,6 +182,27 @@ export const SpriteEditor = ({
     [onChangeSpriteSheetProp],
   );
 
+  const canvasDefaultOriginX = Math.max(0, (sprite?.canvasWidth || 0) / 2 - 8);
+  const canvasDefaultOriginY = (sprite?.canvasHeight || 0) - 8;
+
+  const onChangeCanvasOriginX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp(
+        "canvasOriginX",
+        castEventToInt(e, 0) - canvasDefaultOriginX,
+      ),
+    [canvasDefaultOriginX, onChangeSpriteSheetProp],
+  );
+
+  const onChangeCanvasOriginY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSpriteSheetProp(
+        "canvasOriginY",
+        castEventToInt(e, 0) - canvasDefaultOriginY,
+      ),
+    [canvasDefaultOriginY, onChangeSpriteSheetProp],
+  );
+
   const onChangeCanvasWidth = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       onChangeSpriteSheetProp("canvasWidth", castEventToInt(e, 16)),
@@ -241,14 +263,20 @@ export const SpriteEditor = ({
 
   const onChangeTileX = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeTileProp("x", castEventToInt(e, 0)),
-    [onChangeTileProp],
+      onChangeTileProp(
+        "x",
+        castEventToInt(e, 0) + (sprite?.canvasOriginX ?? 0),
+      ),
+    [onChangeTileProp, sprite?.canvasOriginX],
   );
 
   const onChangeTileY = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeTileProp("y", castEventToInt(e, 0)),
-    [onChangeTileProp],
+      onChangeTileProp(
+        "y",
+        (sprite?.canvasOriginY ?? 0) + TILE_SIZE - castEventToInt(e, 0),
+      ),
+    [onChangeTileProp, sprite?.canvasOriginY],
   );
 
   const onChangeTilesObjPalette = useCallback(
@@ -498,7 +526,7 @@ export const SpriteEditor = ({
                   <CoordinateInput
                     name="x"
                     coordinate="x"
-                    value={metaspriteTile.x}
+                    value={metaspriteTile.x - sprite.canvasOriginX}
                     placeholder="0"
                     min={-96}
                     max={96}
@@ -507,7 +535,13 @@ export const SpriteEditor = ({
                   <CoordinateInput
                     name="y"
                     coordinate="y"
-                    value={metaspriteTile.y}
+                    value={
+                      -(
+                        sprite.canvasOriginY +
+                        metaspriteTile.y +
+                        (spriteMode === "8x16" ? TILE_SIZE : 0)
+                      )
+                    }
                     placeholder="0"
                     min={-96}
                     max={96}
@@ -632,7 +666,6 @@ export const SpriteEditor = ({
                   <FormDivider />
                 </>
               )}
-
               <FormRow>
                 <Label>{l10n("FIELD_CANVAS_SIZE")}</Label>
               </FormRow>
@@ -658,7 +691,31 @@ export const SpriteEditor = ({
                   onChange={onChangeCanvasHeight}
                 />
               </FormRow>
-
+              <FormRow>
+                <Label>{l10n("FIELD_CANVAS_ORIGIN")}</Label>
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="canvasOriginX"
+                  coordinate="x"
+                  value={sprite.canvasOriginX + canvasDefaultOriginX}
+                  placeholder="0"
+                  min={0}
+                  max={sprite.canvasWidth}
+                  step={1}
+                  onChange={onChangeCanvasOriginX}
+                />
+                <CoordinateInput
+                  name="canvasOriginY"
+                  coordinate="y"
+                  value={sprite.canvasOriginY + canvasDefaultOriginY}
+                  placeholder="0"
+                  min={0}
+                  max={sprite.canvasHeight}
+                  step={1}
+                  onChange={onChangeCanvasOriginY}
+                />
+              </FormRow>
               {showSpriteModeOverride && (
                 <FormRow>
                   <FormField

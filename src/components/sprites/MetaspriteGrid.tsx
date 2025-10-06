@@ -1,6 +1,8 @@
 import React from "react";
 
 interface MetaspriteGridProps {
+  originX: number;
+  originY: number;
   width: number;
   height: number;
   showGrid: boolean;
@@ -30,6 +32,8 @@ export const generateGridBackground = (
 };
 
 const MetaspriteGrid = ({
+  originX,
+  originY,
   width,
   height,
   gridSize,
@@ -50,17 +54,19 @@ const MetaspriteGrid = ({
         background: "#fff",
       }}
     >
-      <div
-        style={{
-          pointerEvents: "none",
-          position: "absolute",
-          bottom: 0,
-          left: Math.max(0, width / 2 - 8) * zoom,
-          width: (width === 8 ? width : 16) * zoom,
-          height: 8 * zoom,
-          background: "rgba(0, 188, 212, 0.4)",
-        }}
-      />
+      {showGrid && (
+        <div
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: (Math.max(0, width / 2 - 8) + originX) * zoom,
+            bottom: (8 - originY - 8) * zoom,
+            width: (width < 16 ? 8 : 16) * zoom,
+            height: 8 * zoom,
+            background: "rgba(0, 188, 212, 0.4)",
+          }}
+        />
+      )}
       <div
         style={{
           pointerEvents: "none",
@@ -97,6 +103,19 @@ const MetaspriteGrid = ({
       >
         {children}
       </div>
+      {showGrid && (
+        <div
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: (Math.max(0, width / 2 - 8) + originX - 1) * zoom,
+            bottom: (8 - originY - 1) * zoom,
+            width: 2 * zoom,
+            height: 2 * zoom,
+            background: "rgba(255, 0, 0, 0.6)",
+          }}
+        />
+      )}
     </div>
   );
 };

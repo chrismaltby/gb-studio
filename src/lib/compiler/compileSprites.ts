@@ -150,6 +150,10 @@ export const compileSprite = async (
     spriteMode,
   );
 
+  const fixedXOffset = spriteSheet.canvasOriginX;
+  const fixedYOffset =
+    (spriteMode === "8x16" ? 0 : -8) + spriteSheet.canvasOriginY;
+
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
     .map((state) =>
       toEngineOrder(
@@ -162,8 +166,8 @@ export const compileSprite = async (
               return [];
             }
             return animation.frames.map((frame) => {
-              let currentX = 0;
-              let currentY = spriteMode === "8x16" ? 0 : -8;
+              let currentX = fixedXOffset;
+              let currentY = fixedYOffset;
               return [...frame.tiles]
                 .reverse()
                 .map((tile) => {

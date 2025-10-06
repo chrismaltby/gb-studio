@@ -390,6 +390,8 @@ describe("TypeBox Schemas", () => {
       boundsY: 0,
       boundsWidth: 16,
       boundsHeight: 16,
+      canvasOriginX: 0,
+      canvasOriginY: 0,
       animSpeed: null,
       states: [],
     };

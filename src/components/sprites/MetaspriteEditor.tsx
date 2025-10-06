@@ -27,6 +27,7 @@ import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import { SpriteModeSetting } from "shared/lib/resources/types";
+import { TILE_SIZE } from "consts";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -233,8 +234,11 @@ const MetaspriteEditor = ({
   const currentIndex = frames.indexOf(metaspriteId);
   const prevMetaspriteId =
     frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
-  const canvasWidth = spriteSheet?.canvasWidth || 0;
-  const canvasHeight = spriteSheet?.canvasHeight || 0;
+
+  const canvasOriginX = spriteSheet?.canvasOriginX || 0;
+  const canvasOriginY = spriteSheet?.canvasOriginY || 0;
+  const canvasWidth = spriteSheet?.canvasWidth || 16;
+  const canvasHeight = spriteSheet?.canvasHeight || 16;
   const boundsWidth = spriteSheet?.boundsWidth || 16;
   const boundsHeight = spriteSheet?.boundsHeight || 16;
   const boundsX = spriteSheet?.boundsX || 0;
@@ -810,6 +814,8 @@ const MetaspriteEditor = ({
           onMouseLeave={onLeaveEditor}
         >
           <MetaspriteGrid
+            originX={canvasOriginX}
+            originY={canvasOriginY}
             width={canvasWidth}
             height={canvasHeight}
             zoom={zoom}
@@ -881,8 +887,8 @@ const MetaspriteEditor = ({
             {showBoundingBox && (
               <SpriteBoundingBox
                 style={{
-                  left: boundsX,
-                  top: -boundsY - boundsHeight,
+                  left: boundsX + spriteSheet.canvasOriginX,
+                  top: boundsY + spriteSheet.canvasOriginY - TILE_SIZE,
                   width: boundsWidth,
                   height: boundsHeight,
                 }}
