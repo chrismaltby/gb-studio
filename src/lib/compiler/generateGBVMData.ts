@@ -645,8 +645,6 @@ const compileBounds = ({
   boundsY?: number;
   boundsWidth?: number;
   boundsHeight?: number;
-  canvasOriginX: number;
-  canvasOriginY: number;
 }): {
   left: string;
   bottom: string;
