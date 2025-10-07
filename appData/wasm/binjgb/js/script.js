@@ -477,7 +477,7 @@ class Emulator {
 
   bindKeys() {
     this.keyFuncs = {
-      Backspace: this.keyRewind.bind(this),
+      backspace: this.keyRewind.bind(this),
       " ": this.keyPause.bind(this),
       "[": this.keyPrevPalette.bind(this),
       "]": this.keyNextPalette.bind(this),
@@ -485,74 +485,74 @@ class Emulator {
 
     if (customControls.down && customControls.down.length > 0) {
       customControls.down.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypDown.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypDown.bind(this);
       });
     } else {
-      this.keyFuncs["ArrowDown"] = this.setJoypDown.bind(this);
+      this.keyFuncs["arrowdown"] = this.setJoypDown.bind(this);
       this.keyFuncs["s"] = this.setJoypDown.bind(this);
     }
 
     if (customControls.left && customControls.left.length > 0) {
       customControls.left.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypLeft.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypLeft.bind(this);
       });
     } else {
-      this.keyFuncs["ArrowLeft"] = this.setJoypLeft.bind(this);
+      this.keyFuncs["arrowleft"] = this.setJoypLeft.bind(this);
       this.keyFuncs["a"] = this.setJoypLeft.bind(this);
     }
 
     if (customControls.right && customControls.right.length > 0) {
       customControls.right.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypRight.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypRight.bind(this);
       });
     } else {
-      this.keyFuncs["ArrowRight"] = this.setJoypRight.bind(this);
+      this.keyFuncs["arrowright"] = this.setJoypRight.bind(this);
       this.keyFuncs["d"] = this.setJoypRight.bind(this);
     }
 
     if (customControls.up && customControls.up.length > 0) {
       customControls.up.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypUp.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypUp.bind(this);
       });
     } else {
-      this.keyFuncs["ArrowUp"] = this.setJoypUp.bind(this);
+      this.keyFuncs["arrowup"] = this.setJoypUp.bind(this);
       this.keyFuncs["w"] = this.setJoypUp.bind(this);
     }
 
     if (customControls.a && customControls.a.length > 0) {
       customControls.a.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypA.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypA.bind(this);
       });
     } else {
       this.keyFuncs["z"] = this.setJoypA.bind(this);
       this.keyFuncs["j"] = this.setJoypA.bind(this);
-      this.keyFuncs["Alt"] = this.setJoypA.bind(this);
+      this.keyFuncs["alt"] = this.setJoypA.bind(this);
     }
 
     if (customControls.b && customControls.b.length > 0) {
       customControls.b.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypB.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypB.bind(this);
       });
     } else {
       this.keyFuncs["x"] = this.setJoypB.bind(this);
       this.keyFuncs["k"] = this.setJoypB.bind(this);
-      this.keyFuncs["Control"] = this.setJoypB.bind(this);
+      this.keyFuncs["control"] = this.setJoypB.bind(this);
     }
 
     if (customControls.start && customControls.start.length > 0) {
       customControls.start.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypStart.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypStart.bind(this);
       });
     } else {
-      this.keyFuncs["Enter"] = this.setJoypStart.bind(this);
+      this.keyFuncs["enter"] = this.setJoypStart.bind(this);
     }
 
     if (customControls.select && customControls.select.length > 0) {
       customControls.select.forEach((k) => {
-        this.keyFuncs[k] = this.setJoypSelect.bind(this);
+        this.keyFuncs[String(k).toLowerCase()] = this.setJoypSelect.bind(this);
       });
     } else {
-      this.keyFuncs["Shift"] = this.setJoypSelect.bind(this);
+      this.keyFuncs["shift"] = this.setJoypSelect.bind(this);
     }
 
     this.boundKeyDown = this.keyDown.bind(this);
@@ -568,22 +568,25 @@ class Emulator {
   }
 
   keyDown(event) {
-    if (event.key === "w" && (event.metaKey || event.ctrlKey)) {
+    const key = event.key.toLowerCase();
+
+    if (key === "w" && (event.metaKey || event.ctrlKey)) {
       return;
     }
-    if (event.key in this.keyFuncs) {
+    if (key in this.keyFuncs) {
       if (this.touchEnabled) {
         this.touchEnabled = false;
         this.updateOnscreenGamepad();
       }
-      this.keyFuncs[event.key](true);
+      this.keyFuncs[key](true);
       event.preventDefault();
     }
   }
 
   keyUp(event) {
-    if (event.key in this.keyFuncs) {
-      this.keyFuncs[event.key](false);
+    const key = event.key.toLowerCase();
+    if (key in this.keyFuncs) {
+      this.keyFuncs[key](false);
       event.preventDefault();
     }
   }
