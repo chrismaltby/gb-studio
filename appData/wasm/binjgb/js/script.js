@@ -557,14 +557,17 @@ class Emulator {
 
     this.boundKeyDown = this.keyDown.bind(this);
     this.boundKeyUp = this.keyUp.bind(this);
+    this.boundWindowBlur = this.windowBlur.bind(this);
 
     window.addEventListener("keydown", this.boundKeyDown);
     window.addEventListener("keyup", this.boundKeyUp);
+    window.addEventListener("blur", this.boundWindowBlur);
   }
 
   unbindKeys() {
     window.removeEventListener("keydown", this.boundKeyDown);
     window.removeEventListener("keyup", this.boundKeyUp);
+    window.removeEventListener("blur", this.boundWindowBlur); 
   }
 
   keyDown(event) {
@@ -590,6 +593,21 @@ class Emulator {
       event.preventDefault();
     }
   }
+
+  windowBlur() {
+    this.setJoypDown(false);
+    this.setJoypUp(false);
+    this.setJoypLeft(false);
+    this.setJoypRight(false);
+    this.setJoypA(false);
+    this.setJoypB(false);
+    this.setJoypSelect(false);
+    this.setJoypStart(false);
+    if (this.isRewinding) {
+      this.autoRewind = false;
+      vm.paused = false;
+    }
+  }  
 
   keyRewind(isKeyDown) {
     if (!ENABLE_REWIND) {
