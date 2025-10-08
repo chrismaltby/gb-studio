@@ -360,7 +360,7 @@ export const projectileStateTest = {
       canvasWidth: 16,
       canvasHeight: 16,
       boundsX: 0,
-      boundsY: 0,
+      boundsY: -8,
       boundsWidth: 16,
       boundsHeight: 16,
       animSpeed: 15,

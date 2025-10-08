@@ -8,7 +8,7 @@ test("Should set player collision box", () => {
     {
       actorId: "player",
       x: 8,
-      y: -16,
+      y: -8,
       width: 24,
       height: 32,
     },

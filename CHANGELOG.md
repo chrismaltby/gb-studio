@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to reorder actors and triggers within a scene from context menus [@Mico27](https://github.com/Mico27)
 - Add ability for event plugins to `readText` and `readJSON` files (must be in the same folder as plugin) `const api = require("plugin-api"); const data = api.readJSON("./data.json");`
 - Add ability to position actors in a scene using pixel coordinates rather than tiles by clicking units type next to "Position" label at top of right hand sidebar for actor [@Mico27](https://github.com/Mico27)
+- Add ability to change canvas origin point when editing sprites [@Mico27](https://github.com/Mico27)
 
 ### Changed
 
@@ -81,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
+- Updated French localisation. [@Pomdap](https://github.com/Pomdap)
 - Updated Brazilian Portuguese localisation. [@KosmusSoares](https://github.com/KosmusSoares)
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Changed plugin code evaluation from using [vm2](https://github.com/patriksimek/vm2) (which has been discontinued) to using [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
@@ -126,6 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where renaming current file in music editor would cause unsaved changes to be lost
 - Fix issue where tile priority could not be erased after assigning a color palette to a tile
 - Fix issue in topdown scene type where player speed set to non-whole numbers would often cause player to clip through collisions
+- Fix issue in emulator where holding shift key would cause some inputs not to register
+- Fix issue in emulator where holding inputs while window lost focus could cause buttons to remain stuck
 
 ## [4.1.3] - 2024-09-16
 

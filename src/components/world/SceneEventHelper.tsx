@@ -490,7 +490,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
         <BoundsMarker
           style={{
             left: actor.x * TILE_SIZE + (x || 0),
-            top: actor.y * TILE_SIZE - (y || 0) - height + 9,
+            top: actor.y * TILE_SIZE + (y || 0),
             width: width,
             height: height,
           }}

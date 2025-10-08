@@ -485,6 +485,8 @@ const loadSprite: CaseReducer<
       "id",
       "symbol",
       "states",
+      "canvasOriginX",
+      "canvasOriginY",
       "canvasWidth",
       "canvasHeight",
       "boundsX",

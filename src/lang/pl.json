@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2059250918",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2060251006",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -430,6 +430,7 @@
   "FIELD_HORIZONTAL_DIRECTION_MOVEMENT": "Poziome kierunki + Ruch",
   "FIELD_PLATFORMER_PLAYER": "Gracz platformowy",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "Odbij klatki 'Prawej strony', aby stworzyć klatki 'Lewej strony'",
+  "FIELD_CANVAS_ORIGIN": "Punkt początkowy płótna",
   "FIELD_CANVAS_SIZE": "Rozmiar płótna",
   "FIELD_COLLISION_BOUNDING_BOX": "Pole określające kolizję",
   "FIELD_AUTODETECT_ANIMATIONS": "Automatyczne wykrywanie animacji",

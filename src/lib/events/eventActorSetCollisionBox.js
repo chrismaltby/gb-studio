@@ -45,7 +45,7 @@ const fields = [
         type: "number",
         min: -96,
         max: 96,
-        defaultValue: 0,
+        defaultValue: -8,
         width: "50%",
       },
     ],
@@ -82,7 +82,7 @@ const compile = (input, helpers) => {
   const { actorSetActive, actorSetBounds } = helpers;
   const { actorId, x, y, width, height } = input;
   actorSetActive(actorId);
-  actorSetBounds(x, x + width - 1, 8 - (y + height), 7 - y);
+  actorSetBounds(x, x + width - 1, y, y + height - 1);
 };
 
 module.exports = {
