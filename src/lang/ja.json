@@ -423,6 +423,7 @@
   "FIELD_HORIZONTAL_DIRECTION_MOVEMENT": "水平方向 + 移動",
   "FIELD_PLATFORMER_PLAYER": "プラットフォーマープレイヤー",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "「右」反転して「左」向きフレームを自動生成",
+  "FIELD_CANVAS_ORIGIN": "キャンバス原点",
   "FIELD_CANVAS_SIZE": "キャンバスサイズ",
   "FIELD_COLLISION_BOUNDING_BOX": "コリジョン範囲",
   "FIELD_AUTODETECT_ANIMATIONS": "アニメーションを自動検出",
