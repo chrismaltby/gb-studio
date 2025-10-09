@@ -180,3 +180,67 @@ export const finalizeHandler = (handler: ScriptEventHandler): void => {
 export const noReadFileFn: FileReaderFn = (_path: string): string => {
   throw new Error("This handler is not configured to read files.");
 };
+
+/**
+ * Converts ES modules to CommonJS for eval compatibility.
+ */
+export const convertESMToCommonJS = (code: string): string => {
+  let convertedCode = code;
+
+  // Convert export default statements
+  convertedCode = convertedCode.replace(
+    /export\s+default\s+(.+?)(?:;|$)/gm,
+    "module.exports = $1;",
+  );
+
+  // Convert named exports
+  convertedCode = convertedCode.replace(
+    /export\s*\{\s*([^}]+)\s*\}\s*;?/gm,
+    (match, exports) => {
+      const exportList = exports
+        .split(",")
+        .map((exp: string) => exp.trim())
+        .filter((exp: string) => exp);
+      return `module.exports = { ${exportList.join(", ")} };`;
+    },
+  );
+
+  // Track individual exports to build a combined module.exports
+  const individualExports: string[] = [];
+
+  // Convert individual export declarations like "export const id = 'value'"
+  convertedCode = convertedCode.replace(
+    /export\s+(const|let|var|function|class)\s+(\w+)(\s*=\s*[^;]+)?/gm,
+    (match, keyword, name, assignment) => {
+      individualExports.push(name);
+      if (assignment) {
+        return `${keyword} ${name}${assignment}`;
+      } else {
+        return `${keyword} ${name}`;
+      }
+    },
+  );
+
+  // If we found individual exports, add them to module.exports
+  if (individualExports.length > 0) {
+    const exportsAssignment = individualExports
+      .map((name) => `${name}`)
+      .join(", ");
+    convertedCode += `\nmodule.exports = { ${exportsAssignment} };`;
+  }
+
+  // Convert import statements to require calls
+  convertedCode = convertedCode.replace(
+    /import\s+(\w+)\s+from\s+['"](.+?)['"];?\s*$/gm,
+    (match, varName, moduleName) => {
+      return `const _mod_${varName} = require("${moduleName}"); const ${varName} = _mod_${varName}.default || _mod_${varName}.${varName} || _mod_${varName};`;
+    },
+  );
+
+  convertedCode = convertedCode.replace(
+    /import\s*\{\s*([^}]+)\s*\}\s*from\s+['"](.+?)['"];?\s*$/gm,
+    'const { $1 } = require("$2");',
+  );
+
+  return convertedCode;
+};

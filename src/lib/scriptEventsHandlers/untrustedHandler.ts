@@ -26,6 +26,7 @@ import {
   createHandlerBase,
   finalizeHandler,
   noReadFileFn,
+  convertESMToCommonJS,
 } from "./handlerCommon";
 
 export const QuickJS = newQuickJSWASMModuleFromVariant(quickJSVariant);
@@ -36,7 +37,7 @@ const TIMEOUT_MS = 60000;
  * Proxy factory for creating lazy proxies in the VM
  */
 const PROXY_FACTORY_SRC = `
-  (function(moduleName, invoker) {
+  (function(moduleName, invoker, proxyFactory) {
     const handler = {
       get(_t, prop) {        
         if (prop === Symbol.iterator) {
@@ -56,11 +57,19 @@ const PROXY_FACTORY_SRC = `
         
         const value = invoker(moduleName, String(prop), []);
         
+        if (value && typeof value === 'object' && value.__PROXY_MARKER__) {
+          return proxyFactory(value.__PROXY_MARKER__, invoker, proxyFactory);
+        }
+        
         if (typeof value === 'function') {
           return (...args) => invoker(moduleName, String(prop), ['__CALL__', ...args]);
         }
         
         return value;
+      },
+      set(_t, prop, value) {
+        invoker(moduleName, String(prop), ['__SET__', value]);
+        return true;
       },
       ownKeys(_t) {
         const keys = invoker(moduleName, '__KEYS__', []);
@@ -76,6 +85,7 @@ const PROXY_FACTORY_SRC = `
           return {
             enumerable: true,
             configurable: true,
+            writable: true,
             value: this.get(_t, prop)
           };
         }
@@ -98,6 +108,7 @@ const PROXY_FACTORY_SRC = `
  */
 const createOnInvokeHandler = (
   hostRegistry: Map<string, unknown>,
+  createProxy: (value: unknown) => { proxyId: string; needsProxy: boolean },
 ): ((module: string, path: string, args: unknown[]) => unknown) => {
   return (module: string, path: string, args: unknown[]) => {
     const hostObj = hostRegistry.get(module);
@@ -125,6 +136,20 @@ const createOnInvokeHandler = (
       return Object.prototype.hasOwnProperty.call(hostObj, String(prop));
     }
 
+    if (args.length > 0 && args[0] === "__SET__") {
+      const [, value] = args;
+      if (hostObj && typeof hostObj === "object") {
+        const existingValue = (hostObj as Record<string, unknown>)[path];
+        // Prevent replacing functions
+        if (typeof existingValue === "function") {
+          return undefined;
+        }
+        (hostObj as Record<string, unknown>)[path] = value;
+        return undefined;
+      }
+      return undefined;
+    }
+
     if (args.length > 0 && args[0] === "__CALL__") {
       const [, ...callArgs] = args;
       if (typeof hostObj === "function") {
@@ -144,7 +169,15 @@ const createOnInvokeHandler = (
 
     // Regular property access
     if (hostObj && typeof hostObj === "object") {
-      return (hostObj as Record<string, unknown>)[path];
+      const value = (hostObj as Record<string, unknown>)[path];
+      if (value !== null && value !== undefined && typeof value === "object") {
+        const { proxyId, needsProxy } = createProxy(value);
+        if (needsProxy) {
+          return { __PROXY_MARKER__: proxyId };
+        }
+      }
+
+      return value;
     }
 
     return undefined;
@@ -234,6 +267,21 @@ const createHostInvokeFn = (
     if (typeof result === "number") return vm.newNumber(result);
     if (typeof result === "string") return vm.newString(result);
     if (typeof result === "object" || typeof result === "function") {
+      // Check if this is a proxy marker - if so, return it as-is so the VM can handle it
+      if (
+        result &&
+        typeof result === "object" &&
+        "__PROXY_MARKER__" in result &&
+        Object.keys(result).length === 1
+      ) {
+        const markerObj = vm.newObject();
+        const proxyIdHandle = vm.newString(
+          (result as { __PROXY_MARKER__: string }).__PROXY_MARKER__,
+        );
+        vm.setProp(markerObj, "__PROXY_MARKER__", proxyIdHandle);
+        proxyIdHandle.dispose();
+        return markerObj;
+      }
       return jsValueToHandle(result, false);
     }
 
@@ -264,7 +312,22 @@ class PersistentVM {
     this.setupGlobalEnvironment();
 
     // Setup proxy system
-    this.onInvokeHandler = createOnInvokeHandler(this.hostFunctionRegistry);
+    const createProxyHelper = (value: unknown) => {
+      const proxyId = `proxy_${uuid()}`;
+      const needsProxy =
+        value !== null &&
+        value !== undefined &&
+        (typeof value === "object" || typeof value === "function");
+      if (needsProxy) {
+        this.hostFunctionRegistry.set(proxyId, value);
+      }
+      return { proxyId, needsProxy };
+    };
+
+    this.onInvokeHandler = createOnInvokeHandler(
+      this.hostFunctionRegistry,
+      createProxyHelper,
+    );
 
     this.hostInvokeFn = createHostInvokeFn(
       this.vm,
@@ -297,6 +360,7 @@ class PersistentVM {
       this.vm.undefined,
       proxyIdHandle,
       this.hostInvokeFn,
+      this.proxyFactory,
     );
     proxyIdHandle.dispose();
 
@@ -758,8 +822,7 @@ export const loadScriptEventHandlerFromUntrustedString = async (
 
   try {
     persistentVM.setupMockRequire(readFile);
-
-    persistentVM.executeCode(code, filename);
+    persistentVM.executeCode(convertESMToCommonJS(code), filename);
 
     const metadata = {
       id: persistentVM.getModuleProperty("id"),

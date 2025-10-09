@@ -275,12 +275,6 @@ export const determineUsedAssets = ({
         addEmoteById(id);
       }
 
-      // Sounds
-      if (cmd.command === EVENT_SOUND_PLAY_EFFECT) {
-        const type = (cmd.args?.type as string) ?? "";
-        addSoundById(type);
-      }
-
       if (cmd.args) {
         for (const key in cmd.args) {
           const value = cmd.args[key];
@@ -299,6 +293,9 @@ export const determineUsedAssets = ({
             }
           } else if (fieldType === "tileset" && typeof value === "string") {
             addTilesetById(value);
+          } else if (fieldType === "soundEffect" && typeof value === "string") {
+            // Sounds
+            addSoundById(value);
           }
         }
       }

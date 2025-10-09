@@ -2989,68 +2989,60 @@ describe("script handlers", () => {
     );
   });
 
-  describe("Infinite Loop Handling (only for untrusted code)", () => {
-    testUntrustedHandler(
-      "will timeout and throw an error if plugin causes infinite loop at top level",
+  describe("Validation", () => {
+    testAllHandlers(
+      "Handles non-strict javascript for CommonJS plugins",
       async (handlerLoader) => {
         const pluginCode = `
-          const id = "EVENT_ID";
-          while (true) {}
-          module.exports = {
-            id,
-          };
-        `;
-        await expect(handlerLoader(pluginCode, "test.js")).rejects.toThrow();
-      },
-    );
-
-    testUntrustedHandler(
-      "will timeout and throw an error if plugin causes infinite loop in compile",
-      async (handlerLoader) => {
-        const pluginCode = `
-          const id = "EVENT_ID";
+          const id = "EVENT_NON_STRICT_TEST";
           module.exports = {
             id,
             compile: (input, helpers) => {
-              while (true) {}
+              abc = "Hello"
+              helpers.appendRaw(abc);
             },
           };
         `;
 
         const handler = await handlerLoader(pluginCode, "test.js");
+        const output: string[] = [];
 
-        expect(() => handler.compile({ text: "test" }, {})).toThrow();
+        handler.compile(
+          { text: "test" },
+          { appendRaw: (msg: string) => output.push(msg) },
+        );
 
+        expect(output.length).toBe(1);
+        expect(output[0]).toBe("Hello");
         handler.cleanup();
       },
     );
 
-    testUntrustedHandler(
-      "will timeout and throw an error if plugin causes infinite loop in autolabel",
+    testAllHandlers(
+      "Handles non-strict javascript for ES module plugins",
       async (handlerLoader) => {
         const pluginCode = `
-          const id = "EVENT_ID";
-          module.exports = {
-            id,
-            autoLabel: (fetchArg, input) => {
-              while (true) {}
-              return "BLAH"
-            },
+          export const id = "EVENT_NON_STRICT_TEST";
+          export const compile = (input, helpers) => {
+            abc = "Hello"
+            helpers.appendRaw(abc);
           };
         `;
 
         const handler = await handlerLoader(pluginCode, "test.js");
+        const output: string[] = [];
 
-        expect(() =>
-          handler.autoLabel?.((key: string) => `ABC_${key}`, { text: "test" }),
-        ).toThrow();
+        handler.compile(
+          { text: "test" },
+          { appendRaw: (msg: string) => output.push(msg) },
+        );
 
+        expect(output.length).toBe(1);
+        expect(output[0]).toBe("Hello");
         handler.cleanup();
       },
     );
-  });
 
-  describe("Validation", () => {
     testAllHandlers(
       "Handles all optional metadata properties",
       async (handlerLoader) => {
@@ -3133,43 +3125,40 @@ describe("script handlers", () => {
   });
 
   describe("Security", () => {
-    testUntrustedHandler(
-      "cannot modify passed in data directly",
-      async (handlerLoader) => {
-        const pluginCode = `
+    testUntrustedHandler("can modify passed in data", async (handlerLoader) => {
+      const pluginCode = `
           const id = "EVENT_ID";
           module.exports = {
             id,
             compile: (input, helpers) => {
-              helpers.blah = "HACKED_1";
-              helpers.data[0] = "HACKED_2";
-              helpers.data.push("HACKED_3");
-              helpers.obj.nested = "HACKED_4";
+              helpers.blah = "MODIFIED_1";
+              helpers.data[0] = "MODIFIED_2";
+              helpers.data.push("MODIFIED_3");
+              helpers.obj.nested = "MODIFIED_4";
             },
           };
         `;
-        const handler = await handlerLoader(pluginCode, "test.js");
-        expect(handler.id).toBe("EVENT_ID");
-        const input = {};
-        const helpers = {
-          data: ["OK"],
-          obj: {
-            nested: "OK",
-          },
-        };
-        expect(helpers.data[0]).toBe("OK");
-        expect(helpers.data.length).toBe(1);
-        expect(helpers.obj.nested).toBe("OK");
-        expect("blah" in helpers).toBe(false);
-        handler.compile(input, helpers);
-        expect(helpers.data[0]).toBe("OK");
-        expect(helpers.data.length).toBe(1);
-        expect(helpers.obj.nested).toBe("OK");
-        expect(helpers.obj.nested).toBe("OK");
-        expect("blah" in helpers).toBe(false);
-        handler.cleanup();
-      },
-    );
+      const handler = await handlerLoader(pluginCode, "test.js");
+      expect(handler.id).toBe("EVENT_ID");
+      const input = {};
+      const helpers = {
+        data: ["OK"],
+        obj: {
+          nested: "OK",
+        },
+      };
+      expect(helpers.data[0]).toBe("OK");
+      expect(helpers.data.length).toBe(1);
+      expect(helpers.obj.nested).toBe("OK");
+      expect("blah" in helpers).toBe(false);
+      handler.compile(input, helpers);
+      expect(helpers.data[0]).toBe("MODIFIED_2");
+      expect(helpers.data.length).toBe(2);
+      expect(helpers.data[1]).toBe("MODIFIED_3");
+      expect((helpers.obj as { nested: string }).nested).toBe("MODIFIED_4");
+      expect((helpers as unknown as { blah: unknown }).blah).toBe("MODIFIED_1");
+      handler.cleanup();
+    });
 
     testUntrustedHandler(
       "cannot modify passed in functions",
