@@ -6,6 +6,7 @@ import {
   FontResource,
   ProjectResources,
   SceneResource,
+  SoundResource,
 } from "shared/lib/resources/types";
 
 test("should include default font when provided", async () => {
@@ -160,5 +161,100 @@ test("should include fonts referenced in dialogue", async () => {
   );
   expect(usedAssets.referencedFonts[1].id).toBe(
     "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
+  );
+});
+
+test("should include sound from play sound effect", async () => {
+  const projectData = {
+    ...dummyProjectResources,
+    sounds: [
+      {
+        id: "3060ae1a-dde6-47f7-af40-5a28bba5a649",
+      },
+      {
+        id: "88f417f8-829b-47d8-8b41-fcf51a12d18e",
+      },
+      {
+        id: "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
+      },
+    ] as SoundResource[],
+    scenes: [
+      {
+        ...dummySceneResource,
+        id: "scene1",
+        script: [
+          {
+            command: "EVENT_SOUND_PLAY_EFFECT",
+            args: {
+              type: "3060ae1a-dde6-47f7-af40-5a28bba5a649",
+            },
+            id: "event1",
+          },
+          {
+            command: "EVENT_SOUND_PLAY_EFFECT",
+            args: {
+              type: "crash",
+            },
+            id: "event2",
+          },
+        ],
+      },
+    ] as SceneResource[],
+  } as ProjectResources;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+  expect(usedAssets.referencedSounds).toHaveLength(1);
+  expect(usedAssets.referencedSounds[0].id).toBe(
+    "3060ae1a-dde6-47f7-af40-5a28bba5a649",
+  );
+});
+
+test("should include sound from text sound effect", async () => {
+  const projectData = {
+    ...dummyProjectResources,
+    sounds: [
+      {
+        id: "3060ae1a-dde6-47f7-af40-5a28bba5a649",
+      },
+      {
+        id: "88f417f8-829b-47d8-8b41-fcf51a12d18e",
+      },
+      {
+        id: "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
+      },
+    ] as SoundResource[],
+    scenes: [
+      {
+        ...dummySceneResource,
+        id: "scene1",
+        script: [
+          {
+            command: "EVENT_TEXT_SET_SOUND_EFFECT",
+            args: {
+              type: "3060ae1a-dde6-47f7-af40-5a28bba5a649",
+            },
+            id: "event1",
+          },
+        ],
+      },
+    ] as SceneResource[],
+  } as ProjectResources;
+  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+  expect(usedAssets.referencedSounds).toHaveLength(1);
+  expect(usedAssets.referencedSounds[0].id).toBe(
+    "3060ae1a-dde6-47f7-af40-5a28bba5a649",
   );
 });
