@@ -1267,7 +1267,7 @@
   "EVENT_GROUP_SCENE": "Cena",
   "EVENT_GROUP_INPUT": "Entrada de controle",
   "EVENT_GROUP_MATH": "Matemática",
-  "EVENT_GROUP_ENGINE_FIELDS": "Campo do motor",
+  "EVENT_GROUP_ENGINE_FIELDS": "Campos do motor",
   "EVENT_GROUP_COLOR": "Cores",
   "EVENT_GROUP_VARIABLES": "Variáveis",
   "EVENT_GROUP_MUSIC": "Música e efeitos sonoros",
