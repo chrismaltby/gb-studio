@@ -196,7 +196,7 @@ const ActorView = memo(
                 <SpriteBoundingBox
                   style={{
                     left: boundsX,
-                    top: TILE_SIZE - boundsY - boundsHeight,
+                    top: boundsY,
                     width: boundsWidth,
                     height: boundsHeight,
                   }}
