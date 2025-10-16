@@ -895,6 +895,14 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/states/topdown.c"],
   },
+  {
+    version: "4.2.0-e13",
+    description: createDescription("Fixes", [
+      "Fix issue where game may not compile if both Color and Super GB modes are enabled",
+      `Fix issue where 'Actor Move To' would not always detect one way tile collisions`,
+    ]),
+    modifiedFiles: ["include/ui.h", "src/core/ui.c", "src/core/vm_actor.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
