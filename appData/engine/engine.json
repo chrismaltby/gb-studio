@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e13",
+  "version": "4.2.0-e14",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -1036,7 +1036,9 @@
       "options": [
         ["DASH_INPUT_INTERACT", "FIELD_INTERACT_TAP"],
         ["DASH_INPUT_DOUBLE_TAP", "FIELD_DIR_DOUBLE_TAP"],
-        ["DASH_INPUT_DOWN_JUMP", "FIELD_DOWN_AND_JUMP_TAP"]
+        ["DASH_INPUT_DOWN_JUMP", "FIELD_DOWN_AND_JUMP_TAP"],
+        ["DASH_INPUT_A", "A"],
+        ["DASH_INPUT_B", "B"]        
       ],
       "cType": "define",
       "defaultValue": "DASH_INPUT_DOUBLE_TAP",

@@ -903,6 +903,14 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/ui.h", "src/core/ui.c", "src/core/vm_actor.c"],
   },
+  {
+    version: "4.2.0-e14",
+    description: createDescription("Updates", [
+      "Fix issue compiling when platformer dash button set to Interact button",
+      "Add support for setting platformer dash button as A or B",
+    ]),
+    modifiedFiles: ["src/states/platform.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
