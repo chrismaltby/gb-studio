@@ -4581,7 +4581,7 @@ extern void __mute_mask_${symbol};
     this._overlayMoveTo(
       0,
       18,
-      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed,
+      Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
     this._idle();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
@@ -4606,7 +4606,7 @@ extern void __mute_mask_${symbol};
     this._overlayMoveTo(
       x,
       y,
-      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed,
+      Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
     this._addNL();

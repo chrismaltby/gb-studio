@@ -43,7 +43,18 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { overlayMoveTo } = helpers;
-  overlayMoveTo(input.x, input.y, input.speed);
+
+  const convertSpeed = (value) => {
+    if (value > 0) {
+      return value - 1;
+    }
+    if (value === 0) {
+      return -3;
+    }
+    return -1;
+  };
+
+  overlayMoveTo(input.x, input.y, convertSpeed(input.speed));
 };
 
 module.exports = {

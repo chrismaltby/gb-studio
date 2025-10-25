@@ -23,7 +23,18 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { textCloseNonModal } = helpers;
-  textCloseNonModal(input.speed);
+
+  const convertSpeed = (value) => {
+    if (value > 0) {
+      return value - 1;
+    }
+    if (value === 0) {
+      return -3;
+    }
+    return -1;
+  };
+
+  textCloseNonModal(convertSpeed(input.speed));
 };
 
 module.exports = {
