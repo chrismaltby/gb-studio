@@ -1,4 +1,5 @@
 import { TILE_SIZE } from "consts";
+import { eventHasArg } from "lib/helpers/eventSystem";
 import {
   ScriptEventMigrationFn,
   ProjectResourcesMigration,
@@ -181,4 +182,33 @@ export const migrate420r3To420r4: ProjectResourcesMigration = {
     migrateFrom420r3To420r4Sprites,
     createScriptEventsMigrator(migrateFrom420r3To420r4Event),
   ]),
+};
+
+export const migrateFrom420r4To420r5Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.args &&
+    (scriptEvent.command === "EVENT_DIALOGUE_CLOSE_NONMODAL" ||
+      scriptEvent.command === "EVENT_OVERLAY_MOVE_TO")
+  ) {
+    const args: Record<string, unknown> = { ...scriptEvent.args };
+    if (eventHasArg(scriptEvent, "speed")) {
+      const currentSpeed = ensureNumber(args["speed"], 0);
+      if (currentSpeed > 0) {
+        args["speed"] = currentSpeed + 1;
+      }
+    }
+    return {
+      ...scriptEvent,
+      args,
+    };
+  }
+  return scriptEvent;
+};
+
+export const migrate420r4To420r4: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "4" },
+  to: { version: "4.2.0", release: "5" },
+  migrationFn: createScriptEventsMigrator(migrateFrom420r4To420r5Event),
 };

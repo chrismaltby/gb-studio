@@ -6,6 +6,7 @@ import {
   migrateFrom420r2To420r3Event,
   migrateFrom420r3To420r4Event,
   migrateFrom420r3To420r4Sprites,
+  migrateFrom420r4To420r5Event,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
@@ -480,6 +481,77 @@ describe("migrateFrom420r3To420r4Event", () => {
         y: -24,
         width: 8,
         height: 24,
+      },
+    });
+  });
+});
+
+describe("migrateFrom420r4To420r4Event", () => {
+  test("should migrate EVENT_DIALOGUE_CLOSE_NONMODAL event speed", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 3,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 4,
+      },
+    });
+  });
+  test("should migrate EVENT_OVERLAY_MOVE_TO event speed", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 3,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 4,
+      },
+    });
+  });
+  test("should not migrate EVENT_DIALOGUE_CLOSE_NONMODAL event speed if 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 0,
+      },
+    });
+  });
+  test("should not migrate EVENT_OVERLAY_MOVE_TO event speed if 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 0,
       },
     });
   });

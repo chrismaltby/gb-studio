@@ -13,5 +13,21 @@ test("Should set move overlay to position", () => {
       overlayMoveTo: mockOverlayMoveTo,
     },
   );
-  expect(mockOverlayMoveTo).toBeCalledWith(5, 9, 2);
+  expect(mockOverlayMoveTo).toBeCalledWith(5, 9, 1);
+});
+
+test("Should set move overlay to position with instant speed", () => {
+  const mockOverlayMoveTo = jest.fn();
+
+  compile(
+    {
+      x: 5,
+      y: 9,
+      speed: 0,
+    },
+    {
+      overlayMoveTo: mockOverlayMoveTo,
+    },
+  );
+  expect(mockOverlayMoveTo).toBeCalledWith(5, 9, -3);
 });
