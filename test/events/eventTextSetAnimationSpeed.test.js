@@ -5,8 +5,8 @@ test("Should be able to set text box animation speeds", () => {
 
   compile(
     {
-      speedIn: 2,
-      speedOut: 3,
+      speedIn: 1,
+      speedOut: 2,
       speed: 4,
       allowFastForward: true,
     },

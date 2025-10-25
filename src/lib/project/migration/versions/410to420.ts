@@ -1,4 +1,5 @@
-import { TILE_SIZE } from "consts";
+import { OVERLAY_SPEED_INSTANT, TILE_SIZE } from "consts";
+import { eventHasArg } from "lib/helpers/eventSystem";
 import {
   ScriptEventMigrationFn,
   ProjectResourcesMigration,
@@ -181,4 +182,57 @@ export const migrate420r3To420r4: ProjectResourcesMigration = {
     migrateFrom420r3To420r4Sprites,
     createScriptEventsMigrator(migrateFrom420r3To420r4Event),
   ]),
+};
+
+export const migrateFrom420r4To420r5Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (!scriptEvent.args) return scriptEvent;
+
+  const args = { ...scriptEvent.args };
+
+  const migrateSpeedInstant = (key: string) => {
+    if (eventHasArg(scriptEvent, key)) {
+      const speed = ensureNumber(args[key], 0);
+      if (speed === 0) {
+        args[key] = OVERLAY_SPEED_INSTANT;
+      }
+    }
+  };
+
+  const migrateSpeedInstantAndOffset = (key: string) => {
+    if (eventHasArg(scriptEvent, key)) {
+      const speed = ensureNumber(args[key], 0);
+      if (speed === 0) {
+        args[key] = OVERLAY_SPEED_INSTANT;
+      } else if (speed > 0) {
+        args[key] = speed - 1;
+      }
+    }
+  };
+
+  switch (scriptEvent.command) {
+    case "EVENT_DIALOGUE_CLOSE_NONMODAL":
+    case "EVENT_OVERLAY_MOVE_TO": {
+      migrateSpeedInstant("speed");
+      break;
+    }
+    case "EVENT_TEXT":
+    case "EVENT_TEXT_SET_ANIMATION_SPEED": {
+      migrateSpeedInstantAndOffset("speedIn");
+      migrateSpeedInstantAndOffset("speedOut");
+      break;
+    }
+    default: {
+      return scriptEvent;
+    }
+  }
+
+  return { ...scriptEvent, args };
+};
+
+export const migrate420r4To420r5: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "4" },
+  to: { version: "4.2.0", release: "5" },
+  migrationFn: createScriptEventsMigrator(migrateFrom420r4To420r5Event),
 };

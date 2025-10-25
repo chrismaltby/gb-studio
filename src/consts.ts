@@ -145,6 +145,9 @@ export const MAX_ZOOM_LEVEL = 1600;
 export const TRACKER_UNDO = "TRACKER_UNDO";
 export const TRACKER_REDO = "TRACKER_REDO";
 
+export const OVERLAY_SPEED_INSTANT = -3;
+export const OVERLAY_SPEED_DEFAULT = -1;
+
 // Errors
 export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 

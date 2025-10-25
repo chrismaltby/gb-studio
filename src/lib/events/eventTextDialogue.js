@@ -212,7 +212,7 @@ const fields = [
         label: l10n("TEXT_SPEED_IN"),
         description: l10n("TEXT_SPEED_IN_DESC"),
         key: "speedIn",
-        type: "cameraSpeed",
+        type: "overlaySpeed",
         defaultValue: -1,
         width: "50%",
         allowDefault: true,
@@ -227,7 +227,7 @@ const fields = [
         label: l10n("TEXT_SPEED_OUT"),
         description: l10n("TEXT_SPEED_OUT_DESC"),
         key: "speedOut",
-        type: "cameraSpeed",
+        type: "overlaySpeed",
         defaultValue: -1,
         width: "50%",
         allowDefault: true,
@@ -465,15 +465,6 @@ const compile = (input, helpers) => {
       typeof input.closeDelayTime === "number" ? input.closeDelayTime : 0.5;
     closeDelayFrames = Math.ceil(seconds * 60);
   }
-  const convertSpeed = (value) => {
-    if (value > 0) {
-      return value - 1;
-    }
-    if (value === 0) {
-      return -3;
-    }
-    return -1;
-  };
   textDialogue(
     input.text || " ",
     input.avatarId,
@@ -485,8 +476,8 @@ const compile = (input, helpers) => {
     input.textX ?? 1,
     input.textY ?? 1,
     input.textHeight ?? 5,
-    convertSpeed(input.speedIn),
-    convertSpeed(input.speedOut),
+    input.speedIn,
+    input.speedOut,
     input.closeWhen ?? "key",
     input.closeButton ?? "a",
     closeDelayFrames,

@@ -11,16 +11,16 @@ const fields = [
     label: l10n("TEXT_SPEED_IN"),
     description: l10n("TEXT_SPEED_IN_DESC"),
     key: "speedIn",
-    type: "cameraSpeed",
-    defaultValue: 1,
+    type: "overlaySpeed",
+    defaultValue: 0,
     width: "50%",
   },
   {
     label: l10n("TEXT_SPEED_OUT"),
     description: l10n("TEXT_SPEED_OUT_DESC"),
     key: "speedOut",
-    type: "cameraSpeed",
-    defaultValue: 1,
+    type: "overlaySpeed",
+    defaultValue: 0,
     width: "50%",
   },
   {
@@ -41,9 +41,12 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
-  let speedIn = input.speedIn > 0 ? input.speedIn - 1 : -3;
-  let speedOut = input.speedOut > 0 ? input.speedOut - 1 : -3;
-  textSetAnimSpeed(speedIn, speedOut, input.speed, input.allowFastForward);
+  textSetAnimSpeed(
+    input.speedIn,
+    input.speedOut,
+    input.speed,
+    input.allowFastForward,
+  );
 };
 
 module.exports = {

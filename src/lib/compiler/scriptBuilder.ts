@@ -4250,8 +4250,18 @@ extern void __mute_mask_${symbol};
     const { scene } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
-    const overlayInSpeed = speedIn === -1 ? ".OVERLAY_IN_SPEED" : speedIn;
-    const overlayOutSpeed = speedOut === -1 ? ".OVERLAY_OUT_SPEED" : speedOut;
+    const overlayInSpeed =
+      speedIn === -1
+        ? ".OVERLAY_IN_SPEED"
+        : speedIn === -3
+          ? ".OVERLAY_SPEED_INSTANT"
+          : speedIn;
+    const overlayOutSpeed =
+      speedOut === -1
+        ? ".OVERLAY_OUT_SPEED"
+        : speedOut === -3
+          ? ".OVERLAY_SPEED_INSTANT"
+          : speedOut;
 
     const initialNumLines = input.map(this.textNumLines);
     const maxNumLines = Math.max.apply(null, initialNumLines);
@@ -4433,8 +4443,14 @@ extern void __mute_mask_${symbol};
     this._addComment("Text Set Animation Speed");
     this._setConstMemInt8("text_ff_joypad", allowFastForward ? 1 : 0);
     this._setConstMemInt8("text_draw_speed", textSpeed);
-    this._setConstMemInt8("text_out_speed", speedOut);
-    this._setConstMemInt8("text_in_speed", speedIn);
+    this._setConstMemInt8(
+      "text_out_speed",
+      Number(speedOut) === -3 ? ".OVERLAY_SPEED_INSTANT" : speedOut,
+    );
+    this._setConstMemInt8(
+      "text_in_speed",
+      Number(speedIn) === -3 ? ".OVERLAY_SPEED_INSTANT" : speedIn,
+    );
     this._addNL();
   };
 
@@ -4581,7 +4597,7 @@ extern void __mute_mask_${symbol};
     this._overlayMoveTo(
       0,
       18,
-      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed,
+      Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
     this._idle();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
@@ -4606,7 +4622,7 @@ extern void __mute_mask_${symbol};
     this._overlayMoveTo(
       x,
       y,
-      Number(speed) === 0 ? ".OVERLAY_SPEED_INSTANT" : speed,
+      Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
     this._addNL();
