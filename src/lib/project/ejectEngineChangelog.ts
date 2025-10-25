@@ -903,6 +903,29 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/ui.h", "src/core/ui.c", "src/core/vm_actor.c"],
   },
+  {
+    version: "4.2.0-e14",
+    description: createDescription("Updates", [
+      "Fix issue compiling when platformer dash button set to Interact button",
+      "Add support for setting platformer dash button as A or B",
+    ]),
+    modifiedFiles: ["src/states/platform.c"],
+  },
+  {
+    version: "4.2.0-e15",
+    description: createDescription("Updates", [
+      "Add enhanced Adventure scene type with more configurable options",
+      "Fix bounding box logic which was off by a few subpixels on right and bottom edges",
+    ]),
+    modifiedFiles: [
+      "include/math.h",
+      "src/core/vm_actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/pointnclick.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

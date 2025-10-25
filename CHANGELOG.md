@@ -56,6 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for event plugins to `readText` and `readJSON` files (must be in the same folder as plugin) `const api = require("plugin-api"); const data = api.readJSON("./data.json");`
 - Add ability to position actors in a scene using pixel coordinates rather than tiles by clicking units type next to "Position" label at top of right hand sidebar for actor [@Mico27](https://github.com/Mico27)
 - Add ability to change canvas origin point when editing sprites [@Mico27](https://github.com/Mico27)
+- Add enhanced Adventure scene type with more configurable options
+- Add ability for actors in Adventure scenes to be marked as "Solid"
+- Add support for rounded corner collision tiles in Adventure scenes, allowing players to smoothly slide around corners
 
 ### Changed
 
@@ -133,6 +136,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where text sound effects were not being included in game if they were not referenced by any other events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where game may not compile if both Color and Super GB modes are enabled
 - Fix issue where 'Actor Move To' would not always detect one way tile collisions
+- Fix issue where collision slope tool was accessible in scene types that didn't support it
+- Fix bounding box logic which was off by a few subpixels on right and bottom edges
 
 ## [4.1.3] - 2024-09-16
 
