@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for event plugins to `readText` and `readJSON` files (must be in the same folder as plugin) `const api = require("plugin-api"); const data = api.readJSON("./data.json");`
 - Add ability to position actors in a scene using pixel coordinates rather than tiles by clicking units type next to "Position" label at top of right hand sidebar for actor [@Mico27](https://github.com/Mico27)
 - Add ability to change canvas origin point when editing sprites [@Mico27](https://github.com/Mico27)
+- Add support for SGB border overlapping the GB screen. Magenta pixels in border image will be transparent but other colors will display over the top of the game screen. [@pau-tomas](https://github.com/pau-tomas)
 - Add enhanced Adventure scene type with more configurable options
 - Add ability for actors in Adventure scenes to be marked as "Solid"
 - Add support for rounded corner collision tiles in Adventure scenes, allowing players to smoothly slide around corners
