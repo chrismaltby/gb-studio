@@ -460,6 +460,12 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     dispatch(editorActions.setShowLayers({ showLayers: !showLayers }));
   };
 
+  useEffect(() => {
+    if (!slopesAvailable && selectedBrush === BRUSH_SLOPE) {
+      setBrush(BRUSH_8PX);
+    }
+  }, [selectedBrush, setBrush, slopesAvailable]);
+
   return (
     <>
       <BrushToolbarWrapper $visible={visible}>
@@ -496,7 +502,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           >
             <WandIcon />
           </Button>
-          {showTileTypes && (
+          {showTileTypes && slopesAvailable && (
             <Button
               variant="transparent"
               onClick={() => setBrush(BRUSH_SLOPE)}
@@ -507,9 +513,9 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             </Button>
           )}
           {(showPalettes ||
-            (showTileTypes && selectedBrush !== BRUSH_SLOPE)) && (
-            <FloatingPanelDivider />
-          )}
+            (showTileTypes &&
+              slopesAvailable &&
+              selectedBrush !== BRUSH_SLOPE)) && <FloatingPanelDivider />}
           {showPalettes &&
             !background?.autoColor &&
             paletteIndexes.map((paletteIndex) => (
