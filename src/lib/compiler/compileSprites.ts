@@ -27,7 +27,7 @@ const S_VRAM2 = 0x8;
 type SpriteTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
-  sprite: SpriteSheetData,
+  spriteMode: SpriteModeSetting,
 ) => { tileIndex: number; inVRAM2: boolean };
 
 interface AnimationOffset {
@@ -77,8 +77,9 @@ const spriteTileAllocationDefault: SpriteTileAllocationStrategy = (
 const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
   tileIndex,
   numTiles,
+  spriteMode,
 ) => {
-  const bank1NumTiles = Math.ceil(numTiles / 4) * 2;
+  const bank1NumTiles = (spriteMode === "8x16")? Math.ceil(numTiles / 4) * 2: Math.ceil(numTiles / 2);
   const inVRAM2 = tileIndex >= bank1NumTiles;
   return {
     tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
@@ -178,7 +179,7 @@ export const compileSprite = async (
                   const { tileIndex, inVRAM2 } = tileAllocationStrategy(
                     optimisedTile.tile,
                     tiles.length,
-                    spriteSheet,
+                    spriteMode,
                   );
                   if (flip) {
                     const data: SpriteTileData = {
@@ -257,7 +258,7 @@ export const compileSprite = async (
 
   // Split tiles into VRAM banks based on allocation strategy
   tiles.map(indexedImageTo2bppSpriteData).forEach((tile, i) => {
-    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length, spriteSheet);
+    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length, spriteMode);
     vramData[inVRAM2 ? 1 : 0].push(...tile);
   });
 
