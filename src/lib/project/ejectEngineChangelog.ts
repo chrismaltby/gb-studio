@@ -911,6 +911,21 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/states/platform.c"],
   },
+  {
+    version: "4.2.0-e15",
+    description: createDescription("Updates", [
+      "Add enhanced Adventure scene type with more configurable options",
+      "Fix bounding box logic which was off by a few subpixels on right and bottom edges",
+    ]),
+    modifiedFiles: [
+      "include/math.h",
+      "src/core/vm_actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/pointnclick.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

@@ -657,8 +657,8 @@ const compileBounds = ({
   const bH = boundsHeight || 16;
   return {
     left: enginePxToSubPx(bX),
-    bottom: enginePxToSubPx(bY + bH - 1),
-    right: enginePxToSubPx(bX + bW - 1),
+    bottom: `${enginePxToSubPx(bY + bH)} - 1`,
+    right: `${enginePxToSubPx(bX + bW)} - 1`,
     top: enginePxToSubPx(bY),
   };
 };

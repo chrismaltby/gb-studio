@@ -57,6 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to position actors in a scene using pixel coordinates rather than tiles by clicking units type next to "Position" label at top of right hand sidebar for actor [@Mico27](https://github.com/Mico27)
 - Add ability to change canvas origin point when editing sprites [@Mico27](https://github.com/Mico27)
 - Add support for SGB border overlapping the GB screen. Magenta pixels in border image will be transparent but other colors will display over the top of the game screen. [@pau-tomas](https://github.com/pau-tomas)
+- Add enhanced Adventure scene type with more configurable options
+- Add ability for actors in Adventure scenes to be marked as "Solid"
+- Add support for rounded corner collision tiles in Adventure scenes, allowing players to smoothly slide around corners
 
 ### Changed
 
@@ -84,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Spanish localisation. [@JimScope](https://github.com/JimScope)
 - Updated German localisation. [@gonzoMD](https://github.com/gonzoMD) [@Sencaid](https://github.com/Sencaid)
 - Updated French localisation. [@Pomdap](https://github.com/Pomdap)
-- Updated Brazilian Portuguese localisation. [@KosmusSoares](https://github.com/KosmusSoares)
+- Updated Brazilian Portuguese localisation. [@KosmusSoares](https://github.com/KosmusSoares) [@Italo-Soares-Tradutor](https://github.com/Italo-Soares-Tradutor)
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Changed plugin code evaluation from using [vm2](https://github.com/patriksimek/vm2) (which has been discontinued) to using [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
 
@@ -134,6 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where text sound effects were not being included in game if they were not referenced by any other events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where game may not compile if both Color and Super GB modes are enabled
 - Fix issue where 'Actor Move To' would not always detect one way tile collisions
+- Fix issue where collision slope tool was accessible in scene types that didn't support it
+- Fix bounding box logic which was off by a few subpixels on right and bottom edges
 
 ## [4.1.3] - 2024-09-16
 
