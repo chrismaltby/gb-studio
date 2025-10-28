@@ -16,9 +16,7 @@ const USE_SGB_PAL = 0x10;
 const FLIP_X = 0x40;
 const FLIP_Y = 0x80;
 const BLANK_TILE: number[] = Array.from(Array(TILE_SIZE * TILE_SIZE)).fill(0);
-const TRANSPARENT_TILE: number[] = Array.from(
-  Array(TILE_SIZE * TILE_SIZE),
-).fill(-1);
+const TRANSPARENT_COLOR = -1;
 
 const toIndex = (x: number, y: number): number =>
   (x + y * SNES_SCREEN_WIDTH) * 4;
@@ -187,7 +185,11 @@ const pixelsToSGBData = (pixels: Uint8Array, width: number, height: number) => {
         const r = pixels[i];
         const g = pixels[i + 1];
         const b = pixels[i + 2];
-        const c = rgbTo15BitColor(r, g, b);
+        let c = rgbTo15BitColor(r, g, b);
+        // Replace magenta pixels with transparent color
+        if (c === rgbTo15BitColor(255, 0, 255)) {
+          c = TRANSPARENT_COLOR;
+        }
         let cIndex = colors.indexOf(c);
         if (cIndex === -1) {
           cIndex = colors.length;
@@ -199,23 +201,12 @@ const pixelsToSGBData = (pixels: Uint8Array, width: number, height: number) => {
     return [tile, colors];
   };
 
-  const createEmptyTile = () => {
-    const colors = [-1];
-    return [TRANSPARENT_TILE, colors];
-  };
-
   // Split image into tiles and palettes
   for (let ty = 0; ty < SNES_TILE_HEIGHT; ty++) {
     for (let tx = 0; tx < SNES_TILE_WIDTH; tx++) {
-      if (tx > 5 && tx < 26 && ty > 4 && ty < 23) {
-        const [tile, colors] = createEmptyTile();
-        tiles.push(tile);
-        tilePalettes.push(colors);
-      } else {
-        const [tile, colors] = parseTile(tx, ty);
-        tiles.push(tile);
-        tilePalettes.push(colors);
-      }
+      const [tile, colors] = parseTile(tx, ty);
+      tiles.push(tile);
+      tilePalettes.push(colors);
     }
   }
 

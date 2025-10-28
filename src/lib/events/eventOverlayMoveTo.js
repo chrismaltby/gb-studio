@@ -36,8 +36,8 @@ const fields = [
     key: "speed",
     label: l10n("FIELD_SPEED"),
     description: l10n("FIELD_SPEED_DESC"),
-    type: "cameraSpeed",
-    defaultValue: 0,
+    type: "overlaySpeed",
+    defaultValue: -3,
   },
 ];
 

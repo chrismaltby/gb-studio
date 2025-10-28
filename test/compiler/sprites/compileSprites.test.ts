@@ -1,5 +1,342 @@
 import { optimiseTiles } from "lib/sprites/readSpriteData";
+import { compileSprite } from "lib/compiler/compileSprites";
 import { join } from "path";
+import { ReferencedSprite } from "lib/compiler/precompile/determineUsedAssets";
+import { SpriteModeSetting } from "shared/lib/resources/types";
+
+describe("Compile Sprite", () => {
+  describe("VRAM Allocation", () => {
+    const createTestSprite = (
+      spriteMode: SpriteModeSetting,
+      colorMode: "mono" | "color" = "mono",
+    ): ReferencedSprite => {
+      return {
+        id: "test-sprite",
+        name: "Test Sprite",
+        symbol: "sprite_test_sprite",
+        filename: "box_8x16px.png",
+        numTiles: 2,
+        checksum: "test",
+        width: 16,
+        height: 16,
+        canvasWidth: 16,
+        canvasHeight: 16,
+        canvasOriginX: 0,
+        canvasOriginY: 0,
+        boundsX: 0,
+        boundsY: 0,
+        boundsWidth: 16,
+        boundsHeight: 16,
+        animSpeed: null,
+        colorMode,
+        spriteMode,
+        states: [
+          {
+            id: "state1",
+            name: "",
+            animationType: "fixed",
+            flipLeft: true,
+            animations: [
+              {
+                id: "anim1",
+                frames: [
+                  {
+                    id: "frame1",
+                    tiles: [
+                      {
+                        id: "tile1",
+                        x: 0,
+                        y: 0,
+                        sliceX: 0,
+                        sliceY: 0,
+                        palette: 0,
+                        flipX: false,
+                        flipY: false,
+                        objPalette: "OBP0",
+                        paletteIndex: 0,
+                        priority: false,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+    };
+
+    test("Should allocate all tiles to VRAM bank 1 for mono mode sprites (8x16)", async () => {
+      const sprite = createTestSprite("8x16", "mono");
+      const result = await compileSprite(
+        sprite,
+        false,
+        join(__dirname, "../_files"),
+        "8x16",
+      );
+
+      // All tiles should be in VRAM bank 1 for mono mode
+      expect(result.vramData[0].length).toBeGreaterThan(0);
+      expect(result.vramData[1].length).toBe(0);
+    });
+
+    test("Should allocate all tiles to VRAM bank 1 for mono mode sprites (8x8)", async () => {
+      const sprite = createTestSprite("8x8", "mono");
+      const result = await compileSprite(
+        sprite,
+        false,
+        join(__dirname, "../_files"),
+        "8x8",
+      );
+
+      // All tiles should be in VRAM bank 1 for mono mode
+      expect(result.vramData[0].length).toBeGreaterThan(0);
+      expect(result.vramData[1].length).toBe(0);
+    });
+
+    test("Should split 2 tiles correctly in color-only 8x16 mode", async () => {
+      const sprite = createTestSprite("8x16", "color");
+      const result = await compileSprite(
+        sprite,
+        true,
+        join(__dirname, "../_files"),
+        "8x16",
+      );
+
+      const numTiles = result.tiles.length;
+      expect(numTiles).toBe(2);
+      
+      // Both tiles fit in bank 1 for 8x16 mode
+      expect(result.vramData[0].length).toBe(2 * 16);
+      expect(result.vramData[1].length).toBe(0);
+    });
+
+    test("Should split 2 tiles evenly in color-only 8x8 mode", async () => {
+      const sprite = createTestSprite("8x8", "color");
+      sprite.filename = "box_16px.png";
+      sprite.canvasWidth = 16;
+      sprite.canvasHeight = 16;
+      
+      sprite.states[0].animations[0].frames[0].tiles = [
+        {
+          id: "tile1",
+          x: 0,
+          y: 0,
+          sliceX: 0,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+        {
+          id: "tile2",
+          x: 8,
+          y: 0,
+          sliceX: 8,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+      ];
+
+      const result = await compileSprite(
+        sprite,
+        true,
+        join(__dirname, "../_files"),
+        "8x8",
+      );
+
+      const numTiles = result.tiles.length;
+      const expectedBank1Tiles = Math.ceil(numTiles / 2);
+      
+      expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
+      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
+      
+      // Verify no gaps in allocation
+      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      expect(totalVramTiles).toBe(numTiles);
+    });
+
+    test("Should split 3 tiles correctly in color-only 8x8 mode", async () => {
+      const sprite = createTestSprite("8x8", "color");
+      sprite.filename = "box_16px.png";
+      sprite.canvasWidth = 24;
+      sprite.canvasHeight = 8;
+      
+      sprite.states[0].animations[0].frames[0].tiles = [
+        {
+          id: "tile1",
+          x: 0,
+          y: 0,
+          sliceX: 0,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+        {
+          id: "tile2",
+          x: 8,
+          y: 0,
+          sliceX: 8,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+        {
+          id: "tile3",
+          x: 16,
+          y: 0,
+          sliceX: 0,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+      ];
+
+      const result = await compileSprite(
+        sprite,
+        true,
+        join(__dirname, "../_files"),
+        "8x8",
+      );
+
+      const numTiles = result.tiles.length;
+      const expectedBank1Tiles = Math.ceil(numTiles / 2);
+      
+      expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
+      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
+      
+      // Verify no gaps in allocation
+      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      expect(totalVramTiles).toBe(numTiles);
+    });
+
+    test("Should split 2 tiles with no gaps in color-only 8x8 mode", async () => {
+      const sprite = createTestSprite("8x8", "color");
+      sprite.filename = "box_16px.png";
+      sprite.canvasWidth = 24;
+      sprite.canvasHeight = 8;
+      
+      sprite.states[0].animations[0].frames[0].tiles = [
+        {
+          id: "tile1",
+          x: 0,
+          y: 0,
+          sliceX: 0,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+        {
+          id: "tile2",
+          x: 8,
+          y: 0,
+          sliceX: 8,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+      ];
+
+      const result = await compileSprite(
+        sprite,
+        true,
+        join(__dirname, "../_files"),
+        "8x8",
+      );
+
+      const numTiles = result.tiles.length;
+      const expectedBank1Tiles = Math.ceil(numTiles / 2);
+      
+      expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
+      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
+      
+      // Verify no gaps in allocation
+      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      expect(totalVramTiles).toBe(numTiles);
+    });
+
+    test("Should allocate tiles evenly without gaps in 8x8 color-only mode", async () => {
+      const sprite = createTestSprite("8x8", "color");
+      sprite.filename = "box_16px.png";
+      
+      sprite.states[0].animations[0].frames[0].tiles = [
+        {
+          id: "tile1",
+          x: 0,
+          y: 0,
+          sliceX: 0,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+        {
+          id: "tile2",
+          x: 8,
+          y: 0,
+          sliceX: 8,
+          sliceY: 0,
+          palette: 0,
+          flipX: false,
+          flipY: false,
+          objPalette: "OBP0",
+          paletteIndex: 0,
+          priority: false,
+        },
+      ];
+
+      const result = await compileSprite(
+        sprite,
+        true,
+        join(__dirname, "../_files"),
+        "8x8",
+      );
+
+      const numTiles = result.tiles.length;
+      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      
+      // Verify no gaps exist in tile allocation
+      expect(totalVramTiles).toBe(numTiles);
+      
+      // Verify correct split formula is used for 8x8 mode
+      const expectedBank1Tiles = Math.ceil(numTiles / 2);
+      const actualBank1Tiles = result.vramData[0].length / 16;
+      
+      expect(actualBank1Tiles).toBe(expectedBank1Tiles);
+    });
+  });
+});
 
 describe("Optimise Tiles", () => {
   const expectValidTilesOfLength = (

@@ -75,6 +75,7 @@ import { StyledButton, ButtonPrefixIcon } from "ui/buttons/style";
 import { SingleValue } from "react-select";
 import ConstantValueSelect from "components/forms/ConstantValueSelect";
 import { EngineFieldType } from "store/features/engine/engineState";
+import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -648,6 +649,18 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <CameraSpeedSelect
+          name={id}
+          allowNone
+          allowDefault={field.allowDefault}
+          value={Number(value ?? field.defaultValue ?? 0)}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "overlaySpeed") {
+    return (
+      <OffscreenSkeletonInput>
+        <OverlaySpeedSelect
           name={id}
           allowNone
           allowDefault={field.allowDefault}

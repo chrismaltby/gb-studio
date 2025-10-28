@@ -6,6 +6,7 @@ import {
   migrateFrom420r2To420r3Event,
   migrateFrom420r3To420r4Event,
   migrateFrom420r3To420r4Sprites,
+  migrateFrom420r4To420r5Event,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
@@ -480,6 +481,160 @@ describe("migrateFrom420r3To420r4Event", () => {
         y: -24,
         width: 8,
         height: 24,
+      },
+    });
+  });
+});
+
+describe("migrateFrom420r4To420r5Event", () => {
+  test("should migrate EVENT_DIALOGUE_CLOSE_NONMODAL event instant speed", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: -3,
+      },
+    });
+  });
+
+  test("should not migrate EVENT_DIALOGUE_CLOSE_NONMODAL event speed if greater than 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 1,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_DIALOGUE_CLOSE_NONMODAL",
+      args: {
+        speed: 1,
+      },
+    });
+  });
+
+  test("should migrate EVENT_OVERLAY_MOVE_TO event instant speed", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: -3,
+      },
+    });
+  });
+
+  test("should not migrate EVENT_OVERLAY_MOVE_TO event speed if greater than 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 1,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 1,
+      },
+    });
+  });
+
+  test("should migrate EVENT_TEXT event instant in/out speeds", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_TEXT",
+      args: {
+        text: "Hello World",
+        speedIn: 0,
+        speedOut: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_TEXT",
+      args: {
+        text: "Hello World",
+        speedIn: -3,
+        speedOut: -3,
+      },
+    });
+  });
+
+  test("should migrate EVENT_TEXT event in/out move speeds", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_TEXT",
+      args: {
+        text: "Hello World",
+        speedIn: 1,
+        speedOut: 5,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_TEXT",
+      args: {
+        text: "Hello World",
+        speedIn: 0,
+        speedOut: 4,
+      },
+    });
+  });
+
+  test("should migrate EVENT_TEXT_SET_ANIMATION_SPEED event instant in/out speeds", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+      args: {
+        text: "Hello World",
+        speedIn: 0,
+        speedOut: 0,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+      args: {
+        text: "Hello World",
+        speedIn: -3,
+        speedOut: -3,
+      },
+    });
+  });
+
+  test("should migrate EVENT_TEXT_SET_ANIMATION_SPEED event in/out move speeds", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+      args: {
+        text: "Hello World",
+        speedIn: 1,
+        speedOut: 5,
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+      args: {
+        text: "Hello World",
+        speedIn: 0,
+        speedOut: 4,
       },
     });
   });

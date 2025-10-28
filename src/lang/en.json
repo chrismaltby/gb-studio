@@ -1255,6 +1255,8 @@
   "FIELD_PUSH_STATE": "Pushing",
   "FIELD_PUSH_START": "Start Pushing State",
   "FIELD_PUSH_END": "End Pushing State",
+  "FIELD_ADVENTURE_STATE": "Adventure State",
+  "FIELD_ADVENTURE_STATE_DESC": "The current internal state of the adventure scene",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

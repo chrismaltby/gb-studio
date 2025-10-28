@@ -652,7 +652,9 @@ export const createPlay = async (
       firstLoad = false;
     }
     const isMuted = settings.get(EMULATOR_MUTED_SETTING_KEY) === true;
-    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+    playWindow?.setTitle(
+      playWindowTitle.replace(/ 🔇/, "") + (isMuted ? ` 🔇` : ""),
+    );
   });
 
   playWindow.on("closed", () => {
@@ -2081,7 +2083,9 @@ menu.on("updateEmulatorMuted", (value) => {
   settings.set(EMULATOR_MUTED_SETTING_KEY, isMuted);
   if (playWindow) {
     playWindow.webContents.setAudioMuted(isMuted);
-    playWindow?.setTitle(playWindowTitle + (isMuted ? ` 🔇` : ""));
+    playWindow?.setTitle(
+      playWindowTitle.replace(/ 🔇/, "") + (isMuted ? ` 🔇` : ""),
+    );
   }
 });
 
