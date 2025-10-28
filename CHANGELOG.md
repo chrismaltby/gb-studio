@@ -141,6 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bounding box logic which was off by a few subpixels on right and bottom edges
 - Fix VRAM allocation when using 8x8 sprites in color only mode [@Mico27](https://github.com/Mico27)
 - Fix inconsistent speeds between "Display Dialogue", "Overlay Move To" and "Close Non-Modal Dialogue" events [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where mute icon in game window title bar could appear multiple times
 
 ## [4.1.3] - 2024-09-16
 
