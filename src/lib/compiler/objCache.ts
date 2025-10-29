@@ -81,7 +81,7 @@ const generateIncludesLookup = async (buildIncludeRoot: string) => {
 const generateGameGlobalsLookup = (gameGlobalsContents: string) => {
   const lookup: GameGlobalsLookup = {};
   const globalMatches = [
-    ...gameGlobalsContents.matchAll(/([A-Za-z_0-9]+)[\s]*=[\s]*([0-9]+)/g),
+    ...gameGlobalsContents.matchAll(/([A-Za-z_0-9]+)[\s]*=[\s]*(-?[0-9]+)/g),
   ];
   for (const globalMatch of globalMatches) {
     lookup[globalMatch[1]] = globalMatch[2];
