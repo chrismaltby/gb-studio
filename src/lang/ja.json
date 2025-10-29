@@ -1248,6 +1248,8 @@
   "FIELD_PUSH_STATE": "押出し",
   "FIELD_PUSH_START": "押出し: 開始",
   "FIELD_PUSH_END": "押出し: 終了",
+  "FIELD_ADVENTURE_STATE": "アドベンチャー状態",
+  "FIELD_ADVENTURE_STATE_DESC": "現在のアドベンチャーシーン内の状態",
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "検索...",
   "ASSET_EDIT": "編集",
