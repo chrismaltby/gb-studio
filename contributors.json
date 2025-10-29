@@ -19,7 +19,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 5118
+    "contributions": 5123
   },
   {
     "login": "pau-tomas",
@@ -41,7 +41,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 397
+    "contributions": 399
   },
   {
     "login": "RichardULZ",
@@ -85,7 +85,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 74
+    "contributions": 76
   },
   {
     "login": "tomo666",
@@ -107,7 +107,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 56
+    "contributions": 57
   },
   {
     "login": "marcosecchi",
@@ -286,6 +286,28 @@
     "contributions": 12
   },
   {
+    "login": "Italo-Soares-Tradutor",
+    "id": 59371941,
+    "node_id": "MDQ6VXNlcjU5MzcxOTQx",
+    "avatar_url": "https://avatars.githubusercontent.com/u/59371941?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Italo-Soares-Tradutor",
+    "html_url": "https://github.com/Italo-Soares-Tradutor",
+    "followers_url": "https://api.github.com/users/Italo-Soares-Tradutor/followers",
+    "following_url": "https://api.github.com/users/Italo-Soares-Tradutor/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Italo-Soares-Tradutor/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Italo-Soares-Tradutor/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Italo-Soares-Tradutor/subscriptions",
+    "organizations_url": "https://api.github.com/users/Italo-Soares-Tradutor/orgs",
+    "repos_url": "https://api.github.com/users/Italo-Soares-Tradutor/repos",
+    "events_url": "https://api.github.com/users/Italo-Soares-Tradutor/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Italo-Soares-Tradutor/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false,
+    "contributions": 11
+  },
+  {
     "login": "um3k",
     "id": 371786,
     "node_id": "MDQ6VXNlcjM3MTc4Ng==",
@@ -352,28 +374,6 @@
     "contributions": 10
   },
   {
-    "login": "Italo-Soares-Tradutor",
-    "id": 59371941,
-    "node_id": "MDQ6VXNlcjU5MzcxOTQx",
-    "avatar_url": "https://avatars.githubusercontent.com/u/59371941?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/Italo-Soares-Tradutor",
-    "html_url": "https://github.com/Italo-Soares-Tradutor",
-    "followers_url": "https://api.github.com/users/Italo-Soares-Tradutor/followers",
-    "following_url": "https://api.github.com/users/Italo-Soares-Tradutor/following{/other_user}",
-    "gists_url": "https://api.github.com/users/Italo-Soares-Tradutor/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/Italo-Soares-Tradutor/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/Italo-Soares-Tradutor/subscriptions",
-    "organizations_url": "https://api.github.com/users/Italo-Soares-Tradutor/orgs",
-    "repos_url": "https://api.github.com/users/Italo-Soares-Tradutor/repos",
-    "events_url": "https://api.github.com/users/Italo-Soares-Tradutor/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/Italo-Soares-Tradutor/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": false,
-    "contributions": 10
-  },
-  {
     "login": "Mico27",
     "id": 32064874,
     "node_id": "MDQ6VXNlcjMyMDY0ODc0",
@@ -393,7 +393,7 @@
     "type": "User",
     "user_view_type": "public",
     "site_admin": false,
-    "contributions": 9
+    "contributions": 10
   },
   {
     "login": "projekt2502",
