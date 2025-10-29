@@ -79,7 +79,10 @@ const spriteTileAllocationColorOnly: SpriteTileAllocationStrategy = (
   numTiles,
   spriteMode,
 ) => {
-  const bank1NumTiles = (spriteMode === "8x16")? Math.ceil(numTiles / 4) * 2: Math.ceil(numTiles / 2);
+  const bank1NumTiles =
+    spriteMode === "8x16"
+      ? Math.ceil(numTiles / 4) * 2
+      : Math.ceil(numTiles / 2);
   const inVRAM2 = tileIndex >= bank1NumTiles;
   return {
     tileIndex: inVRAM2 ? tileIndex - bank1NumTiles : tileIndex,
