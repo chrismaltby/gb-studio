@@ -105,7 +105,7 @@ describe("Compile Sprite", () => {
 
       const numTiles = result.tiles.length;
       expect(numTiles).toBe(2);
-      
+
       // Both tiles fit in bank 1 for 8x16 mode
       expect(result.vramData[0].length).toBe(2 * 16);
       expect(result.vramData[1].length).toBe(0);
@@ -116,7 +116,7 @@ describe("Compile Sprite", () => {
       sprite.filename = "box_16px.png";
       sprite.canvasWidth = 16;
       sprite.canvasHeight = 16;
-      
+
       sprite.states[0].animations[0].frames[0].tiles = [
         {
           id: "tile1",
@@ -155,12 +155,15 @@ describe("Compile Sprite", () => {
 
       const numTiles = result.tiles.length;
       const expectedBank1Tiles = Math.ceil(numTiles / 2);
-      
+
       expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
-      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
-      
+      expect(result.vramData[1].length).toBe(
+        (numTiles - expectedBank1Tiles) * 16,
+      );
+
       // Verify no gaps in allocation
-      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      const totalVramTiles =
+        (result.vramData[0].length + result.vramData[1].length) / 16;
       expect(totalVramTiles).toBe(numTiles);
     });
 
@@ -169,7 +172,7 @@ describe("Compile Sprite", () => {
       sprite.filename = "box_16px.png";
       sprite.canvasWidth = 24;
       sprite.canvasHeight = 8;
-      
+
       sprite.states[0].animations[0].frames[0].tiles = [
         {
           id: "tile1",
@@ -221,12 +224,15 @@ describe("Compile Sprite", () => {
 
       const numTiles = result.tiles.length;
       const expectedBank1Tiles = Math.ceil(numTiles / 2);
-      
+
       expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
-      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
-      
+      expect(result.vramData[1].length).toBe(
+        (numTiles - expectedBank1Tiles) * 16,
+      );
+
       // Verify no gaps in allocation
-      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      const totalVramTiles =
+        (result.vramData[0].length + result.vramData[1].length) / 16;
       expect(totalVramTiles).toBe(numTiles);
     });
 
@@ -235,7 +241,7 @@ describe("Compile Sprite", () => {
       sprite.filename = "box_16px.png";
       sprite.canvasWidth = 24;
       sprite.canvasHeight = 8;
-      
+
       sprite.states[0].animations[0].frames[0].tiles = [
         {
           id: "tile1",
@@ -274,19 +280,22 @@ describe("Compile Sprite", () => {
 
       const numTiles = result.tiles.length;
       const expectedBank1Tiles = Math.ceil(numTiles / 2);
-      
+
       expect(result.vramData[0].length).toBe(expectedBank1Tiles * 16);
-      expect(result.vramData[1].length).toBe((numTiles - expectedBank1Tiles) * 16);
-      
+      expect(result.vramData[1].length).toBe(
+        (numTiles - expectedBank1Tiles) * 16,
+      );
+
       // Verify no gaps in allocation
-      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
+      const totalVramTiles =
+        (result.vramData[0].length + result.vramData[1].length) / 16;
       expect(totalVramTiles).toBe(numTiles);
     });
 
     test("Should allocate tiles evenly without gaps in 8x8 color-only mode", async () => {
       const sprite = createTestSprite("8x8", "color");
       sprite.filename = "box_16px.png";
-      
+
       sprite.states[0].animations[0].frames[0].tiles = [
         {
           id: "tile1",
@@ -324,15 +333,16 @@ describe("Compile Sprite", () => {
       );
 
       const numTiles = result.tiles.length;
-      const totalVramTiles = (result.vramData[0].length + result.vramData[1].length) / 16;
-      
+      const totalVramTiles =
+        (result.vramData[0].length + result.vramData[1].length) / 16;
+
       // Verify no gaps exist in tile allocation
       expect(totalVramTiles).toBe(numTiles);
-      
+
       // Verify correct split formula is used for 8x8 mode
       const expectedBank1Tiles = Math.ceil(numTiles / 2);
       const actualBank1Tiles = result.vramData[0].length / 16;
-      
+
       expect(actualBank1Tiles).toBe(expectedBank1Tiles);
     });
   });
