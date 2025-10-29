@@ -21,6 +21,10 @@ export const EditableText = styled.input`
     color: ${(props) => props.theme.colors.input.text};
     border: 1px solid ${(props) => props.theme.colors.highlight};
   }
+
+  &:read-only {
+    pointer-events: none;
+  }
 `;
 
 export const EditableTextOverlay = styled.div`

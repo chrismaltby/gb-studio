@@ -245,4 +245,74 @@ describe("scriptValueToString", () => {
     const result = scriptValueToString(input, options);
     expect(result).toBe("rnd(5)");
   });
+
+  describe("engine constants", () => {
+    test("should format engine constants in expressions", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "@engine::MAX_HEALTH@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toBe("MAX_HEALTH");
+    });
+
+    test("should format engine constants with user constants", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "@550e8400-e29b-41d4-a716-446655440000@ + @engine::BONUS@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toContain("BONUS");
+      expect(result).toContain(
+        "||constant:550e8400-e29b-41d4-a716-446655440000||",
+      );
+    });
+
+    test("should format engine constants with variables", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "$10$ + @engine::BASE_DAMAGE@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toBe("var_10 + BASE_DAMAGE");
+    });
+
+    test("should format complex expressions with engine constants", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "(@engine::MAX_HP@ - $10$) * @engine::MULTIPLIER@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toBe("(MAX_HP - var_10) * MULTIPLIER");
+    });
+
+    test("should format engine constants with underscores", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "@engine::PLAYER_MAX_SPEED@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toBe("PLAYER_MAX_SPEED");
+    });
+
+    test("should format engine constants with numbers", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "@engine::LEVEL_1_MAX@ + @engine::LEVEL_2_MAX@",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toBe("LEVEL_1_MAX + LEVEL_2_MAX");
+    });
+
+    test("should handle engine constants in nested expressions", () => {
+      const input: ScriptValue = {
+        type: "expression",
+        value: "abs(@engine::MIN_VALUE@) + max($V0$, @engine::DEFAULT@)",
+      };
+      const result = scriptValueToString(input, options);
+      expect(result).toContain("MIN_VALUE");
+      expect(result).toContain("DEFAULT");
+      expect(result).toContain("var_V0");
+    });
+  });
 });

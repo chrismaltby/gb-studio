@@ -36,6 +36,9 @@ export const scriptValueToString = (
       .replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
         return options.variableNameForId(match);
       })
+      .replace(/@engine::([^@]+)@/g, (_, match) => {
+        return match;
+      })
       .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
         return `||constant:${match}||`;
       });

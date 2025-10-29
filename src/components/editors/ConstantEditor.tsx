@@ -53,7 +53,7 @@ interface ConstantEditorProps {
   id: string;
 }
 interface UsesWrapperProps {
-  showSymbols: boolean;
+  $showSymbols: boolean;
 }
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
@@ -80,7 +80,15 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   const constantIndex = useAppSelector((state) =>
     constantSelectors.selectIds(state).indexOf(id),
   );
-  const [name, setName] = useState(constant?.name ?? "");
+  const engineConstantsLookup = useAppSelector((state) => state.engine.consts);
+  const isEngineConstant = id.startsWith("engine::");
+  const engineConstantName = isEngineConstant
+    ? id.replace(/^engine::/, "")
+    : "";
+  const engineConstantValue = isEngineConstant
+    ? engineConstantsLookup?.[engineConstantName]
+    : undefined;
+  const [name, setName] = useState(constant?.name ?? engineConstantName);
   const [constantUses, setConstantUses] = useState<ConstantUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -227,40 +235,56 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
     dispatch(entitiesActions.removeConstant({ constantId: constant.id }));
   }, [dispatch, constant]);
 
-  if (!constant) {
+  if (!constant && !isEngineConstant) {
     return <WorldEditor />;
   }
+
+  const displayName = isEngineConstant ? engineConstantName : name;
+  const displayValue = isEngineConstant
+    ? typeof engineConstantValue === "string"
+      ? parseInt(engineConstantValue, 10)
+      : (engineConstantValue ?? 0)
+    : (constant?.value ?? 0);
 
   return (
     <Sidebar onClick={selectSidebar}>
       <FormHeader>
         <EditableConstantName
           name="name"
-          placeholder={defaultLocalisedConstantName(constantIndex)
-            .toLocaleUpperCase()
-            .replace(/\s/g, "_")}
-          value={name || ""}
-          onChange={onRename}
-          onBlur={onRenameFinished}
+          placeholder={
+            isEngineConstant
+              ? engineConstantName
+              : defaultLocalisedConstantName(constantIndex)
+                  .toLocaleUpperCase()
+                  .replace(/\s/g, "_")
+          }
+          value={displayName || ""}
+          onChange={isEngineConstant ? undefined : onRename}
+          onBlur={isEngineConstant ? undefined : onRenameFinished}
+          readOnly={isEngineConstant}
         />
-        <DropdownButton
-          size="small"
-          variant="transparent"
-          menuDirection="right"
-        >
-          {!showSymbols && (
-            <MenuItem onClick={() => setShowSymbols(true)}>
-              {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+        {!isEngineConstant && (
+          <DropdownButton
+            size="small"
+            variant="transparent"
+            menuDirection="right"
+          >
+            {!showSymbols && (
+              <MenuItem onClick={() => setShowSymbols(true)}>
+                {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+              </MenuItem>
+            )}
+            <MenuDivider />
+            <MenuItem onClick={onRemove}>
+              {l10n("MENU_DELETE_CONSTANT")}
             </MenuItem>
-          )}
-          <MenuDivider />
-          <MenuItem onClick={onRemove}>{l10n("MENU_DELETE_CONSTANT")}</MenuItem>
-        </DropdownButton>
+          </DropdownButton>
+        )}
       </FormHeader>
 
       <SidebarColumn>
         <FormContainer>
-          {showSymbols && (
+          {showSymbols && !isEngineConstant && (
             <>
               <SymbolEditorWrapper>
                 <ConstantReference id={id} />
@@ -273,15 +297,16 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
               name="constantValue"
               label={l10n("FIELD_VALUE")}
               placeholder="0"
-              value={constant.value}
-              onChange={onChangeValue}
+              value={displayValue}
+              onChange={isEngineConstant ? undefined : onChangeValue}
               max={SIGNED_16BIT_MAX}
               min={SIGNED_16BIT_MIN}
+              readOnly={isEngineConstant}
             />
           </FormRow>
         </FormContainer>
 
-        <UsesWrapper ref={observe} showSymbols={showSymbols}>
+        <UsesWrapper ref={observe} $showSymbols={showSymbols}>
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_CONSTANT_USES")}
           </SplitPaneHeader>

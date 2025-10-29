@@ -30,6 +30,11 @@ export const StyledInput = styled.input<StyledInputProps>`
     opacity: 0.5;
   }
 
+  &:read-only {
+    background: ${(props) => props.theme.colors.input.border};
+    pointer-events: none;
+  }
+
   ${(props) => (props.$displaySize === "small" ? smallStyles : "")}
   ${(props) => (props.$displaySize === "large" ? largeStyles : "")}
 `;

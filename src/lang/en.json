@@ -1257,6 +1257,7 @@
   "FIELD_PUSH_END": "End Pushing State",
   "FIELD_ADVENTURE_STATE": "Adventure State",
   "FIELD_ADVENTURE_STATE_DESC": "The current internal state of the adventure scene",
+  "FIELD_ENGINE_CONSTANTS": "Engine Constants",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

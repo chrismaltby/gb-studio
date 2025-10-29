@@ -40,7 +40,7 @@ export const isVariable = (token: string): boolean => {
 };
 
 export const isConstant = (token: string): boolean => {
-  return !!/^@[a-z0-9-]{36}@$/i.exec(token);
+  return !!/^@([a-z0-9-]{36}|engine::[^@]+)@$/i.exec(token);
 };
 
 export const getPrecedence = (token: Token): number => {

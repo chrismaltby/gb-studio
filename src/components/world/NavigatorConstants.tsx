@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import { constantSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -11,37 +11,26 @@ import { Constant } from "shared/lib/resources/types";
 import { constantName } from "shared/lib/entities/entitiesHelpers";
 import { FlexRow, FlexGrow } from "ui/spacing/Spacing";
 import styled from "styled-components";
+import {
+  EntityNavigatorItem,
+  buildEntityNavigatorItems,
+} from "shared/lib/entities/buildEntityNavigatorItems";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorConstantsProps {
   height: number;
   searchTerm: string;
 }
 
-interface NavigatorItem {
-  id: string;
+interface ConstantItem extends Constant {
   name: string;
 }
-
-const constantToNavigatorItem = (
-  constant: Constant,
-  index: number,
-): NavigatorItem => ({
-  id: constant.id,
-  name: constantName(constant, index),
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
-  return collator.compare(a.name, b.name);
-};
 
 const ConstantValueLabel = styled.span`
   opacity: 0.5;
 `;
+
+const isEngineConstantId = (id: string) => id.startsWith("engine::");
 
 export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
   height,
@@ -49,26 +38,117 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
 }) => {
   const constants = useAppSelector(constantSelectors.selectAll);
   const constantsLookup = useAppSelector(constantSelectors.selectEntities);
-  const [items, setItems] = useState<NavigatorItem[]>([]);
+  const engineConstantsLookup = useAppSelector((state) => state.engine.consts);
 
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "constant" ? entityId : "";
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
-    setItems(
-      constants
-        .map((constant, index) => constantToNavigatorItem(constant, index))
-        .filter(
-          (value) =>
-            searchTermUpperCase.length === 0 ||
-            value.name.toLocaleUpperCase().includes(searchTermUpperCase),
-        )
-        .sort(sortByName),
+  const {
+    values: manuallyOpenedFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+  } = useToggleableList<string>([]);
+
+  const openFolders = useMemo(() => {
+    return [...manuallyOpenedFolders];
+  }, [manuallyOpenedFolders]);
+
+  const nestedConstantItems = useMemo(() => {
+    const userConstants = constants.map((constant, index) => ({
+      ...constant,
+      name: constantName(constant, index),
+    }));
+
+    const engineConstants = engineConstantsLookup
+      ? Object.entries(engineConstantsLookup).map(([name, value]) => ({
+          id: `engine::${name}`,
+          name,
+          symbol: name,
+          value: typeof value === "string" ? parseInt(value, 10) : value,
+        }))
+      : [];
+
+    if (searchTerm.length > 0) {
+      const searchTermUpperCase = searchTerm.toLocaleUpperCase();
+
+      const matchingUserConstants = userConstants.filter((constant) =>
+        constant.name.toLocaleUpperCase().includes(searchTermUpperCase),
+      );
+
+      const matchingEngineConstants = engineConstants.filter((constant) =>
+        constant.name.toLocaleUpperCase().includes(searchTermUpperCase),
+      );
+
+      const items: EntityNavigatorItem<ConstantItem>[] = [];
+
+      items.push(
+        ...matchingUserConstants.map((constant) => ({
+          id: constant.id,
+          type: "entity" as const,
+          name: constant.name,
+          filename: constant.name,
+          nestLevel: 0,
+          entity: constant,
+        })),
+      );
+
+      if (matchingEngineConstants.length > 0) {
+        items.push({
+          id: "engine_constants",
+          type: "folder",
+          name: l10n("FIELD_ENGINE_CONSTANTS"),
+          filename: l10n("FIELD_ENGINE_CONSTANTS"),
+          nestLevel: 0,
+        });
+
+        items.push(
+          ...matchingEngineConstants.map((constant) => ({
+            id: constant.id,
+            type: "entity" as const,
+            name: constant.name,
+            filename: constant.name,
+            nestLevel: 1,
+            entity: constant,
+          })),
+        );
+      }
+
+      return items;
+    }
+
+    const items = ([] as EntityNavigatorItem<ConstantItem>[]).concat(
+      buildEntityNavigatorItems(
+        userConstants,
+        openFolders,
+        searchTerm,
+        undefined,
+        0,
+      ),
+      {
+        id: "engine_constants",
+        type: "folder",
+        name: l10n("FIELD_ENGINE_CONSTANTS"),
+        filename: l10n("FIELD_ENGINE_CONSTANTS"),
+        nestLevel: 0,
+      },
     );
-  }, [searchTerm, constants]);
+
+    if (isFolderOpen("engine_constants")) {
+      items.push(
+        ...buildEntityNavigatorItems(
+          engineConstants,
+          openFolders,
+          searchTerm,
+          undefined,
+          1,
+        ),
+      );
+    }
+
+    return items;
+  }, [constants, engineConstantsLookup, openFolders, searchTerm, isFolderOpen]);
 
   const setSelectedId = (id: string) => {
     dispatch(editorActions.selectConstant({ constantId: id }));
@@ -105,7 +185,10 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: NavigatorItem) => {
+    (item: EntityNavigatorItem<ConstantItem>) => {
+      if (isEngineConstantId(item.id)) {
+        return [];
+      }
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
@@ -125,36 +208,65 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
   );
 
   const renderLabel = useCallback(
-    (item: NavigatorItem) => {
+    (item: EntityNavigatorItem<ConstantItem>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+
+      const value = isEngineConstantId(item.id)
+        ? item.entity?.value
+        : (constantsLookup[item.id]?.value ?? 0);
+
       return (
         <FlexRow>
           <FlexGrow style={{ overflow: "hidden", flexShrink: 0 }}>
-            {item.name}
+            {item.filename}
           </FlexGrow>
-          <ConstantValueLabel>
-            {constantsLookup[item.id]?.value ?? 0}
-          </ConstantValueLabel>
+          <ConstantValueLabel>{value}</ConstantValueLabel>
         </FlexRow>
       );
     },
-    [constantsLookup],
+    [constantsLookup, toggleFolderOpen],
   );
 
   return (
     <FlatList
       selectedId={selectedId}
-      items={items}
+      items={nestedConstantItems}
       setSelectedId={setSelectedId}
       height={height}
-      onKeyDown={listenForRenameStart}
+      onKeyDown={(e: KeyboardEvent, item) => {
+        listenForRenameStart(e);
+        if (item?.type === "folder") {
+          if (e.key === "ArrowRight") {
+            toggleFolderOpen(item.id);
+          } else if (e.key === "ArrowLeft") {
+            toggleFolderOpen(item.id);
+          }
+        }
+      }}
       children={({ item }) => (
         <EntityListItem
-          type="constant"
+          type={item.type === "folder" ? "folder" : "constant"}
           item={item}
-          rename={renameId === item.id}
+          rename={
+            item.type === "entity" &&
+            renameId === item.id &&
+            !isEngineConstantId(item.id)
+          }
           onRename={onRenameComplete}
           onRenameCancel={onRenameCancel}
-          renderContextMenu={renderContextMenu}
+          renderContextMenu={
+            item.type === "entity" && !isEngineConstantId(item.id)
+              ? renderContextMenu
+              : undefined
+          }
+          collapsable={item.type === "folder"}
+          collapsed={!isFolderOpen(item.id) && searchTerm.length === 0}
+          onToggleCollapse={() => toggleFolderOpen(item.id)}
+          nestLevel={item.nestLevel}
           renderLabel={renderLabel}
         />
       )}

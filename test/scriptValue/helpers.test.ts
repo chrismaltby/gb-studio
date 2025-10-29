@@ -2131,3 +2131,78 @@ describe("variableInScriptValue", () => {
     expect(result).toBe(false);
   });
 });
+
+describe("engine constants in expressions", () => {
+  test("should parse engine constants in expressionToScriptValue", () => {
+    const input = "@engine::MAX_HEALTH@ + 10";
+    const result = expressionToScriptValue(input);
+    expect(result).toMatchObject({
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::MAX_HEALTH",
+      },
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    });
+  });
+
+  test("should parse engine constants with underscores", () => {
+    const input = "@engine::PLAYER_MAX_SPEED@";
+    const result = expressionToScriptValue(input);
+    expect(result).toMatchObject({
+      type: "constant",
+      value: "engine::PLAYER_MAX_SPEED",
+    });
+  });
+
+  test("should parse engine constants with numbers", () => {
+    const input = "@engine::LEVEL_1_MAX@ + @engine::LEVEL_2_MAX@";
+    const result = expressionToScriptValue(input);
+    expect(result).toMatchObject({
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::LEVEL_1_MAX",
+      },
+      valueB: {
+        type: "constant",
+        value: "engine::LEVEL_2_MAX",
+      },
+    });
+  });
+
+  test("should handle engine constants mixed with user constants", () => {
+    const input =
+      "@550e8400-e29b-41d4-a716-446655440000@ * @engine::MULTIPLIER@";
+    const result = expressionToScriptValue(input);
+    expect(result).toMatchObject({
+      type: "mul",
+      valueA: {
+        type: "constant",
+        value: "550e8400-e29b-41d4-a716-446655440000",
+      },
+      valueB: {
+        type: "constant",
+        value: "engine::MULTIPLIER",
+      },
+    });
+  });
+
+  test("should handle engine constants in nested operations", () => {
+    const input = "(@engine::MAX_HP@ - $10$) * @engine::MULTIPLIER@";
+    const result = expressionToScriptValue(input);
+    expect(result).toMatchObject({
+      type: "mul",
+      valueA: {
+        type: "sub",
+      },
+      valueB: {
+        type: "constant",
+        value: "engine::MULTIPLIER",
+      },
+    });
+  });
+});

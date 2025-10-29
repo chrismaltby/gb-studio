@@ -248,6 +248,7 @@ export const replaceAutoLabelLocalValues = (
       /\|\|variable:([a-zA-Z0-9$-]+)\|\|/g,
       (match, id) => lookups.variableNameForId(id) ?? match,
     )
+    .replace(/\|\|constant:engine::([a-zA-Z0-9$-_]+)\|\|/g, (_match, id) => id)
     .replace(
       /\|\|constant:([a-zA-Z0-9$-]+)\|\|/g,
       (match, id) => lookups.constantNameForId(id) ?? match,

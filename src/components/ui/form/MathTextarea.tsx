@@ -15,7 +15,7 @@ import { portalRoot } from "ui/layout/Portal";
 import { ConstantSelect } from "components/forms/ConstantSelect";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
-const constRegex = /@([a-z0-9-]{36})@/g;
+const constRegex = /@([a-z0-9-]{36}|engine::[^@]+)@/g;
 
 const functionSymbols = [
   {
@@ -284,6 +284,7 @@ interface MathTextareaProps {
   placeholder?: string;
   variables: NamedVariable[];
   constants: NamedConstant[];
+  engineConstants?: Record<string, string | number>;
   onChange: (newValue: string) => void;
 }
 
@@ -304,6 +305,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   entityId,
   variables,
   constants,
+  engineConstants,
   placeholder,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -341,11 +343,22 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   useEffect(() => debouncedEvaluate.current(value), [value]);
 
   const constantOptions = useMemo(() => {
-    return constants.map((constant) => ({
+    const userConstants = constants.map((constant) => ({
       id: constant.id,
       display: constant.name,
     }));
-  }, [constants]);
+
+    const engineConstantOptions = engineConstants
+      ? Object.keys(engineConstants)
+          .sort()
+          .map((name) => ({
+            id: `engine::${name}`,
+            display: name,
+          }))
+      : [];
+
+    return [...userConstants, ...engineConstantOptions];
+  }, [constants, engineConstants]);
 
   const constantsLookup = useMemo(() => {
     return keyBy(constants, "id");
@@ -474,13 +487,17 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           trigger={/(([A-Z0-9_][A-Z0-9_]+))$/u}
           markup="@__id__@"
           data={constantOptions}
-          regex={/@([a-z0-9-]{36})@/}
+          regex={/@([a-z0-9-]{36}|engine::[^@]+)@/}
           displayTransform={(constant) =>
-            constantsLookup[constant]?.name || "0"
+            constant.startsWith("engine::")
+              ? constant.replace(/^engine::/, "")
+              : constantsLookup[constant]?.name || "0"
           }
           hoverTransform={(constant) =>
             `${l10n("FIELD_CONSTANT")}: ${
-              constantsLookup[constant]?.name || "0"
+              constant.startsWith("engine::")
+                ? constant.replace(/^engine::/, "")
+                : constantsLookup[constant]?.name || "0"
             }`
           }
           onClick={(e, id, index) => {

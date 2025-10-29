@@ -5829,6 +5829,9 @@ extern void __mute_mask_${symbol};
   };
 
   getConstantSymbol = (id: string): string => {
+    if (id.startsWith("engine::")) {
+      return id.replace(/^engine::/, "");
+    }
     const { constantsLookup } = this.options;
     const constant = constantsLookup[id];
     if (!constant) {

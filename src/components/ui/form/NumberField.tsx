@@ -23,6 +23,7 @@ export const NumberField: FC<NumberFieldProps> = ({
   value,
   min,
   max,
+  readOnly,
   placeholder,
   onChange,
 }) => (
@@ -35,6 +36,7 @@ export const NumberField: FC<NumberFieldProps> = ({
       value={value || ""}
       min={min}
       max={max}
+      readOnly={readOnly}
       placeholder={placeholder}
       onChange={onChange}
     />

@@ -87,3 +87,29 @@ test("should throw mismatched parenthesis", () => {
   expect(() => shuntingYard(input)).toThrow(/Mismatched parenthesis/);
   expect(() => shuntingYard(input2)).toThrow(/Mismatched parenthesis/);
 });
+
+test("should handle engine constants", () => {
+  const input: Token[] = [
+    { type: "CONST", symbol: "engine::MAX_HEALTH" },
+    { type: "OP", operator: "+" },
+    { type: "VAL", value: 10 },
+  ];
+  expect(shuntingYard(input)).toEqual([
+    { type: "CONST", symbol: "engine::MAX_HEALTH" },
+    { type: "VAL", value: 10 },
+    { type: "OP", operator: "+" },
+  ]);
+});
+
+test("should handle engine constants with user constants", () => {
+  const input: Token[] = [
+    { type: "CONST", symbol: "550e8400-e29b-41d4-a716-446655440000" },
+    { type: "OP", operator: "*" },
+    { type: "CONST", symbol: "engine::MULTIPLIER" },
+  ];
+  expect(shuntingYard(input)).toEqual([
+    { type: "CONST", symbol: "550e8400-e29b-41d4-a716-446655440000" },
+    { type: "CONST", symbol: "engine::MULTIPLIER" },
+    { type: "OP", operator: "*" },
+  ]);
+});

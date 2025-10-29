@@ -1,7 +1,8 @@
-import React, { useState, FC, useContext, useMemo } from "react";
+import React, { useState, FC, useMemo } from "react";
 import {
   Select as DefaultSelect,
   Option,
+  OptGroup,
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
@@ -11,7 +12,6 @@ import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { constantName } from "shared/lib/entities/entitiesHelpers";
 import { StyledScriptEventBranchHeader } from "ui/scripting/style";
@@ -131,25 +131,58 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
   allowRename,
   ...selectProps
 }) => {
-  const context = useContext(ScriptEditorContext);
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
   const constants = useAppSelector((state) =>
     constantSelectors.selectAll(state),
   );
+  const engineConstantsLookup = useAppSelector((state) => state.engine.consts);
   const currentConstant = useAppSelector((state) =>
     constantSelectors.selectById(state, value ?? ""),
   );
 
+  const isEngineConstant = value?.startsWith("engine::");
+  const engineConstantName = isEngineConstant
+    ? value?.replace(/^engine::/, "")
+    : "";
+
   const options = useMemo(() => {
-    return constants.map(
+    const userOptions: Option[] = constants.map(
       (constant, constantIndex): Option => ({
         value: constant.id,
         label: constantName(constant, constantIndex),
       }),
     );
-  }, [constants]);
+
+    const engineOptions: Option[] = engineConstantsLookup
+      ? Object.keys(engineConstantsLookup)
+          .sort()
+          .map(
+            (name): Option => ({
+              value: `engine::${name}`,
+              label: name,
+            }),
+          )
+      : [];
+
+    const groupedOptions: OptGroup[] = [
+      {
+        // label: l10n("SIDEBAR_CONSTANTS"),
+        label: "",
+        options: userOptions,
+      },
+    ];
+
+    if (engineOptions.length > 0) {
+      groupedOptions.push({
+        label: l10n("FIELD_ENGINE_CONSTANTS"),
+        options: engineOptions,
+      });
+    }
+
+    return groupedOptions;
+  }, [constants, engineConstantsLookup]);
 
   const currentValue: Option | undefined = useMemo(() => {
     if (currentConstant) {
@@ -161,8 +194,14 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
         ),
       };
     }
+    if (isEngineConstant && engineConstantName) {
+      return {
+        value: value ?? "",
+        label: engineConstantName,
+      };
+    }
     return undefined;
-  }, [constants, currentConstant]);
+  }, [constants, currentConstant, isEngineConstant, engineConstantName, value]);
 
   const dispatch = useAppDispatch();
 
@@ -205,14 +244,8 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
   const onJumpToConstant = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
-    if (e.altKey) {
-      if (
-        value &&
-        context.entityType !== "customEvent" &&
-        Number.isInteger(Number(value))
-      ) {
-        dispatch(editorActions.selectConstant({ constantId: value }));
-      }
+    if (e.altKey && value) {
+      dispatch(editorActions.selectConstant({ constantId: value }));
     }
   };
 
@@ -242,6 +275,7 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
       )}
       {allowRename &&
         currentConstant &&
+        !isEngineConstant &&
         (renameVisible ? (
           <ConstantRenameCompleteButton
             onClick={onRenameFinish}

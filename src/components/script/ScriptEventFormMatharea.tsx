@@ -43,6 +43,7 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
     customEventSelectors.selectById(state, entityId),
   );
   const allConstants = useAppSelector(constantSelectors.selectAll);
+  const engineConstants = useAppSelector((state) => state.engine.consts);
 
   const constants = useMemo(() => namedConstants(allConstants), [allConstants]);
 
@@ -60,6 +61,7 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
       onChange={onChange}
       variables={variables}
       constants={constants}
+      engineConstants={engineConstants}
       placeholder={placeholder}
     />
   );

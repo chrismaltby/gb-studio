@@ -4265,4 +4265,87 @@ describe("ScriptValue to RPN", () => {
     expect(extractRPN(script)).toMatchObject([".R_INT16    0"]);
     expect(fetchOps).toHaveLength(1);
   });
+
+  test("Should convert engine constants to RPN with symbol name", async () => {
+    const { sb } = await createTestScriptBuilder();
+    const scriptValue = {
+      type: "constant",
+      value: "engine::MAX_HEALTH",
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toMatchObject([".R_INT16    MAX_HEALTH"]);
+  });
+
+  test("Should convert expressions with engine constants and variables", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          "0": {
+            id: "0",
+            name: "Health",
+            symbol: "var_variable_0",
+          },
+        },
+      },
+    );
+    const scriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "constant",
+        value: "engine::BONUS_HEALTH",
+      },
+    } as const;
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(extractRPN(script)).toContain(".R_REF      VAR_VARIABLE_0");
+    expect(extractRPN(script)).toContain(".R_INT16    BONUS_HEALTH");
+  });
+
+  test("Should handle getConstantSymbol with engine constants", async () => {
+    const { sb } = await createTestScriptBuilder();
+    const symbol = sb.getConstantSymbol("engine::MAX_HEALTH");
+    expect(symbol).toBe("MAX_HEALTH");
+  });
+
+  test("Should handle getConstantSymbol with engine constants containing underscores and numbers", async () => {
+    const { sb } = await createTestScriptBuilder();
+    expect(sb.getConstantSymbol("engine::PLAYER_MAX_SPEED")).toBe(
+      "PLAYER_MAX_SPEED",
+    );
+    expect(sb.getConstantSymbol("engine::LEVEL_1_MAX")).toBe("LEVEL_1_MAX");
+  });
+
+  test("Should handle getConstantSymbol with user constants", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        constantsLookup: {
+          "550e8400-e29b-41d4-a716-446655440000": {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "MY_CONSTANT",
+            symbol: "const_my_constant",
+            value: 100,
+          },
+        },
+      },
+    );
+    const symbol = sb.getConstantSymbol("550e8400-e29b-41d4-a716-446655440000");
+    expect(symbol).toBe("CONST_MY_CONSTANT");
+  });
 });
