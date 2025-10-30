@@ -1250,6 +1250,7 @@
   "FIELD_PUSH_END": "押出し: 終了",
   "FIELD_ADVENTURE_STATE": "アドベンチャー状態",
   "FIELD_ADVENTURE_STATE_DESC": "現在のアドベンチャーシーン内の状態",
+  "FIELD_ENGINE_CONSTANTS": "エンジン定数",
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "検索...",
   "ASSET_EDIT": "編集",
