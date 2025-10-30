@@ -926,6 +926,23 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e16",
+    description: createDescription("Updates", [
+      "Optimise actor collision check functions",
+      "Optimise actor/actor collision checks in vm_actor_move_to",
+      "Fix issue in Adventure scene type where callbacks were not being reset on scene load",
+      'Fix issue in Adventure scene type where player could get stuck in "push" state when pushing against an actor that moved',
+      "Fix issue where setting dash and run input to same button in Platformer scenes would prevent player from being able to dash",
+    ]),
+    modifiedFiles: [
+      "include/collision.h",
+      "src/core/actor.c",
+      "src/core/vm_actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
