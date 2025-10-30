@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2086251028",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2087251030",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1257,7 +1257,8 @@
   "FIELD_PUSH_END": "Koniec stanu: popychanie",
   "FIELD_ADVENTURE_STATE": "Stan przygodowy",
   "FIELD_ADVENTURE_STATE_DESC": "Aktualny wewnętrzny stan sceny przygodowej",
-
+  "FIELD_ENGINE_CONSTANTS": "Stałe silnika",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1689,7 +1690,7 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Usuń skrypt od zdarzenia sceny przygodowej",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Usuwa przypisany skrypt reagujący na zmiany stanu w scenie przygodowej.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Usuń skrypt od zdarzenia sceny przygodowej: \"{event}\"",
-
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
