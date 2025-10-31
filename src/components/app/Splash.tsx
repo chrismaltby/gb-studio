@@ -22,7 +22,7 @@ import {
 } from "ui/splash/Splash";
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
-import logoFile from "ui/icons/GBStudioLogo.png";
+import logoFile from "ui/icons/app_icon_256.png";
 import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { DotsIcon, LoadingIcon } from "ui/icons/Icons";

@@ -62,7 +62,7 @@ export const SplashForm = styled.form`
 
 export const SplashLogo = styled.div`
   position: relative;
-  margin: 35px 20px 0;
+  margin: 35px 20px 5px;
   transition: transform 0.2s ease-in-out;
 
   img {

@@ -51,7 +51,10 @@ module.exports = async () => {
       icon: "src/assets/app/icon/app_icon",
       darwinDarkModeSupport: true,
       extendInfo: "src/assets/app/Info.plist",
-      extraResource: ["src/assets/app/icon/gbsproj.icns"],
+      extraResource: [
+        "src/assets/app/icon/gbsproj.icns",
+        "src/assets/app/icon/Assets.car",
+      ],
       afterCopy: ["./src/lib/forge/hooks/after-copy"],
       asar: true,
       appBundleId: "dev.gbstudio.gbstudio",

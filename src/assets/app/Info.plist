@@ -17,5 +17,7 @@
       <string>Editor</string>
     </dict>
   </array>
+  <key>CFBundleIconName</key>
+  <string>app_icon</string>     
 </dict>
 </plist>
