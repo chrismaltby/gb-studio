@@ -187,7 +187,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (value) {
+    if (value && background?._v) {
       dispatch(
         assetsActions.loadBackgroundAssetInfo({
           backgroundId: value,
@@ -196,7 +196,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
         }),
       );
     }
-  }, [dispatch, value, is360, tilesetId]);
+  }, [dispatch, value, is360, tilesetId, background?._v]);
 
   useEffect(() => {
     if (buttonFocus) {
