@@ -91,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
 - Changed plugin code evaluation from using [vm2](https://github.com/patriksimek/vm2) (which has been discontinued) to using [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
 - Add ability for engine constants (defined in engine.json) to be used anywhere that constant values are supported
+- Updated app icon to support macOS 26 liquid glass
 
 ### Fixed
 
