@@ -28,6 +28,9 @@ const engineIgnore = [
   "build",
   "third-party",
   "unused",
+  "readme.md",
+  "scheme.png",
+  "scheme2.png",
 ];
 
 const rmdir = promisify(rimraf);

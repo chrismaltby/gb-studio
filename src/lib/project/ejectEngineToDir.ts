@@ -21,7 +21,6 @@ const ejectEngineToDir = async (ejectPath: string) => {
 
   await copy(engineSrcPath, ejectSrcPath);
   await copy(engineIncludePath, ejectIncludePath);
-  console.log("COPY", { defaultEngineMetaPath, ejectMetaPath });
   await copy(defaultEngineMetaPath, ejectMetaPath);
 };
 
