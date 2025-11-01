@@ -1,416 +1,396 @@
 {
-  "fill-specializations" : [
+  "fill-specializations": [
     {
-      "value" : {
-        "linear-gradient" : [
+      "value": {
+        "linear-gradient": [
           "display-p3:0.91650,0.41089,0.60742,1.00000",
           "display-p3:0.73333,0.23816,0.43346,1.00000"
         ],
-        "orientation" : {
-          "start" : {
-            "x" : 0.5,
-            "y" : 0
+        "orientation": {
+          "start": {
+            "x": 0.5,
+            "y": 0
           },
-          "stop" : {
-            "x" : 0.5,
-            "y" : 0.7
+          "stop": {
+            "x": 0.5,
+            "y": 0.7
           }
         }
       }
     },
     {
-      "appearance" : "dark",
-      "value" : "system-dark"
+      "appearance": "dark",
+      "value": "system-dark"
     }
   ],
-  "groups" : [
+  "groups": [
     {
-      "hidden" : false,
-      "layers" : [
+      "hidden": false,
+      "layers": [
         {
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             },
             {
-              "appearance" : "tinted",
-              "value" : false
+              "appearance": "tinted",
+              "value": false
             }
           ],
-          "hidden-specializations" : [
+          "hidden-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "idiom" : "watchOS",
-              "value" : true
+              "idiom": "watchOS",
+              "value": true
             }
           ],
-          "image-name" : "IRSensorHighlight.png",
-          "name" : "IRSensorHighlight",
-          "opacity-specializations" : [
+          "image-name": "IRSensorHighlight.png",
+          "name": "IRSensorHighlight",
+          "opacity-specializations": [
             {
-              "value" : 0.5
+              "value": 0.5
             },
             {
-              "appearance" : "dark",
-              "value" : 0.3
+              "appearance": "dark",
+              "value": 0.3
             },
             {
-              "appearance" : "tinted",
-              "value" : 0
+              "appearance": "tinted",
+              "value": 0
             }
           ],
-          "position-specializations" : [
+          "position-specializations": [
             {
-              "idiom" : "square",
-              "value" : {
-                "scale" : 1,
-                "translation-in-points" : [
-                  0,
-                  0
-                ]
+              "idiom": "square",
+              "value": {
+                "scale": 1,
+                "translation-in-points": [0, 0]
               }
             }
           ]
         },
         {
-          "blend-mode-specializations" : [
+          "blend-mode-specializations": [
             {
-              "appearance" : "tinted",
-              "value" : "plus-darker"
+              "appearance": "tinted",
+              "value": "plus-darker"
             }
           ],
-          "fill-specializations" : [
+          "fill-specializations": [
             {
-              "value" : "automatic"
+              "value": "automatic"
             },
             {
-              "appearance" : "dark",
-              "value" : "none"
+              "appearance": "dark",
+              "value": "none"
             },
             {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "extended-gray:0.50000,1.00000"
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.50000,1.00000"
               }
             }
           ],
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             },
             {
-              "appearance" : "tinted",
-              "value" : false
+              "appearance": "tinted",
+              "value": false
             }
           ],
-          "hidden-specializations" : [
+          "hidden-specializations": [
             {
-              "idiom" : "watchOS",
-              "value" : true
+              "idiom": "watchOS",
+              "value": true
             }
           ],
-          "image-name" : "IRSensor.png",
-          "name" : "IRSensor",
-          "opacity-specializations" : [
+          "image-name": "IRSensor.png",
+          "name": "IRSensor",
+          "opacity-specializations": [
             {
-              "value" : 1
+              "value": 1
             },
             {
-              "appearance" : "dark",
-              "value" : 0.7
+              "appearance": "dark",
+              "value": 0.7
             }
           ],
-          "position-specializations" : [
+          "position-specializations": [
             {
-              "idiom" : "square",
-              "value" : {
-                "scale" : 1,
-                "translation-in-points" : [
-                  0,
-                  0
-                ]
+              "idiom": "square",
+              "value": {
+                "scale": 1,
+                "translation-in-points": [0, 0]
               }
             }
           ]
         },
         {
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             },
             {
-              "appearance" : "tinted",
-              "value" : false
+              "appearance": "tinted",
+              "value": false
             }
           ],
-          "hidden" : false,
-          "image-name" : "SpeakerGrilleHighlight.png",
-          "name" : "SpeakerGrilleHighlight",
-          "opacity-specializations" : [
+          "hidden": false,
+          "image-name": "SpeakerGrilleHighlight.png",
+          "name": "SpeakerGrilleHighlight",
+          "opacity-specializations": [
             {
-              "value" : 1
+              "value": 1
             },
             {
-              "appearance" : "dark",
-              "value" : 0.8
+              "appearance": "dark",
+              "value": 0.8
             },
             {
-              "appearance" : "tinted",
-              "value" : 0
+              "appearance": "tinted",
+              "value": 0
             }
           ],
-          "position-specializations" : [
+          "position-specializations": [
             {
-              "idiom" : "watchOS",
-              "value" : {
-                "scale" : 1,
-                "translation-in-points" : [
-                  -50,
-                  0
-                ]
+              "idiom": "watchOS",
+              "value": {
+                "scale": 1,
+                "translation-in-points": [-50, 0]
               }
             }
           ]
         },
         {
-          "fill-specializations" : [
+          "fill-specializations": [
             {
-              "value" : {
-                "solid" : "srgb:0.00000,0.00000,0.00000,0.50000"
+              "value": {
+                "solid": "srgb:0.00000,0.00000,0.00000,0.50000"
               }
             },
             {
-              "appearance" : "dark",
-              "value" : {
-                "solid" : "extended-gray:0.00000,1.00000"
+              "appearance": "dark",
+              "value": {
+                "solid": "extended-gray:0.00000,1.00000"
               }
             },
             {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "extended-gray:0.50000,1.00000"
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.50000,1.00000"
               }
             }
           ],
-          "glass" : false,
-          "hidden" : false,
-          "image-name" : "SpeakerGrille.png",
-          "name" : "SpeakerGrille",
-          "position-specializations" : [
+          "glass": false,
+          "hidden": false,
+          "image-name": "SpeakerGrille.png",
+          "name": "SpeakerGrille",
+          "position-specializations": [
             {
-              "idiom" : "watchOS",
-              "value" : {
-                "scale" : 1,
-                "translation-in-points" : [
-                  -50,
-                  0
-                ]
+              "idiom": "watchOS",
+              "value": {
+                "scale": 1,
+                "translation-in-points": [-50, 0]
               }
             }
           ]
         }
       ],
-      "name" : "Outer",
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+      "name": "Outer",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
       },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
       }
     },
     {
-      "blur-material" : null,
-      "layers" : [
+      "blur-material": null,
+      "layers": [
         {
-          "blend-mode" : "screen",
-          "glass-specializations" : [
+          "blend-mode": "screen",
+          "glass-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             }
           ],
-          "hidden" : false,
-          "image-name" : "PowerLightGlow.png",
-          "name" : "PowerLightGlow",
-          "opacity-specializations" : [
+          "hidden": false,
+          "image-name": "PowerLightGlow.png",
+          "name": "PowerLightGlow",
+          "opacity-specializations": [
             {
-              "value" : 1
+              "value": 1
             },
             {
-              "appearance" : "tinted",
-              "value" : 0
+              "appearance": "tinted",
+              "value": 0
             }
           ]
         },
         {
-          "blend-mode-specializations" : [
+          "blend-mode-specializations": [
             {
-              "value" : "plus-lighter"
+              "value": "plus-lighter"
             },
             {
-              "appearance" : "dark",
-              "value" : "plus-lighter"
+              "appearance": "dark",
+              "value": "plus-lighter"
             },
             {
-              "appearance" : "tinted",
-              "value" : "multiply"
+              "appearance": "tinted",
+              "value": "multiply"
             }
           ],
-          "fill-specializations" : [
+          "fill-specializations": [
             {
-              "value" : "none"
+              "value": "none"
             },
             {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "extended-gray:0.00000,1.00000"
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.00000,1.00000"
               }
             }
           ],
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             }
           ],
-          "hidden" : false,
-          "image-name" : "Logo.png",
-          "name" : "Logo"
+          "hidden": false,
+          "image-name": "Logo.png",
+          "name": "Logo"
         },
         {
-          "glass" : false,
-          "image-name" : "PowerLight.png",
-          "name" : "PowerLight",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
+          "glass": false,
+          "image-name": "PowerLight.png",
+          "name": "PowerLight",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [0, 0]
           }
         },
         {
-          "blend-mode" : "normal",
-          "fill-specializations" : [
+          "blend-mode": "normal",
+          "fill-specializations": [
             {
-              "value" : "automatic"
+              "value": "automatic"
             },
             {
-              "appearance" : "dark",
-              "value" : "automatic"
+              "appearance": "dark",
+              "value": "automatic"
             },
             {
-              "appearance" : "tinted",
-              "value" : {
-                "automatic-gradient" : "display-p3:0.00000,0.00000,0.00000,1.00000"
+              "appearance": "tinted",
+              "value": {
+                "automatic-gradient": "display-p3:0.00000,0.00000,0.00000,1.00000"
               }
             }
           ],
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "appearance" : "dark",
-              "value" : false
+              "appearance": "dark",
+              "value": false
             },
             {
-              "appearance" : "tinted",
-              "value" : true
+              "appearance": "tinted",
+              "value": true
             }
           ],
-          "image-name" : "Screen.png",
-          "name" : "Screen"
+          "image-name": "Screen.png",
+          "name": "Screen"
         },
         {
-          "blend-mode" : "normal",
-          "fill-specializations" : [
+          "blend-mode": "normal",
+          "fill-specializations": [
             {
-              "value" : "automatic"
+              "value": "automatic"
             },
             {
-              "appearance" : "tinted",
-              "value" : {
-                "linear-gradient" : [
+              "appearance": "tinted",
+              "value": {
+                "linear-gradient": [
                   "extended-gray:0.50000,1.00000",
                   "display-p3:1.00000,1.00000,1.00000,1.00000"
                 ],
-                "orientation" : {
-                  "start" : {
-                    "x" : 0.5,
-                    "y" : 0
+                "orientation": {
+                  "start": {
+                    "x": 0.5,
+                    "y": 0
                   },
-                  "stop" : {
-                    "x" : 0.5,
-                    "y" : 0.7
+                  "stop": {
+                    "x": 0.5,
+                    "y": 0.7
                   }
                 }
               }
             }
           ],
-          "glass-specializations" : [
+          "glass-specializations": [
             {
-              "value" : false
+              "value": false
             },
             {
-              "appearance" : "tinted",
-              "value" : true
+              "appearance": "tinted",
+              "value": true
             }
           ],
-          "image-name" : "Frame.png",
-          "name" : "Frame",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
+          "image-name": "Frame.png",
+          "name": "Frame",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [0, 0]
           }
         }
       ],
-      "name" : "Inner",
-      "shadow-specializations" : [
+      "name": "Inner",
+      "shadow-specializations": [
         {
-          "value" : {
-            "kind" : "layer-color",
-            "opacity" : 0.5
+          "value": {
+            "kind": "layer-color",
+            "opacity": 0.5
           }
         },
         {
-          "appearance" : "dark",
-          "value" : {
-            "kind" : "layer-color",
-            "opacity" : 0.3
+          "appearance": "dark",
+          "value": {
+            "kind": "layer-color",
+            "opacity": 0.3
           }
         }
       ],
-      "specular" : true,
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
       }
     }
   ],
-  "supported-platforms" : {
-    "circles" : [
-      "watchOS"
-    ],
-    "squares" : "shared"
+  "supported-platforms": {
+    "circles": ["watchOS"],
+    "squares": "shared"
   }
 }
