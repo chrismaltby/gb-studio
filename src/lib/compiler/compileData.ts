@@ -1507,6 +1507,7 @@ const compile = async (
           loop,
           lock,
           engineFields: precompiledEngineFields,
+          engineFieldValues: projectData.engineFieldValues.engineFieldValues,
           output: [],
           additionalScripts,
           additionalOutput,
