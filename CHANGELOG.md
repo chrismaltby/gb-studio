@@ -92,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed plugin code evaluation from using [vm2](https://github.com/patriksimek/vm2) (which has been discontinued) to using [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
 - Add ability for engine constants (defined in engine.json) to be used anywhere that constant values are supported
 - Updated app icon to support macOS 26 liquid glass
+- Expose engineFieldValues for use within event plugins [@Mico27](https://github.com/Mico27)
 
 ### Fixed
 

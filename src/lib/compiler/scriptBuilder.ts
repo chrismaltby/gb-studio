@@ -16,6 +16,7 @@ import type {
   CustomEvent,
   SoundData,
   TimeUnitType,
+  EngineFieldValue,
 } from "shared/lib/entities/entitiesTypes";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -193,6 +194,7 @@ export interface ScriptBuilderOptions {
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
   engineFields: Record<string, EngineFieldSchema>;
+  engineFieldValues: EngineFieldValue[];
   settings: SettingsState;
   additionalScripts: Record<
     string,
@@ -750,6 +752,7 @@ class ScriptBuilder {
       variableAliasLookup: options.variableAliasLookup || {},
       constantsLookup: options.constantsLookup || {},
       engineFields: options.engineFields || {},
+      engineFieldValues: options.engineFieldValues || [],
       scenes: options.scenes || [],
       sprites: options.sprites || [],
       backgrounds: options.backgrounds || [],
@@ -772,7 +775,7 @@ class ScriptBuilder {
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
-        options.compiledCustomEventScriptCache ?? {},
+      options.compiledCustomEventScriptCache ?? {},
       recursiveSymbolMap: options.recursiveSymbolMap ?? {},
       additionalScriptsCache: options.additionalScriptsCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
