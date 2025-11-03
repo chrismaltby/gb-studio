@@ -559,6 +559,26 @@ describe("migrateFrom420r4To420r5Event", () => {
     });
   });
 
+  test("should migrate EVENT_OVERLAY_MOVE_TO event speed to number if was string value but greater than 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: "2",
+      },
+    };
+    expect(migrateFrom420r4To420r5Event(oldEvent)).toMatchObject({
+      command: "EVENT_OVERLAY_MOVE_TO",
+      args: {
+        x: 5,
+        y: 9,
+        speed: 2,
+      },
+    });
+  });
+
   test("should migrate EVENT_TEXT event instant in/out speeds", () => {
     const oldEvent: ScriptEvent = {
       id: "event1",

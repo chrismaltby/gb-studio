@@ -193,16 +193,18 @@ export const migrateFrom420r4To420r5Event: ScriptEventMigrationFn = (
 
   const migrateSpeedInstant = (key: string) => {
     if (eventHasArg(scriptEvent, key)) {
-      const speed = ensureNumber(args[key], 0);
+      const speed = ensureNumber(parseInt(String(args[key]), 10), 0);
       if (speed === 0) {
         args[key] = OVERLAY_SPEED_INSTANT;
+      } else {
+        args[key] = speed;
       }
     }
   };
 
   const migrateSpeedInstantAndOffset = (key: string) => {
     if (eventHasArg(scriptEvent, key)) {
-      const speed = ensureNumber(args[key], 0);
+      const speed = ensureNumber(parseInt(String(args[key]), 10), 0);
       if (speed === 0) {
         args[key] = OVERLAY_SPEED_INSTANT;
       } else if (speed > 0) {
