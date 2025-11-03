@@ -943,6 +943,13 @@ const changes: EngineChange[] = [
       "src/states/platform.c",
     ],
   },
+  {
+    version: "4.2.0-e17",
+    description: createDescription("Updates", [
+      "Improve collisions in adventure mode when multiple actors are colliding with player on the same frame",
+    ]),
+    modifiedFiles: ["src/states/adventure.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
