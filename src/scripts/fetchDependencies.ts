@@ -11,37 +11,37 @@ const buildToolsRoot = Path.join(
 const dependencies = {
   "darwin-arm64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos-arm64.tar.gz",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-macos-arm64.tar.gz",
       type: "targz",
     },
   },
   "darwin-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos.tar.gz",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-macos.tar.gz",
       type: "targz",
     },
   },
   "linux-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux64.tar.gz",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-linux64.tar.gz",
       type: "targz",
     },
   },
   "linux-arm64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux-arm64.tar.gz",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-linux-arm64.tar.gz",
       type: "targz",
     },
   },
   "win32-ia32": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win32.zip",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-win32.zip",
       type: "zip",
     },
   },
   "win32-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win64.zip",
+      url: "https://github.com/chrismaltby/gbdk-2020/releases/download/gbdk-4.5.0-rc/gbdk-win64.zip",
       type: "zip",
     },
   },
