@@ -775,7 +775,7 @@ class ScriptBuilder {
       maxDepth: options.maxDepth ?? 5,
       debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
-      options.compiledCustomEventScriptCache ?? {},
+        options.compiledCustomEventScriptCache ?? {},
       recursiveSymbolMap: options.recursiveSymbolMap ?? {},
       additionalScriptsCache: options.additionalScriptsCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
