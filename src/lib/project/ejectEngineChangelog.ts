@@ -950,6 +950,13 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/states/adventure.c"],
   },
+  {
+    version: "4.2.0-e18",
+    description: createDescription("Updates", [
+      "Improved shoot em up scene type to allow configuring free/locked movement and setting trigger activation conditions",
+    ]),
+    modifiedFiles: ["include/actor.h", "include/math.h", "src/states/shmup.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

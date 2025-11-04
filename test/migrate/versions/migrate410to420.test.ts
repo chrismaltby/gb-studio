@@ -7,6 +7,7 @@ import {
   migrateFrom420r3To420r4Event,
   migrateFrom420r3To420r4Sprites,
   migrateFrom420r4To420r5Event,
+  migrateFrom420r5To420r6EngineFields,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
@@ -657,5 +658,74 @@ describe("migrateFrom420r4To420r5Event", () => {
         speedOut: 4,
       },
     });
+  });
+});
+
+describe("migrateFrom420r5To420r6EngineFields", () => {
+  const getFieldValue = (
+    values: { engineFieldValues: EngineFieldValue[] },
+    id: string,
+  ) => {
+    return (
+      values.engineFieldValues.find(
+        (field: EngineFieldValue) => field.id === id,
+      )?.value || null
+    );
+  };
+
+  test("should set SHOOTER_MOVEMENT_TYPE to match previous default", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      engineFieldValues: {
+        ...dummyCompressedProjectResources.engineFieldValues,
+        engineFieldValues: [],
+      },
+    };
+    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    expect(
+      getFieldValue(migrated.engineFieldValues, "SHOOTER_MOVEMENT_TYPE"),
+    ).toEqual("MOVEMENT_TYPE_LOCK_PERPENDICULAR");
+  });
+
+  test("should set SHOOTER_TRIGGER_ACTIVATION to match previous default", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      engineFieldValues: {
+        ...dummyCompressedProjectResources.engineFieldValues,
+        engineFieldValues: [],
+      },
+    };
+    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    expect(
+      getFieldValue(migrated.engineFieldValues, "SHOOTER_TRIGGER_ACTIVATION"),
+    ).toEqual("ON_PLAYER_COLLISION");
+  });
+
+  test("should set SHOOTER_WALL_COLLISION_GROUP to match previous default", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      engineFieldValues: {
+        ...dummyCompressedProjectResources.engineFieldValues,
+        engineFieldValues: [],
+      },
+    };
+    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    expect(
+      getFieldValue(migrated.engineFieldValues, "SHOOTER_WALL_COLLISION_GROUP"),
+    ).toEqual("COLLISION_GROUP_NONE");
+  });
+
+  test("should not modify other engine fields", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      engineFieldValues: {
+        ...dummyCompressedProjectResources.engineFieldValues,
+        engineFieldValues: [{ id: "other_field", value: 10 }],
+      },
+    };
+    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    expect(getFieldValue(migrated.engineFieldValues, "other_field")).toEqual(
+      10,
+    );
   });
 });

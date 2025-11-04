@@ -238,3 +238,48 @@ export const migrate420r4To420r5: ProjectResourcesMigration = {
   to: { version: "4.2.0", release: "5" },
   migrationFn: createScriptEventsMigrator(migrateFrom420r4To420r5Event),
 };
+
+export const migrateFrom420r5To420r6EngineFields: ProjectResourcesMigrationFn =
+  (resources) => {
+    const engineFieldValues = resources.engineFieldValues.engineFieldValues;
+
+    const hasFieldValue = (id: string) => {
+      return engineFieldValues.some((fieldValue) => fieldValue.id === id);
+    };
+
+    const setDefaultFieldValue = (
+      id: string,
+      value: string | number | undefined,
+    ) => {
+      if (!hasFieldValue(id)) {
+        engineFieldValues.push({
+          id: id,
+          value,
+        });
+      }
+    };
+
+    setDefaultFieldValue(
+      "SHOOTER_MOVEMENT_TYPE",
+      "MOVEMENT_TYPE_LOCK_PERPENDICULAR",
+    );
+    setDefaultFieldValue("SHOOTER_TRIGGER_ACTIVATION", "ON_PLAYER_COLLISION");
+    setDefaultFieldValue(
+      "SHOOTER_WALL_COLLISION_GROUP",
+      "COLLISION_GROUP_NONE",
+    );
+
+    return {
+      ...resources,
+      engineFieldValues: {
+        ...resources.engineFieldValues,
+        engineFieldValues,
+      },
+    };
+  };
+
+export const migrate420r5To420r6: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "5" },
+  to: { version: "4.2.0", release: "6" },
+  migrationFn: migrateFrom420r5To420r6EngineFields,
+};

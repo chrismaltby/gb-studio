@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e17",
+  "version": "4.2.0-e18",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -1469,6 +1469,20 @@
       "runtimeOnly": true
     },
     {
+      "key": "SHOOTER_MOVEMENT_TYPE",
+      "sceneType": "SHMUP",
+      "label": "FIELD_MOVEMENT_TYPE",
+      "description": "FIELD_SHMUP_MOVEMENT_TYPE_DESC",
+      "group": "GAMETYPE_SHMUP",
+      "type": "select",
+      "options": [
+        ["MOVEMENT_TYPE_FREE", "FIELD_FREE_MOVEMENT"],
+        ["MOVEMENT_TYPE_LOCK_PERPENDICULAR", "FIELD_LOCKED_MOVEMENT"]
+      ],
+      "cType": "define",
+      "defaultValue": "MOVEMENT_TYPE_FREE"
+    },    
+    {
       "key": "shooter_scroll_speed",
       "sceneType": "SHMUP",
       "label": "FIELD_SCROLL_SPEED",
@@ -1481,6 +1495,36 @@
       "max": 128,
       "editUnits": "subpxVel"
     },
+    {
+      "key": "SHOOTER_TRIGGER_ACTIVATION",
+      "sceneType": "SHMUP",
+      "label": "FIELD_TRIGGER_ACTIVATION",
+      "description": "FIELD_TRIGGER_ACTIVATION_DESC",
+      "group": "GAMETYPE_SHMUP",
+      "type": "select",
+      "options": [
+        ["ON_PLAYER_COLLISION", "FIELD_ON_PLAYER_COLLISION"],
+        ["ON_SCREEN_ENTER", "FIELD_ON_SCREEN_ENTER"]
+      ],
+      "cType": "define",
+      "defaultValue": "ON_PLAYER_COLLISION"
+    },
+    {
+      "key": "SHOOTER_WALL_COLLISION_GROUP",
+      "sceneType": "SHMUP",
+      "label": "FIELD_WALL_COLLISION_GROUP",
+      "description": "FIELD_WALL_COLLISION_GROUP_DESC",
+      "group": "GAMETYPE_SHMUP",
+      "type": "togglebuttons",
+      "options": [
+        ["COLLISION_GROUP_NONE", "FIELD_NONE"],
+        ["COLLISION_GROUP_1", "1"],
+        ["COLLISION_GROUP_2", "2"],
+        ["COLLISION_GROUP_3", "3"]
+      ],
+      "cType": "define",
+      "defaultValue": "COLLISION_GROUP_NONE"
+    },    
     {
       "key": "INPUT_TOPDOWN_INTERACT",
       "sceneType": "TOPDOWN",

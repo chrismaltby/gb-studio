@@ -9,6 +9,7 @@ import {
   migrate420r2To420r3,
   migrate420r3To420r4,
   migrate420r4To420r5,
+  migrate420r5To420r6,
 } from "./versions/410to420";
 
 const migrations: ProjectResourcesMigration[] = [
@@ -18,6 +19,7 @@ const migrations: ProjectResourcesMigration[] = [
   migrate420r2To420r3,
   migrate420r3To420r4,
   migrate420r4To420r5,
+  migrate420r5To420r6,
 ];
 
 const lastMigration = migrations[migrations.length - 1];
