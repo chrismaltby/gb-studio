@@ -216,6 +216,7 @@ test("Should be able to generate script string", async () => {
   });
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
+  sb._packLocals();
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.module MY_SCRIPT
 
@@ -329,6 +330,7 @@ test("Should be able to wait mid-text in dialogue boxes", async () => {
   });
   sb.textDialogue("Hello!W:5f!World");
   sb.scriptEnd();
+  sb._packLocals();
 
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.module MY_SCRIPT

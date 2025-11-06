@@ -2760,12 +2760,23 @@ extern void __mute_mask_${symbol};
       this.localsLookup[asmSymbol] = {
         symbol: asmSymbol,
         size,
-        addr: this.localsSize,
+        addr: 0,
         firstUse: this.output.length,
         lastUse: this.output.length,
       };
     } else {
-      this.localsLookup[asmSymbol].lastUse = this.output.length;
+      this.localsLookup[asmSymbol].size = Math.max(
+        size,
+        this.localsLookup[asmSymbol].size,
+      );
+      this.localsLookup[asmSymbol].firstUse = Math.min(
+        this.output.length,
+        this.localsLookup[asmSymbol].firstUse,
+      );
+      this.localsLookup[asmSymbol].lastUse = Math.max(
+        this.output.length,
+        this.localsLookup[asmSymbol].lastUse,
+      );
     }
     return asmSymbol;
   };

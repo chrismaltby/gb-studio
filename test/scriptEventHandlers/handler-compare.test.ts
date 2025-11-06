@@ -623,6 +623,9 @@ describe("Compare output from trusted and untrusted plugin handlers", () => {
           data.input,
         );
 
+        qSb._packLocals();
+        eSb._packLocals();
+
         const qScriptString = qSb.toScriptString("script", true);
         const eScriptString = eSb.toScriptString("script", true);
 
