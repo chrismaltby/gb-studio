@@ -1862,21 +1862,8 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
-  _actorSetBounds = (
-    addr: string,
-    left: number,
-    right: number,
-    top: number,
-    bottom: number,
-  ) => {
-    this._addCmd(
-      "VM_ACTOR_SET_BOUNDS",
-      addr,
-      pxToSubpx(left),
-      pxToSubpx(right),
-      pxToSubpx(top),
-      pxToSubpx(bottom),
-    );
+  _actorSetBounds = (addr: string) => {
+    this._addCmd("VM_ACTOR_SET_BOUNDS", addr);
   };
 
   _actorSetAnimTick = (addr: string, tick: number) => {
@@ -3533,9 +3520,114 @@ extern void __mute_mask_${symbol};
     top: number,
     bottom: number,
   ) => {
-    const actorRef = this._declareLocal("actor", 4);
+    const stackPtr = this.stackPtr;
+    const actorRef = this._declareLocal("actor", 5);
     this._addComment("Actor Set Bounds");
-    this._actorSetBounds(actorRef, left, right, top, bottom);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate values`);
+
+    // Left Value
+    rpn.int16(pxToSubpx(left));
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Right Value
+    rpn.int16(pxToSubpx(right));
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    // Top Value
+    rpn.int16(pxToSubpx(top));
+    rpn.refSet(this._localRef(actorRef, 3));
+
+    // Bottom Value
+    rpn.int16(pxToSubpx(bottom));
+    rpn.refSet(this._localRef(actorRef, 4));
+
+    rpn.stop();
+    this._addComment(`-- Set Bounds`);
+    this._actorSetBounds(actorRef);
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorSetBoundToScriptValues = (
+    actorId: string,
+    valueLeft: ScriptValue,
+    valueTop: ScriptValue,
+    valueWidth: ScriptValue,
+    valueHeight: ScriptValue,
+  ) => {
+    const stackPtr = this.stackPtr;
+    const actorRef = this._declareLocal("actor", 5);
+    this._addComment("Actor Set Bounds");
+
+    const [rpnOpsLeft, fetchOpsLeft] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToSubpixels(valueLeft, "pixels")),
+      "left",
+    );
+    const [rpnOpsRight, fetchOpsRight] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          scriptValueToSubpixels(
+            addScriptValueToScriptValue(valueLeft, valueWidth),
+            "pixels",
+          ),
+          1,
+        ),
+      ),
+      "right",
+    );
+    const [rpnOpsTop, fetchOpsTop] = precompileScriptValue(
+      optimiseScriptValue(scriptValueToSubpixels(valueTop, "pixels")),
+      "top",
+    );
+    const [rpnOpsBottom, fetchOpsBottom] = precompileScriptValue(
+      optimiseScriptValue(
+        subScriptValueConst(
+          scriptValueToSubpixels(
+            addScriptValueToScriptValue(valueTop, valueHeight),
+            "pixels",
+          ),
+          1,
+        ),
+      ),
+      "bottom",
+    );
+
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsLeft,
+      ...fetchOpsRight,
+      ...fetchOpsTop,
+      ...fetchOpsBottom,
+    ]);
+
+    const rpn = this._rpn();
+
+    this._addComment(`-- Calculate bounds values`);
+
+    // Left Value
+    this._performValueRPN(rpn, rpnOpsLeft, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 1));
+
+    // Right Value
+    this._performValueRPN(rpn, rpnOpsRight, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 2));
+
+    // Top Value
+    this._performValueRPN(rpn, rpnOpsTop, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 3));
+
+    // Bottom Value
+    this._performValueRPN(rpn, rpnOpsBottom, localsLookup);
+    rpn.refSet(this._localRef(actorRef, 4));
+
+    rpn.stop();
+
+    this._addComment(`-- Set Bounds`);
+    this.actorSetById(actorId);
+    this._actorSetBounds(actorRef);
+    this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 

@@ -283,3 +283,42 @@ export const migrate420r5To420r6: ProjectResourcesMigration = {
   to: { version: "4.2.0", release: "6" },
   migrationFn: migrateFrom420r5To420r6EngineFields,
 };
+
+export const migrateFrom420r6To420r7Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.args &&
+    scriptEvent.command === "EVENT_ACTOR_SET_COLLISION_BOX"
+  ) {
+    const args: Record<string, unknown> = { ...scriptEvent.args };
+    // Convert to constvalue
+    args["x"] = {
+      type: "number",
+      value: ensureNumber(parseInt(String(args["x"]), 10), 0),
+    };
+    args["y"] = {
+      type: "number",
+      value: ensureNumber(parseInt(String(args["y"]), 10), -8),
+    };
+    args["width"] = {
+      type: "number",
+      value: ensureNumber(parseInt(String(args["width"]), 10), 16),
+    };
+    args["height"] = {
+      type: "number",
+      value: ensureNumber(parseInt(String(args["height"]), 10), 16),
+    };
+    return {
+      ...scriptEvent,
+      args,
+    };
+  }
+  return scriptEvent;
+};
+
+export const migrate420r6To420r7: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "6" },
+  to: { version: "4.2.0", release: "7" },
+  migrationFn: createScriptEventsMigrator(migrateFrom420r6To420r7Event),
+};

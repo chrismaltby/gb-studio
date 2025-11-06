@@ -8,6 +8,7 @@ import {
   migrateFrom420r3To420r4Sprites,
   migrateFrom420r4To420r5Event,
   migrateFrom420r5To420r6EngineFields,
+  migrateFrom420r6To420r7Event,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
@@ -727,5 +728,107 @@ describe("migrateFrom420r5To420r6EngineFields", () => {
     expect(getFieldValue(migrated.engineFieldValues, "other_field")).toEqual(
       10,
     );
+  });
+});
+
+describe("migrateFrom420r6To420r7Event", () => {
+  test("should migrate EVENT_ACTOR_SET_COLLISION_BOX args to const values", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 5,
+        y: -10,
+        width: 12,
+        height: 14,
+      },
+    };
+    expect(migrateFrom420r6To420r7Event(oldEvent)).toMatchObject({
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: { type: "number", value: 5 },
+        y: { type: "number", value: -10 },
+        width: { type: "number", value: 12 },
+        height: { type: "number", value: 14 },
+      },
+    });
+  });
+
+  test("should migrate EVENT_ACTOR_SET_COLLISION_BOX string args to const values", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: "5",
+        y: "-10",
+        width: "22",
+        height: "24",
+      },
+    };
+    expect(migrateFrom420r6To420r7Event(oldEvent)).toMatchObject({
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: { type: "number", value: 5 },
+        y: { type: "number", value: -10 },
+        width: { type: "number", value: 22 },
+        height: { type: "number", value: 24 },
+      },
+    });
+  });
+
+  test("should migrate EVENT_ACTOR_SET_COLLISION_BOX with default values when missing", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+      },
+    };
+    expect(migrateFrom420r6To420r7Event(oldEvent)).toMatchObject({
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: { type: "number", value: 0 },
+        y: { type: "number", value: -8 },
+        width: { type: "number", value: 16 },
+        height: { type: "number", value: 16 },
+      },
+    });
+  });
+
+  test("should not mutate input", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ACTOR_SET_COLLISION_BOX",
+      args: {
+        actorId: "actor123",
+        x: 5,
+        y: -10,
+        width: 12,
+        height: 14,
+      },
+    };
+    const inputClone = cloneDeep(input);
+    migrateFrom420r6To420r7Event(input);
+    expect(input).toEqual(inputClone);
+  });
+
+  test("should not modify non-collision-box events", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_FOO",
+      args: {
+        x: 5,
+        y: 10,
+        width: 12,
+        height: 14,
+      },
+    };
+    const output = migrateFrom420r6To420r7Event(input);
+    expect(output).toEqual(input);
   });
 });

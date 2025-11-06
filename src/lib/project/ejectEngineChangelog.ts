@@ -957,6 +957,18 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["include/actor.h", "include/math.h", "src/states/shmup.c"],
   },
+  {
+    version: "4.2.0-e19",
+    description: createDescription("Updates", [
+      "Update VM_ACTOR_SET_BOUNDS to allow setting calculated coordinates",
+    ]),
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_actor.h",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

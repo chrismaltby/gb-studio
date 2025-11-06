@@ -1,23 +1,26 @@
 import { compile } from "../../src/lib/events/eventActorSetCollisionBox";
 
 test("Should set player collision box", () => {
-  const mockactorSetActive = jest.fn();
-  const mockActorSetBounds = jest.fn();
+  const mockActorSetBoundToScriptValues = jest.fn();
 
   compile(
     {
       actorId: "player",
-      x: 8,
-      y: -8,
-      width: 24,
-      height: 32,
+      x: { type: "number", value: 8 },
+      y: { type: "number", value: -8 },
+      width: { type: "number", value: 24 },
+      height: { type: "number", value: 32 },
     },
     {
       scene: { actors: [] },
-      actorSetActive: mockactorSetActive,
-      actorSetBounds: mockActorSetBounds,
+      actorSetBoundToScriptValues: mockActorSetBoundToScriptValues,
     },
   );
-  expect(mockactorSetActive).toHaveBeenCalledWith("player");
-  expect(mockActorSetBounds).toHaveBeenCalledWith(8, 31, -8, 23);
+  expect(mockActorSetBoundToScriptValues).toHaveBeenCalledWith(
+    "player",
+    { type: "number", value: 8 },
+    { type: "number", value: -8 },
+    { type: "number", value: 24 },
+    { type: "number", value: 32 },
+  );
 });

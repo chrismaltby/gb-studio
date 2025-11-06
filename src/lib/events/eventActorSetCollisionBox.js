@@ -32,21 +32,33 @@ const fields = [
         key: "x",
         label: l10n("FIELD_X"),
         description: l10n("FIELD_X_DESC"),
-        type: "number",
+        type: "value",
         min: -96,
         max: 96,
-        defaultValue: 0,
         width: "50%",
+        defaultValue: {
+          type: "number",
+          value: 0,
+        },
+        unitsField: "units",
+        unitsDefault: "pixels",
+        unitsAllowed: ["pixels"],
       },
       {
         key: "y",
         label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
-        type: "number",
+        type: "value",
         min: -96,
         max: 96,
-        defaultValue: -8,
+        defaultValue: {
+          type: "number",
+          value: -8,
+        },
         width: "50%",
+        unitsField: "units",
+        unitsDefault: "pixels",
+        unitsAllowed: ["pixels"],
       },
     ],
   },
@@ -58,31 +70,42 @@ const fields = [
         key: "width",
         label: l10n("FIELD_WIDTH"),
         description: l10n("FIELD_BOX_WIDTH_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 128,
-        defaultValue: 16,
+        defaultValue: {
+          type: "number",
+          value: 16,
+        },
         width: "50%",
+        unitsField: "units",
+        unitsDefault: "pixels",
+        unitsAllowed: ["pixels"],
       },
       {
         key: "height",
         label: l10n("FIELD_HEIGHT"),
         description: l10n("FIELD_BOX_HEIGHT_DESC"),
-        type: "number",
+        type: "value",
         min: 0,
         max: 128,
-        defaultValue: 16,
+        defaultValue: {
+          type: "number",
+          value: 16,
+        },
         width: "50%",
+        unitsField: "units",
+        unitsDefault: "pixels",
+        unitsAllowed: ["pixels"],
       },
     ],
   },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetBounds } = helpers;
+  const { actorSetBoundToScriptValues } = helpers;
   const { actorId, x, y, width, height } = input;
-  actorSetActive(actorId);
-  actorSetBounds(x, x + width - 1, y, y + height - 1);
+  actorSetBoundToScriptValues(actorId, x, y, width, height);
 };
 
 module.exports = {
