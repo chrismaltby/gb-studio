@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2087251030",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2096251106",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -82,7 +82,7 @@
   "SIDEBAR_ON_LEAVE": "Skrypt (opuszczenie)",
   "SIDEBAR_ON_INTERACT": "Skrypt (naciśnięcie)",
   "SIDEBAR_ON_HIT": "Skrypt (dotknięcie)",
-  "SIDEBAR_ON_PLAYER_HIT": "Skrypt (dotknięcie)",
+  "SIDEBAR_ON_PLAYER_HIT": "Skrypt (dotknięcie gracza)",
   "SIDEBAR_ON_UPDATE": "Skrypt (równoległy)",
   "SIDEBAR_SCENES": "Sceny",
   "SIDEBAR_VARIABLES": "Zmienne",
@@ -1258,7 +1258,16 @@
   "FIELD_ADVENTURE_STATE": "Stan przygodowy",
   "FIELD_ADVENTURE_STATE_DESC": "Aktualny wewnętrzny stan sceny przygodowej",
   "FIELD_ENGINE_CONSTANTS": "Stałe silnika",
-
+  "FIELD_TRIGGER_ACTIVATION": "Aktywacja wyzwalacza",
+  "FIELD_TRIGGER_ACTIVATION_DESC": "Warunek, który spowoduje aktywację wyzwalacza.",
+  "FIELD_ON_PLAYER_COLLISION": "Kolizja z graczem",
+  "FIELD_ON_SCREEN_ENTER": "Pojawienie się ekranu",
+  "FIELD_SHMUP_MOVEMENT_TYPE_DESC": "Wybierz, czy gracz może swobodnie poruszać się we wszystkich kierunkach, czy jest ograniczony krawędzią ekranu.",
+  "FIELD_FREE_MOVEMENT": "Swobodny ruch",
+  "FIELD_LOCKED_MOVEMENT": "Krawędź ekranu",
+  "FIELD_WALL_COLLISION_GROUP": "Grupa kolizji ściany",
+  "FIELD_WALL_COLLISION_GROUP_DESC": "Po ustawieniu, uruchamia 'Skrypt (dotknięcie gracza)' dla tej grupy kolizji, gdy gracz dotknie ścianę tafli.",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1690,7 +1699,7 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Usuń skrypt od zdarzenia sceny przygodowej",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Usuwa przypisany skrypt reagujący na zmiany stanu w scenie przygodowej.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Usuń skrypt od zdarzenia sceny przygodowej: \"{event}\"",
-
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
