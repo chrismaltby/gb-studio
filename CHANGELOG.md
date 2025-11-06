@@ -94,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated app icon to support macOS 26 liquid glass
 - Expose engineFieldValues for use within event plugins [@Mico27](https://github.com/Mico27)
 - Improved shoot em up scene type to allow configuring free/locked movement and setting trigger activation conditions
+- Updated "Set Actor Collision Bounding Box" event to allow using variables and expressions in new bounds values
 
 ### Fixed
 
