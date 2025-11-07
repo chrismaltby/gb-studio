@@ -1267,7 +1267,7 @@
   "FIELD_LOCKED_MOVEMENT": "Krawędź ekranu",
   "FIELD_WALL_COLLISION_GROUP": "Grupa kolizji ściany",
   "FIELD_WALL_COLLISION_GROUP_DESC": "Po ustawieniu, uruchamia 'Skrypt (dotknięcie gracza)' dla tej grupy kolizji, gdy gracz dotknie ścianę tafli.",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -1699,7 +1699,7 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Usuń skrypt od zdarzenia sceny przygodowej",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Usuwa przypisany skrypt reagujący na zmiany stanu w scenie przygodowej.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Usuń skrypt od zdarzenia sceny przygodowej: \"{event}\"",
-  
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
