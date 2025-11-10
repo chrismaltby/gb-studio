@@ -44,6 +44,7 @@ const userSettingKeys: (keyof SettingsResource)[] = [
   "showNavigator",
   "showCollisions",
   "showConnections",
+  "showSceneScreenGrid",
   "previewAsMono",
   "showCollisionSlopeTiles",
   "showCollisionSlopeTiles",

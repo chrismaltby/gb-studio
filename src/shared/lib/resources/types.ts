@@ -578,6 +578,18 @@ export const ShowConnectionsSetting = Type.Union([
 
 export type ShowConnectionsSetting = Static<typeof ShowConnectionsSetting>;
 
+export const ShowSceneScreenGridSetting = Type.Union([
+  Type.Literal("topLeft"),
+  Type.Literal("bottomLeft"),
+  Type.Literal("topRight"),
+  Type.Literal("bottomRight"),
+  Type.Literal(false),
+]);
+
+export type ShowSceneScreenGridSetting = Static<
+  typeof ShowSceneScreenGridSetting
+>;
+
 export const MusicDriverSetting = Type.Union([
   Type.Literal("huge"),
   Type.Literal("gbt"),
@@ -682,6 +694,7 @@ export const SettingsResource = Type.Object({
   showCollisionSlopeTiles: Type.Boolean(),
   showCollisionExtraTiles: Type.Boolean(),
   showCollisionTileValues: Type.Boolean(),
+  showSceneScreenGrid: ShowSceneScreenGridSetting,
   collisionLayerOpacity: Type.Number(),
   worldScrollX: Type.Number(),
   worldScrollY: Type.Number(),

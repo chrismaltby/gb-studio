@@ -44,6 +44,7 @@ import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
+import SceneScreenGrid from "components/world/SceneScreenGrid";
 
 const TILE_SIZE = 8;
 
@@ -304,7 +305,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       tool === TOOL_COLORS &&
       state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY,
   );
-
+  const showSceneScreenGrid = useAppSelector(
+    (state) => state.project.present.settings.showSceneScreenGrid,
+  );
   const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
@@ -753,6 +756,15 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         {scene.scrollBounds && showLayers && (
           <SceneOverlay $noPointerEvents>
             <SceneScrollBounds
+              width={scene.width}
+              height={scene.height}
+              scrollBounds={scene.scrollBounds}
+            />
+          </SceneOverlay>
+        )}
+        {showSceneScreenGrid && selected && (
+          <SceneOverlay $noPointerEvents>
+            <SceneScreenGrid
               width={scene.width}
               height={scene.height}
               scrollBounds={scene.scrollBounds}

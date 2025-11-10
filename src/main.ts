@@ -2091,6 +2091,17 @@ menu.on("updateShowNavigator", (value) => {
   sendToProjectWindow("setting:changed", "showNavigator", value);
 });
 
+menu.on("updateShowSceneScreenGrid", (value) => {
+  settings.set("showSceneScreenGrid", value as JsonValue);
+  setMenuItemChecked("showSceneScreenGrid", value !== false);
+  setMenuItemChecked("showSceneScreenGridTopLeft", value === "topLeft");
+  setMenuItemChecked("showSceneScreenGridBottomLeft", value === "bottomLeft");
+  setMenuItemChecked("showSceneScreenGridTopRight", value === "topRight");
+  setMenuItemChecked("showSceneScreenGridBottomRight", value === "bottomRight");
+  setMenuItemChecked("showSceneScreenGridNone", value === false);
+  sendToProjectWindow("setting:changed", "showSceneScreenGrid", value);
+});
+
 menu.on("updateEmulatorMuted", (value) => {
   const isMuted = value === true;
   settings.set(EMULATOR_MUTED_SETTING_KEY, isMuted);

@@ -371,6 +371,7 @@ export const defaultProjectSettings: Settings = {
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
   showCollisionTileValues: false,
+  showSceneScreenGrid: "topLeft",
   collisionLayerOpacity: 50,
   worldScrollX: 0,
   worldScrollY: 0,

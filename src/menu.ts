@@ -41,6 +41,7 @@ type MenuListenerKey =
   | "updateShowCollisions"
   | "updateShowConnections"
   | "updateShowNavigator"
+  | "updateShowSceneScreenGrid"
   | "updateCheckSpelling"
   | "updateEmulatorMuted"
   | "run"
@@ -74,6 +75,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateShowCollisions: [],
   updateShowConnections: [],
   updateShowNavigator: [],
+  updateShowSceneScreenGrid: [],
   updateCheckSpelling: [],
   updateEmulatorMuted: [],
   run: [],
@@ -523,6 +525,57 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
           click: (item: MenuItem) => {
             notifyListeners("updateShowNavigator", item.checked);
           },
+        },
+        {
+          label: l10n("MENU_SHOW_SCREEN_GRID"),
+          submenu: [
+            {
+              id: "showSceneScreenGridTopLeft",
+              label: l10n("MENU_SHOW_SCREEN_GRID_TOP_LEFT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "topLeft",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "topLeft");
+              },
+            },
+            {
+              id: "showSceneScreenGridTopRight",
+              label: l10n("MENU_SHOW_SCREEN_GRID_TOP_RIGHT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "topRight",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "topRight");
+              },
+            },
+            {
+              id: "showSceneScreenGridBottomLeft",
+              label: l10n("MENU_SHOW_SCREEN_GRID_BOTTOM_LEFT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "bottomLeft",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "bottomLeft");
+              },
+            },
+            {
+              id: "showSceneScreenGridBottomRight",
+              label: l10n("MENU_SHOW_SCREEN_GRID_BOTTOM_RIGHT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "bottomRight",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "bottomRight");
+              },
+            },
+            { type: "separator" },
+            {
+              id: "showSceneScreenGridNone",
+              label: l10n("MENU_SHOW_SCREEN_GRID_NONE"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === false,
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", false);
+              },
+            },
+          ],
         },
         { type: "separator" },
         {
