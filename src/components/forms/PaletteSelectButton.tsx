@@ -10,6 +10,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 
 type PaletteSelectProps = {
   name: string;
@@ -20,6 +21,8 @@ type PaletteSelectProps = {
   optional?: boolean;
   optionalLabel?: string;
   optionalDefaultPaletteId?: string;
+  canAuto?: boolean;
+  autoPalette?: Palette;
 };
 
 const Wrapper = styled.div`
@@ -76,14 +79,23 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   optional,
   optionalLabel,
   optionalDefaultPaletteId,
+  canAuto,
+  autoPalette,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  let paletteId = value || "";
+  if (optional && !value) {
+    paletteId = optionalDefaultPaletteId || "";
+  }
+  if (paletteId === "auto" && !autoPalette) {
+    paletteId = optionalDefaultPaletteId || "";
+  }
+
   const palette =
-    useAppSelector((state) =>
-      getLocalisedPaletteById(state, value || optionalDefaultPaletteId || ""),
-    ) || getLocalisedDMGPalette();
+    useAppSelector((state) => getLocalisedPaletteById(state, paletteId)) ||
+    (value === "auto" && autoPalette ? autoPalette : getLocalisedDMGPalette());
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -192,6 +204,8 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
               optional={optional}
               optionalLabel={optionalLabel}
               optionalDefaultPaletteId={optionalDefaultPaletteId}
+              canAuto={canAuto}
+              autoPalette={autoPalette}
               {...selectMenuStyleProps}
             />
           </SelectMenu>

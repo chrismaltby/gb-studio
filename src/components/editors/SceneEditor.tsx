@@ -11,6 +11,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import assetsActions from "store/features/assets/assetsActions";
 import settingsActions from "store/features/settings/settingsActions";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
@@ -86,6 +87,7 @@ import { useGroupedEngineFields } from "components/settings/useGroupedEngineFiel
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import { SpriteModeSetting } from "shared/lib/resources/types";
+import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
 
 interface SceneEditorProps {
   id: string;
@@ -187,6 +189,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const startDirection = useAppSelector(
     (state) => state.project.present.settings.startDirection,
+  );
+  const backgroundInfo = useAppSelector(
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""],
   );
   const defaultBackgroundPaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
@@ -441,6 +446,17 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     },
     [dispatch, scene?.backgroundId],
   );
+
+  const onExtractPalettes = useCallback(() => {
+    dispatch(
+      assetsActions.extractBackgroundAssetInfo({
+        sceneId: id,
+        backgroundId: scene?.backgroundId || "",
+        is360: scene?.type === "LOGO",
+        uiPaletteId: scene?.paletteIds?.[7],
+      }),
+    );
+  }, [dispatch, id, scene?.backgroundId, scene?.paletteIds, scene?.type]);
 
   const onToggleParallaxSettings = () => {
     dispatch(
@@ -789,6 +805,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         name="backgroundId"
                         value={scene.backgroundId}
                         tilesetId={scene.tilesetId}
+                        uiPaletteId={scene.paletteIds?.[7]}
                         onChange={onChangeBackgroundId}
                         is360={scene.type === "LOGO"}
                         includeInfo
@@ -973,6 +990,13 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                               {l10n("FIELD_AUTOMATIC")}
                             </MenuItem>
                             <MenuItem
+                              onClick={() => onExtractPalettes()}
+                              icon={<BlankIcon />}
+                            >
+                              {l10n("FIELD_EXTRACT_PALETTES")}
+                            </MenuItem>
+                            <MenuDivider />
+                            <MenuItem
                               onClick={() => onChangeAutoColor(false)}
                               icon={
                                 !background?.autoColor ? (
@@ -989,7 +1013,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       </>
                     }
                   >
-                    {!background?.autoColor && (
+                    {!background?.autoColor ? (
                       <PaletteButtons>
                         {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                           <PaletteSelectButton
@@ -1006,6 +1030,34 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                               defaultBackgroundPaletteIds[index] || ""
                             }
                             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                          />
+                        ))}
+                      </PaletteButtons>
+                    ) : (
+                      <PaletteButtons>
+                        {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                          <AutoPaletteSwatch
+                            key={index}
+                            palette={backgroundInfo?.autoPalettes?.[index]}
+                          />
+                        ))}
+                        {[7].map((index) => (
+                          <PaletteSelectButton
+                            key={index}
+                            name={`scenePalette${index}`}
+                            value={
+                              (scene.paletteIds && scene.paletteIds[index]) ||
+                              ""
+                            }
+                            onChange={onEditPaletteId(index)}
+                            slotNumber={index + 1}
+                            optional
+                            optionalDefaultPaletteId={
+                              defaultBackgroundPaletteIds[index] || ""
+                            }
+                            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                            canAuto
+                            autoPalette={backgroundInfo?.autoPalettes?.[index]}
                           />
                         ))}
                       </PaletteButtons>

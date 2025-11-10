@@ -684,13 +684,20 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                     ? assetURL("backgrounds", tilesOverride)
                     : undefined
                 }
+                uiPalette={
+                  scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
+                }
                 previewAsMono={previewAsMono}
               />
             ) : (
               <ColorizedImage
                 width={scene.width * TILE_SIZE}
                 height={scene.height * TILE_SIZE}
-                src={assetURL("backgrounds", background)}
+                src={
+                  tilesOverride
+                    ? assetURL("backgrounds", tilesOverride)
+                    : assetURL("backgrounds", background)
+                }
                 tiles={tileColors}
                 palettes={palettes}
                 previewAsMono={previewAsMono}
