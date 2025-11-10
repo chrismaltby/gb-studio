@@ -12,6 +12,7 @@ test("Should set loading flag while fetching background warnings", () => {
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+    uiPaletteId: "uiPalette1",
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(true);
@@ -30,6 +31,7 @@ test("Should be able to set background warnings", () => {
     is360: false,
     isCGBOnly: false,
     lookup: [],
+    hash: "newhash",
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);
@@ -56,6 +58,7 @@ test("Should replace existing warnings", () => {
         isCGBOnly: false,
         timestamp: 0,
         lookup: [],
+        hash: "newhash",
       },
     },
   };
@@ -66,6 +69,7 @@ test("Should replace existing warnings", () => {
     is360: false,
     isCGBOnly: false,
     lookup: [],
+    hash: "newhash",
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);

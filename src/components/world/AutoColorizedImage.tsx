@@ -4,6 +4,7 @@ import AutoColorizedImageWorker, {
 } from "./AutoColorizedImage.worker";
 import { getSettings } from "store/features/settings/settingsState";
 import { useAppSelector } from "store/hooks";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 
 const workerPool: AutoColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -15,6 +16,7 @@ interface AutoColorizedImageProps {
   height: number;
   src: string;
   tilesSrc?: string;
+  uiPalette?: Palette;
   previewAsMono?: boolean;
 }
 
@@ -23,6 +25,7 @@ const AutoColorizedImage = ({
   height,
   src,
   tilesSrc,
+  uiPalette,
   previewAsMono,
 }: AutoColorizedImageProps) => {
   const colorCorrection = useAppSelector(
@@ -72,10 +75,11 @@ const AutoColorizedImage = ({
         height,
         previewAsMono,
         colorCorrection,
+        uiPalette: uiPalette ? uiPalette.colors : undefined,
         id: workerId.current,
       });
     }
-  }, [height, src, tilesSrc, width, previewAsMono, colorCorrection]);
+  }, [height, src, tilesSrc, width, previewAsMono, colorCorrection, uiPalette]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };

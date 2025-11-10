@@ -9,9 +9,12 @@ import {
 } from "shared/lib/tiles/autoColor";
 import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 
+type HexPalette = [string, string, string, string];
+
 export const readFileToPalettes = async (
   filename: string,
   colorCorrection: ColorCorrectionSetting,
+  uiPalette: HexPalette | undefined,
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
   return autoPalette(
@@ -19,6 +22,7 @@ export const readFileToPalettes = async (
     colorPNG.height,
     colorPNG.data,
     colorCorrection,
+    uiPalette,
   );
 };
 
@@ -26,6 +30,7 @@ export const readFileToPalettesUsingTiles = async (
   filename: string,
   tilesFileName: string,
   colorCorrection: ColorCorrectionSetting,
+  uiPalette: HexPalette | undefined,
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
   const indexedImage = await readFileToIndexedImage(
@@ -38,6 +43,7 @@ export const readFileToPalettesUsingTiles = async (
     colorPNG.data,
     indexedImage,
     colorCorrection,
+    uiPalette,
   );
 };
 

@@ -20,6 +20,7 @@ interface BackgroundSelectProps {
   name: string;
   value?: string;
   is360: boolean;
+  uiPaletteId: string;
   tilesetId: string;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
@@ -165,6 +166,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   value,
   onChange,
   is360,
+  uiPaletteId,
   tilesetId,
   includeInfo,
 }) => {
@@ -177,6 +179,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const numTiles = useAppSelector(
     (state) => state.assets.backgrounds[value || ""]?.numTiles,
+  );
+  const numPalettes = useAppSelector(
+    (state) => state.assets.backgrounds[value || ""]?.autoPalettes?.length || 0,
   );
   const isCGBOnly = useAppSelector(
     (state) => state.project.present.settings.colorMode === "color",
@@ -193,10 +198,19 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           backgroundId: value,
           tilesetId,
           is360,
+          uiPaletteId,
         }),
       );
     }
-  }, [dispatch, value, is360, tilesetId, background?._v]);
+  }, [
+    dispatch,
+    value,
+    is360,
+    uiPaletteId,
+    tilesetId,
+    background?._v,
+    background?.autoColor,
+  ]);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -318,6 +332,12 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>
+              {numPalettes > 0 && (
+                <SpriteInfoRow>
+                  <SpriteInfoField>{l10n("FIELD_PALETTES")}:</SpriteInfoField>
+                  {numPalettes}
+                </SpriteInfoRow>
+              )}
               <FlexGrow />
             </SpriteInfo>
           )}

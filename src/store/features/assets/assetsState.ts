@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 
 type BackgroundAsset = {
   id: string;
@@ -9,6 +10,8 @@ type BackgroundAsset = {
   numTiles: number;
   lookup: number[];
   timestamp: number;
+  autoPalettes?: Palette[];
+  hash: string;
 };
 
 export interface AssetsState {
@@ -31,6 +34,7 @@ const assetsSlice = createSlice({
         backgroundId: string;
         tilesetId?: string;
         is360: boolean;
+        uiPaletteId: string;
       }>,
     ) => {
       state.backgroundsLoading = true;
@@ -45,6 +49,8 @@ const assetsSlice = createSlice({
         warnings: string[];
         numTiles: number;
         lookup: number[];
+        autoPalettes?: Palette[];
+        hash: string;
       }>,
     ) => {
       state.backgroundsLoading = false;
@@ -56,7 +62,9 @@ const assetsSlice = createSlice({
         warnings: action.payload.warnings,
         numTiles: action.payload.numTiles,
         lookup: action.payload.lookup,
+        autoPalettes: action.payload.autoPalettes,
         timestamp: Date.now(),
+        hash: action.payload.hash,
       };
     },
   },

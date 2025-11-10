@@ -30,6 +30,8 @@ interface PaletteSelectProps extends SelectCommonProps {
   canKeep?: boolean;
   canRestore?: boolean;
   keepLabel?: string;
+  canAuto?: boolean;
+  autoPalette?: Palette;
 }
 
 interface PaletteOption extends Option {
@@ -53,6 +55,8 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   optionalDefaultPaletteId,
   canKeep,
   canRestore,
+  canAuto,
+  autoPalette,
   keepLabel,
   ...selectProps
 }) => {
@@ -78,6 +82,15 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               {
                 value: "restore",
                 label: l10n("FIELD_RESTORE_DEFAULT"),
+              },
+            ] as PaletteOption[])
+          : [],
+        canAuto
+          ? ([
+              {
+                value: "auto",
+                label: l10n("FIELD_AUTOMATIC"),
+                palette: autoPalette,
               },
             ] as PaletteOption[])
           : [],
@@ -113,6 +126,8 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     optionalDefaultPaletteId,
     optionalLabel,
     dmgPalette,
+    canAuto,
+    autoPalette,
   ]);
 
   useEffect(() => {
@@ -133,6 +148,12 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
       setCurrentValue({
         value: "restore",
         label: l10n("FIELD_RESTORE_DEFAULT"),
+      });
+    } else if (canAuto && value === "auto") {
+      setCurrentValue({
+        value: "auto",
+        label: l10n("FIELD_AUTOMATIC"),
+        palette: autoPalette,
       });
     } else if (currentPalette) {
       setCurrentValue({
@@ -166,6 +187,8 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     value,
     canRestore,
     dmgPalette,
+    canAuto,
+    autoPalette,
   ]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {

@@ -684,6 +684,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                     ? assetURL("backgrounds", tilesOverride)
                     : undefined
                 }
+                uiPalette={
+                  scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
+                }
                 previewAsMono={previewAsMono}
               />
             ) : (

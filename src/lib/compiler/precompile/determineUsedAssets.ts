@@ -1,5 +1,5 @@
 import type { Reference } from "components/forms/ReferencesSelect";
-import { MAX_NESTED_SCRIPT_DEPTH } from "consts";
+import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
   BackgroundData,
@@ -12,7 +12,6 @@ import type {
   TilesetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
-import { EVENT_SOUND_PLAY_EFFECT } from "consts";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
@@ -21,8 +20,11 @@ import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
 import l10n from "shared/lib/lang/l10n";
 
+type HexPalette = [string, string, string, string];
+
 export type ReferencedBackground = BackgroundData & {
   is360: boolean;
+  uiPalette: HexPalette;
   colorMode: ColorModeSetting;
   forceTilesetGeneration: boolean;
 };
@@ -53,6 +55,7 @@ export const determineUsedAssets = ({
   const spritesLookup = keyBy(projectData.sprites, "id");
   const emotesLookup = keyBy(projectData.emotes, "id");
   const tilesetsLookup = keyBy(projectData.tilesets, "id");
+  const palettesLookup = keyBy(projectData.palettes, "id");
 
   const defaultPlayerSprites = projectData.settings.defaultPlayerSprites;
   const projectColorMode = projectData.settings.colorMode;
@@ -148,6 +151,7 @@ export const determineUsedAssets = ({
   const addBackgroundById = (
     backgroundId: string,
     is360: boolean,
+    uiPalette: HexPalette,
     colorMode: ColorModeSetting,
     forceTilesetGeneration: boolean,
   ) => {
@@ -158,6 +162,7 @@ export const determineUsedAssets = ({
         usedBackgroundsLookup[id] = {
           ...asset,
           is360,
+          uiPalette,
           colorMode,
           forceTilesetGeneration,
         };
@@ -215,9 +220,19 @@ export const determineUsedAssets = ({
   projectData.scenes.forEach((scene) => {
     const colorMode = getSceneColorMode(scene);
 
+    const uiPalette = (
+      scene.paletteIds?.[7] === "dmg"
+        ? DMG_PALETTE
+        : palettesLookup[
+            scene.paletteIds?.[7] ||
+              projectData.settings.defaultBackgroundPaletteIds?.[7]
+          ]
+    )?.colors as HexPalette;
+
     addBackgroundById(
       ensureString(scene.backgroundId, defaultBackgroundId),
       scene.type === "LOGO",
+      uiPalette,
       colorMode,
       !scene.tilesetId,
     );
@@ -244,6 +259,13 @@ export const determineUsedAssets = ({
       },
     },
     (cmd, scene) => {
+      const uiPalette = projectData.palettes.find(
+        (p) =>
+          p.id ===
+          (scene.paletteIds[7] ||
+            projectData.settings.defaultBackgroundPaletteIds[7]),
+      )?.colors as HexPalette;
+
       // Add Referenced Assets
       if (eventHasArg(cmd, "references") && cmd.args?.references) {
         const references = cmd.args?.references as Reference[];
@@ -254,14 +276,14 @@ export const determineUsedAssets = ({
         addReferences(references, "tileset", addTilesetById);
         addReferences(references, "background", (id: string) => {
           const colorMode = getSceneColorMode(scene);
-          addBackgroundById(id, false, colorMode, true);
+          addBackgroundById(id, false, uiPalette, colorMode, true);
         });
       }
 
       if (eventHasArg(cmd, "backgroundId")) {
         const id = ensureString(cmd.args?.backgroundId, "");
         const colorMode = getSceneColorMode(scene);
-        addBackgroundById(id, false, colorMode, true);
+        addBackgroundById(id, false, uiPalette, colorMode, true);
       }
 
       if (eventHasArg(cmd, "spriteSheetId")) {

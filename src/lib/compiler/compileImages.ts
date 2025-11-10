@@ -1,5 +1,4 @@
 import { assetFilename } from "shared/lib/helpers/assets";
-import { getBackgroundInfo } from "lib/helpers/validation";
 import {
   tileArrayToTileData,
   tilesAndLookupToTilemap,
@@ -26,9 +25,16 @@ import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { ReferencedBackground } from "./precompile/determineUsedAssets";
+import { HexPalette } from "shared/lib/tiles/autoColor";
+import { divisibleBy8 } from "shared/lib/helpers/8bit";
+import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
+
+const MAX_IMAGE_WIDTH = 2040;
+const MAX_IMAGE_HEIGHT = 2040;
+const MAX_PIXELS = 16380 * 64;
 
 type PrecompiledBackgroundData = BackgroundData & {
   commonTilesetId?: string;
@@ -38,6 +44,7 @@ type PrecompiledBackgroundData = BackgroundData & {
   autoPalettes?: Palette[];
   is360: boolean;
   colorMode: ColorModeSetting;
+  tilesetLength: number;
 };
 
 type CompileImageOptions = {
@@ -134,10 +141,11 @@ const buildAttr = (
   );
 };
 
-const compileImage = async (
+export const compileImage = async (
   img: BackgroundData,
   commonTileset: TilesetData | undefined,
   is360: boolean,
+  uiPalette: HexPalette | undefined,
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
   projectPath: string,
@@ -169,7 +177,11 @@ const compileImage = async (
   let autoPalettes: Palette[] | undefined = undefined;
   if (autoColorMode === ImageColorMode.AUTO_COLOR) {
     // Extract both tiles and colors from color PNG
-    const paletteData = await readFileToPalettes(filename, colorCorrection);
+    const paletteData = await readFileToPalettes(
+      filename,
+      colorCorrection,
+      uiPalette,
+    );
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
@@ -183,6 +195,7 @@ const compileImage = async (
       filename,
       tilesFileName,
       colorCorrection,
+      uiPalette,
     );
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
@@ -218,6 +231,7 @@ const compileImage = async (
       autoPalettes,
       is360,
       colorMode,
+      tilesetLength: 360,
     };
   }
 
@@ -229,20 +243,65 @@ const compileImage = async (
   const tilesetLookup = toTileLookup(tileDataWithCommon) ?? {};
   const uniqueTiles = Object.values(tilesetLookup);
   const tilemap = tilesAndLookupToTilemap(tileData, tilesetLookup);
+  const tilesetLength = Object.keys(tilesetLookup).length;
 
-  const backgroundInfo = await getBackgroundInfo(
-    img,
-    undefined,
-    false,
-    cgbOnly,
-    projectPath,
-    uniqueTiles.length,
-  );
-  const backgroundWarnings = backgroundInfo.warnings;
-  if (backgroundWarnings.length > 0) {
-    backgroundWarnings.forEach((warning) => {
-      warnings(`${img.filename}: ${warning}`);
-    });
+  if (img.imageWidth < 160 || img.imageHeight < 144) {
+    warnings(l10n("WARNING_BACKGROUND_TOO_SMALL"));
+  }
+  if (img.imageWidth > MAX_IMAGE_WIDTH) {
+    warnings(
+      l10n("WARNING_BACKGROUND_TOO_WIDE", {
+        width: img.imageWidth,
+        maxWidth: MAX_IMAGE_WIDTH,
+      }),
+    );
+  }
+  if (img.imageHeight > MAX_IMAGE_HEIGHT) {
+    warnings(
+      l10n("WARNING_BACKGROUND_TOO_TALL", {
+        height: img.imageHeight,
+        maxHeight: MAX_IMAGE_HEIGHT,
+      }),
+    );
+  }
+  if (img.imageWidth * img.imageHeight > MAX_PIXELS) {
+    warnings(
+      l10n("WARNING_BACKGROUND_TOO_MANY_PIXELS", {
+        width: img.imageWidth,
+        height: img.imageHeight,
+        numPixels: img.imageWidth * img.imageHeight,
+        maxPixels: MAX_PIXELS,
+      }),
+    );
+  }
+  if (!divisibleBy8(img.imageWidth) || !divisibleBy8(img.imageHeight)) {
+    warnings(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
+  }
+  if (tilesetLength > MAX_BACKGROUND_TILES && !is360 && !cgbOnly) {
+    warnings(
+      l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
+        tilesetLength,
+        maxTilesetLength: MAX_BACKGROUND_TILES,
+      }),
+    );
+  }
+
+  if (tilesetLength > MAX_BACKGROUND_TILES_CGB && !is360 && cgbOnly) {
+    warnings(
+      l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
+        tilesetLength,
+        maxTilesetLength: MAX_BACKGROUND_TILES_CGB,
+      }),
+    );
+  }
+
+  if (is360 && (img.imageWidth !== 160 || img.imageHeight !== 144)) {
+    warnings(
+      l10n("WARNING_LOGO_WRONG_SIZE", {
+        width: img.imageWidth,
+        height: img.imageHeight,
+      }),
+    );
   }
 
   const vramData: [number[], number[]] = [[], []];
@@ -291,6 +350,7 @@ const compileImage = async (
     autoPalettes,
     is360,
     colorMode,
+    tilesetLength,
   };
 };
 
@@ -320,6 +380,7 @@ const compileImages = async (
                     img,
                     undefined,
                     img.is360,
+                    img.uiPalette,
                     img.colorMode,
                     colorCorrection,
                     projectPath,
@@ -334,6 +395,7 @@ const compileImages = async (
                 img,
                 commonTileset,
                 img.is360,
+                img.uiPalette,
                 img.colorMode,
                 colorCorrection,
                 projectPath,

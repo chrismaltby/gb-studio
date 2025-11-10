@@ -5,22 +5,24 @@ import { rgbToColorCorrectedHex } from "shared/lib/color/colorCorrection";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { rgb2hex } from "shared/lib/helpers/color";
 
-type VariableLengthHexPalette = string[];
+export type VariableLengthHexPalette = string[];
 
-type SparseHexPalette = [
+export type SparseHexPalette = [
   string | undefined,
   string | undefined,
   string | undefined,
   string | undefined,
 ];
 
-type HexPalette = [string, string, string, string];
+export type HexPalette = [string, string, string, string];
 
 export type AutoPaletteResult = {
   map: number[];
   palettes: HexPalette[];
   indexedImage: IndexedImage;
 };
+
+const emptyPalette: HexPalette = ["000000", "000000", "000000", "000000"];
 
 /**
  * Given raw RGBA pixel data construct:
@@ -33,6 +35,7 @@ export const autoPalette = (
   height: number,
   pixels: Buffer | Uint8ClampedArray,
   colorCorrection: ColorCorrectionSetting,
+  uiPalette?: HexPalette,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -73,7 +76,10 @@ export const autoPalette = (
 
   // As some tiles may overlap it's possible to compress them further
   // mapping table maps original palette index to indexed in compressed list
-  const { palettes, mappingTable } = compressPalettes(allPalettes);
+  const { palettes, mappingTable } = setUIPalette(
+    compressPalettes(allPalettes),
+    uiPalette,
+  );
 
   // Given the extracted colors we can now build the tile data
   // and the mapping of tiles to color palette
@@ -96,7 +102,7 @@ export const autoPalette = (
 
   return {
     map: tilePaletteMap,
-    palettes: fillHexPalette(palettes),
+    palettes,
     indexedImage,
   };
 };
@@ -112,6 +118,7 @@ export const autoPaletteUsingTiles = (
   pixels: Buffer | Uint8ClampedArray,
   tileData: IndexedImage,
   colorCorrection: ColorCorrectionSetting,
+  uiPalette?: HexPalette,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -146,7 +153,11 @@ export const autoPaletteUsingTiles = (
 
   // As some tiles may overlap it's possible to compress them further
   // mapping table maps original palette index to indexed in compressed list
-  const { palettes, mappingTable } = compressSparsePalettes(allPalettes);
+  // const { palettes, mappingTable } = compressSparsePalettes(allPalettes);
+  const { palettes, mappingTable } = setUIPalette(
+    compressSparsePalettes(allPalettes),
+    uiPalette,
+  );
 
   // Build mapping of tiles to color palette
   for (let tyi = 0; tyi < yTiles; tyi++) {
@@ -158,7 +169,7 @@ export const autoPaletteUsingTiles = (
 
   return {
     map: tilePaletteMap,
-    palettes: fillHexPalette(palettes),
+    palettes,
     indexedImage: tileData,
   };
 };
@@ -359,11 +370,11 @@ const findClosestHexColor = (
  * Compress array of hex palettes by merging overlapping palettes
  * builds a mapping table from old palette to new index
  */
-const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
+export const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
   // Early exit if 8 or fewer palettes are provided
   if (allPalettes.length <= 8) {
     const mappingTable = allPalettes.map((_, index) => index);
-    return { palettes: allPalettes, mappingTable };
+    return { palettes: fillHexPalette(allPalettes), mappingTable };
   }
 
   let outPalettes = [...allPalettes];
@@ -409,7 +420,7 @@ const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
     });
   });
 
-  return { palettes: outPalettes, mappingTable };
+  return { palettes: fillHexPalette(outPalettes), mappingTable };
 };
 
 /**
@@ -456,7 +467,7 @@ const mergeSparsePalette = (
  * Compress array of sparse palettes by merging overlapping palettes
  * builds a mapping table from old palette to new index
  */
-const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
+export const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
   const indexedPalettes = allPalettes.map((palette, index) => ({
     palette,
     index,
@@ -487,7 +498,7 @@ const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
     }
   });
 
-  return { palettes, mappingTable };
+  return { palettes: fillHexPalette(palettes), mappingTable };
 };
 
 /**
@@ -505,4 +516,72 @@ const fillHexPalette = (
       palette[3] ?? "000000",
     ];
   });
+};
+
+const calculatePaletteDistance = (
+  palette1: HexPalette,
+  palette2: HexPalette,
+): number => {
+  let totalDistance = 0;
+  for (let i = 0; i < 4; i++) {
+    const color1 = palette1[i] || "000000";
+    const color2 = palette2[i] || "000000";
+    totalDistance += manhattanHexDistance(color1, color2);
+  }
+  return totalDistance;
+};
+
+export const setUIPalette = (
+  {
+    palettes,
+    mappingTable,
+  }: { palettes: HexPalette[]; mappingTable: number[] },
+  uiPalette?: HexPalette,
+): { palettes: HexPalette[]; mappingTable: number[] } => {
+  if (!uiPalette) {
+    return { palettes, mappingTable };
+  }
+
+  if (palettes.length < 8) {
+    const base = palettes.slice(0, 7);
+    while (base.length < 7) {
+      base.push(emptyPalette);
+    }
+    base.push(uiPalette);
+    return { palettes: base, mappingTable };
+  }
+
+  // Ensure we have at least 8 slots to work with
+  const base = palettes.slice(0);
+  while (base.length < 8) {
+    base.push(emptyPalette);
+  }
+
+  // Determine which palette in [0..6] most closely matches the UI palette
+  const candidateMax = Math.min(6, palettes.length - 1);
+  let replaceIndex = 0;
+  let minDistance = Number.POSITIVE_INFINITY;
+  for (let i = 0; i <= candidateMax; i++) {
+    const d = calculatePaletteDistance(base[i], uiPalette);
+    if (d < minDistance) {
+      minDistance = d;
+      replaceIndex = i;
+    }
+  }
+
+  // Build the new palettes:
+  // - Move whatever was at [7] into the slot we are replacing
+  // - Place the UI palette at [7]
+  const outPalettes = base.slice(0);
+  const previousAt7 = base[7];
+  outPalettes[replaceIndex] = previousAt7;
+  outPalettes[7] = uiPalette;
+
+  const outMapping = mappingTable.map((i) => {
+    if (i === replaceIndex) return 7;
+    if (i === 7) return replaceIndex;
+    return i;
+  });
+
+  return { palettes: outPalettes, mappingTable: outMapping };
 };

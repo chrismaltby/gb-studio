@@ -86,6 +86,7 @@ import { useGroupedEngineFields } from "components/settings/useGroupedEngineFiel
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import { SpriteModeSetting } from "shared/lib/resources/types";
+import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
 
 interface SceneEditorProps {
   id: string;
@@ -187,6 +188,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const startDirection = useAppSelector(
     (state) => state.project.present.settings.startDirection,
+  );
+  const backgroundInfo = useAppSelector(
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""],
   );
   const defaultBackgroundPaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultBackgroundPaletteIds || [],
@@ -789,6 +793,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         name="backgroundId"
                         value={scene.backgroundId}
                         tilesetId={scene.tilesetId}
+                        uiPaletteId={scene.paletteIds?.[7]}
                         onChange={onChangeBackgroundId}
                         is360={scene.type === "LOGO"}
                         includeInfo
@@ -989,7 +994,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                       </>
                     }
                   >
-                    {!background?.autoColor && (
+                    {!background?.autoColor ? (
                       <PaletteButtons>
                         {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                           <PaletteSelectButton
@@ -1006,6 +1011,34 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                               defaultBackgroundPaletteIds[index] || ""
                             }
                             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                          />
+                        ))}
+                      </PaletteButtons>
+                    ) : (
+                      <PaletteButtons>
+                        {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                          <AutoPaletteSwatch
+                            key={index}
+                            palette={backgroundInfo?.autoPalettes?.[index]}
+                          />
+                        ))}
+                        {[7].map((index) => (
+                          <PaletteSelectButton
+                            key={index}
+                            name={`scenePalette${index}`}
+                            value={
+                              (scene.paletteIds && scene.paletteIds[index]) ||
+                              ""
+                            }
+                            onChange={onEditPaletteId(index)}
+                            slotNumber={index + 1}
+                            optional
+                            optionalDefaultPaletteId={
+                              defaultBackgroundPaletteIds[index] || ""
+                            }
+                            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                            canAuto
+                            autoPalette={backgroundInfo?.autoPalettes?.[index]}
                           />
                         ))}
                       </PaletteButtons>

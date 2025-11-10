@@ -120,6 +120,9 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                   width={background.width * TILE_SIZE}
                   height={background.height * TILE_SIZE}
                   src={assetURL("backgrounds", background)}
+                  uiPalette={
+                    scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
+                  }
                 />
               ) : (
                 <ColorizedImage
