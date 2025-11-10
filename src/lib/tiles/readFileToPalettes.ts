@@ -25,6 +25,7 @@ export const readFileToPalettes = async (
 export const readFileToPalettesUsingTiles = async (
   filename: string,
   tilesFileName: string,
+  colorCorrection: ColorCorrectionSetting,
 ): Promise<AutoPaletteResult> => {
   const colorPNG = await readPNG(filename);
   const indexedImage = await readFileToIndexedImage(
@@ -36,6 +37,7 @@ export const readFileToPalettesUsingTiles = async (
     colorPNG.height,
     colorPNG.data,
     indexedImage,
+    colorCorrection,
   );
 };
 

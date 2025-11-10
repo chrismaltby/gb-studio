@@ -118,7 +118,13 @@ workerCtx.onmessage = async (evt) => {
       tilesData,
       tileDataIndexFn,
     );
-    paletteData = autoPaletteUsingTiles(width, height, data, indexedImage);
+    paletteData = autoPaletteUsingTiles(
+      width,
+      height,
+      data,
+      indexedImage,
+      evt.data.colorCorrection,
+    );
   } else {
     // If only one image provided extract tiles and color from same image
     paletteData = autoPalette(width, height, data, evt.data.colorCorrection);

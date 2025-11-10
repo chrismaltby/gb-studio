@@ -111,6 +111,7 @@ export const autoPaletteUsingTiles = (
   height: number,
   pixels: Buffer | Uint8ClampedArray,
   tileData: IndexedImage,
+  colorCorrection: ColorCorrectionSetting,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -130,6 +131,7 @@ export const autoPaletteUsingTiles = (
         txi,
         tyi,
         tileData,
+        colorCorrection,
       );
       const key = JSON.stringify(palette);
       if (paletteCache[key]) {
@@ -224,12 +226,13 @@ const extractTilePalette = (
 /**
  * For a given tile color data and DMG tile hint extract a sparse palette mapping from DMG index to color
  */
-const extractTilePaletteWithHint = (
+export const extractTilePaletteWithHint = (
   pixels: Buffer | Uint8ClampedArray,
   width: number,
   tileX: number,
   tileY: number,
   indexedImage: IndexedImage,
+  colorCorrection: ColorCorrectionSetting,
 ): SparseHexPalette => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -249,11 +252,9 @@ const extractTilePaletteWithHint = (
       const key = `${pixels[i]},${pixels[i + 1]},${pixels[i + 2]}`;
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
-        const hex = rgbToColorCorrectedHex(
-          pixels[i],
-          pixels[i + 1],
-          pixels[i + 2],
-        );
+        const colorCorrectionFn =
+          colorCorrection === "default" ? rgbToColorCorrectedHex : rgb2hex;
+        const hex = colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]);
         colors[index] = hex;
         seenCount++;
         if (seenCount === 4) {

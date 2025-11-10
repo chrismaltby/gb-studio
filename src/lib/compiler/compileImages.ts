@@ -182,6 +182,7 @@ const compileImage = async (
     const paletteData = await readFileToPalettesUsingTiles(
       filename,
       tilesFileName,
+      colorCorrection,
     );
     tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
     autoTileColors = paletteData.map;
