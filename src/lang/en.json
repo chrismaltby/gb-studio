@@ -306,6 +306,7 @@
   "FIELD_EDIT_PALETTES": "Edit Palettes",
   "FIELD_WAIT_UNTIL_FINISHED": "Wait until finished",
   "FIELD_WAIT_UNTIL_FINISHED_SOUND_DESC": "Set if script should pause until sound effect has finished playing.",
+  "FIELD_WAIT_UNTIL_FINISHED_OVERLAY_MOVE_DESC": "Set if script should pause until the overlay has reached its position.",
   "FIELD_ACTOR_TYPE": "Sprite Type",
   "FIELD_OFFSET_X": "Offset X",
   "FIELD_OFFSET_Y": "Offset Y",

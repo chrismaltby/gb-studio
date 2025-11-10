@@ -39,11 +39,25 @@ const fields = [
     type: "overlaySpeed",
     defaultValue: -3,
   },
+  {
+    key: "wait",
+    type: "checkbox",
+    label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
+    description: l10n("FIELD_WAIT_UNTIL_FINISHED_OVERLAY_MOVE_DESC"),
+    conditions: [
+      {
+        key: "speed",
+        ne: -3,
+      },
+    ],
+    defaultValue: true,
+    flexBasis: "100%",
+  },
 ];
 
 const compile = (input, helpers) => {
   const { overlayMoveTo } = helpers;
-  overlayMoveTo(input.x, input.y, input.speed);
+  overlayMoveTo(input.x, input.y, input.speed, input.wait ?? true);
 };
 
 module.exports = {

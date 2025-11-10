@@ -4723,14 +4723,16 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  overlayMoveTo = (x = 0, y = 18, speed = 0) => {
+  overlayMoveTo = (x = 0, y = 18, speed = 0, wait = true) => {
     this._addComment("Overlay Move To");
     this._overlayMoveTo(
       x,
       y,
       Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
-    this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    if (wait) {
+      this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    }
     this._addNL();
   };
 
