@@ -76,6 +76,16 @@ const ScriptEventFields = ({
               return memo && sound?.type === condition.soundType;
             } else if (condition.parallaxEnabled !== undefined) {
               return memo && !!scene?.parallax === condition.parallaxEnabled;
+            } else if (condition.sceneType !== undefined) {
+              const conditionArray =
+                typeof condition.sceneType === "string"
+                  ? [condition.sceneType]
+                  : condition.sceneType;
+              return (
+                memo &&
+                !!scene?.type.toLocaleLowerCase() &&
+                conditionArray.includes(scene.type.toLocaleLowerCase())
+              );
             }
             return memo;
           }, true);

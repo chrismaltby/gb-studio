@@ -541,6 +541,7 @@ interface ScriptEventFieldCondition {
   set?: boolean;
   soundType?: unknown;
   parallaxEnabled?: boolean;
+  sceneType: string | string[];
 }
 
 const distanceUnitTypes = ["tiles", "pixels"] as const;

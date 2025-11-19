@@ -28,6 +28,46 @@ const fields = [
     type: "moveSpeed",
     defaultValue: 1,
   },
+  {
+    label: `To set the Player Movement speed in Platformer or Adventure scene types, you must use the "Engine Field Update" event to set the Walk Velocity or Run Velocity fields.`,
+    labelVariant: "warning",
+    flexBasis: "100%",
+    conditions: [
+      {
+        sceneType: ["platform", "adventure"],
+      },
+      {
+        key: "actorId",
+        eq: "player",
+      },
+    ],
+  },
+  {
+    type: "group",
+    wrapItems: true,
+    conditions: [
+      {
+        sceneType: ["platform", "adventure"],
+      },
+      {
+        key: "actorId",
+        eq: "player",
+      },
+    ],
+    fields: [
+      {
+        type: "addEventButton",
+        hideLabel: true,
+        label: l10n("EVENT_ENGINE_FIELD_SET"),
+        defaultValue: {
+          id: "EVENT_ENGINE_FIELD_SET",
+          values: {
+            engineFieldKey: "plat_walk_vel",
+          },
+        },
+      },
+    ],
+  },
 ];
 
 const compile = (input, helpers) => {
