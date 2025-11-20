@@ -7,6 +7,7 @@ import {
   ProjectResourcesMigrationFn,
   pipeMigrationFns,
 } from "lib/project/migration/helpers";
+import { keyBy } from "lodash";
 import { ensureNumber } from "shared/types";
 
 export const migrateFrom410r1To420r1Event: ScriptEventMigrationFn = (
@@ -321,4 +322,37 @@ export const migrate420r6To420r7: ProjectResourcesMigration = {
   from: { version: "4.2.0", release: "6" },
   to: { version: "4.2.0", release: "7" },
   migrationFn: createScriptEventsMigrator(migrateFrom420r6To420r7Event),
+};
+
+export const migrateFrom420r7To420r8Scenes: ProjectResourcesMigrationFn = (
+  resources,
+) => {
+  const backgroundsLookup = keyBy(resources.backgrounds, "id");
+
+  const scenes = resources.scenes.map((scene) => {
+    const background = backgroundsLookup[scene.backgroundId];
+    if (background && background.autoColor) {
+      return {
+        ...scene,
+        paletteIds: scene.paletteIds.map((paletteId, index) => {
+          if (index === 7) {
+            return "auto";
+          }
+          return paletteId;
+        }),
+      };
+    }
+    return scene;
+  });
+
+  return {
+    ...resources,
+    scenes,
+  };
+};
+
+export const migrate420r7To420r8: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "7" },
+  to: { version: "4.2.0", release: "8" },
+  migrationFn: migrateFrom420r7To420r8Scenes,
 };
