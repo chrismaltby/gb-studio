@@ -23,7 +23,6 @@ import {
   dummyCompressedBackgroundResource,
   dummyCompressedProjectResources,
   dummyCompressedSceneResource,
-  dummySceneResource,
   dummySpriteResource,
 } from "../../dummydata";
 
