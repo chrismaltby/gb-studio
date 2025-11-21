@@ -1260,6 +1260,7 @@
   "FIELD_LOCKED_MOVEMENT": "画面の端に固定",
   "FIELD_WALL_COLLISION_GROUP": "壁コリジョングループ",
   "FIELD_WALL_COLLISION_GROUP_DESC": "プレイヤーが壁タイルに接触した際に、設定されたコリジョングループの「プレイヤーヒット」を呼び出します。",
+  "FIELD_EXTRACT_PALETTES": "パレットの抽出",
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "検索...",
   "ASSET_EDIT": "編集",
