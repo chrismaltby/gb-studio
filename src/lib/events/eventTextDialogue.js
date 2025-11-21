@@ -15,16 +15,6 @@ const autoLabel = (fetchArg, args) => {
 
 const fields = [
   {
-    label: l10n("FIELD_TEXT_IN_LOGO_WARNING"),
-    labelVariant: "warning",
-    flexBasis: "100%",
-    conditions: [
-      {
-        sceneType: ["logo"],
-      },
-    ],
-  },
-  {
     key: "__section",
     type: "tabs",
     defaultValue: "text",
@@ -35,6 +25,17 @@ const fields = [
       behavior: l10n("FIELD_BEHAVIOR"),
       presets: l10n("FIELD_PRESETS"),
     },
+  },
+
+  {
+    label: l10n("FIELD_TEXT_IN_LOGO_WARNING"),
+    labelVariant: "warning",
+    flexBasis: "100%",
+    conditions: [
+      {
+        sceneType: ["logo"],
+      },
+    ],
   },
 
   // Text Section
