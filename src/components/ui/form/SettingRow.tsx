@@ -6,7 +6,7 @@ export const SettingRow = styled.div`
   padding-bottom: 3px;
   padding-top: 3px;
   border-bottom: 1px solid ${(props) => props.theme.colors.card.divider};
-  align-items: flex-start;
+  align-items: center;
   padding: 3px 5px;
   box-sizing: border-box;
   min-height: 34px;
