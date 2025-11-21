@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add enhanced Adventure scene type with more configurable options
 - Add ability for actors in Adventure scenes to be marked as "Solid"
 - Add support for rounded corner collision tiles in Adventure scenes, allowing players to smoothly slide around corners
+- Add warnings when trying to use "Set Actor Movement Speed" event on player with incompatible scene types (platformer and adventure). Includes button to automatically replace with "Engine Field Update" events [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
