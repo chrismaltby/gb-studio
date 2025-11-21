@@ -343,13 +343,13 @@ const EngineFieldRow = ({
       key={field.key}
       searchTerm={searchTerm}
       searchMatches={[l10n(field.label as L10NKey), field.key]}
+      title={field.description && l10n(field.description as L10NKey)}
     >
       <SettingRowLabel
         htmlFor={field.key}
         style={{ width: 300 }}
         $sectionHeading={field.isHeading}
         $indent={field.indent}
-        title={field.description && l10n(field.description as L10NKey)}
       >
         {l10n(field.label as L10NKey)}
       </SettingRowLabel>
@@ -434,9 +434,9 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({
           )}
           {group.fields
             .filter((field) => !field.runtimeOnly)
-            .map((field) => (
+            .map((field, index) => (
               <EngineFieldRow
-                key={field.key}
+                key={field.key || String(index)}
                 field={field}
                 values={values}
                 defaultValues={defaultValues}

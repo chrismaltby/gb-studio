@@ -5,14 +5,16 @@ interface SearchableSettingRowProps {
   searchTerm?: string;
   searchMatches?: string[];
   children?: ReactNode;
+  title?: string;
 }
 
 export const SearchableSettingRow: FC<SearchableSettingRowProps> = ({
   searchTerm,
   searchMatches,
   children,
+  title,
 }) => {
-  const component = <SettingRow>{children}</SettingRow>;
+  const component = <SettingRow title={title}>{children}</SettingRow>;
   if (!searchTerm || !searchMatches || searchTerm.length === 0) {
     return component;
   }

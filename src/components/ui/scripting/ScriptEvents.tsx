@@ -194,6 +194,7 @@ interface ScriptEventFieldProps {
   flexBasis?: string | number;
   minWidth?: string | number;
   children?: ReactNode;
+  title?: string;
 }
 
 export const ScriptEventField = ({
@@ -204,6 +205,7 @@ export const ScriptEventField = ({
   flexBasis,
   minWidth,
   children,
+  title,
 }: ScriptEventFieldProps) => (
   <StyledScriptEventField
     $halfWidth={halfWidth}
@@ -215,6 +217,7 @@ export const ScriptEventField = ({
       minWidth: minWidth,
     }}
     children={children}
+    title={title}
   />
 );
 
