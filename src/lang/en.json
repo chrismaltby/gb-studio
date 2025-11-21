@@ -1269,6 +1269,7 @@
   "FIELD_LOCKED_MOVEMENT": "Locked To Screen Edge",
   "FIELD_WALL_COLLISION_GROUP": "Wall Collision Group",
   "FIELD_WALL_COLLISION_GROUP_DESC": "When set, triggers 'On Player Hit' for this collision group when the player touches a wall tile.",
+  "FIELD_EXTRACT_PALETTES": "Extract Palettes",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

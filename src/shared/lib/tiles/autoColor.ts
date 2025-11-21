@@ -4,23 +4,34 @@ import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { rgbToColorCorrectedHex } from "shared/lib/color/colorCorrection";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { rgb2hex } from "shared/lib/helpers/color";
+import { tileDataIndexFn } from "./tileData";
 
-type VariableLengthHexPalette = string[];
+export type VariableLengthHexPalette = string[];
 
-type SparseHexPalette = [
+export type SparseHexPalette = [
   string | undefined,
   string | undefined,
   string | undefined,
   string | undefined,
 ];
 
-type HexPalette = [string, string, string, string];
+export type HexPalette = [string, string, string, string];
 
 export type AutoPaletteResult = {
   map: number[];
   palettes: HexPalette[];
   indexedImage: IndexedImage;
 };
+
+interface IndexedColor {
+  hex: string;
+  index: number;
+  lightness: number;
+}
+
+const emptyPalette: HexPalette = ["000000", "000000", "000000", "000000"];
+
+const BRIGHTNESS_ANCHOR: [number, number, number, number] = [100, 66, 33, 0];
 
 /**
  * Given raw RGBA pixel data construct:
@@ -33,6 +44,7 @@ export const autoPalette = (
   height: number,
   pixels: Buffer | Uint8ClampedArray,
   colorCorrection: ColorCorrectionSetting,
+  uiPalette?: HexPalette,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -73,7 +85,10 @@ export const autoPalette = (
 
   // As some tiles may overlap it's possible to compress them further
   // mapping table maps original palette index to indexed in compressed list
-  const { palettes, mappingTable } = compressPalettes(allPalettes);
+  const { palettes, mappingTable } = setUIPalette(
+    compressPalettes(allPalettes),
+    uiPalette,
+  );
 
   // Given the extracted colors we can now build the tile data
   // and the mapping of tiles to color palette
@@ -96,7 +111,7 @@ export const autoPalette = (
 
   return {
     map: tilePaletteMap,
-    palettes: fillHexPalette(palettes),
+    palettes,
     indexedImage,
   };
 };
@@ -111,6 +126,8 @@ export const autoPaletteUsingTiles = (
   height: number,
   pixels: Buffer | Uint8ClampedArray,
   tileData: IndexedImage,
+  colorCorrection: ColorCorrectionSetting,
+  uiPalette?: HexPalette,
 ): AutoPaletteResult => {
   const xTiles = Math.floor(width / TILE_SIZE);
   const yTiles = Math.floor(height / TILE_SIZE);
@@ -130,6 +147,7 @@ export const autoPaletteUsingTiles = (
         txi,
         tyi,
         tileData,
+        colorCorrection,
       );
       const key = JSON.stringify(palette);
       if (paletteCache[key]) {
@@ -144,7 +162,11 @@ export const autoPaletteUsingTiles = (
 
   // As some tiles may overlap it's possible to compress them further
   // mapping table maps original palette index to indexed in compressed list
-  const { palettes, mappingTable } = compressSparsePalettes(allPalettes);
+  // const { palettes, mappingTable } = compressSparsePalettes(allPalettes);
+  const { palettes, mappingTable } = setUIPalette(
+    compressSparsePalettes(allPalettes),
+    uiPalette,
+  );
 
   // Build mapping of tiles to color palette
   for (let tyi = 0; tyi < yTiles; tyi++) {
@@ -156,7 +178,7 @@ export const autoPaletteUsingTiles = (
 
   return {
     map: tilePaletteMap,
-    palettes: fillHexPalette(palettes),
+    palettes,
     indexedImage: tileData,
   };
 };
@@ -224,12 +246,13 @@ const extractTilePalette = (
 /**
  * For a given tile color data and DMG tile hint extract a sparse palette mapping from DMG index to color
  */
-const extractTilePaletteWithHint = (
+export const extractTilePaletteWithHint = (
   pixels: Buffer | Uint8ClampedArray,
   width: number,
   tileX: number,
   tileY: number,
   indexedImage: IndexedImage,
+  colorCorrection: ColorCorrectionSetting,
 ): SparseHexPalette => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
@@ -249,11 +272,9 @@ const extractTilePaletteWithHint = (
       const key = `${pixels[i]},${pixels[i + 1]},${pixels[i + 2]}`;
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
-        const hex = rgbToColorCorrectedHex(
-          pixels[i],
-          pixels[i + 1],
-          pixels[i + 2],
-        );
+        const colorCorrectionFn =
+          colorCorrection === "default" ? rgbToColorCorrectedHex : rgb2hex;
+        const hex = colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]);
         colors[index] = hex;
         seenCount++;
         if (seenCount === 4) {
@@ -358,13 +379,7 @@ const findClosestHexColor = (
  * Compress array of hex palettes by merging overlapping palettes
  * builds a mapping table from old palette to new index
  */
-const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
-  // Early exit if 8 or fewer palettes are provided
-  if (allPalettes.length <= 8) {
-    const mappingTable = allPalettes.map((_, index) => index);
-    return { palettes: allPalettes, mappingTable };
-  }
-
+export const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
   let outPalettes = [...allPalettes];
   // let labPalettes = allPalettes.map((palette) => palette.map((hex) => ({hex, chroma:chroma(hex)})));
   const originIndices: number[][] = allPalettes.map((_, index) => [index]); // Tracks original indices for each new palette
@@ -408,7 +423,7 @@ const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
     });
   });
 
-  return { palettes: outPalettes, mappingTable };
+  return { palettes: fillVariablePalettes(outPalettes), mappingTable };
 };
 
 /**
@@ -455,7 +470,7 @@ const mergeSparsePalette = (
  * Compress array of sparse palettes by merging overlapping palettes
  * builds a mapping table from old palette to new index
  */
-const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
+export const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
   const indexedPalettes = allPalettes.map((palette, index) => ({
     palette,
     index,
@@ -486,16 +501,14 @@ const compressSparsePalettes = (allPalettes: SparseHexPalette[]) => {
     }
   });
 
-  return { palettes, mappingTable };
+  return { palettes: fillSparsePalettes(palettes), mappingTable };
 };
 
 /**
- * Given an array of hex palettes
+ * Given an array of spares hex palettes
  * fill them so each contains four values
  */
-const fillHexPalette = (
-  palettes: Array<VariableLengthHexPalette | SparseHexPalette>,
-): HexPalette[] => {
+const fillSparsePalettes = (palettes: SparseHexPalette[]): HexPalette[] => {
   return palettes.map((palette) => {
     return [
       palette[0] ?? "000000",
@@ -504,4 +517,185 @@ const fillHexPalette = (
       palette[3] ?? "000000",
     ];
   });
+};
+
+/**
+ * Fill and sort a variable length palette into a strict 4-entry HexPalette
+ * using brightness anchors and closest color matching
+ */
+export const fillVariablePalette = (
+  palette: VariableLengthHexPalette,
+): HexPalette => {
+  // Convert palette into structured entries
+  const colors: IndexedColor[] = palette.map((hex) => {
+    const color = chroma(hex);
+    const [r, g, b] = color.rgb();
+    const lightness = color.lab()[0];
+    const colorIndex = tileDataIndexFn(r, g, b, 255);
+    return {
+      hex,
+      index: colorIndex,
+      lightness: lightness,
+    };
+  });
+  colors.sort((a, b) => a.index - b.index);
+
+  const result: (string | undefined)[] = [
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+  ];
+  const claimed: boolean[] = [false, false, false, false];
+  const overflow: IndexedColor[] = [];
+
+  // First pass: claim preferred slots based on index
+  {
+    let i = 0;
+    while (i < colors.length) {
+      const slotIndex = colors[i].index;
+
+      // Collect all colors that prefer this same slot
+      const start = i;
+      while (i < colors.length && colors[i].index === slotIndex) i++;
+      const group = colors.slice(start, i);
+
+      // Sort group by distance to brightness anchor for this slot
+      const anchor = BRIGHTNESS_ANCHOR[slotIndex];
+      group.sort((a, b) => {
+        const da = Math.abs(a.lightness - anchor);
+        const db = Math.abs(b.lightness - anchor);
+        return da - db;
+      });
+
+      // Winner claims preferred slot
+      const winner = group[0];
+      if (!claimed[slotIndex] && result[slotIndex] === undefined) {
+        result[slotIndex] = winner.hex;
+        claimed[slotIndex] = true;
+      } else {
+        overflow.push(winner);
+      }
+
+      // Others overflow
+      for (let j = 1; j < group.length; j++) {
+        overflow.push(group[j]);
+      }
+    }
+  }
+
+  // Sort overflow for placement:
+  overflow.sort((a, b) => {
+    const da = Math.abs(a.lightness - BRIGHTNESS_ANCHOR[a.index]);
+    const db = Math.abs(b.lightness - BRIGHTNESS_ANCHOR[b.index]);
+    return da - db;
+  });
+
+  const findForward = (start: number): number | null => {
+    for (let i = start + 1; i < 4; i++) {
+      if (result[i] === undefined) return i;
+    }
+    return null;
+  };
+
+  const findBackward = (start: number): number | null => {
+    for (let i = start - 1; i >= 0; i--) {
+      if (result[i] === undefined) return i;
+    }
+    return null;
+  };
+
+  // Second pass: place overflow items
+  for (const col of overflow) {
+    let slot = findForward(col.index);
+    if (slot === null) slot = findBackward(col.index);
+    if (slot === null) slot = findBackward(4);
+    if (slot !== null) {
+      result[slot] = col.hex;
+      claimed[slot] = true;
+    }
+  }
+
+  // Fill empty slots
+  for (let i = 0; i < 4; i++) {
+    if (result[i] === undefined) result[i] = "000000";
+  }
+
+  return result as HexPalette;
+};
+
+export const fillVariablePalettes = (
+  palettes: VariableLengthHexPalette[],
+): HexPalette[] => {
+  return palettes.map((palette) => {
+    return fillVariablePalette(palette);
+  });
+};
+
+const calculatePaletteDistance = (
+  palette1: HexPalette,
+  palette2: HexPalette,
+): number => {
+  let totalDistance = 0;
+  for (let i = 0; i < 4; i++) {
+    const color1 = palette1[i] || "000000";
+    const color2 = palette2[i] || "000000";
+    totalDistance += manhattanHexDistance(color1, color2);
+  }
+  return totalDistance;
+};
+
+export const setUIPalette = (
+  {
+    palettes,
+    mappingTable,
+  }: { palettes: HexPalette[]; mappingTable: number[] },
+  uiPalette?: HexPalette,
+): { palettes: HexPalette[]; mappingTable: number[] } => {
+  if (!uiPalette) {
+    return { palettes, mappingTable };
+  }
+
+  if (palettes.length < 8) {
+    const base = palettes.slice(0, 7);
+    while (base.length < 7) {
+      base.push(emptyPalette);
+    }
+    base.push(uiPalette);
+    return { palettes: base, mappingTable };
+  }
+
+  // Ensure we have at least 8 slots to work with
+  const base = palettes.slice(0);
+  while (base.length < 8) {
+    base.push(emptyPalette);
+  }
+
+  // Determine which palette in [0..6] most closely matches the UI palette
+  const candidateMax = Math.min(6, palettes.length - 1);
+  let replaceIndex = 0;
+  let minDistance = Number.POSITIVE_INFINITY;
+  for (let i = 0; i <= candidateMax; i++) {
+    const d = calculatePaletteDistance(base[i], uiPalette);
+    if (d < minDistance) {
+      minDistance = d;
+      replaceIndex = i;
+    }
+  }
+
+  // Build the new palettes:
+  // - Move whatever was at [7] into the slot we are replacing
+  // - Place the UI palette at [7]
+  const outPalettes = base.slice(0);
+  const previousAt7 = base[7];
+  outPalettes[replaceIndex] = previousAt7;
+  outPalettes[7] = uiPalette;
+
+  const outMapping = mappingTable.map((i) => {
+    if (i === replaceIndex) return 7;
+    if (i === 7) return replaceIndex;
+    return i;
+  });
+
+  return { palettes: outPalettes, mappingTable: outMapping };
 };

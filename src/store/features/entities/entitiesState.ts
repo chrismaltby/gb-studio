@@ -3503,6 +3503,58 @@ const paintColor: CaseReducer<
   });
 };
 
+const setSceneExtractedPalettes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ sceneId: string; palettes: Palette[]; tileColors: number[] }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const background = localBackgroundSelectById(state, scene.backgroundId);
+  if (!background) {
+    return;
+  }
+
+  const generatePaletteKey = (p: Palette) => p.colors.join("_").toUpperCase();
+  const paletteLookup = state.palettes.ids.reduce(
+    (memo, id) => {
+      const palette = state.palettes.entities[id];
+      memo[generatePaletteKey(palette)] = id;
+      return memo;
+    },
+    {} as Record<string, string>,
+  );
+
+  const newPaletteIds: string[] = [];
+  for (const palette of action.payload.palettes) {
+    const existingId = paletteLookup[generatePaletteKey(palette)];
+    let id = existingId;
+    if (!id) {
+      id = uuid();
+      const newPalette: Palette = { ...palette, id };
+      palettesAdapter.addOne(state.palettes, newPalette);
+      paletteLookup[generatePaletteKey(newPalette)] = id;
+    }
+    newPaletteIds.push(id);
+  }
+
+  backgroundsAdapter.updateOne(state.backgrounds, {
+    id: background.id,
+    changes: {
+      tileColors: action.payload.tileColors,
+      autoColor: false,
+    },
+  });
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      paletteIds: newPaletteIds,
+    },
+  });
+};
+
 /**************************************************************************
  * Variables
  */
@@ -4482,6 +4534,7 @@ const entitiesSlice = createSlice({
     paintCollision,
     paintSlopeCollision,
     paintColor,
+    setSceneExtractedPalettes,
 
     /**************************************************************************
      * Actors

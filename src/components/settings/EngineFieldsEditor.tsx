@@ -343,33 +343,34 @@ const EngineFieldRow = ({
       key={field.key}
       searchTerm={searchTerm}
       searchMatches={[l10n(field.label as L10NKey), field.key]}
+      title={field.description && l10n(field.description as L10NKey)}
+      indent={field.indent}
+      isCheckbox={field.type === "checkbox"}
     >
-      <SettingRowLabel
-        htmlFor={field.key}
-        style={{ width: 300 }}
-        $sectionHeading={field.isHeading}
-        $indent={field.indent}
-        title={field.description && l10n(field.description as L10NKey)}
-      >
+      <SettingRowLabel htmlFor={field.key} $sectionHeading={field.isHeading}>
         {l10n(field.label as L10NKey)}
       </SettingRowLabel>
-      <SettingRowInput>
-        <FlexRow>
-          <EngineFieldInput
-            field={field}
-            value={values[field.key]?.value}
-            onChange={(e) => {
-              dispatch(
-                editEngineFieldValue({
-                  engineFieldId: field.key,
-                  value: e,
-                }),
-              );
-            }}
-          />
-          <EngineFieldUnits field={field} />
-        </FlexRow>
-      </SettingRowInput>
+      {field.type !== "label" && (
+        <SettingRowInput>
+          <FlexRow>
+            <EngineFieldInput
+              field={field}
+              value={values[field.key]?.value}
+              onChange={(e) => {
+                dispatch(
+                  editEngineFieldValue({
+                    engineFieldId: field.key,
+                    value: e,
+                  }),
+                );
+              }}
+            />
+            {(field.editUnits || field.type === "slider") && (
+              <EngineFieldUnits field={field} />
+            )}
+          </FlexRow>
+        </SettingRowInput>
+      )}
     </SearchableSettingRow>
   );
 };
@@ -434,9 +435,9 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({
           )}
           {group.fields
             .filter((field) => !field.runtimeOnly)
-            .map((field) => (
+            .map((field, index) => (
               <EngineFieldRow
-                key={field.key}
+                key={field.key || String(index)}
                 field={field}
                 values={values}
                 defaultValues={defaultValues}

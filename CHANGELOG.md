@@ -61,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability for actors in Adventure scenes to be marked as "Solid"
 - Add support for rounded corner collision tiles in Adventure scenes, allowing players to smoothly slide around corners
 - Add warnings when trying to use "Set Actor Movement Speed" event on player with incompatible scene types (platformer and adventure). Includes button to automatically replace with "Engine Field Update" events [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to extract palettes directly from a color image (available in the Scene sidebar when choosing "Automatic" or "Manual" palettes). This generates the palettes found in the image and auto-paints the tiles, while still allowing tile colors to be edited.
+- Add ability to override UI palette when using automatic background palettes
 
 ### Changed
 
@@ -96,6 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose engineFieldValues for use within event plugins [@Mico27](https://github.com/Mico27)
 - Improved shoot em up scene type to allow configuring free/locked movement and setting trigger activation conditions
 - Updated "Set Actor Collision Bounding Box" event to allow using variables and expressions in new bounds values
+- When using automatic background palettes the generated palettes are now displayed in the scene editor sidebar
+- When provided, a ".mono.png" file is now always preferred for tile data, even when Automatic Coloring is disabled. This ensures that the extract palette feature matches the automatic palette when a ".mono.png" is present.
 
 ### Fixed
 

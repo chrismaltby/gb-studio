@@ -291,7 +291,7 @@ const Splash = () => {
       <SplashWindow focus={windowFocus}>
         <SplashSidebar>
           <SplashLogo>
-            <img src={logoFile} alt="GB Studio" />
+            <img src={logoFile} alt="GB Studio" draggable={false} />
             <SplashEasterEggButton
               onClick={() => setOpenCredits(true)}
               tabIndex={-1}

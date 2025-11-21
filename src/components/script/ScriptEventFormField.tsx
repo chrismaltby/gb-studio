@@ -505,6 +505,7 @@ const ScriptEventFormField = memo(
         flexBasis={field.flexBasis}
         flexGrow={field.flexGrow}
         minWidth={field.minWidth}
+        title={field.description}
       >
         <FormField
           name={genKey(scriptEvent.id, field.key || "")}
@@ -517,7 +518,6 @@ const ScriptEventFormField = memo(
               ? labelWithUnits
               : ""
           }
-          title={field.description}
           variant={field.labelVariant as FormFieldProps["variant"]}
           hasOverride={overrides?.args?.[field.key || ""] !== undefined}
         >

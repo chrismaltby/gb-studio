@@ -620,8 +620,9 @@ const SettingsPage: FC = () => {
                 l10n(sceneType.label as L10NKey),
                 l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
               ]}
+              indent={1}
             >
-              <SettingRowLabel $indent={1}>
+              <SettingRowLabel>
                 {l10n(sceneType.label as L10NKey)}
               </SettingRowLabel>
               <SettingRowInput>

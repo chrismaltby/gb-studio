@@ -9,6 +9,7 @@ import {
   migrateFrom420r4To420r5Event,
   migrateFrom420r5To420r6EngineFields,
   migrateFrom420r6To420r7Event,
+  migrateFrom420r7To420r8Scenes,
 } from "lib/project/migration/versions/410to420";
 import {
   EngineFieldValue,
@@ -19,7 +20,9 @@ import {
   SpriteResource,
 } from "shared/lib/resources/types";
 import {
+  dummyCompressedBackgroundResource,
   dummyCompressedProjectResources,
+  dummyCompressedSceneResource,
   dummySpriteResource,
 } from "../../dummydata";
 
@@ -830,5 +833,108 @@ describe("migrateFrom420r6To420r7Event", () => {
     };
     const output = migrateFrom420r6To420r7Event(input);
     expect(output).toEqual(input);
+  });
+});
+
+describe("migrateFrom420r7To420r8Scenes", () => {
+  test("should set palette 7 to auto if background was using auto palettes, matching previous default behaviour", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      scenes: [
+        {
+          ...dummyCompressedSceneResource,
+          backgroundId: "background1",
+          paletteIds: [
+            "palette0",
+            "palette1",
+            "palette2",
+            "palette3",
+            "palette4",
+            "palette5",
+            "palette6",
+            "palette7",
+          ],
+        },
+      ],
+      backgrounds: [
+        {
+          ...dummyCompressedBackgroundResource,
+          id: "background1",
+          autoColor: true,
+        },
+      ],
+    };
+    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    expect(migrated.scenes[0].paletteIds).not.toEqual(
+      resources.scenes[0].paletteIds,
+    );
+    expect(migrated.scenes[0].paletteIds[7]).toEqual("auto");
+    for (let i = 0; i < 7; i++) {
+      expect(migrated.scenes[0].paletteIds[i]).toEqual(
+        resources.scenes[0].paletteIds[i],
+      );
+    }
+  });
+
+  test("should not set palette 7 to auto if background was not using auto palettes", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      scenes: [
+        {
+          ...dummyCompressedSceneResource,
+          backgroundId: "background1",
+          paletteIds: [
+            "palette0",
+            "palette1",
+            "palette2",
+            "palette3",
+            "palette4",
+            "palette5",
+            "palette6",
+            "palette7",
+          ],
+        },
+      ],
+      backgrounds: [
+        {
+          ...dummyCompressedBackgroundResource,
+          id: "background1",
+          autoColor: false,
+        },
+      ],
+    };
+    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    expect(migrated.scenes[0].paletteIds[7]).not.toEqual("auto");
+    expect(migrated.scenes[0].paletteIds).toEqual(
+      resources.scenes[0].paletteIds,
+    );
+  });
+
+  test("should not set palette 7 to auto if background was not found", () => {
+    const resources: CompressedProjectResources = {
+      ...dummyCompressedProjectResources,
+      scenes: [
+        {
+          ...dummyCompressedSceneResource,
+          backgroundId: "background-not-found",
+          paletteIds: [
+            "palette0",
+            "palette1",
+            "palette2",
+            "palette3",
+            "palette4",
+            "palette5",
+            "palette6",
+            "palette7",
+          ],
+        },
+      ],
+      backgrounds: [],
+    };
+    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    expect(migrated.scenes[0].paletteIds[7]).not.toEqual("auto");
+    expect(migrated.scenes[0].paletteIds).toEqual(
+      resources.scenes[0].paletteIds,
+    );
   });
 });

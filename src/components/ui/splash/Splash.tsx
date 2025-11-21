@@ -303,7 +303,11 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
                   playing={template.id === value}
                 />
               ) : (
-                <img src={template.preview} alt={template.name} />
+                <img
+                  src={template.preview}
+                  alt={template.name}
+                  draggable={false}
+                />
               )}
             </SplashTemplateLabel>
           </SplashTemplateButtonWrapper>
@@ -529,7 +533,7 @@ export const SplashProject: FC<SplashProjectProps> = ({
   onRemove,
 }) => (
   <SplashProjectWrapper onClick={onClick}>
-    <img src={projectIcon} alt="" />
+    <img src={projectIcon} alt="" draggable={false} />
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
       <SplashProjectPath>{project.dir}</SplashProjectPath>

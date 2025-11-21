@@ -108,6 +108,8 @@ import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
+  ColorCorrectionSetting,
+  ColorModeSetting,
   MusicResourceAsset,
   ProjectResources,
   SpriteModeSetting,
@@ -148,6 +150,7 @@ import { TemplateManager } from "lib/templates/templateManager";
 import { EngineSchema, loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename, getROMFileStem } from "shared/lib/helpers/filePaths";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
+import { HexPalette } from "shared/lib/tiles/autoColor";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1635,10 +1638,20 @@ ipcMain.handle(
     background: Background,
     tileset: Tileset | undefined,
     is360: boolean,
-    cgbOnly: boolean,
+    uiPalette: HexPalette | undefined,
+    colorMode: ColorModeSetting,
+    colorCorrection: ColorCorrectionSetting,
   ) => {
     const projectRoot = Path.dirname(projectPath);
-    return getBackgroundInfo(background, tileset, is360, cgbOnly, projectRoot);
+    return getBackgroundInfo(
+      background,
+      tileset,
+      is360,
+      uiPalette,
+      colorMode,
+      colorCorrection,
+      projectRoot,
+    );
   },
 );
 

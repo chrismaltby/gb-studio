@@ -33,6 +33,8 @@ import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import {
   AvatarResourceAsset,
+  ColorCorrectionSetting,
+  ColorModeSetting,
   CompressedBackgroundResourceAsset,
   EmoteResourceAsset,
   FontResourceAsset,
@@ -53,6 +55,7 @@ import type {
 import type { ThemeInterface } from "ui/theme/ThemeInterface";
 import type { TemplatePlugin } from "lib/templates/templateManager";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { HexPalette } from "shared/lib/tiles/autoColor";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -249,14 +252,18 @@ const APISetup = {
       background: Background,
       tileset: Tileset | undefined,
       is360: boolean,
-      cgbOnly: boolean,
+      uiPalette: HexPalette | undefined,
+      colorMode: ColorModeSetting,
+      colorCorrection: ColorCorrectionSetting,
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
         "project:get-background-info",
         background,
         tileset,
         is360,
-        cgbOnly,
+        uiPalette,
+        colorMode,
+        colorCorrection,
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),

@@ -18,6 +18,7 @@ test("Should trigger call to check background assets", async () => {
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: [],
+    attr: [],
   });
 
   const store = {
@@ -43,9 +44,13 @@ test("Should trigger call to check background assets", async () => {
             tilesets: {
               entities: {},
             },
+            palettes: {
+              entities: {},
+            },
           },
           settings: {
             colorMode: "mono",
+            defaultBackgroundPaletteIds: [],
           },
         },
       },
@@ -57,6 +62,7 @@ test("Should trigger call to check background assets", async () => {
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+    uiPaletteId: "",
   });
 
   middleware(store)(next)(action);
@@ -72,6 +78,7 @@ test("Should trigger call to check background assets", async () => {
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
+      hash: "0_false__mono_undefined_undefined_undefined",
     }),
   );
 });
@@ -82,6 +89,7 @@ test("Should not trigger call to check background assets if already cached asset
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: [],
+    attr: [],
   });
 
   const store = {
@@ -97,6 +105,7 @@ test("Should not trigger call to check background assets if already cached asset
             is360: false,
             isCGBOnly: false,
             timestamp: 100,
+            hash: "0_false__mono_undefined_undefined_undefined",
           },
         },
       },
@@ -116,9 +125,13 @@ test("Should not trigger call to check background assets if already cached asset
             tilesets: {
               entities: {},
             },
+            palettes: {
+              entities: {},
+            },
           },
           settings: {
             colorMode: "mono",
+            defaultBackgroundPaletteIds: [],
           },
         },
       },
@@ -130,6 +143,7 @@ test("Should not trigger call to check background assets if already cached asset
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+    uiPaletteId: "",
   });
 
   middleware(store)(next)(action);
@@ -146,6 +160,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: [],
+    attr: [],
   });
 
   const store = {
@@ -178,9 +193,13 @@ test("Should trigger call to check background assets if cache has expired", asyn
             tilesets: {
               entities: {},
             },
+            palettes: {
+              entities: {},
+            },
           },
           settings: {
             colorMode: "mono",
+            defaultBackgroundPaletteIds: [],
           },
         },
       },
@@ -192,6 +211,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
   const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
+    uiPaletteId: "",
   });
 
   middleware(store)(next)(action);
@@ -207,6 +227,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
+      hash: "101_false__mono_undefined_undefined_undefined",
     }),
   );
 });
