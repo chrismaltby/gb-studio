@@ -16,7 +16,7 @@ const autoLabel = (fetchArg) => {
 
 const fields = [
   {
-    label: "Rendering text in Logo scenes will cause graphical glitches.",
+    label: l10n("FIELD_TEXT_IN_LOGO_WARNING"),
     labelVariant: "warning",
     flexBasis: "100%",
     conditions: [

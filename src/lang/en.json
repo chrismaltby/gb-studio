@@ -914,6 +914,8 @@
   "FIELD_TEXT_FINISHED": "Text Finished",
   "FIELD_NEVER_NONMODAL": "Never (Non-Modal)",
   "FIELD_NONMODAL_POSITION_TOP_WARNING": "To close a non-modal dialog positioned at the top of the screen, you can use a \"Close Non-Modal Dialogue\" event or you will need to manually reset the overlay scanline cutoff with a \"Set Overlay Scanline Cutoff\" event.",
+  "FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING": "To set the Player Movement speed in Platformer or Adventure scene types, you must use the \"Engine Field Update\" event to set the Walk Velocity or Run Velocity fields.",
+  "FIELD_TEXT_IN_LOGO_WARNING": "Rendering text in Logo scenes will cause graphical glitches.",
   "FIELD_ANY": "Any",
   "FIELD_CLOSE_DELAY": "Close Delay",
   "FIELD_CLOSE_DELAY_DESC": "Delay closing for a period of time.",

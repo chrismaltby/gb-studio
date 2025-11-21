@@ -29,7 +29,7 @@ const fields = [
     defaultValue: 1,
   },
   {
-    label: `To set the Player Movement speed in Platformer or Adventure scene types, you must use the "Engine Field Update" event to set the Walk Velocity or Run Velocity fields.`,
+    label: l10n("FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING"),
     labelVariant: "warning",
     flexBasis: "100%",
     conditions: [
