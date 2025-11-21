@@ -55,12 +55,17 @@ const genKey = (id: string, key: string, index?: number) =>
 
 const isScriptEventInitializationData = (
   data: unknown,
-): data is { id: string; values?: Record<string, unknown> } => {
+): data is {
+  id: string;
+  values?: Record<string, unknown>;
+  replace?: boolean;
+} => {
   return (
     !!data &&
     typeof data === "object" &&
     "id" in data &&
-    (!("values" in data) || typeof data.values === "object")
+    (!("values" in data) || typeof data.values === "object") &&
+    (!("replace" in data) || typeof data.replace === "boolean")
   );
 };
 
@@ -344,6 +349,16 @@ const ScriptEventFormField = memo(
           ],
         }),
       );
+      if (eventData.replace) {
+        dispatch(
+          entitiesActions.removeScriptEvent({
+            scriptEventId: scriptEvent.id,
+            entityId: parentId,
+            type: parentType,
+            key: parentKey,
+          }),
+        );
+      }
     }, [
       dispatch,
       field.defaultValue,

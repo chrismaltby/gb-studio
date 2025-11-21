@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { EngineSchema } from "lib/project/loadEngineSchema";
 import keyBy from "lodash/keyBy";
-import { BaseCondition } from "shared/lib/conditionsFilter";
+import { Condition } from "shared/lib/conditionsFilter";
 import {
   CollisionExtraFlag,
   CollisionTileDef,
@@ -41,7 +41,7 @@ export type EngineFieldSchema = {
   max?: number;
   options?: [number, string][];
   file?: string;
-  conditions?: BaseCondition[];
+  conditions?: Condition[];
   editUnits?: EngineFieldUnitsType;
   isHeading?: boolean;
   indent?: number;

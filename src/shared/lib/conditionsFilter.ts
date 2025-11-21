@@ -1,4 +1,4 @@
-export interface BaseCondition {
+export interface BaseConditionShape {
   key: string;
   ne?: unknown;
   eq?: unknown;
@@ -9,17 +9,27 @@ export interface BaseCondition {
   in?: unknown[];
   set?: boolean;
   truthy?: boolean;
-  [customKey: string]: unknown;
+  falsy?: boolean;
 }
 
-type ValueGetter = (key: string) => unknown;
-type CustomEvaluator = (condition: BaseCondition, value: unknown) => boolean;
+export interface BaseCondition<T extends BaseCondition<T>>
+  extends BaseConditionShape {
+  or?: T[][];
+}
 
-export const evaluateConditions = (
-  conditions: BaseCondition[],
+export type Condition = BaseCondition<Condition>;
+
+type ValueGetter = (key: string) => unknown;
+type CustomEvaluator<T extends BaseCondition<T>> = (
+  condition: T,
+  value: unknown,
+) => boolean;
+
+export const evaluateConditions = <T extends BaseCondition<T>>(
+  conditions: T[],
   getValue: ValueGetter,
   ignoreConditions?: string[],
-  customEval?: CustomEvaluator,
+  customEval?: CustomEvaluator<T>,
 ): boolean => {
   if (conditions.length === 0) return true;
 
@@ -54,6 +64,20 @@ export const evaluateConditions = (
 
     if (!customChecks) {
       return false;
+    }
+
+    if (condition.or && condition.or.length > 0) {
+      const orChecks = condition.or.some((andConditions) => {
+        return evaluateConditions(
+          andConditions,
+          getValue,
+          ignoreConditions,
+          customEval,
+        );
+      });
+      if (!orChecks) {
+        return false;
+      }
     }
 
     return memo;

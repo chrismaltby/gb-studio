@@ -29,20 +29,6 @@ const fields = [
     defaultValue: 1,
   },
   {
-    label: l10n("FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING"),
-    labelVariant: "warning",
-    flexBasis: "100%",
-    conditions: [
-      {
-        sceneType: ["platform", "adventure"],
-      },
-      {
-        key: "actorId",
-        eq: "player",
-      },
-    ],
-  },
-  {
     type: "group",
     wrapItems: true,
     conditions: [
@@ -50,11 +36,31 @@ const fields = [
         sceneType: ["platform", "adventure"],
       },
       {
-        key: "actorId",
-        eq: "player",
+        or: [
+          [
+            {
+              key: "actorId",
+              eq: "$self$",
+            },
+            {
+              entityTypeNot: ["actor"],
+            },
+          ],
+          [
+            {
+              key: "actorId",
+              eq: "player",
+            },
+          ],
+        ],
       },
     ],
     fields: [
+      {
+        label: l10n("FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING"),
+        labelVariant: "warning",
+        flexBasis: "100%",
+      },
       {
         type: "addEventButton",
         hideLabel: true,
@@ -64,7 +70,30 @@ const fields = [
           values: {
             engineFieldKey: "plat_walk_vel",
           },
+          replace: true,
         },
+        conditions: [
+          {
+            sceneType: ["platform"],
+          },
+        ],
+      },
+      {
+        type: "addEventButton",
+        hideLabel: true,
+        label: l10n("EVENT_ENGINE_FIELD_SET"),
+        defaultValue: {
+          id: "EVENT_ENGINE_FIELD_SET",
+          values: {
+            engineFieldKey: "adv_walk_vel",
+          },
+          replace: true,
+        },
+        conditions: [
+          {
+            sceneType: ["adventure"],
+          },
+        ],
       },
     ],
   },
