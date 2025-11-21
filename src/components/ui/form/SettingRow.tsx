@@ -33,6 +33,7 @@ export const SettingRowLabel = styled.label<SettingRowLabelProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-decoration: underline;
   font-size: ${(props) => props.theme.typography.fontSize};
   ${(props) =>
     props.$sectionHeading
@@ -46,6 +47,10 @@ export const SettingRowLabel = styled.label<SettingRowLabelProps>`
           padding-left: ${props.$indent * 20}px;
         `
       : ""}
+
+  &:hover {
+    color: ${(props) => props.theme.colors.highlight};
+  }
 `;
 
 export const SettingRowInput = styled.div`
