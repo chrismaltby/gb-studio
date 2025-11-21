@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import ScriptEventFormField from "./ScriptEventFormField";
 import {
+  SceneNormalized,
   ScriptEventFieldSchema,
   ScriptEventNormalized,
   ScriptEventParentType,
+  Sound,
 } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
@@ -16,8 +18,9 @@ import {
   soundSelectors,
 } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
-import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { evaluateConditions } from "shared/lib/conditionsFilter";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 interface ScriptEventFieldsProps {
   scriptEvent: ScriptEventNormalized;
@@ -34,6 +37,56 @@ interface ScriptEventFieldsProps {
 
 const genKey = (id: string, key: string, index: number) =>
   `${id}_${key}_${index || 0}`;
+
+export const isFieldVisible = (
+  field: ScriptEventFieldSchema,
+  args: Record<string, unknown>,
+  context: ScriptEditorCtx,
+  scene: SceneNormalized | undefined,
+  soundsLookup: Record<string, Sound>,
+  ignoreConditions?: string[],
+) => {
+  if (!field.conditions) {
+    return true;
+  }
+  return evaluateConditions(
+    field.conditions,
+    (key) => args[key],
+    ignoreConditions,
+    (condition) => {
+      const keyValue = args?.[condition.key];
+      if (condition.soundType) {
+        const sound = soundsLookup[keyValue as string];
+        return sound?.type === condition.soundType;
+      } else if (condition.parallaxEnabled !== undefined) {
+        return !!scene?.parallax === condition.parallaxEnabled;
+      } else if (condition.sceneType !== undefined) {
+        const conditionArray = Array.isArray(condition.sceneType)
+          ? condition.sceneType
+          : [condition.sceneType];
+        return (
+          !!scene?.type.toLocaleLowerCase() &&
+          conditionArray.includes(scene.type.toLocaleLowerCase())
+        );
+      } else if (condition.entityType !== undefined) {
+        const conditionArray = Array.isArray(condition.entityType)
+          ? condition.entityType
+          : [condition.entityType];
+        return (
+          context.entityType && conditionArray.includes(context.entityType)
+        );
+      } else if (condition.entityTypeNot !== undefined) {
+        const conditionArray = Array.isArray(condition.entityTypeNot)
+          ? condition.entityTypeNot
+          : [condition.entityTypeNot];
+        return (
+          context.entityType && !conditionArray.includes(context.entityType)
+        );
+      }
+      return true;
+    },
+  );
+};
 
 const ScriptEventFields = ({
   scriptEvent,
@@ -64,24 +117,13 @@ const ScriptEventFields = ({
         if (field.hide) {
           return null;
         }
+
         // Determine if field conditions are met and hide if not
-        if (value && !isFieldVisible(field, value)) {
+        if (
+          value &&
+          !isFieldVisible(field, value, context, scene, soundsLookup)
+        ) {
           return null;
-        }
-        if (field.conditions) {
-          const showField = field.conditions.reduce((memo, condition) => {
-            const keyValue = value?.[condition.key];
-            if (condition.soundType) {
-              const sound = soundsLookup[keyValue as string];
-              return memo && sound?.type === condition.soundType;
-            } else if (condition.parallaxEnabled !== undefined) {
-              return memo && !!scene?.parallax === condition.parallaxEnabled;
-            }
-            return memo;
-          }, true);
-          if (!showField) {
-            return null;
-          }
         }
 
         if (field.type === "events") {

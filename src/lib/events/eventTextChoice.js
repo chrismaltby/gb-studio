@@ -16,6 +16,16 @@ const autoLabel = (fetchArg) => {
 
 const fields = [
   {
+    label: l10n("FIELD_TEXT_IN_LOGO_WARNING"),
+    labelVariant: "warning",
+    flexBasis: "100%",
+    conditions: [
+      {
+        sceneType: ["logo"],
+      },
+    ],
+  },
+  {
     key: "variable",
     label: l10n("FIELD_SET_VARIABLE"),
     description: l10n("FIELD_VARIABLE_DESC"),

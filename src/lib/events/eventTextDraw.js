@@ -15,6 +15,16 @@ const autoLabel = (fetchArg, args) => {
 
 const fields = [
   {
+    label: l10n("FIELD_TEXT_IN_LOGO_WARNING"),
+    labelVariant: "warning",
+    flexBasis: "100%",
+    conditions: [
+      {
+        sceneType: ["logo"],
+      },
+    ],
+  },
+  {
     key: "text",
     type: "textarea",
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
