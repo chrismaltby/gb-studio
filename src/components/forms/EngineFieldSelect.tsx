@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useAppSelector } from "store/hooks";
-import { Select, Option, OptGroup } from "ui/form/Select";
+import { Select, Option, OptGroup, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 import { SingleValue } from "react-select";
-import { Alert } from "ui/alerts/Alert";
 import styled from "styled-components";
 import { pxToSubpx, pxToSubpxVelPrecise } from "shared/lib/helpers/subpixels";
+import { Label } from "ui/form/Label";
 
 interface EngineFieldSelectProps {
   name: string;
@@ -51,6 +51,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   const currentValue = currentField && {
     value: currentField.key,
     label: l10n(currentField.label as L10NKey),
+    group: l10n(currentField.group as L10NKey),
   };
 
   return (
@@ -64,12 +65,25 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
             onChange(e.value);
           }
         }}
+        formatOptionLabel={(
+          option: SingleValue<Option>,
+          { context }: { context: "menu" | "value" },
+        ) => {
+          if (option && context === "value") {
+            return (
+              <OptionLabelWithInfo info={currentValue?.group || ""}>
+                {option.label}
+              </OptionLabelWithInfo>
+            );
+          }
+          return option?.label;
+        }}
       />
       {showUnitsWarning &&
         currentField?.editUnits &&
         currentField.editUnits !== "px" && (
           <AlertWrapper>
-            <Alert variant="warning">
+            <Label>
               {(currentField.editUnits === "subpx" ||
                 currentField.editUnits === "subpxVel" ||
                 currentField.editUnits === "subpxAcc") &&
@@ -79,7 +93,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
                 l10n("WARNING_FIELD_UNITS_SUBPX_PRECISE", {
                   multiplier: pxToSubpxVelPrecise(1),
                 })}
-            </Alert>
+            </Label>
           </AlertWrapper>
         )}
     </>
