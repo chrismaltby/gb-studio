@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2096251106",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2099251122",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -914,6 +914,8 @@
   "FIELD_TEXT_FINISHED": "Tekst zakończony",
   "FIELD_NEVER_NONMODAL": "Nigdy (niemodalne)",
   "FIELD_NONMODAL_POSITION_TOP_WARNING": "Aby zamknąć niemodalne okno dialogowe umieszczone na górze ekranu, możesz użyć zdarzenia \"Zamknij niemodalne okno dialogowe\" lub musisz ręcznie zresetować ograniczenie linii skanowania nakładki za pomocą zdarzenia \"Ustaw granicę linii skanowania nakładki\".",
+  "FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING": "Aby ustawić szybkość poruszania gracza na scenie platformowej lub przygodowej, należy użyć polecenia \"Silnik: aktualizacja ustawień\", aby ustawić pola Prędkość chodzenia lub Prędkość biegu.",
+  "FIELD_TEXT_IN_LOGO_WARNING": "Renderowanie tekstu w scenach typu Logo spowoduje błędy graficzne.",
   "FIELD_ANY": "Dowolny",
   "FIELD_CLOSE_DELAY": "Opóźnienie zamknięcia",
   "FIELD_CLOSE_DELAY_DESC": "Opóźnienie zamknięcia na określony czas.",
@@ -1267,6 +1269,7 @@
   "FIELD_LOCKED_MOVEMENT": "Krawędź ekranu",
   "FIELD_WALL_COLLISION_GROUP": "Grupa kolizji ściany",
   "FIELD_WALL_COLLISION_GROUP_DESC": "Po ustawieniu, uruchamia 'Skrypt (dotknięcie gracza)' dla tej grupy kolizji, gdy gracz dotknie ścianę tafli.",
+  "FIELD_EXTRACT_PALETTES": "Wyodrębnij palety",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1699,7 +1702,7 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Usuń skrypt od zdarzenia sceny przygodowej",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Usuwa przypisany skrypt reagujący na zmiany stanu w scenie przygodowej.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Usuń skrypt od zdarzenia sceny przygodowej: \"{event}\"",
-
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
