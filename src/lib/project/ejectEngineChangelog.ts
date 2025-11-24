@@ -969,6 +969,25 @@ const changes: EngineChange[] = [
       "src/core/vm_instructions.c",
     ],
   },
+  {
+    version: "4.2.0-e20",
+    description: createDescription("Fixes", [
+      "Fix optional arguments in vm_beginthread",
+      "Optimise actor collision checks to reduce need to read inc_noclip flag within loop",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/core/projectiles.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/pointnclick.c",
+      "src/states/shmup.c",
+      "src/states/topdown.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
