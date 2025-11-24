@@ -1270,6 +1270,11 @@
   "FIELD_WALL_COLLISION_GROUP": "Wall Collision Group",
   "FIELD_WALL_COLLISION_GROUP_DESC": "When set, triggers 'On Player Hit' for this collision group when the player touches a wall tile.",
   "FIELD_EXTRACT_PALETTES": "Extract Palettes",
+  "FIELD_RATE_LIMIT_INTERVAL_DESC": "The minimum wait time between successive calls of this script.",
+  "FIELD_RATE_LIMIT_VARIABLE": "Next Call Time Variable",
+  "FIELD_RATE_LIMIT_VARIABLE_DESC": "The variable which will store the next time, in frames, that this script can be called.",
+  "FIELD_RATE_LIMITED": "Rate Limited",
+  "FIELD_RATE_LIMITED_DESC": "The script that will be rate limited",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1702,6 +1707,9 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Remove Script From Adventure Event Callback",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Remove an attached script from an adventure scene state change.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Remove Script From Adventure \"{event}\"",
+  "EVENT_RATE_LIMIT": "Rate Limit",
+  "EVENT_RATE_LIMIT_DESC": "Limit how often this script can be be run. If the script is triggered again before the time limit has passed the script will be skipped.",
+  "EVENT_RATE_LIMIT_LABEL": "Rate Limit To Once Per {time} {units}",
 
   "// 10": "Menu -----------------------------------------------------",
 

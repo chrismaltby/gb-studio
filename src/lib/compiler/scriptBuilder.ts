@@ -89,6 +89,7 @@ import {
   clampScriptValueConst,
   maskScriptValueConst,
   subScriptValueConst,
+  multiplyScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -5190,6 +5191,49 @@ extern void __mute_mask_${symbol};
   timerDisable = (timer = 1) => {
     this._addComment(`Timer Disable`);
     this._timerStop(timer);
+  };
+
+  rateLimit = (
+    timerVariable: ScriptBuilderVariable,
+    delay: ScriptValue,
+    units: TimeUnitType,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+  ) => {
+    this._addComment(`Rate Limit`);
+
+    const loopId = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(
+        units === "time" ? multiplyScriptValueConst(delay, 60) : delay,
+      ),
+    );
+
+    // If next call time > sys_time, skip this call
+    this._label(loopId);
+    this._rpn() //
+      .refMem(".MEM_I16", "sys_time")
+      .refVariable(timerVariable)
+      .operator(".SUB")
+      .int16(0)
+      .operator(".LT")
+      .stop();
+    this._ifConst(".EQ", ".ARG0", 1, endLabel, 1);
+
+    // Set next call time to sys_time + delay
+    const localsLookup = this._performFetchOperations(fetchOps);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn //
+      .refMem(".MEM_I16", "sys_time")
+      .operator(".ADD")
+      .refSetVariable(timerVariable)
+      .stop();
+
+    this._compilePath(truePath);
+
+    this._label(endLabel);
   };
 
   // --------------------------------------------------------------------------

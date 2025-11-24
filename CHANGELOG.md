@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add warnings when trying to use "Set Actor Movement Speed" event on player with incompatible scene types (platformer and adventure). Includes button to automatically replace with "Engine Field Update" events [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to extract palettes directly from a color image (available in the Scene sidebar when choosing "Automatic" or "Manual" palettes). This generates the palettes found in the image and auto-paints the tiles, while still allowing tile colors to be edited.
 - Add ability to override UI palette when using automatic background palettes
+- Add "Rate Limit" event allowing portions of scripts to be throttled by time, running at most once per interval.
 
 ### Changed
 
