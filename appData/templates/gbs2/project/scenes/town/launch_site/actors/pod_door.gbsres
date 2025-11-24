@@ -5,6 +5,7 @@
   "symbol": "actor_pod_door",
   "prefabId": "",
   "name": "Pod Door",
+  "coordinateType": "tiles",
   "x": 15,
   "y": 9,
   "frame": 0,

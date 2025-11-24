@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "rock.png",
   "width": 16,
   "height": 16,
-  "checksum": "b7cf1ef0e7291494c1aff13493d447801316d6e8",
-  "numFrames": 1
+  "checksum": "b7cf1ef0e7291494c1aff13493d447801316d6e8"
 }

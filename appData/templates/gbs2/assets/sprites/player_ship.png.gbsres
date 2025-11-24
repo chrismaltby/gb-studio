@@ -341,16 +341,17 @@
     }
   ],
   "numTiles": 9,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "player_ship.png",
   "width": 96,
   "height": 16,
-  "checksum": "29459697b548d556d45bb427c413f48d7b14f7b1",
-  "numFrames": 6
+  "checksum": "29459697b548d556d45bb427c413f48d7b14f7b1"
 }

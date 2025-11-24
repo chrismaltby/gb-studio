@@ -5,6 +5,7 @@
   "symbol": "actor_ice_block",
   "prefabId": "",
   "name": "Ice Block",
+  "coordinateType": "tiles",
   "x": 24,
   "y": 18,
   "frame": 0,

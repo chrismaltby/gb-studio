@@ -5,6 +5,7 @@
   "symbol": "actor_elephant",
   "prefabId": "",
   "name": "Elephant",
+  "coordinateType": "tiles",
   "x": 17,
   "y": 13,
   "frame": 0,

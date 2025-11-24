@@ -5,6 +5,7 @@
   "symbol": "actor_space_dog",
   "prefabId": "",
   "name": "Space Dog",
+  "coordinateType": "tiles",
   "x": 14,
   "y": 14,
   "frame": 0,

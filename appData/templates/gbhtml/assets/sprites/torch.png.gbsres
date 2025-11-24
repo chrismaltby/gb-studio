@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "torch.png",
   "width": 16,
   "height": 16,
-  "checksum": "7115d29144680ee075cf63709a5bd562d327b0a4",
-  "numFrames": 1
+  "checksum": "7115d29144680ee075cf63709a5bd562d327b0a4"
 }

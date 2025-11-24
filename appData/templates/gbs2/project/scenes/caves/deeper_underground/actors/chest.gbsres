@@ -5,6 +5,7 @@
   "symbol": "actor_chest",
   "prefabId": "",
   "name": "Chest",
+  "coordinateType": "tiles",
   "x": 27,
   "y": 15,
   "frame": 0,

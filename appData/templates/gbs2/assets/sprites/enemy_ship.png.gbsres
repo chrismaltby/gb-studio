@@ -344,16 +344,17 @@
     }
   ],
   "numTiles": 11,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "enemy_ship.png",
   "width": 64,
   "height": 32,
-  "checksum": "5ca3edf07271d35f48c4d5c6a795ad81d08b479f",
-  "numFrames": 4
+  "checksum": "5ca3edf07271d35f48c4d5c6a795ad81d08b479f"
 }

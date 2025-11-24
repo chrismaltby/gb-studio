@@ -5,6 +5,7 @@
   "symbol": "actor_rock_2",
   "prefabId": "",
   "name": "Rock 2",
+  "coordinateType": "tiles",
   "x": 21,
   "y": 27,
   "frame": 0,

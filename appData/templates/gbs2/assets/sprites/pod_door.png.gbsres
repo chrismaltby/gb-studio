@@ -229,16 +229,17 @@
     }
   ],
   "numTiles": 3,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "pod_door.png",
   "width": 48,
   "height": 16,
-  "checksum": "b8f3e928d6ed27502f5a431e4a35496ecebb614a",
-  "numFrames": 3
+  "checksum": "b8f3e928d6ed27502f5a431e4a35496ecebb614a"
 }

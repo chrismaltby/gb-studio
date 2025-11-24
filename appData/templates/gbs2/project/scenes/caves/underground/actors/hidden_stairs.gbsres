@@ -5,6 +5,7 @@
   "symbol": "actor_hidden_stairs",
   "prefabId": "",
   "name": "Hidden Stairs",
+  "coordinateType": "tiles",
   "x": 11,
   "y": 12,
   "frame": 0,

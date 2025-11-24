@@ -144,16 +144,17 @@
     }
   ],
   "numTiles": 4,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "duck.png",
   "width": 32,
   "height": 16,
-  "checksum": "478ef3a9a69777125e9dd4431884adb5c7f079b3",
-  "numFrames": 2
+  "checksum": "478ef3a9a69777125e9dd4431884adb5c7f079b3"
 }

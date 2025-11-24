@@ -5,6 +5,7 @@
   "symbol": "actor_radio",
   "prefabId": "",
   "name": "Radio",
+  "coordinateType": "tiles",
   "x": 15,
   "y": 5,
   "frame": 0,

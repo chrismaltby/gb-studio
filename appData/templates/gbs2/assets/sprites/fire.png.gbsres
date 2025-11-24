@@ -206,16 +206,17 @@
     }
   ],
   "numTiles": 8,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "fire.png",
   "width": 64,
   "height": 16,
-  "checksum": "178804359d94af9d2cd342cf77f92f4fb6373589",
-  "numFrames": 4
+  "checksum": "178804359d94af9d2cd342cf77f92f4fb6373589"
 }

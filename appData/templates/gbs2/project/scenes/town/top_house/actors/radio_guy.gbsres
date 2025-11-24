@@ -5,6 +5,7 @@
   "symbol": "actor_radio_guy",
   "prefabId": "",
   "name": "Radio Guy",
+  "coordinateType": "tiles",
   "x": 12,
   "y": 5,
   "frame": 0,

@@ -1846,16 +1846,17 @@
     }
   ],
   "numTiles": 24,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 80,
   "canvasHeight": 48,
   "boundsX": -21,
-  "boundsY": 0,
+  "boundsY": -31,
   "boundsWidth": 47,
   "boundsHeight": 39,
   "animSpeed": 15,
   "filename": "elephant.png",
   "width": 504,
   "height": 48,
-  "checksum": "60284e758421739af1e232f7b70eaf126d4c7610",
-  "numFrames": 31.5
+  "checksum": "60284e758421739af1e232f7b70eaf126d4c7610"
 }

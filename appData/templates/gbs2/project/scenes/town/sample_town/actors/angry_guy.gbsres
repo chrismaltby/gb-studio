@@ -5,6 +5,7 @@
   "symbol": "actor_angry_guy",
   "prefabId": "",
   "name": "Angry Guy",
+  "coordinateType": "tiles",
   "x": 18,
   "y": 24,
   "frame": 0,

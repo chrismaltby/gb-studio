@@ -245,16 +245,17 @@
     }
   ],
   "numTiles": 4,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 32,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "npc_gardener.png",
   "width": 16,
   "height": 32,
-  "checksum": "d38f32b4a53309091a711e808a07eeb140a82b7a",
-  "numFrames": 1
+  "checksum": "d38f32b4a53309091a711e808a07eeb140a82b7a"
 }

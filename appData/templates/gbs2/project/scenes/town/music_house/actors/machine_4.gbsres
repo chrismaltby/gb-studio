@@ -5,6 +5,7 @@
   "symbol": "actor_24",
   "prefabId": "",
   "name": "Machine",
+  "coordinateType": "tiles",
   "x": 15,
   "y": 3,
   "frame": 0,

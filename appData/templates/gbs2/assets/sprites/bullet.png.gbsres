@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 1,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "bullet.png",
   "width": 16,
   "height": 16,
-  "checksum": "20f72d8c2befb3e03da3f64a307172a5d95853d1",
-  "numFrames": 1
+  "checksum": "20f72d8c2befb3e03da3f64a307172a5d95853d1"
 }

@@ -372,16 +372,17 @@
     }
   ],
   "numTiles": 8,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "npc008.png",
   "width": 96,
   "height": 16,
-  "checksum": "70a7f36d8770fca9ac372b912a1694a5cdcdaa21",
-  "numFrames": 6
+  "checksum": "70a7f36d8770fca9ac372b912a1694a5cdcdaa21"
 }

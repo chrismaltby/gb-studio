@@ -5,6 +5,7 @@
   "symbol": "actor_quest8",
   "prefabId": "",
   "name": "Quest8",
+  "coordinateType": "tiles",
   "x": 2,
   "y": 7,
   "frame": 0,

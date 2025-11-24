@@ -229,16 +229,17 @@
     }
   ],
   "numTiles": 6,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "portal.png",
   "width": 48,
   "height": 16,
-  "checksum": "ce76db1c019b417a9a1c469a56fe9996249e38e4",
-  "numFrames": 3
+  "checksum": "ce76db1c019b417a9a1c469a56fe9996249e38e4"
 }

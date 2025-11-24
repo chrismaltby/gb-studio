@@ -5,6 +5,7 @@
   "symbol": "actor_18",
   "prefabId": "",
   "name": "Keyboard",
+  "coordinateType": "tiles",
   "x": 5,
   "y": 10,
   "frame": 0,

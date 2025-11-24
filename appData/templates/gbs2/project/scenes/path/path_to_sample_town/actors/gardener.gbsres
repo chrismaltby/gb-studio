@@ -5,6 +5,7 @@
   "symbol": "actor_gardener",
   "prefabId": "",
   "name": "Gardener",
+  "coordinateType": "tiles",
   "x": 45,
   "y": 13,
   "frame": 0,

@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "dog.png",
   "width": 16,
   "height": 16,
-  "checksum": "d9bfa8cf4e196a4b89abc8811e1157b8cf3e4380",
-  "numFrames": 1
+  "checksum": "d9bfa8cf4e196a4b89abc8811e1157b8cf3e4380"
 }

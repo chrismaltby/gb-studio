@@ -5,6 +5,7 @@
   "symbol": "actor_fire",
   "prefabId": "",
   "name": "Fire",
+  "coordinateType": "tiles",
   "x": 4,
   "y": 4,
   "frame": 0,

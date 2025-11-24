@@ -5,6 +5,7 @@
   "symbol": "actor_19",
   "prefabId": "",
   "name": "Drumkit",
+  "coordinateType": "tiles",
   "x": 13,
   "y": 7,
   "frame": 0,

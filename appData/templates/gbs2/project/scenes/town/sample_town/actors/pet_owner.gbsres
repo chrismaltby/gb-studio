@@ -5,6 +5,7 @@
   "symbol": "actor_pet_owner",
   "prefabId": "",
   "name": "Pet Owner",
+  "coordinateType": "tiles",
   "x": 24,
   "y": 44,
   "frame": 0,

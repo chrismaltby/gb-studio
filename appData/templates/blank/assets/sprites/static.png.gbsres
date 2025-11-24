@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "static.png",
   "width": 16,
   "height": 16,
-  "checksum": "ed08d198cc3dd48f9bfba000769904ae41b36db8",
-  "numFrames": 1
+  "checksum": "ed08d198cc3dd48f9bfba000769904ae41b36db8"
 }

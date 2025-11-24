@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 1,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "hidden_stairs.png",
   "width": 16,
   "height": 16,
-  "checksum": "958c815a9dff5938722bb9a6d012a10249134190",
-  "numFrames": 1
+  "checksum": "958c815a9dff5938722bb9a6d012a10249134190"
 }

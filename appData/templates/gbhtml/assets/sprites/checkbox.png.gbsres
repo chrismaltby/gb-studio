@@ -167,16 +167,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "checkbox.png",
   "width": 48,
   "height": 16,
-  "checksum": "fdcbd8b39b1ba989ca58c7b7b4567c4257a43975",
-  "numFrames": 3
+  "checksum": "fdcbd8b39b1ba989ca58c7b7b4567c4257a43975"
 }

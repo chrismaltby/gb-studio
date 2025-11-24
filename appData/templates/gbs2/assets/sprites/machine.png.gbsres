@@ -144,16 +144,17 @@
     }
   ],
   "numTiles": 4,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "machine.png",
   "width": 32,
   "height": 16,
-  "checksum": "10e86bdc2747f98c29c83028783152acac542177",
-  "numFrames": 2
+  "checksum": "10e86bdc2747f98c29c83028783152acac542177"
 }

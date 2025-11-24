@@ -344,16 +344,17 @@
     }
   ],
   "numTiles": 12,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "space_mine.png",
   "width": 64,
   "height": 32,
-  "checksum": "287419e44a11c4a58732ef5ea7b0c51709be3279",
-  "numFrames": 4
+  "checksum": "287419e44a11c4a58732ef5ea7b0c51709be3279"
 }

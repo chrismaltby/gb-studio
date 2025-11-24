@@ -139,16 +139,17 @@
     }
   ],
   "numTiles": 4,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 32,
   "canvasHeight": 16,
   "boundsX": -8,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 32,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "keyboard.png",
   "width": 32,
   "height": 16,
-  "checksum": "9ccb7ce55bcd7a81e8c8f471e4c33c777fa114e6",
-  "numFrames": 2
+  "checksum": "9ccb7ce55bcd7a81e8c8f471e4c33c777fa114e6"
 }

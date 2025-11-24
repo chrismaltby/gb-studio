@@ -5,6 +5,7 @@
   "symbol": "actor_sign_post_4",
   "prefabId": "",
   "name": "Sign Post",
+  "coordinateType": "tiles",
   "x": 134,
   "y": 13,
   "frame": 0,

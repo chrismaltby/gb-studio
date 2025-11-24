@@ -89,5 +89,9 @@
   "compilerPreset": 3000,
   "scriptEventPresets": {},
   "scriptEventDefaultPresets": {},
-  "runSceneSelectionOnly": false
+  "runSceneSelectionOnly": false,
+  "spriteMode": "8x16",
+  "openBuildFolderOnExport": true,
+  "showRomUsageAfterBuild": false,
+  "romFilename": ""
 }

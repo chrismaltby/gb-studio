@@ -5,6 +5,7 @@
   "symbol": "actor_20",
   "prefabId": "",
   "name": "DJ",
+  "coordinateType": "tiles",
   "x": 15,
   "y": 11,
   "frame": 0,

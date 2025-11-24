@@ -167,16 +167,17 @@
     }
   ],
   "numTiles": 6,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "npc001.png",
   "width": 48,
   "height": 16,
-  "checksum": "325c2370daedcc0afc0f8e6df58e4da01731dfc3",
-  "numFrames": 3
+  "checksum": "325c2370daedcc0afc0f8e6df58e4da01731dfc3"
 }

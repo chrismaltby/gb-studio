@@ -24,6 +24,18 @@
     {
       "id": "PLATFORM_BLANK_ANIM",
       "value": "Hurt"
+    },
+    {
+      "id": "SHOOTER_MOVEMENT_TYPE",
+      "value": "MOVEMENT_TYPE_LOCK_PERPENDICULAR"
+    },
+    {
+      "id": "SHOOTER_TRIGGER_ACTIVATION",
+      "value": "ON_PLAYER_COLLISION"
+    },
+    {
+      "id": "SHOOTER_WALL_COLLISION_GROUP",
+      "value": "COLLISION_GROUP_NONE"
     }
   ]
 }

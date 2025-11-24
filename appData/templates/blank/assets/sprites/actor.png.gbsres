@@ -167,16 +167,17 @@
     }
   ],
   "numTiles": 5,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "actor.png",
   "width": 48,
   "height": 16,
-  "checksum": "8646d62a30fe76f9e39e3dbdb23aab0182a33146",
-  "numFrames": 3
+  "checksum": "8646d62a30fe76f9e39e3dbdb23aab0182a33146"
 }

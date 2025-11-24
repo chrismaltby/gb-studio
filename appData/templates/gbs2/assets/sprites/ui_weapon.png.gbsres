@@ -113,16 +113,17 @@
     }
   ],
   "numTiles": 2,
+  "canvasOriginX": 0,
+  "canvasOriginY": 0,
   "canvasWidth": 16,
   "canvasHeight": 16,
   "boundsX": 0,
-  "boundsY": 0,
+  "boundsY": -8,
   "boundsWidth": 16,
   "boundsHeight": 16,
   "animSpeed": 15,
   "filename": "ui_weapon.png",
   "width": 16,
   "height": 16,
-  "checksum": "696a0c2153ca67099513669b7c04c4af32ddacfa",
-  "numFrames": 1
+  "checksum": "696a0c2153ca67099513669b7c04c4af32ddacfa"
 }
