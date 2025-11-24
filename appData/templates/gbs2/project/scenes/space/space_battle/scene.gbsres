@@ -39,27 +39,46 @@
             "children": {
               "true": [
                 {
-                  "id": "b5d82058-ed83-492e-ad43-a011d637d9e2",
-                  "command": "EVENT_LAUNCH_PROJECTILE",
+                  "command": "EVENT_RATE_LIMIT",
                   "args": {
-                    "spriteSheetId": "450a3571-cc76-41be-8c95-818d60b83c59",
-                    "actorId": "player",
-                    "direction": "right",
-                    "speed": 3,
-                    "collisionGroup": "1",
-                    "collisionMask": [
-                      "1"
-                    ],
-                    "__collapse": false,
-                    "animSpeed": 7,
-                    "lifeTime": 1.2,
-                    "directionType": "direction",
-                    "angleVariable": "0",
-                    "angle": 0,
-                    "otherActorId": "$self$",
-                    "loopAnim": true,
-                    "destroyOnHit": true
-                  }
+                    "variable": "19",
+                    "time": {
+                      "type": "number",
+                      "value": 0.5
+                    },
+                    "frames": {
+                      "type": "number",
+                      "value": 1
+                    }
+                  },
+                  "children": {
+                    "true": [
+                      {
+                        "id": "b5d82058-ed83-492e-ad43-a011d637d9e2",
+                        "command": "EVENT_LAUNCH_PROJECTILE",
+                        "args": {
+                          "spriteSheetId": "450a3571-cc76-41be-8c95-818d60b83c59",
+                          "actorId": "player",
+                          "direction": "right",
+                          "speed": 3,
+                          "collisionGroup": "1",
+                          "collisionMask": [
+                            "1"
+                          ],
+                          "__collapse": false,
+                          "animSpeed": 7,
+                          "lifeTime": 1.2,
+                          "directionType": "direction",
+                          "angleVariable": "0",
+                          "angle": 0,
+                          "otherActorId": "$self$",
+                          "loopAnim": true,
+                          "destroyOnHit": true
+                        }
+                      }
+                    ]
+                  },
+                  "id": "f23b5f71-7dd8-4311-b765-131e92566bc4"
                 }
               ]
             },

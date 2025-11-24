@@ -97,6 +97,11 @@
       "symbol": "var_health"
     },
     {
+      "id": "19",
+      "name": "Weapon Cooldown",
+      "symbol": "var_weapon_cooldown"
+    },
+    {
       "id": "871ea302-1cc1-463c-b9d7-530aac38fe81__L0",
       "name": "Spoken to gardener",
       "symbol": "var_spoken_to_gardener"
