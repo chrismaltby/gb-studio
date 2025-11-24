@@ -907,6 +907,8 @@
   "FIELD_TEXT_FINISHED": "テキスト描画の完了時",
   "FIELD_NEVER_NONMODAL": "閉じない（非モーダル）",
   "FIELD_NONMODAL_POSITION_TOP_WARNING": "画面上部に配置した非モーダルのダイアログを閉じる場合は、「非モーダルダイアログを閉じる」イベントを使用するか、「オーバーレイのスキャンラインカットオフを設定」イベントを使用してオーバーレイのスキャンラインカットオフを手動でリセットする必要があります。",
+  "FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING": "プラットフォーマーまたはアドベンチャーシーンでプレイヤーの移動速度を設定する場合は、「エンジンフィールドの値を設定する」イベントを使用して歩行速度または走行速度を設定する必要があります。",
+  "FIELD_TEXT_IN_LOGO_WARNING": "ロゴシーンでテキストを描画するとグラフィックスが乱れます。",
   "FIELD_ANY": "いずれかのボタン",
   "FIELD_CLOSE_DELAY": "閉じるまでのウェイト",
   "FIELD_CLOSE_DELAY_DESC": "閉じる前にウェイトをかけます。",
