@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2099251122",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2107251125",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1270,6 +1270,11 @@
   "FIELD_WALL_COLLISION_GROUP": "Grupa kolizji ściany",
   "FIELD_WALL_COLLISION_GROUP_DESC": "Po ustawieniu, uruchamia 'Skrypt (dotknięcie gracza)' dla tej grupy kolizji, gdy gracz dotknie ścianę tafli.",
   "FIELD_EXTRACT_PALETTES": "Wyodrębnij palety",
+  "FIELD_RATE_LIMIT_INTERVAL_DESC": "Minimalny czas oczekiwania między kolejnymi wywołaniami tego skryptu.",
+  "FIELD_RATE_LIMIT_VARIABLE": "Zmienna następnego wywołania",
+  "FIELD_RATE_LIMIT_VARIABLE_DESC": "Zmienna przechowująca najbliższy moment (w klatkach), w którym ten skrypt może zostać ponownie wywołany.",
+  "FIELD_RATE_LIMITED": "Ograniczeniem częstotliwości",
+  "FIELD_RATE_LIMITED_DESC": "Skrypt, którego częstotliwość wywołań będzie ograniczona",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1702,7 +1707,10 @@
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT": "Usuń skrypt od zdarzenia sceny przygodowej",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_DESC": "Usuwa przypisany skrypt reagujący na zmiany stanu w scenie przygodowej.",
   "EVENT_REMOVE_ADVENTURE_CALLBACK_SCRIPT_LABEL": "Usuń skrypt od zdarzenia sceny przygodowej: \"{event}\"",
-  
+  "EVENT_RATE_LIMIT": "Ograniczenie częstotliwości",
+  "EVENT_RATE_LIMIT_DESC": "Ogranicza, jak często ten skrypt może być uruchamiany. Jeśli zostanie wywołany ponownie przed upływem limitu czasu, jego wykonanie zostanie pominięte.",
+  "EVENT_RATE_LIMIT_LABEL": "Ogranicz do jednego wywołania co {time} {units}",
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
