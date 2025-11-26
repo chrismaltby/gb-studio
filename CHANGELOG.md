@@ -154,6 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix inconsistent speeds between "Display Dialogue", "Overlay Move To" and "Close Non-Modal Dialogue" events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where mute icon in game window title bar could appear multiple times
 - Fix issue where magic brush would use old tile data if backgrounds we resized while editing
+- Fix issue where overlay move events were causing background scripts to pause
 
 ## [4.1.3] - 2024-09-16
 
