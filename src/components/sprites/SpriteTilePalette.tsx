@@ -112,7 +112,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
           },
         }),
       );
-      dispatch(editorActions.setReplaceSpriteTileMode(false));
+      dispatch(editorActions.setReplaceSpriteTileMode(undefined));
     },
     [dispatch, id, selectedTileIds],
   );

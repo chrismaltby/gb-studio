@@ -444,7 +444,7 @@
   "FIELD_CLIMBING": "Wspinanie",
   "FIELD_REPLACE_TILE": "Scena: zmień taflę",
   "FIELD_CHOOSE_REPLACEMENT": "Wybierz zamiennik...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Wybierz zamiennik tafli w panelu 'Tafli'.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Wybierz zamiennik tafli w panelu 'Tafli'.",
   "FIELD_DEFAULT_FONT": "Domyślna czcionka (Font)",
   "FIELD_PIXELS_PER_FRAME": "Piksel na klatkę",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

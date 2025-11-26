@@ -444,7 +444,7 @@
   "FIELD_CLIMBING": "Escalando",
   "FIELD_REPLACE_TILE": "Substituir tile",
   "FIELD_CHOOSE_REPLACEMENT": "Escolher substituto...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Escolhe um tile substituto no painel de 'Tiles'.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Escolhe um tile substituto no painel de 'Tiles'.",
   "FIELD_DEFAULT_FONT": "Fonte padrão",
   "FIELD_PIXELS_PER_FRAME": "Pixels por quadro",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPQ",

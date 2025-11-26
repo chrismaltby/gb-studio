@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to extract palettes directly from a color image (available in the Scene sidebar when choosing "Automatic" or "Manual" palettes). This generates the palettes found in the image and auto-paints the tiles, while still allowing tile colors to be edited.
 - Add ability to override UI palette when using automatic background palettes
 - Add "Rate Limit" event allowing portions of scripts to be throttled by time, running at most once per interval.
+- Add "Replace Palette" button to the Sprite Editor. When enabled, changing the palette of a tile updates all tiles that use the same palette
 
 ### Changed
 

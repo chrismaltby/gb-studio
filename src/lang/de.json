@@ -418,7 +418,7 @@
   "FIELD_CLIMBING": "Kletternd",
   "FIELD_REPLACE_TILE": "Kachel ersetzen",
   "FIELD_CHOOSE_REPLACEMENT": "Ersatz wählen...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Eine Ersatzkachel im Panel 'Kacheln' auswählen.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Eine Ersatzkachel im Panel 'Kacheln' auswählen.",
   "FIELD_DEFAULT_FONT": "Vorgabeschriftart",
   "FIELD_PIXELS_PER_FRAME": "Pixel pro Einzelbild",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

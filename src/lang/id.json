@@ -413,7 +413,7 @@
   "FIELD_CLIMBING": "Memanjat",
   "FIELD_REPLACE_TILE": "Ganti Ubin",
   "FIELD_CHOOSE_REPLACEMENT": "Pilih Pengganti...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Pilih ubin pengganti di panel 'Ubin'.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Pilih ubin pengganti di panel 'Ubin'.",
   "FIELD_DEFAULT_FONT": "Font Default",
   "FIELD_PIXELS_PER_FRAME": "Piksel Per Frame",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

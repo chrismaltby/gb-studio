@@ -934,7 +934,7 @@ describe("editor reducer", () => {
       state.selectedAdditionalMetaspriteIds = ["meta_1", "meta_2"];
       state.selectedMetaspriteTileIds = ["tile_1"];
       state.playSpriteAnimation = true;
-      state.replaceSpriteTileMode = true;
+      state.replaceSpriteTileMode = "tile";
 
       const action = actions.setSelectedSpriteSheetId("sprite_1");
       const newState = reducer(state, action);
@@ -945,7 +945,7 @@ describe("editor reducer", () => {
       expect(newState.selectedAdditionalMetaspriteIds).toEqual([]);
       expect(newState.selectedMetaspriteTileIds).toEqual([]);
       expect(newState.playSpriteAnimation).toBe(false);
-      expect(newState.replaceSpriteTileMode).toBe(false);
+      expect(newState.replaceSpriteTileMode).toBe(undefined);
       expect(newState.spriteTileSelection).toBeUndefined();
     });
   });
@@ -963,7 +963,7 @@ describe("editor reducer", () => {
       expect(newState.selectedAdditionalMetaspriteIds).toEqual([]);
       expect(newState.selectedMetaspriteTileIds).toEqual([]);
       expect(newState.playSpriteAnimation).toBe(false);
-      expect(newState.replaceSpriteTileMode).toBe(false);
+      expect(newState.replaceSpriteTileMode).toBe(undefined);
     });
   });
 
@@ -976,7 +976,7 @@ describe("editor reducer", () => {
       expect(newState.selectedMetaspriteId).toBe("meta_1");
       expect(newState.selectedAdditionalMetaspriteIds).toEqual(["meta_1"]);
       expect(newState.selectedMetaspriteTileIds).toEqual([]);
-      expect(newState.replaceSpriteTileMode).toBe(false);
+      expect(newState.replaceSpriteTileMode).toBe(undefined);
     });
   });
 
@@ -1069,7 +1069,7 @@ describe("editor reducer", () => {
       const newState = reducer(state, action);
       expect(newState.selectedMetaspriteTileIds).toEqual(["tile_1"]);
       expect(newState.playSpriteAnimation).toBe(false);
-      expect(newState.replaceSpriteTileMode).toBe(false);
+      expect(newState.replaceSpriteTileMode).toBe(undefined);
     });
   });
 
