@@ -50,7 +50,13 @@ import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
-import { BlankIcon, CheckIcon, ConnectIcon, PlusIcon } from "ui/icons/Icons";
+import {
+  BlankIcon,
+  CheckIcon,
+  ConnectIcon,
+  PlusIcon,
+  ReplaceIcon,
+} from "ui/icons/Icons";
 import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { ScriptEditorContext } from "./ScriptEditorContext";
@@ -894,7 +900,14 @@ const ScriptEventFormInput = ({
     return (
       <Button style={{ width: "100%" }} onClick={onInsertEventAfter}>
         <ButtonPrefixIcon>
-          <PlusIcon />
+          {field.defaultValue &&
+          typeof field.defaultValue === "object" &&
+          "replace" in field.defaultValue &&
+          field.defaultValue.replace ? (
+            <ReplaceIcon />
+          ) : (
+            <PlusIcon />
+          )}
         </ButtonPrefixIcon>
         {field.label}
       </Button>
