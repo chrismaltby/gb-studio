@@ -4,6 +4,7 @@ import {
   isTriggerPrefabEqual,
   ensureEntitySymbolsUnique,
   getMetaspriteTilesForSpriteSheet,
+  nextIndexedName,
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorPrefabNormalized,
@@ -419,5 +420,28 @@ describe("getMetaspriteTilesForSpriteSheet", () => {
     const spriteTiles = getMetaspriteTilesForSpriteSheet(state, "spriteSheet1");
     expect(spriteTiles.length).toEqual(1);
     expect(spriteTiles.map((t) => t.id)).toEqual(["tile1"]);
+  });
+});
+
+describe("nextIndexedName", () => {
+  test("Should return next indexed name when no conflicts", () => {
+    const existingNames = ["Palette", "Palette 0", "Palette 1"];
+    const nextName = nextIndexedName("Palette", existingNames);
+    expect(nextName).toBe("Palette 2");
+  });
+  test("Should increment index when match is found", () => {
+    const existingNames = ["Palette"];
+    const nextName = nextIndexedName("Palette", existingNames);
+    expect(nextName).toBe("Palette 1");
+  });
+  test("Should continue to increment index when multiple matches are found", () => {
+    const existingNames = ["Palette", "Palette 1"];
+    const nextName = nextIndexedName("Palette", existingNames);
+    expect(nextName).toBe("Palette 2");
+  });
+  test("Should fill gaps in indexing", () => {
+    const existingNames = ["Palette", "Palette 1", "Palette 3"];
+    const nextName = nextIndexedName("Palette", existingNames);
+    expect(nextName).toBe("Palette 2");
   });
 });

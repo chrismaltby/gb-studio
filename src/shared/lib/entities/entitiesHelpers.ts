@@ -1105,3 +1105,26 @@ export const getMetaspriteTilesForSpriteSheet = (
 
   return uniqBy(spriteTiles, "id");
 };
+
+export const nextIndexedName = (
+  existingName: string,
+  allNames: string[],
+): string => {
+  const [, prefix] = existingName.match(/^(.*?)(?: \d+)?$/) ?? [
+    "",
+    existingName,
+  ];
+
+  const suffixes = allNames
+    .map((name) => name.match(/^(.+?) (\d+)$/))
+    .filter((m): m is RegExpMatchArray => !!m && m[1] === prefix)
+    .map((m) => Number(m[2]))
+    .sort((a, b) => a - b);
+
+  const nextIndex = suffixes.reduce(
+    (expected, n) => (n === expected ? expected + 1 : expected),
+    1,
+  );
+
+  return `${prefix} ${nextIndex}`;
+};

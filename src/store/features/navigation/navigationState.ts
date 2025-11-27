@@ -37,6 +37,10 @@ const navigationSlice = createSlice({
       // Select newly created palette in sidebar
       .addCase(entitiesActions.addPalette, (state, action) => {
         state.id = action.payload.paletteId;
+      })
+      // Select newly duplicated palette in sidebar
+      .addCase(entitiesActions.duplicatePalette, (state, action) => {
+        state.id = action.payload.newPaletteId;
       }),
 });
 

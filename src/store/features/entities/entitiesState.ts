@@ -91,6 +91,7 @@ import {
   localVariableCodes,
   normalizeSprite,
   getMetaspriteTilesForSpriteSheet,
+  nextIndexedName,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -3767,6 +3768,30 @@ const editPalette: CaseReducer<
   });
 };
 
+const duplicatePalette: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ paletteId: string; newPaletteId: string }>
+> = (state, action) => {
+  const existingPalette = state.palettes.entities[action.payload.paletteId];
+  if (!existingPalette) {
+    return;
+  }
+
+  const allNames = state.palettes.ids
+    .map((id) => state.palettes.entities[id]?.name)
+    .filter((n) => !!n);
+
+  const newName = nextIndexedName(existingPalette.name, allNames);
+
+  const newPalette: Palette = {
+    ...existingPalette,
+    id: action.payload.newPaletteId,
+    name: newName,
+  };
+
+  palettesAdapter.addOne(state.palettes, newPalette);
+};
+
 const removePalette: CaseReducer<
   EntitiesState,
   PayloadAction<{ paletteId: string }>
@@ -4874,6 +4899,17 @@ const entitiesSlice = createSlice({
       },
     },
     editPalette,
+    duplicatePalette: {
+      reducer: duplicatePalette,
+      prepare: (payload: { paletteId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            newPaletteId: uuid(),
+          },
+        };
+      },
+    },
     removePalette,
 
     /**************************************************************************

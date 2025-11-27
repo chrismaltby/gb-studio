@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Rate Limit" event allowing portions of scripts to be throttled by time, running at most once per interval.
 - Add "Replace Palette" button to the Sprite Editor. When enabled, changing the palette of a tile updates all tiles that use the same palette
 - Add "Preview as Monochrome" button to Sprite Editor
+- Add ability to duplicate color palettes from right click context menu on palette editor sidebar
 
 ### Changed
 
