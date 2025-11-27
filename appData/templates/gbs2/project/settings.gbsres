@@ -23,12 +23,12 @@
   ],
   "defaultSpritePaletteIds": [
     "default-sprite",
-    "default-sprite",
-    "default-sprite",
-    "default-sprite",
-    "default-sprite",
-    "default-sprite",
-    "default-sprite",
+    "105c0ab8-d0d3-41fe-8b1e-8244eed8ee4d",
+    "a3cacd6f-914c-4083-8464-009fce7a1b9f",
+    "6eb4949c-705f-412a-9db3-9895af2fe45e",
+    "af57cb64-74b2-4c40-8f87-050acebfc3e9",
+    "034b5ae3-a6d3-44fb-a259-9197773f0a63",
+    "8607a9b4-fd4f-4bd2-8f99-ceafea5cb754",
     "default-sprite"
   ],
   "defaultSpritePaletteId": "default-sprite",

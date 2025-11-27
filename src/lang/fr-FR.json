@@ -437,7 +437,7 @@
   "FIELD_CLIMBING": "Escalade",
   "FIELD_REPLACE_TILE": "Remplacer tuile",
   "FIELD_CHOOSE_REPLACEMENT": "Choisir Remplacement…",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Choisissez une tuile de remplacement dans le panneau 'Tuiles'.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Choisissez une tuile de remplacement dans le panneau 'Tuiles'.",
   "FIELD_DEFAULT_FONT": "Police par défaut",
   "FIELD_PIXELS_PER_FRAME": "Pixels par Image",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPI",

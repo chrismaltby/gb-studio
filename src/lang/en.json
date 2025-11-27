@@ -444,7 +444,7 @@
   "FIELD_CLIMBING": "Climbing",
   "FIELD_REPLACE_TILE": "Replace Tile",
   "FIELD_CHOOSE_REPLACEMENT": "Choose Replacement...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Choose a replacement tile in the 'Tiles' panel.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Choose a replacement tile in the 'Tiles' panel.",
   "FIELD_DEFAULT_FONT": "Default Font",
   "FIELD_PIXELS_PER_FRAME": "Pixels Per Frame",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",
@@ -1275,6 +1275,8 @@
   "FIELD_RATE_LIMIT_VARIABLE_DESC": "The variable which will store the next time, in frames, that this script can be called.",
   "FIELD_RATE_LIMITED": "Rate Limited",
   "FIELD_RATE_LIMITED_DESC": "The script that will be rate limited",
+  "FIELD_REPLACE_PALETTE": "Replace Palette",
+  "FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS": "Choose a replacement palette to update all matching palettes in this sprite.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

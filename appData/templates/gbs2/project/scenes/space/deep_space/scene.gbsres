@@ -15,7 +15,16 @@
   "paletteIds": [
     "d73adccf-4071-4012-b0a6-9c3973a2dc0e"
   ],
-  "spritePaletteIds": [],
+  "spritePaletteIds": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "default-bg-5"
+  ],
   "autoFadeSpeed": 1,
   "script": [
     {

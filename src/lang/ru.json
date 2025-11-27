@@ -405,7 +405,7 @@
   "FIELD_CLIMBING": "Скалолазание",
   "FIELD_REPLACE_TILE": "Заменить плитку",
   "FIELD_CHOOSE_REPLACEMENT": "Выберите замену ...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Выберите плитку для замены на панели Плитки",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Выберите плитку для замены на панели Плитки",
   "FIELD_DEFAULT_FONT": "Шрифт по умолчанию",
   "FIELD_PIXELS_PER_FRAME": "Пиксели на кадр",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

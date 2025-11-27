@@ -345,7 +345,7 @@
   "FIELD_CLIMBING": "Trepando",
   "FIELD_REPLACE_TILE": "Substituir Tile",
   "FIELD_CHOOSE_REPLACEMENT": "Escolher substituto...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Usa o painel de 'Tiles' para escolher uma Tile alternativa.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Usa o painel de 'Tiles' para escolher uma Tile alternativa.",
   "FIELD_DEFAULT_FONT": "Tipo de letra padrão",
   "FIELD_PIXELS_PER_FRAME": "Pixels Per Frame",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

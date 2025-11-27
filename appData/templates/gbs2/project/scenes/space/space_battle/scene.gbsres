@@ -16,7 +16,15 @@
     "d73adccf-4071-4012-b0a6-9c3973a2dc0e",
     "325f5712-ff6c-40e7-b105-c6d795846783"
   ],
-  "spritePaletteIds": [],
+  "spritePaletteIds": [
+    "",
+    "",
+    "",
+    "9fb1f41b-54d4-43c6-8731-16de50176aa0",
+    "",
+    "",
+    "0cae84a7-ed50-4b05-b39a-66be5af7ffd2"
+  ],
   "autoFadeSpeed": 1,
   "script": [
     {

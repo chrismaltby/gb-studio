@@ -437,7 +437,7 @@
   "FIELD_CLIMBING": "登り",
   "FIELD_REPLACE_TILE": "タイル置換",
   "FIELD_CHOOSE_REPLACEMENT": "置換対象を選択...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "「タイル」パネルから置き換えるタイルを選択します。",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "「タイル」パネルから置き換えるタイルを選択します。",
   "FIELD_DEFAULT_FONT": "デフォルトフォント",
   "FIELD_PIXELS_PER_FRAME": "フレーム毎ピクセル（PPF）",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",

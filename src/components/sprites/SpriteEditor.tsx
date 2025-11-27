@@ -42,8 +42,9 @@ import {
   FlipVerticalIcon,
   SendToFrontIcon,
   SendToBackIcon,
+  ReplaceIcon,
 } from "ui/icons/Icons";
-import { FlexGrow } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
@@ -285,8 +286,26 @@ export const SpriteEditor = ({
   );
 
   const onChangeTilesPaletteIndex = useCallback(
-    (e: number) => onChangeMultipleTilesProp("paletteIndex", e),
-    [onChangeMultipleTilesProp],
+    (e: number) => {
+      if (replaceSpriteTileMode === "palette") {
+        dispatch(
+          entitiesActions.replaceMetaspriteTilesPalettes({
+            spriteSheetId: id,
+            fromIndex: metaspriteTile.paletteIndex || 0,
+            toIndex: e,
+          }),
+        );
+      } else {
+        onChangeMultipleTilesProp("paletteIndex", e);
+      }
+    },
+    [
+      dispatch,
+      id,
+      onChangeMultipleTilesProp,
+      replaceSpriteTileMode,
+      metaspriteTile?.paletteIndex,
+    ],
   );
 
   const onChangeTilesPriority = useCallback(
@@ -410,8 +429,20 @@ export const SpriteEditor = ({
     );
   }, [dispatch, id, spriteStateId]);
 
-  const toggleReplaceMode = useCallback(() => {
-    dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
+  const toggleTileReplaceMode = useCallback(() => {
+    if (replaceSpriteTileMode === "tile") {
+      dispatch(editorActions.setReplaceSpriteTileMode(undefined));
+      return;
+    }
+    dispatch(editorActions.setReplaceSpriteTileMode("tile"));
+  }, [dispatch, replaceSpriteTileMode]);
+
+  const togglePaletteReplaceMode = useCallback(() => {
+    if (replaceSpriteTileMode === "palette") {
+      dispatch(editorActions.setReplaceSpriteTileMode(undefined));
+      return;
+    }
+    dispatch(editorActions.setReplaceSpriteTileMode("palette"));
   }, [dispatch, replaceSpriteTileMode]);
 
   const onAutoDetect = useCallback(() => {
@@ -613,12 +644,34 @@ export const SpriteEditor = ({
                     name="paletteIndex"
                     label={l10n("FIELD_COLOR_PALETTE")}
                   >
-                    <PaletteIndexSelect
-                      name="paletteIndex"
-                      value={metaspriteTile.paletteIndex}
-                      onChange={onChangeTilesPaletteIndex}
-                    />
+                    <FlexRow>
+                      <PaletteIndexSelect
+                        name="paletteIndex"
+                        value={metaspriteTile.paletteIndex}
+                        onChange={onChangeTilesPaletteIndex}
+                      />
+                      <FixedSpacer width={5} />
+                      <Button
+                        onClick={togglePaletteReplaceMode}
+                        variant={
+                          replaceSpriteTileMode === "palette"
+                            ? "primary"
+                            : "normal"
+                        }
+                        title={l10n("FIELD_REPLACE_PALETTE")}
+                      >
+                        <ReplaceIcon />
+                      </Button>
+                    </FlexRow>
                   </FormField>
+                </FormRow>
+              )}
+
+              {colorsEnabled && replaceSpriteTileMode === "palette" && (
+                <FormRow>
+                  <FormFieldInfo>
+                    {l10n("FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS")}
+                  </FormFieldInfo>
                 </FormRow>
               )}
 
@@ -636,18 +689,20 @@ export const SpriteEditor = ({
                   <FormDivider />
                   <FormRow>
                     <Button
-                      onClick={toggleReplaceMode}
-                      variant={replaceSpriteTileMode ? "primary" : "normal"}
+                      onClick={toggleTileReplaceMode}
+                      variant={
+                        replaceSpriteTileMode === "tile" ? "primary" : "normal"
+                      }
                     >
-                      {replaceSpriteTileMode
+                      {replaceSpriteTileMode === "tile"
                         ? l10n("FIELD_CHOOSE_REPLACEMENT")
                         : l10n("FIELD_REPLACE_TILE")}
                     </Button>
                   </FormRow>
-                  {replaceSpriteTileMode && (
+                  {replaceSpriteTileMode === "tile" && (
                     <FormRow>
                       <FormFieldInfo>
-                        {l10n("FIELD_CHOOSE_REPLACEMENT_DETAILS")}
+                        {l10n("FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS")}
                       </FormFieldInfo>
                     </FormRow>
                   )}

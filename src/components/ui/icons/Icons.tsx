@@ -350,6 +350,13 @@ export const PlusIcon = ({ title }: { title?: string }) => (
   </svg>
 );
 
+export const ReplaceIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M19.5 2H4.5C3.39543 2 2.5 2.89543 2.5 4V7V11H0.5L5 16L9 11H7V7H15H19.5C20.6046 7 21.5 6.10457 21.5 5V4C21.5 2.89543 20.6046 2 19.5 2Z" />
+    <path d="M3.5 22H18.5C19.6046 22 20.5 21.1046 20.5 20V17V13H22.5L18 8L14 13H16V17H8H3.5C2.39543 17 1.5 17.8954 1.5 19V20C1.5 21.1046 2.39543 22 3.5 22Z" />
+  </svg>
+);
+
 export const InstantiateIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7 14h-5v5h-4v-5h-5v-4h5v-5h4v5h5v4z" />

@@ -13,7 +13,15 @@
   "tilesetId": "",
   "colorModeOverride": "none",
   "paletteIds": [],
-  "spritePaletteIds": [],
+  "spritePaletteIds": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
   "autoFadeSpeed": 1,
   "script": [
     {

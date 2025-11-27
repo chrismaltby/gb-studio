@@ -418,7 +418,7 @@
   "FIELD_CLIMBING": "Escalada",
   "FIELD_REPLACE_TILE": "Reemplazar mosaico",
   "FIELD_CHOOSE_REPLACEMENT": "Elegir Reemplazo...",
-  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Elija un mosaico de reemplazo en el panel 'Mosaicos'.",
+  "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Elija un mosaico de reemplazo en el panel 'Mosaicos'.",
   "FIELD_DEFAULT_FONT": "Fuente predeterminada",
   "FIELD_PIXELS_PER_FRAME": "Píxeles por cuadro",
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPC",

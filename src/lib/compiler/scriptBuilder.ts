@@ -4707,7 +4707,7 @@ extern void __mute_mask_${symbol};
       Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
     this._idle();
-    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._overlayWait(false, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._setConstMemUInt8("overlay_cut_scanline", LYC_SYNC_VALUE);
     this._addNL();
   };
@@ -4731,7 +4731,7 @@ extern void __mute_mask_${symbol};
       y,
       Number(speed) === -3 ? ".OVERLAY_SPEED_INSTANT" : speed,
     );
-    this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    this._overlayWait(false, [".UI_WAIT_WINDOW"]);
     this._addNL();
   };
 

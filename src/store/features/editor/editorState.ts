@@ -149,7 +149,7 @@ export interface EditorState {
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
-  replaceSpriteTileMode: boolean;
+  replaceSpriteTileMode: "tile" | "palette" | undefined;
   parallaxHoverLayer: number | undefined;
   previewAsSceneId: string;
   selectedSongId: string;
@@ -221,7 +221,7 @@ export const initialState: EditorState = {
   showOnionSkin: false,
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
-  replaceSpriteTileMode: false,
+  replaceSpriteTileMode: undefined,
   parallaxHoverLayer: undefined,
   previewAsSceneId: "",
   selectedSongId: "",
@@ -697,7 +697,7 @@ const editorSlice = createSlice({
       state.selectedAdditionalMetaspriteIds = [];
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
       state.spriteTileSelection = undefined;
     },
 
@@ -714,7 +714,7 @@ const editorSlice = createSlice({
       state.selectedAdditionalMetaspriteIds = [];
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
     },
 
     setSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
@@ -724,7 +724,7 @@ const editorSlice = createSlice({
       state.selectedMetaspriteId = action.payload;
 
       state.selectedMetaspriteTileIds = [];
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
     },
 
     toggleMultiSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
@@ -777,19 +777,19 @@ const editorSlice = createSlice({
     setSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
       state.selectedMetaspriteTileIds = [action.payload];
       state.playSpriteAnimation = false;
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
     },
 
     setSelectedMetaspriteTileIds: (state, action: PayloadAction<string[]>) => {
       state.selectedMetaspriteTileIds = action.payload;
       state.playSpriteAnimation = false;
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
     },
 
     resetSelectedMetaspriteTileIds: (state) => {
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
-      state.replaceSpriteTileMode = false;
+      state.replaceSpriteTileMode = undefined;
     },
 
     toggleSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
@@ -835,7 +835,10 @@ const editorSlice = createSlice({
       state.showSpriteBoundingBox = action.payload;
     },
 
-    setReplaceSpriteTileMode: (state, action: PayloadAction<boolean>) => {
+    setReplaceSpriteTileMode: (
+      state,
+      action: PayloadAction<"tile" | "palette" | undefined>,
+    ) => {
       state.replaceSpriteTileMode = action.payload;
     },
 
@@ -1082,6 +1085,7 @@ const editorSlice = createSlice({
         state.worldFocus = false;
         state.eventId = "";
         state.scriptEventSelectionIds = [];
+        state.replaceSpriteTileMode = undefined;
       })
       // Remove world focus when loading project and set scroll settings from project
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
@@ -1125,6 +1129,13 @@ const editorSlice = createSlice({
         state.scriptEventSelectionIds = [];
         state.scriptEventSelectionParentId = "";
       })
+      // When replacing palettes reset tile replace mode
+      .addCase(
+        entitiesActions.replaceMetaspriteTilesPalettes,
+        (state, _action) => {
+          state.replaceSpriteTileMode = undefined;
+        },
+      )
       // When UI changes increment UI version number
       .addMatcher(
         (action): action is UnknownAction =>

@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to extract palettes directly from a color image (available in the Scene sidebar when choosing "Automatic" or "Manual" palettes). This generates the palettes found in the image and auto-paints the tiles, while still allowing tile colors to be edited.
 - Add ability to override UI palette when using automatic background palettes
 - Add "Rate Limit" event allowing portions of scripts to be throttled by time, running at most once per interval.
+- Add "Replace Palette" button to the Sprite Editor. When enabled, changing the palette of a tile updates all tiles that use the same palette
 
 ### Changed
 
@@ -154,6 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix inconsistent speeds between "Display Dialogue", "Overlay Move To" and "Close Non-Modal Dialogue" events [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where mute icon in game window title bar could appear multiple times
 - Fix issue where magic brush would use old tile data if backgrounds we resized while editing
+- Fix issue where overlay move events were causing background scripts to pause
 
 ## [4.1.3] - 2024-09-16
 

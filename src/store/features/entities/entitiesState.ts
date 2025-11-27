@@ -2896,6 +2896,56 @@ const sendMetaspriteTilesToBack: CaseReducer<
   });
 };
 
+const replaceMetaspriteTilesPalettes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    fromIndex: number;
+    toIndex: number;
+  }>
+> = (state, action) => {
+  const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
+  if (!spriteSheet) {
+    return;
+  }
+  const spriteStates = spriteSheet.states.map(
+    (stateId) => state.spriteStates.entities[stateId],
+  );
+  const spriteAnimations = spriteStates
+    .map((spriteState) =>
+      spriteState.animations.map(
+        (animationId) => state.spriteAnimations.entities[animationId],
+      ),
+    )
+    .flat();
+  const spriteFrames = spriteAnimations
+    .map((animation) =>
+      animation.frames.map(
+        (metaspriteId) => state.metasprites.entities[metaspriteId],
+      ),
+    )
+    .flat();
+  const spriteTiles = spriteFrames
+    .map((metasprite) =>
+      metasprite.tiles.map(
+        (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
+      ),
+    )
+    .flat();
+
+  metaspriteTilesAdapter.updateMany(
+    state.metaspriteTiles,
+    spriteTiles
+      .filter((tile) => tile.paletteIndex === action.payload.fromIndex)
+      .map((tile) => ({
+        id: tile.id,
+        changes: {
+          paletteIndex: action.payload.toIndex,
+        },
+      })),
+  );
+};
+
 const removeMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -4750,6 +4800,7 @@ const entitiesSlice = createSlice({
     flipYMetaspriteTiles,
     editMetaspriteTile,
     editMetaspriteTiles,
+    replaceMetaspriteTilesPalettes,
     removeMetaspriteTiles,
     removeMetaspriteTilesOutsideCanvas,
 
