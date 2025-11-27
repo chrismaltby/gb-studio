@@ -69,6 +69,7 @@ import {
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
 import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
+import { uniqBy } from "lodash";
 
 interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -1102,5 +1103,5 @@ export const getMetaspriteTilesForSpriteSheet = (
     ),
   );
 
-  return spriteTiles;
+  return uniqBy(spriteTiles, "id");
 };
