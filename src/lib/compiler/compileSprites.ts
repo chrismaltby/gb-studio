@@ -187,7 +187,10 @@ export const compileSprite = async (
                   if (flip) {
                     const data: SpriteTileData = {
                       tile: tileIndex,
-                      x: 8 - tile.x - currentX,
+                      x:
+                        (spriteSheet.canvasWidth > 8 ? 8 : 0) -
+                        tile.x -
+                        currentX,
                       y: -tile.y - currentY,
                       props: makeProps(
                         tile.objPalette,
@@ -198,7 +201,7 @@ export const compileSprite = async (
                         inVRAM2,
                       ),
                     };
-                    currentX = 8 - tile.x;
+                    currentX = (spriteSheet.canvasWidth > 8 ? 8 : 0) - tile.x;
                     currentY = -tile.y;
                     return data;
                   }
