@@ -90,6 +90,7 @@ import {
   normalizeEntityResources,
   localVariableCodes,
   normalizeSprite,
+  getMetaspriteTilesForSpriteSheet,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -2904,35 +2905,10 @@ const replaceMetaspriteTilesPalettes: CaseReducer<
     toIndex: number;
   }>
 > = (state, action) => {
-  const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
-  if (!spriteSheet) {
-    return;
-  }
-  const spriteStates = spriteSheet.states.map(
-    (stateId) => state.spriteStates.entities[stateId],
+  const spriteTiles = getMetaspriteTilesForSpriteSheet(
+    state,
+    action.payload.spriteSheetId,
   );
-  const spriteAnimations = spriteStates
-    .map((spriteState) =>
-      spriteState.animations.map(
-        (animationId) => state.spriteAnimations.entities[animationId],
-      ),
-    )
-    .flat();
-  const spriteFrames = spriteAnimations
-    .map((animation) =>
-      animation.frames.map(
-        (metaspriteId) => state.metasprites.entities[metaspriteId],
-      ),
-    )
-    .flat();
-  const spriteTiles = spriteFrames
-    .map((metasprite) =>
-      metasprite.tiles.map(
-        (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
-      ),
-    )
-    .flat();
-
   metaspriteTilesAdapter.updateMany(
     state.metaspriteTiles,
     spriteTiles
@@ -2941,6 +2917,31 @@ const replaceMetaspriteTilesPalettes: CaseReducer<
         id: tile.id,
         changes: {
           paletteIndex: action.payload.toIndex,
+        },
+      })),
+  );
+};
+
+const replaceMetaspriteTilesObjPalettes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    fromPalette: ObjPalette;
+    toPalette: ObjPalette;
+  }>
+> = (state, action) => {
+  const spriteTiles = getMetaspriteTilesForSpriteSheet(
+    state,
+    action.payload.spriteSheetId,
+  );
+  metaspriteTilesAdapter.updateMany(
+    state.metaspriteTiles,
+    spriteTiles
+      .filter((tile) => tile.objPalette === action.payload.fromPalette)
+      .map((tile) => ({
+        id: tile.id,
+        changes: {
+          objPalette: action.payload.toPalette,
         },
       })),
   );
@@ -4801,6 +4802,7 @@ const entitiesSlice = createSlice({
     editMetaspriteTile,
     editMetaspriteTiles,
     replaceMetaspriteTilesPalettes,
+    replaceMetaspriteTilesObjPalettes,
     removeMetaspriteTiles,
     removeMetaspriteTilesOutsideCanvas,
 

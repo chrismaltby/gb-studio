@@ -1072,3 +1072,35 @@ const triggerFixNulls = <T extends Trigger | TriggerPrefab>(trigger: T): T => {
 const scriptFixNulls = (script: CustomEvent): CustomEvent => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
+
+export const getMetaspriteTilesForSpriteSheet = (
+  state: EntitiesState,
+  spriteSheetId: string,
+) => {
+  const spriteSheet = state.spriteSheets.entities[spriteSheetId];
+  if (!spriteSheet) return [];
+
+  const spriteStates = spriteSheet.states.map(
+    (stateId) => state.spriteStates.entities[stateId],
+  );
+
+  const spriteAnimations = spriteStates.flatMap((spriteState) =>
+    spriteState.animations.map(
+      (animationId) => state.spriteAnimations.entities[animationId],
+    ),
+  );
+
+  const spriteFrames = spriteAnimations.flatMap((animation) =>
+    animation.frames.map(
+      (metaspriteId) => state.metasprites.entities[metaspriteId],
+    ),
+  );
+
+  const spriteTiles = spriteFrames.flatMap((metasprite) =>
+    metasprite.tiles.map(
+      (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
+    ),
+  );
+
+  return spriteTiles;
+};

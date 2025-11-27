@@ -149,7 +149,7 @@ export interface EditorState {
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
-  replaceSpriteTileMode: "tile" | "palette" | undefined;
+  replaceSpriteTileMode: "tile" | "palette" | "objPalette" | undefined;
   parallaxHoverLayer: number | undefined;
   previewAsSceneId: string;
   selectedSongId: string;
@@ -837,7 +837,7 @@ const editorSlice = createSlice({
 
     setReplaceSpriteTileMode: (
       state,
-      action: PayloadAction<"tile" | "palette" | undefined>,
+      action: PayloadAction<"tile" | "palette" | "objPalette" | undefined>,
     ) => {
       state.replaceSpriteTileMode = action.payload;
     },
@@ -1132,6 +1132,12 @@ const editorSlice = createSlice({
       // When replacing palettes reset tile replace mode
       .addCase(
         entitiesActions.replaceMetaspriteTilesPalettes,
+        (state, _action) => {
+          state.replaceSpriteTileMode = undefined;
+        },
+      )
+      .addCase(
+        entitiesActions.replaceMetaspriteTilesObjPalettes,
         (state, _action) => {
           state.replaceSpriteTileMode = undefined;
         },
