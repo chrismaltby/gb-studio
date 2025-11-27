@@ -1268,6 +1268,8 @@
   "FIELD_RATE_LIMIT_VARIABLE_DESC": "次のスクリプト実行までに待機する時間（フレーム）を格納する変数。",
   "FIELD_RATE_LIMITED": "レート制限",
   "FIELD_RATE_LIMITED_DESC": "レート制限を設けるスクリプト",
+  "FIELD_REPLACE_PALETTE": "パレットの置換",
+  "FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS": "このスプライトのパレットに一致する置き換え用のパレットを選択します（注記:「パレットの置換」を押して有効にした後にパレットをドロップダウンから選択します）。",
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "検索...",
   "ASSET_EDIT": "編集",
