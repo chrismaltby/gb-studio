@@ -325,6 +325,7 @@ export const StyledPillButton = styled.button<StyledPillButtonProps>`
   font-size: ${(props) => props.theme.typography.fontSize};
 
   &:active {
+    color: ${(props) => props.theme.colors.button.text};
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 
@@ -343,6 +344,8 @@ const pillButtonPrimaryStyles = css`
 
   &:active {
     opacity: 0.8;
+    color: #fff;
+    background: ${(props) => props.theme.colors.highlight};
   }
   &:focus {
     box-shadow:

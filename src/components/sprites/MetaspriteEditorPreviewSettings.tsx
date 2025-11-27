@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import {
   metaspriteSelectors,
@@ -14,6 +14,8 @@ import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { PillButton } from "ui/buttons/PillButton";
+import settingsActions from "store/features/settings/settingsActions";
 
 interface MetaspriteEditorPreviewSettingsProps {
   spriteSheetId: string;
@@ -91,6 +93,12 @@ const MetaspriteEditorPreviewSettings = ({
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
   );
+  const canPreviewAsMono = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "mixed",
+  );
+  const previewAsMono = useAppSelector(
+    (state) => canPreviewAsMono && state.project.present.settings.previewAsMono,
+  );
 
   useEffect(() => {
     if (buttonFocus) {
@@ -162,6 +170,14 @@ const MetaspriteEditorPreviewSettings = ({
     dispatch(editorActions.setPreviewAsSceneId(newValue));
   };
 
+  const onTogglePreviewAsMono = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        previewAsMono: !previewAsMono,
+      }),
+    );
+  }, [dispatch, previewAsMono]);
+
   if (!spriteSheet || !metasprite) {
     return null;
   }
@@ -187,11 +203,12 @@ const MetaspriteEditorPreviewSettings = ({
               </SelectMenu>
             )}
           </RelativePortal>
-          <Pill
+          <PillButton
             ref={buttonRef}
             onClick={openMenu}
             onFocus={onButtonFocus}
             onBlur={onButtonBlur}
+            variant={scene && !previewAsMono ? "primary" : "normal"}
           >
             ▲{" "}
             {scene
@@ -199,10 +216,20 @@ const MetaspriteEditorPreviewSettings = ({
                   sceneName: sceneName(scene, sceneIndex),
                 })
               : l10n("FIELD_PREVIEW_AS_DEFAULT")}
-          </Pill>
-          <FixedSpacer width={10} />
+          </PillButton>
+          <FixedSpacer width={5} />
         </>
       )}
+      {canPreviewAsMono && (
+        <PillButton
+          variant={previewAsMono ? "primary" : "normal"}
+          onClick={onTogglePreviewAsMono}
+        >
+          {l10n("FIELD_PREVIEW_AS_MONO")}
+        </PillButton>
+      )}
+      {(colorsEnabled || canPreviewAsMono) && <FixedSpacer width={10} />}
+
       <TooltipWrapper tooltip={l10n("FIELD_SPRITE_TILES_TOOLTIP")}>
         <Info>
           {l10n("FIELD_TILES")}={metasprite.tiles.length}
