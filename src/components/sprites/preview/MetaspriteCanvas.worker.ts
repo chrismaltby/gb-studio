@@ -125,15 +125,25 @@ workerCtx.onmessage = async (evt) => {
   // Draw Tiles
   for (const tile of tiles) {
     ctx.save();
+
+    const tileWidth = 8;
+    const tileHeight = spriteMode === "8x8" ? 8 : 16;
+
+    const halfTileWidth = tileWidth / 2;
+    const halfTileHeight = tileHeight / 2;
+
+    const drawX = Math.max(0, width / 2 - tileWidth) + tile.x;
+    const drawY = height - tileHeight - tile.y;
+
     if (tile.flipX) {
-      ctx.translate((width - 8) / 2, 0);
+      ctx.translate(drawX + halfTileWidth, 0);
       ctx.scale(-1, 1);
-      ctx.translate(-((width - 8) / 2), 0);
+      ctx.translate(-(drawX + halfTileWidth), 0);
     }
     if (tile.flipY) {
-      ctx.translate(0, height - 8);
+      ctx.translate(0, drawY + halfTileHeight);
       ctx.scale(1, -1);
-      ctx.translate(0, -(height - 8));
+      ctx.translate(0, -(drawY + halfTileHeight));
     }
     const coloredCanvas =
       (palettes && tilesCanvases[tile.paletteIndex]) ||
@@ -148,11 +158,11 @@ workerCtx.onmessage = async (evt) => {
       tile.sliceX,
       tile.sliceY,
       8,
-      spriteMode === "8x8" ? 8 : 16,
-      Math.max(0, width / 2 - 8) + tile.x * (tile.flipX ? -1 : 1),
-      height - (spriteMode === "8x8" ? 8 : 16) - tile.y * (tile.flipY ? -1 : 1),
+      tileHeight,
+      drawX,
+      drawY,
       8,
-      spriteMode === "8x8" ? 8 : 16,
+      tileHeight,
     );
     ctx.restore();
   }

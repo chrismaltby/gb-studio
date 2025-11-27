@@ -157,6 +157,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where mute icon in game window title bar could appear multiple times
 - Fix issue where magic brush would use old tile data if backgrounds we resized while editing
 - Fix issue where overlay move events were causing background scripts to pause
+- Fix flipped tile preview for sprites on 8px canvas
+- Fix sprite "Flip 'Right' To Create 'Left' Facing Frames" feature when sprite canvas is 8px wide
 
 ## [4.1.3] - 2024-09-16
 
