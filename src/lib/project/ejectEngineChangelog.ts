@@ -988,6 +988,21 @@ const changes: EngineChange[] = [
       "src/states/topdown.c",
     ],
   },
+  {
+    version: "4.2.0-e21",
+    description: createDescription("Fixes", [
+      "Add actor_with_script_in_front_of_player() function which skips checking for collisions with actors that don't contain scripts",
+      "Improve interact collision checking in topdown/adventure/platform scenes",
+      "Fix bug in adventure causing push state to not change direction when pushing into corners",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/topdown.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
