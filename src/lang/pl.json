@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2107251125",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2109251127",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -442,7 +442,7 @@
   "FIELD_MOVING_DIR": "Ruch {kierunki}",
   "FIELD_JUMPING_DIR": "Skok {kierunki}",
   "FIELD_CLIMBING": "Wspinanie",
-  "FIELD_REPLACE_TILE": "Scena: zmień taflę",
+  "FIELD_REPLACE_TILE": "Scena: zastąp taflę",
   "FIELD_CHOOSE_REPLACEMENT": "Wybierz zamiennik...",
   "FIELD_CHOOSE_REPLACEMENT_TILE_DETAILS": "Wybierz zamiennik tafli w panelu 'Tafli'.",
   "FIELD_DEFAULT_FONT": "Domyślna czcionka (Font)",
@@ -1275,6 +1275,8 @@
   "FIELD_RATE_LIMIT_VARIABLE_DESC": "Zmienna przechowująca najbliższy moment (w klatkach), w którym ten skrypt może zostać ponownie wywołany.",
   "FIELD_RATE_LIMITED": "Ograniczeniem częstotliwości",
   "FIELD_RATE_LIMITED_DESC": "Skrypt, którego częstotliwość wywołań będzie ograniczona",
+  "FIELD_REPLACE_PALETTE": "Zastąp paletę",
+  "FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS": "Wybierz paletę zastępczą, aby zaktualizować wszystkie pasujące palety w tym spricie.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
