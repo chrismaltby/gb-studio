@@ -1003,6 +1003,24 @@ const changes: EngineChange[] = [
       "src/states/topdown.c",
     ],
   },
+  {
+    version: "4.2.0-e22",
+    description: createDescription("Updates", [
+      "Optimise vm_actor_move_to by only checking current movement axis",
+      "Remove unnecessary projectile offscreen handling for projectiles_render()",
+      "Projectiles_update now tests if collision_group is set to 'player' and only tests for collisions with player in that case",
+      "Refactor splitting actors_update into separate update/render functions",
+      "Optimize bounds checking in actors_update",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/core/core.c",
+      "src/core/projectiles.c",
+      "src/core/ui.c",
+      "src/core/vm_actor.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
