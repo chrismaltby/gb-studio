@@ -88,15 +88,7 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
-const botContributors = ["dependabot[bot]"];
-
-const filteredContributors = contributors.filter((user) => {
-  return !botContributors.includes(user.login);
-});
-
-const goldContributors = filteredContributors.filter(
-  (user) => user.contributions >= 10,
-);
+const goldContributors = contributors.filter((user) => user.group === "gold");
 const silverContributors = [...contributorsExternal]
   // eslint-disable-next-line camelcase
   .map((contributor) => ({
@@ -104,7 +96,7 @@ const silverContributors = [...contributorsExternal]
     // eslint-disable-next-line camelcase
     html_url: contributor.html_url ?? "",
   }))
-  .concat(filteredContributors.filter((user) => user.contributions < 10))
+  .concat(contributors.filter((user) => user.group === "silver"))
   .sort((a, b) => {
     const loginA = a.login.toLowerCase();
     const loginB = b.login.toLowerCase();
@@ -417,7 +409,7 @@ const Splash = () => {
             <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
             {goldContributors.map((contributor) => (
               <CreditsPerson
-                key={contributor.id}
+                key={contributor.login}
                 onClick={
                   contributor.html_url
                     ? () => API.app.openExternal(contributor.html_url)

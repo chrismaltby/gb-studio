@@ -24,10 +24,22 @@ const main = async () => {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
       },
     })
-  ).filter((contributor) => {
-    // Filter out bots
-    return !contributor.login.includes("[bot]");
-  });
+  )
+    .filter((contributor) => {
+      // Filter out bots
+      return !contributor.login.includes("[bot]");
+    })
+    .sort((a, b) => {
+      // Sort highest contributions first
+      return b.contributions - a.contributions;
+    })
+    .map((contributor) => {
+      return {
+        login: contributor.login,
+        html_url: contributor.html_url,
+        group: contributor.contributions >= 10 ? "gold" : "silver",
+      };
+    });
 
   await writeJSON("./contributors.json", contributors, {
     spaces: 2,
