@@ -38,6 +38,14 @@ const TIMEOUT_MS = 60000;
  */
 const PROXY_FACTORY_SRC = `
   (function(moduleName, invoker, proxyFactory) {
+    // Helper to convert proxy markers to proxies
+    const maybeProxy = (value) => {
+      if (value && typeof value === 'object' && value.__PROXY_MARKER__) {
+        return proxyFactory(value.__PROXY_MARKER__, invoker, proxyFactory);
+      }
+      return value;
+    };
+    
     const handler = {
       get(_t, prop) {        
         if (prop === Symbol.iterator) {
@@ -47,7 +55,7 @@ const PROXY_FACTORY_SRC = `
               const keys = invoker(moduleName, '__KEYS__', []);
               if (Array.isArray(keys)) {
                 for (let i = 0; i < keys.length; i++) {
-                  yield invoker(moduleName, String(i), []);
+                  yield maybeProxy(invoker(moduleName, String(i), []));
                 }
               }
             };
@@ -62,7 +70,10 @@ const PROXY_FACTORY_SRC = `
         }
         
         if (typeof value === 'function') {
-          return (...args) => invoker(moduleName, String(prop), ['__CALL__', ...args]);
+          return (...args) => {
+            const result = invoker(moduleName, String(prop), ['__CALL__', ...args]);
+            return maybeProxy(result);
+          };
         }
         
         return value;
@@ -152,19 +163,32 @@ const createOnInvokeHandler = (
 
     if (args.length > 0 && args[0] === "__CALL__") {
       const [, ...callArgs] = args;
+      let callResult: unknown;
+
       if (typeof hostObj === "function") {
-        return (hostObj as Function)(...callArgs);
-      }
-
-      const prop = (hostObj as Record<string, unknown>)[path];
-      if (typeof prop === "function") {
-        if (Array.isArray(hostObj)) {
-          return (prop as Function).call(hostObj, ...callArgs);
+        callResult = (hostObj as Function)(...callArgs);
+      } else {
+        const prop = (hostObj as Record<string, unknown>)[path];
+        if (typeof prop === "function") {
+          callResult = (prop as Function).call(hostObj, ...callArgs);
+        } else {
+          throw new Error(`Property ${path} is not a function`);
         }
-        return (prop as Function).call(hostObj, ...callArgs);
       }
 
-      throw new Error(`Property ${path} is not a function`);
+      // If the result is an object, return a proxy marker
+      if (
+        callResult !== null &&
+        callResult !== undefined &&
+        typeof callResult === "object"
+      ) {
+        const { proxyId, needsProxy } = createProxy(callResult);
+        if (needsProxy) {
+          return { __PROXY_MARKER__: proxyId };
+        }
+      }
+
+      return callResult;
     }
 
     // Regular property access
