@@ -88,7 +88,7 @@ const normalStyles = css<StyledButtonProps>`
   }
 `;
 
-const primaryStyles = css`
+const primaryStyles = css<StyledButtonProps>`
   background: ${(props) => props.theme.colors.highlight};
   border-color: transparent;
   color: ${(props) => props.theme.colors.highlightText};
@@ -105,6 +105,16 @@ const primaryStyles = css`
       0 0 0px 2px #fff,
       0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
+
+  ${(props) =>
+    props.disabled
+      ? css`
+          opacity: 0.5;
+          &:active {
+            opacity: 0.5;
+          }
+        `
+      : ""}
 `;
 
 const transparentStyles = css<StyledButtonProps>`

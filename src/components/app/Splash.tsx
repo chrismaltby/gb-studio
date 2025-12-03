@@ -368,7 +368,7 @@ const Splash = () => {
               </FormRow>
               <FlexGrow />
               <SplashCreateButton>
-                <Button variant="primary" size="large">
+                <Button variant="primary" size="large" disabled={creating}>
                   {creating ? l10n("SPLASH_CREATING") : l10n("SPLASH_CREATE")}
                 </Button>
               </SplashCreateButton>
