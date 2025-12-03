@@ -675,8 +675,6 @@ const WorldView = () => {
           : undefined
       }
     >
-      {loaded && scenes.length === 0 && <WorldHelp />}
-
       <WorldContent ref={scrollContentsRef}>
         <WorldGrid
           ref={worldRef}
@@ -723,6 +721,8 @@ const WorldView = () => {
           />
         )}
       </WorldContent>
+
+      {loaded && scenes.length === 0 && <WorldHelp />}
     </Wrapper>
   );
 };
