@@ -1873,7 +1873,7 @@
   "WARNING_FIELD_UNITS_SUBPX": "Este campo está utilizando unidades de subpíxeles. El valor aquí será {multiplier}x mayor que el valor mostrado en 'Configuración'",
   "WARNING_FIELD_UNITS_SUBPX_PRECISE": "Este campo está utilizando unidades de subpíxeles con precisión. El valor aquí será {multiplier}x mayor que el valor mostrado en 'Configuración'",
   "WARNING_SPRITE_MODE_MISMATCH": "El sprite {sprite} se está utilizando en una escena {scene} con un modo de sprite diferente ({sceneMode}) que el modo del sprite ({spriteMode}). Esto causará que el sprite no se muestre correctamente. Cambie el modo de sprite de la escena o use un sprite diferente.",
-  "// 12": "Errores -------------------------------------------------------",
+  "// 12": "Errors -------------------------------------------------------",
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Por favor, agregue un nombre para el proyecto",
   "ERROR_PLEASE_ENTER_PROJECT_PATH": "Por favor, agregue una ruta para el proyecto",
   "ERROR_PROJECT_ALREADY_EXISTS": "Proyecto ya existe",
