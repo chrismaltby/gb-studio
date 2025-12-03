@@ -1,6 +1,10 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-export const Card = styled.div`
+interface CardProps {
+  $indent?: number;
+}
+
+export const Card = styled.div<CardProps>`
   background: ${(props) => props.theme.colors.card.background};
   color: ${(props) => props.theme.colors.card.text};
   padding: 20px;
@@ -9,6 +13,12 @@ export const Card = styled.div`
   border-radius: 3px;
   width: 100%;
   box-sizing: border-box;
+
+  ${(props) =>
+    props.$indent &&
+    css`
+      border-left-width: ${props.$indent * 25}px;
+    `}
 `;
 
 export const CardHeading = styled.h2`

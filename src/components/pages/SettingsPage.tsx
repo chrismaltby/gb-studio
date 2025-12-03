@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useLayoutEffect, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import {
@@ -35,7 +35,6 @@ import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "components/forms/FontSelect";
-import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { ColorAnimationText } from "components/settings/ColorAnimationText";
 import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
@@ -52,6 +51,7 @@ import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
+import SceneTypesSettingsCard from "components/settings/SceneTypesSettingsCard";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -59,9 +59,7 @@ const SettingsPage: FC = () => {
   const projectName = useAppSelector(
     (state) => state.project.present.metadata.name,
   );
-  const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [scrollToId, setScrollToId] = useState<string>("");
   const groupedFields = useGroupedEngineFields();
   const editSettings = useCallback(
     (patch: Partial<SettingsState>) => {
@@ -78,14 +76,12 @@ const SettingsPage: FC = () => {
   const windowSize = useWindowSize();
   const showMenu = (windowSize.width || 0) >= 750;
 
-  useLayoutEffect(() => {
-    if (scrollToId) {
-      const el = document.getElementById(scrollToId);
-      if (el) {
-        el.scrollIntoView();
-      }
+  const setScrollToId = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView();
     }
-  }, [scrollToId]);
+  }, []);
 
   const {
     colorMode,
@@ -95,7 +91,6 @@ const SettingsPage: FC = () => {
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
     defaultFontId,
-    defaultPlayerSprites,
     musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
@@ -259,19 +254,6 @@ const SettingsPage: FC = () => {
     [defaultSpritePaletteIds, editSettings],
   );
 
-  const onEditDefaultPlayerSprites = useCallback(
-    (sceneType: string, spriteSheetId: string) => {
-      console.log("onEditDefaultPlayerSprites", sceneType, spriteSheetId);
-      dispatch(
-        settingsActions.setSceneTypeDefaultPlayerSprite({
-          sceneType,
-          spriteSheetId,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
   const openAsset = useCallback(
     (path: string) => {
       dispatch(
@@ -304,6 +286,18 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
               {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsSceneTypes")}>
+              {l10n("FIELD_SCENE_TYPES")}
+            </SettingsMenuItem>
+            {groupedFields.map((group) => (
+              <SettingsMenuItem
+                key={group.name}
+                onClick={onMenuItem(`settings${group.name}`)}
+                $indent={group.sceneType ? 1 : 0}
+              >
+                {l10n(group.name as L10NKey)}
+              </SettingsMenuItem>
+            ))}
             <SettingsMenuItem onClick={onMenuItem("settingsSprite")}>
               {l10n("SETTINGS_SPRITE")}
             </SettingsMenuItem>
@@ -313,14 +307,6 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
               {l10n("SETTINGS_MUSIC")}
             </SettingsMenuItem>
-            {groupedFields.map((group) => (
-              <SettingsMenuItem
-                key={group.name}
-                onClick={onMenuItem(`settings${group.name}`)}
-              >
-                {l10n(group.name as L10NKey)}
-              </SettingsMenuItem>
-            ))}
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>
               {l10n("SETTINGS_CONTROLS")}
             </SettingsMenuItem>
@@ -589,55 +575,19 @@ const SettingsPage: FC = () => {
           )}
         </SearchableCard>
 
+        <SceneTypesSettingsCard searchTerm={searchTerm} />
+
+        <EngineFieldsEditor searchTerm={searchTerm} />
+
         <SearchableCard
           searchTerm={searchTerm}
           searchMatches={[
             l10n("SETTINGS_SPRITE"),
-            l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
             l10n("FIELD_DEFAULT_SPRITE_MODE"),
           ]}
         >
           <CardAnchor id="settingsSprite" />
           <CardHeading>{l10n("SETTINGS_SPRITE")}</CardHeading>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[
-              l10n("SETTINGS_SPRITE"),
-              l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
-            ]}
-          >
-            <SettingRowLabel $sectionHeading>
-              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
-            </SettingRowLabel>
-          </SearchableSettingRow>
-
-          {sceneTypes.map((sceneType) => (
-            <SearchableSettingRow
-              key={sceneType.key}
-              searchTerm={searchTerm}
-              searchMatches={[
-                l10n(sceneType.label as L10NKey),
-                l10n("SETTINGS_PLAYER_DEFAULT_SPRITES"),
-              ]}
-              indent={1}
-            >
-              <SettingRowLabel>
-                {l10n(sceneType.label as L10NKey)}
-              </SettingRowLabel>
-              <SettingRowInput>
-                <SpriteSheetSelect
-                  name={`defaultPlayerSprite__${sceneType.key}`}
-                  value={defaultPlayerSprites[sceneType.key] || ""}
-                  optional
-                  optionalLabel={l10n("FIELD_NONE")}
-                  onChange={(value) =>
-                    onEditDefaultPlayerSprites(sceneType.key, value)
-                  }
-                />
-              </SettingRowInput>
-            </SearchableSettingRow>
-          ))}
 
           <SearchableSettingRow
             searchTerm={searchTerm}
@@ -745,8 +695,6 @@ const SettingsPage: FC = () => {
             </SettingRowInput>
           </SearchableSettingRow>
         </SearchableCard>
-
-        <EngineFieldsEditor searchTerm={searchTerm} />
 
         <SearchableCard
           searchTerm={searchTerm}

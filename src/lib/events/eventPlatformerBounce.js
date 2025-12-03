@@ -34,6 +34,7 @@ module.exports = {
   description: l10n("EVENT_PLAYER_BOUNCE_DESC"),
   groups,
   subGroups,
+  sceneTypes: ["PLATFORM"],
   fields,
   compile,
 };

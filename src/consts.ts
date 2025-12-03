@@ -442,6 +442,8 @@ export const defaultProjectSettings: Settings = {
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
   romFilename: "",
+  defaultSceneTypeId: "TOPDOWN",
+  disabledSceneTypeIds: [],
 };
 
 export const defaultPalettes: Palette[] = [

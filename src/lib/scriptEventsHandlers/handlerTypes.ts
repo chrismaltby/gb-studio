@@ -87,6 +87,7 @@ export interface ScriptEventDef {
   description?: string;
   groups?: string[] | string;
   subGroups?: Record<string, string>;
+  sceneTypes?: string[];
   deprecated?: boolean;
   isConditional?: boolean;
   editableSymbol?: boolean;

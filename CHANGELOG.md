@@ -67,6 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Replace Palette" button to the Sprite Editor. When enabled, changing the palette of a tile updates all tiles that use the same palette
 - Add "Preview as Monochrome" button to Sprite Editor
 - Add ability to duplicate color palettes from right click context menu on palette editor sidebar
+- Add "Scene Types" section to the Settings page for enabling or disabling specific scene types
+- Add "Default Scene Type" setting used when creating new scenes
 
 ### Changed
 
@@ -160,6 +162,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where overlay move events were causing background scripts to pause
 - Fix flipped tile preview for sprites on 8px canvas
 - Fix sprite "Flip 'Right' To Create 'Left' Facing Frames" feature when sprite canvas is 8px wide
+- Fix issue where engine fields belonging to unused or disabled scene types could prevent the project from compiling
 
 ## [4.1.3] - 2024-09-16
 

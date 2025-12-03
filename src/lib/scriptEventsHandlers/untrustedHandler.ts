@@ -855,6 +855,7 @@ export const loadScriptEventHandlerFromUntrustedString = async (
       fields: persistentVM.getModuleProperty("fields"),
       groups: persistentVM.getModuleProperty("groups"),
       subGroups: persistentVM.getModuleProperty("subGroups"),
+      sceneTypes: persistentVM.getModuleProperty("sceneTypes"),
       weight: persistentVM.getModuleProperty("weight"),
       deprecated: persistentVM.getModuleProperty("deprecated"),
       editableSymbol: persistentVM.getModuleProperty("editableSymbol"),

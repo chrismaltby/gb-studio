@@ -75,7 +75,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
-import { FlexBreak, FlexGrow } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexBreak, FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
 import {
@@ -88,6 +88,8 @@ import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import { SpriteModeSetting } from "shared/lib/resources/types";
 import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
+import navigationActions from "store/features/navigation/navigationActions";
+import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
 
 interface SceneEditorProps {
   id: string;
@@ -206,6 +208,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     (state) => state.project.present.settings.spriteMode,
   );
   const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
+
+  const enabledSceneTypeIds = useEnabledSceneTypeIds();
+  const sceneTypeEnabled = useMemo(() => {
+    return enabledSceneTypeIds.includes(scene?.type);
+  }, [enabledSceneTypeIds, scene?.type]);
 
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
@@ -557,6 +564,16 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     [id, scriptKey],
   );
 
+  const onOpenSettings = useCallback(() => {
+    dispatch(navigationActions.setSection("settings"));
+    setTimeout(() => {
+      const el = document.getElementById("settingsSceneTypes");
+      if (el) {
+        el.scrollIntoView();
+      }
+    }, 100);
+  }, [dispatch]);
+
   if (!scene) {
     return <WorldEditor />;
   }
@@ -787,429 +804,462 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     </div>
                   </FormField>
                 </FormRow>
-
+                {!sceneTypeEnabled && (
+                  <FormRow>
+                    <Alert variant="warning">
+                      {l10n("WARNING_SCENE_TYPE_DISABLED", {
+                        type: scene.type,
+                      })}
+                      <FixedSpacer height={5} />
+                      <Button size="small" onClick={onOpenSettings}>
+                        {l10n("SETTINGS")}
+                      </Button>
+                    </Alert>
+                  </FormRow>
+                )}
                 {settingsOpen && <EngineFieldsEditor sceneType={scene.type} />}
               </FormContainer>
             </SidebarColumn>
             <FlexBreak />
 
-            <SidebarColumn>
-              <FormContainer>
-                <FormRow>
-                  <FormField
-                    name="backgroundId"
-                    label={l10n("FIELD_BACKGROUND")}
-                  >
-                    <div style={{ display: "flex" }}>
-                      <BackgroundSelectButton
-                        name="backgroundId"
-                        value={scene.backgroundId}
-                        tilesetId={scene.tilesetId}
-                        uiPaletteId={scene.paletteIds?.[7]}
-                        onChange={onChangeBackgroundId}
-                        is360={scene.type === "LOGO"}
-                        includeInfo
-                      />
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns:
-                            numBackgroundButtons > 2
-                              ? "repeat(2, 1fr)"
-                              : undefined,
-                          gap: 4,
-                          marginLeft: 4,
-                        }}
-                      >
-                        {showCommonTilesetButton && (
-                          <Button
-                            style={{
-                              padding: "5px 0",
-                              minWidth: 28,
-                            }}
-                            variant={
-                              commonTilesetOpen ? "primary" : "transparent"
-                            }
-                            onClick={onToggleCommonTileset}
-                            title={l10n("FIELD_COMMON_TILESET")}
-                          >
-                            <JigsawIcon />
-                          </Button>
-                        )}
-                        {showParallaxButton && (
-                          <Button
-                            style={{
-                              padding: "5px 0",
-                              minWidth: 28,
-                            }}
-                            variant={
-                              scene?.parallax ? "primary" : "transparent"
-                            }
-                            onClick={onToggleParallaxSettings}
-                            title={l10n("FIELD_PARALLAX")}
-                          >
-                            <ParallaxIcon />
-                          </Button>
-                        )}
-                        {showScrollBoundsButton && (
-                          <Button
-                            style={{
-                              padding: "5px 0",
-                              minWidth: 28,
-                            }}
-                            variant={
-                              scene?.scrollBounds ? "primary" : "transparent"
-                            }
-                            onClick={onToggleScrollBounds}
-                            title={l10n("FIELD_CAMERA_BOUNDS")}
-                          >
-                            <CameraIcon />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </FormField>
-                </FormRow>
-
-                {commonTilesetOpen && (
-                  <FormRow>
-                    <FormField
-                      name="tilesetId"
-                      label={l10n("FIELD_COMMON_TILESET")}
-                      title={l10n("FIELD_COMMON_TILESET_DESC")}
-                    >
-                      <TilesetSelect
-                        name="tilesetId"
-                        value={scene.tilesetId}
-                        onChange={onChangeTilesetdId}
-                        optional
-                      />
-                    </FormField>
-                  </FormRow>
-                )}
-
-                <FormRow>
-                  <BackgroundWarnings id={scene.backgroundId} />
-                  {logoSceneForBackground && (
-                    <Alert variant="warning">
-                      <AlertItem>
-                        {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
-                          name: logoSceneForBackground.name,
-                        })}
-                      </AlertItem>
-                    </Alert>
-                  )}
-                </FormRow>
-
-                {/* <FormDivider /> */}
-              </FormContainer>
-            </SidebarColumn>
-
-            {showParallaxOptions && (
-              <SidebarColumn>
-                <FormContainer>
-                  <FormRow>
-                    <FormField name="parallax" label={l10n("FIELD_PARALLAX")}>
-                      <ParallaxSelect
-                        name="parallax"
-                        value={scene.parallax}
-                        sceneHeight={scene.height}
-                        onChange={onChangeParallax}
-                      />
-                    </FormField>
-                  </FormRow>
-                </FormContainer>
-              </SidebarColumn>
-            )}
-
-            {showScrollBoundsOptions && scene.scrollBounds && (
-              <SidebarColumn>
-                <FormContainer>
-                  <FormRow>
-                    <FormField
-                      name="scrollBounds"
-                      label={l10n("FIELD_CAMERA_BOUNDS")}
-                    >
-                      <ScrollBoundsInput
-                        name={"scrollBounds"}
-                        sceneWidth={scene.width}
-                        sceneHeight={scene.height}
-                        value={scene.scrollBounds}
-                        onChange={onChangeScrollBounds}
-                      />
-                    </FormField>
-                  </FormRow>
-                </FormContainer>
-              </SidebarColumn>
-            )}
-
-            {colorsEnabled && (
-              <SidebarColumn>
-                {showColorModeOverride && (
-                  <FormRow>
-                    <FormField
-                      name="colorModeOverride"
-                      label={l10n("FIELD_COLOR_MODE_OVERRIDE")}
-                    >
-                      <ColorModeOverrideSelect
-                        name="colorModeOverride"
-                        value={scene.colorModeOverride}
-                        onChange={onChangeColorModeOverride}
-                      />
-                    </FormField>
-                  </FormRow>
-                )}
-
-                <FormRow>
-                  <FormField
-                    name="playerSpriteSheetId"
-                    label={
-                      <>
-                        {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
-                        <InlineDropdownWrapper>
-                          <DropdownButton
-                            size="small"
-                            variant="transparent"
-                            showArrow={false}
-                            label={l10n(
-                              background?.autoColor
-                                ? "FIELD_AUTOMATIC"
-                                : "FIELD_MANUAL",
-                            )}
-                          >
-                            <MenuItem
-                              onClick={() => onChangeAutoColor(true)}
-                              icon={
-                                background?.autoColor ? (
-                                  <CheckIcon />
-                                ) : (
-                                  <BlankIcon />
-                                )
-                              }
-                            >
-                              {l10n("FIELD_AUTOMATIC")}
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() => onExtractPalettes()}
-                              icon={<BlankIcon />}
-                            >
-                              {l10n("FIELD_EXTRACT_PALETTES")}
-                            </MenuItem>
-                            <MenuDivider />
-                            <MenuItem
-                              onClick={() => onChangeAutoColor(false)}
-                              icon={
-                                !background?.autoColor ? (
-                                  <CheckIcon />
-                                ) : (
-                                  <BlankIcon />
-                                )
-                              }
-                            >
-                              {l10n("FIELD_MANUAL")}
-                            </MenuItem>
-                          </DropdownButton>
-                        </InlineDropdownWrapper>
-                      </>
-                    }
-                  >
-                    {!background?.autoColor ? (
-                      <PaletteButtons>
-                        {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                          <PaletteSelectButton
-                            key={index}
-                            name={`scenePalette${index}`}
-                            value={
-                              (scene.paletteIds && scene.paletteIds[index]) ||
-                              ""
-                            }
-                            onChange={onEditPaletteId(index)}
-                            slotNumber={index + 1}
-                            optional
-                            optionalDefaultPaletteId={
-                              defaultBackgroundPaletteIds[index] || ""
-                            }
-                            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                          />
-                        ))}
-                      </PaletteButtons>
-                    ) : (
-                      <PaletteButtons>
-                        {[0, 1, 2, 3, 4, 5, 6].map((index) => (
-                          <AutoPaletteSwatch
-                            key={index}
-                            palette={backgroundInfo?.autoPalettes?.[index]}
-                          />
-                        ))}
-                        {[7].map((index) => (
-                          <PaletteSelectButton
-                            key={index}
-                            name={`scenePalette${index}`}
-                            value={
-                              (scene.paletteIds && scene.paletteIds[index]) ||
-                              ""
-                            }
-                            onChange={onEditPaletteId(index)}
-                            slotNumber={index + 1}
-                            optional
-                            optionalDefaultPaletteId={
-                              defaultBackgroundPaletteIds[index] || ""
-                            }
-                            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                            canAuto
-                            autoPalette={backgroundInfo?.autoPalettes?.[index]}
-                          />
-                        ))}
-                      </PaletteButtons>
-                    )}
-                  </FormField>
-                </FormRow>
-
-                <FormRow>
-                  <FormField
-                    name="playerSpriteSheetId"
-                    label={l10n("FIELD_SCENE_SPRITE_PALETTES")}
-                  >
-                    <PaletteButtons>
-                      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                        <PaletteSelectButton
-                          key={index}
-                          name={`scenePalette${index}`}
-                          type="sprite"
-                          value={
-                            (scene.spritePaletteIds &&
-                              scene.spritePaletteIds[index]) ||
-                            ""
-                          }
-                          slotNumber={index + 1}
-                          onChange={onEditSpritePaletteId(index)}
-                          optional
-                          optionalDefaultPaletteId={
-                            defaultSpritePaletteIds[index] || ""
-                          }
-                          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                        />
-                      ))}
-                    </PaletteButtons>
-                  </FormField>
-                </FormRow>
-
-                {/* <FormDivider /> */}
-              </SidebarColumn>
-            )}
-            {scene.type !== "LOGO" && (
+            {sceneTypeEnabled && (
               <>
                 <SidebarColumn>
-                  <FormRow>
-                    <FormField
-                      name="playerSpriteSheetId"
-                      label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-                    >
-                      <SpriteSheetSelectButton
-                        name="playerSpriteSheetId"
-                        value={scene.playerSpriteSheetId}
-                        direction={isStartingScene ? startDirection : "down"}
-                        onChange={onChangePlayerSpriteSheetId}
-                        filter={onlyCurrentSpriteMode}
-                        includeInfo
-                        optional
-                        optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
-                        optionalValue={defaultPlayerSprites[scene.type]}
-                      />
-                    </FormField>
-                  </FormRow>
-                  {showSpriteModeOverride && (
+                  <FormContainer>
                     <FormRow>
                       <FormField
-                        name="spriteMode"
-                        label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                        name="backgroundId"
+                        label={l10n("FIELD_BACKGROUND")}
                       >
-                        <SpriteModeSelect
-                          name={"spriteMode"}
-                          onChange={onChangeSpriteMode}
-                          allowDefault={true}
-                          value={scene.spriteMode}
+                        <div style={{ display: "flex" }}>
+                          <BackgroundSelectButton
+                            name="backgroundId"
+                            value={scene.backgroundId}
+                            tilesetId={scene.tilesetId}
+                            uiPaletteId={scene.paletteIds?.[7]}
+                            onChange={onChangeBackgroundId}
+                            is360={scene.type === "LOGO"}
+                            includeInfo
+                          />
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns:
+                                numBackgroundButtons > 2
+                                  ? "repeat(2, 1fr)"
+                                  : undefined,
+                              gap: 4,
+                              marginLeft: 4,
+                            }}
+                          >
+                            {showCommonTilesetButton && (
+                              <Button
+                                style={{
+                                  padding: "5px 0",
+                                  minWidth: 28,
+                                }}
+                                variant={
+                                  commonTilesetOpen ? "primary" : "transparent"
+                                }
+                                onClick={onToggleCommonTileset}
+                                title={l10n("FIELD_COMMON_TILESET")}
+                              >
+                                <JigsawIcon />
+                              </Button>
+                            )}
+                            {showParallaxButton && (
+                              <Button
+                                style={{
+                                  padding: "5px 0",
+                                  minWidth: 28,
+                                }}
+                                variant={
+                                  scene?.parallax ? "primary" : "transparent"
+                                }
+                                onClick={onToggleParallaxSettings}
+                                title={l10n("FIELD_PARALLAX")}
+                              >
+                                <ParallaxIcon />
+                              </Button>
+                            )}
+                            {showScrollBoundsButton && (
+                              <Button
+                                style={{
+                                  padding: "5px 0",
+                                  minWidth: 28,
+                                }}
+                                variant={
+                                  scene?.scrollBounds
+                                    ? "primary"
+                                    : "transparent"
+                                }
+                                onClick={onToggleScrollBounds}
+                                title={l10n("FIELD_CAMERA_BOUNDS")}
+                              >
+                                <CameraIcon />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </FormField>
+                    </FormRow>
+
+                    {commonTilesetOpen && (
+                      <FormRow>
+                        <FormField
+                          name="tilesetId"
+                          label={l10n("FIELD_COMMON_TILESET")}
+                          title={l10n("FIELD_COMMON_TILESET_DESC")}
+                        >
+                          <TilesetSelect
+                            name="tilesetId"
+                            value={scene.tilesetId}
+                            onChange={onChangeTilesetdId}
+                            optional
+                          />
+                        </FormField>
+                      </FormRow>
+                    )}
+
+                    <FormRow>
+                      <BackgroundWarnings id={scene.backgroundId} />
+                      {logoSceneForBackground && (
+                        <Alert variant="warning">
+                          <AlertItem>
+                            {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
+                              name: logoSceneForBackground.name,
+                            })}
+                          </AlertItem>
+                        </Alert>
+                      )}
+                    </FormRow>
+
+                    {/* <FormDivider /> */}
+                  </FormContainer>
+                </SidebarColumn>
+
+                {showParallaxOptions && (
+                  <SidebarColumn>
+                    <FormContainer>
+                      <FormRow>
+                        <FormField
+                          name="parallax"
+                          label={l10n("FIELD_PARALLAX")}
+                        >
+                          <ParallaxSelect
+                            name="parallax"
+                            value={scene.parallax}
+                            sceneHeight={scene.height}
+                            onChange={onChangeParallax}
+                          />
+                        </FormField>
+                      </FormRow>
+                    </FormContainer>
+                  </SidebarColumn>
+                )}
+
+                {showScrollBoundsOptions && scene.scrollBounds && (
+                  <SidebarColumn>
+                    <FormContainer>
+                      <FormRow>
+                        <FormField
+                          name="scrollBounds"
+                          label={l10n("FIELD_CAMERA_BOUNDS")}
+                        >
+                          <ScrollBoundsInput
+                            name={"scrollBounds"}
+                            sceneWidth={scene.width}
+                            sceneHeight={scene.height}
+                            value={scene.scrollBounds}
+                            onChange={onChangeScrollBounds}
+                          />
+                        </FormField>
+                      </FormRow>
+                    </FormContainer>
+                  </SidebarColumn>
+                )}
+
+                {colorsEnabled && (
+                  <SidebarColumn>
+                    {showColorModeOverride && (
+                      <FormRow>
+                        <FormField
+                          name="colorModeOverride"
+                          label={l10n("FIELD_COLOR_MODE_OVERRIDE")}
+                        >
+                          <ColorModeOverrideSelect
+                            name="colorModeOverride"
+                            value={scene.colorModeOverride}
+                            onChange={onChangeColorModeOverride}
+                          />
+                        </FormField>
+                      </FormRow>
+                    )}
+
+                    <FormRow>
+                      <FormField
+                        name="playerSpriteSheetId"
+                        label={
+                          <>
+                            {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                            <InlineDropdownWrapper>
+                              <DropdownButton
+                                size="small"
+                                variant="transparent"
+                                showArrow={false}
+                                label={l10n(
+                                  background?.autoColor
+                                    ? "FIELD_AUTOMATIC"
+                                    : "FIELD_MANUAL",
+                                )}
+                              >
+                                <MenuItem
+                                  onClick={() => onChangeAutoColor(true)}
+                                  icon={
+                                    background?.autoColor ? (
+                                      <CheckIcon />
+                                    ) : (
+                                      <BlankIcon />
+                                    )
+                                  }
+                                >
+                                  {l10n("FIELD_AUTOMATIC")}
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => onExtractPalettes()}
+                                  icon={<BlankIcon />}
+                                >
+                                  {l10n("FIELD_EXTRACT_PALETTES")}
+                                </MenuItem>
+                                <MenuDivider />
+                                <MenuItem
+                                  onClick={() => onChangeAutoColor(false)}
+                                  icon={
+                                    !background?.autoColor ? (
+                                      <CheckIcon />
+                                    ) : (
+                                      <BlankIcon />
+                                    )
+                                  }
+                                >
+                                  {l10n("FIELD_MANUAL")}
+                                </MenuItem>
+                              </DropdownButton>
+                            </InlineDropdownWrapper>
+                          </>
+                        }
+                      >
+                        {!background?.autoColor ? (
+                          <PaletteButtons>
+                            {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                              <PaletteSelectButton
+                                key={index}
+                                name={`scenePalette${index}`}
+                                value={
+                                  (scene.paletteIds &&
+                                    scene.paletteIds[index]) ||
+                                  ""
+                                }
+                                onChange={onEditPaletteId(index)}
+                                slotNumber={index + 1}
+                                optional
+                                optionalDefaultPaletteId={
+                                  defaultBackgroundPaletteIds[index] || ""
+                                }
+                                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                              />
+                            ))}
+                          </PaletteButtons>
+                        ) : (
+                          <PaletteButtons>
+                            {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                              <AutoPaletteSwatch
+                                key={index}
+                                palette={backgroundInfo?.autoPalettes?.[index]}
+                              />
+                            ))}
+                            {[7].map((index) => (
+                              <PaletteSelectButton
+                                key={index}
+                                name={`scenePalette${index}`}
+                                value={
+                                  (scene.paletteIds &&
+                                    scene.paletteIds[index]) ||
+                                  ""
+                                }
+                                onChange={onEditPaletteId(index)}
+                                slotNumber={index + 1}
+                                optional
+                                optionalDefaultPaletteId={
+                                  defaultBackgroundPaletteIds[index] || ""
+                                }
+                                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                                canAuto
+                                autoPalette={
+                                  backgroundInfo?.autoPalettes?.[index]
+                                }
+                              />
+                            ))}
+                          </PaletteButtons>
+                        )}
+                      </FormField>
+                    </FormRow>
+
+                    <FormRow>
+                      <FormField
+                        name="playerSpriteSheetId"
+                        label={l10n("FIELD_SCENE_SPRITE_PALETTES")}
+                      >
+                        <PaletteButtons>
+                          {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                            <PaletteSelectButton
+                              key={index}
+                              name={`scenePalette${index}`}
+                              type="sprite"
+                              value={
+                                (scene.spritePaletteIds &&
+                                  scene.spritePaletteIds[index]) ||
+                                ""
+                              }
+                              slotNumber={index + 1}
+                              onChange={onEditSpritePaletteId(index)}
+                              optional
+                              optionalDefaultPaletteId={
+                                defaultSpritePaletteIds[index] || ""
+                              }
+                              optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                            />
+                          ))}
+                        </PaletteButtons>
+                      </FormField>
+                    </FormRow>
+
+                    {/* <FormDivider /> */}
+                  </SidebarColumn>
+                )}
+                {scene.type !== "LOGO" && (
+                  <>
+                    <SidebarColumn>
+                      <FormRow>
+                        <FormField
+                          name="playerSpriteSheetId"
+                          label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
+                        >
+                          <SpriteSheetSelectButton
+                            name="playerSpriteSheetId"
+                            value={scene.playerSpriteSheetId}
+                            direction={
+                              isStartingScene ? startDirection : "down"
+                            }
+                            onChange={onChangePlayerSpriteSheetId}
+                            filter={onlyCurrentSpriteMode}
+                            includeInfo
+                            optional
+                            optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                            optionalValue={defaultPlayerSprites[scene.type]}
+                          />
+                        </FormField>
+                      </FormRow>
+                      {showSpriteModeOverride && (
+                        <FormRow>
+                          <FormField
+                            name="spriteMode"
+                            label={l10n("FIELD_SPRITE_MODE_OVERRIDE")}
+                          >
+                            <SpriteModeSelect
+                              name={"spriteMode"}
+                              onChange={onChangeSpriteMode}
+                              allowDefault={true}
+                              value={scene.spriteMode}
+                            />
+                          </FormField>
+                        </FormRow>
+                      )}
+                    </SidebarColumn>
+                  </>
+                )}
+                {isStartingScene && (
+                  <SidebarColumn>
+                    {/* <FormDivider /> */}
+                    <FormRow>
+                      <Label htmlFor="startX">
+                        {l10n("FIELD_START_POSITION")}
+                      </Label>
+                    </FormRow>
+                    <FormRow>
+                      <CoordinateInput
+                        name="startX"
+                        coordinate="x"
+                        value={startX}
+                        placeholder="0"
+                        min={0}
+                        max={scene.width - 2}
+                        onChange={onChangeStartX}
+                      />
+                      <CoordinateInput
+                        name="startY"
+                        coordinate="y"
+                        value={startY}
+                        placeholder="0"
+                        min={0}
+                        max={scene.height - 1}
+                        onChange={onChangeStartY}
+                      />
+                    </FormRow>
+
+                    <FormRow>
+                      <FormField
+                        name="actorDirection"
+                        label={l10n("FIELD_DIRECTION")}
+                      >
+                        <DirectionPicker
+                          id="actorDirection"
+                          value={startDirection}
+                          onChange={onChangeStartDirection}
                         />
                       </FormField>
                     </FormRow>
-                  )}
-                </SidebarColumn>
+                  </SidebarColumn>
+                )}
               </>
-            )}
-            {isStartingScene && (
-              <SidebarColumn>
-                {/* <FormDivider /> */}
-                <FormRow>
-                  <Label htmlFor="startX">{l10n("FIELD_START_POSITION")}</Label>
-                </FormRow>
-                <FormRow>
-                  <CoordinateInput
-                    name="startX"
-                    coordinate="x"
-                    value={startX}
-                    placeholder="0"
-                    min={0}
-                    max={scene.width - 2}
-                    onChange={onChangeStartX}
-                  />
-                  <CoordinateInput
-                    name="startY"
-                    coordinate="y"
-                    value={startY}
-                    placeholder="0"
-                    min={0}
-                    max={scene.height - 1}
-                    onChange={onChangeStartY}
-                  />
-                </FormRow>
-
-                <FormRow>
-                  <FormField
-                    name="actorDirection"
-                    label={l10n("FIELD_DIRECTION")}
-                  >
-                    <DirectionPicker
-                      id="actorDirection"
-                      value={startDirection}
-                      onChange={onChangeStartDirection}
-                    />
-                  </FormField>
-                </FormRow>
-              </SidebarColumn>
             )}
           </SidebarColumns>
         )}
-        <StickyTabs>
-          <TabBar
-            value={scriptMode}
-            values={scriptTabs}
-            onChange={onChangeScriptMode}
-            overflowActiveTab={scriptMode === "hit"}
-            buttons={
-              <>
-                {lockButton}
-                {scriptButton}
-              </>
-            }
-          />
-          {scriptMode === "hit" && (
-            <TabBar
-              variant="secondary"
-              value={scriptModeSecondary}
-              values={scriptSecondaryTabs}
-              onChange={onChangeScriptModeSecondary}
-            />
-          )}
-        </StickyTabs>
-        {scene.autoFadeSpeed === null && scriptKey === "script" && (
-          <ScriptEventAutoFadeDisabledWarning />
+        {sceneTypeEnabled && (
+          <>
+            <StickyTabs>
+              <TabBar
+                value={scriptMode}
+                values={scriptTabs}
+                onChange={onChangeScriptMode}
+                overflowActiveTab={scriptMode === "hit"}
+                buttons={
+                  <>
+                    {lockButton}
+                    {scriptButton}
+                  </>
+                }
+              />
+              {scriptMode === "hit" && (
+                <TabBar
+                  variant="secondary"
+                  value={scriptModeSecondary}
+                  values={scriptSecondaryTabs}
+                  onChange={onChangeScriptModeSecondary}
+                />
+              )}
+            </StickyTabs>
+            {scene.autoFadeSpeed === null && scriptKey === "script" && (
+              <ScriptEventAutoFadeDisabledWarning />
+            )}
+            <ScriptEditorContext.Provider value={scriptCtx}>
+              <ScriptEditor
+                value={scene[scriptKey]}
+                showAutoFadeIndicator={scriptKey === "script"}
+              />
+            </ScriptEditorContext.Provider>
+          </>
         )}
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor
-            value={scene[scriptKey]}
-            showAutoFadeIndicator={scriptKey === "script"}
-          />
-        </ScriptEditorContext.Provider>
       </CachedScroll>
     </Sidebar>
   );

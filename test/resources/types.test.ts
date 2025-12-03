@@ -645,6 +645,8 @@ describe("TypeBox Schemas", () => {
       openBuildFolderOnExport: true,
       showRomUsageAfterBuild: false,
       romFilename: "",
+      defaultSceneTypeId: "TOPDOWN",
+      disabledSceneTypeIds: [],
     };
     const invalidSettings = {
       _resourceType: "settings",

@@ -49,6 +49,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "2",
         width: 20,
         height: 18,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -123,6 +124,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "3",
         width: 32,
         height: 32,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -184,6 +186,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "4",
         width: 20,
         height: 18,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -405,7 +408,12 @@ test("should compile simple project into files object", async () => {
     scriptEventHandlers,
     engineSchema: {
       fields: [],
-      sceneTypes: [],
+      sceneTypes: [
+        {
+          key: "TOPDOWN",
+          label: "GAMETYPE_TOP_DOWN",
+        },
+      ],
       consts: {},
     },
     tmpPath: os.tmpdir(),

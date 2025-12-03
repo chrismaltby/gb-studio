@@ -375,6 +375,8 @@ export const dummyProjectData: ProjectData = {
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
     romFilename: "",
+    defaultSceneTypeId: "TOPDOWN",
+    disabledSceneTypeIds: [],
   },
 };
 
@@ -659,6 +661,8 @@ export const dummySettingsResource: SettingsResource = {
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
   romFilename: "",
+  defaultSceneTypeId: "TOPDOWN",
+  disabledSceneTypeIds: [],
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -784,6 +788,8 @@ export const dummyProjectResources: ProjectResources = {
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
     romFilename: "",
+    defaultSceneTypeId: "TOPDOWN",
+    disabledSceneTypeIds: [],
   },
 };
 

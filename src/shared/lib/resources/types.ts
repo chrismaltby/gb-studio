@@ -756,6 +756,8 @@ export const SettingsResource = Type.Object({
   openBuildFolderOnExport: Type.Boolean(),
   showRomUsageAfterBuild: Type.Boolean(),
   romFilename: Type.String(),
+  defaultSceneTypeId: Type.String(),
+  disabledSceneTypeIds: Type.Array(Type.String()),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

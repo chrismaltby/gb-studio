@@ -8,6 +8,7 @@ interface SettingRowProps {
 
 interface SettingRowLabelProps {
   $sectionHeading?: boolean;
+  $disabled?: boolean;
 }
 
 export const SettingRowLabel = styled.label<SettingRowLabelProps>`
@@ -23,6 +24,14 @@ export const SettingRowLabel = styled.label<SettingRowLabelProps>`
     props.$sectionHeading
       ? css`
           font-weight: bold;
+        `
+      : ""}
+
+  ${(props) =>
+    props.$disabled
+      ? css`
+          opacity: 0.5;
+          text-decoration: line-through;
         `
       : ""}
 

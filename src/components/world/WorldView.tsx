@@ -144,6 +144,10 @@ const WorldView = () => {
 
   const searchTerm = useAppSelector((state) => state.editor.searchTerm);
 
+  const defaultSceneTypeId = useAppSelector(
+    (state) => state.project.present.settings.defaultSceneTypeId,
+  );
+
   const matchingScenes = searchTerm
     ? scenes.filter((scene, sceneIndex) => {
         const s = scenesLookup[scene];
@@ -385,6 +389,9 @@ const WorldView = () => {
         entitiesActions.addScene({
           ...hoverState,
           variables: clipboardVariables,
+          defaults: {
+            type: defaultSceneTypeId,
+          },
         }),
       );
     }

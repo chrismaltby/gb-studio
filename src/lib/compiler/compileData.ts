@@ -136,6 +136,7 @@ import {
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
+import { difference } from "lodash";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -1295,6 +1296,23 @@ const precompile = async (
 
 // #endregion
 
+export const removeDisabledScenes = (
+  projectData: ProjectResources,
+  engineSchema: EngineSchema,
+): ProjectResources => {
+  const disabledSceneTypeIds = projectData.settings.disabledSceneTypeIds || [];
+  const enabledSceneTypeIds = engineSchema.sceneTypes
+    .map((sceneType) => sceneType.key)
+    .filter((key) => !disabledSceneTypeIds.includes(key));
+
+  return {
+    ...projectData,
+    scenes: projectData.scenes.filter((scene) =>
+      enabledSceneTypeIds.includes(scene.type),
+    ),
+  };
+};
+
 const compile = async (
   rawProjectData: ProjectResources,
   {
@@ -1325,12 +1343,15 @@ const compile = async (
   const sceneMap: Record<string, SceneMapData> = {};
   const globalProjectiles: GlobalProjectiles[] = [];
 
-  if (rawProjectData.scenes.length === 0) {
+  const projectData = applyPrefabs(
+    removeDisabledScenes(rawProjectData, engineSchema),
+  );
+
+  if (projectData.scenes.length === 0) {
     throw new Error(
       "No scenes are included in your project. Add some scenes in the Game World editor and try again.",
     );
   }
-  const projectData = applyPrefabs(rawProjectData);
 
   const precompiled = await precompile(
     projectData,
@@ -1345,7 +1366,20 @@ const compile = async (
 
   const isCGBOnly = projectData.settings.colorMode === "color";
   const isSGB = projectData.settings.sgbEnabled && !isCGBOnly;
-  const precompiledEngineFields = keyBy(engineSchema.fields, "key");
+  const usedSceneTypeIds = uniq(
+    ["LOGO"].concat(precompiled.sceneData.map((scene) => scene.type)),
+  );
+  const unusedSceneTypeIds = difference(
+    engineSchema.sceneTypes.map((st) => st.key),
+    usedSceneTypeIds,
+  );
+  const disabledSceneTypeIds = uniq(
+    unusedSceneTypeIds.concat(projectData.settings.disabledSceneTypeIds),
+  );
+  const enabledEngineFields = engineSchema.fields.filter((field) => {
+    return !field.sceneType || !disabledSceneTypeIds.includes(field.sceneType);
+  });
+  const precompiledEngineFields = keyBy(enabledEngineFields, "key");
   const customEventsLookup = keyBy(projectData.scripts, "id");
 
   // Add UI data
@@ -1369,6 +1403,34 @@ const compile = async (
 
   output["spritesheet_none.h"] = emptySpriteSheetHeader;
   output["spritesheet_none.c"] = emptySpriteSheet;
+
+  const disabledSceneTypeWarnings: Record<string, string[]> = {};
+  const enabledSceneTypeIds = engineSchema.sceneTypes
+    .map((sceneType) => sceneType.key)
+    .filter((key) => !disabledSceneTypeIds.includes(key));
+  for (
+    let sceneIndex = 0;
+    sceneIndex < rawProjectData.scenes.length;
+    sceneIndex++
+  ) {
+    const scene = rawProjectData.scenes[sceneIndex];
+    if (!enabledSceneTypeIds.includes(scene.type)) {
+      if (!disabledSceneTypeWarnings[scene.type]) {
+        disabledSceneTypeWarnings[scene.type] = [];
+      }
+      disabledSceneTypeWarnings[scene.type].push(
+        createLinkToResource(sceneName(scene, sceneIndex), scene.id, "scene"),
+      );
+    }
+  }
+  Object.keys(disabledSceneTypeWarnings).forEach((sceneType) => {
+    warnings(
+      l10n("WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES", {
+        type: sceneType,
+        scenes: disabledSceneTypeWarnings[sceneType].join(", "),
+      }),
+    );
+  });
 
   progress(`${l10n("COMPILING_EVENTS")}...`);
 
@@ -1517,6 +1579,7 @@ const compile = async (
           additionalScriptsCache,
           recursiveSymbolMap,
           compiledAssetsCache,
+          disabledSceneTypeIds,
           branch: false,
           isFunction: false,
           debugEnabled,
@@ -1980,9 +2043,6 @@ const compile = async (
     `void bootstrap_init(void) BANKED;\n\n` +
     `#endif\n`;
 
-  const usedSceneTypeIds = uniq(
-    ["LOGO"].concat(precompiled.sceneData.map((scene) => scene.type)),
-  );
   const usedSceneTypes = engineSchema.sceneTypes.filter((type) =>
     usedSceneTypeIds.includes(type.key),
   );
@@ -1992,7 +2052,7 @@ const compile = async (
   output[`states_ptrs.s`] = compileSceneFnPtrs(usedSceneTypes);
 
   output[`states_defines.h`] = compileStateDefines(
-    engineSchema.fields,
+    enabledEngineFields,
     projectData.engineFieldValues.engineFieldValues,
     usedSceneTypeIds,
     precompiled.statesOrder,
@@ -2007,7 +2067,7 @@ const compile = async (
     startAnimSpeed: ensureNumber(startAnimSpeed, 15),
     fonts: precompiled.usedFonts,
     avatarFonts,
-    engineFields: engineSchema.fields,
+    engineFields: enabledEngineFields,
     engineFieldValues: projectData.engineFieldValues.engineFieldValues,
     usedSceneTypeIds,
   });

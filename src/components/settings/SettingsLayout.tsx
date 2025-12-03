@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Card } from "ui/cards/Card";
 
 export const SettingsPageWrapper = styled.div`
@@ -33,7 +33,11 @@ export const SettingsSearchWrapper = styled.div`
   padding: 5px;
 `;
 
-export const SettingsMenuItem = styled.a`
+export interface SettingsMenuItemProps {
+  $indent?: number;
+}
+
+export const SettingsMenuItem = styled.a<SettingsMenuItemProps>`
   display: block;
   margin: 0;
   padding: 10px;
@@ -52,6 +56,12 @@ export const SettingsMenuItem = styled.a`
   &:active {
     background: ${(props) => props.theme.colors.menu.activeBackground};
   }
+  ${(props) =>
+    props.$indent &&
+    css`
+      border-left: ${props.$indent * 10}px solid
+        ${(props) => props.theme.colors.card.divider};
+    `}
 `;
 
 export const SettingsContentColumn = styled.div`

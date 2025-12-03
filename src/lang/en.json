@@ -1277,6 +1277,9 @@
   "FIELD_RATE_LIMITED_DESC": "The script that will be rate limited",
   "FIELD_REPLACE_PALETTE": "Replace Palette",
   "FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS": "Choose a replacement palette to update all matching palettes in this sprite.",
+  "FIELD_SCENE_TYPES": "Scene Types",
+  "FIELD_ENABLED_SCENE_TYPES": "Enabled Scene Types",
+  "FIELD_DEFAULT_SCENE_TYPE": "Default Scene Type",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1887,6 +1890,8 @@
   "WARNING_FIELD_UNITS_SUBPX": "This field is using sub pixel units. The value here will be {multiplier}x larger than the value displayed in 'Settings'",
   "WARNING_FIELD_UNITS_SUBPX_PRECISE": "This field is using precision sub pixel units. The value here will be {multiplier}x larger than the value displayed in 'Settings'",
   "WARNING_SPRITE_MODE_MISMATCH": "Sprite {sprite} is being used in a scene {scene} with a different sprite mode ({sceneMode}) than the sprite's mode ({spriteMode}). This will cause the sprite to not display correctly. Either change the scene's sprite mode or use a different sprite.",
+  "WARNING_SCENE_TYPE_DISABLED": "Scene type \"{type}\" is not enabled",
+  "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Scene type \"{type}\" is not enabled causing scenes {scenes} to not be included in game",
 
   "// 12": "Errors -------------------------------------------------------",
 

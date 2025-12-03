@@ -226,6 +226,7 @@ export interface ScriptBuilderOptions {
   additionalScriptsCache: Record<string, string>;
   debugEnabled: boolean;
   compiledAssetsCache: Record<string, string>;
+  disabledSceneTypeIds: string[];
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -780,6 +781,7 @@ class ScriptBuilder {
       recursiveSymbolMap: options.recursiveSymbolMap ?? {},
       additionalScriptsCache: options.additionalScriptsCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
+      disabledSceneTypeIds: options.disabledSceneTypeIds || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || defaultProjectSettings,
     };
