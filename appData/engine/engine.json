@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e22",
+  "version": "4.2.0-e23",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -1362,22 +1362,24 @@
     {
       "key": "plat_vel_x",
       "sceneType": "PLATFORM",
-      "label": "FIELD_PLATFORMER_VEL_X",
-      "description": "FIELD_PLATFORMER_VEL_X_DESC",
+      "label": "FIELD_CURRENT_VEL_X",
+      "description": "FIELD_CURRENT_VEL_X_DESC",
       "group": "GAMETYPE_PLATFORMER",
       "type": "number",
       "cType": "WORD",
+      "editUnits": "subpxVelPrecise",
       "defaultValue": 0,
       "runtimeOnly": true
     },
     {
       "key": "plat_vel_y",
       "sceneType": "PLATFORM",
-      "label": "FIELD_PLATFORMER_VEL_Y",
-      "description": "FIELD_PLATFORMER_VEL_Y_DESC",
+      "label": "FIELD_CURRENT_VEL_Y",
+      "description": "FIELD_CURRENT_VEL_Y_DESC",
       "group": "GAMETYPE_PLATFORMER",
       "type": "number",
       "cType": "WORD",
+      "editUnits": "subpxVelPrecise",
       "defaultValue": 0,
       "runtimeOnly": true
     },
@@ -2082,7 +2084,31 @@
       ],
       "defaultValue": "ADVENTURE_GROUND_STATE",
       "runtimeOnly": true
-    }
+    },
+    {
+      "key": "adv_vel_x",
+      "sceneType": "ADVENTURE",
+      "label": "FIELD_CURRENT_VEL_X",
+      "description": "FIELD_CURRENT_VEL_X_DESC",
+      "group": "GAMETYPE_ADVENTURE",
+      "type": "number",
+      "cType": "WORD",
+      "editUnits": "subpxVelPrecise",
+      "defaultValue": 0,
+      "runtimeOnly": true
+    },
+    {
+      "key": "adv_vel_y",
+      "sceneType": "ADVENTURE",
+      "label": "FIELD_CURRENT_VEL_Y",
+      "description": "FIELD_CURRENT_VEL_Y_DESC",
+      "group": "GAMETYPE_ADVENTURE",
+      "type": "number",
+      "cType": "WORD",
+      "editUnits": "subpxVelPrecise",
+      "defaultValue": 0,
+      "runtimeOnly": true
+    }  
   ],
   "consts": {
     "PLATFORM_FALL_STATE": 0,
