@@ -1547,7 +1547,6 @@ class ScriptBuilder {
       },
       actorId: (id: ScriptBuilderVariable) => {
         const actorId = this.resolveActorId(id);
-        console.log("RPN RESOLVE ACTOR", id, actorId);
         switch (actorId.type) {
           case "number": {
             rpnCmd(".R_INT16", actorId.value);
