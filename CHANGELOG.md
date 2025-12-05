@@ -165,6 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix flipped tile preview for sprites on 8px canvas
 - Fix sprite "Flip 'Right' To Create 'Left' Facing Frames" feature when sprite canvas is 8px wide
 - Fix issue where engine fields belonging to unused or disabled scene types could prevent the project from compiling
+- Fix issue where text selection during rename of a script event would cause event to be dragged
 
 ## [4.1.3] - 2024-09-16
 

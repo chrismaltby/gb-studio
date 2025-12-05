@@ -226,6 +226,7 @@ const ScriptEditorEvent = React.memo(
       collect: (monitor: DragSourceMonitor) => ({
         isDragging: monitor.isDragging(),
       }),
+      canDrag: () => !rename,
     });
 
     const toggleOpen = useCallback(
