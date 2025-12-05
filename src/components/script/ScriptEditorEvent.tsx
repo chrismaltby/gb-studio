@@ -289,6 +289,7 @@ const ScriptEditorEvent = React.memo(
     const isOpen = (scriptEvent?.args && !scriptEvent.args.__collapse) ?? false;
     const isConditional = scriptEventDefs[command]?.isConditional ?? false;
     const editableSymbol = scriptEventDefs[command]?.editableSymbol ?? false;
+    const description = scriptEventDefs[command]?.description;
 
     const onOpenAddMenu = useCallback((before: boolean) => {
       setInsertBefore(before);
@@ -502,7 +503,7 @@ const ScriptEditorEvent = React.memo(
 
         <div ref={dropRef}>
           {isOverCurrent && <ScriptEventPlaceholder />}
-          <div ref={dragRef}>
+          <div ref={dragRef} title={description}>
             <ScriptEventHeader
               ref={headerRef}
               isConditional={isConditional}

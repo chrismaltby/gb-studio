@@ -106,6 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated "Set Actor Collision Bounding Box" event to allow using variables and expressions in new bounds values
 - When using automatic background palettes the generated palettes are now displayed in the scene editor sidebar
 - When provided, a ".mono.png" file is now always preferred for tile data, even when Automatic Coloring is disabled. This ensures that the extract palette feature matches the automatic palette when a ".mono.png" is present.
+- Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
+- Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
 
 ### Fixed
 
