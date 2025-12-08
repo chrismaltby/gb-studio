@@ -228,9 +228,11 @@ export const compileImage = async (
       : img.autoTileFlipOverride);
 
   const { tileData, tileAttrs } = imgTileFlipEnabled
-    ? autoFlipTiles({
+    ? await autoFlipTiles({
         indexedImage,
         tileColors: img.tileColors,
+        commonTileset,
+        projectPath,
       })
     : {
         tileData: await readFileToTilesDataArray(tilesFileName),
