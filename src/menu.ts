@@ -793,4 +793,22 @@ export const setMenuItemChecked = (id: string, checkedValue: boolean) => {
   menuItem.checked = checkedValue;
 };
 
+export const refreshScreenGridMenuItems = (value: unknown) => {
+  setMenuItemChecked("showSceneScreenGrid", value !== false);
+  setMenuItemChecked("showSceneScreenGridTopLeft", value === "topLeft");
+  setMenuItemChecked("showSceneScreenGridBottomLeft", value === "bottomLeft");
+  setMenuItemChecked("showSceneScreenGridTopRight", value === "topRight");
+  setMenuItemChecked("showSceneScreenGridBottomRight", value === "bottomRight");
+  setMenuItemChecked("showSceneScreenGridNone", value === false);
+};
+
+export const refreshShowConnectionsMenuItems = (value: unknown) => {
+  setMenuItemChecked("showConnectionsAll", value === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    value === "selected" || value === true,
+  );
+  setMenuItemChecked("showConnectionsNone", value === false);
+};
+
 export default appMenu;

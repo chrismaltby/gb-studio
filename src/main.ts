@@ -20,7 +20,11 @@ import {
   statSync,
   move,
 } from "fs-extra";
-import menu, { setMenuItemChecked } from "./menu";
+import menu, {
+  refreshScreenGridMenuItems,
+  refreshShowConnectionsMenuItems,
+  setMenuItemChecked,
+} from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
 import installExtension, {
@@ -1193,15 +1197,16 @@ ipcMain.handle("build:delete-cache", async (_event) => {
 });
 
 ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
-  const { showCollisions, showConnections, showNavigator } = settings;
+  const {
+    showCollisions,
+    showConnections,
+    showNavigator,
+    showSceneScreenGrid,
+  } = settings;
   setMenuItemChecked("showCollisions", showCollisions);
-  setMenuItemChecked("showConnectionsAll", showConnections === "all");
-  setMenuItemChecked(
-    "showConnectionsSelected",
-    showConnections === "selected" || showConnections === true,
-  );
-  setMenuItemChecked("showConnectionsNone", showConnections === false);
   setMenuItemChecked("showNavigator", showNavigator);
+  refreshShowConnectionsMenuItems(showConnections);
+  refreshScreenGridMenuItems(showSceneScreenGrid);
 });
 
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
@@ -2077,12 +2082,7 @@ menu.on("updateShowCollisions", (value) => {
 
 menu.on("updateShowConnections", (value) => {
   settings.set("showConnections", value as JsonValue);
-  setMenuItemChecked("showConnectionsAll", value === "all");
-  setMenuItemChecked(
-    "showConnectionsSelected",
-    value === "selected" || value === true,
-  );
-  setMenuItemChecked("showConnectionsNone", value === false);
+  refreshShowConnectionsMenuItems(value);
   sendToProjectWindow("setting:changed", "showConnections", value);
 });
 
@@ -2093,12 +2093,7 @@ menu.on("updateShowNavigator", (value) => {
 
 menu.on("updateShowSceneScreenGrid", (value) => {
   settings.set("showSceneScreenGrid", value as JsonValue);
-  setMenuItemChecked("showSceneScreenGrid", value !== false);
-  setMenuItemChecked("showSceneScreenGridTopLeft", value === "topLeft");
-  setMenuItemChecked("showSceneScreenGridBottomLeft", value === "bottomLeft");
-  setMenuItemChecked("showSceneScreenGridTopRight", value === "topRight");
-  setMenuItemChecked("showSceneScreenGridBottomRight", value === "bottomRight");
-  setMenuItemChecked("showSceneScreenGridNone", value === false);
+  refreshScreenGridMenuItems(value);
   sendToProjectWindow("setting:changed", "showSceneScreenGrid", value);
 });
 
