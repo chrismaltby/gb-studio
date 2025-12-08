@@ -41,6 +41,7 @@ type MenuListenerKey =
   | "updateShowCollisions"
   | "updateShowConnections"
   | "updateShowNavigator"
+  | "updateShowSceneScreenGrid"
   | "updateCheckSpelling"
   | "updateEmulatorMuted"
   | "run"
@@ -74,6 +75,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateShowCollisions: [],
   updateShowConnections: [],
   updateShowNavigator: [],
+  updateShowSceneScreenGrid: [],
   updateCheckSpelling: [],
   updateEmulatorMuted: [],
   run: [],
@@ -524,6 +526,57 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
             notifyListeners("updateShowNavigator", item.checked);
           },
         },
+        {
+          label: l10n("MENU_SHOW_SCREEN_GRID"),
+          submenu: [
+            {
+              id: "showSceneScreenGridTopLeft",
+              label: l10n("MENU_SHOW_SCREEN_GRID_TOP_LEFT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "topLeft",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "topLeft");
+              },
+            },
+            {
+              id: "showSceneScreenGridTopRight",
+              label: l10n("MENU_SHOW_SCREEN_GRID_TOP_RIGHT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "topRight",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "topRight");
+              },
+            },
+            {
+              id: "showSceneScreenGridBottomLeft",
+              label: l10n("MENU_SHOW_SCREEN_GRID_BOTTOM_LEFT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "bottomLeft",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "bottomLeft");
+              },
+            },
+            {
+              id: "showSceneScreenGridBottomRight",
+              label: l10n("MENU_SHOW_SCREEN_GRID_BOTTOM_RIGHT"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === "bottomRight",
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", "bottomRight");
+              },
+            },
+            { type: "separator" },
+            {
+              id: "showSceneScreenGridNone",
+              label: l10n("MENU_SHOW_SCREEN_GRID_NONE"),
+              type: "checkbox",
+              checked: settings.get("showSceneScreenGrid") === false,
+              click() {
+                notifyListeners("updateShowSceneScreenGrid", false);
+              },
+            },
+          ],
+        },
         { type: "separator" },
         {
           label: l10n("MENU_ZOOM_RESET"),
@@ -738,6 +791,24 @@ export const setMenuItemChecked = (id: string, checkedValue: boolean) => {
     return;
   }
   menuItem.checked = checkedValue;
+};
+
+export const refreshScreenGridMenuItems = (value: unknown) => {
+  setMenuItemChecked("showSceneScreenGrid", value !== false);
+  setMenuItemChecked("showSceneScreenGridTopLeft", value === "topLeft");
+  setMenuItemChecked("showSceneScreenGridBottomLeft", value === "bottomLeft");
+  setMenuItemChecked("showSceneScreenGridTopRight", value === "topRight");
+  setMenuItemChecked("showSceneScreenGridBottomRight", value === "bottomRight");
+  setMenuItemChecked("showSceneScreenGridNone", value === false);
+};
+
+export const refreshShowConnectionsMenuItems = (value: unknown) => {
+  setMenuItemChecked("showConnectionsAll", value === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    value === "selected" || value === true,
+  );
+  setMenuItemChecked("showConnectionsNone", value === false);
 };
 
 export default appMenu;
