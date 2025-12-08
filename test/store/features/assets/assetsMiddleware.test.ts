@@ -63,6 +63,7 @@ test("Should trigger call to check background assets", async () => {
     backgroundId: "bg1",
     is360: false,
     uiPaletteId: "",
+    colorMode: "mixed",
   });
 
   middleware(store)(next)(action);
@@ -78,7 +79,9 @@ test("Should trigger call to check background assets", async () => {
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
-      hash: "0_false__mono_undefined_undefined_undefined",
+      autoPalettes: undefined,
+      tilesetId: undefined,
+      hash: "0_false__mixed_undefined_undefined_undefined_undefined_undefined",
     }),
   );
 });
@@ -105,7 +108,7 @@ test("Should not trigger call to check background assets if already cached asset
             is360: false,
             isCGBOnly: false,
             timestamp: 100,
-            hash: "0_false__mono_undefined_undefined_undefined",
+            hash: "0_false__mixed_undefined_undefined_undefined_undefined_undefined",
           },
         },
       },
@@ -144,6 +147,7 @@ test("Should not trigger call to check background assets if already cached asset
     backgroundId: "bg1",
     is360: false,
     uiPaletteId: "",
+    colorMode: "mixed",
   });
 
   middleware(store)(next)(action);
@@ -212,6 +216,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
     backgroundId: "bg1",
     is360: false,
     uiPaletteId: "",
+    colorMode: "mixed",
   });
 
   middleware(store)(next)(action);
@@ -227,7 +232,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
       isCGBOnly: false,
       warnings: ["Warning 1"],
       lookup: [],
-      hash: "101_false__mono_undefined_undefined_undefined",
+      hash: "101_false__mixed_undefined_undefined_undefined_undefined_undefined",
     }),
   );
 });

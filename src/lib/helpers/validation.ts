@@ -25,6 +25,7 @@ export const getBackgroundInfo = async (
   uiPalette: HexPalette | undefined,
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
+  autoTileFlipEnabled: boolean,
   projectPath: string,
 ): Promise<BackgroundInfo> => {
   const warnings: string[] = [];
@@ -36,6 +37,7 @@ export const getBackgroundInfo = async (
       uiPalette,
       colorMode,
       colorCorrection,
+      autoTileFlipEnabled,
       projectPath,
       { warnings: (msg) => warnings.push(msg) },
     );

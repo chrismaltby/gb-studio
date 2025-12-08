@@ -647,6 +647,7 @@ describe("TypeBox Schemas", () => {
       romFilename: "",
       defaultSceneTypeId: "TOPDOWN",
       disabledSceneTypeIds: [],
+      autoTileFlipEnabled: true,
     };
     const invalidSettings = {
       _resourceType: "settings",

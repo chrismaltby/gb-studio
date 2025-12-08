@@ -356,3 +356,21 @@ export const migrate420r7To420r8: ProjectResourcesMigration = {
   to: { version: "4.2.0", release: "8" },
   migrationFn: migrateFrom420r7To420r8Scenes,
 };
+
+export const migrateFrom420r8To420r9Settings: ProjectResourcesMigrationFn = (
+  resources,
+) => {
+  return {
+    ...resources,
+    settings: {
+      ...resources.settings,
+      autoTileFlipEnabled: false,
+    },
+  };
+};
+
+export const migrate420r8To420r9: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "8" },
+  to: { version: "4.2.0", release: "9" },
+  migrationFn: migrateFrom420r8To420r9Settings,
+};

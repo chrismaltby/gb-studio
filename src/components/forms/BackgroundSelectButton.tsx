@@ -15,11 +15,13 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { FlexGrow } from "ui/spacing/Spacing";
+import { ColorModeSetting } from "shared/lib/resources/types";
 
 interface BackgroundSelectProps {
   name: string;
   value?: string;
   is360: boolean;
+  colorMode: ColorModeSetting;
   uiPaletteId: string;
   tilesetId: string;
   includeInfo?: boolean;
@@ -166,6 +168,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   value,
   onChange,
   is360,
+  colorMode,
   uiPaletteId,
   tilesetId,
   includeInfo,
@@ -183,12 +186,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const numPalettes = useAppSelector(
     (state) => state.assets.backgrounds[value || ""]?.autoPalettes?.length || 0,
   );
-  const isCGBOnly = useAppSelector(
-    (state) => state.project.present.settings.colorMode === "color",
-  );
-  const isColor = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono",
-  );
+  const isCGBOnly = colorMode === "color";
+  const isColor = colorMode !== "mono";
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -199,6 +199,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
           tilesetId,
           is360,
           uiPaletteId,
+          colorMode,
         }),
       );
     }
@@ -206,10 +207,12 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
     dispatch,
     value,
     is360,
+    colorMode,
     uiPaletteId,
     tilesetId,
     background?._v,
     background?.autoColor,
+    background?.autoTileFlipOverride,
   ]);
 
   useEffect(() => {

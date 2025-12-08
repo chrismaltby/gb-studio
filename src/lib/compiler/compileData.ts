@@ -222,6 +222,7 @@ export const precompileBackgrounds = async (
   scenes: Scene[],
   tilesets: TilesetData[],
   colorCorrection: ColorCorrectionSetting,
+  autoTileFlipEnabled: boolean,
   projectRoot: string,
   {
     warnings,
@@ -256,6 +257,7 @@ export const precompileBackgrounds = async (
     backgroundReferences,
     commonTilesetsLookup,
     colorCorrection,
+    autoTileFlipEnabled,
     projectRoot,
     {
       warnings,
@@ -1143,6 +1145,7 @@ const precompile = async (
   const colorCorrection = projectData.settings.colorCorrection;
   const defaultSpriteMode: SpriteModeSetting =
     projectData.settings.spriteMode ?? "8x16";
+  const autoTileFlipEnabled = projectData.settings.autoTileFlipEnabled;
 
   const usedAssets = determineUsedAssets({
     projectData,
@@ -1166,6 +1169,7 @@ const precompile = async (
     projectData.scenes,
     projectData.tilesets,
     colorCorrection,
+    autoTileFlipEnabled,
     projectRoot,
     { warnings },
   );

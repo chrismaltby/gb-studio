@@ -1280,6 +1280,12 @@
   "FIELD_SCENE_TYPES": "Scene Types",
   "FIELD_ENABLED_SCENE_TYPES": "Enabled Scene Types",
   "FIELD_DEFAULT_SCENE_TYPE": "Default Scene Type",
+  "FIELD_AUTO_TILE_FLIP": "Automatic Tile Flip",
+  "FIELD_AUTO_TILE_FLIP_OVERRIDE": "Automatic Tile Flip Override",
+  "FIELD_AUTO_TILE_FLIP_DESC": "Automatically optimizes tilesets by reusing horizontal and/or vertical flipped versions of tiles to save space in the ROM.",
+  "FIELD_AUTO_TILE_FLIP_SUPPORT_DESC": "Only applies to 'Color Only' scenes.",
+  "FIELD_SET_AUTO_TILE_FLIP_OVERRIDE": "Set Auto Tile Flip Override",
+  "FIELD_DISABLED": "Disabled",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

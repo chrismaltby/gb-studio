@@ -453,6 +453,7 @@ test("should precompile image data", async () => {
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -593,6 +594,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -679,6 +681,7 @@ test("should include tileset for background when also used without common tilese
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -761,6 +764,7 @@ test("should share tilesets if possible when multiple backgrounds include common
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -848,6 +852,7 @@ test("should generate unique tileset for background if used without common tiles
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -948,6 +953,7 @@ test("should generate unique tileset for background if referenced from script ev
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -1021,6 +1027,7 @@ test("should generate unique tileset for identical backgrounds if used without c
     scenes,
     [],
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -1099,6 +1106,7 @@ test("should allow reusing tileset for identical backgrounds if used with common
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );

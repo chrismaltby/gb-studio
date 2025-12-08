@@ -1,6 +1,6 @@
 import { ImageIndexFunction } from "./indexedImage";
 
-type TileLookup = Record<string, Uint8Array>;
+export type TileLookup = Record<string, Uint8Array>;
 
 export const tileDataIndexFn: ImageIndexFunction = (_r, g, _b, _a) => {
   if (g < 65) {
@@ -58,7 +58,7 @@ export const tilesAndLookupToTilemap = (
   return output;
 };
 
-const hashTileData = (tile: Uint8Array): string => {
+export const hashTileData = (tile: Uint8Array): string => {
   // Will do for now...
   return JSON.stringify(tile);
 };
