@@ -1015,7 +1015,7 @@
   "FIELD_DEADZONE_X": "Zona Muerta X",
   "FIELD_DEADZONE_Y": "Zona Muerta Y",
   "FIELD_COLOR_CORRECTION": "Corrección de Color",
-  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "Habilitado (Por defecto)",
+  "FIELD_ENABLED_DEFAULT": "Habilitado (Por defecto)",
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Corrige los colores para que se ajusten más a cómo aparecerían en el hardware original.",
   "FIELD_COLOR_CORRECTION_NONE": "Ninguno",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Deshabilita todas las correcciones de color incorporadas, permitiendo un rango más amplio de colores cuando se usa hardware moderno y emuladores.",

@@ -1022,7 +1022,7 @@
   "FIELD_DEADZONE_X": "Martwa strefa X",
   "FIELD_DEADZONE_Y": "Martwa strefa Y",
   "FIELD_COLOR_CORRECTION": "Korekta kolorów",
-  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "Włącz (domyślnie)",
+  "FIELD_ENABLED_DEFAULT": "Włącz (domyślnie)",
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Koryguje kolory, aby bardziej przypominały te wyświetlane na oryginalnym sprzęcie.",
   "FIELD_COLOR_CORRECTION_NONE": "Brak",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Wyłącza wbudowaną korektę kolorów, umożliwiając szerszy zakres barw na nowoczesnym sprzęcie i emulatorach.",
