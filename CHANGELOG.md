@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to duplicate color palettes from right click context menu on palette editor sidebar
 - Add "Scene Types" section to the Settings page for enabling or disabling specific scene types
 - Add "Default Scene Type" setting used when creating new scenes
+- Add ability to display a "Screen Grid" from the "View" menu which can be anchored to any corner of the scene [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
