@@ -304,6 +304,10 @@ type ScriptBuilderUnionValue =
 
 type ScriptBuilderPathFunction = () => void;
 
+type ResolvedActorId =
+  | { type: "number"; value: number }
+  | { type: "reference"; symbol: string };
+
 type VariablesLookup = { [name: string]: Variable | undefined };
 
 type ScriptBuilderLocalSymbol = {
@@ -999,6 +1003,20 @@ class ScriptBuilder {
     return index;
   };
 
+  private resolveActorId(id: ScriptBuilderVariable): ResolvedActorId {
+    if (typeof id === "number") {
+      return { type: "number", value: id };
+    }
+    if (typeof id === "string") {
+      if (id.startsWith(".")) {
+        return { type: "reference", symbol: id };
+      } else {
+        return { type: "number", value: this.getActorIndex(id) };
+      }
+    }
+    return { type: "reference", symbol: id.symbol };
+  }
+
   // --------------------------------------------------------------------------
   // Low Level GB Studio Assembly Operations
 
@@ -1524,6 +1542,24 @@ class ScriptBuilder {
       },
       refMem: (type: RPNMemType, address: string) => {
         rpnCmd(".R_REF_MEM", type, `_${address}`);
+        rpnStackSize++;
+        return rpn;
+      },
+      actorId: (id: ScriptBuilderVariable) => {
+        const actorId = this.resolveActorId(id);
+        switch (actorId.type) {
+          case "number": {
+            rpnCmd(".R_INT16", actorId.value);
+            break;
+          }
+          case "reference": {
+            rpnCmd(".R_REF", actorId.symbol);
+            break;
+          }
+          default: {
+            assertUnreachable(actorId);
+          }
+        }
         rpnStackSize++;
         return rpn;
       },
@@ -2916,19 +2952,21 @@ extern void __mute_mask_${symbol};
   // Actors
 
   setActorId = (addr: string, id: ScriptBuilderVariable) => {
-    if (typeof id === "number") {
-      this.actorIndex = id;
-      this._setConst(addr, this.actorIndex);
-    } else if (typeof id === "string" && id.startsWith(".")) {
-      this.actorIndex = -1;
-      this._set(addr, id);
-    } else if (typeof id === "string") {
-      const newIndex = this.getActorIndex(id);
-      this.actorIndex = newIndex;
-      this._setConst(addr, this.actorIndex);
-    } else {
-      this.actorIndex = -1;
-      this._set(addr, id.symbol);
+    const actorId = this.resolveActorId(id);
+    switch (actorId.type) {
+      case "number": {
+        this.actorIndex = actorId.value;
+        this._setConst(addr, this.actorIndex);
+        break;
+      }
+      case "reference": {
+        this.actorIndex = -1;
+        this._set(addr, actorId.symbol);
+        break;
+      }
+      default: {
+        assertUnreachable(actorId);
+      }
     }
   };
 
@@ -2938,16 +2976,21 @@ extern void __mute_mask_${symbol};
   };
 
   actorPushById = (id: ScriptBuilderVariable) => {
-    if (typeof id === "number") {
-      this.actorIndex = id;
-      this._stackPushConst(this.actorIndex);
-    } else if (typeof id === "string") {
-      const newIndex = this.getActorIndex(id);
-      this.actorIndex = newIndex;
-      this._stackPushConst(this.actorIndex);
-    } else {
-      this.actorIndex = -1;
-      this._stackPush(id.symbol);
+    const actorId = this.resolveActorId(id);
+    switch (actorId.type) {
+      case "number": {
+        this.actorIndex = actorId.value;
+        this._stackPushConst(this.actorIndex);
+        break;
+      }
+      case "reference": {
+        this.actorIndex = -1;
+        this._stackPush(actorId.symbol);
+        break;
+      }
+      default: {
+        assertUnreachable(actorId);
+      }
     }
   };
 
@@ -3102,7 +3145,6 @@ extern void __mute_mask_${symbol};
     moveType: ScriptBuilderMoveType,
     units: DistanceUnitType = "tiles",
   ) => {
-    const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
 
@@ -3134,22 +3176,15 @@ extern void __mute_mask_${symbol};
     const rpn = this._rpn();
 
     this._addComment(`-- Calculate coordinate values`);
-
-    // X Value
-    this._performValueRPN(rpn, rpnOpsX, localsLookup2);
-    rpn.refSet(this._localRef(actorRef, 1));
-
-    // Y Value
-    this._performValueRPN(rpn, rpnOpsY, localsLookup2);
-    rpn.refSet(this._localRef(actorRef, 2));
-
-    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units));
-    rpn.refSet(this._localRef(actorRef, 3));
-
+    rpn.actorId(actorId); // Actor ID
+    this._performValueRPN(rpn, rpnOpsX, localsLookup2); // X Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup2); // Y Value
+    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units)); // Move Flags
     rpn.stop();
+
     this._addComment(`-- Move Actor`);
-    this.actorSetById(actorId);
-    this._actorMoveTo(actorRef);
+    this._actorMoveTo(".ARG3");
+    this._stackPop(4);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -4135,10 +4170,12 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
-    rpn.int16(dirToAngle(direction)).stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._actorGetPosition(actorRef);
+    const rpn = this._rpn();
+    rpn.int16(dirToAngle(direction));
+    rpn.refSet(this._localRef(actorRef, 3));
+    rpn.stop();
+    this._projectileLaunch(projectileIndex, this._localRef(actorRef, 1));
     this._addNL();
   };
 

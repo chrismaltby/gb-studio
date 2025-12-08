@@ -2424,6 +2424,27 @@ const editBackgroundAutoColor: CaseReducer<
   }
 };
 
+const editBackgroundAutoTileFlipOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    backgroundId: string;
+    autoTileFlipOverride: boolean | undefined;
+  }>
+> = (state, action) => {
+  const background = localBackgroundSelectById(
+    state,
+    action.payload.backgroundId,
+  );
+  if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        autoTileFlipOverride: action.payload.autoTileFlipOverride,
+      },
+    });
+  }
+};
+
 const updateMonoOverrideIds = (state: EntitiesState) => {
   const backgrounds = localBackgroundSelectAll(state);
   const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
@@ -4743,6 +4764,7 @@ const entitiesSlice = createSlice({
 
     setBackgroundSymbol,
     editBackgroundAutoColor,
+    editBackgroundAutoTileFlipOverride,
 
     /**************************************************************************
      * Sprites

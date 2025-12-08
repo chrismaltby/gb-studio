@@ -1015,7 +1015,7 @@
   "FIELD_DEADZONE_X": "デッドゾーン（X）",
   "FIELD_DEADZONE_Y": "デッドゾーン（Y）",
   "FIELD_COLOR_CORRECTION": "色調整",
-  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "有効（デフォルト）",
+  "FIELD_ENABLED_DEFAULT": "有効（デフォルト）",
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "可能な限り実機での発色に近くなるように色調整を行います。",
   "FIELD_COLOR_CORRECTION_NONE": "なし",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "色調整を無効にして、最新のハードウェアやエミュレータ上でより多くの色域を扱えるようにします。",

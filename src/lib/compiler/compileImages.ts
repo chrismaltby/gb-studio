@@ -1,12 +1,13 @@
 import { assetFilename } from "shared/lib/helpers/assets";
 import {
   tileArrayToTileData,
+  tileDataIndexFn,
   tilesAndLookupToTilemap,
   toTileLookup,
 } from "shared/lib/tiles/tileData";
 import {
   readFileToTilesDataArray,
-  indexedImageToTilesDataArray,
+  readFileToIndexedImage,
 } from "lib/tiles/readFileToTiles";
 import {
   BackgroundData,
@@ -28,6 +29,8 @@ import { ReferencedBackground } from "./precompile/determineUsedAssets";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
+import { IndexedImage } from "shared/lib/tiles/indexedImage";
+import { autoFlipTiles } from "shared/lib/tiles/autoFlip";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -148,6 +151,7 @@ export const compileImage = async (
   uiPalette: HexPalette | undefined,
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
+  autoTileFlipEnabled: boolean,
   projectPath: string,
   { warnings }: CompileImageOptions,
 ): Promise<PrecompiledBackgroundData> => {
@@ -169,9 +173,10 @@ export const compileImage = async (
     ? imageTileAllocationColorOnly
     : imageTileAllocationDefault;
 
-  let tileData: Uint8Array[] = [];
   let autoTileColors: number[] = [];
   let autoPalettes: Palette[] | undefined = undefined;
+  let indexedImage: IndexedImage | undefined = undefined;
+
   if (autoColorMode === ImageColorMode.AUTO_COLOR) {
     // Extract both tiles and colors from color PNG
     const paletteData = await readFileToPalettes(
@@ -179,7 +184,7 @@ export const compileImage = async (
       colorCorrection,
       uiPalette,
     );
-    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    indexedImage = paletteData.indexedImage;
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
       id: `${img.id}_p${index}`,
@@ -194,7 +199,7 @@ export const compileImage = async (
       colorCorrection,
       uiPalette,
     );
-    tileData = indexedImageToTilesDataArray(paletteData.indexedImage);
+    indexedImage = paletteData.indexedImage;
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
       id: `${img.id}_p${index}`,
@@ -203,7 +208,7 @@ export const compileImage = async (
     }));
   } else {
     // Extract tiles from PNG and use manual color data
-    tileData = await readFileToTilesDataArray(tilesFileName);
+    indexedImage = await readFileToIndexedImage(tilesFileName, tileDataIndexFn);
   }
 
   // Warn if auto palettes extracted too many unique palettes
@@ -216,10 +221,26 @@ export const compileImage = async (
     );
   }
 
+  const imgTileFlipEnabled =
+    cgbOnly &&
+    (img.autoTileFlipOverride === undefined
+      ? autoTileFlipEnabled
+      : img.autoTileFlipOverride);
+
+  const { tileData, tileAttrs } = imgTileFlipEnabled
+    ? autoFlipTiles({
+        indexedImage,
+        tileColors: img.tileColors,
+      })
+    : {
+        tileData: await readFileToTilesDataArray(tilesFileName),
+        tileAttrs: img.tileColors,
+      };
+
   if (is360) {
     const tilemap = Array.from(Array(360)).map((_, i) => i);
     const tiles = tileArrayToTileData(tileData);
-    const attr = buildAttr(img.tileColors, autoTileColors, tilemap.length);
+    const attr = buildAttr(tileAttrs, autoTileColors, tilemap.length);
     return {
       ...img,
       vramData: [[...tiles], []],
@@ -310,7 +331,7 @@ export const compileImage = async (
   });
 
   // Determine tilemap attrs
-  const attr = buildAttr(img.tileColors, autoTileColors, tilemap.length).map(
+  const attr = buildAttr(tileAttrs, autoTileColors, tilemap.length).map(
     (attr, index) => {
       const tile = tilemap[index];
       const { inVRAM2, tileIndex } = tileAllocationStrategy(
@@ -355,6 +376,7 @@ const compileImages = async (
   imgs: ReferencedBackground[],
   commonTilesetsLookup: Record<string, TilesetData[]>,
   colorCorrection: ColorCorrectionSetting,
+  autoTileFlipEnabled: boolean,
   projectPath: string,
   { warnings }: CompileImageOptions,
 ): Promise<PrecompiledBackgroundData[]> => {
@@ -380,6 +402,7 @@ const compileImages = async (
                     img.uiPalette,
                     img.colorMode,
                     colorCorrection,
+                    autoTileFlipEnabled,
                     projectPath,
                     { warnings },
                   ),
@@ -395,6 +418,7 @@ const compileImages = async (
                 img.uiPalette,
                 img.colorMode,
                 colorCorrection,
+                autoTileFlipEnabled,
                 projectPath,
                 { warnings },
               );

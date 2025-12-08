@@ -325,6 +325,7 @@ export const CompressedBackgroundResource = Type.Object({
   autoColor: Type.Optional(Type.Boolean()),
   plugin: Type.Optional(Type.String()),
   tileColors: Type.String(),
+  autoTileFlipOverride: Type.Optional(Type.Boolean()),
 });
 
 export type CompressedBackgroundResource = Static<
@@ -569,6 +570,14 @@ export const ColorCorrectionSetting = Type.Union([
 
 export type ColorCorrectionSetting = Static<typeof ColorCorrectionSetting>;
 
+export const AutoTileFlipSetting = Type.Union([
+  Type.Literal("disabled"),
+  Type.Literal("ask"),
+  Type.Literal("enabled"),
+]);
+
+export type AutoTileFlipSetting = Static<typeof AutoTileFlipSetting>;
+
 export const ShowConnectionsSetting = Type.Union([
   Type.Literal("all"),
   Type.Literal("selected"),
@@ -771,6 +780,7 @@ export const SettingsResource = Type.Object({
   romFilename: Type.String(),
   defaultSceneTypeId: Type.String(),
   disabledSceneTypeIds: Type.Array(Type.String()),
+  autoTileFlipEnabled: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2109251127",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2114251204",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1022,7 +1022,7 @@
   "FIELD_DEADZONE_X": "Martwa strefa X",
   "FIELD_DEADZONE_Y": "Martwa strefa Y",
   "FIELD_COLOR_CORRECTION": "Korekta kolorów",
-  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "Włącz (domyślnie)",
+  "FIELD_ENABLED_DEFAULT": "Włącz (domyślnie)",
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Koryguje kolory, aby bardziej przypominały te wyświetlane na oryginalnym sprzęcie.",
   "FIELD_COLOR_CORRECTION_NONE": "Brak",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Wyłącza wbudowaną korektę kolorów, umożliwiając szerszy zakres barw na nowoczesnym sprzęcie i emulatorach.",
@@ -1277,6 +1277,9 @@
   "FIELD_RATE_LIMITED_DESC": "Skrypt, którego częstotliwość wywołań będzie ograniczona",
   "FIELD_REPLACE_PALETTE": "Zastąp paletę",
   "FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS": "Wybierz paletę zastępczą, aby zaktualizować wszystkie pasujące palety w tym spricie.",
+  "FIELD_SCENE_TYPES": "Rodzaje scen",
+  "FIELD_ENABLED_SCENE_TYPES": "Włączone rodzaje scen",
+  "FIELD_DEFAULT_SCENE_TYPE": "Domyślny rodzaj sceny",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1887,6 +1890,8 @@
   "WARNING_FIELD_UNITS_SUBPX": "To pole używa jednostek subpikselowych. Wartość będzie {multiplier} razy większa niż ta wyświetlana w  'Ustawieniach'",
   "WARNING_FIELD_UNITS_SUBPX_PRECISE": "To pole używa precyzyjnych jednostek subpikslewowych. Wartość będzie {multiplier} razy większa niż ta wyświetlana w 'Ustawieniach'",
   "WARNING_SPRITE_MODE_MISMATCH": "Grafika {sprite} jest używana w scenie {scene} z innym trybem grafiki ({sceneMode}) niż jej własny tryb ({spriteMode}). Może to powodować błędne wyświetlanie. Zmień tryb grafiki sceny lub użyj innej grafiki.",
+  "WARNING_SCENE_TYPE_DISABLED": "Rodzja sceny \"{type}\" nie jest włączony",
+  "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Rodzaj sceny \"{type}\" nie jest włączony - sceny {scenes} nie zostaną dołączone do gry",
 
   "// 12": "Errors -------------------------------------------------------",
 

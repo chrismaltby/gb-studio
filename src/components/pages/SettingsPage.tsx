@@ -52,6 +52,7 @@ import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
 import SceneTypesSettingsCard from "components/settings/SceneTypesSettingsCard";
+import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -99,6 +100,7 @@ const SettingsPage: FC = () => {
     compilerPreset,
     spriteMode,
     romFilename,
+    autoTileFlipEnabled,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
@@ -142,6 +144,11 @@ const SettingsPage: FC = () => {
 
   const onChangeColorCorrection = useCallback(
     (e: ColorCorrectionSetting) => onChangeSettingProp("colorCorrection", e),
+    [onChangeSettingProp],
+  );
+
+  const onChangeAutoTileFlip = useCallback(
+    (e: boolean) => onChangeSettingProp("autoTileFlipEnabled", e),
     [onChangeSettingProp],
   );
 
@@ -332,6 +339,7 @@ const SettingsPage: FC = () => {
               : "",
             colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
             l10n("FIELD_COLOR_CORRECTION"),
+            l10n("FIELD_AUTO_TILE_FLIP"),
           ]}
         >
           <CardAnchor id="settingsColor" />
@@ -401,6 +409,31 @@ const SettingsPage: FC = () => {
                       l10n("FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO")}
                     {colorCorrection === "none" &&
                       l10n("FIELD_COLOR_CORRECTION_NONE_INFO")}
+                  </FormInfo>
+                </SettingRowInput>
+              </SearchableSettingRow>
+
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_AUTO_TILE_FLIP")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_AUTO_TILE_FLIP")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <AutoTileFlipSelect
+                    value={autoTileFlipEnabled}
+                    onChange={onChangeAutoTileFlip}
+                  />
+                  <FormInfo>
+                    {l10n("FIELD_AUTO_TILE_FLIP_DESC")}
+                    {colorMode !== "color" && (
+                      <>
+                        <br />
+                        <br />
+                        {l10n("FIELD_AUTO_TILE_FLIP_SUPPORT_DESC")}
+                      </>
+                    )}
                   </FormInfo>
                 </SettingRowInput>
               </SearchableSettingRow>

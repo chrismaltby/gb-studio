@@ -90,6 +90,7 @@ import { SpriteModeSetting } from "shared/lib/resources/types";
 import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
+import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 
 interface SceneEditorProps {
   id: string;
@@ -166,6 +167,8 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
     scene?.colorModeOverride && scene?.colorModeOverride !== "none",
   );
+  const [autoTileFlipOverrideOpen, setAutoTileFlipOverrideOpen] =
+    useState<boolean>(background?.autoTileFlipOverride !== undefined);
   const [spriteModeOverrideOpen, setSpriteModeOverrideOpen] = useState<boolean>(
     scene?.spriteMode !== undefined,
   );
@@ -179,6 +182,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
+  );
+  const colorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode,
   );
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId,
@@ -206,6 +212,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
+  );
+  const defaultAutoTileFlip = useAppSelector(
+    (state) => state.project.present.settings.autoTileFlipEnabled,
   );
   const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
 
@@ -414,6 +423,24 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     setColorModeOverrideOpen(true);
   };
 
+  const onChangeAutoTileFlip = useCallback(
+    (value: boolean | undefined) => {
+      scene?.backgroundId &&
+        dispatch(
+          entitiesActions.editBackgroundAutoTileFlipOverride({
+            backgroundId: scene.backgroundId,
+            autoTileFlipOverride: value,
+          }),
+        );
+    },
+    [dispatch, scene?.backgroundId],
+  );
+
+  const onOverrideAutoTileFlip = useCallback(() => {
+    onChangeAutoTileFlip(!defaultAutoTileFlip);
+    setAutoTileFlipOverrideOpen(true);
+  }, [defaultAutoTileFlip, onChangeAutoTileFlip]);
+
   const onOverrideSpriteMode = useCallback(() => {
     const sceneSpriteMode = defaultSpriteMode === "8x16" ? "8x8" : "8x16";
     onChangeSpriteMode(sceneSpriteMode);
@@ -461,9 +488,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
         backgroundId: scene?.backgroundId || "",
         is360: scene?.type === "LOGO",
         uiPaletteId: scene?.paletteIds?.[7],
+        colorMode:
+          scene.colorModeOverride === "none"
+            ? projectColorMode
+            : scene.colorModeOverride,
       }),
     );
-  }, [dispatch, id, scene?.backgroundId, scene?.paletteIds, scene?.type]);
+  }, [
+    dispatch,
+    id,
+    scene?.backgroundId,
+    scene?.paletteIds,
+    scene?.type,
+    scene?.colorModeOverride,
+    projectColorMode,
+  ]);
 
   const onToggleParallaxSettings = () => {
     dispatch(
@@ -583,7 +622,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     (scene.colorModeOverride && scene.colorModeOverride !== "none") ||
     colorModeOverrideOpen;
   const showSpriteModeOverride = scene.spriteMode || spriteModeOverrideOpen;
-
+  const canAutoTileFlip =
+    (colorMode === "color" && scene.colorModeOverride === "none") ||
+    scene.colorModeOverride === "color";
+  const showAutoTileFlipOverride =
+    canAutoTileFlip &&
+    (background.autoTileFlipOverride !== undefined || autoTileFlipOverrideOpen);
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
     paletteIds[index] = paletteId;
@@ -704,6 +748,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                 {!showColorModeOverride && colorsEnabled && (
                   <MenuItem onClick={onOverrideColorMode}>
                     {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
+                  </MenuItem>
+                )}
+                {canAutoTileFlip && !showAutoTileFlipOverride && (
+                  <MenuItem onClick={onOverrideAutoTileFlip}>
+                    {l10n("FIELD_SET_AUTO_TILE_FLIP_OVERRIDE")}
                   </MenuItem>
                 )}
                 {!showSpriteModeOverride && (
@@ -839,6 +888,11 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                             uiPaletteId={scene.paletteIds?.[7]}
                             onChange={onChangeBackgroundId}
                             is360={scene.type === "LOGO"}
+                            colorMode={
+                              scene.colorModeOverride === "none"
+                                ? projectColorMode
+                                : scene.colorModeOverride
+                            }
                             includeInfo
                           />
                           <div
@@ -903,6 +957,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                         </div>
                       </FormField>
                     </FormRow>
+
+                    {showAutoTileFlipOverride && (
+                      <FormRow>
+                        <FormField
+                          name="autoTileFlip"
+                          label={l10n("FIELD_AUTO_TILE_FLIP_OVERRIDE")}
+                        >
+                          <AutoTileFlipSelect
+                            onChange={onChangeAutoTileFlip}
+                            allowDefault={true}
+                            value={background?.autoTileFlipOverride}
+                          />
+                        </FormField>
+                      </FormRow>
+                    )}
 
                     {commonTilesetOpen && (
                       <FormRow>

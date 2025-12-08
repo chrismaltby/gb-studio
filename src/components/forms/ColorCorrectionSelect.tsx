@@ -25,7 +25,7 @@ export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
     () => [
       {
         value: "default",
-        label: l10n("FIELD_COLOR_CORRECTION_ENABLED_DEFAULT"),
+        label: l10n("FIELD_ENABLED_DEFAULT"),
       },
       {
         value: "none",

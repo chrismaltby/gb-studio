@@ -1646,6 +1646,7 @@ ipcMain.handle(
     uiPalette: HexPalette | undefined,
     colorMode: ColorModeSetting,
     colorCorrection: ColorCorrectionSetting,
+    autoTileFlipEnabled: boolean,
   ) => {
     const projectRoot = Path.dirname(projectPath);
     return getBackgroundInfo(
@@ -1655,6 +1656,7 @@ ipcMain.handle(
       uiPalette,
       colorMode,
       colorCorrection,
+      autoTileFlipEnabled,
       projectRoot,
     );
   },

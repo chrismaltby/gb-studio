@@ -255,6 +255,7 @@ const APISetup = {
       uiPalette: HexPalette | undefined,
       colorMode: ColorModeSetting,
       colorCorrection: ColorCorrectionSetting,
+      autoTileFlipEnabled: boolean,
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
         "project:get-background-info",
@@ -264,6 +265,7 @@ const APISetup = {
         uiPalette,
         colorMode,
         colorCorrection,
+        autoTileFlipEnabled,
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),

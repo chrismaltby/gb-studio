@@ -54,25 +54,20 @@ exports[`Compare output from trusted and untrusted plugin handlers Compare outpu
 
 .area _CODE_255
 
-.LOCAL_ACTOR = -4
 
 ___bank_script = 255
 .globl ___bank_script
 
 _script::
         VM_LOCK
-
-        VM_RESERVE              4
         VM_RPN
-            .R_INT16    256
-            .R_REF_SET  ^/(.LOCAL_ACTOR + 1)/
             .R_INT16    0
-            .R_REF_SET  ^/(.LOCAL_ACTOR + 2)/
+            .R_INT16    256
+            .R_INT16    0
             .R_INT16    ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST | .ACTOR_ATTR_RELATIVE_SNAP_TILE)/
-            .R_REF_SET  ^/(.LOCAL_ACTOR + 3)/
             .R_STOP
-        VM_SET_CONST            .LOCAL_ACTOR, 0
-        VM_ACTOR_MOVE_TO        .LOCAL_ACTOR
+        VM_ACTOR_MOVE_TO        .ARG3
+        VM_POP                  4
 
 "
 `;

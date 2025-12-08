@@ -211,6 +211,7 @@ export type Background = {
   plugin?: string;
   inode: string;
   _v: number;
+  autoTileFlipOverride?: boolean;
 };
 
 export type BackgroundData = Omit<Background, "_v" | "inode">;

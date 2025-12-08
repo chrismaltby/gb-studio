@@ -1022,6 +1022,14 @@ const changes: EngineChange[] = [
       "src/core/vm_actor.c",
     ],
   },
+  {
+    version: "4.2.0-e23",
+    description: createDescription("Updates", [
+      "Fix issue where setting adventure walk/run velocity to lower than current velocity wouldn't cause player to slow down",
+      "Tiny optimization: call deactivate_actor_impl (!BANKED) instead of deactivate_actor (BANKED) in actors_update",
+    ]),
+    modifiedFiles: ["src/core/actor.c", "src/states/adventure.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

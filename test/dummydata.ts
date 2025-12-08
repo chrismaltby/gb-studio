@@ -378,6 +378,7 @@ export const dummyProjectData: ProjectData = {
     romFilename: "",
     defaultSceneTypeId: "TOPDOWN",
     disabledSceneTypeIds: [],
+    autoTileFlipEnabled: true,
   },
 };
 
@@ -665,6 +666,7 @@ export const dummySettingsResource: SettingsResource = {
   romFilename: "",
   defaultSceneTypeId: "TOPDOWN",
   disabledSceneTypeIds: [],
+  autoTileFlipEnabled: true,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -793,6 +795,7 @@ export const dummyProjectResources: ProjectResources = {
     romFilename: "",
     defaultSceneTypeId: "TOPDOWN",
     disabledSceneTypeIds: [],
+    autoTileFlipEnabled: true,
   },
 };
 
