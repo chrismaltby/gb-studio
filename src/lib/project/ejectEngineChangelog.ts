@@ -1030,6 +1030,14 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/core/actor.c", "src/states/adventure.c"],
   },
+  {
+    version: "4.2.0-e24",
+    description: createDescription("Fixes", [
+      "Fix topdown player position overflow when moving off the top or left edge of the scene with movement speeds that don’t divide the tile size evenly",
+      "Tidy up slope collision definitions and remove magic numbers",
+    ]),
+    modifiedFiles: ["src/states/platform.c", "src/states/topdown.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
