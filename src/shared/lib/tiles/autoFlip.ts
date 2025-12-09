@@ -10,43 +10,32 @@ import {
   flipIndexedImageX,
   flipIndexedImageY,
 } from "shared/lib/tiles/indexedImage";
-import {
-  TilesetData,
-} from "shared/lib/entities/entitiesTypes";
-import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
-import { assetFilename } from "shared/lib/helpers/assets";
 import { TileLookup, hashTileData } from "shared/lib/tiles/tileData";
 
 interface AutoFlipResult {
   tileData: Uint8Array[];
   tileAttrs: number[];
+  tilesetData: Uint8Array[];
 }
 
-export const autoFlipTiles = async ({
+export const autoFlipTiles = ({
   indexedImage,
   tileColors,
-  commonTileset,
-  projectPath,
+  commonTileData,
 }: {
   indexedImage: IndexedImage;
   tileColors: readonly number[];
-  commonTileset: TilesetData | undefined;
-  projectPath: string;
-}): Promise<AutoFlipResult> => {
+  commonTileData: Uint8Array[];
+}): AutoFlipResult => {
   const xTiles = Math.floor(indexedImage.width / TILE_SIZE);
   const yTiles = Math.floor(indexedImage.height / TILE_SIZE);
 
   const newTileData: Uint8Array[] = [];
   const newTileColors = [...tileColors];
-  const tileLookup: TileLookup = {};
-  
-  if (commonTileset) {
-    const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
-    const commonTileData = await readFileToTilesDataArray(commonFilename);
-    commonTileData.forEach((tileData) => {
-      tileLookup[hashTileData(tileData)] = tileData;
-    });
-  }  
+  const tileLookup: TileLookup = commonTileData.reduce((memo, tileData) => {
+    memo[hashTileData(tileData)] = tileData;
+    return memo;
+  }, {} as TileLookup);
 
   for (let tyi = 0; tyi < yTiles; tyi++) {
     for (let txi = 0; txi < xTiles; txi++) {
@@ -113,5 +102,6 @@ export const autoFlipTiles = async ({
   return {
     tileData: newTileData,
     tileAttrs: newTileColors,
+    tilesetData: [...commonTileData, ...newTileData],
   };
-}
+};
