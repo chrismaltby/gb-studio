@@ -325,6 +325,7 @@ export const CompressedBackgroundResource = Type.Object({
   autoColor: Type.Optional(Type.Boolean()),
   plugin: Type.Optional(Type.String()),
   tileColors: Type.String(),
+  autoTileFlipOverride: Type.Optional(Type.Boolean()),
 });
 
 export type CompressedBackgroundResource = Static<
@@ -569,6 +570,14 @@ export const ColorCorrectionSetting = Type.Union([
 
 export type ColorCorrectionSetting = Static<typeof ColorCorrectionSetting>;
 
+export const AutoTileFlipSetting = Type.Union([
+  Type.Literal("disabled"),
+  Type.Literal("ask"),
+  Type.Literal("enabled"),
+]);
+
+export type AutoTileFlipSetting = Static<typeof AutoTileFlipSetting>;
+
 export const ShowConnectionsSetting = Type.Union([
   Type.Literal("all"),
   Type.Literal("selected"),
@@ -577,6 +586,18 @@ export const ShowConnectionsSetting = Type.Union([
 ]);
 
 export type ShowConnectionsSetting = Static<typeof ShowConnectionsSetting>;
+
+export const ShowSceneScreenGridSetting = Type.Union([
+  Type.Literal("topLeft"),
+  Type.Literal("bottomLeft"),
+  Type.Literal("topRight"),
+  Type.Literal("bottomRight"),
+  Type.Literal(false),
+]);
+
+export type ShowSceneScreenGridSetting = Static<
+  typeof ShowSceneScreenGridSetting
+>;
 
 export const MusicDriverSetting = Type.Union([
   Type.Literal("huge"),
@@ -682,6 +703,7 @@ export const SettingsResource = Type.Object({
   showCollisionSlopeTiles: Type.Boolean(),
   showCollisionExtraTiles: Type.Boolean(),
   showCollisionTileValues: Type.Boolean(),
+  showSceneScreenGrid: ShowSceneScreenGridSetting,
   collisionLayerOpacity: Type.Number(),
   worldScrollX: Type.Number(),
   worldScrollY: Type.Number(),
@@ -756,6 +778,9 @@ export const SettingsResource = Type.Object({
   openBuildFolderOnExport: Type.Boolean(),
   showRomUsageAfterBuild: Type.Boolean(),
   romFilename: Type.String(),
+  defaultSceneTypeId: Type.String(),
+  disabledSceneTypeIds: Type.Array(Type.String()),
+  autoTileFlipEnabled: Type.Boolean(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;

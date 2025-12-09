@@ -65,6 +65,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to override UI palette when using automatic background palettes
 - Add "Rate Limit" event allowing portions of scripts to be throttled by time, running at most once per interval.
 - Add "Replace Palette" button to the Sprite Editor. When enabled, changing the palette of a tile updates all tiles that use the same palette
+- Add "Preview as Monochrome" button to Sprite Editor
+- Add ability to duplicate color palettes from right click context menu on palette editor sidebar
+- Add "Scene Types" section to the Settings page for enabling or disabling specific scene types
+- Add "Default Scene Type" setting used when creating new scenes
+- Add ability to display a "Screen Grid" from the "View" menu which can be anchored to any corner of the scene [@pau-tomas](https://github.com/pau-tomas)
+- Add "Automatic Tile Flip" setting to optimize tilesets by reusing horizontally and vertically flipped tiles where possible. Only supported in "Color Only" scenes [@Mico27](https://github.com/Mico27)
 
 ### Changed
 
@@ -102,6 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated "Set Actor Collision Bounding Box" event to allow using variables and expressions in new bounds values
 - When using automatic background palettes the generated palettes are now displayed in the scene editor sidebar
 - When provided, a ".mono.png" file is now always preferred for tile data, even when Automatic Coloring is disabled. This ensures that the extract palette feature matches the automatic palette when a ".mono.png" is present.
+- Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
+- Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
 
 ### Fixed
 
@@ -156,6 +164,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where mute icon in game window title bar could appear multiple times
 - Fix issue where magic brush would use old tile data if backgrounds we resized while editing
 - Fix issue where overlay move events were causing background scripts to pause
+- Fix flipped tile preview for sprites on 8px canvas
+- Fix sprite "Flip 'Right' To Create 'Left' Facing Frames" feature when sprite canvas is 8px wide
+- Fix issue where engine fields belonging to unused or disabled scene types could prevent the project from compiling
+- Fix issue where text selection during rename of a script event would cause event to be dragged
 
 ## [4.1.3] - 2024-09-16
 

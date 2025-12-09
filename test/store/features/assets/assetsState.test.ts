@@ -13,6 +13,7 @@ test("Should set loading flag while fetching background warnings", () => {
     backgroundId: "bg1",
     is360: false,
     uiPaletteId: "uiPalette1",
+    colorMode: "mixed",
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(true);

@@ -14,6 +14,8 @@ import { ProjectResources } from "shared/lib/resources/types";
 import psTree from "ps-tree";
 import { promisify } from "util";
 import { envWith } from "lib/helpers/cli/env";
+import { readEngineVersion } from "lib/project/engine";
+import { defaultEngineMetaPath } from "consts";
 
 const psTreeAsync = promisify(psTree);
 
@@ -61,6 +63,7 @@ const makeBuild = async ({
 
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
+  env.GBS_ENGINE_VERSION = await readEngineVersion(defaultEngineMetaPath);
   env.TARGET_PLATFORM = targetPlatform;
 
   env.CART_TYPE = settings.cartType || "mbc5";

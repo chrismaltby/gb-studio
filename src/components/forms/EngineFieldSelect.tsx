@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { useAppSelector } from "store/hooks";
 import { Select, Option, OptGroup, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
@@ -31,7 +30,9 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   showUnitsWarning,
 }) => {
   const groupedFields = useGroupedEngineFields();
-  const engineFields = useAppSelector((state) => state.engine.fields);
+  const engineFields = useMemo(() => {
+    return groupedFields.flatMap((g) => g.fields);
+  }, [groupedFields]);
   const [options, setOptions] = useState<OptGroup[]>([]);
 
   useEffect(() => {

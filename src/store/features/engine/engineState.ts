@@ -87,6 +87,12 @@ const getDefaultEngineFieldId = (fields: EngineFieldSchema[]) => {
   return field ? field.key : "";
 };
 
+const sortSceneTypes = (sceneTypes: SceneTypeSchema[]) => {
+  return [...sceneTypes].sort((a, b) => {
+    return a.label.localeCompare(b.label);
+  });
+};
+
 const engineSlice = createSlice({
   name: "engine",
   initialState,
@@ -94,7 +100,7 @@ const engineSlice = createSlice({
     setEngineSchema: (state, action: PayloadAction<EngineSchema>) => {
       state.fields = action.payload.fields;
       state.lookup = keyBy(action.payload.fields, "key");
-      state.sceneTypes = action.payload.sceneTypes;
+      state.sceneTypes = sortSceneTypes(action.payload.sceneTypes);
       state.consts = action.payload.consts;
       state.defaultEngineFieldId = getDefaultEngineFieldId(
         action.payload.fields,
@@ -109,7 +115,9 @@ const engineSlice = createSlice({
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
         state.fields = action.payload.engineSchema.fields;
         state.lookup = keyBy(action.payload.engineSchema.fields, "key");
-        state.sceneTypes = action.payload.engineSchema.sceneTypes;
+        state.sceneTypes = sortSceneTypes(
+          action.payload.engineSchema.sceneTypes,
+        );
         state.consts = action.payload.engineSchema.consts;
         state.defaultEngineFieldId = getDefaultEngineFieldId(
           action.payload.engineSchema.fields,

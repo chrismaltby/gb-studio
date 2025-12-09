@@ -18,6 +18,7 @@ test("should compile images", async () => {
     backgroundData,
     {},
     "default",
+    true,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
@@ -31,12 +32,14 @@ test("should compile split large images into two tilesets for CGB mode", async (
       id: "img1",
       filename: "scribble.png",
       colorMode: "color",
+      tileColors: [],
     },
-  ] as ReferencedBackground[];
+  ] as unknown as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
     "default",
+    false,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
@@ -56,6 +59,7 @@ test("should compile large images into one overflowing bank when not in color on
     backgroundData,
     {},
     "default",
+    true,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
@@ -69,12 +73,14 @@ test("should split tiles into two banks when in color only mode, filling first 1
       id: "img1",
       filename: "parallax.png",
       colorMode: "color",
+      tileColors: [],
     },
-  ] as ReferencedBackground[];
+  ] as unknown as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
     "default",
+    true,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
@@ -136,6 +142,7 @@ test("should handle overflow correctly for DMG mode", async () => {
     backgroundData,
     {},
     "default",
+    true,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
@@ -156,12 +163,14 @@ test("should handle overflow correctly for color only mode", async () => {
       id: "img1",
       filename: "tiles-386.png",
       colorMode: "color",
+      tileColors: [],
     },
-  ] as ReferencedBackground[];
+  ] as unknown as ReferencedBackground[];
   const res = await compileImages(
     backgroundData,
     {},
     "default",
+    false,
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );

@@ -124,7 +124,8 @@ export const compileEventsWithScriptBuilder = (
   location: ScriptLocation,
   warnings: (msg: string) => void,
 ) => {
-  const { scriptEventHandlers, scriptSymbolName } = scriptBuilder.options;
+  const { scriptEventHandlers, scriptSymbolName, disabledSceneTypeIds } =
+    scriptBuilder.options;
 
   for (let i = 0; i < subInput.length; i++) {
     const command = subInput[i].command;
@@ -137,6 +138,15 @@ export const compileEventsWithScriptBuilder = (
       scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
 
       try {
+        if (
+          scriptEventHandlers[command].sceneTypes &&
+          scriptEventHandlers[command].sceneTypes.every((t) =>
+            disabledSceneTypeIds.includes(t),
+          )
+        ) {
+          // Skip events where all scene types are disabled
+          continue;
+        }
         scriptEventHandlers[command]?.compile(
           { ...subInput[i].args, ...subInput[i].children },
           {

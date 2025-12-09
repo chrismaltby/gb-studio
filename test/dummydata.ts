@@ -320,6 +320,7 @@ export const dummyProjectData: ProjectData = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    showSceneScreenGrid: "topLeft",
     collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
@@ -375,6 +376,9 @@ export const dummyProjectData: ProjectData = {
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
     romFilename: "",
+    defaultSceneTypeId: "TOPDOWN",
+    disabledSceneTypeIds: [],
+    autoTileFlipEnabled: true,
   },
 };
 
@@ -585,6 +589,7 @@ export const dummySettingsResource: SettingsResource = {
   startDirection: "down",
   showCollisions: true,
   showConnections: "all",
+  showSceneScreenGrid: "topLeft",
   showCollisionSlopeTiles: true,
   showCollisionExtraTiles: true,
   showCollisionTileValues: false,
@@ -659,6 +664,9 @@ export const dummySettingsResource: SettingsResource = {
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
   romFilename: "",
+  defaultSceneTypeId: "TOPDOWN",
+  disabledSceneTypeIds: [],
+  autoTileFlipEnabled: true,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -729,6 +737,7 @@ export const dummyProjectResources: ProjectResources = {
     playerPaletteId: "",
     showCollisions: true,
     showConnections: true,
+    showSceneScreenGrid: "topLeft",
     collisionLayerOpacity: 50,
     worldScrollX: 0,
     worldScrollY: 0,
@@ -784,6 +793,9 @@ export const dummyProjectResources: ProjectResources = {
     openBuildFolderOnExport: true,
     showRomUsageAfterBuild: false,
     romFilename: "",
+    defaultSceneTypeId: "TOPDOWN",
+    disabledSceneTypeIds: [],
+    autoTileFlipEnabled: true,
   },
 };
 

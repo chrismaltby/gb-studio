@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Palette } from "shared/lib/entities/entitiesTypes";
+import { ColorModeSetting } from "shared/lib/resources/types";
 
 type BackgroundAsset = {
   id: string;
@@ -35,6 +36,7 @@ const assetsSlice = createSlice({
         tilesetId?: string;
         is360: boolean;
         uiPaletteId: string;
+        colorMode: ColorModeSetting;
       }>,
     ) => {
       state.backgroundsLoading = true;
@@ -47,6 +49,7 @@ const assetsSlice = createSlice({
         tilesetId?: string;
         is360: boolean;
         uiPaletteId: string;
+        colorMode: ColorModeSetting;
       }>,
     ) => {
       state.backgroundsLoading = true;

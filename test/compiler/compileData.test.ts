@@ -49,6 +49,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "2",
         width: 20,
         height: 18,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -123,6 +124,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "3",
         width: 32,
         height: 32,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -184,6 +186,7 @@ test("should compile simple project into files object", async () => {
         backgroundId: "4",
         width: 20,
         height: 18,
+        type: "TOPDOWN",
         // prettier-ignore
         collisions: [
           0,0,0,0,0,0,0,0,0,0,
@@ -405,7 +408,12 @@ test("should compile simple project into files object", async () => {
     scriptEventHandlers,
     engineSchema: {
       fields: [],
-      sceneTypes: [],
+      sceneTypes: [
+        {
+          key: "TOPDOWN",
+          label: "GAMETYPE_TOP_DOWN",
+        },
+      ],
       consts: {},
     },
     tmpPath: os.tmpdir(),
@@ -445,6 +453,7 @@ test("should precompile image data", async () => {
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -585,6 +594,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -671,6 +681,7 @@ test("should include tileset for background when also used without common tilese
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -753,6 +764,7 @@ test("should share tilesets if possible when multiple backgrounds include common
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -840,6 +852,7 @@ test("should generate unique tileset for background if used without common tiles
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -940,6 +953,7 @@ test("should generate unique tileset for background if referenced from script ev
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -1013,6 +1027,7 @@ test("should generate unique tileset for identical backgrounds if used without c
     scenes,
     [],
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );
@@ -1091,6 +1106,7 @@ test("should allow reusing tileset for identical backgrounds if used with common
     scenes,
     tilesets,
     "default",
+    true,
     `${__dirname}/_files`,
     { warnings: () => {} },
   );

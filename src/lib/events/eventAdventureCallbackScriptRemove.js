@@ -71,6 +71,7 @@ module.exports = {
   autoLabel,
   groups,
   subGroups,
+  sceneTypes: ["ADVENTURE"],
   fields,
   compile,
   allowedBeforeInitFade: true,

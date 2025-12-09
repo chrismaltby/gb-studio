@@ -124,6 +124,8 @@ export const COLLISION_SLOPE_VALUES = [
 // Colors
 export const TILE_COLOR_PALETTE = 0x7;
 export const TILE_COLOR_PROPS = 0xf8;
+export const TILE_COLOR_PROP_FLIP_HORIZONTAL = 0x20;
+export const TILE_COLOR_PROP_FLIP_VERTICAL = 0x40;
 export const TILE_COLOR_PROP_PRIORITY = 0x80;
 export const DMG_PALETTE = {
   id: "dmg",
@@ -371,6 +373,7 @@ export const defaultProjectSettings: Settings = {
   showCollisionSlopeTiles: false,
   showCollisionExtraTiles: false,
   showCollisionTileValues: false,
+  showSceneScreenGrid: false,
   collisionLayerOpacity: 50,
   worldScrollX: 0,
   worldScrollY: 0,
@@ -442,6 +445,9 @@ export const defaultProjectSettings: Settings = {
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
   romFilename: "",
+  defaultSceneTypeId: "TOPDOWN",
+  disabledSceneTypeIds: [],
+  autoTileFlipEnabled: true,
 };
 
 export const defaultPalettes: Palette[] = [

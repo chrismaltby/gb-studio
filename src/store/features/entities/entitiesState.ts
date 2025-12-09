@@ -90,6 +90,8 @@ import {
   normalizeEntityResources,
   localVariableCodes,
   normalizeSprite,
+  getMetaspriteTilesForSpriteSheet,
+  nextIndexedName,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -2422,6 +2424,27 @@ const editBackgroundAutoColor: CaseReducer<
   }
 };
 
+const editBackgroundAutoTileFlipOverride: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    backgroundId: string;
+    autoTileFlipOverride: boolean | undefined;
+  }>
+> = (state, action) => {
+  const background = localBackgroundSelectById(
+    state,
+    action.payload.backgroundId,
+  );
+  if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        autoTileFlipOverride: action.payload.autoTileFlipOverride,
+      },
+    });
+  }
+};
+
 const updateMonoOverrideIds = (state: EntitiesState) => {
   const backgrounds = localBackgroundSelectAll(state);
   const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
@@ -2904,35 +2927,10 @@ const replaceMetaspriteTilesPalettes: CaseReducer<
     toIndex: number;
   }>
 > = (state, action) => {
-  const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
-  if (!spriteSheet) {
-    return;
-  }
-  const spriteStates = spriteSheet.states.map(
-    (stateId) => state.spriteStates.entities[stateId],
+  const spriteTiles = getMetaspriteTilesForSpriteSheet(
+    state,
+    action.payload.spriteSheetId,
   );
-  const spriteAnimations = spriteStates
-    .map((spriteState) =>
-      spriteState.animations.map(
-        (animationId) => state.spriteAnimations.entities[animationId],
-      ),
-    )
-    .flat();
-  const spriteFrames = spriteAnimations
-    .map((animation) =>
-      animation.frames.map(
-        (metaspriteId) => state.metasprites.entities[metaspriteId],
-      ),
-    )
-    .flat();
-  const spriteTiles = spriteFrames
-    .map((metasprite) =>
-      metasprite.tiles.map(
-        (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
-      ),
-    )
-    .flat();
-
   metaspriteTilesAdapter.updateMany(
     state.metaspriteTiles,
     spriteTiles
@@ -2941,6 +2939,31 @@ const replaceMetaspriteTilesPalettes: CaseReducer<
         id: tile.id,
         changes: {
           paletteIndex: action.payload.toIndex,
+        },
+      })),
+  );
+};
+
+const replaceMetaspriteTilesObjPalettes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    fromPalette: ObjPalette;
+    toPalette: ObjPalette;
+  }>
+> = (state, action) => {
+  const spriteTiles = getMetaspriteTilesForSpriteSheet(
+    state,
+    action.payload.spriteSheetId,
+  );
+  metaspriteTilesAdapter.updateMany(
+    state.metaspriteTiles,
+    spriteTiles
+      .filter((tile) => tile.objPalette === action.payload.fromPalette)
+      .map((tile) => ({
+        id: tile.id,
+        changes: {
+          objPalette: action.payload.toPalette,
         },
       })),
   );
@@ -3764,6 +3787,30 @@ const editPalette: CaseReducer<
     id: action.payload.paletteId,
     changes: patch,
   });
+};
+
+const duplicatePalette: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ paletteId: string; newPaletteId: string }>
+> = (state, action) => {
+  const existingPalette = state.palettes.entities[action.payload.paletteId];
+  if (!existingPalette) {
+    return;
+  }
+
+  const allNames = state.palettes.ids
+    .map((id) => state.palettes.entities[id]?.name)
+    .filter((n) => !!n);
+
+  const newName = nextIndexedName(existingPalette.name, allNames);
+
+  const newPalette: Palette = {
+    ...existingPalette,
+    id: action.payload.newPaletteId,
+    name: newName,
+  };
+
+  palettesAdapter.addOne(state.palettes, newPalette);
 };
 
 const removePalette: CaseReducer<
@@ -4717,6 +4764,7 @@ const entitiesSlice = createSlice({
 
     setBackgroundSymbol,
     editBackgroundAutoColor,
+    editBackgroundAutoTileFlipOverride,
 
     /**************************************************************************
      * Sprites
@@ -4801,6 +4849,7 @@ const entitiesSlice = createSlice({
     editMetaspriteTile,
     editMetaspriteTiles,
     replaceMetaspriteTilesPalettes,
+    replaceMetaspriteTilesObjPalettes,
     removeMetaspriteTiles,
     removeMetaspriteTilesOutsideCanvas,
 
@@ -4872,6 +4921,17 @@ const entitiesSlice = createSlice({
       },
     },
     editPalette,
+    duplicatePalette: {
+      reducer: duplicatePalette,
+      prepare: (payload: { paletteId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            newPaletteId: uuid(),
+          },
+        };
+      },
+    },
     removePalette,
 
     /**************************************************************************

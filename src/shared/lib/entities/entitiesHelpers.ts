@@ -69,6 +69,7 @@ import {
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
 import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
+import { uniqBy } from "lodash";
 
 interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -1071,4 +1072,59 @@ const triggerFixNulls = <T extends Trigger | TriggerPrefab>(trigger: T): T => {
 
 const scriptFixNulls = (script: CustomEvent): CustomEvent => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
+};
+
+export const getMetaspriteTilesForSpriteSheet = (
+  state: EntitiesState,
+  spriteSheetId: string,
+) => {
+  const spriteSheet = state.spriteSheets.entities[spriteSheetId];
+  if (!spriteSheet) return [];
+
+  const spriteStates = spriteSheet.states.map(
+    (stateId) => state.spriteStates.entities[stateId],
+  );
+
+  const spriteAnimations = spriteStates.flatMap((spriteState) =>
+    spriteState.animations.map(
+      (animationId) => state.spriteAnimations.entities[animationId],
+    ),
+  );
+
+  const spriteFrames = spriteAnimations.flatMap((animation) =>
+    animation.frames.map(
+      (metaspriteId) => state.metasprites.entities[metaspriteId],
+    ),
+  );
+
+  const spriteTiles = spriteFrames.flatMap((metasprite) =>
+    metasprite.tiles.map(
+      (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
+    ),
+  );
+
+  return uniqBy(spriteTiles, "id");
+};
+
+export const nextIndexedName = (
+  existingName: string,
+  allNames: string[],
+): string => {
+  const [, prefix] = existingName.match(/^(.*?)(?: \d+)?$/) ?? [
+    "",
+    existingName,
+  ];
+
+  const suffixes = allNames
+    .map((name) => name.match(/^(.+?) (\d+)$/))
+    .filter((m): m is RegExpMatchArray => !!m && m[1] === prefix)
+    .map((m) => Number(m[2]))
+    .sort((a, b) => a - b);
+
+  const nextIndex = suffixes.reduce(
+    (expected, n) => (n === expected ? expected + 1 : expected),
+    1,
+  );
+
+  return `${prefix} ${nextIndex}`;
 };

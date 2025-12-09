@@ -21,9 +21,10 @@ const generateAssetHash = (
   uiPaletteId: string,
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
+  autoTileFlipEnabled: boolean,
   tilesetId: string,
 ): string => {
-  return `${background._v}_${is360}_${uiPaletteId}_${colorMode}_${colorCorrection}_${tilesetId}_${background.autoColor}`;
+  return `${background._v}_${is360}_${uiPaletteId}_${colorMode}_${colorCorrection}_${tilesetId}_${background.autoColor}_${autoTileFlipEnabled}_${background.autoTileFlipOverride}`;
 };
 
 const assetsMiddleware: Middleware<Dispatch, RootState> =
@@ -44,9 +45,11 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
       );
       const tilesetId = tileset?.id;
 
-      const isCGBOnly = state.project.present.settings.colorMode === "color";
-      const colorMode = state.project.present.settings.colorMode;
+      const colorMode = action.payload.colorMode;
+      const isCGBOnly = colorMode === "color";
       const colorCorrection = state.project.present.settings.colorCorrection;
+      const autoTileFlipEnabled =
+        state.project.present.settings.autoTileFlipEnabled;
       const is360 = action.payload.is360;
       const uiPaletteId = action.payload.uiPaletteId;
 
@@ -59,6 +62,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
           uiPaletteId,
           colorMode,
           colorCorrection,
+          autoTileFlipEnabled,
           tilesetId,
         );
         if (!cachedInfo || cachedInfo.hash !== hash || isExtracting) {
@@ -80,6 +84,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
               uiPalette,
               colorMode,
               colorCorrection,
+              autoTileFlipEnabled,
             )
             .then((info) => {
               store.dispatch(

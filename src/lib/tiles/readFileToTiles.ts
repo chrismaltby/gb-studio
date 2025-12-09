@@ -43,26 +43,17 @@ export const readFileToTilesData = async (
   filename: string,
 ): Promise<Uint8Array> => {
   const img = await readFileToIndexedImage(filename, tileDataIndexFn);
-  const xTiles = Math.floor(img.width / TILE_SIZE);
-  const yTiles = Math.floor(img.height / TILE_SIZE);
-  const size = xTiles * yTiles * 16;
+  const tilesDataArray = indexedImageToTilesDataArray(img);
+  const size = tilesDataArray.length * 16;
   const output = new Uint8Array(size);
+
   let index = 0;
-  for (let tyi = 0; tyi < yTiles; tyi++) {
-    for (let txi = 0; txi < xTiles; txi++) {
-      const tileData = indexedImageTo2bppTileData(
-        sliceIndexedImage(
-          img,
-          txi * TILE_SIZE,
-          tyi * TILE_SIZE,
-          TILE_SIZE,
-          TILE_SIZE,
-        ),
-      );
-      output.set(tileData, index);
-      index += tileData.length;
-    }
+  for (let ti = 0; ti < tilesDataArray.length; ti++) {
+    const tileData = tilesDataArray[ti];
+    output.set(tileData, index);
+    index += tileData.length;
   }
+
   return output;
 };
 
@@ -75,24 +66,7 @@ export const readFileToTilesDataArray = async (
   filename: string,
 ): Promise<Uint8Array[]> => {
   const img = await readFileToIndexedImage(filename, tileDataIndexFn);
-  const xTiles = Math.floor(img.width / TILE_SIZE);
-  const yTiles = Math.floor(img.height / TILE_SIZE);
-  const output = [];
-  for (let tyi = 0; tyi < yTiles; tyi++) {
-    for (let txi = 0; txi < xTiles; txi++) {
-      const tileData = indexedImageTo2bppTileData(
-        sliceIndexedImage(
-          img,
-          txi * TILE_SIZE,
-          tyi * TILE_SIZE,
-          TILE_SIZE,
-          TILE_SIZE,
-        ),
-      );
-      output.push(tileData);
-    }
-  }
-  return output;
+  return indexedImageToTilesDataArray(img);
 };
 
 /**

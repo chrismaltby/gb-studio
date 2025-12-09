@@ -571,6 +571,7 @@ describe("TypeBox Schemas", () => {
       startDirection: "down",
       showCollisions: true,
       showConnections: "all",
+      showSceneScreenGrid: "topLeft",
       showCollisionSlopeTiles: true,
       showCollisionExtraTiles: true,
       showCollisionTileValues: false,
@@ -645,6 +646,9 @@ describe("TypeBox Schemas", () => {
       openBuildFolderOnExport: true,
       showRomUsageAfterBuild: false,
       romFilename: "",
+      defaultSceneTypeId: "TOPDOWN",
+      disabledSceneTypeIds: [],
+      autoTileFlipEnabled: true,
     };
     const invalidSettings = {
       _resourceType: "settings",
@@ -655,6 +659,7 @@ describe("TypeBox Schemas", () => {
       startAnimSpeed: null,
       startDirection: "down",
       showCollisions: true,
+      showSceneScreenGrid: "topLeft",
       collisionLayerOpacity: 50,
       showConnections: "all",
       showCollisionSlopeTiles: true,

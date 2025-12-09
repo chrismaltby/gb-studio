@@ -44,7 +44,7 @@ import {
   SendToBackIcon,
   ReplaceIcon,
 } from "ui/icons/Icons";
-import { FixedSpacer, FlexGrow, FlexRow } from "ui/spacing/Spacing";
+import { FlexGrow } from "ui/spacing/Spacing";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
@@ -62,6 +62,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import { SpriteModeSetting } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
+import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 
 interface SpriteEditorProps {
   id: string;
@@ -281,8 +282,26 @@ export const SpriteEditor = ({
   );
 
   const onChangeTilesObjPalette = useCallback(
-    (e: ObjPalette) => onChangeMultipleTilesProp("objPalette", e),
-    [onChangeMultipleTilesProp],
+    (e: ObjPalette) => {
+      if (replaceSpriteTileMode === "objPalette") {
+        dispatch(
+          entitiesActions.replaceMetaspriteTilesObjPalettes({
+            spriteSheetId: id,
+            fromPalette: metaspriteTile.objPalette || "OBP0",
+            toPalette: e,
+          }),
+        );
+      } else {
+        onChangeMultipleTilesProp("objPalette", e);
+      }
+    },
+    [
+      dispatch,
+      id,
+      metaspriteTile?.objPalette,
+      onChangeMultipleTilesProp,
+      replaceSpriteTileMode,
+    ],
   );
 
   const onChangeTilesPaletteIndex = useCallback(
@@ -443,6 +462,14 @@ export const SpriteEditor = ({
       return;
     }
     dispatch(editorActions.setReplaceSpriteTileMode("palette"));
+  }, [dispatch, replaceSpriteTileMode]);
+
+  const toggleMonoPaletteReplaceMode = useCallback(() => {
+    if (replaceSpriteTileMode === "objPalette") {
+      dispatch(editorActions.setReplaceSpriteTileMode(undefined));
+      return;
+    }
+    dispatch(editorActions.setReplaceSpriteTileMode("objPalette"));
   }, [dispatch, replaceSpriteTileMode]);
 
   const onAutoDetect = useCallback(() => {
@@ -630,31 +657,17 @@ export const SpriteEditor = ({
                   name="objPalette"
                   label={l10n("FIELD_MONOCHROME_PALETTE")}
                 >
-                  <ObjPaletteSelect
-                    name="objPalette"
-                    value={metaspriteTile.objPalette}
-                    onChange={onChangeTilesObjPalette}
-                  />
-                </FormField>
-              </FormRow>
-
-              {colorsEnabled && (
-                <FormRow>
-                  <FormField
-                    name="paletteIndex"
-                    label={l10n("FIELD_COLOR_PALETTE")}
-                  >
-                    <FlexRow>
-                      <PaletteIndexSelect
-                        name="paletteIndex"
-                        value={metaspriteTile.paletteIndex}
-                        onChange={onChangeTilesPaletteIndex}
-                      />
-                      <FixedSpacer width={5} />
+                  <InputGroup>
+                    <ObjPaletteSelect
+                      name="objPalette"
+                      value={metaspriteTile.objPalette}
+                      onChange={onChangeTilesObjPalette}
+                    />
+                    <InputGroupAppend>
                       <Button
-                        onClick={togglePaletteReplaceMode}
+                        onClick={toggleMonoPaletteReplaceMode}
                         variant={
-                          replaceSpriteTileMode === "palette"
+                          replaceSpriteTileMode === "objPalette"
                             ? "primary"
                             : "normal"
                         }
@@ -662,7 +675,45 @@ export const SpriteEditor = ({
                       >
                         <ReplaceIcon />
                       </Button>
-                    </FlexRow>
+                    </InputGroupAppend>
+                  </InputGroup>
+                </FormField>
+              </FormRow>
+
+              {replaceSpriteTileMode === "objPalette" && (
+                <FormRow>
+                  <FormFieldInfo>
+                    {l10n("FIELD_CHOOSE_REPLACEMENT_PALETTE_DETAILS")}
+                  </FormFieldInfo>
+                </FormRow>
+              )}
+
+              {colorsEnabled && (
+                <FormRow>
+                  <FormField
+                    name="paletteIndex"
+                    label={l10n("FIELD_COLOR_PALETTE")}
+                  >
+                    <InputGroup>
+                      <PaletteIndexSelect
+                        name="paletteIndex"
+                        value={metaspriteTile.paletteIndex}
+                        onChange={onChangeTilesPaletteIndex}
+                      />
+                      <InputGroupAppend>
+                        <Button
+                          onClick={togglePaletteReplaceMode}
+                          variant={
+                            replaceSpriteTileMode === "palette"
+                              ? "primary"
+                              : "normal"
+                          }
+                          title={l10n("FIELD_REPLACE_PALETTE")}
+                        >
+                          <ReplaceIcon />
+                        </Button>
+                      </InputGroupAppend>
+                    </InputGroup>
                   </FormField>
                 </FormRow>
               )}

@@ -42,6 +42,9 @@ import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/SceneContext";
+import { WarningIcon } from "ui/icons/Icons";
+import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
+import SceneScreenGrid from "components/world/SceneScreenGrid";
 
 const TILE_SIZE = 8;
 
@@ -202,6 +205,28 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
       : ""}
 `;
 
+const SceneErrorOverlay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+
+  svg {
+    background: ${(props) => props.theme.colors.highlight};
+    fill: ${(props) => props.theme.colors.highlightText};
+    padding: 10px;
+    border-radius: 4px;
+  }
+`;
+
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
@@ -216,7 +241,10 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       ? backgroundSelectors.selectById(state, background.monoOverrideId ?? "")
       : undefined,
   );
-
+  const enabledSceneTypeIds = useEnabledSceneTypeIds();
+  const sceneTypeEnabled = useMemo(() => {
+    return enabledSceneTypeIds.includes(scene?.type);
+  }, [enabledSceneTypeIds, scene?.type]);
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId,
   );
@@ -277,7 +305,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       tool === TOOL_COLORS &&
       state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY,
   );
-
+  const showSceneScreenGrid = useAppSelector(
+    (state) => state.project.present.settings.showSceneScreenGrid,
+  );
   const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
@@ -732,6 +762,15 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             />
           </SceneOverlay>
         )}
+        {showSceneScreenGrid && selected && (
+          <SceneOverlay $noPointerEvents>
+            <SceneScreenGrid
+              width={scene.width}
+              height={scene.height}
+              scrollBounds={scene.scrollBounds}
+            />
+          </SceneOverlay>
+        )}
 
         {background && showPriorityMap && (
           <SceneOverlay>
@@ -791,6 +830,13 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             />
           </div>
         )}
+
+        {!sceneTypeEnabled && (
+          <SceneErrorOverlay>
+            <WarningIcon />
+          </SceneErrorOverlay>
+        )}
+
         {editable && (hovered || selected) && (
           <SceneCursor
             sceneId={id}

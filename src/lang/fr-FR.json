@@ -1013,7 +1013,7 @@
   "FIELD_DEADZONE_X": "Zone morte X",
   "FIELD_DEADZONE_Y": "Zone morte Y",
   "FIELD_COLOR_CORRECTION": "Correction des couleurs",
-  "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT": "Activée (par défaut)",
+  "FIELD_ENABLED_DEFAULT": "Activée (par défaut)",
   "FIELD_COLOR_CORRECTION_ENABLED_DEFAULT_INFO": "Corrige les couleurs pour mieux refléter l’affichage sur matériel d’origine.",
   "FIELD_COLOR_CORRECTION_NONE": "Aucune",
   "FIELD_COLOR_CORRECTION_NONE_INFO": "Désactive la correction intégrée des couleurs, autorise un plus large spectre de couleurs sur du matériel moderne ou des émulateurs.",

@@ -424,13 +424,13 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({
           key={group.name}
           searchTerm={searchTerm}
           searchMatches={group.searchMatches}
+          indent={group.sceneType ? 1 : 0}
         >
           {!sceneType && (
             <>
               <CardAnchor id={`settings${group.name}`} />
-              <CardHeading>
-                {l10n("SETTINGS_ENGINE")}: {l10n(group.name as L10NKey)}
-              </CardHeading>
+              <CardAnchor id={`settings${group.sceneType}`} />
+              <CardHeading>{l10n(group.name as L10NKey)}</CardHeading>
             </>
           )}
           {group.fields

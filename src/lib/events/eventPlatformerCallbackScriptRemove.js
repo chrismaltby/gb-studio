@@ -87,6 +87,7 @@ module.exports = {
   autoLabel,
   groups,
   subGroups,
+  sceneTypes: ["PLATFORM"],
   fields,
   compile,
   allowedBeforeInitFade: true,

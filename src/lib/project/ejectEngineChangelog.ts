@@ -988,6 +988,56 @@ const changes: EngineChange[] = [
       "src/states/topdown.c",
     ],
   },
+  {
+    version: "4.2.0-e21",
+    description: createDescription("Fixes", [
+      "Add actor_with_script_in_front_of_player() function which skips checking for collisions with actors that don't contain scripts",
+      "Improve interact collision checking in topdown/adventure/platform scenes",
+      "Fix bug in adventure causing push state to not change direction when pushing into corners",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/topdown.c",
+    ],
+  },
+  {
+    version: "4.2.0-e22",
+    description: createDescription("Updates", [
+      "Optimise vm_actor_move_to by only checking current movement axis",
+      "Remove unnecessary projectile offscreen handling for projectiles_render()",
+      "Projectiles_update now tests if collision_group is set to 'player' and only tests for collisions with player in that case",
+      "Refactor splitting actors_update into separate update/render functions",
+      "Optimize bounds checking in actors_update",
+      "Refactor platformer/adventure state machine handling into separate functions to improve compile times",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/core/core.c",
+      "src/core/projectiles.c",
+      "src/core/ui.c",
+      "src/core/vm_actor.c",
+    ],
+  },
+  {
+    version: "4.2.0-e23",
+    description: createDescription("Updates", [
+      "Fix issue where setting adventure walk/run velocity to lower than current velocity wouldn't cause player to slow down",
+      "Tiny optimization: call deactivate_actor_impl (!BANKED) instead of deactivate_actor (BANKED) in actors_update",
+    ]),
+    modifiedFiles: ["src/core/actor.c", "src/states/adventure.c"],
+  },
+  {
+    version: "4.2.0-e24",
+    description: createDescription("Fixes", [
+      "Fix topdown player position overflow when moving off the top or left edge of the scene with movement speeds that don’t divide the tile size evenly",
+      "Tidy up slope collision definitions and remove magic numbers",
+    ]),
+    modifiedFiles: ["src/states/platform.c", "src/states/topdown.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

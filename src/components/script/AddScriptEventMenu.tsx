@@ -586,6 +586,9 @@ const AddScriptEventMenu = ({
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
+  const disabledSceneTypeIds = useAppSelector(
+    (state) => state.project.present.settings.disabledSceneTypeIds,
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -595,7 +598,16 @@ const AddScriptEventMenu = ({
 
   useEffect(() => {
     const eventList = (
-      Object.values(scriptEventDefs).filter(identity) as ScriptEventDef[]
+      Object.values(scriptEventDefs)
+        .filter(identity)
+        .filter((event) => {
+          if (!event.sceneTypes) {
+            return true;
+          }
+          return event.sceneTypes.some(
+            (t) => !disabledSceneTypeIds.includes(t),
+          );
+        }) as ScriptEventDef[]
     ).filter(notDeprecated);
 
     const allEvents = ([] as EventOption[]).concat(
@@ -688,7 +700,13 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [customEventsLookup, favoriteEvents, favoritesCache, scriptEventDefs]);
+  }, [
+    customEventsLookup,
+    disabledSceneTypeIds,
+    favoriteEvents,
+    favoritesCache,
+    scriptEventDefs,
+  ]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {

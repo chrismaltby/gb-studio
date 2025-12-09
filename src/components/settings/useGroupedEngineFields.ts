@@ -13,6 +13,9 @@ type EngineFieldGroup = {
 
 export const useGroupedEngineFields = (sceneType?: string) => {
   const fields = useAppSelector((state) => state.engine.fields);
+  const disabledSceneTypeIds = useAppSelector(
+    (state) => state.project.present.settings.disabledSceneTypeIds,
+  );
   const [groupedFields, setGroupedFields] = useState<EngineFieldGroup[]>([]);
 
   useEffect(() => {
@@ -33,10 +36,17 @@ export const useGroupedEngineFields = (sceneType?: string) => {
           };
         })
         .filter((g) => {
-          return !sceneType || g.sceneType === sceneType;
-        }),
+          if (g.sceneType && disabledSceneTypeIds.includes(g.sceneType)) {
+            return false;
+          }
+          if (sceneType) {
+            return g.sceneType === sceneType;
+          }
+          return true;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
     );
-  }, [fields, sceneType]);
+  }, [disabledSceneTypeIds, fields, sceneType]);
 
   return groupedFields;
 };

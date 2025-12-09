@@ -133,6 +133,16 @@ export const NavigatorPalettes = ({
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
         </MenuItem>,
+        <MenuItem
+          key="duplicate"
+          onClick={(e) => {
+            dispatch(entitiesActions.duplicatePalette({ paletteId: item.id }));
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {l10n("FIELD_DUPLICATE")}
+        </MenuItem>,
         ...(!item.entity?.defaultColors
           ? [
               <MenuDivider key="div-delete" />,

@@ -170,8 +170,15 @@ const MetaspriteEditor = ({
   const gridSize = 8;
   const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
+  const canPreviewAsMono = useAppSelector(
+    (state) => state.project.present.settings.colorMode === "mixed",
+  );
+  const previewAsMono = useAppSelector(
+    (state) => canPreviewAsMono && state.project.present.settings.previewAsMono,
+  );
   const colorsEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono",
+    (state) =>
+      state.project.present.settings.colorMode !== "mono" && !previewAsMono,
   );
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId),

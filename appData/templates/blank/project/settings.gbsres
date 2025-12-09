@@ -93,5 +93,8 @@
   "spriteMode": "8x16",
   "openBuildFolderOnExport": true,
   "showRomUsageAfterBuild": false,
-  "romFilename": ""
+  "romFilename": "",
+  "defaultSceneTypeId": "TOPDOWN",
+  "disabledSceneTypeIds": [],
+  "autoTileFlipEnabled": true
 }
