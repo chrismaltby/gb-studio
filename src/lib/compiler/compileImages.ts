@@ -8,6 +8,7 @@ import {
 import {
   readFileToTilesDataArray,
   readFileToIndexedImage,
+  indexedImageToTilesDataArray,
 } from "lib/tiles/readFileToTiles";
 import {
   BackgroundData,
@@ -111,17 +112,16 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
   return arr.concat(Array(len - arr.length).fill(padding));
 };
 
-const mergeCommonTiles = async (
-  tileData: Uint8Array[],
+const readCommonTileset = async (
   commonTileset: TilesetData | undefined,
   projectPath: string,
 ) => {
   if (!commonTileset) {
-    return tileData;
+    return [];
   }
   const commonFilename = assetFilename(projectPath, "tilesets", commonTileset);
   const commonTileData = await readFileToTilesDataArray(commonFilename);
-  return [...commonTileData, ...tileData];
+  return commonTileData;
 };
 
 enum ImageColorMode {
@@ -142,6 +142,32 @@ const buildAttr = (
         : manualAttr;
     },
   );
+};
+
+const buildImageData = (
+  indexedImage: IndexedImage,
+  tileColors: number[],
+  commonTileData: Uint8Array[],
+  imgTileFlipEnabled: boolean,
+): {
+  tileData: Uint8Array[];
+  tileAttrs: number[];
+  tilesetData: Uint8Array[];
+} => {
+  if (imgTileFlipEnabled) {
+    return autoFlipTiles({
+      indexedImage,
+      tileColors,
+      commonTileData,
+    });
+  }
+
+  const tileData = indexedImageToTilesDataArray(indexedImage);
+  return {
+    tileData,
+    tileAttrs: tileColors,
+    tilesetData: [...commonTileData, ...tileData],
+  };
 };
 
 export const compileImage = async (
@@ -227,15 +253,14 @@ export const compileImage = async (
       ? autoTileFlipEnabled
       : img.autoTileFlipOverride);
 
-  const { tileData, tileAttrs } = imgTileFlipEnabled
-    ? autoFlipTiles({
-        indexedImage,
-        tileColors: img.tileColors,
-      })
-    : {
-        tileData: await readFileToTilesDataArray(tilesFileName),
-        tileAttrs: img.tileColors,
-      };
+  const commonTileData = await readCommonTileset(commonTileset, projectPath);
+
+  const { tileData, tileAttrs, tilesetData } = buildImageData(
+    indexedImage,
+    img.tileColors,
+    commonTileData,
+    imgTileFlipEnabled,
+  );
 
   if (is360) {
     const tilemap = Array.from(Array(360)).map((_, i) => i);
@@ -253,12 +278,7 @@ export const compileImage = async (
     };
   }
 
-  const tileDataWithCommon = await mergeCommonTiles(
-    tileData,
-    commonTileset,
-    projectPath,
-  );
-  const tilesetLookup = toTileLookup(tileDataWithCommon) ?? {};
+  const tilesetLookup = toTileLookup(tilesetData) ?? {};
   const uniqueTiles = Object.values(tilesetLookup);
   const tilemap = tilesAndLookupToTilemap(tileData, tilesetLookup);
   const tilesetLength = Object.keys(tilesetLookup).length;

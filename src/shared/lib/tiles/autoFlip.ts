@@ -15,21 +15,27 @@ import { TileLookup, hashTileData } from "shared/lib/tiles/tileData";
 interface AutoFlipResult {
   tileData: Uint8Array[];
   tileAttrs: number[];
+  tilesetData: Uint8Array[];
 }
 
-export function autoFlipTiles({
+export const autoFlipTiles = ({
   indexedImage,
   tileColors,
+  commonTileData,
 }: {
   indexedImage: IndexedImage;
   tileColors: readonly number[];
-}): AutoFlipResult {
+  commonTileData: Uint8Array[];
+}): AutoFlipResult => {
   const xTiles = Math.floor(indexedImage.width / TILE_SIZE);
   const yTiles = Math.floor(indexedImage.height / TILE_SIZE);
 
   const newTileData: Uint8Array[] = [];
   const newTileColors = [...tileColors];
-  const tileLookup: TileLookup = {};
+  const tileLookup: TileLookup = commonTileData.reduce((memo, tileData) => {
+    memo[hashTileData(tileData)] = tileData;
+    return memo;
+  }, {} as TileLookup);
 
   for (let tyi = 0; tyi < yTiles; tyi++) {
     for (let txi = 0; txi < xTiles; txi++) {
@@ -96,5 +102,6 @@ export function autoFlipTiles({
   return {
     tileData: newTileData,
     tileAttrs: newTileColors,
+    tilesetData: [...commonTileData, ...newTileData],
   };
-}
+};
