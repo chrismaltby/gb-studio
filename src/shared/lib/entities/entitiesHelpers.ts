@@ -18,7 +18,6 @@ import {
   UnionVariableValue,
   SpriteStateNormalized,
   ScriptEventNormalized,
-  Sound,
   CustomEventVariable,
   CustomEventActor,
   CustomEvent,
@@ -67,6 +66,7 @@ import {
   Palette,
   ProjectEntityResources,
   Scene,
+  SoundAsset,
   Sprite,
   TilesetAsset,
   Trigger,
@@ -86,7 +86,7 @@ interface NormalizedEntities {
   spriteStates: Record<EntityId, SpriteStateNormalized>;
   palettes: Record<EntityId, Palette>;
   music: Record<EntityId, MusicAsset>;
-  sounds: Record<EntityId, Sound>;
+  sounds: Record<EntityId, SoundAsset>;
   fonts: Record<EntityId, FontAsset>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, EmoteAsset>;
@@ -138,7 +138,7 @@ interface DenormalizedEntities {
   palettes: Palette[];
   scenes: Scene[];
   scripts: CustomEvent[];
-  sounds: Sound[];
+  sounds: SoundAsset[];
   sprites: Sprite[];
   tilesets: TilesetAsset[];
   triggers: Trigger[];
@@ -324,7 +324,7 @@ export const denormalizeEntities = (
       CustomEventNormalized
     >,
     music: state.music.entities as Record<EntityId, MusicAsset>,
-    sounds: state.sounds.entities as Record<EntityId, Sound>,
+    sounds: state.sounds.entities as Record<EntityId, SoundAsset>,
     fonts: state.fonts.entities as Record<EntityId, FontAsset>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, EmoteAsset>,

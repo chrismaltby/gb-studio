@@ -22,6 +22,8 @@ import type {
   FontAsset,
   Music,
   MusicAsset,
+  Sound,
+  SoundAsset,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -169,20 +171,6 @@ export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
 
-export type Sound = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  plugin?: string;
-  type: "wav" | "vgm" | "fxhammer";
-  numEffects?: number;
-  inode: string;
-  _v: number;
-};
-
-export type SoundData = Omit<Sound, "_v" | "inode">;
-
 export type Variable = {
   id: string;
   name: string;
@@ -273,7 +261,7 @@ export type ProjectEntitiesData = {
   palettes: Palette[];
   customEvents: CustomEvent[];
   music: Music[];
-  sounds: SoundData[];
+  sounds: Sound[];
   fonts: Font[];
   avatars: AvatarData[];
   emotes: Emote[];
@@ -299,7 +287,7 @@ export interface EntitiesState {
   palettes: EntityState<Palette, string>;
   customEvents: EntityState<CustomEventNormalized, string>;
   music: EntityState<MusicAsset, string>;
-  sounds: EntityState<Sound, string>;
+  sounds: EntityState<SoundAsset, string>;
   fonts: EntityState<FontAsset, string>;
   avatars: EntityState<Avatar, string>;
   emotes: EntityState<EmoteAsset, string>;

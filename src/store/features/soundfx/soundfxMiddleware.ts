@@ -11,9 +11,9 @@ import musicActions from "store/features/music/musicActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
-import { Sound } from "shared/lib/entities/entitiesTypes";
 import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
+import { SoundAsset } from "shared/lib/resources/types";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -38,7 +38,7 @@ function play(filename: string) {
     });
 }
 
-async function playSound(sound: Sound, effectIndex: number) {
+async function playSound(sound: SoundAsset, effectIndex: number) {
   const filename = assetPath("sounds", sound);
 
   if (sound.type === "wav") {

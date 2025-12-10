@@ -12,7 +12,6 @@ import type {
   Variable,
   ScriptEvent,
   CustomEvent,
-  SoundData,
   TimeUnitType,
   EngineFieldValue,
 } from "shared/lib/entities/entitiesTypes";
@@ -63,6 +62,7 @@ import type {
   Constant,
   Palette,
   ScriptEditorCtxType,
+  Sound,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
@@ -187,7 +187,7 @@ export interface ScriptBuilderOptions {
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
-  sounds: SoundData[];
+  sounds: Sound[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
   tilesets: PrecompiledTilesetData[];

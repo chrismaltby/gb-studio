@@ -27,7 +27,6 @@ import {
 import {
   CustomEventNormalized,
   SceneNormalized,
-  Sound,
   SpriteSheetNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
@@ -47,6 +46,7 @@ import {
   EmoteAsset,
   FontAsset,
   MusicAsset,
+  SoundAsset,
   TilesetAsset,
 } from "shared/lib/resources/types";
 
@@ -129,7 +129,7 @@ const musicToOption = (music: MusicAsset): EventOption => {
   };
 };
 
-const soundToOption = (sound: Sound): EventOption => {
+const soundToOption = (sound: SoundAsset): EventOption => {
   return {
     label: sound.name,
     value: sound.id,

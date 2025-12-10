@@ -60,7 +60,6 @@ import {
   SpriteStateNormalized,
   ScriptEventsRef,
   ScriptEventParentType,
-  Sound,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ScriptEventArgsOverride,
@@ -110,6 +109,7 @@ import {
   MusicResourceAsset,
   ObjPalette,
   Palette,
+  SoundAsset,
   SoundResourceAsset,
   SpriteResourceAsset,
   TilesetAsset,
@@ -153,7 +153,7 @@ const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
 const musicAdapter = createEntityAdapter<MusicAsset>({
   sortComparer: sortByFilename,
 });
-const soundsAdapter = createEntityAdapter<Sound>({
+const soundsAdapter = createEntityAdapter<SoundAsset>({
   sortComparer: sortByFilename,
 });
 const fontsAdapter = createEntityAdapter<FontAsset>({

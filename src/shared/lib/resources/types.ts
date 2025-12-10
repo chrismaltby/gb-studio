@@ -567,7 +567,11 @@ export const SoundResource = Type.Object({
 
 export type SoundResource = Static<typeof SoundResource>;
 
+export type Sound = ExtractResource<SoundResource>;
+
 export type SoundResourceAsset = SoundResource & AssetMetadata;
+
+export type SoundAsset = ExtractResource<SoundResourceAsset>;
 
 export const MusicSettings = Type.Object({
   disableSpeedConversion: Type.Optional(Type.Boolean()),

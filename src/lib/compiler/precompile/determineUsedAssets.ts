@@ -1,11 +1,7 @@
 import type { Reference } from "components/forms/ReferencesSelect";
 import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
-import type {
-  CustomEvent,
-  SoundData,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
+import type { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
@@ -16,6 +12,7 @@ import {
   Font,
   ProjectResources,
   Scene,
+  Sound,
   Sprite,
   Tileset,
 } from "shared/lib/resources/types";
@@ -64,7 +61,7 @@ export const determineUsedAssets = ({
   const projectColorMode = projectData.settings.colorMode;
 
   const usedVariablesLookup: Record<string, Variable> = {};
-  const usedSoundsLookup: Record<string, SoundData> = {};
+  const usedSoundsLookup: Record<string, Sound> = {};
   const usedFontsLookup: Record<string, Font> = {};
   const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
   const usedSpritesLookup: Record<string, ReferencedSprite> = {};
