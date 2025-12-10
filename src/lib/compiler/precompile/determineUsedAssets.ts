@@ -6,7 +6,6 @@ import type {
   CustomEvent,
   EmoteData,
   FontData,
-  Scene,
   SoundData,
   SpriteSheetData,
   TilesetData,
@@ -15,7 +14,11 @@ import type {
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
-import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
+import {
+  ColorModeSetting,
+  ProjectResources,
+  Scene,
+} from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
 import l10n from "shared/lib/lang/l10n";

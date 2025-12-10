@@ -1,6 +1,6 @@
 import { Type, Static } from "@sinclair/typebox";
 
-export type ExtractResource<T> = Omit<T, "_resourceType">;
+export type ExtractResource<T> = Omit<T, "_resourceType" | "_index">;
 
 export const ActorDirection = Type.Union(
   [
@@ -86,6 +86,13 @@ export const MinimalResource = Type.Object({
 
 export type MinimalResource = Static<typeof MinimalResource>;
 
+export const SpriteModeSetting = Type.Union([
+  Type.Literal("8x8"),
+  Type.Literal("8x16"),
+]);
+
+export type SpriteModeSetting = Static<typeof SpriteModeSetting>;
+
 const MetadataResource = Type.Object({
   _resourceType: Type.Literal("project"),
   name: Type.String(),
@@ -130,6 +137,7 @@ export const ActorResource = Type.Object({
   symbol: Type.String(),
   prefabId: Type.String(),
   name: Type.String(),
+  notes: Type.Optional(Type.String()),
   coordinateType: CoordinateType,
   x: Type.Number(),
   y: Type.Number(),
@@ -154,6 +162,8 @@ export const ActorResource = Type.Object({
 });
 
 export type ActorResource = Static<typeof ActorResource>;
+
+export type Actor = ExtractResource<ActorResource>;
 
 export const ActorPrefabResource = Type.Composite([
   Type.Omit(ActorResource, [
@@ -182,6 +192,7 @@ export const TriggerResource = Type.Object({
   symbol: Type.String(),
   prefabId: Type.String(),
   name: Type.String(),
+  notes: Type.Optional(Type.String()),
   x: Type.Number(),
   y: Type.Number(),
   width: Type.Number(),
@@ -192,6 +203,8 @@ export const TriggerResource = Type.Object({
 });
 
 export type TriggerResource = Static<typeof TriggerResource>;
+
+export type Trigger = ExtractResource<TriggerResource>;
 
 export const TriggerPrefabResource = Type.Composite([
   Type.Omit(TriggerResource, [
@@ -230,6 +243,7 @@ export const CompressedSceneResource = Type.Object({
   colorModeOverride: ColorModeOverrideSetting,
   paletteIds: Type.Array(Type.String()),
   spritePaletteIds: Type.Array(Type.String()),
+  spriteMode: Type.Optional(SpriteModeSetting),
   autoFadeSpeed: Type.Union([Type.Number(), Type.Null()], { default: 1 }),
   autoFadeEventCollapse: Type.Optional(Type.Boolean()),
   parallax: Type.Optional(Type.Array(SceneParallaxLayer)),
@@ -282,6 +296,14 @@ export const SceneResource = Type.Composite([
 ]);
 
 export type SceneResource = Static<typeof SceneResource>;
+
+export type Scene = Omit<
+  ExtractResource<SceneResource>,
+  "actors" | "triggers"
+> & {
+  actors: Actor[];
+  triggers: Trigger[];
+};
 
 export const ScriptVariable = Type.Object({
   id: Type.String(),
@@ -367,13 +389,6 @@ export const ObjPalette = Type.Union([
 ]);
 
 export type ObjPalette = Static<typeof ObjPalette>;
-
-export const SpriteModeSetting = Type.Union([
-  Type.Literal("8x8"),
-  Type.Literal("8x16"),
-]);
-
-export type SpriteModeSetting = Static<typeof SpriteModeSetting>;
 
 export const MetaspriteTile = Type.Object({
   id: Type.String(),

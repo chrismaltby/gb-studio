@@ -29,10 +29,7 @@ import {
   Tileset,
   CustomEventVariable,
   CustomEventActor,
-  Actor,
-  Scene,
   CustomEvent,
-  Trigger,
   SpriteSheet,
   ActorPrefab,
   ActorPrefabNormalized,
@@ -68,7 +65,13 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
+import {
+  Actor,
+  Constant,
+  ProjectEntityResources,
+  Scene,
+  Trigger,
+} from "shared/lib/resources/types";
 import { uniqBy } from "lodash";
 
 interface NormalizedEntities {

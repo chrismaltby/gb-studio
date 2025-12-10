@@ -26,14 +26,12 @@ import {
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import {
-  Actor,
   AvatarData,
   CustomEvent,
   CustomEventVariable,
   EmoteData,
   EngineFieldValue,
   FontData,
-  Scene,
   ScriptEventArgs,
   ScriptEvent,
   SpriteAnimationData,
@@ -51,6 +49,7 @@ import {
   isScriptValue,
 } from "shared/lib/scriptValue/types";
 import { ensureNumber } from "shared/types";
+import { Actor, Scene } from "shared/lib/resources/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 

@@ -2,16 +2,13 @@ import mapValues from "lodash/mapValues";
 import {
   actorScriptKeys,
   ActorNormalized,
-  Actor,
   ActorScriptKey,
   CustomEventNormalized,
   SceneNormalized,
-  Scene,
   SceneScriptKey,
   ScriptEventNormalized,
   ScriptEvent,
   TriggerNormalized,
-  Trigger,
   TriggerScriptKey,
   triggerScriptKeys,
   sceneScriptKeys,
@@ -23,9 +20,12 @@ import {
   ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
 import type {
+  Actor,
   CompressedSceneResourceWithChildren,
+  Scene,
   SceneResource,
   ScriptResource,
+  Trigger,
 } from "shared/lib/resources/types";
 
 type ScriptMapOptions =

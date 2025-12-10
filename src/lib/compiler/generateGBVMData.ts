@@ -2,14 +2,11 @@
 import flatten from "lodash/flatten";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import type {
-  Actor,
   CollisionExtraFlag,
   EngineFieldValue,
   Palette,
-  Scene,
   SceneParallaxLayer,
   TilesetData,
-  Trigger,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
 import {
@@ -25,9 +22,12 @@ import type {
   SceneTypeSchema,
 } from "store/features/engine/engineState";
 import {
+  Actor,
   ColorModeSetting,
   Constant,
+  Scene,
   SceneBoundsRect,
+  Trigger,
 } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
 import { GlobalProjectiles } from "./scriptBuilder";

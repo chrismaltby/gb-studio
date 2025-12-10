@@ -12,8 +12,8 @@ import {
 import { EVENT_TEXT, EVENT_IF_TRUE } from "../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
-import { ProjectResources } from "shared/lib/resources/types";
-import { Scene, TilesetData } from "shared/lib/entities/entitiesTypes";
+import { ProjectResources, Scene } from "shared/lib/resources/types";
+import { TilesetData } from "shared/lib/entities/entitiesTypes";
 import {
   dummyActor,
   dummyBackground,

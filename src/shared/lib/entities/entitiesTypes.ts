@@ -1,9 +1,9 @@
 import type { EntityState } from "@reduxjs/toolkit";
 import type {
-  ColorModeOverrideSetting,
+  Actor,
+  Trigger,
+  Scene,
   Constant,
-  CoordinateType,
-  SceneBoundsRect,
   ScriptEditorCtxType,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
@@ -94,35 +94,6 @@ export const actorScriptKeys = [
 ] as const;
 export type ActorScriptKey = (typeof actorScriptKeys)[number];
 
-export type Actor = {
-  id: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  coordinateType: CoordinateType;
-  x: number;
-  y: number;
-  prefabId: string;
-  spriteSheetId: string;
-  paletteId: string;
-  frame: number;
-  moveSpeed: number;
-  animSpeed: number;
-  direction: ActorDirection;
-  animate: boolean;
-  isPinned: boolean;
-  persistent: boolean;
-  collisionGroup: CollisionGroup;
-  collisionExtraFlags: CollisionExtraFlag[];
-  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
-};
-
 export type ActorNormalized = Omit<
   Actor,
   | "script"
@@ -159,21 +130,6 @@ export type ActorPrefabNormalized = Omit<
 
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = (typeof triggerScriptKeys)[number];
-
-export type Trigger = {
-  id: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  prefabId: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
-  script: ScriptEvent[];
-  leaveScript: ScriptEvent[];
-};
 
 export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
   script: string[];
@@ -438,37 +394,6 @@ export const sceneScriptKeys = [
   "playerHit3Script",
 ] as const;
 export type SceneScriptKey = (typeof sceneScriptKeys)[number];
-
-export type Scene = {
-  id: string;
-  type: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  labelColor?: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  backgroundId: string;
-  tilesetId: string;
-  colorModeOverride: ColorModeOverrideSetting;
-  paletteIds: string[];
-  spritePaletteIds: string[];
-  collisions: number[];
-  autoFadeSpeed: number | null;
-  autoFadeEventCollapse?: boolean;
-  parallax?: SceneParallaxLayer[];
-  scrollBounds?: SceneBoundsRect;
-  playerSpriteSheetId?: string;
-  actors: Actor[];
-  triggers: Trigger[];
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
-  spriteMode?: SpriteModeSetting;
-};
 
 export type SceneNormalized = Omit<
   Scene,

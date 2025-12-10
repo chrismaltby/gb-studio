@@ -114,7 +114,6 @@ import {
   FontData,
   MusicData,
   Palette,
-  Scene,
   ScriptEvent,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
@@ -131,6 +130,7 @@ import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
   ProjectResources,
+  Scene,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";

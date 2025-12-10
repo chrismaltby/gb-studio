@@ -1,12 +1,10 @@
 import {
-  Actor,
   ActorNormalized,
   CustomEvent,
   CustomEventNormalized,
   SceneNormalized,
   ScriptEvent,
   ScriptEventNormalized,
-  Trigger,
   TriggerNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
@@ -30,6 +28,7 @@ import {
   dummyTriggerNormalized,
   dummyTriggerPrefabNormalized,
 } from "../dummydata";
+import { Actor, Trigger } from "shared/lib/resources/types";
 
 test("shouldn't walk empty events", () => {
   const events: ScriptEvent[] = [];
