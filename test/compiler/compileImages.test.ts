@@ -3,7 +3,7 @@ import compileImages, {
   imageTileAllocationDefault,
 } from "lib/compiler/compileImages";
 import { ReferencedBackground } from "lib/compiler/precompile/determineUsedAssets";
-import { BackgroundData } from "shared/lib/entities/entitiesTypes";
+import { Background } from "shared/lib/resources/types";
 
 const BYTES_PER_TILE = 16;
 
@@ -108,7 +108,7 @@ test("Should allocate first 128 tiles to vram1, next 128 to vram2 and split the 
       id: "img1",
       filename: "parallax.png",
     },
-  ] as unknown as BackgroundData;
+  ] as unknown as Background;
   for (let i = 0; i < 384; i++) {
     let shouldBeVRAM2 = false;
     let index = i;

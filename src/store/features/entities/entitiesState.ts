@@ -48,7 +48,6 @@ import {
   ActorNormalized,
   TriggerNormalized,
   SceneNormalized,
-  Background,
   SpriteSheetNormalized,
   Music,
   Variable,
@@ -103,6 +102,7 @@ import { omit } from "shared/types";
 import { isEqual } from "lodash";
 import {
   AvatarResourceAsset,
+  BackgroundAsset,
   CompressedBackgroundResourceAsset,
   Constant,
   EmoteAsset,
@@ -134,7 +134,7 @@ const triggersAdapter = createEntityAdapter<TriggerNormalized>();
 const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
 const triggerPrefabsAdapter = createEntityAdapter<TriggerPrefabNormalized>();
-const backgroundsAdapter = createEntityAdapter<Background>({
+const backgroundsAdapter = createEntityAdapter<BackgroundAsset>({
   sortComparer: sortByFilename,
 });
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
@@ -2452,8 +2452,8 @@ const editBackgroundAutoTileFlipOverride: CaseReducer<
 
 const updateMonoOverrideIds = (state: EntitiesState) => {
   const backgrounds = localBackgroundSelectAll(state);
-  const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
-  const getMonoKey = (b: Background) =>
+  const getKey = (b: BackgroundAsset) => `${b.plugin ?? ""}_${b.filename}`;
+  const getMonoKey = (b: BackgroundAsset) =>
     `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
   const monoOverrideLookup = keyBy(backgrounds, getKey);
   backgrounds.forEach((b) => {

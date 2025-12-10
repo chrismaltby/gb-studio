@@ -54,7 +54,7 @@ import {
   projectTemplatesRoot,
   THEME_SETTING_KEY,
 } from "consts";
-import type { Background, Tileset } from "shared/lib/entities/entitiesTypes";
+import type { Tileset } from "shared/lib/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
@@ -108,6 +108,7 @@ import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
 import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
+  BackgroundAsset,
   ColorCorrectionSetting,
   ColorModeSetting,
   MusicResourceAsset,
@@ -1637,7 +1638,7 @@ ipcMain.handle(
   "project:get-background-info",
   (
     _event,
-    background: Background,
+    background: BackgroundAsset,
     tileset: Tileset | undefined,
     is360: boolean,
     uiPalette: HexPalette | undefined,

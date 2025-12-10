@@ -1,6 +1,5 @@
 import {
   SceneNormalized,
-  Background,
   SpriteSheetNormalized,
   Music,
   ActorNormalized,
@@ -47,6 +46,7 @@ import {
   ActorPrefabResource,
   ActorResource,
   AvatarResource,
+  BackgroundAsset,
   CompressedBackgroundResource,
   CompressedSceneResourceWithChildren,
   EmoteResource,
@@ -194,7 +194,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
   colorMode: "mixed",
 };
 
-export const dummyBackground: Background = {
+export const dummyBackground: BackgroundAsset = {
   id: "",
   name: "",
   symbol: "bg_0",

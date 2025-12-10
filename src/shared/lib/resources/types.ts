@@ -366,6 +366,12 @@ export const BackgroundResource = Type.Composite([
 
 export type BackgroundResource = Static<typeof BackgroundResource>;
 
+export type Background = ExtractResource<BackgroundResource>;
+
+export type BackgroundResourceAsset = BackgroundResource & AssetMetadata;
+
+export type BackgroundAsset = ExtractResource<BackgroundResourceAsset>;
+
 export const TilesetResource = Type.Object({
   _resourceType: Type.Literal("tileset"),
   id: Type.String(),

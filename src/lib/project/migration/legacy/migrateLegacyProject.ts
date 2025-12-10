@@ -1,7 +1,6 @@
 import { Static, TSchema } from "@sinclair/typebox";
 import migrateProject from "./migrateLegacyProjectVersions";
 import identity from "lodash/identity";
-import { BackgroundData } from "shared/lib/entities/entitiesTypes";
 import {
   compressSceneResource,
   compressBackgroundResource,
@@ -9,6 +8,7 @@ import {
 import {
   ActorResource,
   AvatarResource,
+  Background,
   BackgroundResource,
   CompressedBackgroundResource,
   CompressedProjectResources,
@@ -80,7 +80,7 @@ export const migrateLegacyProject = (
   };
 
   const encodeBackground = (
-    background: BackgroundData,
+    background: Background,
   ): CompressedBackgroundResource => {
     const encodeBackground = encodeResource(BackgroundResource);
     return compressBackgroundResource(encodeBackground(background));

@@ -14,6 +14,8 @@ import type {
   Emote,
   EmoteAsset,
   Palette,
+  Background,
+  BackgroundAsset,
 } from "shared/lib/resources/types";
 
 export type ObjPalette = "OBP0" | "OBP1";
@@ -145,26 +147,6 @@ export type TriggerPrefabNormalized = Omit<
   TriggerNormalized,
   TriggerFieldsOmittedFromPrefab
 >;
-
-export type Background = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  tileColors: number[];
-  monoOverrideId?: string;
-  autoColor?: boolean;
-  plugin?: string;
-  inode: string;
-  _v: number;
-  autoTileFlipOverride?: boolean;
-};
-
-export type BackgroundData = Omit<Background, "_v" | "inode">;
 
 export type Font = {
   id: string;
@@ -327,7 +309,7 @@ export type SceneNormalized = Omit<
 
 export type ProjectEntitiesData = {
   scenes: Scene[];
-  backgrounds: BackgroundData[];
+  backgrounds: Background[];
   spriteSheets: Sprite[];
   palettes: Palette[];
   customEvents: CustomEvent[];
@@ -349,7 +331,7 @@ export interface EntitiesState {
   actorPrefabs: EntityState<ActorPrefabNormalized, string>;
   triggerPrefabs: EntityState<TriggerPrefabNormalized, string>;
   scriptEvents: EntityState<ScriptEventNormalized, string>;
-  backgrounds: EntityState<Background, string>;
+  backgrounds: EntityState<BackgroundAsset, string>;
   spriteSheets: EntityState<SpriteSheetNormalized, string>;
   metasprites: EntityState<MetaspriteNormalized, string>;
   metaspriteTiles: EntityState<MetaspriteTile, string>;

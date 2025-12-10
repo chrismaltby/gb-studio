@@ -25,7 +25,6 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import {
-  Background,
   CustomEventNormalized,
   Font,
   Music,
@@ -46,7 +45,7 @@ import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledMenu } from "ui/menu/style";
-import { EmoteAsset } from "shared/lib/resources/types";
+import { BackgroundAsset, EmoteAsset } from "shared/lib/resources/types";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -74,7 +73,7 @@ interface EventOptGroup {
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
 
-const backgroundToOption = (background: Background): EventOption => {
+const backgroundToOption = (background: BackgroundAsset): EventOption => {
   return {
     label: background.name,
     value: background.id,

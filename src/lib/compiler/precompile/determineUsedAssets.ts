@@ -2,7 +2,6 @@ import type { Reference } from "components/forms/ReferencesSelect";
 import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
-  BackgroundData,
   CustomEvent,
   FontData,
   SoundData,
@@ -13,6 +12,7 @@ import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
 import {
+  Background,
   ColorModeSetting,
   Emote,
   ProjectResources,
@@ -25,7 +25,7 @@ import l10n from "shared/lib/lang/l10n";
 
 type HexPalette = [string, string, string, string];
 
-export type ReferencedBackground = BackgroundData & {
+export type ReferencedBackground = Background & {
   is360: boolean;
   uiPalette: HexPalette;
   colorMode: ColorModeSetting;

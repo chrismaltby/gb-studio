@@ -9,7 +9,6 @@ import {
   SceneNormalized,
   ActorNormalized,
   TriggerNormalized,
-  Background,
   Music,
   Font,
   Avatar,
@@ -62,6 +61,7 @@ import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
 import {
   Actor,
+  BackgroundAsset,
   Constant,
   EmoteAsset,
   MetaspriteTile,
@@ -78,7 +78,7 @@ interface NormalizedEntities {
   actors: Record<EntityId, ActorNormalized>;
   triggers: Record<EntityId, TriggerNormalized>;
   scriptEvents: Record<EntityId, ScriptEventNormalized>;
-  backgrounds: Record<EntityId, Background>;
+  backgrounds: Record<EntityId, BackgroundAsset>;
   sprites: Record<EntityId, SpriteSheetNormalized>;
   metasprites: Record<EntityId, MetaspriteNormalized>;
   metaspriteTiles: Record<EntityId, MetaspriteTile>;
@@ -128,7 +128,7 @@ type NamedEntity = { name: string };
 interface DenormalizedEntities {
   actors: Actor[];
   avatars: Avatar[];
-  backgrounds: Background[];
+  backgrounds: BackgroundAsset[];
   emotes: EmoteAsset[];
   engineFieldValues: {
     engineFieldValues: EngineFieldValue[];
@@ -294,7 +294,10 @@ export const denormalizeEntities = (
       EntityId,
       ScriptEventNormalized
     >,
-    backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
+    backgrounds: state.backgrounds.entities as Record<
+      EntityId,
+      BackgroundAsset
+    >,
     sprites: state.spriteSheets.entities as Record<
       EntityId,
       SpriteSheetNormalized

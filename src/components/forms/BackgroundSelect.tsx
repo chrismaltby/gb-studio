@@ -11,11 +11,11 @@ import {
   SelectCommonProps,
   FormatFolderLabel,
 } from "ui/form/Select";
-import { Background } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { isMonoOverride } from "shared/lib/assets/backgrounds";
 import { SingleValue } from "react-select";
+import { BackgroundAsset } from "shared/lib/resources/types";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -46,7 +46,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
     backgroundSelectors.selectById(state, value || ""),
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentBackground, setCurrentBackground] = useState<Background>();
+  const [currentBackground, setCurrentBackground] = useState<BackgroundAsset>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {

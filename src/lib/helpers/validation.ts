@@ -1,9 +1,7 @@
-import type {
-  BackgroundData,
-  Tileset,
-} from "shared/lib/entities/entitiesTypes";
+import type { Tileset } from "shared/lib/entities/entitiesTypes";
 import { compileImage } from "lib/compiler/compileImages";
 import {
+  Background,
   ColorCorrectionSetting,
   ColorModeSetting,
   Palette,
@@ -19,7 +17,7 @@ export interface BackgroundInfo {
 }
 
 export const getBackgroundInfo = async (
-  background: BackgroundData,
+  background: Background,
   commonTileset: Tileset | undefined,
   is360: boolean,
   uiPalette: HexPalette | undefined,
