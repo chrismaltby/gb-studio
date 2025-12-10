@@ -1,59 +1,40 @@
-class Semaphore {
-  private maxConcurrency: number;
-  private currentConcurrency: number;
-  private queue: (() => void)[];
-
-  constructor(maxConcurrency: number) {
-    this.maxConcurrency = maxConcurrency;
-    this.currentConcurrency = 0;
-    this.queue = [];
-  }
-
-  async acquire() {
-    return new Promise<void>((resolve) => {
-      if (this.currentConcurrency < this.maxConcurrency) {
-        this.currentConcurrency++;
-        resolve();
-      } else {
-        this.queue.push(resolve);
-      }
-    });
-  }
-
-  release() {
-    const resolve = this.queue.shift();
-    if (resolve) {
-      resolve();
-    } else {
-      this.currentConcurrency--;
-    }
-  }
-}
-
 const promiseLimit = async <T>(
   n: number,
-  list: (() => Promise<T>)[],
+  list: Array<() => Promise<T>>,
 ): Promise<T[]> => {
-  const semaphore = new Semaphore(n);
-  const results: T[] = [];
+  const results: T[] = new Array(list.length);
+  let nextIndex = 0;
+  let active = 0;
 
-  const limitedFn = async (
-    fn: () => Promise<T>,
-    index: number,
-  ): Promise<void> => {
-    await semaphore.acquire();
-    try {
-      const result = await fn();
-      results[index] = result;
-    } finally {
-      semaphore.release();
+  return new Promise<T[]>((resolve, reject) => {
+    const runNext = () => {
+      if (nextIndex >= list.length) {
+        if (active === 0) resolve(results);
+        return;
+      }
+
+      const current = nextIndex++;
+      active++;
+
+      list[current]()
+        .then((value) => {
+          results[current] = value;
+          active--;
+          runNext();
+          if (active === 0 && nextIndex >= list.length) resolve(results);
+        })
+        .catch(reject);
+    };
+
+    if (list.length === 0) {
+      resolve(results);
+      return;
     }
-  };
 
-  const promises = list.map(limitedFn);
-  await Promise.all(promises);
-
-  return results;
+    for (let i = 0; i < n && i < list.length; i++) {
+      runNext();
+    }
+  });
 };
 
 export default promiseLimit;
