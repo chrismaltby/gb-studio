@@ -209,11 +209,6 @@ export type SpriteSheetNormalized = Omit<SpriteAsset, "states"> & {
   states: string[];
 };
 
-export type SceneParallaxLayer = {
-  height: number;
-  speed: number;
-};
-
 export const sceneScriptKeys = [
   "script",
   "playerHit1Script",

@@ -23,7 +23,6 @@ import {
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
   SceneNormalized,
-  SceneParallaxLayer,
   ScriptEventNormalized,
   SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -81,6 +80,7 @@ import {
   ActorDirection,
   ColorModeOverrideSetting,
   SceneBoundsRect,
+  SceneParallaxLayer,
 } from "shared/lib/resources/types";
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
