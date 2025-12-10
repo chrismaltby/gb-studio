@@ -44,13 +44,13 @@ const defaultSceneTypes = [
 ];
 
 export const loadSceneTypes = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<SceneTypeSchema[]> => {
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
     "engine",
-    "engine.json"
+    "engine.json",
   );
   const pluginsPath = Path.join(projectRoot, "plugins");
 
@@ -75,7 +75,7 @@ export const loadSceneTypes = async (
     sceneTypes = defaultSceneTypes;
   }
 
-  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     const enginePluginJsonPath = Path.join(enginePluginPath, "engine.json");
     if (await pathExists(enginePluginJsonPath)) {

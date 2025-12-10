@@ -1,5 +1,6 @@
 import chokidar from "chokidar";
 import Path from "path";
+import type { Stats } from "fs";
 
 type WatchCallback = (path: string) => void;
 
@@ -26,7 +27,7 @@ const watchProject = (
     onRemoveTileset: WatchCallback;
     onChangedEngineSchema: WatchCallback;
     onChangedEventPlugin: WatchCallback;
-  }
+  },
 ) => {
   const projectRoot = Path.dirname(projectPath);
   const spritesRoot = `${projectRoot}/assets/sprites`;
@@ -52,151 +53,165 @@ const watchProject = (
     pollInterval: 100,
   };
 
-  const pluginSubfolder = (filename: string) => {
-    return Path.relative(pluginsRoot, filename).split(Path.sep)[1];
+  const endsWithExt = (path: string, extensions: string[]) => {
+    const lowerPath = path.toLowerCase();
+    return extensions.some((ext) => lowerPath.endsWith(ext));
+  };
+
+  const ignoreUnlessExt = (extensions: string[]) => {
+    const lowerExts = extensions.map((e) => e.toLowerCase());
+    return (path: string, stats: Stats | undefined) => {
+      if (stats?.isFile()) {
+        return !endsWithExt(path, lowerExts);
+      }
+      return false;
+    };
+  };
+
+  const getPluginType = (filename: string) => {
+    const folderParts = Path.relative(pluginsRoot, filename).split(Path.sep);
+    for (let i = 1; i < folderParts.length; i++) {
+      const part = folderParts[i];
+      if (part === "backgrounds" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (part === "sprites" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (part === "music" && endsWithExt(filename, [".uge", ".mod"])) {
+        return part;
+      }
+      if (part === "fonts" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (part === "avatars" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (part === "emotes" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (part === "tilesets" && endsWithExt(filename, [".png"])) {
+        return part;
+      }
+      if (
+        part === "sounds" &&
+        endsWithExt(filename, [".wav", ".vgm", ".vgz", ".sav"])
+      ) {
+        return part;
+      }
+      if (part === "engine" && filename.endsWith("engine.json")) {
+        return part;
+      }
+    }
+    return null;
   };
 
   const spriteWatcher = chokidar
-    .watch(
-      [
-        `${spritesRoot}/**/*.{png,PNG}`,
-        `${pluginsRoot}/**/sprites/**/*.{png,PNG}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(spritesRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedSprite)
     .on("change", callbacks.onChangedSprite)
     .on("unlink", callbacks.onRemoveSprite);
 
   const backgroundWatcher = chokidar
-    .watch(
-      [
-        `${backgroundsRoot}/**/*.{png,PNG}`,
-        `${pluginsRoot}/**/backgrounds/**/*.{png,PNG}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(backgroundsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedBackground)
     .on("change", callbacks.onChangedBackground)
     .on("unlink", callbacks.onRemoveBackground);
 
   const uiWatcher = chokidar
-    .watch(`${uiRoot}/**/*.{png,PNG}`, {
+    .watch(uiRoot, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
     })
     .on("add", callbacks.onChangedUI)
     .on("change", callbacks.onChangedUI)
     .on("unlink", callbacks.onRemoveUI);
 
   const sgbWatcher = chokidar
-    .watch(`${sgbRoot}/**/*.{png,PNG}`, {
+    .watch(sgbRoot, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
     })
     .on("add", callbacks.onChangedUI)
     .on("change", callbacks.onChangedUI)
     .on("unlink", callbacks.onRemoveUI);
 
   const musicWatcher = chokidar
-    .watch(
-      [
-        `${musicRoot}/**/*.{uge,UGE,mod,MOD}`,
-        `${pluginsRoot}/**/music/**/*.{uge,UGE,mod,MOD}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish: musicAwaitWriteFinish,
-      }
-    )
+    .watch(musicRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish: musicAwaitWriteFinish,
+      ignored: ignoreUnlessExt([".uge", ".mod"]),
+    })
     .on("add", callbacks.onChangedMusic)
     .on("change", callbacks.onChangedMusic)
     .on("unlink", callbacks.onRemoveMusic);
 
   const soundsWatcher = chokidar
-    .watch(
-      [
-        `${soundsRoot}/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
-        `${pluginsRoot}/**/sounds/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(soundsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".wav", ".vgm", ".vgz", ".sav"]),
+    })
     .on("add", callbacks.onChangedSound)
     .on("change", callbacks.onChangedSound)
     .on("unlink", callbacks.onRemoveSound);
 
   const fontsWatcher = chokidar
-    .watch(
-      [`${fontsRoot}/**/*.{png,PNG}`, `${pluginsRoot}/**/fonts/**/*.{png,PNG}`],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(fontsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedFont)
     .on("change", callbacks.onChangedFont)
     .on("unlink", callbacks.onRemoveFont);
 
   const avatarsWatcher = chokidar
-    .watch(
-      [
-        `${avatarsRoot}/**/*.{png,PNG}`,
-        `${pluginsRoot}/**/avatars/**/*.{png,PNG}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(avatarsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedAvatar)
     .on("change", callbacks.onChangedAvatar)
     .on("unlink", callbacks.onRemoveAvatar);
 
   const emotesWatcher = chokidar
-    .watch(
-      [
-        `${emotesRoot}/**/*.{png,PNG}`,
-        `${pluginsRoot}/**/emotes/**/*.{png,PNG}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(emotesRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedEmote)
     .on("change", callbacks.onChangedEmote)
     .on("unlink", callbacks.onRemoveEmote);
 
   const tilesetsWatcher = chokidar
-    .watch(
-      [
-        `${tilesetsRoot}/**/*.{png,PNG}`,
-        `${pluginsRoot}/**/tilesets/**/*.{png,PNG}`,
-      ],
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(tilesetsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([".png"]),
+    })
     .on("add", callbacks.onChangedTileset)
     .on("change", callbacks.onChangedTileset)
     .on("unlink", callbacks.onRemoveTileset);
@@ -212,7 +227,7 @@ const watchProject = (
     .on("unlink", callbacks.onChangedEngineSchema);
 
   const pluginEventsWatcher = chokidar
-    .watch(`${pluginsRoot}/**/events/event*.js`, {
+    .watch(`${pluginsRoot}/**/events/**`, {
       ignoreInitial: true,
       persistent: true,
     })
@@ -221,72 +236,88 @@ const watchProject = (
     .on("unlink", callbacks.onChangedEventPlugin);
 
   const pluginAssetsWatcher = chokidar
-    .watch(
-      `${pluginsRoot}/**/*.{png,PNG,uge,UGE,mod,MOD,wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
-      {
-        ignoreInitial: true,
-        persistent: true,
-        awaitWriteFinish,
-      }
-    )
+    .watch(pluginsRoot, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([
+        ".png",
+        ".uge",
+        ".mod",
+        ".wav",
+        ".vgm",
+        ".vgz",
+        ".sav",
+        "engine.json",
+      ]),
+    })
     .on("add", (filename) => {
-      const subfolder = pluginSubfolder(filename);
-      if (subfolder === "backgrounds") {
+      const pluginType = getPluginType(filename);
+      if (pluginType === "backgrounds") {
         callbacks.onChangedBackground(filename);
-      } else if (subfolder === "sprites") {
+      } else if (pluginType === "sprites") {
         callbacks.onChangedSprite(filename);
-      } else if (subfolder === "music") {
+      } else if (
+        pluginType === "music" &&
+        endsWithExt(filename, [".uge", ".mod"])
+      ) {
         callbacks.onChangedMusic(filename);
-      } else if (subfolder === "fonts") {
+      } else if (pluginType === "fonts") {
         callbacks.onChangedFont(filename);
-      } else if (subfolder === "avatar") {
+      } else if (pluginType === "avatars") {
         callbacks.onChangedAvatar(filename);
-      } else if (subfolder === "emotes") {
+      } else if (pluginType === "emotes") {
         callbacks.onChangedEmote(filename);
-      } else if (subfolder === "tilesets") {
+      } else if (pluginType === "tilesets") {
         callbacks.onChangedTileset(filename);
-      } else if (subfolder === "sounds") {
+      } else if (pluginType === "sounds") {
         callbacks.onChangedSound(filename);
+      } else if (pluginType === "engine") {
+        callbacks.onChangedEngineSchema(filename);
       }
     })
     .on("change", (filename) => {
-      const subfolder = pluginSubfolder(filename);
-      if (subfolder === "backgrounds") {
+      const pluginType = getPluginType(filename);
+      if (pluginType === "backgrounds") {
         callbacks.onChangedBackground(filename);
-      } else if (subfolder === "sprites") {
+      } else if (pluginType === "sprites") {
         callbacks.onChangedSprite(filename);
-      } else if (subfolder === "music") {
+      } else if (pluginType === "music") {
         callbacks.onChangedMusic(filename);
-      } else if (subfolder === "fonts") {
+      } else if (pluginType === "fonts") {
         callbacks.onChangedFont(filename);
-      } else if (subfolder === "avatars") {
+      } else if (pluginType === "avatars") {
         callbacks.onChangedAvatar(filename);
-      } else if (subfolder === "emotes") {
+      } else if (pluginType === "emotes") {
         callbacks.onChangedEmote(filename);
-      } else if (subfolder === "tilesets") {
+      } else if (pluginType === "tilesets") {
         callbacks.onChangedTileset(filename);
-      } else if (subfolder === "sounds") {
+      } else if (pluginType === "sounds") {
         callbacks.onChangedSound(filename);
+      } else if (pluginType === "engine") {
+        callbacks.onChangedEngineSchema(filename);
       }
     })
     .on("unlink", (filename) => {
-      const subfolder = pluginSubfolder(filename);
-      if (subfolder === "backgrounds") {
+      const pluginType = getPluginType(filename);
+      if (pluginType === "backgrounds") {
         callbacks.onRemoveBackground(filename);
-      } else if (subfolder === "sprites") {
+      } else if (pluginType === "sprites") {
         callbacks.onRemoveSprite(filename);
-      } else if (subfolder === "music") {
+      } else if (pluginType === "music") {
         callbacks.onRemoveMusic(filename);
-      } else if (subfolder === "fonts") {
+      } else if (pluginType === "fonts") {
         callbacks.onRemoveFont(filename);
-      } else if (subfolder === "avatars") {
+      } else if (pluginType === "avatars") {
         callbacks.onRemoveAvatar(filename);
-      } else if (subfolder === "emotes") {
+      } else if (pluginType === "emotes") {
         callbacks.onRemoveEmote(filename);
-      } else if (subfolder === "tilesets") {
+      } else if (pluginType === "tilesets") {
         callbacks.onRemoveTileset(filename);
-      } else if (subfolder === "sounds") {
+      } else if (pluginType === "sounds") {
         callbacks.onRemoveSound(filename);
+      } else if (pluginType === "engine") {
+        callbacks.onChangedEngineSchema(filename);
       }
     });
 

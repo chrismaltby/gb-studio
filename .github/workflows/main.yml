@@ -45,17 +45,11 @@ jobs:
           - name: mac
             label: macOS ARM
             os: macos-14
-          - name: mac-intel
-            label: macOS Intel
-            os: macos-14
           - name: win32
             label: Windows 32-bit
             os: ubuntu-latest
           - name: win64
             label: Windows 64-bit
-            os: ubuntu-latest
-          - name: linux
-            label: Linux
             os: ubuntu-latest
 
     steps:

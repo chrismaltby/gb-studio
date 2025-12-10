@@ -1,6 +1,6 @@
-import { createReadStream } from "fs-extra";
+import { createReadStream, readFile } from "fs-extra";
 import crypto from "crypto";
-import SparkMD5 from "spark-md5";
+import { md5 } from "hash-wasm";
 
 export const checksumFile = (path: string): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -12,14 +12,9 @@ export const checksumFile = (path: string): Promise<string> => {
   });
 };
 
-export const checksumMD5File = (path: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const spark = new SparkMD5.ArrayBuffer();
-    const stream = createReadStream(path);
-    stream.on("error", (err) => reject(err));
-    stream.on("data", (chunk: ArrayBuffer) => spark.append(chunk));
-    stream.on("end", () => resolve(spark.end()));
-  });
+export const checksumMD5File = async (path: string): Promise<string> => {
+  const file = await readFile(path);
+  return md5(file);
 };
 
 export const checksumString = (string: string): string => {

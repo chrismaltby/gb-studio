@@ -9,13 +9,13 @@ interface EngineData {
 }
 
 export const loadEngineFields = async (
-  projectRoot: string
+  projectRoot: string,
 ): Promise<EngineFieldSchema[]> => {
   const localEngineJsonPath = Path.join(
     projectRoot,
     "assets",
     "engine",
-    "engine.json"
+    "engine.json",
   );
   const pluginsPath = Path.join(projectRoot, "plugins");
 
@@ -36,7 +36,7 @@ export const loadEngineFields = async (
     fields = defaultEngine.fields;
   }
 
-  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     const enginePluginJsonPath = Path.join(enginePluginPath, "engine.json");
     if (await pathExists(enginePluginJsonPath)) {

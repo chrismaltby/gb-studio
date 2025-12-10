@@ -5,7 +5,7 @@ import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import Path from "path";
 import { WriteResourcesPatch } from "shared/lib/resources/types";
 import promiseLimit from "lib/helpers/promiseLimit";
-import { uniq } from "lodash";
+import { uniq, throttle } from "lodash";
 import { pathToPosix } from "shared/lib/helpers/path";
 import { encodeResource } from "shared/lib/resources/save";
 
@@ -20,7 +20,7 @@ interface SaveProjectDataOptions {
 const saveProjectData = async (
   projectPath: string,
   patch: WriteResourcesPatch,
-  options?: SaveProjectDataOptions
+  options?: SaveProjectDataOptions,
 ) => {
   const writeBuffer = patch.data;
   const metadata = patch.metadata;
@@ -29,28 +29,28 @@ const saveProjectData = async (
 
   let completedCount = 0;
 
-  const notifyProgress = () => {
+  const notifyProgress = throttle(() => {
     options?.progress?.(completedCount, writeBuffer.length);
-  };
+  }, 50);
 
   const existingResourcePaths = new Set(
     (
       await globAsync(
-        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres")
+        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres"),
       )
-    ).map((path) => pathToPosix(Path.relative(projectFolder, path)))
+    ).map((path) => pathToPosix(Path.relative(projectFolder, path))),
   );
   const expectedResourcePaths: Set<string> = new Set(patch.paths);
 
   const resourceDirPaths = uniq(
-    writeBuffer.map(({ path }) => Path.dirname(path))
+    writeBuffer.map(({ path }) => Path.dirname(path)),
   );
 
   await promiseLimit(
     CONCURRENT_RESOURCE_SAVE_COUNT,
     resourceDirPaths.map((path) => async () => {
       await ensureDir(Path.join(projectFolder, path));
-    })
+    }),
   );
 
   notifyProgress();
@@ -61,16 +61,16 @@ const saveProjectData = async (
       await writeFileWithBackupAsync(Path.join(projectFolder, path), data);
       completedCount++;
       notifyProgress();
-    })
+    }),
   );
 
   await writeFileWithBackupAsync(
     projectPath,
-    encodeResource("project", metadata)
+    encodeResource("project", metadata),
   );
 
   const resourceDiff = Array.from(existingResourcePaths).filter(
-    (path) => !expectedResourcePaths.has(path)
+    (path) => !expectedResourcePaths.has(path),
   );
 
   // Remove previous project files that are no longer needed
