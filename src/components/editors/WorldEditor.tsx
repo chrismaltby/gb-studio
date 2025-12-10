@@ -33,8 +33,8 @@ import { TextField } from "ui/form/TextField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ActorDirection } from "shared/lib/resources/types";
 
 export const WorldEditor: FC = () => {
   const metadata = useAppSelector((state) => state.project.present.metadata);

@@ -1,8 +1,7 @@
 import {
-  MetaspriteTile,
-  Metasprite,
-  SpriteState,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteStateNormalized,
+  SpriteAnimationNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
   ActorNormalized,
@@ -12,6 +11,7 @@ import {
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
+import { MetaspriteTile } from "shared/lib/resources/types";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
@@ -31,14 +31,14 @@ export type ClipboardMetaspriteTiles = {
 };
 
 export type ClipboardMetasprites = {
-  metasprites: Metasprite[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
 };
 
 export type ClipboardSpriteState = {
-  spriteState: SpriteState;
-  animations: SpriteAnimation[];
-  metasprites: Metasprite[];
+  spriteState: SpriteStateNormalized;
+  animations: SpriteAnimationNormalized[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
 };
 

@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import { TriangleIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 import styled from "styled-components";
+import { ActorDirection } from "shared/lib/resources/types";
 
 type DirectionPickerProps = {
   id: string;

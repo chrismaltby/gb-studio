@@ -7,7 +7,6 @@ import type {
   EmoteData,
   FontData,
   SoundData,
-  SpriteSheetData,
   TilesetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
@@ -18,6 +17,7 @@ import {
   ColorModeSetting,
   ProjectResources,
   Scene,
+  Sprite,
 } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
@@ -32,7 +32,7 @@ export type ReferencedBackground = BackgroundData & {
   forceTilesetGeneration: boolean;
 };
 
-export type ReferencedSprite = SpriteSheetData & {
+export type ReferencedSprite = Sprite & {
   colorMode: ColorModeSetting;
 };
 

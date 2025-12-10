@@ -43,7 +43,6 @@ import {
 import { MenuAccelerator, MenuDivider, MenuItem } from "ui/menu/Menu";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import ScriptEventFormMathArea from "components/script/ScriptEventFormMatharea";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import {
   castEventToBool,
   castEventToFloat,
@@ -72,6 +71,7 @@ import { ConstantSelect } from "./ConstantSelect";
 import { SingleValue } from "react-select";
 import EngineFieldSelect from "components/forms/EngineFieldSelect";
 import { assertUnreachable } from "shared/lib/helpers/assert";
+import { ActorDirection } from "shared/lib/resources/types";
 
 type ValueFunctionMenuItem = {
   value: ValueOperatorType | ValueUnaryOperatorType;

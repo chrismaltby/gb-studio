@@ -1,22 +1,22 @@
 import { createAction } from "@reduxjs/toolkit";
 import {
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
   SpriteSheetNormalized,
-  SpriteState,
+  SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
+import { MetaspriteTile } from "shared/lib/resources/types";
 
 const detectSprite = createAction<{ spriteSheetId: string }>(
   "sprite/detect/pending",
 );
 const detectSpriteComplete = createAction<{
   spriteSheetId: string;
-  spriteAnimations: SpriteAnimation[];
-  spriteStates: SpriteState[];
-  metasprites: Metasprite[];
+  spriteAnimations: SpriteAnimationNormalized[];
+  spriteStates: SpriteStateNormalized[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
-  state: SpriteState;
+  state: SpriteStateNormalized;
   changes: Partial<SpriteSheetNormalized>;
 }>("sprite/detect/fulfilled");
 

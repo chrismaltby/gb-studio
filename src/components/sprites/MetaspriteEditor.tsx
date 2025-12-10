@@ -14,7 +14,6 @@ import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
 import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -26,7 +25,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import { MetaspriteTile, SpriteModeSetting } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 
 interface MetaspriteEditorProps {

@@ -14,11 +14,7 @@ import type {
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
 import type { SettingsState } from "store/features/settings/settingsState";
-import type {
-  Background,
-  SpriteSheetData,
-  Tileset,
-} from "shared/lib/entities/entitiesTypes";
+import type { Background, Tileset } from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
@@ -41,6 +37,7 @@ import {
   MusicResourceAsset,
   ProjectResources,
   SoundResourceAsset,
+  Sprite,
   SpriteModeSetting,
   SpriteResourceAsset,
   TilesetResourceAsset,
@@ -338,7 +335,7 @@ const APISetup = {
   },
   sprite: {
     compileSprite: (
-      spriteData: SpriteSheetData,
+      spriteData: Sprite,
       defaultSpriteMode: SpriteModeSetting,
     ): Promise<PrecompiledSpriteSheetData> =>
       ipcRenderer.invoke("sprite:compile", spriteData, defaultSpriteMode),

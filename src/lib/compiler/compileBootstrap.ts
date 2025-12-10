@@ -2,10 +2,7 @@ import type {
   EngineFieldCType,
   EngineFieldSchema,
 } from "store/features/engine/engineState";
-import type {
-  ActorDirection,
-  EngineFieldValue,
-} from "shared/lib/entities/entitiesTypes";
+import type { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import {
   avatarFontSymbol,
   PrecompiledFontData,
@@ -14,6 +11,7 @@ import {
 import { dirEnum } from "./helpers";
 import { PrecompiledAvatarData } from "./compileAvatars";
 import { pxToSubpx, tileToSubpx } from "shared/lib/helpers/subpixels";
+import { ActorDirection } from "shared/lib/resources/types";
 
 interface InitialState {
   startX: number;

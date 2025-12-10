@@ -14,11 +14,9 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
-  MetaspriteTile,
   ObjPalette,
-  SpriteAnimationType,
   SpriteSheetNormalized,
-  SpriteState,
+  SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
@@ -60,7 +58,11 @@ import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEdito
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  SpriteAnimationType,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 
@@ -135,7 +137,10 @@ export const SpriteEditor = ({
   );
 
   const onChangeSpriteStateProp = useCallback(
-    <T extends keyof SpriteState>(key: T, value: SpriteState[T]) => {
+    <T extends keyof SpriteStateNormalized>(
+      key: T,
+      value: SpriteStateNormalized[T],
+    ) => {
       dispatch(
         entitiesActions.editSpriteState({
           spriteStateId,

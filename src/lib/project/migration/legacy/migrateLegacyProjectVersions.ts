@@ -34,9 +34,6 @@ import {
   FontData,
   ScriptEventArgs,
   ScriptEvent,
-  SpriteAnimationData,
-  SpriteAnimationType,
-  SpriteSheetData,
 } from "shared/lib/entities/entitiesTypes";
 import {
   customEventName,
@@ -49,7 +46,13 @@ import {
   isScriptValue,
 } from "shared/lib/scriptValue/types";
 import { ensureNumber } from "shared/types";
-import { Actor, Scene } from "shared/lib/resources/types";
+import {
+  Actor,
+  Scene,
+  Sprite,
+  SpriteAnimation,
+  SpriteAnimationType,
+} from "shared/lib/resources/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
@@ -109,7 +112,7 @@ const applyEventsMigration = (
 };
 
 type ProjectDataV1 = Omit<ProjectData, "spriteSheets" | "scenes"> & {
-  spriteSheets: (SpriteSheetData & { numFrames: number })[];
+  spriteSheets: (Sprite & { numFrames: number })[];
   scenes: (Omit<Scene, "actors"> & {
     actors: (Actor & { movementType?: string })[];
   })[];
@@ -1121,10 +1124,10 @@ const migrateFrom200r6To200r7Scenes = (data: ProjectData): ProjectData => {
 };
 
 type ProjectDataV200r7 = Omit<ProjectData, "spriteSheets"> & {
-  spriteSheets: (SpriteSheetData & {
+  spriteSheets: (Sprite & {
     animationType: SpriteAnimationType;
     flipLeft: boolean;
-    animations: SpriteAnimationData[];
+    animations: SpriteAnimation[];
   })[];
 };
 

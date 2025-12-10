@@ -2,10 +2,7 @@
 import reducer, {
   initialState,
 } from "../../../../src/store/features/entities/entitiesState";
-import {
-  EntitiesState,
-  MetaspriteTile,
-} from "../../../../src/shared/lib/entities/entitiesTypes";
+import { EntitiesState } from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
 import projectActions from "../../../../src/store/features/project/projectActions";
 import {
@@ -30,6 +27,7 @@ import entitiesActions from "../../../../src/store/features/entities/entitiesAct
 import {
   CompressedBackgroundResourceAsset,
   CompressedProjectResources,
+  MetaspriteTile,
   MusicResourceAsset,
   SpriteResourceAsset,
 } from "shared/lib/resources/types";

@@ -8,7 +8,6 @@ import {
   tempVariableName,
 } from "shared/lib/variables/variableNames";
 import type {
-  ActorDirection,
   Palette,
   DistanceUnitType,
   Variable,
@@ -61,6 +60,7 @@ import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import type {
+  ActorDirection,
   Constant,
   ScriptEditorCtxType,
   SpriteModeSetting,

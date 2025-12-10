@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { CollisionGroup } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
+import { CollisionGroup } from "shared/lib/resources/types";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 
 type CollisionMaskPickerProps = {

@@ -1,5 +1,5 @@
-import { SpriteAnimationType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
+import { SpriteAnimationType } from "shared/lib/resources/types";
 import {
   filterAnimationsBySpriteType,
   AnimationType,

@@ -54,11 +54,7 @@ import {
   projectTemplatesRoot,
   THEME_SETTING_KEY,
 } from "consts";
-import type {
-  Background,
-  SpriteSheetData,
-  Tileset,
-} from "shared/lib/entities/entitiesTypes";
+import type { Background, Tileset } from "shared/lib/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
@@ -116,6 +112,7 @@ import {
   ColorModeSetting,
   MusicResourceAsset,
   ProjectResources,
+  Sprite,
   SpriteModeSetting,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
@@ -1835,7 +1832,7 @@ ipcMain.handle(
   "sprite:compile",
   async (
     _event,
-    spriteData: SpriteSheetData,
+    spriteData: Sprite,
     defaultSpriteMode: SpriteModeSetting,
   ): Promise<PrecompiledSpriteSheetData> => {
     const projectRoot = Path.dirname(projectPath);

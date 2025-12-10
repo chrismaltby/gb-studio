@@ -57,14 +57,13 @@ import {
   ScriptEventNormalized,
   MusicSettings,
   EngineFieldValue,
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
   Font,
   ObjPalette,
   Avatar,
   Emote,
-  SpriteState,
+  SpriteStateNormalized,
   ScriptEventsRef,
   ScriptEventParentType,
   Sound,
@@ -110,6 +109,7 @@ import {
   Constant,
   EmoteResourceAsset,
   FontResourceAsset,
+  MetaspriteTile,
   MusicResourceAsset,
   SoundResourceAsset,
   SpriteResourceAsset,
@@ -143,10 +143,11 @@ const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
 const tilesetsAdapter = createEntityAdapter<Tileset>({
   sortComparer: sortByFilename,
 });
-const metaspritesAdapter = createEntityAdapter<Metasprite>();
+const metaspritesAdapter = createEntityAdapter<MetaspriteNormalized>();
 const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
-const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
-const spriteStatesAdapter = createEntityAdapter<SpriteState>();
+const spriteAnimationsAdapter =
+  createEntityAdapter<SpriteAnimationNormalized>();
+const spriteStatesAdapter = createEntityAdapter<SpriteStateNormalized>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
 const musicAdapter = createEntityAdapter<Music>({
@@ -528,11 +529,11 @@ const loadDetectedSprite: CaseReducer<
   EntitiesState,
   PayloadAction<{
     spriteSheetId: string;
-    spriteAnimations: SpriteAnimation[];
-    spriteStates: SpriteState[];
-    metasprites: Metasprite[];
+    spriteAnimations: SpriteAnimationNormalized[];
+    spriteStates: SpriteStateNormalized[];
+    metasprites: MetaspriteNormalized[];
     metaspriteTiles: MetaspriteTile[];
-    state: SpriteState;
+    state: SpriteStateNormalized;
     changes: Partial<SpriteSheetNormalized>;
   }>
 > = (state, action) => {
@@ -812,16 +813,20 @@ const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
   for (const sprite of sprites) {
     if (!sprite.states || sprite.states.length === 0) {
       // Create default state for newly added spritesheets
-      const metasprites: Metasprite[] = Array.from(Array(8)).map(() => ({
-        id: uuid(),
-        tiles: [],
-      }));
-      const animations: SpriteAnimation[] = metasprites.map((metasprite) => ({
-        id: uuid(),
-        frames: [metasprite.id],
-      }));
+      const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(
+        () => ({
+          id: uuid(),
+          tiles: [],
+        }),
+      );
+      const animations: SpriteAnimationNormalized[] = metasprites.map(
+        (metasprite) => ({
+          id: uuid(),
+          frames: [metasprite.id],
+        }),
+      );
       const animationIds = animations.map((a) => a.id);
-      const spriteState: SpriteState = {
+      const spriteState: SpriteStateNormalized = {
         id: uuid(),
         name: "",
         animationType: "multi_movement",
@@ -2513,7 +2518,7 @@ const addMetasprite: CaseReducer<
     return;
   }
 
-  const newMetasprite: Metasprite = {
+  const newMetasprite: MetaspriteNormalized = {
     id: action.payload.metaspriteId,
     tiles: [],
   };
@@ -3042,7 +3047,7 @@ const editSpriteAnimation: CaseReducer<
   PayloadAction<{
     spriteSheetId: string;
     spriteAnimationId: string;
-    changes: Partial<SpriteAnimation>;
+    changes: Partial<SpriteAnimationNormalized>;
   }>
 > = (state, action) => {
   const spriteAnimation =
@@ -3138,21 +3143,23 @@ const addSpriteState: CaseReducer<
 
   const eightElements = Array.from(Array(8));
 
-  const newMetasprites: Metasprite[] = eightElements.map(() => ({
+  const newMetasprites: MetaspriteNormalized[] = eightElements.map(() => ({
     id: uuid(),
     tiles: [],
   }));
 
   metaspritesAdapter.addMany(state.metasprites, newMetasprites);
 
-  const newAnimations: SpriteAnimation[] = eightElements.map((_, index) => ({
-    id: uuid(),
-    frames: [newMetasprites[index].id],
-  }));
+  const newAnimations: SpriteAnimationNormalized[] = eightElements.map(
+    (_, index) => ({
+      id: uuid(),
+      frames: [newMetasprites[index].id],
+    }),
+  );
 
   spriteAnimationsAdapter.addMany(state.spriteAnimations, newAnimations);
 
-  const newSpriteState: SpriteState = {
+  const newSpriteState: SpriteStateNormalized = {
     id: action.payload.spriteStateId,
     name: sprite.states.length > 0 ? l10n("FIELD_STATE_NEW_STATE_NAME") : "",
     animations: newAnimations.map((anim) => anim.id),
@@ -3167,7 +3174,10 @@ const addSpriteState: CaseReducer<
 
 const editSpriteState: CaseReducer<
   EntitiesState,
-  PayloadAction<{ spriteStateId: string; changes: Partial<SpriteState> }>
+  PayloadAction<{
+    spriteStateId: string;
+    changes: Partial<SpriteStateNormalized>;
+  }>
 > = (state, action) => {
   const spriteState = state.spriteStates.entities[action.payload.spriteStateId];
 

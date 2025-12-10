@@ -6,9 +6,10 @@ import {
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
 import { SceneContext } from "components/script/SceneContext";
+import { ActorDirection } from "shared/lib/resources/types";
 
 interface SpriteSheetCanvasProps {
   spriteSheetId: string;

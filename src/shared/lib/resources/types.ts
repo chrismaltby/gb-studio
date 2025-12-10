@@ -404,10 +404,14 @@ export const MetaspriteTile = Type.Object({
   priority: Type.Boolean(),
 });
 
+export type MetaspriteTile = Static<typeof MetaspriteTile>;
+
 export const Metasprite = Type.Object({
   id: Type.String(),
   tiles: Type.Array(MetaspriteTile),
 });
+
+export type Metasprite = Static<typeof Metasprite>;
 
 export const SpriteAnimationType = Type.Union([
   Type.Literal("fixed"),
@@ -437,6 +441,8 @@ export const SpriteState = Type.Object({
   animations: Type.Array(SpriteAnimation),
 });
 
+export type SpriteState = Static<typeof SpriteState>;
+
 export const SpriteResource = Type.Object({
   _resourceType: Type.Literal("sprite"),
   id: Type.String(),
@@ -463,6 +469,8 @@ export const SpriteResource = Type.Object({
 
 export type SpriteResource = Static<typeof SpriteResource>;
 
+export type Sprite = ExtractResource<SpriteResource>;
+
 export const AssetMetadata = Type.Object({
   _v: Type.Number(),
   inode: Type.String(),
@@ -471,6 +479,8 @@ export const AssetMetadata = Type.Object({
 export type AssetMetadata = Static<typeof AssetMetadata>;
 
 export type SpriteResourceAsset = SpriteResource & AssetMetadata;
+
+export type SpriteAsset = ExtractResource<SpriteResourceAsset>;
 
 export const EmoteResource = Type.Object({
   _resourceType: Type.Literal("emote"),

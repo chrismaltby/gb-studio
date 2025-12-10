@@ -2,7 +2,6 @@
 import flatten from "lodash/flatten";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import type {
-  CollisionExtraFlag,
   EngineFieldValue,
   Palette,
   SceneParallaxLayer,
@@ -23,6 +22,7 @@ import type {
 } from "store/features/engine/engineState";
 import {
   Actor,
+  CollisionExtraFlag,
   ColorModeSetting,
   Constant,
   Scene,

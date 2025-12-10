@@ -6,13 +6,13 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile, Palette } from "shared/lib/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import { MetaspriteTile, SpriteModeSetting } from "shared/lib/resources/types";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;

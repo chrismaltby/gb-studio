@@ -4,9 +4,8 @@ import cloneDeep from "lodash/cloneDeep";
 import {
   EntitiesState,
   SpriteSheetNormalized,
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
   SceneNormalized,
   ActorNormalized,
   TriggerNormalized,
@@ -22,15 +21,13 @@ import {
   UnionValue,
   UnionPropertyValue,
   UnionVariableValue,
-  SpriteState,
-  SpriteSheetData,
+  SpriteStateNormalized,
   ScriptEventNormalized,
   Sound,
   Tileset,
   CustomEventVariable,
   CustomEventActor,
   CustomEvent,
-  SpriteSheet,
   ActorPrefab,
   ActorPrefabNormalized,
   ActorScriptKey,
@@ -68,8 +65,10 @@ import { sortByKey } from "shared/lib/helpers/sortByKey";
 import {
   Actor,
   Constant,
+  MetaspriteTile,
   ProjectEntityResources,
   Scene,
+  Sprite,
   Trigger,
 } from "shared/lib/resources/types";
 import { uniqBy } from "lodash";
@@ -81,10 +80,10 @@ interface NormalizedEntities {
   scriptEvents: Record<EntityId, ScriptEventNormalized>;
   backgrounds: Record<EntityId, Background>;
   sprites: Record<EntityId, SpriteSheetNormalized>;
-  metasprites: Record<EntityId, Metasprite>;
+  metasprites: Record<EntityId, MetaspriteNormalized>;
   metaspriteTiles: Record<EntityId, MetaspriteTile>;
-  spriteAnimations: Record<EntityId, SpriteAnimation>;
-  spriteStates: Record<EntityId, SpriteState>;
+  spriteAnimations: Record<EntityId, SpriteAnimationNormalized>;
+  spriteStates: Record<EntityId, SpriteStateNormalized>;
   palettes: Record<EntityId, Palette>;
   music: Record<EntityId, Music>;
   sounds: Record<EntityId, Sound>;
@@ -140,7 +139,7 @@ interface DenormalizedEntities {
   scenes: Scene[];
   scripts: CustomEvent[];
   sounds: Sound[];
-  sprites: SpriteSheet[];
+  sprites: Sprite[];
   tilesets: Tileset[];
   triggers: Trigger[];
   variables: {
@@ -300,16 +299,22 @@ export const denormalizeEntities = (
       EntityId,
       SpriteSheetNormalized
     >,
-    metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,
+    metasprites: state.metasprites.entities as Record<
+      EntityId,
+      MetaspriteNormalized
+    >,
     metaspriteTiles: state.metaspriteTiles.entities as Record<
       EntityId,
       MetaspriteTile
     >,
     spriteAnimations: state.spriteAnimations.entities as Record<
       EntityId,
-      SpriteAnimation
+      SpriteAnimationNormalized
     >,
-    spriteStates: state.spriteStates.entities as Record<EntityId, SpriteState>,
+    spriteStates: state.spriteStates.entities as Record<
+      EntityId,
+      SpriteStateNormalized
+    >,
     palettes: state.palettes.entities as Record<EntityId, Palette>,
     scripts: state.customEvents.entities as Record<
       EntityId,
@@ -402,11 +407,11 @@ export const denormalizeSprite = ({
   spriteStates,
 }: {
   sprite: SpriteSheetNormalized;
-  metasprites: Record<string, Metasprite>;
+  metasprites: Record<string, MetaspriteNormalized>;
   metaspriteTiles: Record<string, MetaspriteTile>;
-  spriteAnimations: Record<string, SpriteAnimation>;
-  spriteStates: Record<string, SpriteState>;
-}): SpriteSheetData => {
+  spriteAnimations: Record<string, SpriteAnimationNormalized>;
+  spriteStates: Record<string, SpriteStateNormalized>;
+}): Sprite => {
   const entities = {
     metasprites,
     metaspriteTiles,
@@ -417,14 +422,14 @@ export const denormalizeSprite = ({
 };
 
 export const normalizeSprite = (
-  sprite: SpriteSheet,
+  sprite: Sprite,
 ): {
   entities: {
     spriteSheets: Record<string, SpriteSheetNormalized>;
-    metasprites: Record<string, Metasprite> | undefined;
+    metasprites: Record<string, MetaspriteNormalized> | undefined;
     metaspriteTiles: Record<string, MetaspriteTile> | undefined;
-    spriteAnimations: Record<string, SpriteAnimation> | undefined;
-    spriteStates: Record<string, SpriteState> | undefined;
+    spriteAnimations: Record<string, SpriteAnimationNormalized> | undefined;
+    spriteStates: Record<string, SpriteStateNormalized> | undefined;
   };
   result: string;
 } => {

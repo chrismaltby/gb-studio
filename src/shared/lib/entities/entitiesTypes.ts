@@ -5,23 +5,14 @@ import type {
   Scene,
   Constant,
   ScriptEditorCtxType,
-  SpriteModeSetting,
+  MetaspriteTile,
+  Metasprite,
+  SpriteState,
+  SpriteAnimation,
+  Sprite,
+  SpriteAsset,
 } from "shared/lib/resources/types";
 
-export type CollisionGroup = "" | "1" | "2" | "3" | "player";
-
-export type CollisionExtraFlag = "1" | "2" | "3" | "4" | "solid" | "platform";
-
-export type ActorDirection = "up" | "down" | "left" | "right";
-export type SpriteAnimationType =
-  | "fixed"
-  | "fixed_movement"
-  | "multi"
-  | "multi_movement"
-  | "horizontal"
-  | "horizontal_movement"
-  | "platform_player"
-  | "cursor";
 export type ObjPalette = "OBP0" | "OBP1";
 
 export type UnionVariableValue = {
@@ -307,80 +298,21 @@ export type EngineFieldValue = {
   value?: number | string | undefined;
 };
 
-export type MetaspriteTile = {
-  id: string;
-  x: number;
-  y: number;
-  sliceX: number;
-  sliceY: number;
-  palette: number;
-  flipX: boolean;
-  flipY: boolean;
-  objPalette: ObjPalette;
-  paletteIndex: number;
-  priority: boolean;
-};
-
-export type Metasprite = {
-  id: string;
+export type MetaspriteNormalized = Omit<Metasprite, "tiles"> & {
   tiles: string[];
 };
 
-type MetaspriteData = Omit<Metasprite, "tiles"> & {
-  tiles: MetaspriteTile[];
-};
-
-export type SpriteState = {
-  id: string;
-  name: string;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
+export type SpriteStateNormalized = Omit<SpriteState, "animations"> & {
   animations: string[];
 };
 
-type SpriteStateData = Omit<SpriteState, "animations"> & {
-  animations: SpriteAnimationData[];
-};
-
-export type SpriteAnimation = {
-  id: string;
+export type SpriteAnimationNormalized = Omit<SpriteAnimation, "frames"> & {
   frames: string[];
 };
 
-export type SpriteAnimationData = Omit<SpriteAnimation, "frames"> & {
-  frames: MetaspriteData[];
-};
-
-export type SpriteSheet = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  numTiles: number;
-  plugin?: string;
-  inode: string;
-  checksum: string;
-  _v: number;
-  width: number;
-  height: number;
-  canvasOriginX: number;
-  canvasOriginY: number;
-  canvasWidth: number;
-  canvasHeight: number;
-  boundsX: number;
-  boundsY: number;
-  boundsWidth: number;
-  boundsHeight: number;
-  animSpeed: number | null;
-  states: SpriteStateData[];
-  spriteMode?: SpriteModeSetting;
-};
-
-export type SpriteSheetNormalized = Omit<SpriteSheet, "states"> & {
+export type SpriteSheetNormalized = Omit<SpriteAsset, "states"> & {
   states: string[];
 };
-
-export type SpriteSheetData = Omit<SpriteSheet, "_v" | "inode">;
 
 export type SceneParallaxLayer = {
   height: number;
@@ -415,7 +347,7 @@ export type SceneNormalized = Omit<
 export type ProjectEntitiesData = {
   scenes: Scene[];
   backgrounds: BackgroundData[];
-  spriteSheets: SpriteSheetData[];
+  spriteSheets: Sprite[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   music: MusicData[];
@@ -438,10 +370,10 @@ export interface EntitiesState {
   scriptEvents: EntityState<ScriptEventNormalized, string>;
   backgrounds: EntityState<Background, string>;
   spriteSheets: EntityState<SpriteSheetNormalized, string>;
-  metasprites: EntityState<Metasprite, string>;
+  metasprites: EntityState<MetaspriteNormalized, string>;
   metaspriteTiles: EntityState<MetaspriteTile, string>;
-  spriteAnimations: EntityState<SpriteAnimation, string>;
-  spriteStates: EntityState<SpriteState, string>;
+  spriteAnimations: EntityState<SpriteAnimationNormalized, string>;
+  spriteStates: EntityState<SpriteStateNormalized, string>;
   palettes: EntityState<Palette, string>;
   customEvents: EntityState<CustomEventNormalized, string>;
   music: EntityState<Music, string>;

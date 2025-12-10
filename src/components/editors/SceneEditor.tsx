@@ -22,7 +22,6 @@ import {
 } from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import {
-  ActorDirection,
   SceneNormalized,
   SceneParallaxLayer,
   ScriptEventNormalized,
@@ -79,6 +78,7 @@ import { FixedSpacer, FlexBreak, FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelect";
 import {
+  ActorDirection,
   ColorModeOverrideSetting,
   SceneBoundsRect,
 } from "shared/lib/resources/types";

@@ -1,10 +1,6 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import {
-  ActorDirection,
-  ActorNormalized,
-  UnitType,
-} from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized, UnitType } from "shared/lib/entities/entitiesTypes";
 import {
   OptGroup,
   Option,
@@ -27,6 +23,7 @@ import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { components, SingleValue } from "react-select";
 import { CameraIcon } from "ui/icons/Icons";
+import { ActorDirection } from "shared/lib/resources/types";
 
 interface PropertySelectProps {
   name: string;

@@ -1,20 +1,22 @@
 import uuid from "uuid";
 import type {
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
-  SpriteAnimationType,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
   SpriteSheetNormalized,
-  SpriteState,
+  SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
+import {
+  MetaspriteTile,
+  SpriteAnimationType,
+} from "shared/lib/resources/types";
 
 interface DetectedSprite {
   spriteSheetId: string;
-  spriteAnimations: SpriteAnimation[];
-  spriteStates: SpriteState[];
-  metasprites: Metasprite[];
+  spriteAnimations: SpriteAnimationNormalized[];
+  spriteStates: SpriteStateNormalized[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
-  state: SpriteState;
+  state: SpriteStateNormalized;
   changes: Partial<SpriteSheetNormalized>;
 }
 
@@ -24,11 +26,13 @@ export const detectClassic = (
 ): DetectedSprite => {
   const numFrames = Math.floor(spriteSheet.width / 16);
 
-  const animations: SpriteAnimation[] = Array.from(Array(8)).map(() => ({
-    id: uuid(),
-    frames: [],
-  }));
-  const metasprites: Metasprite[] = [];
+  const animations: SpriteAnimationNormalized[] = Array.from(Array(8)).map(
+    () => ({
+      id: uuid(),
+      frames: [],
+    }),
+  );
+  const metasprites: MetaspriteNormalized[] = [];
   const metaspriteTiles: MetaspriteTile[] = [];
 
   for (let i = 0; i < numFrames; i++) {
@@ -58,7 +62,7 @@ export const detectClassic = (
       objPalette: "OBP0",
       priority: false,
     };
-    const metasprite: Metasprite = {
+    const metasprite: MetaspriteNormalized = {
       id: uuid(),
       tiles: [tileLeft.id, tileRight.id],
     };
@@ -96,7 +100,7 @@ export const detectClassic = (
         ...originalTileRight,
         id: uuid(),
       };
-      const metasprite: Metasprite = {
+      const metasprite: MetaspriteNormalized = {
         id: uuid(),
         tiles: [tileLeft.id, tileRight.id],
       };
@@ -123,7 +127,7 @@ export const detectClassic = (
   // Create blank metasprite for empty animations
   for (const animation of animations) {
     if (animation.frames.length === 0) {
-      const metasprite: Metasprite = {
+      const metasprite: MetaspriteNormalized = {
         id: uuid(),
         tiles: [],
       };
@@ -132,7 +136,7 @@ export const detectClassic = (
     }
   }
 
-  const state: SpriteState = {
+  const state: SpriteStateNormalized = {
     id: spriteSheet.states?.[0] || uuid(),
     name: "",
     animationType,

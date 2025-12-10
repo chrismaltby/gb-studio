@@ -20,11 +20,10 @@ import {
   ActorNormalized,
   ActorPrefabNormalized,
   CustomEventNormalized,
-  Metasprite,
-  MetaspriteTile,
+  MetaspriteNormalized,
   SceneNormalized,
   ScriptEventNormalized,
-  SpriteAnimation,
+  SpriteAnimationNormalized,
   TriggerNormalized,
   TriggerPrefabNormalized,
   Variable,
@@ -72,6 +71,7 @@ import {
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
 import { sortSubsetStringArray } from "shared/lib/helpers/array";
+import { MetaspriteTile } from "shared/lib/resources/types";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -482,7 +482,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return animationsLookup[id];
         })
-        .filter((animation): animation is SpriteAnimation => !!animation);
+        .filter(
+          (animation): animation is SpriteAnimationNormalized => !!animation,
+        );
 
       const metaspriteIds = flatten(
         animations.map((animation) => animation.frames),
@@ -492,7 +494,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return metaspritesLookup[id];
         })
-        .filter((metasprite): metasprite is Metasprite => !!metasprite);
+        .filter(
+          (metasprite): metasprite is MetaspriteNormalized => !!metasprite,
+        );
 
       const metaspriteTileIds = flatten(
         metasprites.map((metasprite) => metasprite.tiles),
@@ -537,7 +541,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return metaspritesLookup[id];
         })
-        .filter((metasprite): metasprite is Metasprite => !!metasprite);
+        .filter(
+          (metasprite): metasprite is MetaspriteNormalized => !!metasprite,
+        );
 
       const metaspriteTileIds = flatten(
         metasprites.map((metasprite) => metasprite.tiles),

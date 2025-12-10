@@ -4,16 +4,14 @@ import {
   animationMapBySpriteType,
   toEngineOrder,
 } from "shared/lib/sprites/helpers";
-import type {
-  ObjPalette,
-  SpriteSheetData,
-} from "shared/lib/entities/entitiesTypes";
+import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
 import { ReferencedSprite } from "./precompile/determineUsedAssets";
 import {
   ColorModeSetting,
+  Sprite,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
 
@@ -35,7 +33,7 @@ interface AnimationOffset {
   end: number;
 }
 
-export type PrecompiledSpriteSheetData = SpriteSheetData & {
+export type PrecompiledSpriteSheetData = Sprite & {
   vramData: [number[], number[]];
   tiles: IndexedImage[];
   metasprites: SpriteTileData[][];
