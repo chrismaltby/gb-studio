@@ -111,7 +111,6 @@ import l10n from "shared/lib/lang/l10n";
 import {
   AvatarData,
   CustomEvent,
-  MusicData,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
@@ -127,6 +126,7 @@ import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
   Font,
+  Music,
   Palette,
   ProjectResources,
   Scene,
@@ -743,7 +743,7 @@ const precompileTilesets = async (
 const precompileMusic = (
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
-  music: MusicData[],
+  music: Music[],
   musicDriver: MusicDriverSetting,
 ) => {
   const usedMusicIds: string[] = [];

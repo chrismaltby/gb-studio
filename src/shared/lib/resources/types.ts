@@ -586,7 +586,11 @@ export const MusicResource = Type.Object({
 
 export type MusicResource = Static<typeof MusicResource>;
 
+export type Music = ExtractResource<MusicResource>;
+
 export type MusicResourceAsset = MusicResource & AssetMetadata;
+
+export type MusicAsset = ExtractResource<MusicResourceAsset>;
 
 export const PaletteResource = Type.Object({
   _resourceType: Type.Literal("palette"),

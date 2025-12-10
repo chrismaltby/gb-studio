@@ -20,6 +20,8 @@ import type {
   Tileset,
   Font,
   FontAsset,
+  Music,
+  MusicAsset,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -167,20 +169,6 @@ export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
 
-export type Music = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  plugin?: string;
-  settings: MusicSettings;
-  type?: string;
-  inode: string;
-  _v: number;
-};
-
-export type MusicData = Omit<Music, "_v" | "inode">;
-
 export type Sound = {
   id: string;
   name: string;
@@ -284,7 +272,7 @@ export type ProjectEntitiesData = {
   spriteSheets: Sprite[];
   palettes: Palette[];
   customEvents: CustomEvent[];
-  music: MusicData[];
+  music: Music[];
   sounds: SoundData[];
   fonts: Font[];
   avatars: AvatarData[];
@@ -310,7 +298,7 @@ export interface EntitiesState {
   spriteStates: EntityState<SpriteStateNormalized, string>;
   palettes: EntityState<Palette, string>;
   customEvents: EntityState<CustomEventNormalized, string>;
-  music: EntityState<Music, string>;
+  music: EntityState<MusicAsset, string>;
   sounds: EntityState<Sound, string>;
   fonts: EntityState<FontAsset, string>;
   avatars: EntityState<Avatar, string>;

@@ -9,7 +9,6 @@ import {
   SceneNormalized,
   ActorNormalized,
   TriggerNormalized,
-  Music,
   Avatar,
   CustomEventNormalized,
   Variable,
@@ -64,6 +63,7 @@ import {
   EmoteAsset,
   FontAsset,
   MetaspriteTile,
+  MusicAsset,
   Palette,
   ProjectEntityResources,
   Scene,
@@ -85,7 +85,7 @@ interface NormalizedEntities {
   spriteAnimations: Record<EntityId, SpriteAnimationNormalized>;
   spriteStates: Record<EntityId, SpriteStateNormalized>;
   palettes: Record<EntityId, Palette>;
-  music: Record<EntityId, Music>;
+  music: Record<EntityId, MusicAsset>;
   sounds: Record<EntityId, Sound>;
   fonts: Record<EntityId, FontAsset>;
   avatars: Record<EntityId, Avatar>;
@@ -134,7 +134,7 @@ interface DenormalizedEntities {
     engineFieldValues: EngineFieldValue[];
   };
   fonts: FontAsset[];
-  music: Music[];
+  music: MusicAsset[];
   palettes: Palette[];
   scenes: Scene[];
   scripts: CustomEvent[];
@@ -323,7 +323,7 @@ export const denormalizeEntities = (
       EntityId,
       CustomEventNormalized
     >,
-    music: state.music.entities as Record<EntityId, Music>,
+    music: state.music.entities as Record<EntityId, MusicAsset>,
     sounds: state.sounds.entities as Record<EntityId, Sound>,
     fonts: state.fonts.entities as Record<EntityId, FontAsset>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,

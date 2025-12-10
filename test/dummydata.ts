@@ -1,7 +1,6 @@
 import {
   SceneNormalized,
   SpriteSheetNormalized,
-  Music,
   ActorNormalized,
   TriggerNormalized,
   CustomEventNormalized,
@@ -52,6 +51,7 @@ import {
   EmoteResource,
   EngineFieldValuesResource,
   FontResource,
+  MusicAsset,
   MusicResource,
   Palette,
   PaletteResource,
@@ -270,7 +270,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   spriteMode: "8x16",
 };
 
-export const dummyMusic: Music = {
+export const dummyMusic: MusicAsset = {
   id: "",
   name: "",
   symbol: "song_0",

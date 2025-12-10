@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Music } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
@@ -35,6 +34,7 @@ import {
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { MusicAsset } from "shared/lib/resources/types";
 
 const COLLAPSED_SIZE = 30;
 
@@ -103,7 +103,7 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
 
-export const ugeFilter = (s: Music) => {
+export const ugeFilter = (s: MusicAsset) => {
   return s.type && s.type === "uge";
 };
 
@@ -423,7 +423,7 @@ export const NavigatorSongs = ({
   );
 
   const renderLabel = useCallback(
-    (item: FileSystemNavigatorItem<Music>) => {
+    (item: FileSystemNavigatorItem<MusicAsset>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

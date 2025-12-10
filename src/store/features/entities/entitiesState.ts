@@ -49,7 +49,6 @@ import {
   TriggerNormalized,
   SceneNormalized,
   SpriteSheetNormalized,
-  Music,
   Variable,
   CustomEventNormalized,
   ScriptEventNormalized,
@@ -107,6 +106,7 @@ import {
   FontAsset,
   FontResourceAsset,
   MetaspriteTile,
+  MusicAsset,
   MusicResourceAsset,
   ObjPalette,
   Palette,
@@ -150,7 +150,7 @@ const spriteAnimationsAdapter =
 const spriteStatesAdapter = createEntityAdapter<SpriteStateNormalized>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
-const musicAdapter = createEntityAdapter<Music>({
+const musicAdapter = createEntityAdapter<MusicAsset>({
   sortComparer: sortByFilename,
 });
 const soundsAdapter = createEntityAdapter<Sound>({

@@ -16,7 +16,6 @@ import {
 import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
-import { Music } from "shared/lib/entities/entitiesTypes";
 import { saveSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
@@ -26,6 +25,7 @@ import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";
+import { MusicAsset } from "shared/lib/resources/types";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -38,7 +38,7 @@ interface OctaveOffsetOptions {
 }
 
 interface SongEditorToolsPanelProps {
-  selectedSong?: Music;
+  selectedSong?: MusicAsset;
 }
 
 const FloatingPanelSwitchView = styled(FloatingPanel)`
