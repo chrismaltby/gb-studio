@@ -114,7 +114,6 @@ import {
   FontData,
   MusicData,
   ScriptEvent,
-  TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
@@ -132,6 +131,7 @@ import {
   ProjectResources,
   Scene,
   SpriteModeSetting,
+  Tileset,
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
@@ -220,7 +220,7 @@ const ensureProjectAsset = async (
 export const precompileBackgrounds = async (
   backgroundReferences: ReferencedBackground[],
   scenes: Scene[],
-  tilesets: TilesetData[],
+  tilesets: Tileset[],
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
   projectRoot: string,
@@ -250,7 +250,7 @@ export const precompileBackgrounds = async (
       }
       return memo;
     },
-    {} as Record<string, TilesetData[]>,
+    {} as Record<string, Tileset[]>,
   );
 
   const backgroundsData = await compileImages(

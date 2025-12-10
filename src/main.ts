@@ -54,7 +54,6 @@ import {
   projectTemplatesRoot,
   THEME_SETTING_KEY,
 } from "consts";
-import type { Tileset } from "shared/lib/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
@@ -115,6 +114,7 @@ import {
   ProjectResources,
   Sprite,
   SpriteModeSetting,
+  TilesetAsset,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums";
@@ -1639,7 +1639,7 @@ ipcMain.handle(
   (
     _event,
     background: BackgroundAsset,
-    tileset: Tileset | undefined,
+    tileset: TilesetAsset | undefined,
     is360: boolean,
     uiPalette: HexPalette | undefined,
     colorMode: ColorModeSetting,

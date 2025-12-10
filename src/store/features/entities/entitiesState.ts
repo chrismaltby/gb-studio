@@ -64,7 +64,6 @@ import {
   ScriptEventsRef,
   ScriptEventParentType,
   Sound,
-  Tileset,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ScriptEventArgsOverride,
@@ -113,6 +112,7 @@ import {
   Palette,
   SoundResourceAsset,
   SpriteResourceAsset,
+  TilesetAsset,
   TilesetResourceAsset,
 } from "shared/lib/resources/types";
 import {
@@ -140,7 +140,7 @@ const backgroundsAdapter = createEntityAdapter<BackgroundAsset>({
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
   sortComparer: sortByFilename,
 });
-const tilesetsAdapter = createEntityAdapter<Tileset>({
+const tilesetsAdapter = createEntityAdapter<TilesetAsset>({
   sortComparer: sortByFilename,
 });
 const metaspritesAdapter = createEntityAdapter<MetaspriteNormalized>();

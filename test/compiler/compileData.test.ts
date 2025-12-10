@@ -12,8 +12,7 @@ import {
 import { EVENT_TEXT, EVENT_IF_TRUE } from "../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
-import { ProjectResources, Scene } from "shared/lib/resources/types";
-import { TilesetData } from "shared/lib/entities/entitiesTypes";
+import { ProjectResources, Scene, Tileset } from "shared/lib/resources/types";
 import {
   dummyActor,
   dummyBackground,
@@ -447,7 +446,7 @@ test("should precompile image data", async () => {
       triggers: [],
     },
   ] as Scene[];
-  const tilesets = [] as TilesetData[];
+  const tilesets = [] as Tileset[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -588,7 +587,7 @@ test("should include extra backgrounds when using common tilesets", async () => 
       filename: "tile_img2.png",
       symbol: "t2",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -675,7 +674,7 @@ test("should include tileset for background when also used without common tilese
       filename: "tile_img2.png",
       symbol: "t2",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -758,7 +757,7 @@ test("should share tilesets if possible when multiple backgrounds include common
       filename: "tile_img3.png",
       symbol: "t1",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -846,7 +845,7 @@ test("should generate unique tileset for background if used without common tiles
       filename: "tile_img3.png",
       symbol: "t1",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -947,7 +946,7 @@ test("should generate unique tileset for background if referenced from script ev
       filename: "tile_img3.png",
       symbol: "t1",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds } = await precompileBackgrounds(
     backgrounds,
     scenes,
@@ -1100,7 +1099,7 @@ test("should allow reusing tileset for identical backgrounds if used with common
       filename: "tile_img1.png",
       symbol: "t1",
     },
-  ] as TilesetData[];
+  ] as Tileset[];
   const { usedBackgrounds } = await precompileBackgrounds(
     backgrounds,
     scenes,

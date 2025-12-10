@@ -387,7 +387,11 @@ export const TilesetResource = Type.Object({
 
 export type TilesetResource = Static<typeof TilesetResource>;
 
+export type Tileset = ExtractResource<TilesetResource>;
+
 export type TilesetResourceAsset = TilesetResource & AssetMetadata;
+
+export type TilesetAsset = ExtractResource<TilesetResourceAsset>;
 
 export const ObjPalette = Type.Union([
   Type.Literal("OBP0"),

@@ -4,7 +4,6 @@ import {
   tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Tileset } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
@@ -23,7 +22,7 @@ import {
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
-import { BackgroundAsset } from "shared/lib/resources/types";
+import { BackgroundAsset, TilesetAsset } from "shared/lib/resources/types";
 
 interface NavigatorBackgroundsProps {
   height: number;
@@ -143,7 +142,7 @@ export const NavigatorBackgrounds = ({
   }, []);
 
   const renderTilesetContextMenu = useCallback(
-    (item: FileSystemNavigatorItem<Tileset>) => {
+    (item: FileSystemNavigatorItem<TilesetAsset>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
@@ -191,7 +190,7 @@ export const NavigatorBackgrounds = ({
   );
 
   const renderLabel = useCallback(
-    (item: FileSystemNavigatorItem<BackgroundAsset | Tileset>) => {
+    (item: FileSystemNavigatorItem<BackgroundAsset | TilesetAsset>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

@@ -16,6 +16,8 @@ import type {
   Palette,
   Background,
   BackgroundAsset,
+  TilesetAsset,
+  Tileset,
 } from "shared/lib/resources/types";
 
 export type ObjPalette = "OBP0" | "OBP1";
@@ -208,22 +210,6 @@ export type Sound = {
 
 export type SoundData = Omit<Sound, "_v" | "inode">;
 
-export type Tileset = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type TilesetData = Omit<Tileset, "_v" | "inode">;
-
 export type Variable = {
   id: string;
   name: string;
@@ -318,7 +304,7 @@ export type ProjectEntitiesData = {
   fonts: FontData[];
   avatars: AvatarData[];
   emotes: Emote[];
-  tilesets: TilesetData[];
+  tilesets: Tileset[];
   variables: Variable[];
   constants: Constant[];
   engineFieldValues: EngineFieldValue[];
@@ -344,7 +330,7 @@ export interface EntitiesState {
   fonts: EntityState<Font, string>;
   avatars: EntityState<Avatar, string>;
   emotes: EntityState<EmoteAsset, string>;
-  tilesets: EntityState<Tileset, string>;
+  tilesets: EntityState<TilesetAsset, string>;
   variables: EntityState<Variable, string>;
   constants: EntityState<Constant, string>;
   engineFieldValues: EntityState<EngineFieldValue, string>;

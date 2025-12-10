@@ -1,15 +1,15 @@
 import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { TilesetData } from "shared/lib/entities/entitiesTypes";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
 import { tileArrayToTileData } from "shared/lib/tiles/tileData";
+import { Tileset } from "shared/lib/resources/types";
 
 type CompileTilesetOptions = {
   warnings: (msg: string) => void;
 };
 
-type PrecompiledTilesetData = TilesetData & {
+type PrecompiledTilesetData = Tileset & {
   id: string;
   data: Uint8Array;
 };
@@ -23,7 +23,7 @@ const tilesetBuildCache: Record<
 > = {};
 
 const compileTilesets = async (
-  tilesets: TilesetData[],
+  tilesets: Tileset[],
   projectRoot: string,
   { warnings: _ }: CompileTilesetOptions,
 ): Promise<PrecompiledTilesetData[]> => {

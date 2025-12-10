@@ -10,7 +10,6 @@ import {
   readFileToIndexedImage,
   indexedImageToTilesDataArray,
 } from "lib/tiles/readFileToTiles";
-import { TilesetData } from "shared/lib/entities/entitiesTypes";
 import promiseLimit from "lib/helpers/promiseLimit";
 import { FLAG_VRAM_BANK_1 } from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
@@ -25,6 +24,7 @@ import {
   Background,
   ColorCorrectionSetting,
   Palette,
+  Tileset,
 } from "shared/lib/resources/types";
 import { ReferencedBackground } from "./precompile/determineUsedAssets";
 import { HexPalette } from "shared/lib/tiles/autoColor";
@@ -113,7 +113,7 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
 };
 
 const readCommonTileset = async (
-  commonTileset: TilesetData | undefined,
+  commonTileset: Tileset | undefined,
   projectPath: string,
 ) => {
   if (!commonTileset) {
@@ -172,7 +172,7 @@ const buildImageData = (
 
 export const compileImage = async (
   img: Background,
-  commonTileset: TilesetData | undefined,
+  commonTileset: Tileset | undefined,
   is360: boolean,
   uiPalette: HexPalette | undefined,
   colorMode: ColorModeSetting,
@@ -394,7 +394,7 @@ export const compileImage = async (
 
 const compileImages = async (
   imgs: ReferencedBackground[],
-  commonTilesetsLookup: Record<string, TilesetData[]>,
+  commonTilesetsLookup: Record<string, Tileset[]>,
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
   projectPath: string,

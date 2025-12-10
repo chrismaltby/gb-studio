@@ -4,7 +4,6 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import type {
   EngineFieldValue,
   SceneParallaxLayer,
-  TilesetData,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
 import {
@@ -27,6 +26,7 @@ import {
   Palette,
   Scene,
   SceneBoundsRect,
+  Tileset,
   Trigger,
 } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
@@ -76,7 +76,7 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
-export type PrecompiledTilesetData = TilesetData & {
+export type PrecompiledTilesetData = Tileset & {
   id: string;
   symbol: string;
   data: number[] | Uint8Array;

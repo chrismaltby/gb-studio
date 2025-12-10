@@ -21,7 +21,6 @@ import {
   SpriteStateNormalized,
   ScriptEventNormalized,
   Sound,
-  Tileset,
   CustomEventVariable,
   CustomEventActor,
   CustomEvent,
@@ -69,6 +68,7 @@ import {
   ProjectEntityResources,
   Scene,
   Sprite,
+  TilesetAsset,
   Trigger,
 } from "shared/lib/resources/types";
 import { uniqBy } from "lodash";
@@ -90,7 +90,7 @@ interface NormalizedEntities {
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, EmoteAsset>;
-  tilesets: Record<EntityId, Tileset>;
+  tilesets: Record<EntityId, TilesetAsset>;
   actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
   scripts: Record<EntityId, CustomEventNormalized>;
@@ -140,7 +140,7 @@ interface DenormalizedEntities {
   scripts: CustomEvent[];
   sounds: Sound[];
   sprites: Sprite[];
-  tilesets: Tileset[];
+  tilesets: TilesetAsset[];
   triggers: Trigger[];
   variables: {
     constants: Constant[];
@@ -328,7 +328,7 @@ export const denormalizeEntities = (
     fonts: state.fonts.entities as Record<EntityId, Font>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, EmoteAsset>,
-    tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
+    tilesets: state.tilesets.entities as Record<EntityId, TilesetAsset>,
     variableResources: {
       variables: {
         variables: state.variables.ids,

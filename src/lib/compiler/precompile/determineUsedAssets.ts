@@ -5,7 +5,6 @@ import type {
   CustomEvent,
   FontData,
   SoundData,
-  TilesetData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
@@ -18,6 +17,7 @@ import {
   ProjectResources,
   Scene,
   Sprite,
+  Tileset,
 } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
@@ -38,7 +38,7 @@ export type ReferencedSprite = Sprite & {
 
 export type ReferencedEmote = Emote;
 
-export type ReferencedTileset = TilesetData;
+export type ReferencedTileset = Tileset;
 
 export const determineUsedAssets = ({
   projectData,

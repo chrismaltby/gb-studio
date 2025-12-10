@@ -31,7 +31,6 @@ import {
   SceneNormalized,
   Sound,
   SpriteSheetNormalized,
-  Tileset,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
@@ -45,7 +44,11 @@ import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledMenu } from "ui/menu/style";
-import { BackgroundAsset, EmoteAsset } from "shared/lib/resources/types";
+import {
+  BackgroundAsset,
+  EmoteAsset,
+  TilesetAsset,
+} from "shared/lib/resources/types";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -142,7 +145,7 @@ const emoteToOption = (emote: EmoteAsset): EventOption => {
   };
 };
 
-const tilesetToOption = (tileset: Tileset): EventOption => {
+const tilesetToOption = (tileset: TilesetAsset): EventOption => {
   return {
     label: tileset.name,
     value: tileset.id,

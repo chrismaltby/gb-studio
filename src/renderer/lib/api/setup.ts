@@ -14,7 +14,6 @@ import type {
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
 import type { SettingsState } from "store/features/settings/settingsState";
-import type { Tileset } from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
@@ -41,6 +40,7 @@ import {
   Sprite,
   SpriteModeSetting,
   SpriteResourceAsset,
+  TilesetAsset,
   TilesetResourceAsset,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
@@ -248,7 +248,7 @@ const APISetup = {
     ) => ipcRenderer.invoke("project:export", data, engineSchema, exportType),
     getBackgroundInfo: (
       background: BackgroundAsset,
-      tileset: Tileset | undefined,
+      tileset: TilesetAsset | undefined,
       is360: boolean,
       uiPalette: HexPalette | undefined,
       colorMode: ColorModeSetting,
